@@ -3,6 +3,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { renderNav } from "./lib/nav.mjs";
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const colorTokens = JSON.parse(fs.readFileSync(path.join(root, "tokens/primitives/color.tokens.json")));
@@ -83,6 +84,7 @@ const html = `<!doctype html>
   .navlink:hover { background: var(--bg-card-hover); }
   .navlink.active { background: var(--accent-bg); color: var(--accent); font-weight: 600; }
   .navlink.disabled { color: var(--text-muted); cursor: default; pointer-events: none; }
+  .nav-category { font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin: 16px 8px 6px; }
   .tag { font-size: 9.5px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); border: 0.5px solid var(--border-strong); border-radius: 4px; padding: 1px 5px; }
   main { flex: 1; padding: 3rem 3rem 4rem; max-width: 1120px; }
   h1 { font-size: 22px; font-weight: 600; margin: 0 0 4px; letter-spacing: -0.01em; }
@@ -113,15 +115,7 @@ const html = `<!doctype html>
 <body>
 <div class="shell">
   <nav class="side">
-    <p class="brand">hp-design</p>
-    <p class="brand-sub">Highpoint design system</p>
-    <a class="navlink" href="index.html">Overview</a>
-    <a class="navlink active" href="colors.html">Colors</a>
-    <a class="navlink" href="semantic-colors.html">Semantic colors</a>
-    <a class="navlink" href="typography.html">Typography</a>
-    <a class="navlink" href="layout.html">Layout</a>
-    <a class="navlink" href="icons.html">Icons</a>
-    <span class="navlink disabled">Components <span class="tag">soon</span></span>
+    ${renderNav("colors")}
   </nav>
   <main>
     <h1>Colors — primitives</h1>

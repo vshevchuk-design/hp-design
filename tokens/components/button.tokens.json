@@ -1,0 +1,62 @@
+{
+  "component": {
+    "button": {
+      "$description": "First component built on top of the semantic layer — per project rule, built strictly on primitives/semantic tokens, no hardcoded values.",
+      "primary": {
+        "$description": "Solid accent-filled button, highest emphasis. Content variants (all share the same size/state tokens below): text-only · icon-left+text · icon-only (square, no paddingX/gap) · icon-left+text+icon-right · icon-left+text+counter-right (see component.counter — onFill variant, sized to match). Radius is constant across sizes (radius.default) — only height/paddingX/iconSize/label scale, so the corner doesn't visually change between sm/base/lg.",
+        "radius": { "$type": "dimension", "$value": "{radius.default}" },
+        "size": {
+          "sm": {
+            "$description": "32px. Icon-only variant is 32×32 (square = height, no paddingX applied).",
+            "height": { "$type": "dimension", "$value": "{dim.8}" },
+            "paddingX": { "$type": "dimension", "$value": "{dim.2}" },
+            "gap": { "$type": "dimension", "$value": "{dim.2}" },
+            "iconSize": { "$type": "dimension", "$value": "{dim.4}" },
+            "label": { "$type": "typography", "$value": "{text-style.heading-sm}" }
+          },
+          "base": {
+            "$description": "40px, the default size. Icon-only variant is 40×40.",
+            "height": { "$type": "dimension", "$value": "{dim.10}" },
+            "paddingX": { "$type": "dimension", "$value": "{dim.3}" },
+            "gap": { "$type": "dimension", "$value": "{dim.2}" },
+            "iconSize": { "$type": "dimension", "$value": "{dim.5}" },
+            "label": { "$type": "typography", "$value": "{text-style.heading-base}" }
+          },
+          "lg": {
+            "$description": "48px. Icon-only variant is 48×48.",
+            "height": { "$type": "dimension", "$value": "{dim.12}" },
+            "paddingX": { "$type": "dimension", "$value": "{dim.4}" },
+            "gap": { "$type": "dimension", "$value": "{dim.2}" },
+            "iconSize": { "$type": "dimension", "$value": "{dim.6}" },
+            "label": { "$type": "typography", "$value": "{text-style.heading-md}" }
+          },
+          "$description": "paddingX and iconSize scale with height along the same 4px grid the size step itself moves on (height +8 → paddingX +4, iconSize +4); gap between icon and label stays a flat 8px at every size, per spec. Icon sizes (16/20/24) resolve to 50% of button height at every step, which is why they don't need independent tuning as more sizes get added."
+        },
+        "state": {
+          "default": {
+            "fill": { "$type": "color", "$value": "{fill.accent}" },
+            "label": { "$type": "color", "$value": "{text.onFill}" },
+            "icon": { "$type": "color", "$value": "{icon.onFill}" }
+          },
+          "hover": {
+            "fill": { "$type": "color", "$value": "{fill.accentHover}" }
+          },
+          "pressed": {
+            "fill": { "$type": "color", "$value": "{fill.accentActive}" }
+          },
+          "focused": {
+            "ringColor": { "$type": "color", "$value": "{border.focus}" },
+            "ringWidth": { "$type": "dimension", "$value": "{dim.0_5}" },
+            "ringOffset": { "$type": "dimension", "$value": "{dim.0_5}" },
+            "$description": "Additive outline (keyboard focus only) on top of whatever default/hover/pressed fill is already showing — not a fill swap, so it composes with any of the three above."
+          },
+          "disabled": {
+            "fill": { "$type": "color", "$value": "{fill.disabled}" },
+            "label": { "$type": "color", "$value": "{text.disabled}" },
+            "icon": { "$type": "color", "$value": "{icon.disabled}" }
+          }
+        }
+      }
+    }
+  }
+}

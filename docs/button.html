@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>hp-design — Button</title>
+<style>
+  :root {
+    --bg-page: #f7f7f5; --bg-card: #ffffff; --bg-card-hover: #fbfbfa;
+    --border: #e4e3df; --border-strong: #d2d1cb;
+    --text-primary: #0e0e10; --text-secondary: #63625c; --text-muted: #918f87;
+    --accent: #0468c4; --accent-bg: #eff6ff;
+    --code-bg: #1e1e22; --code-text: #e4e3df;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --sans: -apple-system, "Segoe UI", system-ui, sans-serif;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327;
+      --border: #313035; --border-strong: #403f45;
+      --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68;
+      --accent: #5aa4ec; --accent-bg: #16283b;
+      --code-bg: #0d0d0f; --code-text: #d7d6d2;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327;
+    --border: #313035; --border-strong: #403f45;
+    --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68;
+    --accent: #5aa4ec; --accent-bg: #16283b;
+    --code-bg: #0d0d0f; --code-text: #d7d6d2;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg-page); color: var(--text-primary); font-family: var(--sans); }
+  .shell { display: flex; min-height: 100vh; }
+  nav.side { width: 220px; flex-shrink: 0; border-right: 0.5px solid var(--border); padding: 1.5rem 1rem; position: sticky; top: 0; height: 100vh; }
+  .brand { font-size: 14px; font-weight: 600; margin: 0 0 2px 8px; }
+  .brand-sub { font-size: 11.5px; color: var(--text-muted); margin: 0 0 1.5rem 8px; }
+  .navlink { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 8px; border-radius: 7px; font-size: 13px; text-decoration: none; color: var(--text-primary); margin-bottom: 1px; }
+  .navlink:hover { background: var(--bg-card-hover); }
+  .navlink.active { background: var(--accent-bg); color: var(--accent); font-weight: 600; }
+  .nav-category { font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin: 16px 8px 6px; }
+  main { flex: 1; padding: 4rem 4rem 6rem; max-width: 1120px; }
+
+  h1 { font-size: 36px; font-weight: 700; margin: 0 0 10px; letter-spacing: -0.02em; }
+  .sub { font-size: 14px; color: var(--text-secondary); margin: 0 0 2.5rem; }
+  h2.big-section { font-size: 24px; font-weight: 700; margin: 5.5rem 0 1.5rem; letter-spacing: -0.01em; padding-top: 2.5rem; border-top: 1px solid var(--border); }
+  h2.big-section:first-of-type { margin-top: 3rem; padding-top: 0; border-top: none; }
+  .section-desc { font-size: 13.5px; color: var(--text-secondary); margin: -0.75rem 0 1.75rem; max-width: 68ch; line-height: 1.6; }
+
+  .legend { font-size: 12.5px; color: var(--text-secondary); padding: 14px 18px; background: var(--bg-card); border: 0.5px solid var(--border); border-radius: 10px; margin-bottom: 1rem; line-height: 1.6; }
+  .legend .row { display: flex; gap: 14px; padding: 6px 0; border-bottom: 0.5px solid var(--border); }
+  .legend .row:last-child { border-bottom: none; }
+  .legend .row b { width: 150px; flex-shrink: 0; color: var(--text-primary); font-weight: 600; font-family: var(--mono); font-size: 11.5px; }
+  code.tok { font-family: var(--mono); font-size: 12px; color: var(--accent); }
+
+  pre.code { background: var(--code-bg); color: var(--code-text); border-radius: 10px; padding: 16px 18px; margin: 0; overflow-x: auto; font-family: var(--mono); font-size: 12px; line-height: 1.7; }
+  pre.code code { font-family: inherit; }
+
+  .story-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 28px; }
+  .story { border: 0.5px solid var(--border); border-radius: 14px; background: var(--bg-card); padding: 24px; display: flex; flex-direction: column; gap: 14px; }
+  .story h3 { font-size: 14px; font-weight: 600; margin: 0; font-family: var(--mono); }
+  .story-preview { min-height: 64px; display: flex; align-items: center; justify-content: center; padding: 12px 0; }
+  .story-note { font-size: 11.5px; color: var(--text-muted); margin: 0; line-height: 1.5; }
+  .story-note code.tok { font-size: 11px; }
+
+  .placeholder-note { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-muted); border: 0.5px dashed var(--border-strong); border-radius: 6px; padding: 4px 10px; margin-top: 1.5rem; }
+
+  .btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: 'Sora', sans-serif;
+  background: #077fec;
+  color: #ffffff;
+}
+.btn-primary__icon { flex-shrink: 0; }
+.btn-primary:not(:disabled):hover { background: #0468c4; }
+.btn-primary:not(:disabled):active { background: #01519c; }
+.btn-primary:not(:disabled):focus-visible { outline: none; box-shadow:0 0 0 2px var(--bg-card), 0 0 0 calc(2px + 2px) #077fec; }
+.btn-primary:disabled { background: #e8e8e8; color: #b4b4b4; cursor: not-allowed; }
+
+.btn-primary--sm {
+  height: 32px;
+  padding: 0 8px;
+  gap: 8px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 1.4;
+}
+.btn-primary--sm.btn-primary--icon-only { width: 32px; padding: 0; }
+.btn-primary--sm .btn-primary__icon { width: 16px; height: 16px; }
+
+.btn-primary--base {
+  height: 40px;
+  padding: 0 12px;
+  gap: 8px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1.4;
+}
+.btn-primary--base.btn-primary--icon-only { width: 40px; padding: 0; }
+.btn-primary--base .btn-primary__icon { width: 20px; height: 20px; }
+
+.btn-primary--lg {
+  height: 48px;
+  padding: 0 16px;
+  gap: 8px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1.4;
+}
+.btn-primary--lg.btn-primary--icon-only { width: 48px; padding: 0; }
+.btn-primary--lg .btn-primary__icon { width: 24px; height: 24px; }
+
+.counter {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-variant-numeric: tabular-nums;
+  font-family: 'Sora', sans-serif;
+  font-weight: 700;
+  border-radius: 999px;
+}
+.counter--sm { height: 16px; min-width: 16px; padding: 0 4px; font-size: 10px; line-height: 1; }
+.counter--base { height: 20px; min-width: 20px; padding: 0 6px; font-size: 12px; line-height: 1; }
+.counter--lg { height: 24px; min-width: 24px; padding: 0 6px; font-size: 14px; line-height: 1; }
+.counter--inactive { background: #01519c; color: #ffffff; }
+</style>
+</head>
+<body>
+<div class="shell">
+  <nav class="side">
+    <p class="brand">hp-design</p>
+    <p class="brand-sub">Highpoint design system</p>
+    <a class="navlink" href="index.html">Overview</a>
+    <p class="nav-category">Tokens</p>
+    <a class="navlink" href="colors.html">Colors</a>
+    <a class="navlink" href="semantic-colors.html">Semantic colors</a>
+    <a class="navlink" href="typography.html">Typography</a>
+    <a class="navlink" href="layout.html">Layout</a>
+    <a class="navlink" href="icons.html">Icons</a>
+    <p class="nav-category">Components</p>
+    <a class="navlink active" href="button.html">Button</a>
+    <a class="navlink" href="counter.html">Counter</a>
+  </nav>
+  <main>
+    <h1>Button</h1>
+    <p class="sub">tokens/components/button.tokens.json · Primary variant · generated — the CSS below is generated from the same resolved tokens driving every preview on this page, not hand-copied.</p>
+
+    <div class="legend">
+      <div class="row"><b>Sizes</b><span>sm 32px / base 40px (default) / lg 48px. paddingX and iconSize scale with height on the same 4px grid the size step itself moves on; the 8px icon↔label gap is flat at every size, per spec.</span></div>
+      <div class="row"><b>Icon size</b><span>16 / 20 / 24px — resolves to exactly 50% of button height at every size, which is why it self-scales instead of needing separate tuning as more sizes get added later.</span></div>
+      <div class="row"><b>Icon-only</b><span>Square (width = height), no paddingX/gap — the icon centers directly in the box.</span></div>
+      <div class="row"><b>Radius</b><span>radius.default (8px) at every size — constant, doesn't scale with height, so the corner reads the same across sm/base/lg.</span></div>
+      <div class="row"><b>States</b><span>default → fill.accent · hover → fill.accentHover · pressed → fill.accentActive · focused → additive 2px ring (border.focus) with 2px offset, composes on top of any of the three · disabled → fill.disabled + text.disabled + icon.disabled.</span></div>
+    </div>
+
+    <h2 class="big-section">CSS</h2>
+    <p class="section-desc">The full stylesheet — one base <code class="tok">.btn-primary</code> class, a <code class="tok">--sm/--base/--lg</code> size modifier, and an <code class="tok">--icon-only</code> modifier for the square variant. States are plain pseudo-classes, not separate classes.</p>
+    <pre class="code"><code>.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: 'Sora', sans-serif;
+  background: #077fec;
+  color: #ffffff;
+}
+.btn-primary__icon { flex-shrink: 0; }
+.btn-primary:not(:disabled):hover { background: #0468c4; }
+.btn-primary:not(:disabled):active { background: #01519c; }
+.btn-primary:not(:disabled):focus-visible { outline: none; box-shadow:0 0 0 2px var(--bg-card), 0 0 0 calc(2px + 2px) #077fec; }
+.btn-primary:disabled { background: #e8e8e8; color: #b4b4b4; cursor: not-allowed; }
+
+.btn-primary--sm {
+  height: 32px;
+  padding: 0 8px;
+  gap: 8px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 1.4;
+}
+.btn-primary--sm.btn-primary--icon-only { width: 32px; padding: 0; }
+.btn-primary--sm .btn-primary__icon { width: 16px; height: 16px; }
+
+.btn-primary--base {
+  height: 40px;
+  padding: 0 12px;
+  gap: 8px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1.4;
+}
+.btn-primary--base.btn-primary--icon-only { width: 40px; padding: 0; }
+.btn-primary--base .btn-primary__icon { width: 20px; height: 20px; }
+
+.btn-primary--lg {
+  height: 48px;
+  padding: 0 16px;
+  gap: 8px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1.4;
+}
+.btn-primary--lg.btn-primary--icon-only { width: 48px; padding: 0; }
+.btn-primary--lg .btn-primary__icon { width: 24px; height: 24px; }
+
+.counter {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-variant-numeric: tabular-nums;
+  font-family: 'Sora', sans-serif;
+  font-weight: 700;
+  border-radius: 999px;
+}
+.counter--sm { height: 16px; min-width: 16px; padding: 0 4px; font-size: 10px; line-height: 1; }
+.counter--base { height: 20px; min-width: 20px; padding: 0 6px; font-size: 12px; line-height: 1; }
+.counter--lg { height: 24px; min-width: 24px; padding: 0 6px; font-size: 14px; line-height: 1; }
+.counter--inactive { background: #01519c; color: #ffffff; }</code></pre>
+
+    <h2 class="big-section">Sizes</h2>
+    <p class="section-desc">Size and content variant are independent — any of the 5 variants below works at any of these 3 sizes. Shown here with the icon-left+text variant as the reference.</p>
+    <div class="story-grid">
+      
+      <div class="story">
+        <h3>sm — 32px</h3>
+        <div class="story-preview"><button class="btn-primary btn-primary--sm"><svg class="btn-primary__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+  Label</button></div>
+        <pre class="code"><code>&lt;button class="btn-primary btn-primary--sm"&gt;
+  &lt;svg class="btn-primary__icon"&gt;&lt;!-- icon: add --&gt;&lt;/svg&gt;
+  Label
+&lt;/button&gt;</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>base — 40px</h3>
+        <div class="story-preview"><button class="btn-primary btn-primary--base"><svg class="btn-primary__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+  Label</button></div>
+        <pre class="code"><code>&lt;button class="btn-primary btn-primary--base"&gt;
+  &lt;svg class="btn-primary__icon"&gt;&lt;!-- icon: add --&gt;&lt;/svg&gt;
+  Label
+&lt;/button&gt;</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>lg — 48px</h3>
+        <div class="story-preview"><button class="btn-primary btn-primary--lg"><svg class="btn-primary__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+  Label</button></div>
+        <pre class="code"><code>&lt;button class="btn-primary btn-primary--lg"&gt;
+  &lt;svg class="btn-primary__icon"&gt;&lt;!-- icon: add --&gt;&lt;/svg&gt;
+  Label
+&lt;/button&gt;</code></pre>
+        
+      </div>
+    </div>
+
+    <h2 class="big-section">Content variants</h2>
+    <p class="section-desc">All 5 at base (40px) size. Icons shown (add / arrow_forward) are stand-ins for preview only — the real icon per button is decided when a concrete use case is composed, same as the icons page's own "not yet used" placeholders. Counter details: <a href="counter.html">counter.html</a>.</p>
+    <div class="story-grid">
+      
+      <div class="story">
+        <h3>Text only</h3>
+        <div class="story-preview"><button class="btn-primary btn-primary--base">Label</button></div>
+        <pre class="code"><code>&lt;button class="btn-primary btn-primary--base"&gt;
+  Label
+&lt;/button&gt;</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>Icon left + text</h3>
+        <div class="story-preview"><button class="btn-primary btn-primary--base"><svg class="btn-primary__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+  Label</button></div>
+        <pre class="code"><code>&lt;button class="btn-primary btn-primary--base"&gt;
+  &lt;svg class="btn-primary__icon"&gt;&lt;!-- icon: add --&gt;&lt;/svg&gt;
+  Label
+&lt;/button&gt;</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>Icon only (square)</h3>
+        <div class="story-preview"><button class="btn-primary btn-primary--base btn-primary--icon-only" aria-label="Icon only"><svg class="btn-primary__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></button></div>
+        <pre class="code"><code>&lt;button class="btn-primary btn-primary--base btn-primary--icon-only" aria-label="Icon only"&gt;
+  &lt;svg class="btn-primary__icon"&gt;&lt;!-- icon: add --&gt;&lt;/svg&gt;
+&lt;/button&gt;</code></pre>
+        <p class="story-note">Square — width equals height, no horizontal padding. Needs an <code>aria-label</code> since there's no visible text.</p>
+      </div>
+
+      <div class="story">
+        <h3>Icon left + text + icon right</h3>
+        <div class="story-preview"><button class="btn-primary btn-primary--base"><svg class="btn-primary__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+  Label
+  <svg class="btn-primary__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg></button></div>
+        <pre class="code"><code>&lt;button class="btn-primary btn-primary--base"&gt;
+  &lt;svg class="btn-primary__icon"&gt;&lt;!-- icon: add --&gt;&lt;/svg&gt;
+  Label
+  &lt;svg class="btn-primary__icon"&gt;&lt;!-- icon: arrow_forward --&gt;&lt;/svg&gt;
+&lt;/button&gt;</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>Icon left + text + counter right</h3>
+        <div class="story-preview"><button class="btn-primary btn-primary--base"><svg class="btn-primary__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+  Label
+  <span class="counter counter--base counter--inactive">3</span></button></div>
+        <pre class="code"><code>&lt;button class="btn-primary btn-primary--base"&gt;
+  &lt;svg class="btn-primary__icon"&gt;&lt;!-- icon: add --&gt;&lt;/svg&gt;
+  Label
+  &lt;span class="counter counter--base counter--inactive"&gt;3&lt;/span&gt;
+&lt;/button&gt;</code></pre>
+        
+      </div>
+    </div>
+
+    <h2 class="big-section">States</h2>
+    <p class="section-desc">Base size, icon-left+text variant. Default/hover/pressed/focused are one shared markup with different pseudo-classes applied — disabled is the one real attribute (<code class="tok">disabled</code>) that also flips the label/icon color and drops the cursor.</p>
+    <div class="story-grid">
+      
+      <div class="story">
+        <h3>default</h3>
+        <div class="story-preview"><button class="btn-primary btn-primary--base" style=""><svg class="btn-primary__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+    Label</button></div>
+        <pre class="code"><code>.btn-primary {
+  background: #077fec;
+}</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>hover</h3>
+        <div class="story-preview"><button class="btn-primary btn-primary--base" style="background:#0468c4"><svg class="btn-primary__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+    Label</button></div>
+        <pre class="code"><code>.btn-primary:hover {
+  background: #0468c4;
+}</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>pressed</h3>
+        <div class="story-preview"><button class="btn-primary btn-primary--base" style="background:#01519c"><svg class="btn-primary__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+    Label</button></div>
+        <pre class="code"><code>.btn-primary:active {
+  background: #01519c;
+}</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>focused</h3>
+        <div class="story-preview"><button class="btn-primary btn-primary--base" style="box-shadow:0 0 0 2px var(--bg-card), 0 0 0 calc(2px + 2px) #077fec;"><svg class="btn-primary__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+    Label</button></div>
+        <pre class="code"><code>.btn-primary:focus-visible {
+  outline: none;
+  box-shadow:0 0 0 2px var(--bg-card), 0 0 0 calc(2px + 2px) #077fec;
+}</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>disabled</h3>
+        <div class="story-preview"><button class="btn-primary btn-primary--base" disabled style=""><svg class="btn-primary__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+    Label</button></div>
+        <pre class="code"><code>.btn-primary:disabled {
+  background: #e8e8e8;
+  color: #b4b4b4;
+}</code></pre>
+        
+      </div>
+    </div>
+
+    <p class="placeholder-note">Every code sample on this page is printed from the same resolved token values driving the live previews above it — copy it directly, nothing here is hand-typed.</p>
+  </main>
+</div>
+</body>
+</html>

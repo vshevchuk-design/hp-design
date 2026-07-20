@@ -53,6 +53,7 @@
   .navlink:hover { background: var(--bg-card-hover); }
   .navlink.active { background: var(--accent-bg); color: var(--accent); font-weight: 600; }
   .navlink.disabled { color: var(--text-muted); cursor: default; pointer-events: none; }
+  .nav-category { font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin: 16px 8px 6px; }
   .tag { font-size: 9.5px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); border: 0.5px solid var(--border-strong); border-radius: 4px; padding: 1px 5px; }
   main { flex: 1; padding: 3rem 3rem 4rem; max-width: 980px; }
   h1 { font-size: 24px; font-weight: 600; margin: 0 0 6px; letter-spacing: -0.01em; }
@@ -77,12 +78,15 @@
     <p class="brand">hp-design</p>
     <p class="brand-sub">Highpoint design system</p>
     <a class="navlink active" href="index.html">Overview</a>
+    <p class="nav-category">Tokens</p>
     <a class="navlink" href="colors.html">Colors</a>
     <a class="navlink" href="semantic-colors.html">Semantic colors</a>
     <a class="navlink" href="typography.html">Typography</a>
     <a class="navlink" href="layout.html">Layout</a>
     <a class="navlink" href="icons.html">Icons</a>
-    <span class="navlink disabled">Components <span class="tag">soon</span></span>
+    <p class="nav-category">Components</p>
+    <a class="navlink" href="button.html">Button</a>
+    <a class="navlink" href="counter.html">Counter</a>
   </nav>
   <main>
     <h1>hp-design</h1>
@@ -119,10 +123,14 @@
         <div class="card-head"><h2>Icons</h2><span class="tag">136</span></div>
         <p>Material Icons, Filled style, SVG — currentColor, розширюється за потреби.</p>
       </a>
-      <div class="card disabled">
-        <div class="card-head"><h2>Components</h2><span class="tag">soon</span></div>
-        <p>Бібліотека компонентів на semantic-токенах.</p>
-      </div>
+      <a class="card" href="button.html">
+        <div class="card-head"><h2>Button</h2><span class="tag">Primary</span></div>
+        <p>sm/base/lg · 5 контентних варіантів · 5 станів.</p>
+      </a>
+      <a class="card" href="counter.html">
+        <div class="card-head"><h2>Counter</h2><span class="tag">onFill</span></div>
+        <p>Числовий бейдж всередині Primary-кнопки. Inactive/active.</p>
+      </a>
     </div>
   </main>
 </div>

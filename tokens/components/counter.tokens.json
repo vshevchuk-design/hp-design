@@ -1,0 +1,71 @@
+{
+  "component": {
+    "counter": {
+      "$description": "Small numeric pill. Built now only for the one variant that exists yet — sitting on the right side of a filled component.button.primary (the icon-left+text+counter-right content variant). A general-purpose standalone counter/badge (for nav items, list rows, etc. on a plain surface) is deferred until a real use case for it shows up — not built speculatively.",
+      "onFill": {
+        "$description": "The one variant built so far: counter sitting on top of an already-colored fill (e.g. button.primary's fill.accent). Sizes mirror button.primary's sizes 1:1 (same sm/base/lg keys) and reuse the same iconSize dim step for height, so the pill's edges line up visually with the icon slot beside it.",
+        "radius": { "$type": "dimension", "$value": "{radius.full}" },
+        "size": {
+          "sm": {
+            "height": { "$type": "dimension", "$value": "{dim.4}" },
+            "minWidth": { "$type": "dimension", "$value": "{dim.4}" },
+            "paddingX": { "$type": "dimension", "$value": "{dim.1}" },
+            "label": {
+              "$type": "typography",
+              "$value": {
+                "fontFamily": "{family.sans}",
+                "fontWeight": "{weight.bold}",
+                "fontSize": "{size.xs}",
+                "lineHeight": "{leading.none}",
+                "letterSpacing": "{tracking.normal}"
+              }
+            }
+          },
+          "base": {
+            "height": { "$type": "dimension", "$value": "{dim.5}" },
+            "minWidth": { "$type": "dimension", "$value": "{dim.5}" },
+            "paddingX": { "$type": "dimension", "$value": "{dim.1_5}" },
+            "label": {
+              "$type": "typography",
+              "$value": {
+                "fontFamily": "{family.sans}",
+                "fontWeight": "{weight.bold}",
+                "fontSize": "{size.sm}",
+                "lineHeight": "{leading.none}",
+                "letterSpacing": "{tracking.normal}"
+              }
+            }
+          },
+          "lg": {
+            "height": { "$type": "dimension", "$value": "{dim.6}" },
+            "minWidth": { "$type": "dimension", "$value": "{dim.6}" },
+            "paddingX": { "$type": "dimension", "$value": "{dim.1_5}" },
+            "label": {
+              "$type": "typography",
+              "$value": {
+                "fontFamily": "{family.sans}",
+                "fontWeight": "{weight.bold}",
+                "fontSize": "{size.base}",
+                "lineHeight": "{leading.none}",
+                "letterSpacing": "{tracking.normal}"
+              }
+            }
+          },
+          "$description": "Not a text-style.* alias — every existing bold text-style (label-sm/base) bakes in uppercase + wide tracking for all-caps words, wrong for digits. Composed directly from typography primitives instead, same as text-style.* itself is composed. leading.none (1) rather than normal/tight — a single-line numeric pill centers better with no extra line-box air."
+          },
+        "state": {
+          "inactive": {
+            "$description": "Seen/zero count — reads as quiet, close to the button's own fill so it doesn't compete for attention. Deliberately NOT the same color as fill.accentHover, so it stays visible instead of disappearing when the parent button is hovered.",
+            "bg": { "$type": "color", "$value": "{fill.accentActive}" },
+            "label": { "$type": "color", "$value": "{text.onFill}" }
+          },
+          "active": {
+            "$description": "Has a new/meaningful count — inverted to white so it pops off the button's blue fill instead of blending into it.",
+            "bg": { "$type": "color", "$value": "{color.white}" },
+            "label": { "$type": "color", "$value": "{text.accent}" }
+          }
+        }
+      }
+    }
+  }
+}

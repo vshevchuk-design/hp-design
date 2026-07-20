@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>hp-design — Counter</title>
+<style>
+  :root {
+    --bg-page: #f7f7f5; --bg-card: #ffffff; --bg-card-hover: #fbfbfa;
+    --border: #e4e3df; --border-strong: #d2d1cb;
+    --text-primary: #0e0e10; --text-secondary: #63625c; --text-muted: #918f87;
+    --accent: #0468c4; --accent-bg: #eff6ff;
+    --code-bg: #1e1e22; --code-text: #e4e3df;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --sans: -apple-system, "Segoe UI", system-ui, sans-serif;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327;
+      --border: #313035; --border-strong: #403f45;
+      --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68;
+      --accent: #5aa4ec; --accent-bg: #16283b;
+      --code-bg: #0d0d0f; --code-text: #d7d6d2;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327;
+    --border: #313035; --border-strong: #403f45;
+    --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68;
+    --accent: #5aa4ec; --accent-bg: #16283b;
+    --code-bg: #0d0d0f; --code-text: #d7d6d2;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg-page); color: var(--text-primary); font-family: var(--sans); }
+  .shell { display: flex; min-height: 100vh; }
+  nav.side { width: 220px; flex-shrink: 0; border-right: 0.5px solid var(--border); padding: 1.5rem 1rem; position: sticky; top: 0; height: 100vh; }
+  .brand { font-size: 14px; font-weight: 600; margin: 0 0 2px 8px; }
+  .brand-sub { font-size: 11.5px; color: var(--text-muted); margin: 0 0 1.5rem 8px; }
+  .navlink { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 8px; border-radius: 7px; font-size: 13px; text-decoration: none; color: var(--text-primary); margin-bottom: 1px; }
+  .navlink:hover { background: var(--bg-card-hover); }
+  .navlink.active { background: var(--accent-bg); color: var(--accent); font-weight: 600; }
+  .nav-category { font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin: 16px 8px 6px; }
+  main { flex: 1; padding: 4rem 4rem 6rem; max-width: 1120px; }
+
+  h1 { font-size: 36px; font-weight: 700; margin: 0 0 10px; letter-spacing: -0.02em; }
+  .sub { font-size: 14px; color: var(--text-secondary); margin: 0 0 2.5rem; }
+  h2.big-section { font-size: 24px; font-weight: 700; margin: 5.5rem 0 1.5rem; letter-spacing: -0.01em; padding-top: 2.5rem; border-top: 1px solid var(--border); }
+  h2.big-section:first-of-type { margin-top: 3rem; padding-top: 0; border-top: none; }
+  .section-desc { font-size: 13.5px; color: var(--text-secondary); margin: -0.75rem 0 1.75rem; max-width: 68ch; line-height: 1.6; }
+
+  .legend { font-size: 12.5px; color: var(--text-secondary); padding: 14px 18px; background: var(--bg-card); border: 0.5px solid var(--border); border-radius: 10px; margin-bottom: 1rem; line-height: 1.6; }
+  .legend .row { display: flex; gap: 14px; padding: 6px 0; border-bottom: 0.5px solid var(--border); }
+  .legend .row:last-child { border-bottom: none; }
+  .legend .row b { width: 150px; flex-shrink: 0; color: var(--text-primary); font-weight: 600; font-family: var(--mono); font-size: 11.5px; }
+  code.tok { font-family: var(--mono); font-size: 12px; color: var(--accent); }
+
+  pre.code { background: var(--code-bg); color: var(--code-text); border-radius: 10px; padding: 16px 18px; margin: 0; overflow-x: auto; font-family: var(--mono); font-size: 12px; line-height: 1.7; }
+  pre.code code { font-family: inherit; }
+
+  .story-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 28px; }
+  .story { border: 0.5px solid var(--border); border-radius: 14px; background: var(--bg-card); padding: 24px; display: flex; flex-direction: column; gap: 14px; }
+  .story h3 { font-size: 14px; font-weight: 600; margin: 0; font-family: var(--mono); }
+  .story-preview { min-height: 64px; display: flex; align-items: center; justify-content: center; padding: 12px 0; }
+  .story-note { font-size: 11.5px; color: var(--text-muted); margin: 0; line-height: 1.5; }
+
+  .demo-box { display: inline-flex; align-items: center; justify-content: center; width: 64px; height: 64px; background: var(--border-strong); }
+
+  .placeholder-note { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-muted); border: 0.5px dashed var(--border-strong); border-radius: 6px; padding: 4px 10px; margin-top: 1.5rem; }
+
+  .counter {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-variant-numeric: tabular-nums;
+  font-family: 'Sora', sans-serif;
+  font-weight: 700;
+  border-radius: 999px;
+}
+.counter--sm { height: 16px; min-width: 16px; padding: 0 4px; font-size: 10px; line-height: 1; }
+.counter--base { height: 20px; min-width: 20px; padding: 0 6px; font-size: 12px; line-height: 1; }
+.counter--lg { height: 24px; min-width: 24px; padding: 0 6px; font-size: 14px; line-height: 1; }
+
+.counter--inactive { background: #01519c; color: #ffffff; }
+.counter--active { background: #ffffff; color: #0468c4; }
+</style>
+</head>
+<body>
+<div class="shell">
+  <nav class="side">
+    <p class="brand">hp-design</p>
+    <p class="brand-sub">Highpoint design system</p>
+    <a class="navlink" href="index.html">Overview</a>
+    <p class="nav-category">Tokens</p>
+    <a class="navlink" href="colors.html">Colors</a>
+    <a class="navlink" href="semantic-colors.html">Semantic colors</a>
+    <a class="navlink" href="typography.html">Typography</a>
+    <a class="navlink" href="layout.html">Layout</a>
+    <a class="navlink" href="icons.html">Icons</a>
+    <p class="nav-category">Components</p>
+    <a class="navlink" href="button.html">Button</a>
+    <a class="navlink active" href="counter.html">Counter</a>
+  </nav>
+  <main>
+    <h1>Counter</h1>
+    <p class="sub">tokens/components/counter.tokens.json · onFill variant · generated — the CSS below is generated from the same resolved tokens driving every preview on this page, not hand-copied.</p>
+
+    <div class="legend">
+      <div class="row"><b>Scope</b><span>Only the on-fill variant exists so far — for <a href="button.html">button.primary</a>'s icon+label+counter-right content variant. A standalone counter for plain surfaces (nav badges, list rows) is deferred until a real use case needs it.</span></div>
+      <div class="row"><b>Sizing</b><span>Mirrors button.primary's sm/base/lg 1:1 — height = the same dim step as that size's iconSize (16/20/24px), so the pill lines up with the icon beside it.</span></div>
+      <div class="row"><b>Inactive</b><span>fill.accentActive bg + text.onFill label — deliberately not fill.accentHover, so it doesn't visually disappear when the parent button is hovered.</span></div>
+      <div class="row"><b>Active</b><span>Inverted to white bg + text.accent label, so a new/meaningful count pops off the button instead of blending in.</span></div>
+    </div>
+
+    <h2 class="big-section">CSS</h2>
+    <p class="section-desc">One base <code class="tok">.counter</code> class, a <code class="tok">--sm/--base/--lg</code> size modifier, and an <code class="tok">--inactive/--active</code> state modifier.</p>
+    <pre class="code"><code>.counter {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-variant-numeric: tabular-nums;
+  font-family: 'Sora', sans-serif;
+  font-weight: 700;
+  border-radius: 999px;
+}
+.counter--sm { height: 16px; min-width: 16px; padding: 0 4px; font-size: 10px; line-height: 1; }
+.counter--base { height: 20px; min-width: 20px; padding: 0 6px; font-size: 12px; line-height: 1; }
+.counter--lg { height: 24px; min-width: 24px; padding: 0 6px; font-size: 14px; line-height: 1; }
+
+.counter--inactive { background: #01519c; color: #ffffff; }
+.counter--active { background: #ffffff; color: #0468c4; }</code></pre>
+
+    <h2 class="big-section">Sizes</h2>
+    <p class="section-desc">Gray boxes are a neutral demo container only (fixed 64×64, no rounding) — not a real button. The counter's actual background always comes from whatever it sits on in real use — see <a href="button.html">the icon+text+counter button variant</a>.</p>
+    <div class="story-grid">
+      
+      <div class="story">
+        <h3>sm — 16px</h3>
+        <div class="story-preview"><div class="demo-box"><span class="counter counter--sm counter--inactive">3</span></div></div>
+        <pre class="code"><code>&lt;span class="counter counter--sm counter--inactive"&gt;3&lt;/span&gt;</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>base — 20px</h3>
+        <div class="story-preview"><div class="demo-box"><span class="counter counter--base counter--inactive">3</span></div></div>
+        <pre class="code"><code>&lt;span class="counter counter--base counter--inactive"&gt;3&lt;/span&gt;</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>lg — 24px</h3>
+        <div class="story-preview"><div class="demo-box"><span class="counter counter--lg counter--inactive">3</span></div></div>
+        <pre class="code"><code>&lt;span class="counter counter--lg counter--inactive"&gt;3&lt;/span&gt;</code></pre>
+        
+      </div>
+    </div>
+
+    <h2 class="big-section">States</h2>
+    <p class="section-desc">Base size.</p>
+    <div class="story-grid">
+      
+      <div class="story">
+        <h3>inactive</h3>
+        <div class="story-preview"><div class="demo-box"><span class="counter counter--base counter--inactive">3</span></div></div>
+        <pre class="code"><code>&lt;span class="counter counter--base counter--inactive"&gt;3&lt;/span&gt;</code></pre>
+        <p class="story-note">Seen/zero count — close to the button's own fill so it reads as quiet.</p>
+      </div>
+
+      <div class="story">
+        <h3>active</h3>
+        <div class="story-preview"><div class="demo-box"><span class="counter counter--base counter--active">3</span></div></div>
+        <pre class="code"><code>&lt;span class="counter counter--base counter--active"&gt;3&lt;/span&gt;</code></pre>
+        <p class="story-note">Has a new/meaningful count — inverted to white so it pops off the fill.</p>
+      </div>
+    </div>
+
+    <p class="placeholder-note">Every code sample on this page is printed from the same resolved token values driving the live previews above it — copy it directly, nothing here is hand-typed.</p>
+  </main>
+</div>
+</body>
+</html>

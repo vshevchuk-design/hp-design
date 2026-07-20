@@ -141,6 +141,11 @@
       "$type": "color",
       "$value": "{color.gray.400}"
     },
+    "disabled": {
+      "$type": "color",
+      "$value": "{color.gray.300}",
+      "$description": "Matches text.disabled — icon and label go equally quiet together on a disabled control."
+    },
     "onFill": {
       "$type": "color",
       "$value": "{color.white}"
