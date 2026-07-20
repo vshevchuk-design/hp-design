@@ -116,7 +116,7 @@ const html = `<!doctype html>
 
     <div class="legend">
       <div class="row"><b>Source</b><span>google/material-design-icons, "Filled" style, 24px SVG. Extracted selectively (this batch matched an existing product icon audit + common UI basics) — add more the same way as new needs come up, not a one-time full import.</span></div>
-      <div class="row"><b>Color</b><span>Every SVG has fill="currentColor" — never hardcode a fill. Previewed here at icon.default (${iconDefaultHex}); set icon.accent/success/danger/warning as the wrapper's CSS color to switch it.</span></div>
+      <div class="row"><b>Color</b><span>Every SVG has fill="currentColor" — never hardcode a fill. Previewed here at icon.default (${iconDefaultHex}); set icon.primary/success/danger/warning as the wrapper's CSS color to switch it.</span></div>
       <div class="row"><b>Size</b><span>Sourced at 24px, the standard UI icon grid — scale via CSS width/height, the paths stay crisp at typical UI sizes (16–32px).</span></div>
       <div class="row"><b>Used by</b><span>Placeholder for now — every icon says "not yet used" since no components consume them yet. Gets rewritten to real component references as they're built, per the standing token-docs-legend rule.</span></div>
     </div>

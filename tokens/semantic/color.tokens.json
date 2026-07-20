@@ -28,8 +28,8 @@
     }
   },
   "bg": {
-    "$description": "Passive status surfaces (banners, badges, notification chips) — solid light tints, not opacity. Pair with the matching text.* or icon.* color at the same role, never with text.primary.",
-    "accent": {
+    "$description": "Passive status surfaces (banners, badges, notification chips) — solid light tints, not opacity. Pair with the matching text.* or icon.* color at the same role, never with text.default.",
+    "primary": {
       "$type": "color",
       "$value": "{color.blue.100}"
     },
@@ -67,7 +67,7 @@
       "$value": "{color.blue.500}",
       "$description": "Focus ring — always this color regardless of the focused element's own role."
     },
-    "accent": {
+    "primary": {
       "$type": "color",
       "$value": "{color.blue.200}"
     },
@@ -85,8 +85,8 @@
     }
   },
   "text": {
-    "$description": "Content color. Role text (accent/success/danger/warning) sits at each family's 600 step — AA text-safe (≥4.5:1). muted is a deliberate exception, see its own note.",
-    "primary": {
+    "$description": "Content color. Role text (primary/success/danger/warning) sits at each family's 600 step — AA text-safe (≥4.5:1). muted is a deliberate exception, see its own note.",
+    "default": {
       "$type": "color",
       "$value": "{color.gray.950}",
       "$description": "Default body/heading/title text."
@@ -110,7 +110,7 @@
       "$value": "{color.white}",
       "$description": "Text/label sitting on a solid fill.* color (button labels, filled badges). Literal white, not a ramp step — none of the fill.* colors are dark enough to need anything else. Must be paired with semibold/bold weight: at fill's 500 step, contrast against white lands at 3.7-4.4:1 (large-text/UI-component AA, not the 4.5:1 small-text threshold) — checked directly, true for every role, not just one."
     },
-    "accent": {
+    "primary": {
       "$type": "color",
       "$value": "{color.blue.600}"
     },
@@ -150,7 +150,7 @@
       "$type": "color",
       "$value": "{color.white}"
     },
-    "accent": {
+    "primary": {
       "$type": "color",
       "$value": "{color.blue.500}"
     },
@@ -168,23 +168,23 @@
     }
   },
   "fill": {
-    "$description": "Solid, saturated backgrounds for interactive controls (buttons, checkboxes, toggles, filled badges) — pairs with text.onFill / icon.onFill, never with text.primary. Label text on any fill.* must be semibold or bold — see text.onFill.",
-    "accent": {
+    "$description": "Solid, saturated backgrounds for interactive controls (buttons, checkboxes, toggles, filled badges) — pairs with text.onFill / icon.onFill, never with text.default. Label text on any fill.* must be semibold or bold — see text.onFill.",
+    "primary": {
       "$type": "color",
       "$value": "{color.blue.500}"
     },
-    "accentHover": {
+    "primaryHover": {
       "$type": "color",
       "$value": "{color.blue.600}"
     },
-    "accentActive": {
+    "primaryActive": {
       "$type": "color",
       "$value": "{color.blue.700}"
     },
     "neutral": {
       "$type": "color",
       "$value": "{color.gray.100}",
-      "$description": "Secondary/neutral button fill — pairs with text.primary, not text.onFill (too light for white text)."
+      "$description": "Secondary/neutral button fill — pairs with text.default, not text.onFill (too light for white text)."
     },
     "neutralHover": {
       "$type": "color",

@@ -69,22 +69,35 @@
 
   .placeholder-note { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-muted); border: 0.5px dashed var(--border-strong); border-radius: 6px; padding: 4px 10px; margin-top: 1.5rem; }
 
-  .btn-primary {
+  :root {
+  --fill-primary: #077fec;
+  --fill-primary-hover: #0468c4;
+  --fill-primary-active: #01519c;
+  --fill-disabled: #e8e8e8;
+  --text-on-fill: #ffffff;
+  --text-disabled: #b4b4b4;
+  --border-focus: #077fec;
+  --color-white: #ffffff;
+  --text-primary: #0468c4;
+  --family-sans: 'Sora', sans-serif;
+}
+
+.btn-primary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   border: none;
   cursor: pointer;
   white-space: nowrap;
-  font-family: 'Sora', sans-serif;
-  background: #077fec;
-  color: #ffffff;
+  font-family: var(--family-sans);
+  background: var(--fill-primary);
+  color: var(--text-on-fill);
 }
 .btn-primary__icon { flex-shrink: 0; }
-.btn-primary:not(:disabled):hover { background: #0468c4; }
-.btn-primary:not(:disabled):active { background: #01519c; }
-.btn-primary:not(:disabled):focus-visible { outline: none; box-shadow:0 0 0 2px var(--bg-card), 0 0 0 calc(2px + 2px) #077fec; }
-.btn-primary:disabled { background: #e8e8e8; color: #b4b4b4; cursor: not-allowed; }
+.btn-primary:not(:disabled):hover { background: var(--fill-primary-hover); }
+.btn-primary:not(:disabled):active { background: var(--fill-primary-active); }
+.btn-primary:not(:disabled):focus-visible { outline: none; box-shadow: 0 0 0 2px var(--bg-card) /* substitute your own surface color */, 0 0 0 calc(2px + 2px) var(--border-focus); }
+.btn-primary:disabled { background: var(--fill-disabled); color: var(--text-disabled); cursor: not-allowed; }
 
 .btn-primary--sm {
   height: 32px;
@@ -127,14 +140,14 @@
   align-items: center;
   justify-content: center;
   font-variant-numeric: tabular-nums;
-  font-family: 'Sora', sans-serif;
+  font-family: var(--family-sans);
   font-weight: 700;
   border-radius: 999px;
 }
 .counter--sm { height: 16px; min-width: 16px; padding: 0 4px; font-size: 10px; line-height: 1; }
 .counter--base { height: 20px; min-width: 20px; padding: 0 6px; font-size: 12px; line-height: 1; }
 .counter--lg { height: 24px; min-width: 24px; padding: 0 6px; font-size: 14px; line-height: 1; }
-.counter--inactive { background: #01519c; color: #ffffff; }
+.counter--inactive { background: var(--fill-primary-active); color: var(--text-on-fill); }
 </style>
 </head>
 <body>
@@ -155,34 +168,47 @@
   </nav>
   <main>
     <h1>Button</h1>
-    <p class="sub">tokens/components/button.tokens.json · Primary variant · generated — the CSS below is generated from the same resolved tokens driving every preview on this page, not hand-copied.</p>
+    <p class="sub">tokens/components/button.tokens.json · Primary variant · generated — the CSS below is generated from the same resolved tokens driving every preview on this page, not hand-copied. Colors are CSS custom properties (<code class="tok">var(--fill-primary)</code> etc.), not literal hex — retune a token, regenerate, and every rule that references it updates together.</p>
 
     <div class="legend">
       <div class="row"><b>Sizes</b><span>sm 32px / base 40px (default) / lg 48px. paddingX and iconSize scale with height on the same 4px grid the size step itself moves on; the 8px icon↔label gap is flat at every size, per spec.</span></div>
       <div class="row"><b>Icon size</b><span>16 / 20 / 24px — resolves to exactly 50% of button height at every size, which is why it self-scales instead of needing separate tuning as more sizes get added later.</span></div>
       <div class="row"><b>Icon-only</b><span>Square (width = height), no paddingX/gap — the icon centers directly in the box.</span></div>
       <div class="row"><b>Radius</b><span>radius.default (8px) at every size — constant, doesn't scale with height, so the corner reads the same across sm/base/lg.</span></div>
-      <div class="row"><b>States</b><span>default → fill.accent · hover → fill.accentHover · pressed → fill.accentActive · focused → additive 2px ring (border.focus) with 2px offset, composes on top of any of the three · disabled → fill.disabled + text.disabled + icon.disabled.</span></div>
+      <div class="row"><b>States</b><span>default → fill.primary · hover → fill.primaryHover · pressed → fill.primaryActive · focused → additive 2px ring (border.focus) with 2px offset, composes on top of any of the three · disabled → fill.disabled + text.disabled + icon.disabled.</span></div>
     </div>
 
     <h2 class="big-section">CSS</h2>
-    <p class="section-desc">The full stylesheet — one base <code class="tok">.btn-primary</code> class, a <code class="tok">--sm/--base/--lg</code> size modifier, and an <code class="tok">--icon-only</code> modifier for the square variant. States are plain pseudo-classes, not separate classes.</p>
-    <pre class="code"><code>.btn-primary {
+    <p class="section-desc">One <code class="tok">:root</code> block of color custom properties, then one base <code class="tok">.btn-primary</code> class, a <code class="tok">--sm/--base/--lg</code> size modifier, and an <code class="tok">--icon-only</code> modifier for the square variant. States are plain pseudo-classes, not separate classes. Dimensions (height/padding/gap/font-size) stay literal px in the size modifiers — those are baked layout decisions per size, not values a consumer re-themes at runtime the way colors are.</p>
+    <pre class="code"><code>:root {
+  --fill-primary: #077fec;
+  --fill-primary-hover: #0468c4;
+  --fill-primary-active: #01519c;
+  --fill-disabled: #e8e8e8;
+  --text-on-fill: #ffffff;
+  --text-disabled: #b4b4b4;
+  --border-focus: #077fec;
+  --color-white: #ffffff;
+  --text-primary: #0468c4;
+  --family-sans: 'Sora', sans-serif;
+}
+
+.btn-primary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   border: none;
   cursor: pointer;
   white-space: nowrap;
-  font-family: 'Sora', sans-serif;
-  background: #077fec;
-  color: #ffffff;
+  font-family: var(--family-sans);
+  background: var(--fill-primary);
+  color: var(--text-on-fill);
 }
 .btn-primary__icon { flex-shrink: 0; }
-.btn-primary:not(:disabled):hover { background: #0468c4; }
-.btn-primary:not(:disabled):active { background: #01519c; }
-.btn-primary:not(:disabled):focus-visible { outline: none; box-shadow:0 0 0 2px var(--bg-card), 0 0 0 calc(2px + 2px) #077fec; }
-.btn-primary:disabled { background: #e8e8e8; color: #b4b4b4; cursor: not-allowed; }
+.btn-primary:not(:disabled):hover { background: var(--fill-primary-hover); }
+.btn-primary:not(:disabled):active { background: var(--fill-primary-active); }
+.btn-primary:not(:disabled):focus-visible { outline: none; box-shadow: 0 0 0 2px var(--bg-card) /* substitute your own surface color */, 0 0 0 calc(2px + 2px) var(--border-focus); }
+.btn-primary:disabled { background: var(--fill-disabled); color: var(--text-disabled); cursor: not-allowed; }
 
 .btn-primary--sm {
   height: 32px;
@@ -225,14 +251,14 @@
   align-items: center;
   justify-content: center;
   font-variant-numeric: tabular-nums;
-  font-family: 'Sora', sans-serif;
+  font-family: var(--family-sans);
   font-weight: 700;
   border-radius: 999px;
 }
 .counter--sm { height: 16px; min-width: 16px; padding: 0 4px; font-size: 10px; line-height: 1; }
 .counter--base { height: 20px; min-width: 20px; padding: 0 6px; font-size: 12px; line-height: 1; }
 .counter--lg { height: 24px; min-width: 24px; padding: 0 6px; font-size: 14px; line-height: 1; }
-.counter--inactive { background: #01519c; color: #ffffff; }</code></pre>
+.counter--inactive { background: var(--fill-primary-active); color: var(--text-on-fill); }</code></pre>
 
     <h2 class="big-section">Sizes</h2>
     <p class="section-desc">Size and content variant are independent — any of the 5 variants below works at any of these 3 sizes. Shown here with the icon-left+text variant as the reference.</p>
@@ -341,38 +367,38 @@
         <div class="story-preview"><button class="btn-primary btn-primary--base" style=""><svg class="btn-primary__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
     Label</button></div>
         <pre class="code"><code>.btn-primary {
-  background: #077fec;
+  background: var(--fill-primary);
 }</code></pre>
         
       </div>
 
       <div class="story">
         <h3>hover</h3>
-        <div class="story-preview"><button class="btn-primary btn-primary--base" style="background:#0468c4"><svg class="btn-primary__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+        <div class="story-preview"><button class="btn-primary btn-primary--base" style="background:var(--fill-primary-hover)"><svg class="btn-primary__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
     Label</button></div>
         <pre class="code"><code>.btn-primary:hover {
-  background: #0468c4;
+  background: var(--fill-primary-hover);
 }</code></pre>
         
       </div>
 
       <div class="story">
         <h3>pressed</h3>
-        <div class="story-preview"><button class="btn-primary btn-primary--base" style="background:#01519c"><svg class="btn-primary__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+        <div class="story-preview"><button class="btn-primary btn-primary--base" style="background:var(--fill-primary-active)"><svg class="btn-primary__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
     Label</button></div>
         <pre class="code"><code>.btn-primary:active {
-  background: #01519c;
+  background: var(--fill-primary-active);
 }</code></pre>
         
       </div>
 
       <div class="story">
         <h3>focused</h3>
-        <div class="story-preview"><button class="btn-primary btn-primary--base" style="box-shadow:0 0 0 2px var(--bg-card), 0 0 0 calc(2px + 2px) #077fec;"><svg class="btn-primary__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+        <div class="story-preview"><button class="btn-primary btn-primary--base" style="box-shadow: 0 0 0 2px var(--bg-card) /* substitute your own surface color */, 0 0 0 calc(2px + 2px) var(--border-focus);"><svg class="btn-primary__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
     Label</button></div>
         <pre class="code"><code>.btn-primary:focus-visible {
   outline: none;
-  box-shadow:0 0 0 2px var(--bg-card), 0 0 0 calc(2px + 2px) #077fec;
+  box-shadow: 0 0 0 2px var(--bg-card) /* substitute your own surface color */, 0 0 0 calc(2px + 2px) var(--border-focus);
 }</code></pre>
         
       </div>
@@ -382,8 +408,8 @@
         <div class="story-preview"><button class="btn-primary btn-primary--base" disabled style=""><svg class="btn-primary__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
     Label</button></div>
         <pre class="code"><code>.btn-primary:disabled {
-  background: #e8e8e8;
-  color: #b4b4b4;
+  background: var(--fill-disabled);
+  color: var(--text-disabled);
 }</code></pre>
         
       </div>

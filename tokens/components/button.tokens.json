@@ -3,7 +3,7 @@
     "button": {
       "$description": "First component built on top of the semantic layer — per project rule, built strictly on primitives/semantic tokens, no hardcoded values.",
       "primary": {
-        "$description": "Solid accent-filled button, highest emphasis. Content variants (all share the same size/state tokens below): text-only · icon-left+text · icon-only (square, no paddingX/gap) · icon-left+text+icon-right · icon-left+text+counter-right (see component.counter — onFill variant, sized to match). Radius is constant across sizes (radius.default) — only height/paddingX/iconSize/label scale, so the corner doesn't visually change between sm/base/lg.",
+        "$description": "Solid button filled with the fill.primary color role — highest emphasis. Content variants (all share the same size/state tokens below): text-only · icon-left+text · icon-only (square, no paddingX/gap) · icon-left+text+icon-right · icon-left+text+counter-right (see component.counter — onFill variant, sized to match). Radius is constant across sizes (radius.default) — only height/paddingX/iconSize/label scale, so the corner doesn't visually change between sm/base/lg.",
         "radius": { "$type": "dimension", "$value": "{radius.default}" },
         "size": {
           "sm": {
@@ -34,15 +34,15 @@
         },
         "state": {
           "default": {
-            "fill": { "$type": "color", "$value": "{fill.accent}" },
+            "fill": { "$type": "color", "$value": "{fill.primary}" },
             "label": { "$type": "color", "$value": "{text.onFill}" },
             "icon": { "$type": "color", "$value": "{icon.onFill}" }
           },
           "hover": {
-            "fill": { "$type": "color", "$value": "{fill.accentHover}" }
+            "fill": { "$type": "color", "$value": "{fill.primaryHover}" }
           },
           "pressed": {
-            "fill": { "$type": "color", "$value": "{fill.accentActive}" }
+            "fill": { "$type": "color", "$value": "{fill.primaryActive}" }
           },
           "focused": {
             "ringColor": { "$type": "color", "$value": "{border.focus}" },

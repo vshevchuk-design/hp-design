@@ -3,7 +3,7 @@
     "counter": {
       "$description": "Small numeric pill. Built now only for the one variant that exists yet — sitting on the right side of a filled component.button.primary (the icon-left+text+counter-right content variant). A general-purpose standalone counter/badge (for nav items, list rows, etc. on a plain surface) is deferred until a real use case for it shows up — not built speculatively.",
       "onFill": {
-        "$description": "The one variant built so far: counter sitting on top of an already-colored fill (e.g. button.primary's fill.accent). Sizes mirror button.primary's sizes 1:1 (same sm/base/lg keys) and reuse the same iconSize dim step for height, so the pill's edges line up visually with the icon slot beside it.",
+        "$description": "The one variant built so far: counter sitting on top of an already-colored fill (e.g. button.primary's fill.primary). Sizes mirror button.primary's sizes 1:1 (same sm/base/lg keys) and reuse the same iconSize dim step for height, so the pill's edges line up visually with the icon slot beside it.",
         "radius": { "$type": "dimension", "$value": "{radius.full}" },
         "size": {
           "sm": {
@@ -55,14 +55,14 @@
           },
         "state": {
           "inactive": {
-            "$description": "Seen/zero count — reads as quiet, close to the button's own fill so it doesn't compete for attention. Deliberately NOT the same color as fill.accentHover, so it stays visible instead of disappearing when the parent button is hovered.",
-            "bg": { "$type": "color", "$value": "{fill.accentActive}" },
+            "$description": "Seen/zero count — reads as quiet, close to the button's own fill so it doesn't compete for attention. Deliberately NOT the same color as fill.primaryHover, so it stays visible instead of disappearing when the parent button is hovered.",
+            "bg": { "$type": "color", "$value": "{fill.primaryActive}" },
             "label": { "$type": "color", "$value": "{text.onFill}" }
           },
           "active": {
             "$description": "Has a new/meaningful count — inverted to white so it pops off the button's blue fill instead of blending into it.",
             "bg": { "$type": "color", "$value": "{color.white}" },
-            "label": { "$type": "color", "$value": "{text.accent}" }
+            "label": { "$type": "color", "$value": "{text.primary}" }
           }
         }
       }

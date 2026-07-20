@@ -7,6 +7,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { renderNav } from "./lib/nav.mjs";
+import { cssVarName, renderRootVars } from "./lib/css-vars.mjs";
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const load = (p) => JSON.parse(fs.readFileSync(path.join(root, p)));
@@ -55,22 +56,29 @@ const resolve = (ref) => resolveToken(get(ref));
 const px = (d) => `${d.value}${d.unit}`;
 const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
+// ---- color tokens this page actually uses, as CSS custom properties ----
+// (`cv` = "css var" — returns var(--x); shares the exact same name-mangling
+// as the :root block below, via cssVarName, so they can't drift apart.)
+const colorPaths = ["fill.primaryActive", "text.onFill", "color.white", "text.primary"];
+const colorValue = Object.fromEntries(colorPaths.map((p) => [p, resolve(p)]));
+const fontSans = resolve("family.sans"); // e.g. "Sora" — was previously hand-typed as a literal 'Sora' string in the CSS below instead of coming from this token
+const cv = (tokenPath) => `var(${cssVarName(tokenPath)})`;
+const rootVars = renderRootVars([...colorPaths.map((p) => [p, colorValue[p]]), ["family.sans", `'${fontSans}', sans-serif`]]);
+
 const counterRadius = px(resolve(counter.onFill.radius.$value));
 const sizes = ["sm", "base", "lg"].map((key) => {
   const s = counter.onFill.size[key];
   return { key, height: resolve(s.height.$value), minWidth: resolve(s.minWidth.$value), paddingX: resolve(s.paddingX.$value), label: resolveToken(s.label) };
 });
-const stateColor = {
-  inactive: { bg: resolve(counter.onFill.state.inactive.bg.$value), label: resolve(counter.onFill.state.inactive.label.$value) },
-  active: { bg: resolve(counter.onFill.state.active.bg.$value), label: resolve(counter.onFill.state.active.label.$value) },
-};
 
-const css = `.counter {
+const css = `${rootVars}
+
+.counter {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   font-variant-numeric: tabular-nums;
-  font-family: 'Sora', sans-serif;
+  font-family: ${cv("family.sans")};
   font-weight: 700;
   border-radius: ${counterRadius};
 }
@@ -78,8 +86,8 @@ ${sizes
   .map((s) => `.counter--${s.key} { height: ${px(s.height)}; min-width: ${px(s.minWidth)}; padding: 0 ${px(s.paddingX)}; font-size: ${px(s.label.fontSize)}; line-height: ${s.label.lineHeight}; }`)
   .join("\n")}
 
-.counter--inactive { background: ${stateColor.inactive.bg}; color: ${stateColor.inactive.label}; }
-.counter--active { background: ${stateColor.active.bg}; color: ${stateColor.active.label}; }`;
+.counter--inactive { background: ${cv("fill.primaryActive")}; color: ${cv("text.onFill")}; }
+.counter--active { background: ${cv("color.white")}; color: ${cv("text.primary")}; }`;
 
 function markup(size, st) {
   return `<span class="counter counter--${size} counter--${st}">3</span>`;
@@ -184,13 +192,13 @@ const html = `<!doctype html>
   </nav>
   <main>
     <h1>Counter</h1>
-    <p class="sub">tokens/components/counter.tokens.json · onFill variant · generated — the CSS below is generated from the same resolved tokens driving every preview on this page, not hand-copied.</p>
+    <p class="sub">tokens/components/counter.tokens.json · onFill variant · generated — the CSS below is generated from the same resolved tokens driving every preview on this page, not hand-copied. Colors are CSS custom properties (<code class="tok">var(--fill-primary-active)</code> etc.), not literal hex.</p>
 
     <div class="legend">
       <div class="row"><b>Scope</b><span>Only the on-fill variant exists so far — for <a href="button.html">button.primary</a>'s icon+label+counter-right content variant. A standalone counter for plain surfaces (nav badges, list rows) is deferred until a real use case needs it.</span></div>
       <div class="row"><b>Sizing</b><span>Mirrors button.primary's sm/base/lg 1:1 — height = the same dim step as that size's iconSize (16/20/24px), so the pill lines up with the icon beside it.</span></div>
-      <div class="row"><b>Inactive</b><span>fill.accentActive bg + text.onFill label — deliberately not fill.accentHover, so it doesn't visually disappear when the parent button is hovered.</span></div>
-      <div class="row"><b>Active</b><span>Inverted to white bg + text.accent label, so a new/meaningful count pops off the button instead of blending in.</span></div>
+      <div class="row"><b>Inactive</b><span>fill.primaryActive bg + text.onFill label — deliberately not fill.primaryHover, so it doesn't visually disappear when the parent button is hovered.</span></div>
+      <div class="row"><b>Active</b><span>Inverted to white bg + text.primary label, so a new/meaningful count pops off the button instead of blending in.</span></div>
     </div>
 
     <h2 class="big-section">CSS</h2>

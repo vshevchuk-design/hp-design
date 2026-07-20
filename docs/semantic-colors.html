@@ -109,10 +109,10 @@
     </div>
 
     <h3 class="sub-section">bg</h3>
-    <div class="legend"><div class="row"><span>Passive status surfaces (banners, badges, notification chips) — solid light tints, not opacity. Pair with the matching text.* or icon.* color at the same role, never with text.primary.</span></div></div>
+    <div class="legend"><div class="row"><span>Passive status surfaces (banners, badges, notification chips) — solid light tints, not opacity. Pair with the matching text.* or icon.* color at the same role, never with text.default.</span></div></div>
     <div class="swatch-grid">
       <div class="tok-card" style="background:#d9eaff;color:#141414">
-        <code class="tok-name">bg.accent</code>
+        <code class="tok-name">bg.primary</code>
         <span class="tok-alias">color.blue.100</span>
         <span class="tok-hex">#d9eaff</span>
       </div>
@@ -157,7 +157,7 @@
         <span class="tok-hex">#077fec</span>
       </div><div class="tok-desc-wrap"><p class="tok-desc">Focus ring — always this color regardless of the focused element's own role.</p></div>
       <div class="tok-card" style="background:#b2d4fe;color:#141414">
-        <code class="tok-name">border.accent</code>
+        <code class="tok-name">border.primary</code>
         <span class="tok-alias">color.blue.200</span>
         <span class="tok-hex">#b2d4fe</span>
       </div>
@@ -179,10 +179,10 @@
     </div>
 
     <h3 class="sub-section">text</h3>
-    <div class="legend"><div class="row"><span>Content color. Role text (accent/success/danger/warning) sits at each family's 600 step — AA text-safe (≥4.5:1). muted is a deliberate exception, see its own note.</span></div></div>
+    <div class="legend"><div class="row"><span>Content color. Role text (primary/success/danger/warning) sits at each family's 600 step — AA text-safe (≥4.5:1). muted is a deliberate exception, see its own note.</span></div></div>
     <div class="swatch-grid">
       <div class="tok-card" style="background:#181818;color:#fdfdfd">
-        <code class="tok-name">text.primary</code>
+        <code class="tok-name">text.default</code>
         <span class="tok-alias">color.gray.950</span>
         <span class="tok-hex">#181818</span>
       </div><div class="tok-desc-wrap"><p class="tok-desc">Default body/heading/title text.</p></div>
@@ -207,7 +207,7 @@
         <span class="tok-hex">#ffffff</span>
       </div><div class="tok-desc-wrap"><p class="tok-desc">Text/label sitting on a solid fill.* color (button labels, filled badges). Literal white, not a ramp step — none of the fill.* colors are dark enough to need anything else. Must be paired with semibold/bold weight: at fill's 500 step, contrast against white lands at 3.7-4.4:1 (large-text/UI-component AA, not the 4.5:1 small-text threshold) — checked directly, true for every role, not just one.</p></div>
       <div class="tok-card" style="background:#0468c4;color:#fdfdfd">
-        <code class="tok-name">text.accent</code>
+        <code class="tok-name">text.primary</code>
         <span class="tok-alias">color.blue.600</span>
         <span class="tok-hex">#0468c4</span>
       </div>
@@ -257,7 +257,7 @@
         <span class="tok-hex">#ffffff</span>
       </div>
       <div class="tok-card" style="background:#077fec;color:#fdfdfd">
-        <code class="tok-name">icon.accent</code>
+        <code class="tok-name">icon.primary</code>
         <span class="tok-alias">color.blue.500</span>
         <span class="tok-hex">#077fec</span>
       </div>
@@ -279,20 +279,20 @@
     </div>
 
     <h3 class="sub-section">fill</h3>
-    <div class="legend"><div class="row"><span>Solid, saturated backgrounds for interactive controls (buttons, checkboxes, toggles, filled badges) — pairs with text.onFill / icon.onFill, never with text.primary. Label text on any fill.* must be semibold or bold — see text.onFill.</span></div></div>
+    <div class="legend"><div class="row"><span>Solid, saturated backgrounds for interactive controls (buttons, checkboxes, toggles, filled badges) — pairs with text.onFill / icon.onFill, never with text.default. Label text on any fill.* must be semibold or bold — see text.onFill.</span></div></div>
     <div class="swatch-grid">
       <div class="tok-card" style="background:#077fec;color:#fdfdfd">
-        <code class="tok-name">fill.accent</code>
+        <code class="tok-name">fill.primary</code>
         <span class="tok-alias">color.blue.500</span>
         <span class="tok-hex">#077fec</span>
       </div>
       <div class="tok-card" style="background:#0468c4;color:#fdfdfd">
-        <code class="tok-name">fill.accentHover</code>
+        <code class="tok-name">fill.primaryHover</code>
         <span class="tok-alias">color.blue.600</span>
         <span class="tok-hex">#0468c4</span>
       </div>
       <div class="tok-card" style="background:#01519c;color:#fdfdfd">
-        <code class="tok-name">fill.accentActive</code>
+        <code class="tok-name">fill.primaryActive</code>
         <span class="tok-alias">color.blue.700</span>
         <span class="tok-hex">#01519c</span>
       </div>
@@ -300,7 +300,7 @@
         <code class="tok-name">fill.neutral</code>
         <span class="tok-alias">color.gray.100</span>
         <span class="tok-hex">#e8e8e8</span>
-      </div><div class="tok-desc-wrap"><p class="tok-desc">Secondary/neutral button fill — pairs with text.primary, not text.onFill (too light for white text).</p></div>
+      </div><div class="tok-desc-wrap"><p class="tok-desc">Secondary/neutral button fill — pairs with text.default, not text.onFill (too light for white text).</p></div>
       <div class="tok-card" style="background:#d1d1d1;color:#141414">
         <code class="tok-name">fill.neutralHover</code>
         <span class="tok-alias">color.gray.200</span>

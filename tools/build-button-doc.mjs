@@ -1,5 +1,8 @@
 // Regenerates docs/button.html from tokens/components/button.tokens.json,
 // resolving aliases back through semantic/*.tokens.json and primitives/*.tokens.json.
+// Colors are emitted as CSS custom properties (:root { --fill-primary: ...; })
+// and every rule below references var(--x) — never a literal hex — so the
+// printed CSS is real, retheme-able code, not a frozen snapshot of today's values.
 // The generated <style> block IS the code shown in the "CSS" section below —
 // one source, so the live preview and the printed snippet can't drift apart.
 // Run: node tools/build-button-doc.mjs
@@ -7,6 +10,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { renderNav } from "./lib/nav.mjs";
+import { cssVarName, renderRootVars } from "./lib/css-vars.mjs";
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const load = (p) => JSON.parse(fs.readFileSync(path.join(root, p)));
@@ -56,7 +60,16 @@ const resolve = (ref) => resolveToken(get(ref));
 const px = (d) => `${d.value}${d.unit}`;
 const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
-// ---- resolve button.primary ----
+// ---- color tokens this page actually uses, as CSS custom properties ----
+// (`cv` = "css var" — returns var(--x); shares the exact same name-mangling
+// as the :root block below, via cssVarName, so they can't drift apart.)
+const colorPaths = ["fill.primary", "fill.primaryHover", "fill.primaryActive", "fill.disabled", "text.onFill", "text.disabled", "border.focus", "color.white", "text.primary"];
+const colorValue = Object.fromEntries(colorPaths.map((p) => [p, resolve(p)]));
+const fontSans = resolve("family.sans"); // e.g. "Sora" — was previously hand-typed as a literal 'Sora' string in the CSS below instead of coming from this token
+const cv = (tokenPath) => `var(${cssVarName(tokenPath)})`;
+const rootVars = renderRootVars([...colorPaths.map((p) => [p, colorValue[p]]), ["family.sans", `'${fontSans}', sans-serif`]]);
+
+// ---- resolve button.primary (dimensions stay literal px — only color is themeable here) ----
 const btnRadius = px(resolve(button.primary.radius.$value));
 const sizes = ["sm", "base", "lg"].map((key) => {
   const s = button.primary.size[key];
@@ -69,15 +82,8 @@ const sizes = ["sm", "base", "lg"].map((key) => {
     label: resolveToken(get(s.label.$value)),
   };
 });
-const state = {
-  default: { fill: resolve(button.primary.state.default.fill.$value), label: resolve(button.primary.state.default.label.$value) },
-  hover: { fill: resolve(button.primary.state.hover.fill.$value) },
-  pressed: { fill: resolve(button.primary.state.pressed.fill.$value) },
-  disabled: { fill: resolve(button.primary.state.disabled.fill.$value), label: resolve(button.primary.state.disabled.label.$value) },
-  focusRing: resolve(button.primary.state.focused.ringColor.$value),
-  focusWidth: resolve(button.primary.state.focused.ringWidth.$value),
-  focusOffset: resolve(button.primary.state.focused.ringOffset.$value),
-};
+const focusWidth = resolve(button.primary.state.focused.ringWidth.$value);
+const focusOffset = resolve(button.primary.state.focused.ringOffset.$value);
 
 // ---- resolve counter.onFill (needed for the icon+text+counter variant) ----
 const counterRadius = px(resolve(counter.onFill.radius.$value));
@@ -85,31 +91,36 @@ const counterSizes = ["sm", "base", "lg"].map((key) => {
   const s = counter.onFill.size[key];
   return { key, height: resolve(s.height.$value), minWidth: resolve(s.minWidth.$value), paddingX: resolve(s.paddingX.$value), label: resolveToken(s.label) };
 });
-const counterInactive = { bg: resolve(counter.onFill.state.inactive.bg.$value), label: resolve(counter.onFill.state.inactive.label.$value) };
 
 // ---- icons (placeholders for the preview only) ----
 const iconAdd = fs.readFileSync(path.join(root, "assets/icons/material-filled/add.svg"), "utf8").replace("<svg ", '<svg class="btn-primary__icon" ');
 const iconArrow = fs.readFileSync(path.join(root, "assets/icons/material-filled/arrow_forward.svg"), "utf8").replace("<svg ", '<svg class="btn-primary__icon" ');
 
-const ringShadow = `box-shadow:0 0 0 ${px(state.focusOffset)} var(--bg-card), 0 0 0 calc(${px(state.focusOffset)} + ${px(state.focusWidth)}) ${state.focusRing};`;
+// var(--bg-card) here is this docs page's own card background, not a design
+// token — the ring's inner box-shadow has to match whatever surface the button
+// actually sits on, which is inherently contextual. Called out explicitly in
+// the printed comment below so nobody copies --bg-card expecting it to exist.
+const ringShadow = `box-shadow: 0 0 0 ${px(focusOffset)} var(--bg-card) /* substitute your own surface color */, 0 0 0 calc(${px(focusOffset)} + ${px(focusWidth)}) ${cv("border.focus")};`;
 
 // ---- the actual stylesheet — printed as code AND used to render the live preview ----
-const css = `.btn-primary {
+const css = `${rootVars}
+
+.btn-primary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   border: none;
   cursor: pointer;
   white-space: nowrap;
-  font-family: 'Sora', sans-serif;
-  background: ${state.default.fill};
-  color: ${state.default.label};
+  font-family: ${cv("family.sans")};
+  background: ${cv("fill.primary")};
+  color: ${cv("text.onFill")};
 }
 .btn-primary__icon { flex-shrink: 0; }
-.btn-primary:not(:disabled):hover { background: ${state.hover.fill}; }
-.btn-primary:not(:disabled):active { background: ${state.pressed.fill}; }
-.btn-primary:not(:disabled):focus-visible { outline: none; ${ringShadow.trim()} }
-.btn-primary:disabled { background: ${state.disabled.fill}; color: ${state.disabled.label}; cursor: not-allowed; }
+.btn-primary:not(:disabled):hover { background: ${cv("fill.primaryHover")}; }
+.btn-primary:not(:disabled):active { background: ${cv("fill.primaryActive")}; }
+.btn-primary:not(:disabled):focus-visible { outline: none; ${ringShadow} }
+.btn-primary:disabled { background: ${cv("fill.disabled")}; color: ${cv("text.disabled")}; cursor: not-allowed; }
 
 ${sizes
   .map(
@@ -132,7 +143,7 @@ ${sizes
   align-items: center;
   justify-content: center;
   font-variant-numeric: tabular-nums;
-  font-family: 'Sora', sans-serif;
+  font-family: ${cv("family.sans")};
   font-weight: 700;
   border-radius: ${counterRadius};
 }
@@ -141,7 +152,7 @@ ${counterSizes
     (cs) => `.counter--${cs.key} { height: ${px(cs.height)}; min-width: ${px(cs.minWidth)}; padding: 0 ${px(cs.paddingX)}; font-size: ${px(cs.label.fontSize)}; line-height: ${cs.label.lineHeight}; }`
   )
   .join("\n")}
-.counter--inactive { background: ${counterInactive.bg}; color: ${counterInactive.label}; }`;
+.counter--inactive { background: ${cv("fill.primaryActive")}; color: ${cv("text.onFill")}; }`;
 
 // ---- markup builders: `live` uses real inline SVGs (for the rendered preview), `code` uses a short placeholder comment (for the printed snippet — a full path data dump isn't useful as a code sample) ----
 function content(kind, live) {
@@ -192,15 +203,15 @@ const sizeStories = sizes
   .join("\n");
 
 const variantStories = variants
-  .map((v) => storyCard(v.label, markup("base", v.key, true), markup("base", v.key, false), v.key === "icon-only" ? "Square — width equals height, no horizontal padding. Needs an <code>aria-label</code> since there's no visible text." : ""))
+  .map((vr) => storyCard(vr.label, markup("base", vr.key, true), markup("base", vr.key, false), vr.key === "icon-only" ? "Square — width equals height, no horizontal padding. Needs an <code>aria-label</code> since there's no visible text." : ""))
   .join("\n");
 
 const stateSnippets = {
-  default: `.btn-primary {\n  background: ${state.default.fill};\n}`,
-  hover: `.btn-primary:hover {\n  background: ${state.hover.fill};\n}`,
-  pressed: `.btn-primary:active {\n  background: ${state.pressed.fill};\n}`,
+  default: `.btn-primary {\n  background: ${cv("fill.primary")};\n}`,
+  hover: `.btn-primary:hover {\n  background: ${cv("fill.primaryHover")};\n}`,
+  pressed: `.btn-primary:active {\n  background: ${cv("fill.primaryActive")};\n}`,
   focused: `.btn-primary:focus-visible {\n  outline: none;\n  ${ringShadow}\n}`,
-  disabled: `.btn-primary:disabled {\n  background: ${state.disabled.fill};\n  color: ${state.disabled.label};\n}`,
+  disabled: `.btn-primary:disabled {\n  background: ${cv("fill.disabled")};\n  color: ${cv("text.disabled")};\n}`,
 };
 function stateStory(name, extraStyle, disabled) {
   const html = `<button class="btn-primary btn-primary--base"${disabled ? " disabled" : ""} style="${extraStyle}">${iconAdd}\n    Label</button>`;
@@ -208,8 +219,8 @@ function stateStory(name, extraStyle, disabled) {
 }
 const stateStories = [
   stateStory("default", ""),
-  stateStory("hover", `background:${state.hover.fill}`),
-  stateStory("pressed", `background:${state.pressed.fill}`),
+  stateStory("hover", `background:${cv("fill.primaryHover")}`),
+  stateStory("pressed", `background:${cv("fill.primaryActive")}`),
   stateStory("focused", ringShadow),
   stateStory("disabled", "", true),
 ].join("\n");
@@ -295,18 +306,18 @@ const html = `<!doctype html>
   </nav>
   <main>
     <h1>Button</h1>
-    <p class="sub">tokens/components/button.tokens.json · Primary variant · generated — the CSS below is generated from the same resolved tokens driving every preview on this page, not hand-copied.</p>
+    <p class="sub">tokens/components/button.tokens.json · Primary variant · generated — the CSS below is generated from the same resolved tokens driving every preview on this page, not hand-copied. Colors are CSS custom properties (<code class="tok">var(--fill-primary)</code> etc.), not literal hex — retune a token, regenerate, and every rule that references it updates together.</p>
 
     <div class="legend">
       <div class="row"><b>Sizes</b><span>sm 32px / base 40px (default) / lg 48px. paddingX and iconSize scale with height on the same 4px grid the size step itself moves on; the 8px icon↔label gap is flat at every size, per spec.</span></div>
       <div class="row"><b>Icon size</b><span>16 / 20 / 24px — resolves to exactly 50% of button height at every size, which is why it self-scales instead of needing separate tuning as more sizes get added later.</span></div>
       <div class="row"><b>Icon-only</b><span>Square (width = height), no paddingX/gap — the icon centers directly in the box.</span></div>
       <div class="row"><b>Radius</b><span>radius.default (8px) at every size — constant, doesn't scale with height, so the corner reads the same across sm/base/lg.</span></div>
-      <div class="row"><b>States</b><span>default → fill.accent · hover → fill.accentHover · pressed → fill.accentActive · focused → additive 2px ring (border.focus) with 2px offset, composes on top of any of the three · disabled → fill.disabled + text.disabled + icon.disabled.</span></div>
+      <div class="row"><b>States</b><span>default → fill.primary · hover → fill.primaryHover · pressed → fill.primaryActive · focused → additive 2px ring (border.focus) with 2px offset, composes on top of any of the three · disabled → fill.disabled + text.disabled + icon.disabled.</span></div>
     </div>
 
     <h2 class="big-section">CSS</h2>
-    <p class="section-desc">The full stylesheet — one base <code class="tok">.btn-primary</code> class, a <code class="tok">--sm/--base/--lg</code> size modifier, and an <code class="tok">--icon-only</code> modifier for the square variant. States are plain pseudo-classes, not separate classes.</p>
+    <p class="section-desc">One <code class="tok">:root</code> block of color custom properties, then one base <code class="tok">.btn-primary</code> class, a <code class="tok">--sm/--base/--lg</code> size modifier, and an <code class="tok">--icon-only</code> modifier for the square variant. States are plain pseudo-classes, not separate classes. Dimensions (height/padding/gap/font-size) stay literal px in the size modifiers — those are baked layout decisions per size, not values a consumer re-themes at runtime the way colors are.</p>
     <pre class="code"><code>${esc(css)}</code></pre>
 
     <h2 class="big-section">Sizes</h2>

@@ -70,12 +70,20 @@
 
   .placeholder-note { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-muted); border: 0.5px dashed var(--border-strong); border-radius: 6px; padding: 4px 10px; margin-top: 1.5rem; }
 
-  .counter {
+  :root {
+  --fill-primary-active: #01519c;
+  --text-on-fill: #ffffff;
+  --color-white: #ffffff;
+  --text-primary: #0468c4;
+  --family-sans: 'Sora', sans-serif;
+}
+
+.counter {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   font-variant-numeric: tabular-nums;
-  font-family: 'Sora', sans-serif;
+  font-family: var(--family-sans);
   font-weight: 700;
   border-radius: 999px;
 }
@@ -83,8 +91,8 @@
 .counter--base { height: 20px; min-width: 20px; padding: 0 6px; font-size: 12px; line-height: 1; }
 .counter--lg { height: 24px; min-width: 24px; padding: 0 6px; font-size: 14px; line-height: 1; }
 
-.counter--inactive { background: #01519c; color: #ffffff; }
-.counter--active { background: #ffffff; color: #0468c4; }
+.counter--inactive { background: var(--fill-primary-active); color: var(--text-on-fill); }
+.counter--active { background: var(--color-white); color: var(--text-primary); }
 </style>
 </head>
 <body>
@@ -105,23 +113,31 @@
   </nav>
   <main>
     <h1>Counter</h1>
-    <p class="sub">tokens/components/counter.tokens.json · onFill variant · generated — the CSS below is generated from the same resolved tokens driving every preview on this page, not hand-copied.</p>
+    <p class="sub">tokens/components/counter.tokens.json · onFill variant · generated — the CSS below is generated from the same resolved tokens driving every preview on this page, not hand-copied. Colors are CSS custom properties (<code class="tok">var(--fill-primary-active)</code> etc.), not literal hex.</p>
 
     <div class="legend">
       <div class="row"><b>Scope</b><span>Only the on-fill variant exists so far — for <a href="button.html">button.primary</a>'s icon+label+counter-right content variant. A standalone counter for plain surfaces (nav badges, list rows) is deferred until a real use case needs it.</span></div>
       <div class="row"><b>Sizing</b><span>Mirrors button.primary's sm/base/lg 1:1 — height = the same dim step as that size's iconSize (16/20/24px), so the pill lines up with the icon beside it.</span></div>
-      <div class="row"><b>Inactive</b><span>fill.accentActive bg + text.onFill label — deliberately not fill.accentHover, so it doesn't visually disappear when the parent button is hovered.</span></div>
-      <div class="row"><b>Active</b><span>Inverted to white bg + text.accent label, so a new/meaningful count pops off the button instead of blending in.</span></div>
+      <div class="row"><b>Inactive</b><span>fill.primaryActive bg + text.onFill label — deliberately not fill.primaryHover, so it doesn't visually disappear when the parent button is hovered.</span></div>
+      <div class="row"><b>Active</b><span>Inverted to white bg + text.primary label, so a new/meaningful count pops off the button instead of blending in.</span></div>
     </div>
 
     <h2 class="big-section">CSS</h2>
     <p class="section-desc">One base <code class="tok">.counter</code> class, a <code class="tok">--sm/--base/--lg</code> size modifier, and an <code class="tok">--inactive/--active</code> state modifier.</p>
-    <pre class="code"><code>.counter {
+    <pre class="code"><code>:root {
+  --fill-primary-active: #01519c;
+  --text-on-fill: #ffffff;
+  --color-white: #ffffff;
+  --text-primary: #0468c4;
+  --family-sans: 'Sora', sans-serif;
+}
+
+.counter {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   font-variant-numeric: tabular-nums;
-  font-family: 'Sora', sans-serif;
+  font-family: var(--family-sans);
   font-weight: 700;
   border-radius: 999px;
 }
@@ -129,8 +145,8 @@
 .counter--base { height: 20px; min-width: 20px; padding: 0 6px; font-size: 12px; line-height: 1; }
 .counter--lg { height: 24px; min-width: 24px; padding: 0 6px; font-size: 14px; line-height: 1; }
 
-.counter--inactive { background: #01519c; color: #ffffff; }
-.counter--active { background: #ffffff; color: #0468c4; }</code></pre>
+.counter--inactive { background: var(--fill-primary-active); color: var(--text-on-fill); }
+.counter--active { background: var(--color-white); color: var(--text-primary); }</code></pre>
 
     <h2 class="big-section">Sizes</h2>
     <p class="section-desc">Gray boxes are a neutral demo container only (fixed 64×64, no rounding) — not a real button. The counter's actual background always comes from whatever it sits on in real use — see <a href="button.html">the icon+text+counter button variant</a>.</p>
