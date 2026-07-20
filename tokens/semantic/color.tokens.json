@@ -1,0 +1,240 @@
+{
+  "surface": {
+    "$description": "Page structure — canvas, cards/panels, recessed fields, backdrops. page and default are both literal white deliberately — cards read as 'raised' via border.default, not a background shift. Use default/page for the vast majority of the UI; sunken is for genuinely recessed elements only, used sparingly.",
+    "page": {
+      "$type": "color",
+      "$value": "{color.white}",
+      "$description": "Page canvas — the dominant background color across the whole product."
+    },
+    "default": {
+      "$type": "color",
+      "$value": "{color.white}",
+      "$description": "Default raised surface — cards, panels. Same value as surface.page on purpose; separated from the page by border.default, not a darker background."
+    },
+    "sunken": {
+      "$type": "color",
+      "$value": "{color.gray.100}",
+      "$description": "Inputs, table row stripes, code blocks — recessed relative to a default surface. Reach for this rarely; it's the exception, not the norm."
+    },
+    "overlay": {
+      "$type": "color",
+      "$value": "rgba(21, 25, 30, 0.5)",
+      "$description": "Modal/drawer backdrop scrim. The one legitimate opacity use in this system — it must composite over arbitrary page content, unlike bg.* tints which sit on a known surface."
+    },
+    "disabled": {
+      "$type": "color",
+      "$value": "{color.gray.100}",
+      "$description": "Disabled control background."
+    }
+  },
+  "bg": {
+    "$description": "Passive status surfaces (banners, badges, notification chips) — solid light tints, not opacity. Pair with the matching text.* or icon.* color at the same role, never with text.primary.",
+    "accent": {
+      "$type": "color",
+      "$value": "{color.blue.100}"
+    },
+    "success": {
+      "$type": "color",
+      "$value": "{color.green.100}"
+    },
+    "danger": {
+      "$type": "color",
+      "$value": "{color.red.100}"
+    },
+    "warning": {
+      "$type": "color",
+      "$value": "{color.amber.100}"
+    },
+    "neutral": {
+      "$type": "color",
+      "$value": "{color.gray.100}"
+    }
+  },
+  "border": {
+    "$description": "Hairlines, dividers, and role-colored outlines. border.focus is always blue regardless of the focused element's own role.",
+    "default": {
+      "$type": "color",
+      "$value": "{color.gray.200}",
+      "$description": "Default hairline — card edges, dividers, input borders at rest."
+    },
+    "strong": {
+      "$type": "color",
+      "$value": "{color.gray.300}",
+      "$description": "Emphasized divider, input border on hover."
+    },
+    "focus": {
+      "$type": "color",
+      "$value": "{color.blue.500}",
+      "$description": "Focus ring — always this color regardless of the focused element's own role."
+    },
+    "accent": {
+      "$type": "color",
+      "$value": "{color.blue.200}"
+    },
+    "success": {
+      "$type": "color",
+      "$value": "{color.green.200}"
+    },
+    "danger": {
+      "$type": "color",
+      "$value": "{color.red.200}"
+    },
+    "warning": {
+      "$type": "color",
+      "$value": "{color.amber.200}"
+    }
+  },
+  "text": {
+    "$description": "Content color. Role text (accent/success/danger/warning) sits at each family's 600 step — AA text-safe (≥4.5:1). muted is a deliberate exception, see its own note.",
+    "primary": {
+      "$type": "color",
+      "$value": "{color.gray.950}",
+      "$description": "Default body/heading/title text."
+    },
+    "secondary": {
+      "$type": "color",
+      "$value": "{color.gray.600}",
+      "$description": "Supporting text — still AA text-safe (>=4.5:1)."
+    },
+    "muted": {
+      "$type": "color",
+      "$value": "{color.gray.500}",
+      "$description": "Placeholders, captions, timestamps — intentionally below AA text contrast (~3.9:1); never use for content the user must read to complete a task."
+    },
+    "disabled": {
+      "$type": "color",
+      "$value": "{color.gray.300}"
+    },
+    "onFill": {
+      "$type": "color",
+      "$value": "{color.white}",
+      "$description": "Text/label sitting on a solid fill.* color (button labels, filled badges). Literal white, not a ramp step — none of the fill.* colors are dark enough to need anything else. Must be paired with semibold/bold weight: at fill's 500 step, contrast against white lands at 3.7-4.4:1 (large-text/UI-component AA, not the 4.5:1 small-text threshold) — checked directly, true for every role, not just one."
+    },
+    "accent": {
+      "$type": "color",
+      "$value": "{color.blue.600}"
+    },
+    "success": {
+      "$type": "color",
+      "$value": "{color.green.600}"
+    },
+    "danger": {
+      "$type": "color",
+      "$value": "{color.red.600}"
+    },
+    "warning": {
+      "$type": "color",
+      "$value": "{color.amber.600}"
+    }
+  },
+  "icon": {
+    "$description": "Mirrors text.* but one step lighter/less saturated where noted — icons are graphical elements (WCAG 3:1 UI-component rule), not small text (4.5:1), so role icons sit at each family's 500 step, not 600.",
+    "default": {
+      "$type": "color",
+      "$value": "{color.gray.700}"
+    },
+    "secondary": {
+      "$type": "color",
+      "$value": "{color.gray.500}"
+    },
+    "muted": {
+      "$type": "color",
+      "$value": "{color.gray.400}"
+    },
+    "onFill": {
+      "$type": "color",
+      "$value": "{color.white}"
+    },
+    "accent": {
+      "$type": "color",
+      "$value": "{color.blue.500}"
+    },
+    "success": {
+      "$type": "color",
+      "$value": "{color.green.500}"
+    },
+    "danger": {
+      "$type": "color",
+      "$value": "{color.red.500}"
+    },
+    "warning": {
+      "$type": "color",
+      "$value": "{color.amber.500}"
+    }
+  },
+  "fill": {
+    "$description": "Solid, saturated backgrounds for interactive controls (buttons, checkboxes, toggles, filled badges) — pairs with text.onFill / icon.onFill, never with text.primary. Label text on any fill.* must be semibold or bold — see text.onFill.",
+    "accent": {
+      "$type": "color",
+      "$value": "{color.blue.500}"
+    },
+    "accentHover": {
+      "$type": "color",
+      "$value": "{color.blue.600}"
+    },
+    "accentActive": {
+      "$type": "color",
+      "$value": "{color.blue.700}"
+    },
+    "neutral": {
+      "$type": "color",
+      "$value": "{color.gray.100}",
+      "$description": "Secondary/neutral button fill — pairs with text.primary, not text.onFill (too light for white text)."
+    },
+    "neutralHover": {
+      "$type": "color",
+      "$value": "{color.gray.200}"
+    },
+    "neutralActive": {
+      "$type": "color",
+      "$value": "{color.gray.300}"
+    },
+    "success": {
+      "$type": "color",
+      "$value": "{status.success}"
+    },
+    "successHover": {
+      "$type": "color",
+      "$value": "{color.green.600}"
+    },
+    "danger": {
+      "$type": "color",
+      "$value": "{status.danger}"
+    },
+    "dangerHover": {
+      "$type": "color",
+      "$value": "{color.red.600}"
+    },
+    "warning": {
+      "$type": "color",
+      "$value": "{status.warning}"
+    },
+    "warningHover": {
+      "$type": "color",
+      "$value": "{color.amber.600}"
+    },
+    "disabled": {
+      "$type": "color",
+      "$value": "{color.gray.100}"
+    }
+  },
+  "status": {
+    "$description": "Reserved state meaning (good/warning/danger/info) for badges, alerts, form validation. Never reuse a chart-series color for status, and never reuse status for 'series 4' — see tokens/primitives/chart-series.tokens.json's own rule. Always pair with an icon + label, not color alone.",
+    "success": {
+      "$type": "color",
+      "$value": "{color.green.500}"
+    },
+    "warning": {
+      "$type": "color",
+      "$value": "{color.amber.500}"
+    },
+    "danger": {
+      "$type": "color",
+      "$value": "{color.red.500}"
+    },
+    "info": {
+      "$type": "color",
+      "$value": "{color.blue.500}"
+    }
+  }
+}

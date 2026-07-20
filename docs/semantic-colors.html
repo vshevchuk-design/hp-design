@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>hp-design — semantic colors</title>
+<style>
+  :root {
+    --bg-page: #f7f7f5; --bg-card: #ffffff; --bg-card-hover: #fbfbfa;
+    --border: #e4e3df; --border-strong: #d2d1cb;
+    --text-primary: #0e0e10; --text-secondary: #63625c; --text-muted: #918f87;
+    --accent: #0468c4; --accent-bg: #eff6ff;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --sans: -apple-system, "Segoe UI", system-ui, sans-serif;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327;
+      --border: #313035; --border-strong: #403f45;
+      --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68;
+      --accent: #5aa4ec; --accent-bg: #16283b;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327;
+    --border: #313035; --border-strong: #403f45;
+    --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68;
+    --accent: #5aa4ec; --accent-bg: #16283b;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg-page); color: var(--text-primary); font-family: var(--sans); }
+  .shell { display: flex; min-height: 100vh; }
+  nav.side { width: 220px; flex-shrink: 0; border-right: 0.5px solid var(--border); padding: 1.5rem 1rem; position: sticky; top: 0; height: 100vh; }
+  .brand { font-size: 14px; font-weight: 600; margin: 0 0 2px 8px; }
+  .brand-sub { font-size: 11.5px; color: var(--text-muted); margin: 0 0 1.5rem 8px; }
+  .navlink { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 8px; border-radius: 7px; font-size: 13px; text-decoration: none; color: var(--text-primary); margin-bottom: 1px; }
+  .navlink:hover { background: var(--bg-card-hover); }
+  .navlink.active { background: var(--accent-bg); color: var(--accent); font-weight: 600; }
+  .navlink.disabled { color: var(--text-muted); cursor: default; pointer-events: none; }
+  .tag { font-size: 9.5px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); border: 0.5px solid var(--border-strong); border-radius: 4px; padding: 1px 5px; }
+  main { flex: 1; padding: 3rem 3rem 4rem; max-width: 1080px; }
+  h1 { font-size: 22px; font-weight: 600; margin: 0 0 4px; letter-spacing: -0.01em; }
+  .sub { font-size: 13px; color: var(--text-secondary); margin: 0 0 2rem; }
+  h3.sub-section { font-size: 15px; font-weight: 600; margin: 2.4rem 0 0.6rem; text-transform: lowercase; font-family: var(--mono); }
+  .legend { font-size: 12.5px; color: var(--text-secondary); padding: 10px 14px; background: var(--bg-card); border: 0.5px solid var(--border); border-radius: 10px; margin-bottom: 0.6rem; }
+  .legend .row { display: flex; }
+  .group-desc { font-size: 12px; color: var(--text-muted); margin: 0 0 0.8rem; }
+  .swatch-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
+  .tok-card { border-radius: 10px; padding: 14px 14px 12px; min-height: 76px; display: flex; flex-direction: column; border: 0.5px solid rgba(0,0,0,0.08); }
+  .tok-name { font-family: var(--mono); font-size: 12px; font-weight: 600; }
+  .tok-alias { font-family: var(--mono); font-size: 10.5px; opacity: 0.75; margin-top: 8px; }
+  .tok-hex { font-family: var(--mono); font-size: 10.5px; opacity: 0.85; margin-top: 1px; }
+  .tok-desc-wrap { grid-column: 1 / -1; }
+  .tok-desc { font-size: 11.5px; color: var(--text-muted); margin: -4px 0 4px; max-width: 70ch; }
+</style>
+</head>
+<body>
+<div class="shell">
+  <nav class="side">
+    <p class="brand">hp-design</p>
+    <p class="brand-sub">Highpoint design system</p>
+    <a class="navlink" href="index.html">Overview</a>
+    <a class="navlink" href="colors.html">Colors</a>
+    <a class="navlink active" href="semantic-colors.html">Semantic colors</a>
+    <a class="navlink" href="typography.html">Typography</a>
+    <a class="navlink" href="layout.html">Layout</a>
+    <a class="navlink" href="icons.html">Icons</a>
+    <span class="navlink disabled">Components <span class="tag">soon</span></span>
+  </nav>
+  <main>
+    <h1>Semantic colors</h1>
+    <p class="sub">tokens/semantic/color.tokens.json · aliases tokens/primitives/color.tokens.json · generated</p>
+    
+    <h3 class="sub-section">surface</h3>
+    <div class="legend"><div class="row"><span>Page structure — canvas, cards/panels, recessed fields, backdrops. page and default are both literal white deliberately — cards read as 'raised' via border.default, not a background shift. Use default/page for the vast majority of the UI; sunken is for genuinely recessed elements only, used sparingly.</span></div></div>
+    <div class="swatch-grid">
+      <div class="tok-card" style="background:#ffffff;color:#141414">
+        <code class="tok-name">surface.page</code>
+        <span class="tok-alias">color.white</span>
+        <span class="tok-hex">#ffffff</span>
+      </div><div class="tok-desc-wrap"><p class="tok-desc">Page canvas — the dominant background color across the whole product.</p></div>
+      <div class="tok-card" style="background:#ffffff;color:#141414">
+        <code class="tok-name">surface.default</code>
+        <span class="tok-alias">color.white</span>
+        <span class="tok-hex">#ffffff</span>
+      </div><div class="tok-desc-wrap"><p class="tok-desc">Default raised surface — cards, panels. Same value as surface.page on purpose; separated from the page by border.default, not a darker background.</p></div>
+      <div class="tok-card" style="background:#e8e8e8;color:#141414">
+        <code class="tok-name">surface.sunken</code>
+        <span class="tok-alias">color.gray.100</span>
+        <span class="tok-hex">#e8e8e8</span>
+      </div><div class="tok-desc-wrap"><p class="tok-desc">Inputs, table row stripes, code blocks — recessed relative to a default surface. Reach for this rarely; it's the exception, not the norm.</p></div>
+      <div class="tok-card" style="background:rgba(21, 25, 30, 0.5);color:#141414">
+        <code class="tok-name">surface.overlay</code>
+        <span class="tok-alias">literal</span>
+        <span class="tok-hex">rgba(21, 25, 30, 0.5)</span>
+      </div><div class="tok-desc-wrap"><p class="tok-desc">Modal/drawer backdrop scrim. The one legitimate opacity use in this system — it must composite over arbitrary page content, unlike bg.* tints which sit on a known surface.</p></div>
+      <div class="tok-card" style="background:#e8e8e8;color:#141414">
+        <code class="tok-name">surface.disabled</code>
+        <span class="tok-alias">color.gray.100</span>
+        <span class="tok-hex">#e8e8e8</span>
+      </div><div class="tok-desc-wrap"><p class="tok-desc">Disabled control background.</p></div>
+    </div>
+
+    <h3 class="sub-section">bg</h3>
+    <div class="legend"><div class="row"><span>Passive status surfaces (banners, badges, notification chips) — solid light tints, not opacity. Pair with the matching text.* or icon.* color at the same role, never with text.primary.</span></div></div>
+    <div class="swatch-grid">
+      <div class="tok-card" style="background:#d9eaff;color:#141414">
+        <code class="tok-name">bg.accent</code>
+        <span class="tok-alias">color.blue.100</span>
+        <span class="tok-hex">#d9eaff</span>
+      </div>
+      <div class="tok-card" style="background:#acffc2;color:#141414">
+        <code class="tok-name">bg.success</code>
+        <span class="tok-alias">color.green.100</span>
+        <span class="tok-hex">#acffc2</span>
+      </div>
+      <div class="tok-card" style="background:#ffdfde;color:#141414">
+        <code class="tok-name">bg.danger</code>
+        <span class="tok-alias">color.red.100</span>
+        <span class="tok-hex">#ffdfde</span>
+      </div>
+      <div class="tok-card" style="background:#ffe2c5;color:#141414">
+        <code class="tok-name">bg.warning</code>
+        <span class="tok-alias">color.amber.100</span>
+        <span class="tok-hex">#ffe2c5</span>
+      </div>
+      <div class="tok-card" style="background:#e8e8e8;color:#141414">
+        <code class="tok-name">bg.neutral</code>
+        <span class="tok-alias">color.gray.100</span>
+        <span class="tok-hex">#e8e8e8</span>
+      </div>
+    </div>
+
+    <h3 class="sub-section">border</h3>
+    <div class="legend"><div class="row"><span>Hairlines, dividers, and role-colored outlines. border.focus is always blue regardless of the focused element's own role.</span></div></div>
+    <div class="swatch-grid">
+      <div class="tok-card" style="background:#d1d1d1;color:#141414">
+        <code class="tok-name">border.default</code>
+        <span class="tok-alias">color.gray.200</span>
+        <span class="tok-hex">#d1d1d1</span>
+      </div><div class="tok-desc-wrap"><p class="tok-desc">Default hairline — card edges, dividers, input borders at rest.</p></div>
+      <div class="tok-card" style="background:#b4b4b4;color:#141414">
+        <code class="tok-name">border.strong</code>
+        <span class="tok-alias">color.gray.300</span>
+        <span class="tok-hex">#b4b4b4</span>
+      </div><div class="tok-desc-wrap"><p class="tok-desc">Emphasized divider, input border on hover.</p></div>
+      <div class="tok-card" style="background:#077fec;color:#fdfdfd">
+        <code class="tok-name">border.focus</code>
+        <span class="tok-alias">color.blue.500</span>
+        <span class="tok-hex">#077fec</span>
+      </div><div class="tok-desc-wrap"><p class="tok-desc">Focus ring — always this color regardless of the focused element's own role.</p></div>
+      <div class="tok-card" style="background:#b2d4fe;color:#141414">
+        <code class="tok-name">border.accent</code>
+        <span class="tok-alias">color.blue.200</span>
+        <span class="tok-hex">#b2d4fe</span>
+      </div>
+      <div class="tok-card" style="background:#75ef9c;color:#141414">
+        <code class="tok-name">border.success</code>
+        <span class="tok-alias">color.green.200</span>
+        <span class="tok-hex">#75ef9c</span>
+      </div>
+      <div class="tok-card" style="background:#febebd;color:#141414">
+        <code class="tok-name">border.danger</code>
+        <span class="tok-alias">color.red.200</span>
+        <span class="tok-hex">#febebd</span>
+      </div>
+      <div class="tok-card" style="background:#fec486;color:#141414">
+        <code class="tok-name">border.warning</code>
+        <span class="tok-alias">color.amber.200</span>
+        <span class="tok-hex">#fec486</span>
+      </div>
+    </div>
+
+    <h3 class="sub-section">text</h3>
+    <div class="legend"><div class="row"><span>Content color. Role text (accent/success/danger/warning) sits at each family's 600 step — AA text-safe (≥4.5:1). muted is a deliberate exception, see its own note.</span></div></div>
+    <div class="swatch-grid">
+      <div class="tok-card" style="background:#181818;color:#fdfdfd">
+        <code class="tok-name">text.primary</code>
+        <span class="tok-alias">color.gray.950</span>
+        <span class="tok-hex">#181818</span>
+      </div><div class="tok-desc-wrap"><p class="tok-desc">Default body/heading/title text.</p></div>
+      <div class="tok-card" style="background:#696969;color:#fdfdfd">
+        <code class="tok-name">text.secondary</code>
+        <span class="tok-alias">color.gray.600</span>
+        <span class="tok-hex">#696969</span>
+      </div><div class="tok-desc-wrap"><p class="tok-desc">Supporting text — still AA text-safe (>=4.5:1).</p></div>
+      <div class="tok-card" style="background:#808080;color:#fdfdfd">
+        <code class="tok-name">text.muted</code>
+        <span class="tok-alias">color.gray.500</span>
+        <span class="tok-hex">#808080</span>
+      </div><div class="tok-desc-wrap"><p class="tok-desc">Placeholders, captions, timestamps — intentionally below AA text contrast (~3.9:1); never use for content the user must read to complete a task.</p></div>
+      <div class="tok-card" style="background:#b4b4b4;color:#141414">
+        <code class="tok-name">text.disabled</code>
+        <span class="tok-alias">color.gray.300</span>
+        <span class="tok-hex">#b4b4b4</span>
+      </div>
+      <div class="tok-card" style="background:#ffffff;color:#141414">
+        <code class="tok-name">text.onFill</code>
+        <span class="tok-alias">color.white</span>
+        <span class="tok-hex">#ffffff</span>
+      </div><div class="tok-desc-wrap"><p class="tok-desc">Text/label sitting on a solid fill.* color (button labels, filled badges). Literal white, not a ramp step — none of the fill.* colors are dark enough to need anything else. Must be paired with semibold/bold weight: at fill's 500 step, contrast against white lands at 3.7-4.4:1 (large-text/UI-component AA, not the 4.5:1 small-text threshold) — checked directly, true for every role, not just one.</p></div>
+      <div class="tok-card" style="background:#0468c4;color:#fdfdfd">
+        <code class="tok-name">text.accent</code>
+        <span class="tok-alias">color.blue.600</span>
+        <span class="tok-hex">#0468c4</span>
+      </div>
+      <div class="tok-card" style="background:#057e3f;color:#fdfdfd">
+        <code class="tok-name">text.success</code>
+        <span class="tok-alias">color.green.600</span>
+        <span class="tok-hex">#057e3f</span>
+      </div>
+      <div class="tok-card" style="background:#c11435;color:#fdfdfd">
+        <code class="tok-name">text.danger</code>
+        <span class="tok-alias">color.red.600</span>
+        <span class="tok-hex">#c11435</span>
+      </div>
+      <div class="tok-card" style="background:#935a03;color:#fdfdfd">
+        <code class="tok-name">text.warning</code>
+        <span class="tok-alias">color.amber.600</span>
+        <span class="tok-hex">#935a03</span>
+      </div>
+    </div>
+
+    <h3 class="sub-section">icon</h3>
+    <div class="legend"><div class="row"><span>Mirrors text.* but one step lighter/less saturated where noted — icons are graphical elements (WCAG 3:1 UI-component rule), not small text (4.5:1), so role icons sit at each family's 500 step, not 600.</span></div></div>
+    <div class="swatch-grid">
+      <div class="tok-card" style="background:#525252;color:#fdfdfd">
+        <code class="tok-name">icon.default</code>
+        <span class="tok-alias">color.gray.700</span>
+        <span class="tok-hex">#525252</span>
+      </div>
+      <div class="tok-card" style="background:#808080;color:#fdfdfd">
+        <code class="tok-name">icon.secondary</code>
+        <span class="tok-alias">color.gray.500</span>
+        <span class="tok-hex">#808080</span>
+      </div>
+      <div class="tok-card" style="background:#989898;color:#fdfdfd">
+        <code class="tok-name">icon.muted</code>
+        <span class="tok-alias">color.gray.400</span>
+        <span class="tok-hex">#989898</span>
+      </div>
+      <div class="tok-card" style="background:#ffffff;color:#141414">
+        <code class="tok-name">icon.onFill</code>
+        <span class="tok-alias">color.white</span>
+        <span class="tok-hex">#ffffff</span>
+      </div>
+      <div class="tok-card" style="background:#077fec;color:#fdfdfd">
+        <code class="tok-name">icon.accent</code>
+        <span class="tok-alias">color.blue.500</span>
+        <span class="tok-hex">#077fec</span>
+      </div>
+      <div class="tok-card" style="background:#0a994e;color:#fdfdfd">
+        <code class="tok-name">icon.success</code>
+        <span class="tok-alias">color.green.500</span>
+        <span class="tok-hex">#0a994e</span>
+      </div>
+      <div class="tok-card" style="background:#de394b;color:#fdfdfd">
+        <code class="tok-name">icon.danger</code>
+        <span class="tok-alias">color.red.500</span>
+        <span class="tok-hex">#de394b</span>
+      </div>
+      <div class="tok-card" style="background:#b26f07;color:#fdfdfd">
+        <code class="tok-name">icon.warning</code>
+        <span class="tok-alias">color.amber.500</span>
+        <span class="tok-hex">#b26f07</span>
+      </div>
+    </div>
+
+    <h3 class="sub-section">fill</h3>
+    <div class="legend"><div class="row"><span>Solid, saturated backgrounds for interactive controls (buttons, checkboxes, toggles, filled badges) — pairs with text.onFill / icon.onFill, never with text.primary. Label text on any fill.* must be semibold or bold — see text.onFill.</span></div></div>
+    <div class="swatch-grid">
+      <div class="tok-card" style="background:#077fec;color:#fdfdfd">
+        <code class="tok-name">fill.accent</code>
+        <span class="tok-alias">color.blue.500</span>
+        <span class="tok-hex">#077fec</span>
+      </div>
+      <div class="tok-card" style="background:#0468c4;color:#fdfdfd">
+        <code class="tok-name">fill.accentHover</code>
+        <span class="tok-alias">color.blue.600</span>
+        <span class="tok-hex">#0468c4</span>
+      </div>
+      <div class="tok-card" style="background:#01519c;color:#fdfdfd">
+        <code class="tok-name">fill.accentActive</code>
+        <span class="tok-alias">color.blue.700</span>
+        <span class="tok-hex">#01519c</span>
+      </div>
+      <div class="tok-card" style="background:#e8e8e8;color:#141414">
+        <code class="tok-name">fill.neutral</code>
+        <span class="tok-alias">color.gray.100</span>
+        <span class="tok-hex">#e8e8e8</span>
+      </div><div class="tok-desc-wrap"><p class="tok-desc">Secondary/neutral button fill — pairs with text.primary, not text.onFill (too light for white text).</p></div>
+      <div class="tok-card" style="background:#d1d1d1;color:#141414">
+        <code class="tok-name">fill.neutralHover</code>
+        <span class="tok-alias">color.gray.200</span>
+        <span class="tok-hex">#d1d1d1</span>
+      </div>
+      <div class="tok-card" style="background:#b4b4b4;color:#141414">
+        <code class="tok-name">fill.neutralActive</code>
+        <span class="tok-alias">color.gray.300</span>
+        <span class="tok-hex">#b4b4b4</span>
+      </div>
+      <div class="tok-card" style="background:#0a994e;color:#fdfdfd">
+        <code class="tok-name">fill.success</code>
+        <span class="tok-alias">status.success</span>
+        <span class="tok-hex">#0a994e</span>
+      </div>
+      <div class="tok-card" style="background:#057e3f;color:#fdfdfd">
+        <code class="tok-name">fill.successHover</code>
+        <span class="tok-alias">color.green.600</span>
+        <span class="tok-hex">#057e3f</span>
+      </div>
+      <div class="tok-card" style="background:#de394b;color:#fdfdfd">
+        <code class="tok-name">fill.danger</code>
+        <span class="tok-alias">status.danger</span>
+        <span class="tok-hex">#de394b</span>
+      </div>
+      <div class="tok-card" style="background:#c11435;color:#fdfdfd">
+        <code class="tok-name">fill.dangerHover</code>
+        <span class="tok-alias">color.red.600</span>
+        <span class="tok-hex">#c11435</span>
+      </div>
+      <div class="tok-card" style="background:#b26f07;color:#fdfdfd">
+        <code class="tok-name">fill.warning</code>
+        <span class="tok-alias">status.warning</span>
+        <span class="tok-hex">#b26f07</span>
+      </div>
+      <div class="tok-card" style="background:#935a03;color:#fdfdfd">
+        <code class="tok-name">fill.warningHover</code>
+        <span class="tok-alias">color.amber.600</span>
+        <span class="tok-hex">#935a03</span>
+      </div>
+      <div class="tok-card" style="background:#e8e8e8;color:#141414">
+        <code class="tok-name">fill.disabled</code>
+        <span class="tok-alias">color.gray.100</span>
+        <span class="tok-hex">#e8e8e8</span>
+      </div>
+    </div>
+
+    <h3 class="sub-section">status</h3>
+    <div class="legend"><div class="row"><span>Reserved state meaning (good/warning/danger/info) for badges, alerts, form validation. Never reuse a chart-series color for status, and never reuse status for 'series 4' — see tokens/primitives/chart-series.tokens.json's own rule. Always pair with an icon + label, not color alone.</span></div></div>
+    <div class="swatch-grid">
+      <div class="tok-card" style="background:#0a994e;color:#fdfdfd">
+        <code class="tok-name">status.success</code>
+        <span class="tok-alias">color.green.500</span>
+        <span class="tok-hex">#0a994e</span>
+      </div>
+      <div class="tok-card" style="background:#b26f07;color:#fdfdfd">
+        <code class="tok-name">status.warning</code>
+        <span class="tok-alias">color.amber.500</span>
+        <span class="tok-hex">#b26f07</span>
+      </div>
+      <div class="tok-card" style="background:#de394b;color:#fdfdfd">
+        <code class="tok-name">status.danger</code>
+        <span class="tok-alias">color.red.500</span>
+        <span class="tok-hex">#de394b</span>
+      </div>
+      <div class="tok-card" style="background:#077fec;color:#fdfdfd">
+        <code class="tok-name">status.info</code>
+        <span class="tok-alias">color.blue.500</span>
+        <span class="tok-hex">#077fec</span>
+      </div>
+    </div>
+  </main>
+</div>
+</body>
+</html>

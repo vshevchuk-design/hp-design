@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>hp-design — typography</title>
+<link rel="stylesheet" href="../assets/fonts/sora/sora.css" />
+<style>
+  :root {
+    --bg-page: #f7f7f5; --bg-card: #ffffff; --bg-card-hover: #fbfbfa;
+    --border: #e4e3df; --border-strong: #d2d1cb;
+    --text-primary: #0e0e10; --text-secondary: #63625c; --text-muted: #918f87;
+    --accent: #0468c4; --accent-bg: #eff6ff;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --ui-sans: -apple-system, "Segoe UI", system-ui, sans-serif;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327;
+      --border: #313035; --border-strong: #403f45;
+      --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68;
+      --accent: #5aa4ec; --accent-bg: #16283b;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327;
+    --border: #313035; --border-strong: #403f45;
+    --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68;
+    --accent: #5aa4ec; --accent-bg: #16283b;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg-page); color: var(--text-primary); font-family: var(--ui-sans); }
+  .shell { display: flex; min-height: 100vh; }
+  nav.side { width: 220px; flex-shrink: 0; border-right: 0.5px solid var(--border); padding: 1.5rem 1rem; position: sticky; top: 0; height: 100vh; }
+  .brand { font-size: 14px; font-weight: 600; margin: 0 0 2px 8px; }
+  .brand-sub { font-size: 11.5px; color: var(--text-muted); margin: 0 0 1.5rem 8px; }
+  .navlink { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 8px; border-radius: 7px; font-size: 13px; text-decoration: none; color: var(--text-primary); margin-bottom: 1px; }
+  .navlink:hover { background: var(--bg-card-hover); }
+  .navlink.active { background: var(--accent-bg); color: var(--accent); font-weight: 600; }
+  .navlink.disabled { color: var(--text-muted); cursor: default; pointer-events: none; }
+  .tag { font-size: 9.5px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); border: 0.5px solid var(--border-strong); border-radius: 4px; padding: 1px 5px; }
+  main { flex: 1; padding: 3rem 3rem 4rem; max-width: 1000px; }
+  h1 { font-size: 22px; font-weight: 600; margin: 0 0 4px; letter-spacing: -0.01em; }
+  .sub { font-size: 13px; color: var(--text-secondary); margin: 0 0 2rem; }
+  h2.section { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-secondary); margin: 2.5rem 0 0.9rem; }
+  .legend { font-size: 12.5px; color: var(--text-secondary); padding: 12px 16px; background: var(--bg-card); border: 0.5px solid var(--border); border-radius: 10px; margin-bottom: 1rem; }
+  .legend .row { display: flex; gap: 14px; padding: 5px 0; border-bottom: 0.5px solid var(--border); }
+  .legend .row:last-child { border-bottom: none; }
+  .legend .row b { width: 150px; flex-shrink: 0; color: var(--text-primary); font-weight: 600; font-family: var(--mono); font-size: 11.5px; }
+  table.scale { border-collapse: collapse; width: 100%; font-size: 13px; }
+  table.scale th, table.scale td { text-align: left; padding: 6px 12px 6px 0; border-bottom: 0.5px solid var(--border); font-variant-numeric: tabular-nums; }
+  table.scale th { color: var(--text-secondary); font-weight: 500; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; }
+  code.tok { font-family: var(--mono); font-size: 12px; color: var(--accent); }
+  .specimen { border: 0.5px solid var(--border); border-radius: 12px; background: var(--bg-card); padding: 16px 20px; margin-bottom: 8px; display: flex; align-items: baseline; gap: 20px; }
+  .specimen .meta { width: 190px; flex-shrink: 0; font-family: var(--mono); font-size: 11px; color: var(--text-muted); line-height: 1.6; }
+  .specimen .meta b { color: var(--text-secondary); font-family: var(--ui-sans); font-size: 12px; display: block; margin-bottom: 2px; }
+  .specimen .sample { flex: 1; color: var(--text-primary); min-width: 0; }
+</style>
+</head>
+<body>
+<div class="shell">
+  <nav class="side">
+    <p class="brand">hp-design</p>
+    <p class="brand-sub">Highpoint design system</p>
+    <a class="navlink" href="index.html">Overview</a>
+    <a class="navlink" href="colors.html">Colors</a>
+    <a class="navlink" href="semantic-colors.html">Semantic colors</a>
+    <a class="navlink active" href="typography.html">Typography</a>
+    <a class="navlink" href="layout.html">Layout</a>
+    <a class="navlink" href="icons.html">Icons</a>
+    <span class="navlink disabled">Components <span class="tag">soon</span></span>
+  </nav>
+  <main>
+    <h1>Typography</h1>
+    <p class="sub">tokens/primitives/typography.tokens.json + text-styles.tokens.json · generated</p>
+
+    <h2 class="section">Primitives</h2>
+    <table class="scale">
+      <tr><th>Family</th><th>Value</th></tr>
+      <tr><td><code class="tok">--sans</code></td><td style="font-family:'Sora', sans-serif">Sora</td></tr>
+    </table>
+    <table class="scale" style="margin-top:1.2rem">
+      <tr><th>Weight</th><th>Value</th></tr>
+      <tr><td><code class="tok">--normal</code></td><td style="font-weight:400">400</td></tr>
+      <tr><td><code class="tok">--semibold</code></td><td style="font-weight:600">600</td></tr>
+      <tr><td><code class="tok">--bold</code></td><td style="font-weight:700">700</td></tr>
+    </table>
+    <table class="scale" style="margin-top:1.2rem">
+      <tr><th>Size</th><th>Value</th></tr>
+      <tr><td><code class="tok">--text-xxs</code></td><td>8px</td></tr>
+      <tr><td><code class="tok">--text-xs</code></td><td>10px</td></tr>
+      <tr><td><code class="tok">--text-sm</code></td><td>12px</td></tr>
+      <tr><td><code class="tok">--text-base</code></td><td>14px</td></tr>
+      <tr><td><code class="tok">--text-md</code></td><td>16px</td></tr>
+      <tr><td><code class="tok">--text-lg</code></td><td>18px</td></tr>
+      <tr><td><code class="tok">--text-xl</code></td><td>20px</td></tr>
+      <tr><td><code class="tok">--text-2xl</code></td><td>24px</td></tr>
+      <tr><td><code class="tok">--text-3xl</code></td><td>30px</td></tr>
+      <tr><td><code class="tok">--text-4xl</code></td><td>36px</td></tr>
+      <tr><td><code class="tok">--text-5xl</code></td><td>48px</td></tr>
+    </table>
+    <table class="scale" style="margin-top:1.2rem">
+      <tr><th>Leading</th><th>Value</th></tr>
+      <tr><td><code class="tok">--leading-none</code></td><td>1</td></tr>
+      <tr><td><code class="tok">--leading-tight</code></td><td>1.2</td></tr>
+      <tr><td><code class="tok">--leading-normal</code></td><td>1.4</td></tr>
+      <tr><td><code class="tok">--leading-relaxed</code></td><td>1.6</td></tr>
+    </table>
+    <table class="scale" style="margin-top:1.2rem">
+      <tr><th>Tracking</th><th>Value</th></tr>
+      <tr><td><code class="tok">--tracking-normal</code></td><td>0em</td></tr>
+      <tr><td><code class="tok">--tracking-wide</code></td><td>0.04em</td></tr>
+    </table>
+
+    <h2 class="section">Text styles</h2>
+    <div class="legend">
+      <div class="row"><b>body-*</b><span>Default paragraph/UI text — table cells, form fields, descriptions, list items.</span></div>
+      <div class="row"><b>heading-*</b><span>Same size ladder as body, semibold — in-content emphasis without a size jump: card titles, sidebar section names, subsection labels.</span></div>
+      <div class="row"><b>title-*</b><span>Page/modal-level titles — bold, sizes beyond body/heading's range (20–30px), tightened leading for single-line display.</span></div>
+      <div class="row"><b>link-*</b><span>Any interactive inline text. Underline is the affordance — never rely on color alone to signal "clickable".</span></div>
+      <div class="row"><b>label-*</b><span>Uppercase micro-labels only — badges, chips, filter pills, table column headers. Never full sentences (all-caps hurts readability past a few words).</span></div>
+    </div>
+    <div class="specimen">
+      <div class="meta"><b>body-xs</b>400 · 10px · lh 1.4 · tr 0em</div>
+      <div class="sample" style="font-family:'Sora', sans-serif;font-weight:400;font-size:10px;line-height:1.4;letter-spacing:0em;">Registration for the fall term opens on Monday, July 20.</div>
+    </div>
+    <div class="specimen">
+      <div class="meta"><b>body-sm</b>400 · 12px · lh 1.4 · tr 0em</div>
+      <div class="sample" style="font-family:'Sora', sans-serif;font-weight:400;font-size:12px;line-height:1.4;letter-spacing:0em;">Registration for the fall term opens on Monday, July 20.</div>
+    </div>
+    <div class="specimen">
+      <div class="meta"><b>body-base</b>400 · 14px · lh 1.4 · tr 0em</div>
+      <div class="sample" style="font-family:'Sora', sans-serif;font-weight:400;font-size:14px;line-height:1.4;letter-spacing:0em;">Registration for the fall term opens on Monday, July 20.</div>
+    </div>
+    <div class="specimen">
+      <div class="meta"><b>body-md</b>400 · 16px · lh 1.4 · tr 0em</div>
+      <div class="sample" style="font-family:'Sora', sans-serif;font-weight:400;font-size:16px;line-height:1.4;letter-spacing:0em;">Registration for the fall term opens on Monday, July 20.</div>
+    </div>
+    <div class="specimen">
+      <div class="meta"><b>body-lg</b>400 · 18px · lh 1.4 · tr 0em</div>
+      <div class="sample" style="font-family:'Sora', sans-serif;font-weight:400;font-size:18px;line-height:1.4;letter-spacing:0em;">Registration for the fall term opens on Monday, July 20.</div>
+    </div>
+    <div class="specimen">
+      <div class="meta"><b>heading-xs</b>600 · 10px · lh 1.4 · tr 0em</div>
+      <div class="sample" style="font-family:'Sora', sans-serif;font-weight:600;font-size:10px;line-height:1.4;letter-spacing:0em;">Academic advising</div>
+    </div>
+    <div class="specimen">
+      <div class="meta"><b>heading-sm</b>600 · 12px · lh 1.4 · tr 0em</div>
+      <div class="sample" style="font-family:'Sora', sans-serif;font-weight:600;font-size:12px;line-height:1.4;letter-spacing:0em;">Academic advising</div>
+    </div>
+    <div class="specimen">
+      <div class="meta"><b>heading-base</b>600 · 14px · lh 1.4 · tr 0em</div>
+      <div class="sample" style="font-family:'Sora', sans-serif;font-weight:600;font-size:14px;line-height:1.4;letter-spacing:0em;">Academic advising</div>
+    </div>
+    <div class="specimen">
+      <div class="meta"><b>heading-md</b>600 · 16px · lh 1.4 · tr 0em</div>
+      <div class="sample" style="font-family:'Sora', sans-serif;font-weight:600;font-size:16px;line-height:1.4;letter-spacing:0em;">Academic advising</div>
+    </div>
+    <div class="specimen">
+      <div class="meta"><b>heading-lg</b>600 · 18px · lh 1.4 · tr 0em</div>
+      <div class="sample" style="font-family:'Sora', sans-serif;font-weight:600;font-size:18px;line-height:1.4;letter-spacing:0em;">Academic advising</div>
+    </div>
+    <div class="specimen">
+      <div class="meta"><b>title-xl</b>700 · 20px · lh 1.2 · tr 0em</div>
+      <div class="sample" style="font-family:'Sora', sans-serif;font-weight:700;font-size:20px;line-height:1.2;letter-spacing:0em;">Question about fall registration</div>
+    </div>
+    <div class="specimen">
+      <div class="meta"><b>title-2xl</b>700 · 24px · lh 1.2 · tr 0em</div>
+      <div class="sample" style="font-family:'Sora', sans-serif;font-weight:700;font-size:24px;line-height:1.2;letter-spacing:0em;">Question about fall registration</div>
+    </div>
+    <div class="specimen">
+      <div class="meta"><b>title-3xl</b>700 · 30px · lh 1.2 · tr 0em</div>
+      <div class="sample" style="font-family:'Sora', sans-serif;font-weight:700;font-size:30px;line-height:1.2;letter-spacing:0em;">Question about fall registration</div>
+    </div>
+    <div class="specimen">
+      <div class="meta"><b>link-sm</b>400 · 12px · lh 1.4 · tr 0em · underline</div>
+      <div class="sample" style="font-family:'Sora', sans-serif;font-weight:400;font-size:12px;line-height:1.4;letter-spacing:0em;text-decoration:underline;">View pricing</div>
+    </div>
+    <div class="specimen">
+      <div class="meta"><b>link-base</b>400 · 14px · lh 1.4 · tr 0em · underline</div>
+      <div class="sample" style="font-family:'Sora', sans-serif;font-weight:400;font-size:14px;line-height:1.4;letter-spacing:0em;text-decoration:underline;">View pricing</div>
+    </div>
+    <div class="specimen">
+      <div class="meta"><b>label-sm</b>700 · 12px · lh 1.4 · tr 0.04em · uppercase</div>
+      <div class="sample" style="font-family:'Sora', sans-serif;font-weight:700;font-size:12px;line-height:1.4;letter-spacing:0.04em;text-transform:uppercase;">Assigned to me</div>
+    </div>
+    <div class="specimen">
+      <div class="meta"><b>label-base</b>700 · 14px · lh 1.4 · tr 0.04em · uppercase</div>
+      <div class="sample" style="font-family:'Sora', sans-serif;font-weight:700;font-size:14px;line-height:1.4;letter-spacing:0.04em;text-transform:uppercase;">Assigned to me</div>
+    </div>
+  </main>
+</div>
+</body>
+</html>

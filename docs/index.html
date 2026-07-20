@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>hp-design — overview</title>
+<style>
+  :root {
+    --bg-page: #f7f7f5;
+    --bg-card: #ffffff;
+    --bg-card-hover: #fbfbfa;
+    --border: #e4e3df;
+    --border-strong: #d2d1cb;
+    --text-primary: #0e0e10;
+    --text-secondary: #63625c;
+    --text-muted: #918f87;
+    --accent: #0468c4;
+    --accent-bg: #eff6ff;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --sans: -apple-system, "Segoe UI", system-ui, sans-serif;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327;
+      --border: #313035; --border-strong: #403f45;
+      --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68;
+      --accent: #5aa4ec; --accent-bg: #16283b;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327;
+    --border: #313035; --border-strong: #403f45;
+    --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68;
+    --accent: #5aa4ec; --accent-bg: #16283b;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg-page); color: var(--text-primary); font-family: var(--sans); }
+  .shell { display: flex; min-height: 100vh; }
+  nav.side {
+    width: 220px; flex-shrink: 0; border-right: 0.5px solid var(--border);
+    padding: 1.5rem 1rem; position: sticky; top: 0; height: 100vh;
+  }
+  .brand { font-size: 14px; font-weight: 600; margin: 0 0 2px 8px; }
+  .brand-sub { font-size: 11.5px; color: var(--text-muted); margin: 0 0 1.5rem 8px; }
+  .navlink {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    padding: 7px 8px; border-radius: 7px; font-size: 13px; text-decoration: none;
+    color: var(--text-primary); margin-bottom: 1px;
+  }
+  .navlink:hover { background: var(--bg-card-hover); }
+  .navlink.active { background: var(--accent-bg); color: var(--accent); font-weight: 600; }
+  .navlink.disabled { color: var(--text-muted); cursor: default; pointer-events: none; }
+  .tag { font-size: 9.5px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); border: 0.5px solid var(--border-strong); border-radius: 4px; padding: 1px 5px; }
+  main { flex: 1; padding: 3rem 3rem 4rem; max-width: 980px; }
+  h1 { font-size: 24px; font-weight: 600; margin: 0 0 6px; letter-spacing: -0.01em; }
+  p.lede { font-size: 14px; color: var(--text-secondary); max-width: 60ch; line-height: 1.6; margin: 0 0 2.5rem; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+  .card {
+    border: 0.5px solid var(--border); border-radius: 12px; padding: 1.1rem 1.2rem;
+    background: var(--bg-card); text-decoration: none; color: inherit; display: block;
+  }
+  a.card:hover { border-color: var(--border-strong); background: var(--bg-card-hover); }
+  .card.disabled { opacity: 0.55; }
+  .card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+  .card h2 { font-size: 14px; font-weight: 600; margin: 0; }
+  .card p { font-size: 12.5px; color: var(--text-secondary); margin: 0; line-height: 1.5; }
+  .swatchline { display: flex; gap: 3px; margin-top: 10px; }
+  .swatchline span { flex: 1; height: 8px; border-radius: 2px; }
+</style>
+</head>
+<body>
+<div class="shell">
+  <nav class="side">
+    <p class="brand">hp-design</p>
+    <p class="brand-sub">Highpoint design system</p>
+    <a class="navlink active" href="index.html">Overview</a>
+    <a class="navlink" href="colors.html">Colors</a>
+    <a class="navlink" href="semantic-colors.html">Semantic colors</a>
+    <a class="navlink" href="typography.html">Typography</a>
+    <a class="navlink" href="layout.html">Layout</a>
+    <a class="navlink" href="icons.html">Icons</a>
+    <span class="navlink disabled">Components <span class="tag">soon</span></span>
+  </nav>
+  <main>
+    <h1>hp-design</h1>
+    <p class="lede">Дизайн-система для продуктів Highpoint. Джерело правди для токенів і компонентів — усе інше (прототипи, продукти) будується строго на них.</p>
+
+    <div class="grid">
+      <a class="card" href="colors.html">
+        <div class="card-head"><h2>Colors</h2><span class="tag">10 ramps</span></div>
+        <p>OKLCH primitive ramps (25→950) + валідована категорійна палітра для графіків.</p>
+        <div class="swatchline">
+          <span style="background:#077fec"></span>
+          <span style="background:#de394b"></span>
+          <span style="background:#0a994e"></span>
+          <span style="background:#b26f07"></span>
+          <span style="background:#d35006"></span>
+          <span style="background:#8a5af4"></span>
+          <span style="background:#d13d91"></span>
+          <span style="background:#0a9393"></span>
+        </div>
+      </a>
+      <a class="card" href="semantic-colors.html">
+        <div class="card-head"><h2>Semantic colors</h2><span class="tag">7 groups</span></div>
+        <p>surface · bg · border · text · icon · fill · status — побудовані поверх primitives.</p>
+      </a>
+      <a class="card" href="typography.html">
+        <div class="card-head"><h2>Typography</h2><span class="tag">Sora</span></div>
+        <p>Family, weight, size, leading, tracking + 17 text-styles.</p>
+      </a>
+      <a class="card" href="layout.html">
+        <div class="card-head"><h2>Layout</h2><span class="tag">dim · radius · z</span></div>
+        <p>Spacing scale, radius scale, z-index tiers.</p>
+      </a>
+      <a class="card" href="icons.html">
+        <div class="card-head"><h2>Icons</h2><span class="tag">136</span></div>
+        <p>Material Icons, Filled style, SVG — currentColor, розширюється за потреби.</p>
+      </a>
+      <div class="card disabled">
+        <div class="card-head"><h2>Components</h2><span class="tag">soon</span></div>
+        <p>Бібліотека компонентів на semantic-токенах.</p>
+      </div>
+    </div>
+  </main>
+</div>
+</body>
+</html>

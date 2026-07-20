@@ -1,0 +1,198 @@
+// Regenerates docs/layout.html from tokens/primitives/dimension.tokens.json,
+// radius.tokens.json, z-index.tokens.json. Run: node tools/build-layout-doc.mjs
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
+const dim = JSON.parse(fs.readFileSync(path.join(root, "tokens/primitives/dimension.tokens.json"))).dim;
+const radius = JSON.parse(fs.readFileSync(path.join(root, "tokens/primitives/radius.tokens.json"))).radius;
+const z = JSON.parse(fs.readFileSync(path.join(root, "tokens/primitives/z-index.tokens.json"))).z;
+
+function resolveDim(ref) {
+  const key = ref.replace(/[{}]/g, "").split(".")[1];
+  return dim[key].$value;
+}
+function px(d) {
+  return `${d.value}${d.unit}`;
+}
+
+// JS/JSON object keys that look like array indices ("0","1",…"96") always
+// sort numerically ahead of non-integer-like keys ("0_5","max") regardless of
+// insertion order — a quirk of the spec, not something worth fighting in the
+// source file. Sort explicitly by resolved px value for display instead of
+// trusting object key order (true of the raw token JSON too, not just here).
+const dimRows = Object.entries(dim)
+  .filter(([k]) => !k.startsWith("$"))
+  .sort((a, b) => a[1].$value.value - b[1].$value.value);
+const radiusRows = Object.entries(radius).filter(([k]) => !k.startsWith("$"));
+const zRows = Object.entries(z).filter(([k]) => !k.startsWith("$"));
+
+const dimLegend = [
+  ["0_5 (2px)", "Hairline gaps — icon-to-text micro adjustments."],
+  ["1 – 1_5 (4–6px)", "Tight inline spacing — icon-to-label inside a compact control."],
+  ["2 (8px)", "The base gap — the single most-used spacing value in the whole scale: default gap between buttons, cards, form fields; standard icon-to-label spacing."],
+  ["3 – 4 (12–16px)", "Comfortable padding — card/input padding, gap between closely related elements."],
+  ["5 – 6 (20–24px)", "Gap between distinct components within a group or section."],
+  ["7 – 12 (28–48px)", "Section spacing — gaps between grouped components, major content blocks."],
+  ["14+ (56px+)", "Page-level layout gaps, major section breaks."],
+  ["max (999px)", "Sentinel only, used by radius-full. Not a general-purpose \"big number\" — see the Radius legend below for why."],
+];
+
+const zContext = {
+  base: "Base",
+  raised: "Base — slightly raised elements",
+  sticky: "Base — in-content sticky, stays below the page header",
+  header: "Base — the page's global header",
+  dropdown: "Floating on page — no drawer/modal open",
+  popover: "Floating on page",
+  tooltip: "Floating on page",
+  "drawer-overlay": "Drawer — backdrop",
+  drawer: "Drawer — panel",
+  "drawer-floating": "Drawer — dropdown/tooltip mounted inside an open Drawer",
+  "modal-overlay": "Modal L1 — backdrop",
+  modal: "Modal L1 — panel",
+  "modal-floating": "Modal L1 — dropdown/tooltip mounted inside an open Modal",
+  "modal-overlay-2": "Modal L2 — backdrop (a modal opened from within a modal)",
+  "modal-2": "Modal L2 — panel",
+  "modal-floating-2": "Modal L2 — dropdown/tooltip mounted inside an open L2 modal",
+  toast: "Global — always on top, over any open drawer/modal",
+};
+
+const radiusLegend = [
+  ["none", "Square corners — rare; e.g. table cells inside a card that must sit flush against the edge."],
+  ["xxs / xs", "Tight controls: checkboxes, small chips, tag pill corner easing."],
+  ["sm", "Inputs, small buttons."],
+  ["default (8px)", "The base grid unit — go-to radius for ordinary controls (buttons, inputs, cards) unless a component calls for a named size."],
+  ["md / lg", "Cards, panels, dropdown menus."],
+  ["xl", "Prominent surfaces: modals, large panels, hero cards."],
+  ["full", "Pills, avatars, circular icon buttons — guaranteed round regardless of element size (border-radius clamps to 50% of the box)."],
+];
+
+const html = `<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>hp-design — layout</title>
+<style>
+  :root {
+    --bg-page: #f7f7f5; --bg-card: #ffffff; --bg-card-hover: #fbfbfa;
+    --border: #e4e3df; --border-strong: #d2d1cb;
+    --text-primary: #0e0e10; --text-secondary: #63625c; --text-muted: #918f87;
+    --accent: #0468c4; --accent-bg: #eff6ff;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --sans: -apple-system, "Segoe UI", system-ui, sans-serif;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327;
+      --border: #313035; --border-strong: #403f45;
+      --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68;
+      --accent: #5aa4ec; --accent-bg: #16283b;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327;
+    --border: #313035; --border-strong: #403f45;
+    --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68;
+    --accent: #5aa4ec; --accent-bg: #16283b;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg-page); color: var(--text-primary); font-family: var(--sans); }
+  .shell { display: flex; min-height: 100vh; }
+  nav.side { width: 220px; flex-shrink: 0; border-right: 0.5px solid var(--border); padding: 1.5rem 1rem; position: sticky; top: 0; height: 100vh; }
+  .brand { font-size: 14px; font-weight: 600; margin: 0 0 2px 8px; }
+  .brand-sub { font-size: 11.5px; color: var(--text-muted); margin: 0 0 1.5rem 8px; }
+  .navlink { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 8px; border-radius: 7px; font-size: 13px; text-decoration: none; color: var(--text-primary); margin-bottom: 1px; }
+  .navlink:hover { background: var(--bg-card-hover); }
+  .navlink.active { background: var(--accent-bg); color: var(--accent); font-weight: 600; }
+  .navlink.disabled { color: var(--text-muted); cursor: default; pointer-events: none; }
+  .tag { font-size: 9.5px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); border: 0.5px solid var(--border-strong); border-radius: 4px; padding: 1px 5px; }
+  main { flex: 1; padding: 3rem 3rem 4rem; max-width: 1080px; }
+  h1 { font-size: 22px; font-weight: 600; margin: 0 0 4px; letter-spacing: -0.01em; }
+  .sub { font-size: 13px; color: var(--text-secondary); margin: 0 0 2rem; }
+  h2.section { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-secondary); margin: 2.5rem 0 0.9rem; }
+  h3.sub-section { font-size: 15px; font-weight: 600; margin: 2rem 0 0.8rem; }
+  .legend { font-size: 12.5px; color: var(--text-secondary); padding: 12px 16px; background: var(--bg-card); border: 0.5px solid var(--border); border-radius: 10px; margin-bottom: 1rem; }
+  .legend .row { display: flex; gap: 14px; padding: 5px 0; border-bottom: 0.5px solid var(--border); }
+  .legend .row:last-child { border-bottom: none; }
+  .legend .row b { width: 150px; flex-shrink: 0; color: var(--text-primary); font-weight: 600; font-family: var(--mono); font-size: 11.5px; }
+  table.scale { border-collapse: collapse; width: 100%; font-size: 13px; }
+  table.scale th, table.scale td { text-align: left; padding: 6px 12px 6px 0; border-bottom: 0.5px solid var(--border); font-variant-numeric: tabular-nums; vertical-align: top; }
+  table.scale th { color: var(--text-secondary); font-weight: 500; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; }
+  code.tok { font-family: var(--mono); font-size: 12px; color: var(--accent); }
+  .swatch-row { display: flex; align-items: center; gap: 10px; }
+  .dim-bar { height: 8px; background: var(--accent); border-radius: 2px; }
+  .radius-box { width: 72px; height: 72px; background: var(--accent-bg); border: 1.5px solid var(--accent); flex-shrink: 0; }
+  .ctx { color: var(--text-secondary); font-size: 12px; white-space: nowrap; }
+  .table-wrap { overflow-x: auto; }
+</style>
+</head>
+<body>
+<div class="shell">
+  <nav class="side">
+    <p class="brand">hp-design</p>
+    <p class="brand-sub">Highpoint design system</p>
+    <a class="navlink" href="index.html">Overview</a>
+    <a class="navlink" href="colors.html">Colors</a>
+    <a class="navlink" href="semantic-colors.html">Semantic colors</a>
+    <a class="navlink" href="typography.html">Typography</a>
+    <a class="navlink active" href="layout.html">Layout</a>
+    <a class="navlink" href="icons.html">Icons</a>
+    <span class="navlink disabled">Components <span class="tag">soon</span></span>
+  </nav>
+  <main>
+    <h1>Layout — dimensions, radius, z-index</h1>
+    <p class="sub">tokens/primitives/dimension.tokens.json + radius.tokens.json + z-index.tokens.json · generated</p>
+
+    <h3 class="sub-section">Dimensions</h3>
+    <div class="legend">
+      ${dimLegend.map(([k, v]) => `<div class="row"><b>${k}</b><span>${v}</span></div>`).join("\n      ")}
+    </div>
+    <table class="scale">
+      <tr><th>Token</th><th>Value</th><th style="width:40%">Preview</th></tr>
+      ${dimRows
+        .map(([k, v]) => {
+          const d = v.$value;
+          const barWidth = Math.min(d.value, 240);
+          return `<tr><td><code class="tok">--dim-${k}</code></td><td>${px(d)}</td><td><div class="dim-bar" style="width:${barWidth}px"></div></td></tr>`;
+        })
+        .join("\n      ")}
+    </table>
+
+    <h3 class="sub-section">Radius</h3>
+    <div class="legend">
+      ${radiusLegend.map(([k, v]) => `<div class="row"><b>${k}</b><span>${v}</span></div>`).join("\n      ")}
+    </div>
+    <table class="scale">
+      <tr><th>Token</th><th>Aliases</th><th>Value</th><th>Preview</th></tr>
+      ${radiusRows
+        .map(([k, v]) => {
+          const d = resolveDim(v.$value);
+          return `<tr><td><code class="tok">--radius-${k}</code></td><td class="ctx">${v.$value}</td><td>${px(d)}</td><td><div class="radius-box" style="border-radius:${d.value}px"></div></td></tr>`;
+        })
+        .join("\n      ")}
+    </table>
+
+    <h3 class="sub-section">Z-index</h3>
+    <div class="legend">
+      <div class="row"><b>Not one flat scale</b><span>Floating UI (dropdown/popover/tooltip) picks whichever tier's "-floating" (or base) token matches the topmost context it's currently mounted inside — page, drawer, modal level 1, or modal level 2 — rather than carrying one fixed value. See each row's context below.</span></div>
+    </div>
+    <div class="table-wrap">
+    <table class="scale">
+      <tr><th>Token</th><th>Value</th><th>Context</th></tr>
+      ${zRows.map(([k, v]) => `<tr><td><code class="tok">--z-${k}</code></td><td>${v.$value}</td><td class="ctx">${zContext[k] || ""}</td></tr>`).join("\n      ")}
+    </table>
+    </div>
+  </main>
+</div>
+</body>
+</html>
+`;
+
+fs.writeFileSync(path.join(root, "docs/layout.html"), html);
+console.log("wrote docs/layout.html");

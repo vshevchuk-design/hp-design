@@ -1,0 +1,195 @@
+{
+  "text-style": {
+    "body-xs": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "{family.sans}",
+        "fontWeight": "{weight.normal}",
+        "fontSize": "{size.xs}",
+        "lineHeight": "{leading.normal}",
+        "letterSpacing": "{tracking.normal}"
+      }
+    },
+    "body-sm": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "{family.sans}",
+        "fontWeight": "{weight.normal}",
+        "fontSize": "{size.sm}",
+        "lineHeight": "{leading.normal}",
+        "letterSpacing": "{tracking.normal}"
+      }
+    },
+    "body-base": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "{family.sans}",
+        "fontWeight": "{weight.normal}",
+        "fontSize": "{size.base}",
+        "lineHeight": "{leading.normal}",
+        "letterSpacing": "{tracking.normal}"
+      }
+    },
+    "body-md": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "{family.sans}",
+        "fontWeight": "{weight.normal}",
+        "fontSize": "{size.md}",
+        "lineHeight": "{leading.normal}",
+        "letterSpacing": "{tracking.normal}"
+      }
+    },
+    "body-lg": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "{family.sans}",
+        "fontWeight": "{weight.normal}",
+        "fontSize": "{size.lg}",
+        "lineHeight": "{leading.normal}",
+        "letterSpacing": "{tracking.normal}"
+      }
+    },
+    "heading-xs": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "{family.sans}",
+        "fontWeight": "{weight.semibold}",
+        "fontSize": "{size.xs}",
+        "lineHeight": "{leading.normal}",
+        "letterSpacing": "{tracking.normal}"
+      }
+    },
+    "heading-sm": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "{family.sans}",
+        "fontWeight": "{weight.semibold}",
+        "fontSize": "{size.sm}",
+        "lineHeight": "{leading.normal}",
+        "letterSpacing": "{tracking.normal}"
+      }
+    },
+    "heading-base": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "{family.sans}",
+        "fontWeight": "{weight.semibold}",
+        "fontSize": "{size.base}",
+        "lineHeight": "{leading.normal}",
+        "letterSpacing": "{tracking.normal}"
+      }
+    },
+    "heading-md": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "{family.sans}",
+        "fontWeight": "{weight.semibold}",
+        "fontSize": "{size.md}",
+        "lineHeight": "{leading.normal}",
+        "letterSpacing": "{tracking.normal}"
+      }
+    },
+    "heading-lg": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "{family.sans}",
+        "fontWeight": "{weight.semibold}",
+        "fontSize": "{size.lg}",
+        "lineHeight": "{leading.normal}",
+        "letterSpacing": "{tracking.normal}"
+      }
+    },
+    "title-xl": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "{family.sans}",
+        "fontWeight": "{weight.bold}",
+        "fontSize": "{size.xl}",
+        "lineHeight": "{leading.tight}",
+        "letterSpacing": "{tracking.normal}"
+      }
+    },
+    "title-2xl": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "{family.sans}",
+        "fontWeight": "{weight.bold}",
+        "fontSize": "{size.2xl}",
+        "lineHeight": "{leading.tight}",
+        "letterSpacing": "{tracking.normal}"
+      }
+    },
+    "title-3xl": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "{family.sans}",
+        "fontWeight": "{weight.bold}",
+        "fontSize": "{size.3xl}",
+        "lineHeight": "{leading.tight}",
+        "letterSpacing": "{tracking.normal}"
+      }
+    },
+    "link-sm": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "{family.sans}",
+        "fontWeight": "{weight.normal}",
+        "fontSize": "{size.sm}",
+        "lineHeight": "{leading.normal}",
+        "letterSpacing": "{tracking.normal}"
+      },
+      "$extensions": {
+        "hp.design/text": {
+          "textDecoration": "underline"
+        }
+      }
+    },
+    "link-base": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "{family.sans}",
+        "fontWeight": "{weight.normal}",
+        "fontSize": "{size.base}",
+        "lineHeight": "{leading.normal}",
+        "letterSpacing": "{tracking.normal}"
+      },
+      "$extensions": {
+        "hp.design/text": {
+          "textDecoration": "underline"
+        }
+      }
+    },
+    "label-sm": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "{family.sans}",
+        "fontWeight": "{weight.bold}",
+        "fontSize": "{size.sm}",
+        "lineHeight": "{leading.normal}",
+        "letterSpacing": "{tracking.wide}"
+      },
+      "$extensions": {
+        "hp.design/text": {
+          "textTransform": "uppercase"
+        }
+      }
+    },
+    "label-base": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "{family.sans}",
+        "fontWeight": "{weight.bold}",
+        "fontSize": "{size.base}",
+        "lineHeight": "{leading.normal}",
+        "letterSpacing": "{tracking.wide}"
+      },
+      "$extensions": {
+        "hp.design/text": {
+          "textTransform": "uppercase"
+        }
+      }
+    },
+    "$description": "Composite styles over the typography primitives. Two fixes vs. the Figma source: body-lg now uses size.lg (18px) — the source labeled it size.md (16px), duplicating body-md, inconsistent with every other row where the style name matches its size name (confirmed as a Figma slip, fixed here). title-xl/2xl/3xl use leading.tight (1.2) instead of leading.normal (1.4) — at 20-30px bold, 140% line-height reads as too much air for a single-line title; tightening as size grows is standard practice (Stripe/Linear/Vercel all do this). label-sm/base use tracking.wide instead of tracking.normal for the same reason (all-caps needs positive tracking to not look cramped)."
+  }
+}

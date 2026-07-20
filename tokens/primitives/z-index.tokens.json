@@ -1,0 +1,90 @@
+{
+  "z": {
+    "base": {
+      "$type": "number",
+      "$value": 0,
+      "$description": "Base layer / tier: Base"
+    },
+    "raised": {
+      "$type": "number",
+      "$value": 10,
+      "$description": "Tier: Base"
+    },
+    "sticky": {
+      "$type": "number",
+      "$value": 20,
+      "$description": "Tier: Base — in-content sticky elements; stays below the page header."
+    },
+    "header": {
+      "$type": "number",
+      "$value": 30,
+      "$description": "Tier: Base — the page's global header."
+    },
+    "dropdown": {
+      "$type": "number",
+      "$value": 100,
+      "$description": "Tier: Floating on page — dropdown/select/popover/tooltip mounted directly on the base page (no drawer or modal open)."
+    },
+    "popover": {
+      "$type": "number",
+      "$value": 110,
+      "$description": "Tier: Floating on page"
+    },
+    "tooltip": {
+      "$type": "number",
+      "$value": 120,
+      "$description": "Tier: Floating on page"
+    },
+    "drawer-overlay": {
+      "$type": "number",
+      "$value": 200,
+      "$description": "Tier: Drawer"
+    },
+    "drawer": {
+      "$type": "number",
+      "$value": 210,
+      "$description": "Tier: Drawer"
+    },
+    "drawer-floating": {
+      "$type": "number",
+      "$value": 220,
+      "$description": "Tier: Drawer — use for dropdown/select/popover/tooltip mounted *inside* an open Drawer, instead of z.dropdown/popover/tooltip, so it renders above the drawer panel it lives in."
+    },
+    "modal-overlay": {
+      "$type": "number",
+      "$value": 300,
+      "$description": "Tier: Modal level 1"
+    },
+    "modal": {
+      "$type": "number",
+      "$value": 310,
+      "$description": "Tier: Modal level 1"
+    },
+    "modal-floating": {
+      "$type": "number",
+      "$value": 320,
+      "$description": "Tier: Modal level 1 — use for dropdown/select/popover/tooltip mounted *inside* an open level-1 Modal."
+    },
+    "modal-overlay-2": {
+      "$type": "number",
+      "$value": 400,
+      "$description": "Tier: Modal level 2 (a modal opened from within another modal)"
+    },
+    "modal-2": {
+      "$type": "number",
+      "$value": 410,
+      "$description": "Tier: Modal level 2"
+    },
+    "modal-floating-2": {
+      "$type": "number",
+      "$value": 420,
+      "$description": "Tier: Modal level 2 — use for dropdown/select/popover/tooltip mounted *inside* an open level-2 modal."
+    },
+    "toast": {
+      "$type": "number",
+      "$value": 500,
+      "$description": "Tier: Global notifications — always on top, independent of whatever drawer/modal is open."
+    },
+    "$description": "Named tiers with 100-point gaps (room to insert without renumbering) and, within Drawer/Modal tiers, a fixed 3-slot sub-pattern (overlay/panel/floating, +0/+10/+20). Floating UI (dropdown/popover/tooltip) is intentionally NOT one global z-index: a component must pick the '-floating' (or base 'dropdown/popover/tooltip') token matching the topmost context it is currently mounted inside — on the page vs. inside a Drawer vs. inside Modal level 1 vs. level 2 — so it always renders above its own container without ever floating above a container it isn't part of. That context-detection is a component-layer concern (e.g. a React context each Drawer/Modal provides to descendants), not solved by the tokens alone — build it when the Select/Popover/Tooltip components get built."
+  }
+}
