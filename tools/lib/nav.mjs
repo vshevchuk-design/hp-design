@@ -14,6 +14,8 @@ export const NAV_ITEMS = {
   select: { label: "Select", href: "select.html" },
   search: { label: "Search", href: "search.html" },
   pagination: { label: "Pagination", href: "pagination.html" },
+  separator: { label: "Separator", href: "separator.html" },
+  tabs: { label: "Tabs", href: "tabs.html" },
 };
 
 export function renderNav(activeKey) {
@@ -36,5 +38,7 @@ export function renderNav(activeKey) {
     ${link("input")}
     ${link("select")}
     ${link("search")}
-    ${link("pagination")}`;
+    ${link("pagination")}
+    ${link("separator")}
+    ${link("tabs")}`;
 }

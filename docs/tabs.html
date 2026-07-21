@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>hp-design — Tabs</title>
+<style>
+  :root {
+    --bg-page: #f7f7f5; --bg-card: #ffffff; --bg-card-hover: #fbfbfa;
+    --border: #e4e3df; --border-strong: #d2d1cb;
+    --text-primary: #0e0e10; --text-secondary: #63625c; --text-muted: #918f87;
+    --accent: #0468c4; --accent-bg: #eff6ff;
+    --code-bg: #1e1e22; --code-text: #e4e3df;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --sans: -apple-system, "Segoe UI", system-ui, sans-serif;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327;
+      --border: #313035; --border-strong: #403f45;
+      --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68;
+      --accent: #5aa4ec; --accent-bg: #16283b;
+      --code-bg: #0d0d0f; --code-text: #d7d6d2;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327;
+    --border: #313035; --border-strong: #403f45;
+    --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68;
+    --accent: #5aa4ec; --accent-bg: #16283b;
+    --code-bg: #0d0d0f; --code-text: #d7d6d2;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg-page); color: var(--text-primary); font-family: var(--sans); }
+  .shell { display: flex; min-height: 100vh; }
+  nav.side { width: 220px; flex-shrink: 0; border-right: 0.5px solid var(--border); padding: 1.5rem 1rem; position: sticky; top: 0; height: 100vh; }
+  .brand { font-size: 14px; font-weight: 600; margin: 0 0 2px 8px; }
+  .brand-sub { font-size: 11.5px; color: var(--text-muted); margin: 0 0 1.5rem 8px; }
+  .navlink { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 8px; border-radius: 7px; font-size: 13px; text-decoration: none; color: var(--text-primary); margin-bottom: 1px; }
+  .navlink:hover { background: var(--bg-card-hover); }
+  .navlink.active { background: var(--accent-bg); color: var(--accent); font-weight: 600; }
+  .nav-category { font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin: 16px 8px 6px; }
+  main { flex: 1; padding: 4rem 4rem 6rem; max-width: 1120px; }
+
+  h1 { font-size: 36px; font-weight: 700; margin: 0 0 10px; letter-spacing: -0.02em; }
+  .sub { font-size: 14px; color: var(--text-secondary); margin: 0 0 2.5rem; }
+  h2.big-section { font-size: 24px; font-weight: 700; margin: 5.5rem 0 1.5rem; letter-spacing: -0.01em; padding-top: 2.5rem; border-top: 1px solid var(--border); }
+  h2.big-section:first-of-type { margin-top: 3rem; padding-top: 0; border-top: none; }
+  .section-desc { font-size: 13.5px; color: var(--text-secondary); margin: -0.5rem 0 1.5rem; max-width: 68ch; line-height: 1.6; }
+
+  .legend { font-size: 12.5px; color: var(--text-secondary); padding: 14px 18px; background: var(--bg-card); border: 0.5px solid var(--border); border-radius: 10px; margin-bottom: 1rem; line-height: 1.6; }
+  .legend .row { display: flex; gap: 14px; padding: 6px 0; border-bottom: 0.5px solid var(--border); }
+  .legend .row:last-child { border-bottom: none; }
+  .legend .row b { width: 150px; flex-shrink: 0; color: var(--text-primary); font-weight: 600; font-family: var(--mono); font-size: 11.5px; }
+  code.tok { font-family: var(--mono); font-size: 12px; color: var(--accent); }
+
+  pre.code { background: var(--code-bg); color: var(--code-text); border-radius: 10px; padding: 16px 18px; margin: 0; overflow-x: auto; font-family: var(--mono); font-size: 12px; line-height: 1.7; }
+  pre.code code { font-family: inherit; }
+
+  .story-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 28px; }
+  .story { border: 0.5px solid var(--border); border-radius: 14px; background: var(--bg-card); padding: 24px; display: flex; flex-direction: column; gap: 14px; }
+  .story h3 { font-size: 14px; font-weight: 600; margin: 0; font-family: var(--mono); }
+  .story-preview { min-height: 64px; display: flex; align-items: center; justify-content: center; padding: 12px 0; }
+  .story-note { font-size: 11.5px; color: var(--text-muted); margin: 0; line-height: 1.5; }
+
+  .full-bar-demo { border: 0.5px solid var(--border); border-radius: 14px; background: var(--bg-card); padding: 24px; display: flex; flex-direction: column; gap: 16px; max-width: 480px; }
+  .full-bar-demo .story-preview { justify-content: flex-start; padding: 4px 0; }
+
+  .tab--hover-demo { background: var(--tok-fill-neutral-hover); color: var(--tok-text-default); }
+
+  .placeholder-note { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-muted); border: 0.5px dashed var(--border-strong); border-radius: 6px; padding: 4px 10px; margin-top: 1.5rem; }
+
+  :root {
+  --tok-text-secondary: #696969;
+  --tok-text-default: #181818;
+  --tok-text-disabled: #b4b4b4;
+  --tok-fill-neutral-hover: #d1d1d1;
+  --tok-fill-neutral-active: #b4b4b4;
+  --tok-surface-sunken: #e8e8e8;
+  --tok-surface-default: #ffffff;
+  --tok-border-default: #d1d1d1;
+  --tok-border-focus: #077fec;
+  --tok-text-on-fill: #ffffff;
+  --tok-fill-primary: #077fec;
+  --tok-icon-default: #525252;
+  --tok-icon-disabled: #b4b4b4;
+  --tok-family-sans: 'Sora', sans-serif;
+}
+
+.tab { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: none; background: transparent; cursor: pointer; white-space: nowrap; color: var(--tok-text-secondary); font-family: var(--tok-family-sans); font-weight: 400; font-size: 14px; line-height: 1.2; }
+.tab__icon { flex-shrink: 0; color: var(--tok-icon-default); }
+
+.tab--sm { height: 32px; padding: 0 8px; }
+.tab--sm .tab__icon { width: 16px; height: 16px; }
+.tab--base { height: 40px; padding: 0 12px; }
+.tab--base .tab__icon { width: 20px; height: 20px; }
+
+.tabs--segmented { display: inline-flex; align-items: center; gap: 4px; background: var(--tok-surface-sunken); border-radius: 12px; padding: 4px; max-width: 100%; overflow-x: auto; }
+.tabs--segmented .tab { border-radius: 8px; }
+.tabs--segmented .tab:not(.tab--active):not(.tab--disabled):hover { background: var(--tok-fill-neutral-hover); color: var(--tok-text-default); }
+.tabs--segmented .tab--active { background: var(--tok-surface-default); color: var(--tok-text-default); font-weight: 600; }
+.tabs--segmented .tab--disabled { color: var(--tok-text-disabled); cursor: not-allowed; }
+.tabs--segmented .tab--disabled .tab__icon, .tabs--underline .tab--disabled .tab__icon { color: var(--tok-icon-disabled); }
+
+.tabs--underline { display: inline-flex; align-items: stretch; gap: 24px; border-bottom: 1px solid var(--tok-border-default); max-width: 100%; overflow-x: auto; }
+.tabs--underline .tab { border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.tabs--underline .tab:not(.tab--active):not(.tab--disabled):hover { color: var(--tok-text-default); }
+.tabs--underline .tab--active { color: var(--tok-text-default); font-weight: 600; border-bottom-color: var(--tok-border-focus); }
+.tabs--underline .tab--disabled { color: var(--tok-text-disabled); cursor: not-allowed; }
+
+.counter { display: inline-flex; align-items: center; justify-content: center; font-variant-numeric: tabular-nums; font-family: var(--tok-family-sans); font-weight: 700; border-radius: 999px; }
+.counter--sm { height: 16px; min-width: 16px; padding: 0 4px; font-size: 10px; line-height: 1; }
+.counter--base { height: 20px; min-width: 20px; padding: 0 6px; font-size: 12px; line-height: 1; }
+.counter--onNeutral.counter--inactive { background: var(--tok-fill-neutral-active); color: var(--tok-text-default); }
+.counter--onNeutral.counter--active { background: var(--tok-fill-primary); color: var(--tok-text-on-fill); }
+</style>
+</head>
+<body>
+<div class="shell">
+  <nav class="side">
+    <p class="brand">hp-design</p>
+    <p class="brand-sub">Highpoint design system</p>
+    <a class="navlink" href="index.html">Overview</a>
+    <p class="nav-category">Tokens</p>
+    <a class="navlink" href="colors.html">Colors</a>
+    <a class="navlink" href="semantic-colors.html">Semantic colors</a>
+    <a class="navlink" href="typography.html">Typography</a>
+    <a class="navlink" href="layout.html">Layout</a>
+    <a class="navlink" href="icons.html">Icons</a>
+    <p class="nav-category">Components</p>
+    <a class="navlink" href="button.html">Button</a>
+    <a class="navlink" href="counter.html">Counter</a>
+    <a class="navlink" href="input.html">Input</a>
+    <a class="navlink" href="select.html">Select</a>
+    <a class="navlink" href="search.html">Search</a>
+    <a class="navlink" href="pagination.html">Pagination</a>
+    <a class="navlink" href="separator.html">Separator</a>
+    <a class="navlink active" href="tabs.html">Tabs</a>
+  </nav>
+  <main>
+    <h1>Tabs</h1>
+    <p class="sub">tokens/components/tabs.tokens.json · generated — the CSS below is generated from the same resolved tokens driving every preview on this page, not hand-copied. Colors are CSS custom properties, not literal hex.</p>
+
+    <div class="legend">
+      <div class="row"><b>Two styles</b><span>Segmented (pill track, active tab raised on a white pill) and underline (plain text, active tab marked by a 2px bottom bar) — per the two reference screenshots.</span></div>
+      <div class="row"><b>Sizes</b><span>sm 32px / base 40px (no lg — a two-size control, unlike button/input/select/search). Label text stays a flat 14px at both sizes; only icon size and padding scale.</span></div>
+      <div class="row"><b>Counter</b><span>Reuses component.counter's onNeutral surface as-is — inactive tab → quiet gray, active tab → pops blue. Same tokens already built for the secondary button, repurposed for tab-selection instead of notification-freshness.</span></div>
+      <div class="row"><b>Tab count</b><span>No hard limit enforced by the component — a content decision, not a design token. The tab list scrolls horizontally (overflow-x: auto) if it overflows its container. Practical guideline: 5-7 tabs is comfortable in one row; beyond that, expect scrolling or consider a different pattern (a "more" menu, a select).</span></div>
+      <div class="row"><b>States</b><span>default → text.secondary · hover → darker text (+ bg on segmented) · active (selected) → text.default + semibold + the style's own indicator · disabled → text.disabled, no hover.</span></div>
+    </div>
+
+    <h2 class="big-section">CSS</h2>
+    <pre class="code"><code>:root {
+  --tok-text-secondary: #696969;
+  --tok-text-default: #181818;
+  --tok-text-disabled: #b4b4b4;
+  --tok-fill-neutral-hover: #d1d1d1;
+  --tok-fill-neutral-active: #b4b4b4;
+  --tok-surface-sunken: #e8e8e8;
+  --tok-surface-default: #ffffff;
+  --tok-border-default: #d1d1d1;
+  --tok-border-focus: #077fec;
+  --tok-text-on-fill: #ffffff;
+  --tok-fill-primary: #077fec;
+  --tok-icon-default: #525252;
+  --tok-icon-disabled: #b4b4b4;
+  --tok-family-sans: 'Sora', sans-serif;
+}
+
+.tab { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: none; background: transparent; cursor: pointer; white-space: nowrap; color: var(--tok-text-secondary); font-family: var(--tok-family-sans); font-weight: 400; font-size: 14px; line-height: 1.2; }
+.tab__icon { flex-shrink: 0; color: var(--tok-icon-default); }
+
+.tab--sm { height: 32px; padding: 0 8px; }
+.tab--sm .tab__icon { width: 16px; height: 16px; }
+.tab--base { height: 40px; padding: 0 12px; }
+.tab--base .tab__icon { width: 20px; height: 20px; }
+
+.tabs--segmented { display: inline-flex; align-items: center; gap: 4px; background: var(--tok-surface-sunken); border-radius: 12px; padding: 4px; max-width: 100%; overflow-x: auto; }
+.tabs--segmented .tab { border-radius: 8px; }
+.tabs--segmented .tab:not(.tab--active):not(.tab--disabled):hover { background: var(--tok-fill-neutral-hover); color: var(--tok-text-default); }
+.tabs--segmented .tab--active { background: var(--tok-surface-default); color: var(--tok-text-default); font-weight: 600; }
+.tabs--segmented .tab--disabled { color: var(--tok-text-disabled); cursor: not-allowed; }
+.tabs--segmented .tab--disabled .tab__icon, .tabs--underline .tab--disabled .tab__icon { color: var(--tok-icon-disabled); }
+
+.tabs--underline { display: inline-flex; align-items: stretch; gap: 24px; border-bottom: 1px solid var(--tok-border-default); max-width: 100%; overflow-x: auto; }
+.tabs--underline .tab { border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.tabs--underline .tab:not(.tab--active):not(.tab--disabled):hover { color: var(--tok-text-default); }
+.tabs--underline .tab--active { color: var(--tok-text-default); font-weight: 600; border-bottom-color: var(--tok-border-focus); }
+.tabs--underline .tab--disabled { color: var(--tok-text-disabled); cursor: not-allowed; }
+
+.counter { display: inline-flex; align-items: center; justify-content: center; font-variant-numeric: tabular-nums; font-family: var(--tok-family-sans); font-weight: 700; border-radius: 999px; }
+.counter--sm { height: 16px; min-width: 16px; padding: 0 4px; font-size: 10px; line-height: 1; }
+.counter--base { height: 20px; min-width: 20px; padding: 0 6px; font-size: 12px; line-height: 1; }
+.counter--onNeutral.counter--inactive { background: var(--tok-fill-neutral-active); color: var(--tok-text-default); }
+.counter--onNeutral.counter--active { background: var(--tok-fill-primary); color: var(--tok-text-on-fill); }</code></pre>
+
+    <h2 class="big-section">Styles</h2>
+    <div class="story-grid">
+      
+      <div class="story">
+        <h3>Segmented</h3>
+        <div class="story-preview"><div class="tabs tabs--segmented tabs--base"><button class="tab tab--segmented tab--base"><span class="tab__label">Inbox</span><span class="counter counter--base counter--onNeutral counter--inactive">4</span></button><button class="tab tab--segmented tab--base tab--active" aria-selected="true"><span class="tab__label">Resolved</span></button></div></div>
+        <pre class="code"><code>&lt;div class="tabs tabs--segmented tabs--base"&gt;&lt;button class="tab tab--segmented tab--base"&gt;&lt;span class="tab__label"&gt;Inbox&lt;/span&gt;&lt;span class="counter counter--base counter--onNeutral counter--inactive"&gt;4&lt;/span&gt;&lt;/button&gt;&lt;button class="tab tab--segmented tab--base tab--active" aria-selected="true"&gt;&lt;span class="tab__label"&gt;Resolved&lt;/span&gt;&lt;/button&gt;&lt;/div&gt;</code></pre>
+        <p class="story-note">Active tab raised on a white pill (surface.default) over the sunken track.</p>
+      </div>
+
+      <div class="story">
+        <h3>Underline</h3>
+        <div class="story-preview"><div class="tabs tabs--underline tabs--base"><button class="tab tab--underline tab--base tab--active" aria-selected="true"><span class="tab__label">Inbox</span></button><button class="tab tab--underline tab--base"><span class="tab__label">Archived</span></button></div></div>
+        <pre class="code"><code>&lt;div class="tabs tabs--underline tabs--base"&gt;&lt;button class="tab tab--underline tab--base tab--active" aria-selected="true"&gt;&lt;span class="tab__label"&gt;Inbox&lt;/span&gt;&lt;/button&gt;&lt;button class="tab tab--underline tab--base"&gt;&lt;span class="tab__label"&gt;Archived&lt;/span&gt;&lt;/button&gt;&lt;/div&gt;</code></pre>
+        <p class="story-note">Active tab marked by a 2px border.focus bar over the 1px baseline.</p>
+      </div>
+    </div>
+
+    <h2 class="big-section">Sizes</h2>
+    <p class="section-desc">Segmented style shown at both sizes — underline scales identically (same size grid).</p>
+    <div class="story-grid">
+      
+      <div class="story">
+        <h3>sm — 32px</h3>
+        <div class="story-preview"><div class="tabs tabs--segmented tabs--sm"><button class="tab tab--segmented tab--sm"><svg class="tab__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg><span class="tab__label">Inbox</span></button><button class="tab tab--segmented tab--sm tab--active" aria-selected="true"><span class="tab__label">Resolved</span></button></div></div>
+        <pre class="code"><code>&lt;div class="tabs tabs--segmented tabs--sm"&gt;&lt;button class="tab tab--segmented tab--sm"&gt;&lt;svg class="tab__icon"&gt;&lt;!-- icon: mail --&gt;&lt;/svg&gt;&lt;span class="tab__label"&gt;Inbox&lt;/span&gt;&lt;/button&gt;&lt;button class="tab tab--segmented tab--sm tab--active" aria-selected="true"&gt;&lt;span class="tab__label"&gt;Resolved&lt;/span&gt;&lt;/button&gt;&lt;/div&gt;</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>base — 40px</h3>
+        <div class="story-preview"><div class="tabs tabs--segmented tabs--base"><button class="tab tab--segmented tab--base"><svg class="tab__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg><span class="tab__label">Inbox</span></button><button class="tab tab--segmented tab--base tab--active" aria-selected="true"><span class="tab__label">Resolved</span></button></div></div>
+        <pre class="code"><code>&lt;div class="tabs tabs--segmented tabs--base"&gt;&lt;button class="tab tab--segmented tab--base"&gt;&lt;svg class="tab__icon"&gt;&lt;!-- icon: mail --&gt;&lt;/svg&gt;&lt;span class="tab__label"&gt;Inbox&lt;/span&gt;&lt;/button&gt;&lt;button class="tab tab--segmented tab--base tab--active" aria-selected="true"&gt;&lt;span class="tab__label"&gt;Resolved&lt;/span&gt;&lt;/button&gt;&lt;/div&gt;</code></pre>
+        
+      </div>
+    </div>
+
+    <h2 class="big-section">Content variants</h2>
+    <p class="section-desc">Base size, segmented, active tab — same 5 variants apply to underline and to inactive tabs identically.</p>
+    <div class="story-grid">
+      
+      <div class="story">
+        <h3>Text only</h3>
+        <div class="story-preview"><button class="tab tab--segmented tab--base tab--active" aria-selected="true"><span class="tab__label">Inbox</span></button></div>
+        <pre class="code"><code>&lt;button class="tab tab--segmented tab--base tab--active" aria-selected="true"&gt;&lt;span class="tab__label"&gt;Inbox&lt;/span&gt;&lt;/button&gt;</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>Icon left + text</h3>
+        <div class="story-preview"><button class="tab tab--segmented tab--base tab--active" aria-selected="true"><svg class="tab__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg><span class="tab__label">Inbox</span></button></div>
+        <pre class="code"><code>&lt;button class="tab tab--segmented tab--base tab--active" aria-selected="true"&gt;&lt;svg class="tab__icon"&gt;&lt;!-- icon: mail --&gt;&lt;/svg&gt;&lt;span class="tab__label"&gt;Inbox&lt;/span&gt;&lt;/button&gt;</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>With counter</h3>
+        <div class="story-preview"><button class="tab tab--segmented tab--base tab--active" aria-selected="true"><span class="tab__label">Inbox</span><span class="counter counter--base counter--onNeutral counter--active">4</span></button></div>
+        <pre class="code"><code>&lt;button class="tab tab--segmented tab--base tab--active" aria-selected="true"&gt;&lt;span class="tab__label"&gt;Inbox&lt;/span&gt;&lt;span class="counter counter--base counter--onNeutral counter--active"&gt;4&lt;/span&gt;&lt;/button&gt;</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>Icon + counter</h3>
+        <div class="story-preview"><button class="tab tab--segmented tab--base tab--active" aria-selected="true"><svg class="tab__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg><span class="tab__label">Inbox</span><span class="counter counter--base counter--onNeutral counter--active">4</span></button></div>
+        <pre class="code"><code>&lt;button class="tab tab--segmented tab--base tab--active" aria-selected="true"&gt;&lt;svg class="tab__icon"&gt;&lt;!-- icon: mail --&gt;&lt;/svg&gt;&lt;span class="tab__label"&gt;Inbox&lt;/span&gt;&lt;span class="counter counter--base counter--onNeutral counter--active"&gt;4&lt;/span&gt;&lt;/button&gt;</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>Icon only</h3>
+        <div class="story-preview"><button class="tab tab--segmented tab--base tab--active" aria-selected="true" aria-label="Inbox"><svg class="tab__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></button></div>
+        <pre class="code"><code>&lt;button class="tab tab--segmented tab--base tab--active" aria-selected="true" aria-label="Inbox"&gt;&lt;svg class="tab__icon"&gt;&lt;!-- icon: mail --&gt;&lt;/svg&gt;&lt;/button&gt;</code></pre>
+        
+      </div>
+    </div>
+
+    <h2 class="big-section">States</h2>
+    <p class="section-desc">Base size, segmented, text-only.</p>
+    <div class="story-grid">
+      
+      <div class="story">
+        <h3>default</h3>
+        <div class="story-preview"><div class="tabs tabs--segmented tabs--base"><button class="tab tab--segmented tab--base"><span class="tab__label">Inbox</span></button></div></div>
+        <pre class="code"><code>&lt;div class="tabs tabs--segmented tabs--base"&gt;&lt;button class="tab tab--segmented tab--base"&gt;&lt;span class="tab__label"&gt;Inbox&lt;/span&gt;&lt;/button&gt;&lt;/div&gt;</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>hover</h3>
+        <div class="story-preview"><div class="tabs tabs--segmented tabs--base"><button class="tab tab--segmented tab--base tab--hover-demo"><span class="tab__label">Inbox</span></button></div></div>
+        <pre class="code"><code>&lt;div class="tabs tabs--segmented tabs--base"&gt;&lt;button class="tab tab--segmented tab--base tab--hover-demo"&gt;&lt;span class="tab__label"&gt;Inbox&lt;/span&gt;&lt;/button&gt;&lt;/div&gt;</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>active (selected)</h3>
+        <div class="story-preview"><div class="tabs tabs--segmented tabs--base"><button class="tab tab--segmented tab--base tab--active" aria-selected="true"><span class="tab__label">Inbox</span></button></div></div>
+        <pre class="code"><code>&lt;div class="tabs tabs--segmented tabs--base"&gt;&lt;button class="tab tab--segmented tab--base tab--active" aria-selected="true"&gt;&lt;span class="tab__label"&gt;Inbox&lt;/span&gt;&lt;/button&gt;&lt;/div&gt;</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>disabled</h3>
+        <div class="story-preview"><div class="tabs tabs--segmented tabs--base"><button class="tab tab--segmented tab--base tab--disabled" disabled><span class="tab__label">Inbox</span></button></div></div>
+        <pre class="code"><code>&lt;div class="tabs tabs--segmented tabs--base"&gt;&lt;button class="tab tab--segmented tab--base tab--disabled" disabled&gt;&lt;span class="tab__label"&gt;Inbox&lt;/span&gt;&lt;/button&gt;&lt;/div&gt;</code></pre>
+        
+      </div>
+    </div>
+
+    <h2 class="big-section">Many tabs</h2>
+    <p class="section-desc">8 tabs in a 480px-wide container — demonstrates the horizontal-scroll fallback rather than a hard cap.</p>
+    <div class="full-bar-demo">
+      <div class="story-preview"><div class="tabs tabs--underline tabs--base"><button class="tab tab--underline tab--base tab--active" aria-selected="true"><span class="tab__label">Overview</span></button><button class="tab tab--underline tab--base"><span class="tab__label">Analytics</span></button><button class="tab tab--underline tab--base"><span class="tab__label">Reports</span></button><button class="tab tab--underline tab--base"><span class="tab__label">Notifications</span></button><button class="tab tab--underline tab--base"><span class="tab__label">Team</span></button><button class="tab tab--underline tab--base"><span class="tab__label">Billing</span></button><button class="tab tab--underline tab--base"><span class="tab__label">Integrations</span></button><button class="tab tab--underline tab--base"><span class="tab__label">Settings</span></button></div></div>
+    </div>
+
+    <p class="placeholder-note">Every code sample on this page is printed from the same resolved token values driving the live previews above it — copy it directly, nothing here is hand-typed.</p>
+  </main>
+</div>
+</body>
+</html>

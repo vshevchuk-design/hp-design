@@ -158,3 +158,31 @@ Added `tokens/components/pagination.tokens.json` + `tools/build-pagination-doc.m
 ## 2026-07-20 (cont. 12) — Pagination full bar
 
 User caught a real gap: rows-per-page and the page-range nav were documented as two separate pieces, but in real usage (a table/list footer, per the shadcn reference) they always appear together in one row. Added `component.pagination.bar` (a single `gap` token, dim.6/24px — the minimum breathing room between the two groups when the container isn't wide enough for `justify-content: space-between` to matter on its own) and a new "Full bar" section at the top of `docs/pagination.html`, rendered full-width (outside the normal `story-grid`, which would have squeezed it into a 320px column) so it actually reads like a table footer rather than another small card.
+
+## 2026-07-20 (cont. 13) — Separator
+
+User asked to research common practice first, not guess. Searched Radix/shadcn/MUI/Mantine's own Separator/Divider components before building `tokens/components/separator.tokens.json` + `tools/build-separator-doc.mjs` → `docs/separator.html`.
+
+- Confirmed by research: horizontal + vertical orientation is standard across every reference; none of them give the divider interactive states (it's purely presentational) — so this is the first component this session with no default/hover/focus/disabled section at all, and the legend says so explicitly rather than silently omitting a section a reader might expect.
+- Color: `border.default` — its own `$description` already said "...card edges, dividers, input borders at rest" back in the original semantic-color session, before any component existed. Third or fourth time a token's own description has directly answered a component question before it was even asked.
+- Thickness: 1px, kept as a literal (not a token) — checked, no design system scales hairline width the way it scales spacing/typography.
+- With-label variant per the user's spec exactly: line – 8px gap (`dim.2`) – label – 8px gap – line, all centered via flexbox. Label color: `text.secondary` (AA-safe), not `text.muted` — a divider label ("3 replies", "Today") is often meaningful content, not pure decoration, so it shouldn't default to the below-AA-contrast role.
+- Extended nav + index card; regenerated all 12 docs pages, verified zero literal hex outside the printed `:root` block.
+
+Sources consulted: [Separator – Radix Primitives](https://www.radix-ui.com/primitives/docs/components/separator), [Separator - shadcn/ui](https://ui.shadcn.com/docs/components/radix/separator), [Divider - Material UI](https://mui.com/material-ui/react-divider/), [Divider - Mantine](https://mantine.dev/core/divider/).
+
+## 2026-07-20 (cont. 14) — Tabs
+
+Added `tokens/components/tabs.tokens.json` + `tools/build-tabs-doc.mjs` → `docs/tabs.html`.
+
+- Two styles per the user's own two reference screenshots: **segmented** (a track, active tab raised on a white pill) and **underline** (plain text, active tab marked by a 2px bottom bar). Two sizes only (sm 32 / base 40, no lg) — a two-size control, matching what was actually asked rather than defaulting to the button's 3-tier scale everywhere.
+- Clean semantic-token reuse, found rather than invented: segmented's track uses `surface.sunken` (the same "recessed" token an input's own background already uses) and the active pill uses `surface.default` — literally the same sunken/default pairing cards already use for "raised above the page." `pillRadius` (8px) is deliberately `trackRadius` (12px) − `trackPadding` (4px) so the active pill's corners nest correctly inside the track's rounded corner, not a coincidence.
+- Text stays a flat 14px at both sizes per the user's explicit spec (unlike button/input, where type scales with control size) — only icon size, padding, and the counter scale between sm/base.
+- Counter variant reuses `component.counter.onNeutral` exactly as built for the secondary button (inactive tab → quiet gray, active tab → pops blue) rather than inventing new counter colors — same visual distinction, repurposed from "notification freshness" to "tab selection," which the tokens don't encode either way (they only define appearance, not why).
+- **Caught and fixed two real bugs while resolving the reused counter, before shipping**: (1) the CSS generation had hand-retyped the counter's color roles instead of resolving them from `counter.onNeutral`'s own token values — and the hand-typed guess was wrong (`fill.neutralHover` instead of the actual `fill.neutralActive`), exactly the kind of drift risk resolving-from-source is supposed to prevent. Fixed by reading the real `$value` path strings off `counter.onNeutral.state.*` and feeding those into `cv()`, so it can't happen again silently. (2) The tab icon had one fixed color (`icon.default`) with no `disabled` override, so a disabled tab's icon stayed full-strength while its label faded to `text.disabled` — the same icon/label decoupling bug caught and fixed on Button/Secondary and Input earlier this session, this time caught before commit rather than after user feedback.
+- Tab count: no hard limit enforced by the component (a content decision, not a token) — confirmed with the user first rather than assumed. `overflow-x: auto` on both style containers as the fallback, plus a practical (5-7 comfortable) guideline in the legend. Demonstrated with a real 8-tab overflow example in a 480px container rather than just asserting it works.
+- Extended nav + index card; regenerated all 13 docs pages, verified zero literal hex outside the printed `:root` blocks.
+
+## 2026-07-20 (cont. 15) — Tabs States section had no visible background
+
+User caught it immediately: the segmented States examples rendered as plain text floating on white, states indistinguishable. Root cause: `.tab` itself has no background — only its `.tabs--segmented` parent (the track) carries `surface.sunken`. The "Styles"/"Sizes"/"Content variants" sections all correctly render full `tabBar()` output (tab wrapped in its track), but "States" rendered a bare `tabItem()` with no wrapper — the one section that skipped it. Fixed by wrapping each state example in the same `.tabs.tabs--segmented.tabs--base` container the other sections already use, in both the live preview and the printed code sample (so the copyable snippet is accurate too, not just the preview).
