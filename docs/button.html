@@ -82,6 +82,8 @@
   --tok-fill-neutral-active: #b4b4b4;
   --tok-text-default: #181818;
   --tok-icon-default: #525252;
+  --tok-text-secondary: #696969;
+  --tok-icon-secondary: #808080;
   --tok-fill-disabled: #e8e8e8;
   --tok-text-disabled: #b4b4b4;
   --tok-icon-disabled: #b4b4b4;
@@ -153,6 +155,14 @@
 .btn--secondary:not(:disabled):focus-visible { outline: none; box-shadow: 0 0 0 2px var(--bg-card) /* substitute your own surface color */, 0 0 0 calc(2px + 2px) var(--tok-border-focus); }
 .btn--secondary:disabled { background: var(--tok-fill-disabled); color: var(--tok-text-disabled); cursor: not-allowed; }
 .btn--secondary:disabled .btn__icon { color: var(--tok-icon-disabled); }
+
+.btn--ghost { background: transparent; color: var(--tok-text-secondary); }
+.btn--ghost .btn__icon { color: var(--tok-icon-secondary); }
+.btn--ghost:not(:disabled):hover { background: var(--tok-fill-neutral-hover); }
+.btn--ghost:not(:disabled):active { background: var(--tok-fill-neutral-active); }
+.btn--ghost:not(:disabled):focus-visible { outline: none; box-shadow: 0 0 0 2px var(--bg-card) /* substitute your own surface color */, 0 0 0 calc(2px + 2px) var(--tok-border-focus); }
+.btn--ghost:disabled { background: transparent; color: var(--tok-text-disabled); cursor: not-allowed; }
+.btn--ghost:disabled .btn__icon { color: var(--tok-icon-disabled); }
 
 .counter {
   display: inline-flex;
@@ -194,19 +204,19 @@
   </nav>
   <main>
     <h1>Button</h1>
-    <p class="sub">tokens/components/button.tokens.json · Primary + Secondary variants · generated — the CSS below is generated from the same resolved tokens driving every preview on this page, not hand-copied. Colors are CSS custom properties (<code class="tok">var(--fill-primary)</code> etc.), not literal hex — retune a token, regenerate, and every rule that references it updates together.</p>
+    <p class="sub">tokens/components/button.tokens.json · Primary + Secondary + Ghost variants · generated — the CSS below is generated from the same resolved tokens driving every preview on this page, not hand-copied. Colors are CSS custom properties (<code class="tok">var(--fill-primary)</code> etc.), not literal hex — retune a token, regenerate, and every rule that references it updates together.</p>
 
     <div class="legend">
-      <div class="row"><b>Sizes</b><span>sm 32px / base 40px (default) / lg 48px — shared by both variants, byte-for-byte identical (asserted at build time). paddingX and iconSize scale with height on the same 4px grid the size step itself moves on; the 8px icon↔label gap is flat at every size, per spec.</span></div>
+      <div class="row"><b>Sizes</b><span>sm 32px / base 40px (default) / lg 48px — shared by all three variants, byte-for-byte identical (asserted at build time). paddingX and iconSize scale with height on the same 4px grid the size step itself moves on; the 8px icon↔label gap is flat at every size, per spec.</span></div>
       <div class="row"><b>Icon size</b><span>16 / 20 / 24px — resolves to exactly 50% of button height at every size, which is why it self-scales instead of needing separate tuning as more sizes get added later.</span></div>
       <div class="row"><b>Icon-only</b><span>Square (width = height), no paddingX/gap — the icon centers directly in the box.</span></div>
       <div class="row"><b>Radius</b><span>radius.default (8px) at every size — constant, doesn't scale with height, so the corner reads the same across sm/base/lg.</span></div>
-      <div class="row"><b>Primary vs Secondary</b><span>Same size/state/content-variant grid, different color role: primary → fill.primary (the brand blue, highest emphasis). secondary → fill.neutral (gray fill, not an outline — fill.neutral's own token description calls it out as the intended secondary-button fill).</span></div>
-      <div class="row"><b>States</b><span>default → variant's fill · hover → fillHover · pressed → fillActive · focused → additive 2px ring (border.focus) with 2px offset, composes on top of any of the three · disabled → fill.disabled + text.disabled + icon.disabled, shared by both variants.</span></div>
+      <div class="row"><b>Primary vs Secondary vs Ghost</b><span>Same size/state/content-variant grid, three color roles: primary → fill.primary (brand blue, highest emphasis). secondary → fill.neutral (gray fill — fill.neutral's own token description calls it out as the intended secondary-button fill). ghost → no fill or border at rest, the quietest tier — reuses the same transparent→fill.neutralHover→fill.neutralActive progression already established by pagination's page-item and tabs' segmented style.</span></div>
+      <div class="row"><b>States</b><span>default → variant's fill (or transparent, for ghost) · hover → fillHover · pressed → fillActive · focused → additive 2px ring (border.focus) with 2px offset, composes on top of any of the three · disabled → fill.disabled + text.disabled + icon.disabled (ghost stays transparent, no fill to lose).</span></div>
     </div>
 
     <h2 class="big-section">CSS</h2>
-    <p class="section-desc">One <code class="tok">:root</code> block of color custom properties, then a shared <code class="tok">.btn</code> base + <code class="tok">--sm/--base/--lg</code> size modifiers (used by both variants — sizes are identical), then <code class="tok">.btn--primary</code> / <code class="tok">.btn--secondary</code> color modifiers. States are plain pseudo-classes, not separate classes. Dimensions (height/padding/gap/font-size) stay literal px in the size modifiers — those are baked layout decisions per size, not values a consumer re-themes at runtime the way colors are.</p>
+    <p class="section-desc">One <code class="tok">:root</code> block of color custom properties, then a shared <code class="tok">.btn</code> base + <code class="tok">--sm/--base/--lg</code> size modifiers (used by all three variants — sizes are identical), then <code class="tok">.btn--primary</code> / <code class="tok">.btn--secondary</code> / <code class="tok">.btn--ghost</code> color modifiers. States are plain pseudo-classes, not separate classes. Dimensions (height/padding/gap/font-size) stay literal px in the size modifiers — those are baked layout decisions per size, not values a consumer re-themes at runtime the way colors are.</p>
     <pre class="code"><code>:root {
   --tok-fill-primary: #077fec;
   --tok-fill-primary-hover: #0468c4;
@@ -218,6 +228,8 @@
   --tok-fill-neutral-active: #b4b4b4;
   --tok-text-default: #181818;
   --tok-icon-default: #525252;
+  --tok-text-secondary: #696969;
+  --tok-icon-secondary: #808080;
   --tok-fill-disabled: #e8e8e8;
   --tok-text-disabled: #b4b4b4;
   --tok-icon-disabled: #b4b4b4;
@@ -289,6 +301,14 @@
 .btn--secondary:not(:disabled):focus-visible { outline: none; box-shadow: 0 0 0 2px var(--bg-card) /* substitute your own surface color */, 0 0 0 calc(2px + 2px) var(--tok-border-focus); }
 .btn--secondary:disabled { background: var(--tok-fill-disabled); color: var(--tok-text-disabled); cursor: not-allowed; }
 .btn--secondary:disabled .btn__icon { color: var(--tok-icon-disabled); }
+
+.btn--ghost { background: transparent; color: var(--tok-text-secondary); }
+.btn--ghost .btn__icon { color: var(--tok-icon-secondary); }
+.btn--ghost:not(:disabled):hover { background: var(--tok-fill-neutral-hover); }
+.btn--ghost:not(:disabled):active { background: var(--tok-fill-neutral-active); }
+.btn--ghost:not(:disabled):focus-visible { outline: none; box-shadow: 0 0 0 2px var(--bg-card) /* substitute your own surface color */, 0 0 0 calc(2px + 2px) var(--tok-border-focus); }
+.btn--ghost:disabled { background: transparent; color: var(--tok-text-disabled); cursor: not-allowed; }
+.btn--ghost:disabled .btn__icon { color: var(--tok-icon-disabled); }
 
 .counter {
   display: inline-flex;
@@ -612,6 +632,162 @@
     Label</button></div>
         <pre class="code"><code>.btn--secondary:disabled {
   background: var(--tok-fill-disabled);
+  color: var(--tok-text-disabled);
+}</code></pre>
+        
+      </div>
+    </div>
+    
+    <h2 class="big-section">Ghost</h2>
+    <h3 class="mid-section">Sizes</h3>
+    <p class="section-desc">Size and content variant are independent — any of the 5 variants below works at any of these 3 sizes. Shown here with the icon-left+text variant as the reference.</p>
+    <div class="story-grid">
+      
+      <div class="story">
+        <h3>sm — 32px</h3>
+        <div class="story-preview"><button class="btn btn--ghost btn--sm"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+  Label</button></div>
+        <pre class="code"><code>&lt;button class="btn btn--ghost btn--sm"&gt;
+  &lt;svg class="btn__icon"&gt;&lt;!-- icon: add --&gt;&lt;/svg&gt;
+  Label
+&lt;/button&gt;</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>base — 40px</h3>
+        <div class="story-preview"><button class="btn btn--ghost btn--base"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+  Label</button></div>
+        <pre class="code"><code>&lt;button class="btn btn--ghost btn--base"&gt;
+  &lt;svg class="btn__icon"&gt;&lt;!-- icon: add --&gt;&lt;/svg&gt;
+  Label
+&lt;/button&gt;</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>lg — 48px</h3>
+        <div class="story-preview"><button class="btn btn--ghost btn--lg"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+  Label</button></div>
+        <pre class="code"><code>&lt;button class="btn btn--ghost btn--lg"&gt;
+  &lt;svg class="btn__icon"&gt;&lt;!-- icon: add --&gt;&lt;/svg&gt;
+  Label
+&lt;/button&gt;</code></pre>
+        
+      </div>
+    </div>
+
+    <h3 class="mid-section">Content variants</h3>
+    <p class="section-desc">All 5 at base (40px) size. Icons shown (add / arrow_forward) are stand-ins for preview only — the real icon per button is decided when a concrete use case is composed. The counter variant uses <a href="counter.html">counter.onNeutral</a>, matching this button's own fill.</p>
+    <div class="story-grid">
+      
+      <div class="story">
+        <h3>Text only</h3>
+        <div class="story-preview"><button class="btn btn--ghost btn--base">Label</button></div>
+        <pre class="code"><code>&lt;button class="btn btn--ghost btn--base"&gt;
+  Label
+&lt;/button&gt;</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>Icon left + text</h3>
+        <div class="story-preview"><button class="btn btn--ghost btn--base"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+  Label</button></div>
+        <pre class="code"><code>&lt;button class="btn btn--ghost btn--base"&gt;
+  &lt;svg class="btn__icon"&gt;&lt;!-- icon: add --&gt;&lt;/svg&gt;
+  Label
+&lt;/button&gt;</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>Icon only (square)</h3>
+        <div class="story-preview"><button class="btn btn--ghost btn--base btn--icon-only" aria-label="Icon only"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></button></div>
+        <pre class="code"><code>&lt;button class="btn btn--ghost btn--base btn--icon-only" aria-label="Icon only"&gt;
+  &lt;svg class="btn__icon"&gt;&lt;!-- icon: add --&gt;&lt;/svg&gt;
+&lt;/button&gt;</code></pre>
+        <p class="story-note">Square — width equals height, no horizontal padding. Needs an <code>aria-label</code> since there's no visible text.</p>
+      </div>
+
+      <div class="story">
+        <h3>Icon left + text + icon right</h3>
+        <div class="story-preview"><button class="btn btn--ghost btn--base"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+  Label
+  <svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg></button></div>
+        <pre class="code"><code>&lt;button class="btn btn--ghost btn--base"&gt;
+  &lt;svg class="btn__icon"&gt;&lt;!-- icon: add --&gt;&lt;/svg&gt;
+  Label
+  &lt;svg class="btn__icon"&gt;&lt;!-- icon: arrow_forward --&gt;&lt;/svg&gt;
+&lt;/button&gt;</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>Icon left + text + counter right</h3>
+        <div class="story-preview"><button class="btn btn--ghost btn--base"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+  Label
+  <span class="counter counter--base counter--onNeutral counter--inactive">3</span></button></div>
+        <pre class="code"><code>&lt;button class="btn btn--ghost btn--base"&gt;
+  &lt;svg class="btn__icon"&gt;&lt;!-- icon: add --&gt;&lt;/svg&gt;
+  Label
+  &lt;span class="counter counter--base counter--onNeutral counter--inactive"&gt;3&lt;/span&gt;
+&lt;/button&gt;</code></pre>
+        
+      </div>
+    </div>
+
+    <h3 class="mid-section">States</h3>
+    <p class="section-desc">Base size, icon-left+text variant. Default/hover/pressed/focused are one shared markup with different pseudo-classes applied — disabled is the one real attribute (<code class="tok">disabled</code>) that also flips the label/icon color and drops the cursor. Ghost has no background at rest, so disabled stays transparent too — it never had a fill to lose.</p>
+    <div class="story-grid">
+      
+      <div class="story">
+        <h3>default</h3>
+        <div class="story-preview"><button class="btn btn--ghost btn--base" style=""><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+    Label</button></div>
+        <pre class="code"><code>.btn--ghost {
+  background: transparent;
+}</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>hover</h3>
+        <div class="story-preview"><button class="btn btn--ghost btn--base" style="background:var(--tok-fill-neutral-hover)"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+    Label</button></div>
+        <pre class="code"><code>.btn--ghost:hover {
+  background: var(--tok-fill-neutral-hover);
+}</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>pressed</h3>
+        <div class="story-preview"><button class="btn btn--ghost btn--base" style="background:var(--tok-fill-neutral-active)"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+    Label</button></div>
+        <pre class="code"><code>.btn--ghost:active {
+  background: var(--tok-fill-neutral-active);
+}</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>focused</h3>
+        <div class="story-preview"><button class="btn btn--ghost btn--base" style="box-shadow: 0 0 0 2px var(--bg-card) /* substitute your own surface color */, 0 0 0 calc(2px + 2px) var(--tok-border-focus);"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+    Label</button></div>
+        <pre class="code"><code>.btn--ghost:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--bg-card) /* substitute your own surface color */, 0 0 0 calc(2px + 2px) var(--tok-border-focus);
+}</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>disabled</h3>
+        <div class="story-preview"><button class="btn btn--ghost btn--base" disabled style=""><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+    Label</button></div>
+        <pre class="code"><code>.btn--ghost:disabled {
+  background: transparent;
   color: var(--tok-text-disabled);
 }</code></pre>
         

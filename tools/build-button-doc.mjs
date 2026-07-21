@@ -69,6 +69,7 @@ const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, 
 const colorPaths = [
   "fill.primary", "fill.primaryHover", "fill.primaryActive", "text.onFill", "icon.onFill",
   "fill.neutral", "fill.neutralHover", "fill.neutralActive", "text.default", "icon.default",
+  "text.secondary", "icon.secondary",
   "fill.disabled", "text.disabled", "icon.disabled",
   "border.focus", "color.white", "text.primary",
 ];
@@ -93,12 +94,15 @@ function resolveSize(variantToken) {
 }
 const primarySizes = resolveSize(button.primary);
 const secondarySizes = resolveSize(button.secondary);
+const ghostSizes = resolveSize(button.ghost);
 primarySizes.forEach((p, i) => {
-  const s = secondarySizes[i];
-  const same = JSON.stringify(p) === JSON.stringify(s);
-  if (!same) throw new Error(`button.primary.size.${p.key} and button.secondary.size.${s.key} were expected to be identical but diverged — update the shared .btn--${p.key} CSS generation to handle them separately.`);
+  for (const [label, sizes_] of [["secondary", secondarySizes], ["ghost", ghostSizes]]) {
+    const s = sizes_[i];
+    const same = JSON.stringify(p) === JSON.stringify(s);
+    if (!same) throw new Error(`button.primary.size.${p.key} and button.${label}.size.${s.key} were expected to be identical but diverged — update the shared .btn--${p.key} CSS generation to handle them separately.`);
+  }
 });
-const sizes = primarySizes; // identical to secondarySizes, asserted above — one shared size grid
+const sizes = primarySizes; // identical across all three variants, asserted above — one shared size grid
 const btnRadius = px(resolve(button.primary.radius.$value));
 
 const focusWidth = resolve(button.primary.state.focused.ringWidth.$value);
@@ -119,7 +123,7 @@ const counterSizes = ["sm", "base", "lg"].map((key) => {
 // onPrimary's colors (white "active" pill, dark-navy "inactive") don't work on a
 // near-white gray button: the white pill barely shows and the navy reads as loud
 // rather than quiet, so each button variant needs its matching counter surface.
-const counterSurfaceFor = { primary: "onPrimary", secondary: "onNeutral" };
+const counterSurfaceFor = { primary: "onPrimary", secondary: "onNeutral", ghost: "onNeutral" };
 const counterSurfaces = {
   onPrimary: { inactiveBg: "fill.primaryActive", inactiveLabel: "text.onFill" },
   onNeutral: { inactiveBg: "fill.neutralActive", inactiveLabel: "text.default" },
@@ -130,19 +134,24 @@ const iconAdd = fs.readFileSync(path.join(root, "assets/icons/material-filled/ad
 const iconArrow = fs.readFileSync(path.join(root, "assets/icons/material-filled/arrow_forward.svg"), "utf8").replace("<svg ", '<svg class="btn__icon" ');
 
 // ---- variant color mapping ----
+// fill: null means "no fill token — literal transparent", used by ghost (no
+// background at rest, and disabled shouldn't suddenly gain one it never had).
 const variants = {
   primary: { label: "Primary", fill: "fill.primary", fillHover: "fill.primaryHover", fillActive: "fill.primaryActive", text: "text.onFill", icon: "icon.onFill" },
   secondary: { label: "Secondary", fill: "fill.neutral", fillHover: "fill.neutralHover", fillActive: "fill.neutralActive", text: "text.default", icon: "icon.default" },
+  ghost: { label: "Ghost", fill: null, fillHover: "fill.neutralHover", fillActive: "fill.neutralActive", text: "text.secondary", icon: "icon.secondary" },
 };
 
 function variantCss(key) {
   const v = variants[key];
-  return `.btn--${key} { background: ${cv(v.fill)}; color: ${cv(v.text)}; }
+  const restBg = v.fill ? cv(v.fill) : "transparent";
+  const disabledBg = v.fill ? cv("fill.disabled") : "transparent";
+  return `.btn--${key} { background: ${restBg}; color: ${cv(v.text)}; }
 .btn--${key} .btn__icon { color: ${cv(v.icon)}; }
 .btn--${key}:not(:disabled):hover { background: ${cv(v.fillHover)}; }
 .btn--${key}:not(:disabled):active { background: ${cv(v.fillActive)}; }
 .btn--${key}:not(:disabled):focus-visible { outline: none; ${ringShadow} }
-.btn--${key}:disabled { background: ${cv("fill.disabled")}; color: ${cv("text.disabled")}; cursor: not-allowed; }
+.btn--${key}:disabled { background: ${disabledBg}; color: ${cv("text.disabled")}; cursor: not-allowed; }
 .btn--${key}:disabled .btn__icon { color: ${cv("icon.disabled")}; }`;
 }
 
@@ -179,6 +188,8 @@ ${sizes
 ${variantCss("primary")}
 
 ${variantCss("secondary")}
+
+${variantCss("ghost")}
 
 .counter {
   display: inline-flex;
@@ -256,11 +267,11 @@ function variantStories(variant) {
 function stateSnippets(variant) {
   const v = variants[variant];
   return {
-    default: `.btn--${variant} {\n  background: ${cv(v.fill)};\n}`,
+    default: `.btn--${variant} {\n  background: ${v.fill ? cv(v.fill) : "transparent"};\n}`,
     hover: `.btn--${variant}:hover {\n  background: ${cv(v.fillHover)};\n}`,
     pressed: `.btn--${variant}:active {\n  background: ${cv(v.fillActive)};\n}`,
     focused: `.btn--${variant}:focus-visible {\n  outline: none;\n  ${ringShadow}\n}`,
-    disabled: `.btn--${variant}:disabled {\n  background: ${cv("fill.disabled")};\n  color: ${cv("text.disabled")};\n}`,
+    disabled: `.btn--${variant}:disabled {\n  background: ${v.fill ? cv("fill.disabled") : "transparent"};\n  color: ${cv("text.disabled")};\n}`,
   };
 }
 function stateStory(variant, name, extraStyle, disabled) {
@@ -289,13 +300,13 @@ function variantSection(key) {
     </div>
 
     <h3 class="mid-section">Content variants</h3>
-    <p class="section-desc">All 5 at base (40px) size. Icons shown (add / arrow_forward) are stand-ins for preview only — the real icon per button is decided when a concrete use case is composed. The counter variant uses <a href="counter.html">counter.${key === "secondary" ? "onNeutral" : "onPrimary"}</a>, matching this button's own fill.</p>
+    <p class="section-desc">All 5 at base (40px) size. Icons shown (add / arrow_forward) are stand-ins for preview only — the real icon per button is decided when a concrete use case is composed. The counter variant uses <a href="counter.html">counter.${counterSurfaceFor[key]}</a>, matching this button's own fill.</p>
     <div class="story-grid">
       ${variantStories(key)}
     </div>
 
     <h3 class="mid-section">States</h3>
-    <p class="section-desc">Base size, icon-left+text variant. Default/hover/pressed/focused are one shared markup with different pseudo-classes applied — disabled is the one real attribute (<code class="tok">disabled</code>) that also flips the label/icon color and drops the cursor.${key === "secondary" ? " fill.disabled equals fill.neutral (both gray.100), so disabled here only changes the label/icon color, not the background — see the token's own note." : ""}</p>
+    <p class="section-desc">Base size, icon-left+text variant. Default/hover/pressed/focused are one shared markup with different pseudo-classes applied — disabled is the one real attribute (<code class="tok">disabled</code>) that also flips the label/icon color and drops the cursor.${key === "secondary" ? " fill.disabled equals fill.neutral (both gray.100), so disabled here only changes the label/icon color, not the background — see the token's own note." : ""}${key === "ghost" ? " Ghost has no background at rest, so disabled stays transparent too — it never had a fill to lose." : ""}</p>
     <div class="story-grid">
       ${stateStories(key)}
     </div>`;
@@ -384,23 +395,24 @@ const html = `<!doctype html>
   </nav>
   <main>
     <h1>Button</h1>
-    <p class="sub">tokens/components/button.tokens.json · Primary + Secondary variants · generated — the CSS below is generated from the same resolved tokens driving every preview on this page, not hand-copied. Colors are CSS custom properties (<code class="tok">var(--fill-primary)</code> etc.), not literal hex — retune a token, regenerate, and every rule that references it updates together.</p>
+    <p class="sub">tokens/components/button.tokens.json · Primary + Secondary + Ghost variants · generated — the CSS below is generated from the same resolved tokens driving every preview on this page, not hand-copied. Colors are CSS custom properties (<code class="tok">var(--fill-primary)</code> etc.), not literal hex — retune a token, regenerate, and every rule that references it updates together.</p>
 
     <div class="legend">
-      <div class="row"><b>Sizes</b><span>sm 32px / base 40px (default) / lg 48px — shared by both variants, byte-for-byte identical (asserted at build time). paddingX and iconSize scale with height on the same 4px grid the size step itself moves on; the 8px icon↔label gap is flat at every size, per spec.</span></div>
+      <div class="row"><b>Sizes</b><span>sm 32px / base 40px (default) / lg 48px — shared by all three variants, byte-for-byte identical (asserted at build time). paddingX and iconSize scale with height on the same 4px grid the size step itself moves on; the 8px icon↔label gap is flat at every size, per spec.</span></div>
       <div class="row"><b>Icon size</b><span>16 / 20 / 24px — resolves to exactly 50% of button height at every size, which is why it self-scales instead of needing separate tuning as more sizes get added later.</span></div>
       <div class="row"><b>Icon-only</b><span>Square (width = height), no paddingX/gap — the icon centers directly in the box.</span></div>
       <div class="row"><b>Radius</b><span>radius.default (8px) at every size — constant, doesn't scale with height, so the corner reads the same across sm/base/lg.</span></div>
-      <div class="row"><b>Primary vs Secondary</b><span>Same size/state/content-variant grid, different color role: primary → fill.primary (the brand blue, highest emphasis). secondary → fill.neutral (gray fill, not an outline — fill.neutral's own token description calls it out as the intended secondary-button fill).</span></div>
-      <div class="row"><b>States</b><span>default → variant's fill · hover → fillHover · pressed → fillActive · focused → additive 2px ring (border.focus) with 2px offset, composes on top of any of the three · disabled → fill.disabled + text.disabled + icon.disabled, shared by both variants.</span></div>
+      <div class="row"><b>Primary vs Secondary vs Ghost</b><span>Same size/state/content-variant grid, three color roles: primary → fill.primary (brand blue, highest emphasis). secondary → fill.neutral (gray fill — fill.neutral's own token description calls it out as the intended secondary-button fill). ghost → no fill or border at rest, the quietest tier — reuses the same transparent→fill.neutralHover→fill.neutralActive progression already established by pagination's page-item and tabs' segmented style.</span></div>
+      <div class="row"><b>States</b><span>default → variant's fill (or transparent, for ghost) · hover → fillHover · pressed → fillActive · focused → additive 2px ring (border.focus) with 2px offset, composes on top of any of the three · disabled → fill.disabled + text.disabled + icon.disabled (ghost stays transparent, no fill to lose).</span></div>
     </div>
 
     <h2 class="big-section">CSS</h2>
-    <p class="section-desc">One <code class="tok">:root</code> block of color custom properties, then a shared <code class="tok">.btn</code> base + <code class="tok">--sm/--base/--lg</code> size modifiers (used by both variants — sizes are identical), then <code class="tok">.btn--primary</code> / <code class="tok">.btn--secondary</code> color modifiers. States are plain pseudo-classes, not separate classes. Dimensions (height/padding/gap/font-size) stay literal px in the size modifiers — those are baked layout decisions per size, not values a consumer re-themes at runtime the way colors are.</p>
+    <p class="section-desc">One <code class="tok">:root</code> block of color custom properties, then a shared <code class="tok">.btn</code> base + <code class="tok">--sm/--base/--lg</code> size modifiers (used by all three variants — sizes are identical), then <code class="tok">.btn--primary</code> / <code class="tok">.btn--secondary</code> / <code class="tok">.btn--ghost</code> color modifiers. States are plain pseudo-classes, not separate classes. Dimensions (height/padding/gap/font-size) stay literal px in the size modifiers — those are baked layout decisions per size, not values a consumer re-themes at runtime the way colors are.</p>
     <pre class="code"><code>${esc(css)}</code></pre>
 
     ${variantSection("primary")}
     ${variantSection("secondary")}
+    ${variantSection("ghost")}
 
     <p class="placeholder-note">Every code sample on this page is printed from the same resolved token values driving the live previews above it — copy it directly, nothing here is hand-typed.</p>
   </main>
