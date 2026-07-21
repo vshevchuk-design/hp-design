@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>hp-design — Switch</title>
+<style>
+  :root {
+    --bg-page: #f7f7f5; --bg-card: #ffffff; --bg-card-hover: #fbfbfa;
+    --border: #e4e3df; --border-strong: #d2d1cb;
+    --text-primary: #0e0e10; --text-secondary: #63625c; --text-muted: #918f87;
+    --accent: #0468c4; --accent-bg: #eff6ff;
+    --code-bg: #1e1e22; --code-text: #e4e3df;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --sans: -apple-system, "Segoe UI", system-ui, sans-serif;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327;
+      --border: #313035; --border-strong: #403f45;
+      --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68;
+      --accent: #5aa4ec; --accent-bg: #16283b;
+      --code-bg: #0d0d0f; --code-text: #d7d6d2;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327;
+    --border: #313035; --border-strong: #403f45;
+    --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68;
+    --accent: #5aa4ec; --accent-bg: #16283b;
+    --code-bg: #0d0d0f; --code-text: #d7d6d2;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg-page); color: var(--text-primary); font-family: var(--sans); }
+  .shell { display: flex; min-height: 100vh; }
+  nav.side { width: 220px; flex-shrink: 0; border-right: 0.5px solid var(--border); padding: 1.5rem 1rem; position: sticky; top: 0; height: 100vh; }
+  .brand { font-size: 14px; font-weight: 600; margin: 0 0 2px 8px; }
+  .brand-sub { font-size: 11.5px; color: var(--text-muted); margin: 0 0 1.5rem 8px; }
+  .navlink { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 8px; border-radius: 7px; font-size: 13px; text-decoration: none; color: var(--text-primary); margin-bottom: 1px; }
+  .navlink:hover { background: var(--bg-card-hover); }
+  .navlink.active { background: var(--accent-bg); color: var(--accent); font-weight: 600; }
+  .nav-category { font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin: 16px 8px 6px; }
+  main { flex: 1; padding: 4rem 4rem 6rem; max-width: 1120px; }
+
+  h1 { font-size: 36px; font-weight: 700; margin: 0 0 10px; letter-spacing: -0.02em; }
+  .sub { font-size: 14px; color: var(--text-secondary); margin: 0 0 2.5rem; }
+  h2.big-section { font-size: 24px; font-weight: 700; margin: 5.5rem 0 1.5rem; letter-spacing: -0.01em; padding-top: 2.5rem; border-top: 1px solid var(--border); }
+  h2.big-section:first-of-type { margin-top: 3rem; padding-top: 0; border-top: none; }
+  .section-desc { font-size: 13.5px; color: var(--text-secondary); margin: -0.5rem 0 1.5rem; max-width: 68ch; line-height: 1.6; }
+
+  .legend { font-size: 12.5px; color: var(--text-secondary); padding: 14px 18px; background: var(--bg-card); border: 0.5px solid var(--border); border-radius: 10px; margin-bottom: 1rem; line-height: 1.6; }
+  .legend .row { display: flex; gap: 14px; padding: 6px 0; border-bottom: 0.5px solid var(--border); }
+  .legend .row:last-child { border-bottom: none; }
+  .legend .row b { width: 150px; flex-shrink: 0; color: var(--text-primary); font-weight: 600; font-family: var(--mono); font-size: 11.5px; }
+  code.tok { font-family: var(--mono); font-size: 12px; color: var(--accent); }
+
+  pre.code { background: var(--code-bg); color: var(--code-text); border-radius: 10px; padding: 16px 18px; margin: 0; overflow-x: auto; font-family: var(--mono); font-size: 12px; line-height: 1.7; }
+  pre.code code { font-family: inherit; }
+
+  .story-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 28px; }
+  .story { border: 0.5px solid var(--border); border-radius: 14px; background: var(--bg-card); padding: 24px; display: flex; flex-direction: column; gap: 14px; }
+  .story h3 { font-size: 14px; font-weight: 600; margin: 0; font-family: var(--mono); }
+  .story-preview { min-height: 64px; display: flex; align-items: center; justify-content: center; padding: 12px 0; }
+  .story-note { font-size: 11.5px; color: var(--text-muted); margin: 0; line-height: 1.5; }
+
+  .placeholder-note { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-muted); border: 0.5px dashed var(--border-strong); border-radius: 6px; padding: 4px 10px; margin-top: 1.5rem; }
+
+  :root {
+  --tok-surface-default: #ffffff;
+  --tok-border-default: #d1d1d1;
+  --tok-border-strong: #b4b4b4;
+  --tok-border-focus: #0468c4;
+  --tok-fill-primary: #077fec;
+  --tok-fill-primary-hover: #0468c4;
+  --tok-fill-disabled: #e8e8e8;
+  --tok-text-default: #181818;
+  --tok-text-disabled: #b4b4b4;
+  --tok-family-sans: 'Sora', sans-serif;
+}
+
+.switch { display: inline-flex; align-items: center; gap: 8px; font-family: var(--tok-family-sans); cursor: pointer; }
+.switch__input { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.switch__track { box-sizing: border-box; position: relative; flex-shrink: 0; width: 36px; height: 20px; border-radius: 999px; background: var(--tok-border-default); }
+.switch__thumb { position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 999px; background: var(--tok-surface-default); transform: translateX(0); }
+.switch__label { color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; }
+
+.switch:hover .switch__track { background: var(--tok-border-strong); }
+.switch__input:focus-visible ~ .switch__track { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
+.switch__input:checked ~ .switch__track { background: var(--tok-fill-primary); }
+.switch__input:checked ~ .switch__track .switch__thumb { transform: translateX(16px); }
+.switch:hover .switch__input:checked:not(:disabled) ~ .switch__track { background: var(--tok-fill-primary-hover); }
+.switch__input:disabled ~ .switch__track { background: var(--tok-fill-disabled); cursor: not-allowed; }
+.switch__input:disabled ~ .switch__label { color: var(--tok-text-disabled); }
+.switch:has(.switch__input:disabled) { cursor: not-allowed; }
+</style>
+</head>
+<body>
+<div class="shell">
+  <nav class="side">
+    <p class="brand">hp-design</p>
+    <p class="brand-sub">Highpoint design system</p>
+    <a class="navlink" href="index.html">Overview</a>
+    <p class="nav-category">Tokens</p>
+    <a class="navlink" href="colors.html">Colors</a>
+    <a class="navlink" href="semantic-colors.html">Semantic colors</a>
+    <a class="navlink" href="typography.html">Typography</a>
+    <a class="navlink" href="layout.html">Layout</a>
+    <a class="navlink" href="icons.html">Icons</a>
+    <p class="nav-category">Components</p>
+    <a class="navlink" href="button.html">Button</a>
+    <a class="navlink" href="counter.html">Counter</a>
+    <a class="navlink" href="input.html">Input</a>
+    <a class="navlink" href="select.html">Select</a>
+    <a class="navlink" href="search.html">Search</a>
+    <a class="navlink" href="pagination.html">Pagination</a>
+    <a class="navlink" href="separator.html">Separator</a>
+    <a class="navlink" href="tabs.html">Tabs</a>
+    <a class="navlink" href="checkbox.html">Checkbox</a>
+    <a class="navlink" href="radio.html">Radio</a>
+    <a class="navlink" href="box.html">Box</a>
+    <a class="navlink" href="card.html">Card</a>
+    <a class="navlink active" href="switch.html">Switch</a>
+    <a class="navlink" href="grid.html">Grid</a>
+  </nav>
+  <main>
+    <h1>Switch</h1>
+    <p class="sub">tokens/components/switch.tokens.json · generated — the CSS below is generated from the same resolved tokens driving every preview on this page, not hand-copied. Colors are CSS custom properties, not literal hex.</p>
+
+    <div class="legend">
+      <div class="row"><b>Native input</b><span>A real <code class="tok">&lt;input type="checkbox"&gt;</code> stays in the DOM, visually hidden (clip-rect, not display:none) — keyboard/forms/screen-readers work for free, same approach as <a href="checkbox.html">Checkbox</a>/<a href="radio.html">Radio</a>.</span></div>
+      <div class="row"><b>Single size</b><span>36×20px track, 16px thumb, 2px inset on every side — no sm/base/lg grid, same rationale as Checkbox/Radio.</span></div>
+      <div class="row"><b>Always filled</b><span>Unlike Checkbox/Radio, the track is a solid fill even when off (border.default) — every reference checked (Radix/MUI/Ant/iOS) draws it this way, since the track itself is the whole affordance, not just an outline.</span></div>
+      <div class="row"><b>No indeterminate</b><span>Checkbox-specific tri-state concept — no switch equivalent.</span></div>
+      <div class="row"><b>No shadow on the thumb</b><span>Flat white circle, no drop shadow — consistent with the rest of this system having no shadow/elevation token; contrast against the track color alone provides definition.</span></div>
+      <div class="row"><b>States</b><span>default / hover / focused / checked / checked+hover / disabled / disabled+checked. No error state — not asked for.</span></div>
+    </div>
+
+    <h2 class="big-section">CSS</h2>
+    <pre class="code"><code>:root {
+  --tok-surface-default: #ffffff;
+  --tok-border-default: #d1d1d1;
+  --tok-border-strong: #b4b4b4;
+  --tok-border-focus: #0468c4;
+  --tok-fill-primary: #077fec;
+  --tok-fill-primary-hover: #0468c4;
+  --tok-fill-disabled: #e8e8e8;
+  --tok-text-default: #181818;
+  --tok-text-disabled: #b4b4b4;
+  --tok-family-sans: 'Sora', sans-serif;
+}
+
+.switch { display: inline-flex; align-items: center; gap: 8px; font-family: var(--tok-family-sans); cursor: pointer; }
+.switch__input { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.switch__track { box-sizing: border-box; position: relative; flex-shrink: 0; width: 36px; height: 20px; border-radius: 999px; background: var(--tok-border-default); }
+.switch__thumb { position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 999px; background: var(--tok-surface-default); transform: translateX(0); }
+.switch__label { color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; }
+
+.switch:hover .switch__track { background: var(--tok-border-strong); }
+.switch__input:focus-visible ~ .switch__track { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
+.switch__input:checked ~ .switch__track { background: var(--tok-fill-primary); }
+.switch__input:checked ~ .switch__track .switch__thumb { transform: translateX(16px); }
+.switch:hover .switch__input:checked:not(:disabled) ~ .switch__track { background: var(--tok-fill-primary-hover); }
+.switch__input:disabled ~ .switch__track { background: var(--tok-fill-disabled); cursor: not-allowed; }
+.switch__input:disabled ~ .switch__label { color: var(--tok-text-disabled); }
+.switch:has(.switch__input:disabled) { cursor: not-allowed; }</code></pre>
+
+    <h2 class="big-section">States</h2>
+    <p class="section-desc">Single size. Hover/focused are forced via inline style for a static screenshot — the real rule is :hover / :focus-visible on the native input, shown in the CSS above.</p>
+    <div class="story-grid">
+      
+      <div class="story">
+        <h3>default</h3>
+        <div class="story-preview"><label class="switch">
+    <input type="checkbox" class="switch__input" id="sw-state-0" />
+    <span class="switch__track"><span class="switch__thumb"></span></span>
+    <span class="switch__label">Label</span>
+  </label></div>
+        <pre class="code"><code>&lt;label class="switch"&gt;
+    &lt;input type="checkbox" class="switch__input" id="sw-state-0" /&gt;
+    &lt;span class="switch__track"&gt;&lt;span class="switch__thumb"&gt;&lt;/span&gt;&lt;/span&gt;
+    &lt;span class="switch__label"&gt;Label&lt;/span&gt;
+  &lt;/label&gt;</code></pre>
+        <p class="story-note">Off, at rest — border.default as a solid track fill, not an outline.</p>
+      </div>
+
+      <div class="story">
+        <h3>hover</h3>
+        <div class="story-preview"><label class="switch">
+    <input type="checkbox" class="switch__input" id="sw-state-1" />
+    <span class="switch__track" style="background:var(--tok-border-strong)"><span class="switch__thumb"></span></span>
+    <span class="switch__label">Label</span>
+  </label></div>
+        <pre class="code"><code>&lt;label class="switch"&gt;
+    &lt;input type="checkbox" class="switch__input" id="sw-state-1" /&gt;
+    &lt;span class="switch__track" style="background:var(--tok-border-strong)"&gt;&lt;span class="switch__thumb"&gt;&lt;/span&gt;&lt;/span&gt;
+    &lt;span class="switch__label"&gt;Label&lt;/span&gt;
+  &lt;/label&gt;</code></pre>
+        <p class="story-note">border.strong — a plain gray-darken reads fine here since the track is already a sizeable filled area, unlike Checkbox/Radio's hairline border.</p>
+      </div>
+
+      <div class="story">
+        <h3>focused</h3>
+        <div class="story-preview"><label class="switch">
+    <input type="checkbox" class="switch__input" id="sw-state-2" />
+    <span class="switch__track" style="outline:4px solid var(--tok-border-focus); outline-offset:2px"><span class="switch__thumb"></span></span>
+    <span class="switch__label">Label</span>
+  </label></div>
+        <pre class="code"><code>&lt;label class="switch"&gt;
+    &lt;input type="checkbox" class="switch__input" id="sw-state-2" /&gt;
+    &lt;span class="switch__track" style="outline:4px solid var(--tok-border-focus); outline-offset:2px"&gt;&lt;span class="switch__thumb"&gt;&lt;/span&gt;&lt;/span&gt;
+    &lt;span class="switch__label"&gt;Label&lt;/span&gt;
+  &lt;/label&gt;</code></pre>
+        <p class="story-note">Additive ring (border.focus). Real CSS is :focus-visible on the input; forced here via inline style.</p>
+      </div>
+
+      <div class="story">
+        <h3>checked</h3>
+        <div class="story-preview"><label class="switch">
+    <input type="checkbox" class="switch__input" id="sw-state-3" checked />
+    <span class="switch__track"><span class="switch__thumb" style="transform:translateX(16px)"></span></span>
+    <span class="switch__label">Label</span>
+  </label></div>
+        <pre class="code"><code>&lt;label class="switch"&gt;
+    &lt;input type="checkbox" class="switch__input" id="sw-state-3" checked /&gt;
+    &lt;span class="switch__track"&gt;&lt;span class="switch__thumb" style="transform:translateX(16px)"&gt;&lt;/span&gt;&lt;/span&gt;
+    &lt;span class="switch__label"&gt;Label&lt;/span&gt;
+  &lt;/label&gt;</code></pre>
+        <p class="story-note">Track fills fill.primary (blue.500), thumb slides right via transform.</p>
+      </div>
+
+      <div class="story">
+        <h3>checked + hover</h3>
+        <div class="story-preview"><label class="switch">
+    <input type="checkbox" class="switch__input" id="sw-state-4" checked />
+    <span class="switch__track" style="background:var(--tok-fill-primary-hover)"><span class="switch__thumb" style="transform:translateX(16px)"></span></span>
+    <span class="switch__label">Label</span>
+  </label></div>
+        <pre class="code"><code>&lt;label class="switch"&gt;
+    &lt;input type="checkbox" class="switch__input" id="sw-state-4" checked /&gt;
+    &lt;span class="switch__track" style="background:var(--tok-fill-primary-hover)"&gt;&lt;span class="switch__thumb" style="transform:translateX(16px)"&gt;&lt;/span&gt;&lt;/span&gt;
+    &lt;span class="switch__label"&gt;Label&lt;/span&gt;
+  &lt;/label&gt;</code></pre>
+        <p class="story-note">fill.primaryHover (blue.600) — same darken-on-hover pair Button primary and Checkbox/Radio's own checked+hover use.</p>
+      </div>
+
+      <div class="story">
+        <h3>disabled</h3>
+        <div class="story-preview"><label class="switch">
+    <input type="checkbox" class="switch__input" id="sw-state-5" disabled />
+    <span class="switch__track"><span class="switch__thumb"></span></span>
+    <span class="switch__label">Label</span>
+  </label></div>
+        <pre class="code"><code>&lt;label class="switch"&gt;
+    &lt;input type="checkbox" class="switch__input" id="sw-state-5" disabled /&gt;
+    &lt;span class="switch__track"&gt;&lt;span class="switch__thumb"&gt;&lt;/span&gt;&lt;/span&gt;
+    &lt;span class="switch__label"&gt;Label&lt;/span&gt;
+  &lt;/label&gt;</code></pre>
+        <p class="story-note">fill.disabled — same pair Button secondary/Input/Checkbox already use for their own disabled states.</p>
+      </div>
+
+      <div class="story">
+        <h3>disabled + checked</h3>
+        <div class="story-preview"><label class="switch">
+    <input type="checkbox" class="switch__input" id="sw-state-6" checked disabled />
+    <span class="switch__track"><span class="switch__thumb" style="transform:translateX(16px)"></span></span>
+    <span class="switch__label">Label</span>
+  </label></div>
+        <pre class="code"><code>&lt;label class="switch"&gt;
+    &lt;input type="checkbox" class="switch__input" id="sw-state-6" checked disabled /&gt;
+    &lt;span class="switch__track"&gt;&lt;span class="switch__thumb" style="transform:translateX(16px)"&gt;&lt;/span&gt;&lt;/span&gt;
+    &lt;span class="switch__label"&gt;Label&lt;/span&gt;
+  &lt;/label&gt;</code></pre>
+        <p class="story-note">Same fill.disabled regardless of checked — brand blue never shows on an inert control. Thumb still slides right (position follows :checked independently of :disabled).</p>
+      </div>
+    </div>
+
+    <p class="placeholder-note">Every code sample on this page is printed from the same resolved token values driving the live previews above it — copy it directly, nothing here is hand-typed.</p>
+  </main>
+</div>
+</body>
+</html>

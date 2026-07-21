@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>hp-design — Grid</title>
+<style>
+  :root {
+    --bg-page: #f7f7f5; --bg-card: #ffffff; --bg-card-hover: #fbfbfa;
+    --border: #e4e3df; --border-strong: #d2d1cb;
+    --text-primary: #0e0e10; --text-secondary: #63625c; --text-muted: #918f87;
+    --accent: #0468c4; --accent-bg: #eff6ff;
+    --code-bg: #1e1e22; --code-text: #e4e3df;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --sans: -apple-system, "Segoe UI", system-ui, sans-serif;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327;
+      --border: #313035; --border-strong: #403f45;
+      --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68;
+      --accent: #5aa4ec; --accent-bg: #16283b;
+      --code-bg: #0d0d0f; --code-text: #d7d6d2;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327;
+    --border: #313035; --border-strong: #403f45;
+    --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68;
+    --accent: #5aa4ec; --accent-bg: #16283b;
+    --code-bg: #0d0d0f; --code-text: #d7d6d2;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg-page); color: var(--text-primary); font-family: var(--sans); }
+  .shell { display: flex; min-height: 100vh; }
+  nav.side { width: 220px; flex-shrink: 0; border-right: 0.5px solid var(--border); padding: 1.5rem 1rem; position: sticky; top: 0; height: 100vh; }
+  .brand { font-size: 14px; font-weight: 600; margin: 0 0 2px 8px; }
+  .brand-sub { font-size: 11.5px; color: var(--text-muted); margin: 0 0 1.5rem 8px; }
+  .navlink { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 8px; border-radius: 7px; font-size: 13px; text-decoration: none; color: var(--text-primary); margin-bottom: 1px; }
+  .navlink:hover { background: var(--bg-card-hover); }
+  .navlink.active { background: var(--accent-bg); color: var(--accent); font-weight: 600; }
+  .nav-category { font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin: 16px 8px 6px; }
+  main { flex: 1; padding: 4rem 4rem 6rem; max-width: 1120px; }
+
+  h1 { font-size: 36px; font-weight: 700; margin: 0 0 10px; letter-spacing: -0.02em; }
+  .sub { font-size: 14px; color: var(--text-secondary); margin: 0 0 2.5rem; }
+  h2.big-section { font-size: 24px; font-weight: 700; margin: 5.5rem 0 1.5rem; letter-spacing: -0.01em; padding-top: 2.5rem; border-top: 1px solid var(--border); }
+  h2.big-section:first-of-type { margin-top: 3rem; padding-top: 0; border-top: none; }
+  .section-desc { font-size: 13.5px; color: var(--text-secondary); margin: -0.5rem 0 1.5rem; max-width: 68ch; line-height: 1.6; }
+
+  .legend { font-size: 12.5px; color: var(--text-secondary); padding: 14px 18px; background: var(--bg-card); border: 0.5px solid var(--border); border-radius: 10px; margin-bottom: 1rem; line-height: 1.6; }
+  .legend .row { display: flex; gap: 14px; padding: 6px 0; border-bottom: 0.5px solid var(--border); }
+  .legend .row:last-child { border-bottom: none; }
+  .legend .row b { width: 150px; flex-shrink: 0; color: var(--text-primary); font-weight: 600; font-family: var(--mono); font-size: 11.5px; }
+  code.tok { font-family: var(--mono); font-size: 12px; color: var(--accent); }
+
+  pre.code { background: var(--code-bg); color: var(--code-text); border-radius: 10px; padding: 16px 18px; margin: 0; overflow-x: auto; font-family: var(--mono); font-size: 12px; line-height: 1.7; }
+  pre.code code { font-family: inherit; }
+
+  .story-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 28px; }
+  .story { border: 0.5px solid var(--border); border-radius: 14px; background: var(--bg-card); padding: 24px; display: flex; flex-direction: column; gap: 14px; }
+  .story h3 { font-size: 14px; font-weight: 600; margin: 0; font-family: var(--mono); }
+  .story-preview { min-height: 64px; display: flex; align-items: center; justify-content: center; padding: 12px 0; }
+  .story-note { font-size: 11.5px; color: var(--text-muted); margin: 0; line-height: 1.5; }
+
+  .demo-grid { width: 100%; }
+  .grid-cell { background: var(--tok-surface-sunken); border: 1px solid var(--tok-border-default); border-radius: 6px; color: var(--tok-text-secondary); font-family: var(--mono); font-size: 12px; display: flex; align-items: center; justify-content: center; height: 44px; }
+
+  .placeholder-note { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-muted); border: 0.5px dashed var(--border-strong); border-radius: 6px; padding: 4px 10px; margin-top: 1.5rem; }
+
+  :root {
+  --tok-surface-sunken: #e8e8e8;
+  --tok-border-default: #d1d1d1;
+  --tok-text-secondary: #696969;
+  --tok-family-sans: 'Sora', sans-serif;
+}
+
+.grid { display: grid; }
+.grid--gap-none { gap: 0px; }
+.grid--gap-xs { gap: 8px; }
+.grid--gap-sm { gap: 12px; }
+.grid--gap-md { gap: 16px; }
+.grid--gap-lg { gap: 24px; }
+.grid--cols-2 { grid-template-columns: repeat(2, 1fr); }
+.grid--cols-3 { grid-template-columns: repeat(3, 1fr); }
+.grid--cols-4 { grid-template-columns: repeat(4, 1fr); }
+.grid--cols-6 { grid-template-columns: repeat(6, 1fr); }
+.grid--auto { grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); }
+</style>
+</head>
+<body>
+<div class="shell">
+  <nav class="side">
+    <p class="brand">hp-design</p>
+    <p class="brand-sub">Highpoint design system</p>
+    <a class="navlink" href="index.html">Overview</a>
+    <p class="nav-category">Tokens</p>
+    <a class="navlink" href="colors.html">Colors</a>
+    <a class="navlink" href="semantic-colors.html">Semantic colors</a>
+    <a class="navlink" href="typography.html">Typography</a>
+    <a class="navlink" href="layout.html">Layout</a>
+    <a class="navlink" href="icons.html">Icons</a>
+    <p class="nav-category">Components</p>
+    <a class="navlink" href="button.html">Button</a>
+    <a class="navlink" href="counter.html">Counter</a>
+    <a class="navlink" href="input.html">Input</a>
+    <a class="navlink" href="select.html">Select</a>
+    <a class="navlink" href="search.html">Search</a>
+    <a class="navlink" href="pagination.html">Pagination</a>
+    <a class="navlink" href="separator.html">Separator</a>
+    <a class="navlink" href="tabs.html">Tabs</a>
+    <a class="navlink" href="checkbox.html">Checkbox</a>
+    <a class="navlink" href="radio.html">Radio</a>
+    <a class="navlink" href="box.html">Box</a>
+    <a class="navlink" href="card.html">Card</a>
+    <a class="navlink" href="switch.html">Switch</a>
+    <a class="navlink active" href="grid.html">Grid</a>
+  </nav>
+  <main>
+    <h1>Grid</h1>
+    <p class="sub">tokens/components/grid.tokens.json · generated — the CSS below is generated from the same resolved tokens driving every preview on this page, not hand-copied. Colors are CSS custom properties, not literal hex.</p>
+
+    <div class="legend">
+      <div class="row"><b>Gap only</b><span>The only tokenized property is gap — column count/sizing is a per-use structural decision, not a design-token scale (same reasoning Box applied to not tokenizing radius).</span></div>
+      <div class="row"><b>Gap scale</b><span>none/xs/sm/md/lg — 0/8/12/16/24 — the <em>exact same</em> steps and dim aliases as <a href="box.html">Box</a>'s padding scale, reused rather than inventing a second spacing scale.</span></div>
+      <div class="row"><b>Fixed columns</b><span>Plain <code class="tok">repeat(N, 1fr)</code> — 2/3/4/6 shown, any count works the same way.</span></div>
+      <div class="row"><b>Auto-fit</b><span>Responsive without a single breakpoint token — <code class="tok">repeat(auto-fit, minmax(…, 1fr))</code>, the exact pattern this docs site's own .story-grid already uses on every page.</span></div>
+      <div class="row"><b>No states</b><span>Purely presentational — same as Box/Separator, a layout container never reacts to hover/focus/press.</span></div>
+    </div>
+
+    <h2 class="big-section">CSS</h2>
+    <pre class="code"><code>:root {
+  --tok-surface-sunken: #e8e8e8;
+  --tok-border-default: #d1d1d1;
+  --tok-text-secondary: #696969;
+  --tok-family-sans: 'Sora', sans-serif;
+}
+
+.grid { display: grid; }
+.grid--gap-none { gap: 0px; }
+.grid--gap-xs { gap: 8px; }
+.grid--gap-sm { gap: 12px; }
+.grid--gap-md { gap: 16px; }
+.grid--gap-lg { gap: 24px; }
+.grid--cols-2 { grid-template-columns: repeat(2, 1fr); }
+.grid--cols-3 { grid-template-columns: repeat(3, 1fr); }
+.grid--cols-4 { grid-template-columns: repeat(4, 1fr); }
+.grid--cols-6 { grid-template-columns: repeat(6, 1fr); }
+.grid--auto { grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); }</code></pre>
+
+    <h2 class="big-section">Fixed columns</h2>
+    <p class="section-desc">gap.xs (8px) throughout.</p>
+    <div class="story-grid">
+      
+      <div class="story">
+        <h3>2 columns</h3>
+        <div class="story-preview"><div class="grid grid--cols-2 grid--gap-xs demo-grid"><div class="grid-cell">1</div><div class="grid-cell">2</div><div class="grid-cell">3</div><div class="grid-cell">4</div></div></div>
+        <pre class="code"><code>&lt;div class="grid grid--cols-2 grid--gap-xs"&gt;
+  &lt;div&gt;…&lt;/div&gt;
+  ...
+&lt;/div&gt;</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>3 columns</h3>
+        <div class="story-preview"><div class="grid grid--cols-3 grid--gap-xs demo-grid"><div class="grid-cell">1</div><div class="grid-cell">2</div><div class="grid-cell">3</div><div class="grid-cell">4</div><div class="grid-cell">5</div><div class="grid-cell">6</div></div></div>
+        <pre class="code"><code>&lt;div class="grid grid--cols-3 grid--gap-xs"&gt;
+  &lt;div&gt;…&lt;/div&gt;
+  ...
+&lt;/div&gt;</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>4 columns</h3>
+        <div class="story-preview"><div class="grid grid--cols-4 grid--gap-xs demo-grid"><div class="grid-cell">1</div><div class="grid-cell">2</div><div class="grid-cell">3</div><div class="grid-cell">4</div><div class="grid-cell">5</div><div class="grid-cell">6</div><div class="grid-cell">7</div><div class="grid-cell">8</div></div></div>
+        <pre class="code"><code>&lt;div class="grid grid--cols-4 grid--gap-xs"&gt;
+  &lt;div&gt;…&lt;/div&gt;
+  ...
+&lt;/div&gt;</code></pre>
+        
+      </div>
+    </div>
+
+    <h2 class="big-section">Gap scale</h2>
+    <p class="section-desc">3 columns, all five gap steps.</p>
+    <div class="story-grid">
+      
+      <div class="story">
+        <h3>gap.none — 0px</h3>
+        <div class="story-preview"><div class="grid grid--cols-3 grid--gap-none demo-grid"><div class="grid-cell">1</div><div class="grid-cell">2</div><div class="grid-cell">3</div><div class="grid-cell">4</div><div class="grid-cell">5</div><div class="grid-cell">6</div></div></div>
+        <pre class="code"><code>&lt;div class="grid grid--cols-3 grid--gap-none"&gt;…&lt;/div&gt;</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>gap.xs — 8px</h3>
+        <div class="story-preview"><div class="grid grid--cols-3 grid--gap-xs demo-grid"><div class="grid-cell">1</div><div class="grid-cell">2</div><div class="grid-cell">3</div><div class="grid-cell">4</div><div class="grid-cell">5</div><div class="grid-cell">6</div></div></div>
+        <pre class="code"><code>&lt;div class="grid grid--cols-3 grid--gap-xs"&gt;…&lt;/div&gt;</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>gap.sm — 12px</h3>
+        <div class="story-preview"><div class="grid grid--cols-3 grid--gap-sm demo-grid"><div class="grid-cell">1</div><div class="grid-cell">2</div><div class="grid-cell">3</div><div class="grid-cell">4</div><div class="grid-cell">5</div><div class="grid-cell">6</div></div></div>
+        <pre class="code"><code>&lt;div class="grid grid--cols-3 grid--gap-sm"&gt;…&lt;/div&gt;</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>gap.md — 16px</h3>
+        <div class="story-preview"><div class="grid grid--cols-3 grid--gap-md demo-grid"><div class="grid-cell">1</div><div class="grid-cell">2</div><div class="grid-cell">3</div><div class="grid-cell">4</div><div class="grid-cell">5</div><div class="grid-cell">6</div></div></div>
+        <pre class="code"><code>&lt;div class="grid grid--cols-3 grid--gap-md"&gt;…&lt;/div&gt;</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>gap.lg — 24px</h3>
+        <div class="story-preview"><div class="grid grid--cols-3 grid--gap-lg demo-grid"><div class="grid-cell">1</div><div class="grid-cell">2</div><div class="grid-cell">3</div><div class="grid-cell">4</div><div class="grid-cell">5</div><div class="grid-cell">6</div></div></div>
+        <pre class="code"><code>&lt;div class="grid grid--cols-3 grid--gap-lg"&gt;…&lt;/div&gt;</code></pre>
+        
+      </div>
+    </div>
+
+    <h2 class="big-section">Auto-fit (responsive)</h2>
+    <p class="section-desc">Columns count adjusts to the container width on its own — resize the window to see it reflow, no media query needed.</p>
+    <div class="story-grid">
+      
+      <div class="story">
+        <h3>auto-fit, minmax(96px, 1fr)</h3>
+        <div class="story-preview"><div class="grid grid--auto grid--gap-xs demo-grid"><div class="grid-cell">1</div><div class="grid-cell">2</div><div class="grid-cell">3</div><div class="grid-cell">4</div><div class="grid-cell">5</div><div class="grid-cell">6</div><div class="grid-cell">7</div></div></div>
+        <pre class="code"><code>&lt;div class="grid grid--auto grid--gap-xs"&gt;
+  &lt;div&gt;…&lt;/div&gt;
+  ...
+&lt;/div&gt;</code></pre>
+        
+      </div>
+    </div>
+
+    <p class="placeholder-note">Every code sample on this page is printed from the same resolved token values driving the live previews above it — copy it directly, nothing here is hand-typed.</p>
+  </main>
+</div>
+</body>
+</html>

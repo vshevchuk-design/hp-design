@@ -20,6 +20,8 @@ export const NAV_ITEMS = {
   radio: { label: "Radio", href: "radio.html" },
   box: { label: "Box", href: "box.html" },
   card: { label: "Card", href: "card.html" },
+  switch: { label: "Switch", href: "switch.html" },
+  grid: { label: "Grid", href: "grid.html" },
 };
 
 export function renderNav(activeKey) {
@@ -48,5 +50,7 @@ export function renderNav(activeKey) {
     ${link("checkbox")}
     ${link("radio")}
     ${link("box")}
-    ${link("card")}`;
+    ${link("card")}
+    ${link("switch")}
+    ${link("grid")}`;
 }
