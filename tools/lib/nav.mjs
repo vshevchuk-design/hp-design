@@ -16,6 +16,8 @@ export const NAV_ITEMS = {
   pagination: { label: "Pagination", href: "pagination.html" },
   separator: { label: "Separator", href: "separator.html" },
   tabs: { label: "Tabs", href: "tabs.html" },
+  checkbox: { label: "Checkbox", href: "checkbox.html" },
+  radio: { label: "Radio", href: "radio.html" },
 };
 
 export function renderNav(activeKey) {
@@ -40,5 +42,7 @@ export function renderNav(activeKey) {
     ${link("search")}
     ${link("pagination")}
     ${link("separator")}
-    ${link("tabs")}`;
+    ${link("tabs")}
+    ${link("checkbox")}
+    ${link("radio")}`;
 }

@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>hp-design — Radio</title>
+<style>
+  :root {
+    --bg-page: #f7f7f5; --bg-card: #ffffff; --bg-card-hover: #fbfbfa;
+    --border: #e4e3df; --border-strong: #d2d1cb;
+    --text-primary: #0e0e10; --text-secondary: #63625c; --text-muted: #918f87;
+    --accent: #0468c4; --accent-bg: #eff6ff;
+    --code-bg: #1e1e22; --code-text: #e4e3df;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --sans: -apple-system, "Segoe UI", system-ui, sans-serif;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327;
+      --border: #313035; --border-strong: #403f45;
+      --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68;
+      --accent: #5aa4ec; --accent-bg: #16283b;
+      --code-bg: #0d0d0f; --code-text: #d7d6d2;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327;
+    --border: #313035; --border-strong: #403f45;
+    --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68;
+    --accent: #5aa4ec; --accent-bg: #16283b;
+    --code-bg: #0d0d0f; --code-text: #d7d6d2;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg-page); color: var(--text-primary); font-family: var(--sans); }
+  .shell { display: flex; min-height: 100vh; }
+  nav.side { width: 220px; flex-shrink: 0; border-right: 0.5px solid var(--border); padding: 1.5rem 1rem; position: sticky; top: 0; height: 100vh; }
+  .brand { font-size: 14px; font-weight: 600; margin: 0 0 2px 8px; }
+  .brand-sub { font-size: 11.5px; color: var(--text-muted); margin: 0 0 1.5rem 8px; }
+  .navlink { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 8px; border-radius: 7px; font-size: 13px; text-decoration: none; color: var(--text-primary); margin-bottom: 1px; }
+  .navlink:hover { background: var(--bg-card-hover); }
+  .navlink.active { background: var(--accent-bg); color: var(--accent); font-weight: 600; }
+  .nav-category { font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin: 16px 8px 6px; }
+  main { flex: 1; padding: 4rem 4rem 6rem; max-width: 1120px; }
+
+  h1 { font-size: 36px; font-weight: 700; margin: 0 0 10px; letter-spacing: -0.02em; }
+  .sub { font-size: 14px; color: var(--text-secondary); margin: 0 0 2.5rem; }
+  h2.big-section { font-size: 24px; font-weight: 700; margin: 5.5rem 0 1.5rem; letter-spacing: -0.01em; padding-top: 2.5rem; border-top: 1px solid var(--border); }
+  h2.big-section:first-of-type { margin-top: 3rem; padding-top: 0; border-top: none; }
+  .section-desc { font-size: 13.5px; color: var(--text-secondary); margin: -0.5rem 0 1.5rem; max-width: 68ch; line-height: 1.6; }
+
+  .legend { font-size: 12.5px; color: var(--text-secondary); padding: 14px 18px; background: var(--bg-card); border: 0.5px solid var(--border); border-radius: 10px; margin-bottom: 1rem; line-height: 1.6; }
+  .legend .row { display: flex; gap: 14px; padding: 6px 0; border-bottom: 0.5px solid var(--border); }
+  .legend .row:last-child { border-bottom: none; }
+  .legend .row b { width: 150px; flex-shrink: 0; color: var(--text-primary); font-weight: 600; font-family: var(--mono); font-size: 11.5px; }
+  code.tok { font-family: var(--mono); font-size: 12px; color: var(--accent); }
+
+  pre.code { background: var(--code-bg); color: var(--code-text); border-radius: 10px; padding: 16px 18px; margin: 0; overflow-x: auto; font-family: var(--mono); font-size: 12px; line-height: 1.7; }
+  pre.code code { font-family: inherit; }
+
+  .story-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 28px; }
+  .story { border: 0.5px solid var(--border); border-radius: 14px; background: var(--bg-card); padding: 24px; display: flex; flex-direction: column; gap: 14px; }
+  .story h3 { font-size: 14px; font-weight: 600; margin: 0; font-family: var(--mono); }
+  .story-preview { min-height: 64px; display: flex; align-items: center; justify-content: center; padding: 12px 0; }
+  .story-note { font-size: 11.5px; color: var(--text-muted); margin: 0; line-height: 1.5; }
+
+  .placeholder-note { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-muted); border: 0.5px dashed var(--border-strong); border-radius: 6px; padding: 4px 10px; margin-top: 1.5rem; }
+
+  :root {
+  --tok-surface-default: #ffffff;
+  --tok-surface-disabled: #e8e8e8;
+  --tok-border-default: #d1d1d1;
+  --tok-border-strong: #b4b4b4;
+  --tok-border-focus: #077fec;
+  --tok-fill-primary: #077fec;
+  --tok-fill-disabled: #e8e8e8;
+  --tok-text-default: #181818;
+  --tok-text-disabled: #b4b4b4;
+  --tok-text-secondary: #696969;
+  --tok-family-sans: 'Sora', sans-serif;
+}
+
+.radio { display: inline-flex; align-items: center; gap: 8px; font-family: var(--tok-family-sans); cursor: pointer; }
+.radio__input { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.radio__circle { box-sizing: border-box; width: 20px; height: 20px; border-radius: 999px; border: 2px solid var(--tok-border-default); background: var(--tok-surface-default); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.radio__dot { width: 8px; height: 8px; border-radius: 999px; background: transparent; }
+.radio__label { color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; }
+
+.radio:hover .radio__circle { border-color: var(--tok-border-strong); }
+.radio__input:focus-visible ~ .radio__circle { outline: 2px solid var(--tok-border-focus); outline-offset: 2px; }
+.radio__input:checked ~ .radio__circle { border-color: var(--tok-fill-primary); }
+.radio__input:checked ~ .radio__circle .radio__dot { background: var(--tok-fill-primary); }
+.radio__input:disabled ~ .radio__circle { background: var(--tok-surface-disabled); border-color: var(--tok-border-default); cursor: not-allowed; }
+.radio__input:disabled ~ .radio__label { color: var(--tok-text-disabled); }
+.radio__input:disabled:checked ~ .radio__circle .radio__dot { background: var(--tok-fill-disabled); }
+.radio:has(.radio__input:disabled) { cursor: not-allowed; }
+
+.radio-group { display: flex; flex-direction: column; gap: 8px; }
+.radio-group--vertical .radio-group__items { display: flex; flex-direction: column; gap: 12px; }
+.radio-group--horizontal .radio-group__items { display: flex; flex-direction: row; flex-wrap: wrap; gap: 20px; }
+.radio-group__label { color: var(--tok-text-default); margin: 0; font-weight: 600; font-size: 12px; line-height: 1.4; }
+.radio-group__helper { color: var(--tok-text-secondary); margin: 0; font-weight: 400; font-size: 12px; line-height: 1.4; }
+</style>
+</head>
+<body>
+<div class="shell">
+  <nav class="side">
+    <p class="brand">hp-design</p>
+    <p class="brand-sub">Highpoint design system</p>
+    <a class="navlink" href="index.html">Overview</a>
+    <p class="nav-category">Tokens</p>
+    <a class="navlink" href="colors.html">Colors</a>
+    <a class="navlink" href="semantic-colors.html">Semantic colors</a>
+    <a class="navlink" href="typography.html">Typography</a>
+    <a class="navlink" href="layout.html">Layout</a>
+    <a class="navlink" href="icons.html">Icons</a>
+    <p class="nav-category">Components</p>
+    <a class="navlink" href="button.html">Button</a>
+    <a class="navlink" href="counter.html">Counter</a>
+    <a class="navlink" href="input.html">Input</a>
+    <a class="navlink" href="select.html">Select</a>
+    <a class="navlink" href="search.html">Search</a>
+    <a class="navlink" href="pagination.html">Pagination</a>
+    <a class="navlink" href="separator.html">Separator</a>
+    <a class="navlink" href="tabs.html">Tabs</a>
+    <a class="navlink" href="checkbox.html">Checkbox</a>
+    <a class="navlink active" href="radio.html">Radio</a>
+  </nav>
+  <main>
+    <h1>Radio</h1>
+    <p class="sub">tokens/components/radio.tokens.json · generated — the CSS below is generated from the same resolved tokens driving every preview on this page, not hand-copied. Colors are CSS custom properties, not literal hex.</p>
+
+    <div class="legend">
+      <div class="row"><b>Native input</b><span>A real <code class="tok">&lt;input type="radio"&gt;</code> stays in the DOM, visually hidden (clip-rect, not display:none) — grouping via matching <code class="tok">name</code>, keyboard, forms, screen readers all work for free.</span></div>
+      <div class="row"><b>Single size</b><span>20px circle, 8px dot — no sm/base/lg grid, same rationale as <a href="checkbox.html">Checkbox</a>.</span></div>
+      <div class="row"><b>Never fully fills</b><span>Unlike Checkbox, checked only recolors the outline and shows a small inner dot — both fill.primary, the circle background stays surface.default. Plain CSS circle, not an icon; every reference checked (Radix/MUI/Ant/Material) draws it this way.</span></div>
+      <div class="row"><b>States</b><span>default / hover / focused / checked / disabled / disabled+checked. No error state — not asked for.</span></div>
+      <div class="row"><b>Groups</b><span>RadioGroup composes plain Radio items sharing one <code class="tok">name</code> under an optional heading + helper text, vertical or horizontal — no group-level error state.</span></div>
+    </div>
+
+    <h2 class="big-section">CSS</h2>
+    <pre class="code"><code>:root {
+  --tok-surface-default: #ffffff;
+  --tok-surface-disabled: #e8e8e8;
+  --tok-border-default: #d1d1d1;
+  --tok-border-strong: #b4b4b4;
+  --tok-border-focus: #077fec;
+  --tok-fill-primary: #077fec;
+  --tok-fill-disabled: #e8e8e8;
+  --tok-text-default: #181818;
+  --tok-text-disabled: #b4b4b4;
+  --tok-text-secondary: #696969;
+  --tok-family-sans: 'Sora', sans-serif;
+}
+
+.radio { display: inline-flex; align-items: center; gap: 8px; font-family: var(--tok-family-sans); cursor: pointer; }
+.radio__input { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.radio__circle { box-sizing: border-box; width: 20px; height: 20px; border-radius: 999px; border: 2px solid var(--tok-border-default); background: var(--tok-surface-default); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.radio__dot { width: 8px; height: 8px; border-radius: 999px; background: transparent; }
+.radio__label { color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; }
+
+.radio:hover .radio__circle { border-color: var(--tok-border-strong); }
+.radio__input:focus-visible ~ .radio__circle { outline: 2px solid var(--tok-border-focus); outline-offset: 2px; }
+.radio__input:checked ~ .radio__circle { border-color: var(--tok-fill-primary); }
+.radio__input:checked ~ .radio__circle .radio__dot { background: var(--tok-fill-primary); }
+.radio__input:disabled ~ .radio__circle { background: var(--tok-surface-disabled); border-color: var(--tok-border-default); cursor: not-allowed; }
+.radio__input:disabled ~ .radio__label { color: var(--tok-text-disabled); }
+.radio__input:disabled:checked ~ .radio__circle .radio__dot { background: var(--tok-fill-disabled); }
+.radio:has(.radio__input:disabled) { cursor: not-allowed; }
+
+.radio-group { display: flex; flex-direction: column; gap: 8px; }
+.radio-group--vertical .radio-group__items { display: flex; flex-direction: column; gap: 12px; }
+.radio-group--horizontal .radio-group__items { display: flex; flex-direction: row; flex-wrap: wrap; gap: 20px; }
+.radio-group__label { color: var(--tok-text-default); margin: 0; font-weight: 600; font-size: 12px; line-height: 1.4; }
+.radio-group__helper { color: var(--tok-text-secondary); margin: 0; font-weight: 400; font-size: 12px; line-height: 1.4; }</code></pre>
+
+    <h2 class="big-section">States</h2>
+    <p class="section-desc">Single size (20px). Hover/focused are forced via inline style for a static screenshot — the real rule is :hover / :focus-visible on the native input, shown in the CSS above.</p>
+    <div class="story-grid">
+      
+      <div class="story">
+        <h3>default</h3>
+        <div class="story-preview"><label class="radio">
+    <input type="radio" class="radio__input" id="r-state-0" name="state-demo-0" />
+    <span class="radio__circle"><span class="radio__dot"></span></span>
+    <span class="radio__label">Label</span>
+  </label></div>
+        <pre class="code"><code>&lt;label class="radio"&gt;
+    &lt;input type="radio" class="radio__input" id="r-state-0" name="state-demo-0" /&gt;
+    &lt;span class="radio__circle"&gt;&lt;span class="radio__dot"&gt;&lt;/span&gt;&lt;/span&gt;
+    &lt;span class="radio__label"&gt;Label&lt;/span&gt;
+  &lt;/label&gt;</code></pre>
+        <p class="story-note">Unchecked, on surface.default — not filled.</p>
+      </div>
+
+      <div class="story">
+        <h3>hover</h3>
+        <div class="story-preview"><label class="radio">
+    <input type="radio" class="radio__input" id="r-state-1" name="state-demo-1" />
+    <span class="radio__circle" style="border-color:var(--tok-border-strong)"><span class="radio__dot"></span></span>
+    <span class="radio__label">Label</span>
+  </label></div>
+        <pre class="code"><code>&lt;label class="radio"&gt;
+    &lt;input type="radio" class="radio__input" id="r-state-1" name="state-demo-1" /&gt;
+    &lt;span class="radio__circle" style="border-color:var(--tok-border-strong)"&gt;&lt;span class="radio__dot"&gt;&lt;/span&gt;&lt;/span&gt;
+    &lt;span class="radio__label"&gt;Label&lt;/span&gt;
+  &lt;/label&gt;</code></pre>
+        <p class="story-note">border.strong. Real CSS uses :hover on the label; forced here via inline style so it screenshots without a real cursor.</p>
+      </div>
+
+      <div class="story">
+        <h3>focused</h3>
+        <div class="story-preview"><label class="radio">
+    <input type="radio" class="radio__input" id="r-state-2" name="state-demo-2" />
+    <span class="radio__circle" style="outline:2px solid var(--tok-border-focus); outline-offset:2px"><span class="radio__dot"></span></span>
+    <span class="radio__label">Label</span>
+  </label></div>
+        <pre class="code"><code>&lt;label class="radio"&gt;
+    &lt;input type="radio" class="radio__input" id="r-state-2" name="state-demo-2" /&gt;
+    &lt;span class="radio__circle" style="outline:2px solid var(--tok-border-focus); outline-offset:2px"&gt;&lt;span class="radio__dot"&gt;&lt;/span&gt;&lt;/span&gt;
+    &lt;span class="radio__label"&gt;Label&lt;/span&gt;
+  &lt;/label&gt;</code></pre>
+        <p class="story-note">Additive ring (border.focus). Real CSS is :focus-visible on the input; forced here via inline style.</p>
+      </div>
+
+      <div class="story">
+        <h3>checked</h3>
+        <div class="story-preview"><label class="radio">
+    <input type="radio" class="radio__input" id="r-state-3" name="state-demo-3" checked />
+    <span class="radio__circle"><span class="radio__dot"></span></span>
+    <span class="radio__label">Label</span>
+  </label></div>
+        <pre class="code"><code>&lt;label class="radio"&gt;
+    &lt;input type="radio" class="radio__input" id="r-state-3" name="state-demo-3" checked /&gt;
+    &lt;span class="radio__circle"&gt;&lt;span class="radio__dot"&gt;&lt;/span&gt;&lt;/span&gt;
+    &lt;span class="radio__label"&gt;Label&lt;/span&gt;
+  &lt;/label&gt;</code></pre>
+        <p class="story-note">Outline and inner dot both resolve to fill.primary — the circle itself never fills, unlike Checkbox's box.</p>
+      </div>
+
+      <div class="story">
+        <h3>disabled</h3>
+        <div class="story-preview"><label class="radio">
+    <input type="radio" class="radio__input" id="r-state-4" name="state-demo-4" disabled />
+    <span class="radio__circle"><span class="radio__dot"></span></span>
+    <span class="radio__label">Label</span>
+  </label></div>
+        <pre class="code"><code>&lt;label class="radio"&gt;
+    &lt;input type="radio" class="radio__input" id="r-state-4" name="state-demo-4" disabled /&gt;
+    &lt;span class="radio__circle"&gt;&lt;span class="radio__dot"&gt;&lt;/span&gt;&lt;/span&gt;
+    &lt;span class="radio__label"&gt;Label&lt;/span&gt;
+  &lt;/label&gt;</code></pre>
+        <p class="story-note">surface.disabled, unlike default which uses surface.default.</p>
+      </div>
+
+      <div class="story">
+        <h3>disabled + checked</h3>
+        <div class="story-preview"><label class="radio">
+    <input type="radio" class="radio__input" id="r-state-5" name="state-demo-5" checked disabled />
+    <span class="radio__circle"><span class="radio__dot"></span></span>
+    <span class="radio__label">Label</span>
+  </label></div>
+        <pre class="code"><code>&lt;label class="radio"&gt;
+    &lt;input type="radio" class="radio__input" id="r-state-5" name="state-demo-5" checked disabled /&gt;
+    &lt;span class="radio__circle"&gt;&lt;span class="radio__dot"&gt;&lt;/span&gt;&lt;/span&gt;
+    &lt;span class="radio__label"&gt;Label&lt;/span&gt;
+  &lt;/label&gt;</code></pre>
+        <p class="story-note">Border stays border.default (never fill.primary) while disabled — brand blue never shows on an inert control; dot is fill.disabled.</p>
+      </div>
+    </div>
+
+    <h2 class="big-section">Groups</h2>
+    <p class="section-desc">RadioGroup — vertical (stacked) and horizontal (wrapping row) layouts, each with an optional group label and helper text. No error/validation state at the group level.</p>
+    <div class="story-grid">
+      <div class="story">
+        <h3>vertical</h3>
+        <div class="story-preview" style="justify-content:flex-start"><div class="radio-group radio-group--vertical">
+      <p class="radio-group__label">Notify me by</p>
+      <div class="radio-group__items">
+      <label class="radio">
+        <input type="radio" class="radio__input" id="r-vertical-0" name="plan-vertical" checked />
+        <span class="radio__circle"><span class="radio__dot"></span></span>
+        <span class="radio__label">Email</span>
+      </label>
+      <label class="radio">
+        <input type="radio" class="radio__input" id="r-vertical-1" name="plan-vertical" />
+        <span class="radio__circle"><span class="radio__dot"></span></span>
+        <span class="radio__label">SMS</span>
+      </label>
+      <label class="radio">
+        <input type="radio" class="radio__input" id="r-vertical-2" name="plan-vertical" />
+        <span class="radio__circle"><span class="radio__dot"></span></span>
+        <span class="radio__label">Push notifications</span>
+      </label>
+      </div>
+      <p class="radio-group__helper">Pick one channel.</p>
+    </div></div>
+      </div>
+      <div class="story">
+        <h3>horizontal</h3>
+        <div class="story-preview" style="justify-content:flex-start"><div class="radio-group radio-group--horizontal">
+      <p class="radio-group__label">Notify me by</p>
+      <div class="radio-group__items">
+      <label class="radio">
+        <input type="radio" class="radio__input" id="r-horizontal-0" name="plan-horizontal" checked />
+        <span class="radio__circle"><span class="radio__dot"></span></span>
+        <span class="radio__label">Email</span>
+      </label>
+      <label class="radio">
+        <input type="radio" class="radio__input" id="r-horizontal-1" name="plan-horizontal" />
+        <span class="radio__circle"><span class="radio__dot"></span></span>
+        <span class="radio__label">SMS</span>
+      </label>
+      <label class="radio">
+        <input type="radio" class="radio__input" id="r-horizontal-2" name="plan-horizontal" />
+        <span class="radio__circle"><span class="radio__dot"></span></span>
+        <span class="radio__label">Push notifications</span>
+      </label>
+      </div>
+      <p class="radio-group__helper">Pick one channel.</p>
+    </div></div>
+      </div>
+    </div>
+
+    <p class="placeholder-note">Every code sample on this page is printed from the same resolved token values driving the live previews above it — copy it directly, nothing here is hand-typed.</p>
+  </main>
+</div>
+</body>
+</html>

@@ -4,7 +4,7 @@ Update this file whenever component inventory or conventions change. For chronol
 
 Last updated: 2026-07-21.
 
-## Components built (8)
+## Components built (10)
 
 | Component | File | Sizes | Variants | States |
 |---|---|---|---|---|
@@ -16,6 +16,8 @@ Last updated: 2026-07-21.
 | Pagination | `pagination.tokens.json` / `pagination.html` | one size, 32px items | page-number row w/ real ellipsis-collapsing algorithm (first/last always visible, no jump-to-first/last buttons needed) + prev/next arrows; rows-per-page reuses Select's `sm` directly | default/hover/active(current page)/disabled. No hard page-count limit — `overflow-x:auto` fallback. |
 | Separator | `separator.tokens.json` / `separator.html` | one thickness, 1px | horizontal / vertical / with-label (center, 8px gaps) | **none — purely presentational, researched against Radix/shadcn/MUI/Mantine first** |
 | Tabs | `tabs.tokens.json` / `tabs.html` | sm 32 / base 40 (no lg) | segmented (pill track) · underline (bottom bar) — each ×5 content variants (same as Button minus icon-both... actually: text/icon-left/counter/icon+counter/icon-only) | default/hover/active(selected)/disabled. No hard tab-count limit. |
+| Checkbox | `checkbox.tokens.json` / `checkbox.html` | 1 size, 20px box | Native `<input>` visually hidden, custom box painted via `:checked`/`:disabled`/`:focus-visible` on the real input. Checked fills solid (fill.primary); indeterminate uses same fill, dash glyph. CheckboxGroup: vertical/horizontal, optional heading+helper, no error state. | default/hover/focused/checked/indeterminate/disabled/disabled+checked |
+| Radio | `radio.tokens.json` / `radio.html` | 1 size, 20px circle, 8px dot | Same native-input approach as Checkbox. Checked never fills the circle — only outline + dot recolor, both **fill.primary** (not the paler `border.primary` role — see note below). RadioGroup same shape as CheckboxGroup, items share one `name`. | default/hover/focused/checked/disabled/disabled+checked |
 
 Text sizing: every component except Tabs scales label font-size with control size (sm/base/lg). Tabs is flat 14px at every size, per explicit spec. Input/Select/Search value & placeholder text is always 16px regardless of size — Safari iOS auto-zoom threshold.
 
@@ -30,6 +32,8 @@ Text sizing: every component except Tabs scales label font-size with control siz
 - **No hard caps on repeating collections** (Pagination pages, Tabs count) — `overflow-x: auto` + a practical guideline in the legend, confirmed with the user as the preferred approach over a hard-coded limit.
 - Every docs page prints the *exact* generated CSS string both live and as the "copy this" code sample — one source, can't drift. Icons in printed code samples are `<!-- icon: name --></svg>` placeholder comments, not full path data.
 - Radius is `radius.default` (8px) everywhere unless there's a specific reason otherwise (e.g. Tabs' `radius.md` track with a deliberately nested `radius.default` pill).
+- **Native `<input>` for Checkbox/Radio**, visually hidden (clip-rect technique, not `display:none`) — keyboard/forms/screen readers/`:indeterminate` all work for free, only the paired `<span>` box/circle is repainted via `~` sibling selectors off `:checked`/`:disabled`/`:focus-visible` on the real input. Checkmark/dash glyphs reuse the shared Material icon set (`check.svg`/`remove.svg`), not bespoke assets.
+- **`border.primary`/`border.success`/`border.danger`/`border.warning` are pale 200-tint roles, not brand-strength** — `border.primary` (blue.200, `#b2d4fe`) is much lighter than `fill.primary` (blue.500, `#077fec`). Radio's checked state first used `border.primary` for the ring, pairing a washed-out ring with a saturated dot — looked broken, caught before shipping. Fixed to reuse `fill.primary` for both ring and dot (same pattern Checkbox's checked state already uses for bg+border). `border.danger` at Input/Select error *is* the pale tint used correctly (a hairline-weight error border, not an emphasis border) — don't assume every `border.*` role is interchangeable with its same-named `fill.*`/`icon.*` counterpart; check the resolved hex before reusing one for emphasis.
 
 ## Known non-bugs (don't "fix" these again)
 
