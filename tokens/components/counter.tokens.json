@@ -1,61 +1,61 @@
 {
   "component": {
     "counter": {
-      "$description": "Small numeric pill. Built now only for the one variant that exists yet — sitting on the right side of a filled component.button.primary (the icon-left+text+counter-right content variant). A general-purpose standalone counter/badge (for nav items, list rows, etc. on a plain surface) is deferred until a real use case for it shows up — not built speculatively.",
-      "onFill": {
-        "$description": "The one variant built so far: counter sitting on top of an already-colored fill (e.g. button.primary's fill.primary). Sizes mirror button.primary's sizes 1:1 (same sm/base/lg keys) and reuse the same iconSize dim step for height, so the pill's edges line up visually with the icon slot beside it.",
-        "radius": { "$type": "dimension", "$value": "{radius.full}" },
-        "size": {
-          "sm": {
-            "height": { "$type": "dimension", "$value": "{dim.4}" },
-            "minWidth": { "$type": "dimension", "$value": "{dim.4}" },
-            "paddingX": { "$type": "dimension", "$value": "{dim.1}" },
-            "label": {
-              "$type": "typography",
-              "$value": {
-                "fontFamily": "{family.sans}",
-                "fontWeight": "{weight.bold}",
-                "fontSize": "{size.xs}",
-                "lineHeight": "{leading.none}",
-                "letterSpacing": "{tracking.normal}"
-              }
+      "$description": "Small numeric pill sitting on top of an already-colored button fill (the icon-left+text+counter-right content variant of both button.primary and button.secondary). A general-purpose standalone counter/badge (for nav items, list rows, etc. on a plain page surface) is deferred until a real use case for it shows up — not built speculatively.",
+      "radius": { "$type": "dimension", "$value": "{radius.full}" },
+      "size": {
+        "sm": {
+          "height": { "$type": "dimension", "$value": "{dim.4}" },
+          "minWidth": { "$type": "dimension", "$value": "{dim.4}" },
+          "paddingX": { "$type": "dimension", "$value": "{dim.1}" },
+          "label": {
+            "$type": "typography",
+            "$value": {
+              "fontFamily": "{family.sans}",
+              "fontWeight": "{weight.bold}",
+              "fontSize": "{size.xs}",
+              "lineHeight": "{leading.none}",
+              "letterSpacing": "{tracking.normal}"
             }
-          },
-          "base": {
-            "height": { "$type": "dimension", "$value": "{dim.5}" },
-            "minWidth": { "$type": "dimension", "$value": "{dim.5}" },
-            "paddingX": { "$type": "dimension", "$value": "{dim.1_5}" },
-            "label": {
-              "$type": "typography",
-              "$value": {
-                "fontFamily": "{family.sans}",
-                "fontWeight": "{weight.bold}",
-                "fontSize": "{size.sm}",
-                "lineHeight": "{leading.none}",
-                "letterSpacing": "{tracking.normal}"
-              }
+          }
+        },
+        "base": {
+          "height": { "$type": "dimension", "$value": "{dim.5}" },
+          "minWidth": { "$type": "dimension", "$value": "{dim.5}" },
+          "paddingX": { "$type": "dimension", "$value": "{dim.1_5}" },
+          "label": {
+            "$type": "typography",
+            "$value": {
+              "fontFamily": "{family.sans}",
+              "fontWeight": "{weight.bold}",
+              "fontSize": "{size.sm}",
+              "lineHeight": "{leading.none}",
+              "letterSpacing": "{tracking.normal}"
             }
-          },
-          "lg": {
-            "height": { "$type": "dimension", "$value": "{dim.6}" },
-            "minWidth": { "$type": "dimension", "$value": "{dim.6}" },
-            "paddingX": { "$type": "dimension", "$value": "{dim.1_5}" },
-            "label": {
-              "$type": "typography",
-              "$value": {
-                "fontFamily": "{family.sans}",
-                "fontWeight": "{weight.bold}",
-                "fontSize": "{size.base}",
-                "lineHeight": "{leading.none}",
-                "letterSpacing": "{tracking.normal}"
-              }
+          }
+        },
+        "lg": {
+          "height": { "$type": "dimension", "$value": "{dim.6}" },
+          "minWidth": { "$type": "dimension", "$value": "{dim.6}" },
+          "paddingX": { "$type": "dimension", "$value": "{dim.1_5}" },
+          "label": {
+            "$type": "typography",
+            "$value": {
+              "fontFamily": "{family.sans}",
+              "fontWeight": "{weight.bold}",
+              "fontSize": "{size.base}",
+              "lineHeight": "{leading.none}",
+              "letterSpacing": "{tracking.normal}"
             }
-          },
-          "$description": "Not a text-style.* alias — every existing bold text-style (label-sm/base) bakes in uppercase + wide tracking for all-caps words, wrong for digits. Composed directly from typography primitives instead, same as text-style.* itself is composed. leading.none (1) rather than normal/tight — a single-line numeric pill centers better with no extra line-box air."
-          },
+          }
+        },
+        "$description": "Shared by every surface variant below — sizing doesn't depend on which button it sits on, only sm/base/lg does. Not a text-style.* alias — every existing bold text-style (label-sm/base) bakes in uppercase + wide tracking for all-caps words, wrong for digits. Composed directly from typography primitives instead. leading.none (1) rather than normal/tight — a single-line numeric pill centers better with no extra line-box air."
+      },
+      "onPrimary": {
+        "$description": "For use on top of fill.primary (button.primary's blue fill).",
         "state": {
           "inactive": {
-            "$description": "Seen/zero count — reads as quiet, close to the button's own fill so it doesn't compete for attention. Deliberately NOT the same color as fill.primaryHover, so it stays visible instead of disappearing when the parent button is hovered.",
+            "$description": "Seen/zero count — reads as quiet, close to the button's own fill so it doesn't compete for attention. Deliberately fill.primaryActive, NOT fill.primaryHover, so it stays visible instead of disappearing when the parent button is hovered.",
             "bg": { "$type": "color", "$value": "{fill.primaryActive}" },
             "label": { "$type": "color", "$value": "{text.onFill}" }
           },
@@ -63,6 +63,21 @@
             "$description": "Has a new/meaningful count — inverted to white so it pops off the button's blue fill instead of blending into it.",
             "bg": { "$type": "color", "$value": "{color.white}" },
             "label": { "$type": "color", "$value": "{text.primary}" }
+          }
+        }
+      },
+      "onNeutral": {
+        "$description": "For use on top of fill.neutral (button.secondary's gray fill). Cannot reuse onPrimary's colors: fill.neutral is nearly white already, so a white 'active' pill would barely show, and fill.primaryActive's dark navy 'inactive' pill reads as loud/attention-grabbing rather than quiet against a light gray button — the opposite of onPrimary's effect on a blue button.",
+        "state": {
+          "inactive": {
+            "$description": "Mirrors onPrimary's logic (one step past the button's own hover shade, so it survives hover without disappearing), but in the gray family: fill.neutralActive, not fill.neutralHover. Dark label — the gray family's light steps need dark text, not white.",
+            "bg": { "$type": "color", "$value": "{fill.neutralActive}" },
+            "label": { "$type": "color", "$value": "{text.default}" }
+          },
+          "active": {
+            "$description": "Inverts to the brand blue (fill.primary), not white — gray.100 is already near-white, so a white pill would have almost no contrast against it. Blue pops against gray the same way white pops against blue on onPrimary.",
+            "bg": { "$type": "color", "$value": "{fill.primary}" },
+            "label": { "$type": "color", "$value": "{text.onFill}" }
           }
         }
       }

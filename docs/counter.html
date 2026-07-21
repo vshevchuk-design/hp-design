@@ -71,11 +71,14 @@
   .placeholder-note { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-muted); border: 0.5px dashed var(--border-strong); border-radius: 6px; padding: 4px 10px; margin-top: 1.5rem; }
 
   :root {
-  --fill-primary-active: #01519c;
-  --text-on-fill: #ffffff;
-  --color-white: #ffffff;
-  --text-primary: #0468c4;
-  --family-sans: 'Sora', sans-serif;
+  --tok-fill-primary-active: #01519c;
+  --tok-text-on-fill: #ffffff;
+  --tok-color-white: #ffffff;
+  --tok-text-primary: #0468c4;
+  --tok-fill-neutral-active: #b4b4b4;
+  --tok-text-default: #181818;
+  --tok-fill-primary: #077fec;
+  --tok-family-sans: 'Sora', sans-serif;
 }
 
 .counter {
@@ -83,7 +86,7 @@
   align-items: center;
   justify-content: center;
   font-variant-numeric: tabular-nums;
-  font-family: var(--family-sans);
+  font-family: var(--tok-family-sans);
   font-weight: 700;
   border-radius: 999px;
 }
@@ -91,8 +94,11 @@
 .counter--base { height: 20px; min-width: 20px; padding: 0 6px; font-size: 12px; line-height: 1; }
 .counter--lg { height: 24px; min-width: 24px; padding: 0 6px; font-size: 14px; line-height: 1; }
 
-.counter--inactive { background: var(--fill-primary-active); color: var(--text-on-fill); }
-.counter--active { background: var(--color-white); color: var(--text-primary); }
+.counter--onPrimary.counter--inactive { background: var(--tok-fill-primary-active); color: var(--tok-text-on-fill); }
+.counter--onPrimary.counter--active { background: var(--tok-color-white); color: var(--tok-text-primary); }
+
+.counter--onNeutral.counter--inactive { background: var(--tok-fill-neutral-active); color: var(--tok-text-default); }
+.counter--onNeutral.counter--active { background: var(--tok-fill-primary); color: var(--tok-text-on-fill); }
 </style>
 </head>
 <body>
@@ -110,26 +116,33 @@
     <p class="nav-category">Components</p>
     <a class="navlink" href="button.html">Button</a>
     <a class="navlink active" href="counter.html">Counter</a>
+    <a class="navlink" href="input.html">Input</a>
+    <a class="navlink" href="select.html">Select</a>
+    <a class="navlink" href="search.html">Search</a>
+    <a class="navlink" href="pagination.html">Pagination</a>
   </nav>
   <main>
     <h1>Counter</h1>
-    <p class="sub">tokens/components/counter.tokens.json · onFill variant · generated — the CSS below is generated from the same resolved tokens driving every preview on this page, not hand-copied. Colors are CSS custom properties (<code class="tok">var(--fill-primary-active)</code> etc.), not literal hex.</p>
+    <p class="sub">tokens/components/counter.tokens.json · onPrimary + onNeutral variants · generated — the CSS below is generated from the same resolved tokens driving every preview on this page, not hand-copied. Colors are CSS custom properties, not literal hex.</p>
 
     <div class="legend">
-      <div class="row"><b>Scope</b><span>Only the on-fill variant exists so far — for <a href="button.html">button.primary</a>'s icon+label+counter-right content variant. A standalone counter for plain surfaces (nav badges, list rows) is deferred until a real use case needs it.</span></div>
-      <div class="row"><b>Sizing</b><span>Mirrors button.primary's sm/base/lg 1:1 — height = the same dim step as that size's iconSize (16/20/24px), so the pill lines up with the icon beside it.</span></div>
-      <div class="row"><b>Inactive</b><span>fill.primaryActive bg + text.onFill label — deliberately not fill.primaryHover, so it doesn't visually disappear when the parent button is hovered.</span></div>
-      <div class="row"><b>Active</b><span>Inverted to white bg + text.primary label, so a new/meaningful count pops off the button instead of blending in.</span></div>
+      <div class="row"><b>Scope</b><span>Two surface variants exist so far — one per <a href="button.html">button</a> variant's fill. A standalone counter for plain page surfaces (nav badges, list rows) is deferred until a real use case needs it.</span></div>
+      <div class="row"><b>Sizing</b><span>Shared by both surfaces — mirrors button's sm/base/lg 1:1, height = the same dim step as that size's iconSize (16/20/24px), so the pill lines up with the icon beside it.</span></div>
+      <div class="row"><b>On Primary</b><span>inactive → fill.primaryActive bg + text.onFill label. active → white bg + text.primary label. Both chosen to pop or blend against a saturated blue fill.</span></div>
+      <div class="row"><b>On Neutral</b><span>inactive → fill.neutralActive bg + text.default label. active → fill.primary bg + text.onFill label. Neither of onPrimary's colors work here — gray.100 is too pale for a white "active" pill to show, and the dark navy "inactive" reads as loud rather than quiet against gray.</span></div>
     </div>
 
     <h2 class="big-section">CSS</h2>
-    <p class="section-desc">One base <code class="tok">.counter</code> class, a <code class="tok">--sm/--base/--lg</code> size modifier, and an <code class="tok">--inactive/--active</code> state modifier.</p>
+    <p class="section-desc">One base <code class="tok">.counter</code> class, a shared <code class="tok">--sm/--base/--lg</code> size modifier, and <code class="tok">--onPrimary/--onNeutral</code> combined with <code class="tok">--inactive/--active</code> for color.</p>
     <pre class="code"><code>:root {
-  --fill-primary-active: #01519c;
-  --text-on-fill: #ffffff;
-  --color-white: #ffffff;
-  --text-primary: #0468c4;
-  --family-sans: 'Sora', sans-serif;
+  --tok-fill-primary-active: #01519c;
+  --tok-text-on-fill: #ffffff;
+  --tok-color-white: #ffffff;
+  --tok-text-primary: #0468c4;
+  --tok-fill-neutral-active: #b4b4b4;
+  --tok-text-default: #181818;
+  --tok-fill-primary: #077fec;
+  --tok-family-sans: 'Sora', sans-serif;
 }
 
 .counter {
@@ -137,7 +150,7 @@
   align-items: center;
   justify-content: center;
   font-variant-numeric: tabular-nums;
-  font-family: var(--family-sans);
+  font-family: var(--tok-family-sans);
   font-weight: 700;
   border-radius: 999px;
 }
@@ -145,51 +158,74 @@
 .counter--base { height: 20px; min-width: 20px; padding: 0 6px; font-size: 12px; line-height: 1; }
 .counter--lg { height: 24px; min-width: 24px; padding: 0 6px; font-size: 14px; line-height: 1; }
 
-.counter--inactive { background: var(--fill-primary-active); color: var(--text-on-fill); }
-.counter--active { background: var(--color-white); color: var(--text-primary); }</code></pre>
+.counter--onPrimary.counter--inactive { background: var(--tok-fill-primary-active); color: var(--tok-text-on-fill); }
+.counter--onPrimary.counter--active { background: var(--tok-color-white); color: var(--tok-text-primary); }
+
+.counter--onNeutral.counter--inactive { background: var(--tok-fill-neutral-active); color: var(--tok-text-default); }
+.counter--onNeutral.counter--active { background: var(--tok-fill-primary); color: var(--tok-text-on-fill); }</code></pre>
 
     <h2 class="big-section">Sizes</h2>
-    <p class="section-desc">Gray boxes are a neutral demo container only (fixed 64×64, no rounding) — not a real button. The counter's actual background always comes from whatever it sits on in real use — see <a href="button.html">the icon+text+counter button variant</a>.</p>
+    <p class="section-desc">Shared across both surface variants — shown here at onPrimary/inactive as the reference.</p>
     <div class="story-grid">
       
       <div class="story">
         <h3>sm — 16px</h3>
-        <div class="story-preview"><div class="demo-box"><span class="counter counter--sm counter--inactive">3</span></div></div>
-        <pre class="code"><code>&lt;span class="counter counter--sm counter--inactive"&gt;3&lt;/span&gt;</code></pre>
+        <div class="story-preview"><div class="demo-box"><span class="counter counter--sm counter--onPrimary counter--inactive">3</span></div></div>
+        <pre class="code"><code>&lt;span class="counter counter--sm counter--onPrimary counter--inactive"&gt;3&lt;/span&gt;</code></pre>
         
       </div>
 
       <div class="story">
         <h3>base — 20px</h3>
-        <div class="story-preview"><div class="demo-box"><span class="counter counter--base counter--inactive">3</span></div></div>
-        <pre class="code"><code>&lt;span class="counter counter--base counter--inactive"&gt;3&lt;/span&gt;</code></pre>
+        <div class="story-preview"><div class="demo-box"><span class="counter counter--base counter--onPrimary counter--inactive">3</span></div></div>
+        <pre class="code"><code>&lt;span class="counter counter--base counter--onPrimary counter--inactive"&gt;3&lt;/span&gt;</code></pre>
         
       </div>
 
       <div class="story">
         <h3>lg — 24px</h3>
-        <div class="story-preview"><div class="demo-box"><span class="counter counter--lg counter--inactive">3</span></div></div>
-        <pre class="code"><code>&lt;span class="counter counter--lg counter--inactive"&gt;3&lt;/span&gt;</code></pre>
+        <div class="story-preview"><div class="demo-box"><span class="counter counter--lg counter--onPrimary counter--inactive">3</span></div></div>
+        <pre class="code"><code>&lt;span class="counter counter--lg counter--onPrimary counter--inactive"&gt;3&lt;/span&gt;</code></pre>
         
       </div>
     </div>
 
-    <h2 class="big-section">States</h2>
-    <p class="section-desc">Base size.</p>
+    
+    <h2 class="big-section">On Primary</h2>
+    <p class="section-desc">For use on <code class="tok">button.primary</code>'s fill. Gray boxes are a neutral demo container only (fixed 64×64, no rounding) — not the real button background; see <a href="button.html">the icon+text+counter button variant</a> for how it actually looks in context.</p>
     <div class="story-grid">
       
       <div class="story">
         <h3>inactive</h3>
-        <div class="story-preview"><div class="demo-box"><span class="counter counter--base counter--inactive">3</span></div></div>
-        <pre class="code"><code>&lt;span class="counter counter--base counter--inactive"&gt;3&lt;/span&gt;</code></pre>
-        <p class="story-note">Seen/zero count — close to the button's own fill so it reads as quiet.</p>
+        <div class="story-preview"><div class="demo-box"><span class="counter counter--base counter--onPrimary counter--inactive">3</span></div></div>
+        <pre class="code"><code>&lt;span class="counter counter--base counter--onPrimary counter--inactive"&gt;3&lt;/span&gt;</code></pre>
+        <p class="story-note">Seen/zero count — close to the button's own blue fill so it reads as quiet.</p>
       </div>
-
+      
       <div class="story">
         <h3>active</h3>
-        <div class="story-preview"><div class="demo-box"><span class="counter counter--base counter--active">3</span></div></div>
-        <pre class="code"><code>&lt;span class="counter counter--base counter--active"&gt;3&lt;/span&gt;</code></pre>
-        <p class="story-note">Has a new/meaningful count — inverted to white so it pops off the fill.</p>
+        <div class="story-preview"><div class="demo-box"><span class="counter counter--base counter--onPrimary counter--active">3</span></div></div>
+        <pre class="code"><code>&lt;span class="counter counter--base counter--onPrimary counter--active"&gt;3&lt;/span&gt;</code></pre>
+        <p class="story-note">Has a new/meaningful count — inverted to white so it pops off the blue fill.</p>
+      </div>
+    </div>
+    
+    <h2 class="big-section">On Neutral</h2>
+    <p class="section-desc">For use on <code class="tok">button.secondary</code>'s fill. Gray boxes are a neutral demo container only (fixed 64×64, no rounding) — not the real button background; see <a href="button.html">the icon+text+counter button variant</a> for how it actually looks in context.</p>
+    <div class="story-grid">
+      
+      <div class="story">
+        <h3>inactive</h3>
+        <div class="story-preview"><div class="demo-box"><span class="counter counter--base counter--onNeutral counter--inactive">3</span></div></div>
+        <pre class="code"><code>&lt;span class="counter counter--base counter--onNeutral counter--inactive"&gt;3&lt;/span&gt;</code></pre>
+        <p class="story-note">Mirrors onPrimary's logic in the gray family — one step past the button's own hover shade, dark label since the gray steps here are light.</p>
+      </div>
+      
+      <div class="story">
+        <h3>active</h3>
+        <div class="story-preview"><div class="demo-box"><span class="counter counter--base counter--onNeutral counter--active">3</span></div></div>
+        <pre class="code"><code>&lt;span class="counter counter--base counter--onNeutral counter--active"&gt;3&lt;/span&gt;</code></pre>
+        <p class="story-note">Inverts to brand blue, not white — gray.100 is already near-white, so a white pill would barely show against it.</p>
       </div>
     </div>
 

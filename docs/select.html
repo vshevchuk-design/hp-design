@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>hp-design — Select</title>
+<style>
+  :root {
+    --bg-page: #f7f7f5; --bg-card: #ffffff; --bg-card-hover: #fbfbfa;
+    --border: #e4e3df; --border-strong: #d2d1cb;
+    --text-primary: #0e0e10; --text-secondary: #63625c; --text-muted: #918f87;
+    --accent: #0468c4; --accent-bg: #eff6ff;
+    --code-bg: #1e1e22; --code-text: #e4e3df;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --sans: -apple-system, "Segoe UI", system-ui, sans-serif;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327;
+      --border: #313035; --border-strong: #403f45;
+      --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68;
+      --accent: #5aa4ec; --accent-bg: #16283b;
+      --code-bg: #0d0d0f; --code-text: #d7d6d2;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327;
+    --border: #313035; --border-strong: #403f45;
+    --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68;
+    --accent: #5aa4ec; --accent-bg: #16283b;
+    --code-bg: #0d0d0f; --code-text: #d7d6d2;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg-page); color: var(--text-primary); font-family: var(--sans); }
+  .shell { display: flex; min-height: 100vh; }
+  nav.side { width: 220px; flex-shrink: 0; border-right: 0.5px solid var(--border); padding: 1.5rem 1rem; position: sticky; top: 0; height: 100vh; }
+  .brand { font-size: 14px; font-weight: 600; margin: 0 0 2px 8px; }
+  .brand-sub { font-size: 11.5px; color: var(--text-muted); margin: 0 0 1.5rem 8px; }
+  .navlink { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 8px; border-radius: 7px; font-size: 13px; text-decoration: none; color: var(--text-primary); margin-bottom: 1px; }
+  .navlink:hover { background: var(--bg-card-hover); }
+  .navlink.active { background: var(--accent-bg); color: var(--accent); font-weight: 600; }
+  .nav-category { font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin: 16px 8px 6px; }
+  main { flex: 1; padding: 4rem 4rem 6rem; max-width: 1120px; }
+
+  h1 { font-size: 36px; font-weight: 700; margin: 0 0 10px; letter-spacing: -0.02em; }
+  .sub { font-size: 14px; color: var(--text-secondary); margin: 0 0 2.5rem; }
+  h2.big-section { font-size: 24px; font-weight: 700; margin: 5.5rem 0 1.5rem; letter-spacing: -0.01em; padding-top: 2.5rem; border-top: 1px solid var(--border); }
+  h2.big-section:first-of-type { margin-top: 3rem; padding-top: 0; border-top: none; }
+  .section-desc { font-size: 13.5px; color: var(--text-secondary); margin: -0.5rem 0 1.5rem; max-width: 68ch; line-height: 1.6; }
+
+  .legend { font-size: 12.5px; color: var(--text-secondary); padding: 14px 18px; background: var(--bg-card); border: 0.5px solid var(--border); border-radius: 10px; margin-bottom: 1rem; line-height: 1.6; }
+  .legend .row { display: flex; gap: 14px; padding: 6px 0; border-bottom: 0.5px solid var(--border); }
+  .legend .row:last-child { border-bottom: none; }
+  .legend .row b { width: 150px; flex-shrink: 0; color: var(--text-primary); font-weight: 600; font-family: var(--mono); font-size: 11.5px; }
+  code.tok { font-family: var(--mono); font-size: 12px; color: var(--accent); }
+
+  pre.code { background: var(--code-bg); color: var(--code-text); border-radius: 10px; padding: 16px 18px; margin: 0; overflow-x: auto; font-family: var(--mono); font-size: 12px; line-height: 1.7; }
+  pre.code code { font-family: inherit; }
+
+  .story-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 28px; }
+  .story { border: 0.5px solid var(--border); border-radius: 14px; background: var(--bg-card); padding: 24px; display: flex; flex-direction: column; gap: 14px; }
+  .story h3 { font-size: 14px; font-weight: 600; margin: 0; font-family: var(--mono); }
+  .story-preview { min-height: 64px; display: flex; align-items: center; justify-content: center; padding: 12px 0; }
+  .story-preview .select { width: 100%; max-width: 260px; }
+  .story-note { font-size: 11.5px; color: var(--text-muted); margin: 0; line-height: 1.5; }
+
+  .placeholder-note { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-muted); border: 0.5px dashed var(--border-strong); border-radius: 6px; padding: 4px 10px; margin-top: 1.5rem; }
+
+  :root {
+  --tok-surface-sunken: #e8e8e8;
+  --tok-surface-disabled: #e8e8e8;
+  --tok-border-default: #d1d1d1;
+  --tok-border-strong: #b4b4b4;
+  --tok-border-focus: #077fec;
+  --tok-border-danger: #febebd;
+  --tok-text-muted: #808080;
+  --tok-text-default: #181818;
+  --tok-text-disabled: #b4b4b4;
+  --tok-text-primary: #0468c4;
+  --tok-icon-default: #525252;
+  --tok-icon-disabled: #b4b4b4;
+  --tok-family-sans: 'Sora', sans-serif;
+}
+
+.select {
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  background: var(--tok-surface-sunken);
+  border: 1px solid var(--tok-border-default);
+  border-radius: 8px;
+  font-family: var(--tok-family-sans);
+  cursor: pointer;
+}
+.select__icon { flex-shrink: 0; color: var(--tok-icon-default); }
+.select__chevron { flex-shrink: 0; margin-left: auto; color: var(--tok-icon-default); }
+.select__placeholder { color: var(--tok-text-muted); }
+.select__value { color: var(--tok-text-default); }
+.select__stack { display: flex; flex-direction: column; justify-content: center; flex: 1; min-width: 0; }
+.select__label { color: var(--tok-text-muted); }
+
+.select--sm { height: 32px; padding: 0 8px; gap: 8px; }
+.select--sm .select__icon, .select--sm .select__chevron { width: 16px; height: 16px; }
+.select--sm .select__placeholder, .select--sm .select__value { font-weight: 400; font-size: 16px; line-height: 1.2; }
+
+.select--base { height: 40px; padding: 0 12px; gap: 8px; }
+.select--base .select__icon, .select--base .select__chevron { width: 20px; height: 20px; }
+.select--base .select__placeholder, .select--base .select__value { font-weight: 400; font-size: 16px; line-height: 1.2; }
+.select--base .select__stack { gap: 0px; }
+.select--base .select__label { font-weight: 400; font-size: 12px; line-height: 1.2; }
+
+.select--lg { height: 48px; padding: 0 16px; gap: 8px; }
+.select--lg .select__icon, .select--lg .select__chevron { width: 24px; height: 24px; }
+.select--lg .select__placeholder, .select--lg .select__value { font-weight: 400; font-size: 16px; line-height: 1.2; }
+.select--lg .select__stack { gap: 4px; }
+.select--lg .select__label { font-weight: 400; font-size: 12px; line-height: 1.2; }
+
+.select:not(.select--disabled):hover, .select--hover { border-color: var(--tok-border-strong); }
+.select--focus { border-color: var(--tok-border-focus); }
+.select--focus .select__label { color: var(--tok-text-primary); }
+.select--disabled { background: var(--tok-surface-disabled); cursor: not-allowed; }
+.select--disabled .select__placeholder, .select--disabled .select__value, .select--disabled .select__label { color: var(--tok-text-disabled); }
+.select--disabled .select__icon, .select--disabled .select__chevron { color: var(--tok-icon-disabled); }
+.select--error { border-color: var(--tok-border-danger); }
+</style>
+</head>
+<body>
+<div class="shell">
+  <nav class="side">
+    <p class="brand">hp-design</p>
+    <p class="brand-sub">Highpoint design system</p>
+    <a class="navlink" href="index.html">Overview</a>
+    <p class="nav-category">Tokens</p>
+    <a class="navlink" href="colors.html">Colors</a>
+    <a class="navlink" href="semantic-colors.html">Semantic colors</a>
+    <a class="navlink" href="typography.html">Typography</a>
+    <a class="navlink" href="layout.html">Layout</a>
+    <a class="navlink" href="icons.html">Icons</a>
+    <p class="nav-category">Components</p>
+    <a class="navlink" href="button.html">Button</a>
+    <a class="navlink" href="counter.html">Counter</a>
+    <a class="navlink" href="input.html">Input</a>
+    <a class="navlink active" href="select.html">Select</a>
+    <a class="navlink" href="search.html">Search</a>
+    <a class="navlink" href="pagination.html">Pagination</a>
+  </nav>
+  <main>
+    <h1>Select</h1>
+    <p class="sub">tokens/components/select.tokens.json · generated — the CSS below is generated from the same resolved tokens driving every preview on this page, not hand-copied. Colors are CSS custom properties, not literal hex. Documents the closed trigger only — the open menu/listbox isn't built yet.</p>
+
+    <div class="legend">
+      <div class="row"><b>Fill + border</b><span>Same as <a href="input.html">Input</a> — surface.sunken bg + border.default hairline.</span></div>
+      <div class="row"><b>Sizes</b><span>Identical grid to Input: sm 32px (no floating label) / base 40px / lg 48px, 16px value text throughout.</span></div>
+      <div class="row"><b>Chevron</b><span>Always present, right-aligned (margin-left: auto pushes it to the far edge regardless of value length) — unlike the optional icon-left, this isn't a content variant, every select has one.</span></div>
+      <div class="row"><b>Floating label</b><span>Same mechanics as Input — see <a href="input.html">input.html</a> for the full reasoning.</span></div>
+      <div class="row"><b>States</b><span>Same set as Input: default / hover / focus / populated / disabled / error.</span></div>
+    </div>
+
+    <h2 class="big-section">CSS</h2>
+    <p class="section-desc">Same structure as Input's stylesheet, plus <code class="tok">.select__chevron</code> — always rendered, pushed to the trailing edge.</p>
+    <pre class="code"><code>:root {
+  --tok-surface-sunken: #e8e8e8;
+  --tok-surface-disabled: #e8e8e8;
+  --tok-border-default: #d1d1d1;
+  --tok-border-strong: #b4b4b4;
+  --tok-border-focus: #077fec;
+  --tok-border-danger: #febebd;
+  --tok-text-muted: #808080;
+  --tok-text-default: #181818;
+  --tok-text-disabled: #b4b4b4;
+  --tok-text-primary: #0468c4;
+  --tok-icon-default: #525252;
+  --tok-icon-disabled: #b4b4b4;
+  --tok-family-sans: 'Sora', sans-serif;
+}
+
+.select {
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  background: var(--tok-surface-sunken);
+  border: 1px solid var(--tok-border-default);
+  border-radius: 8px;
+  font-family: var(--tok-family-sans);
+  cursor: pointer;
+}
+.select__icon { flex-shrink: 0; color: var(--tok-icon-default); }
+.select__chevron { flex-shrink: 0; margin-left: auto; color: var(--tok-icon-default); }
+.select__placeholder { color: var(--tok-text-muted); }
+.select__value { color: var(--tok-text-default); }
+.select__stack { display: flex; flex-direction: column; justify-content: center; flex: 1; min-width: 0; }
+.select__label { color: var(--tok-text-muted); }
+
+.select--sm { height: 32px; padding: 0 8px; gap: 8px; }
+.select--sm .select__icon, .select--sm .select__chevron { width: 16px; height: 16px; }
+.select--sm .select__placeholder, .select--sm .select__value { font-weight: 400; font-size: 16px; line-height: 1.2; }
+
+.select--base { height: 40px; padding: 0 12px; gap: 8px; }
+.select--base .select__icon, .select--base .select__chevron { width: 20px; height: 20px; }
+.select--base .select__placeholder, .select--base .select__value { font-weight: 400; font-size: 16px; line-height: 1.2; }
+.select--base .select__stack { gap: 0px; }
+.select--base .select__label { font-weight: 400; font-size: 12px; line-height: 1.2; }
+
+.select--lg { height: 48px; padding: 0 16px; gap: 8px; }
+.select--lg .select__icon, .select--lg .select__chevron { width: 24px; height: 24px; }
+.select--lg .select__placeholder, .select--lg .select__value { font-weight: 400; font-size: 16px; line-height: 1.2; }
+.select--lg .select__stack { gap: 4px; }
+.select--lg .select__label { font-weight: 400; font-size: 12px; line-height: 1.2; }
+
+.select:not(.select--disabled):hover, .select--hover { border-color: var(--tok-border-strong); }
+.select--focus { border-color: var(--tok-border-focus); }
+.select--focus .select__label { color: var(--tok-text-primary); }
+.select--disabled { background: var(--tok-surface-disabled); cursor: not-allowed; }
+.select--disabled .select__placeholder, .select--disabled .select__value, .select--disabled .select__label { color: var(--tok-text-disabled); }
+.select--disabled .select__icon, .select--disabled .select__chevron { color: var(--tok-icon-disabled); }
+.select--error { border-color: var(--tok-border-danger); }</code></pre>
+
+    <h2 class="big-section">Sizes</h2>
+    <p class="section-desc">sm shows the resting layout. base/lg shown populated.</p>
+    <div class="story-grid">
+      
+      <div class="story">
+        <h3>sm — 32px</h3>
+        <div class="story-preview"><div class="select select--sm"><span class="select__placeholder">Country</span><svg class="select__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></div></div>
+        <pre class="code"><code>&lt;div class="select select--sm"&gt;&lt;span class="select__placeholder"&gt;Country&lt;/span&gt;&lt;svg class="select__chevron"&gt;&lt;!-- icon: expand_more --&gt;&lt;/svg&gt;&lt;/div&gt;</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>base — 40px</h3>
+        <div class="story-preview"><div class="select select--base"><div class="select__stack"><span class="select__label">Country</span><span class="select__value">Ukraine</span></div><svg class="select__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></div></div>
+        <pre class="code"><code>&lt;div class="select select--base"&gt;&lt;div class="select__stack"&gt;&lt;span class="select__label"&gt;Country&lt;/span&gt;&lt;span class="select__value"&gt;Ukraine&lt;/span&gt;&lt;/div&gt;&lt;svg class="select__chevron"&gt;&lt;!-- icon: expand_more --&gt;&lt;/svg&gt;&lt;/div&gt;</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>lg — 48px</h3>
+        <div class="story-preview"><div class="select select--lg"><div class="select__stack"><span class="select__label">Country</span><span class="select__value">Ukraine</span></div><svg class="select__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></div></div>
+        <pre class="code"><code>&lt;div class="select select--lg"&gt;&lt;div class="select__stack"&gt;&lt;span class="select__label"&gt;Country&lt;/span&gt;&lt;span class="select__value"&gt;Ukraine&lt;/span&gt;&lt;/div&gt;&lt;svg class="select__chevron"&gt;&lt;!-- icon: expand_more --&gt;&lt;/svg&gt;&lt;/div&gt;</code></pre>
+        
+      </div>
+    </div>
+
+    <h2 class="big-section">Content variants</h2>
+    <p class="section-desc">Base size, populated.</p>
+    <div class="story-grid">
+      
+      <div class="story">
+        <h3>Value only</h3>
+        <div class="story-preview"><div class="select select--base"><div class="select__stack"><span class="select__label">Country</span><span class="select__value">Ukraine</span></div><svg class="select__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></div></div>
+        <pre class="code"><code>&lt;div class="select select--base"&gt;&lt;div class="select__stack"&gt;&lt;span class="select__label"&gt;Country&lt;/span&gt;&lt;span class="select__value"&gt;Ukraine&lt;/span&gt;&lt;/div&gt;&lt;svg class="select__chevron"&gt;&lt;!-- icon: expand_more --&gt;&lt;/svg&gt;&lt;/div&gt;</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>Icon left + value</h3>
+        <div class="story-preview"><div class="select select--base"><svg class="select__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg><div class="select__stack"><span class="select__label">Country</span><span class="select__value">Ukraine</span></div><svg class="select__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></div></div>
+        <pre class="code"><code>&lt;div class="select select--base"&gt;&lt;svg class="select__icon"&gt;&lt;!-- icon: search --&gt;&lt;/svg&gt;&lt;div class="select__stack"&gt;&lt;span class="select__label"&gt;Country&lt;/span&gt;&lt;span class="select__value"&gt;Ukraine&lt;/span&gt;&lt;/div&gt;&lt;svg class="select__chevron"&gt;&lt;!-- icon: expand_more --&gt;&lt;/svg&gt;&lt;/div&gt;</code></pre>
+        
+      </div>
+    </div>
+
+    <h2 class="big-section">States</h2>
+    <p class="section-desc">Base size.</p>
+    <div class="story-grid">
+      
+      <div class="story">
+        <h3>default</h3>
+        <div class="story-preview"><div class="select select--base"><span class="select__placeholder">Country</span><svg class="select__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></div></div>
+        <pre class="code"><code>&lt;div class="select select--base"&gt;&lt;span class="select__placeholder"&gt;Country&lt;/span&gt;&lt;svg class="select__chevron"&gt;&lt;!-- icon: expand_more --&gt;&lt;/svg&gt;&lt;/div&gt;</code></pre>
+        <p class="story-note">Empty, not focused.</p>
+      </div>
+
+      <div class="story">
+        <h3>hover</h3>
+        <div class="story-preview"><div class="select select--base select--hover"><span class="select__placeholder">Country</span><svg class="select__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></div></div>
+        <pre class="code"><code>&lt;div class="select select--base select--hover"&gt;&lt;span class="select__placeholder"&gt;Country&lt;/span&gt;&lt;svg class="select__chevron"&gt;&lt;!-- icon: expand_more --&gt;&lt;/svg&gt;&lt;/div&gt;</code></pre>
+        <p class="story-note">border.strong.</p>
+      </div>
+
+      <div class="story">
+        <h3>focus</h3>
+        <div class="story-preview"><div class="select select--base select--focus"><div class="select__stack"><span class="select__label">Country</span><span class="select__value"></span></div><svg class="select__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></div></div>
+        <pre class="code"><code>&lt;div class="select select--base select--focus"&gt;&lt;div class="select__stack"&gt;&lt;span class="select__label"&gt;Country&lt;/span&gt;&lt;span class="select__value"&gt;&lt;/span&gt;&lt;/div&gt;&lt;svg class="select__chevron"&gt;&lt;!-- icon: expand_more --&gt;&lt;/svg&gt;&lt;/div&gt;</code></pre>
+        <p class="story-note">Trigger is focused (e.g. via keyboard) — label floats the same as input.state.focus.</p>
+      </div>
+
+      <div class="story">
+        <h3>populated</h3>
+        <div class="story-preview"><div class="select select--base"><div class="select__stack"><span class="select__label">Country</span><span class="select__value">Ukraine</span></div><svg class="select__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></div></div>
+        <pre class="code"><code>&lt;div class="select select--base"&gt;&lt;div class="select__stack"&gt;&lt;span class="select__label"&gt;Country&lt;/span&gt;&lt;span class="select__value"&gt;Ukraine&lt;/span&gt;&lt;/div&gt;&lt;svg class="select__chevron"&gt;&lt;!-- icon: expand_more --&gt;&lt;/svg&gt;&lt;/div&gt;</code></pre>
+        <p class="story-note">Has a chosen value, not focused — label stays floated, colors revert to default.</p>
+      </div>
+
+      <div class="story">
+        <h3>disabled</h3>
+        <div class="story-preview"><div class="select select--base select--disabled"><span class="select__placeholder">Country</span><svg class="select__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></div></div>
+        <pre class="code"><code>&lt;div class="select select--base select--disabled"&gt;&lt;span class="select__placeholder"&gt;Country&lt;/span&gt;&lt;svg class="select__chevron"&gt;&lt;!-- icon: expand_more --&gt;&lt;/svg&gt;&lt;/div&gt;</code></pre>
+        <p class="story-note">surface.disabled equals surface.sunken — same pattern as input/secondary-button.</p>
+      </div>
+
+      <div class="story">
+        <h3>error</h3>
+        <div class="story-preview"><div class="select select--base select--error"><div class="select__stack"><span class="select__label">Country</span><span class="select__value">—</span></div><svg class="select__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></div></div>
+        <pre class="code"><code>&lt;div class="select select--base select--error"&gt;&lt;div class="select__stack"&gt;&lt;span class="select__label"&gt;Country&lt;/span&gt;&lt;span class="select__value"&gt;—&lt;/span&gt;&lt;/div&gt;&lt;svg class="select__chevron"&gt;&lt;!-- icon: expand_more --&gt;&lt;/svg&gt;&lt;/div&gt;</code></pre>
+        <p class="story-note">e.g. a required field left unselected.</p>
+      </div>
+    </div>
+
+    <p class="placeholder-note">Every code sample on this page is printed from the same resolved token values driving the live previews above it — copy it directly, nothing here is hand-typed.</p>
+  </main>
+</div>
+</body>
+</html>

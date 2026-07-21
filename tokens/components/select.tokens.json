@@ -1,0 +1,85 @@
+{
+  "component": {
+    "select": {
+      "$description": "Closed dropdown trigger — same box model as component.input (sm has no floating label; base/lg float a 12px label above the 16px selected-value once a choice is made or the trigger is focused). Always shows a trailing chevron; open-menu/listbox styling is out of scope here — deferred the same way a standalone counter or z-index-aware floating UI was deferred, until a real need to actually open something exists.",
+      "radius": { "$type": "dimension", "$value": "{radius.default}" },
+      "size": {
+        "sm": {
+          "height": { "$type": "dimension", "$value": "{dim.8}" },
+          "paddingX": { "$type": "dimension", "$value": "{dim.2}" },
+          "gap": { "$type": "dimension", "$value": "{dim.2}" },
+          "iconSize": { "$type": "dimension", "$value": "{dim.4}" },
+          "value": {
+            "$type": "typography",
+            "$value": { "fontFamily": "{family.sans}", "fontWeight": "{weight.normal}", "fontSize": "{size.md}", "lineHeight": "{leading.tight}", "letterSpacing": "{tracking.normal}" }
+          }
+        },
+        "base": {
+          "height": { "$type": "dimension", "$value": "{dim.10}" },
+          "paddingX": { "$type": "dimension", "$value": "{dim.3}" },
+          "gap": { "$type": "dimension", "$value": "{dim.2}" },
+          "iconSize": { "$type": "dimension", "$value": "{dim.5}" },
+          "labelGap": { "$type": "dimension", "$value": "{dim.0}" },
+          "value": {
+            "$type": "typography",
+            "$value": { "fontFamily": "{family.sans}", "fontWeight": "{weight.normal}", "fontSize": "{size.md}", "lineHeight": "{leading.tight}", "letterSpacing": "{tracking.normal}" }
+          },
+          "label": {
+            "$type": "typography",
+            "$value": { "fontFamily": "{family.sans}", "fontWeight": "{weight.normal}", "fontSize": "{size.sm}", "lineHeight": "{leading.tight}", "letterSpacing": "{tracking.normal}" }
+          }
+        },
+        "lg": {
+          "height": { "$type": "dimension", "$value": "{dim.12}" },
+          "paddingX": { "$type": "dimension", "$value": "{dim.4}" },
+          "gap": { "$type": "dimension", "$value": "{dim.2}" },
+          "iconSize": { "$type": "dimension", "$value": "{dim.6}" },
+          "labelGap": { "$type": "dimension", "$value": "{dim.1}" },
+          "value": {
+            "$type": "typography",
+            "$value": { "fontFamily": "{family.sans}", "fontWeight": "{weight.normal}", "fontSize": "{size.md}", "lineHeight": "{leading.tight}", "letterSpacing": "{tracking.normal}" }
+          },
+          "label": {
+            "$type": "typography",
+            "$value": { "fontFamily": "{family.sans}", "fontWeight": "{weight.normal}", "fontSize": "{size.sm}", "lineHeight": "{leading.tight}", "letterSpacing": "{tracking.normal}" }
+          }
+        },
+        "$description": "Identical to component.input.size — same reasoning, see that token's own $description."
+      },
+      "state": {
+        "default": {
+          "bg": { "$type": "color", "$value": "{surface.sunken}" },
+          "border": { "$type": "color", "$value": "{border.default}" },
+          "placeholder": { "$type": "color", "$value": "{text.muted}" },
+          "value": { "$type": "color", "$value": "{text.default}" },
+          "icon": { "$type": "color", "$value": "{icon.default}" },
+          "chevron": { "$type": "color", "$value": "{icon.default}" }
+        },
+        "hover": {
+          "border": { "$type": "color", "$value": "{border.strong}" }
+        },
+        "focus": {
+          "border": { "$type": "color", "$value": "{border.focus}" },
+          "label": { "$type": "color", "$value": "{text.primary}" },
+          "$description": "Same as input.state.focus — keyboard focus on the trigger, before/without the menu necessarily being open."
+        },
+        "populated": {
+          "$description": "Has a chosen value — label stays floated, colors revert to default.",
+          "label": { "$type": "color", "$value": "{text.muted}" }
+        },
+        "disabled": {
+          "bg": { "$type": "color", "$value": "{surface.disabled}" },
+          "border": { "$type": "color", "$value": "{border.default}" },
+          "placeholder": { "$type": "color", "$value": "{text.disabled}" },
+          "value": { "$type": "color", "$value": "{text.disabled}" },
+          "icon": { "$type": "color", "$value": "{icon.disabled}" },
+          "chevron": { "$type": "color", "$value": "{icon.disabled}" },
+          "label": { "$type": "color", "$value": "{text.disabled}" }
+        },
+        "error": {
+          "border": { "$type": "color", "$value": "{border.danger}" }
+        }
+      }
+    }
+  }
+}

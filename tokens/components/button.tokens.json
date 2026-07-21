@@ -56,6 +56,63 @@
             "icon": { "$type": "color", "$value": "{icon.disabled}" }
           }
         }
+      },
+      "secondary": {
+        "$description": "Gray-filled button, one step below primary in the emphasis ladder — not an outline, per fill.neutral's own description ('Secondary/neutral button fill'), written when the semantic color layer was built, before this component existed. Same size/content-variant grid as primary; size values here are byte-for-byte identical to primary.size (verified at build time) — duplicated only because DTCG can't alias a whole sub-tree, just leaf values.",
+        "radius": { "$type": "dimension", "$value": "{radius.default}" },
+        "size": {
+          "sm": {
+            "$description": "32px. Icon-only variant is 32×32 (square = height, no paddingX applied).",
+            "height": { "$type": "dimension", "$value": "{dim.8}" },
+            "paddingX": { "$type": "dimension", "$value": "{dim.2}" },
+            "gap": { "$type": "dimension", "$value": "{dim.2}" },
+            "iconSize": { "$type": "dimension", "$value": "{dim.4}" },
+            "label": { "$type": "typography", "$value": "{text-style.heading-sm}" }
+          },
+          "base": {
+            "$description": "40px, the default size. Icon-only variant is 40×40.",
+            "height": { "$type": "dimension", "$value": "{dim.10}" },
+            "paddingX": { "$type": "dimension", "$value": "{dim.3}" },
+            "gap": { "$type": "dimension", "$value": "{dim.2}" },
+            "iconSize": { "$type": "dimension", "$value": "{dim.5}" },
+            "label": { "$type": "typography", "$value": "{text-style.heading-base}" }
+          },
+          "lg": {
+            "$description": "48px. Icon-only variant is 48×48.",
+            "height": { "$type": "dimension", "$value": "{dim.12}" },
+            "paddingX": { "$type": "dimension", "$value": "{dim.4}" },
+            "gap": { "$type": "dimension", "$value": "{dim.2}" },
+            "iconSize": { "$type": "dimension", "$value": "{dim.6}" },
+            "label": { "$type": "typography", "$value": "{text-style.heading-md}" }
+          },
+          "$description": "Identical to primary.size — see that block's own $description for the scaling rule."
+        },
+        "state": {
+          "default": {
+            "fill": { "$type": "color", "$value": "{fill.neutral}" },
+            "label": { "$type": "color", "$value": "{text.default}" },
+            "icon": { "$type": "color", "$value": "{icon.default}" },
+            "$description": "text.default (gray.950) and icon.default (gray.700) are two different values, unlike primary's label/icon (both white) — so this variant needs its icon colored explicitly rather than inheriting the label's color via currentColor."
+          },
+          "hover": {
+            "fill": { "$type": "color", "$value": "{fill.neutralHover}" }
+          },
+          "pressed": {
+            "fill": { "$type": "color", "$value": "{fill.neutralActive}" }
+          },
+          "focused": {
+            "ringColor": { "$type": "color", "$value": "{border.focus}" },
+            "ringWidth": { "$type": "dimension", "$value": "{dim.0_5}" },
+            "ringOffset": { "$type": "dimension", "$value": "{dim.0_5}" },
+            "$description": "Same ring treatment as primary — border.focus is always blue regardless of the button's own role, per that token's own rule."
+          },
+          "disabled": {
+            "fill": { "$type": "color", "$value": "{fill.disabled}" },
+            "label": { "$type": "color", "$value": "{text.disabled}" },
+            "icon": { "$type": "color", "$value": "{icon.disabled}" },
+            "$description": "fill.disabled and fill.neutral are both {color.gray.100} — same value. Disabled secondary buttons don't get a background change, only the label/icon fading to text.disabled/icon.disabled; a deliberate consequence of reusing the universal fill.disabled token rather than a secondary-specific one, not a bug."
+          }
+        }
       }
     }
   }

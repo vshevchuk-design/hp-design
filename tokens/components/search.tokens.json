@@ -1,0 +1,62 @@
+{
+  "component": {
+    "search": {
+      "$description": "Single-line search field. No floating label at any size, unlike input/select — the placeholder simply vanishes the instant the field is focused, at sm/base/lg alike. Always has a leading search icon. A trailing clear (×) icon appears only once there's a value, to empty the field. No error state — a search box doesn't have a validation concept the way a form input/select does.",
+      "radius": { "$type": "dimension", "$value": "{radius.default}" },
+      "size": {
+        "sm": {
+          "height": { "$type": "dimension", "$value": "{dim.8}" },
+          "paddingX": { "$type": "dimension", "$value": "{dim.2}" },
+          "gap": { "$type": "dimension", "$value": "{dim.2}" },
+          "iconSize": { "$type": "dimension", "$value": "{dim.4}" }
+        },
+        "base": {
+          "height": { "$type": "dimension", "$value": "{dim.10}" },
+          "paddingX": { "$type": "dimension", "$value": "{dim.3}" },
+          "gap": { "$type": "dimension", "$value": "{dim.2}" },
+          "iconSize": { "$type": "dimension", "$value": "{dim.5}" }
+        },
+        "lg": {
+          "height": { "$type": "dimension", "$value": "{dim.12}" },
+          "paddingX": { "$type": "dimension", "$value": "{dim.4}" },
+          "gap": { "$type": "dimension", "$value": "{dim.2}" },
+          "iconSize": { "$type": "dimension", "$value": "{dim.6}" }
+        },
+        "$description": "Same grid as component.input.size, minus the label/labelGap fields — search never floats a label. value text is 16px at every size (see component-level $description) via the shared 'value' typography block below."
+      },
+      "value": {
+        "$type": "typography",
+        "$value": { "fontFamily": "{family.sans}", "fontWeight": "{weight.normal}", "fontSize": "{size.md}", "lineHeight": "{leading.tight}", "letterSpacing": "{tracking.normal}" },
+        "$description": "One shared text style for placeholder/value at every size (16px, Safari-zoom-safe) — no per-size override needed since there's no floating label to coordinate with."
+      },
+      "state": {
+        "default": {
+          "bg": { "$type": "color", "$value": "{surface.sunken}" },
+          "border": { "$type": "color", "$value": "{border.default}" },
+          "placeholder": { "$type": "color", "$value": "{text.muted}" },
+          "value": { "$type": "color", "$value": "{text.default}" },
+          "icon": { "$type": "color", "$value": "{icon.default}" }
+        },
+        "hover": {
+          "border": { "$type": "color", "$value": "{border.strong}" }
+        },
+        "focus": {
+          "border": { "$type": "color", "$value": "{border.focus}" },
+          "$description": "No label to color here (search has none) — only the border reacts."
+        },
+        "populated": {
+          "$description": "Has typed text — the clear (×) icon becomes visible. Colors otherwise match default unless also focused.",
+          "clearIcon": { "$type": "color", "$value": "{icon.default}" }
+        },
+        "disabled": {
+          "bg": { "$type": "color", "$value": "{surface.disabled}" },
+          "border": { "$type": "color", "$value": "{border.default}" },
+          "placeholder": { "$type": "color", "$value": "{text.disabled}" },
+          "value": { "$type": "color", "$value": "{text.disabled}" },
+          "icon": { "$type": "color", "$value": "{icon.disabled}" },
+          "clearIcon": { "$type": "color", "$value": "{icon.disabled}" }
+        }
+      }
+    }
+  }
+}

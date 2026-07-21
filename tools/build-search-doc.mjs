@@ -1,10 +1,11 @@
-// Regenerates docs/counter.html from tokens/components/counter.tokens.json,
+// Regenerates docs/search.html from tokens/components/search.tokens.json,
 // resolving aliases back through semantic/*.tokens.json and primitives/*.tokens.json.
-// Two surface variants — onPrimary (sits on button.primary's blue fill) and
-// onNeutral (sits on button.secondary's gray fill) — share one size/radius grid.
+// No floating label at any size (unlike input/select) — placeholder just
+// vanishes on focus. Leading search icon always present; trailing clear (×)
+// icon shown only once there's a value.
 // The generated <style> block IS the code shown in the "CSS" section below —
 // one source, so the live preview and the printed snippet can't drift apart.
-// Run: node tools/build-counter-doc.mjs
+// Run: node tools/build-search-doc.mjs
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -20,7 +21,7 @@ const radiusPrim = load("tokens/primitives/radius.tokens.json").radius;
 const typo = load("tokens/primitives/typography.tokens.json");
 const textStyle = load("tokens/primitives/text-styles.tokens.json")["text-style"];
 const semantic = load("tokens/semantic/color.tokens.json");
-const counter = load("tokens/components/counter.tokens.json").component.counter;
+const search = load("tokens/components/search.tokens.json").component.search;
 
 const registry = {
   color: colorPrim,
@@ -58,75 +59,99 @@ const resolve = (ref) => resolveToken(get(ref));
 const px = (d) => `${d.value}${d.unit}`;
 const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
-// ---- color tokens this page uses, as CSS custom properties ----
-// (`cv` = "css var" — returns var(--x); shares the exact same name-mangling
-// as the :root block below, via cssVarName, so they can't drift apart.)
-const colorPaths = ["fill.primaryActive", "text.onFill", "color.white", "text.primary", "fill.neutralActive", "text.default", "fill.primary"];
+const colorPaths = [
+  "surface.sunken", "surface.disabled", "border.default", "border.strong", "border.focus",
+  "text.muted", "text.default", "text.disabled", "icon.default", "icon.disabled",
+];
 const colorValue = Object.fromEntries(colorPaths.map((p) => [p, resolve(p)]));
 const fontSans = resolve("family.sans");
 const cv = (tokenPath) => `var(${cssVarName(tokenPath)})`;
 const rootVars = renderRootVars([...colorPaths.map((p) => [p, colorValue[p]]), ["family.sans", `'${fontSans}', sans-serif`]]);
 
-const counterRadius = px(resolve(counter.radius.$value));
+const fieldRadius = px(resolve(search.radius.$value));
+const valueType = resolveToken(search.value);
 const sizes = ["sm", "base", "lg"].map((key) => {
-  const s = counter.size[key];
-  return { key, height: resolve(s.height.$value), minWidth: resolve(s.minWidth.$value), paddingX: resolve(s.paddingX.$value), label: resolveToken(s.label) };
+  const s = search.size[key];
+  return {
+    key,
+    height: resolve(s.height.$value),
+    paddingX: resolve(s.paddingX.$value),
+    gap: resolve(s.gap.$value),
+    iconSize: resolve(s.iconSize.$value),
+  };
 });
 
-const surfaces = {
-  onPrimary: { label: "On Primary", inactiveBg: "fill.primaryActive", inactiveLabel: "text.onFill", activeBg: "color.white", activeLabel: "text.primary" },
-  onNeutral: { label: "On Neutral", inactiveBg: "fill.neutralActive", inactiveLabel: "text.default", activeBg: "fill.primary", activeLabel: "text.onFill" },
-};
-function surfaceCss(key) {
-  const s = surfaces[key];
-  return `.counter--${key}.counter--inactive { background: ${cv(s.inactiveBg)}; color: ${cv(s.inactiveLabel)}; }
-.counter--${key}.counter--active { background: ${cv(s.activeBg)}; color: ${cv(s.activeLabel)}; }`;
+const iconSearch = fs.readFileSync(path.join(root, "assets/icons/material-filled/search.svg"), "utf8").replace("<svg ", '<svg class="search__icon" ');
+const iconClose = fs.readFileSync(path.join(root, "assets/icons/material-filled/close.svg"), "utf8").replace("<svg ", '<svg class="search__clear" ');
+
+function typoCss(t) {
+  return `font-weight: ${t.fontWeight}; font-size: ${px(t.fontSize)}; line-height: ${t.lineHeight};`;
 }
 
 const css = `${rootVars}
 
-.counter {
+.search {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  font-variant-numeric: tabular-nums;
+  box-sizing: border-box;
+  background: ${cv("surface.sunken")};
+  border: 1px solid ${cv("border.default")};
+  border-radius: ${fieldRadius};
   font-family: ${cv("family.sans")};
-  font-weight: 700;
-  border-radius: ${counterRadius};
+  cursor: text;
 }
+.search__icon { flex-shrink: 0; color: ${cv("icon.default")}; }
+.search__clear { flex-shrink: 0; margin-left: auto; color: ${cv("icon.default")}; cursor: pointer; }
+.search__placeholder { color: ${cv("text.muted")}; flex: 1; }
+.search__value { color: ${cv("text.default")}; flex: 1; ${typoCss(valueType)} }
+.search__placeholder { ${typoCss(valueType)} }
+
 ${sizes
-  .map((s) => `.counter--${s.key} { height: ${px(s.height)}; min-width: ${px(s.minWidth)}; padding: 0 ${px(s.paddingX)}; font-size: ${px(s.label.fontSize)}; line-height: ${s.label.lineHeight}; }`)
-  .join("\n")}
+  .map(
+    (s) => `.search--${s.key} { height: ${px(s.height)}; padding: 0 ${px(s.paddingX)}; gap: ${px(s.gap)}; }
+.search--${s.key} .search__icon, .search--${s.key} .search__clear { width: ${px(s.iconSize)}; height: ${px(s.iconSize)}; }`
+  )
+  .join("\n\n")}
 
-${surfaceCss("onPrimary")}
+.search:not(.search--disabled):hover, .search--hover { border-color: ${cv("border.strong")}; }
+.search--focus { border-color: ${cv("border.focus")}; }
+.search--disabled { background: ${cv("surface.disabled")}; cursor: not-allowed; }
+.search--disabled .search__placeholder, .search--disabled .search__value { color: ${cv("text.disabled")}; }
+.search--disabled .search__icon, .search--disabled .search__clear { color: ${cv("icon.disabled")}; }`;
 
-${surfaceCss("onNeutral")}`;
-
-function markup(size, surface, state) {
-  return `<span class="counter counter--${size} counter--${surface} counter--${state}">3</span>`;
+function markup(size, { state = "default", value = "", live = true } = {}) {
+  const ic = live ? iconSearch : `<svg class="search__icon"><!-- icon: search --></svg>`;
+  const classes = ["search", `search--${size}`];
+  if (state !== "default" && state !== "populated") classes.push(`search--${state}`);
+  const showClear = value.length > 0;
+  const textEl = value ? `<span class="search__value">${value}</span>` : state === "focus" ? "" : `<span class="search__placeholder">Search</span>`;
+  const clear = showClear ? (live ? iconClose : `<svg class="search__clear"><!-- icon: close --></svg>`) : "";
+  return `<div class="${classes.join(" ")}">${ic}${textEl}${clear}</div>`;
 }
 
 function storyCard(title, liveHtml, codeHtml, note = "") {
   return `
       <div class="story">
         <h3>${title}</h3>
-        <div class="story-preview"><div class="demo-box">${liveHtml}</div></div>
+        <div class="story-preview">${liveHtml}</div>
         <pre class="code"><code>${esc(codeHtml)}</code></pre>
         ${note ? `<p class="story-note">${note}</p>` : ""}
       </div>`;
 }
 
-const sizeStories = sizes.map((s) => storyCard(`${s.key} — ${px(s.height)}`, markup(s.key, "onPrimary", "inactive"), markup(s.key, "onPrimary", "inactive"))).join("\n");
+function sizeStories() {
+  return sizes.map((s) => storyCard(`${s.key} — ${px(s.height)}`, markup(s.key, { value: "sneakers", live: true }), markup(s.key, { value: "sneakers", live: false }))).join("\n");
+}
 
-function surfaceSection(key) {
-  const s = surfaces[key];
-  return `
-    <h2 class="big-section">${s.label}</h2>
-    <p class="section-desc">For use on <code class="tok">${key === "onPrimary" ? "button.primary" : "button.secondary"}</code>'s fill. Gray boxes are a neutral demo container only (fixed 64×64, no rounding) — not the real button background; see <a href="button.html">the icon+text+counter button variant</a> for how it actually looks in context.</p>
-    <div class="story-grid">
-      ${storyCard("inactive", markup("base", key, "inactive"), markup("base", key, "inactive"), key === "onPrimary" ? "Seen/zero count — close to the button's own blue fill so it reads as quiet." : "Mirrors onPrimary's logic in the gray family — one step past the button's own hover shade, dark label since the gray steps here are light.")}
-      ${storyCard("active", markup("base", key, "active"), markup("base", key, "active"), key === "onPrimary" ? "Has a new/meaningful count — inverted to white so it pops off the blue fill." : "Inverts to brand blue, not white — gray.100 is already near-white, so a white pill would barely show against it.")}
-    </div>`;
+const stateDefs = [
+  { key: "default", label: "default", value: "", note: "Empty, not focused — placeholder visible." },
+  { key: "hover", label: "hover", value: "", note: "border.strong." },
+  { key: "focus", label: "focus", value: "", note: "Placeholder vanishes the instant the field is focused, at every size — no floated label to replace it with, the value area just starts empty." },
+  { key: "populated", label: "populated (with clear)", value: "sneakers", note: "Once there's a value, the clear (×) icon appears at the trailing edge — click to empty the field." },
+  { key: "disabled", label: "disabled", value: "", note: "surface.disabled equals surface.sunken — same recurring pattern as input/select/secondary-button." },
+];
+function stateStories() {
+  return stateDefs.map((s) => storyCard(s.label, markup("base", { state: s.key, value: s.value, live: true }), markup("base", { state: s.key, value: s.value, live: false }), s.note)).join("\n");
 }
 
 const html = `<!doctype html>
@@ -134,7 +159,7 @@ const html = `<!doctype html>
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>hp-design — Counter</title>
+<title>hp-design — Search</title>
 <style>
   :root {
     --bg-page: #f7f7f5; --bg-card: #ffffff; --bg-card-hover: #fbfbfa;
@@ -180,7 +205,7 @@ const html = `<!doctype html>
   .sub { font-size: 14px; color: var(--text-secondary); margin: 0 0 2.5rem; }
   h2.big-section { font-size: 24px; font-weight: 700; margin: 5.5rem 0 1.5rem; letter-spacing: -0.01em; padding-top: 2.5rem; border-top: 1px solid var(--border); }
   h2.big-section:first-of-type { margin-top: 3rem; padding-top: 0; border-top: none; }
-  .section-desc { font-size: 13.5px; color: var(--text-secondary); margin: -0.75rem 0 1.75rem; max-width: 68ch; line-height: 1.6; }
+  .section-desc { font-size: 13.5px; color: var(--text-secondary); margin: -0.5rem 0 1.5rem; max-width: 68ch; line-height: 1.6; }
 
   .legend { font-size: 12.5px; color: var(--text-secondary); padding: 14px 18px; background: var(--bg-card); border: 0.5px solid var(--border); border-radius: 10px; margin-bottom: 1rem; line-height: 1.6; }
   .legend .row { display: flex; gap: 14px; padding: 6px 0; border-bottom: 0.5px solid var(--border); }
@@ -195,9 +220,8 @@ const html = `<!doctype html>
   .story { border: 0.5px solid var(--border); border-radius: 14px; background: var(--bg-card); padding: 24px; display: flex; flex-direction: column; gap: 14px; }
   .story h3 { font-size: 14px; font-weight: 600; margin: 0; font-family: var(--mono); }
   .story-preview { min-height: 64px; display: flex; align-items: center; justify-content: center; padding: 12px 0; }
+  .story-preview .search { width: 100%; max-width: 260px; }
   .story-note { font-size: 11.5px; color: var(--text-muted); margin: 0; line-height: 1.5; }
-
-  .demo-box { display: inline-flex; align-items: center; justify-content: center; width: 64px; height: 64px; background: var(--border-strong); }
 
   .placeholder-note { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-muted); border: 0.5px dashed var(--border-strong); border-radius: 6px; padding: 4px 10px; margin-top: 1.5rem; }
 
@@ -207,31 +231,35 @@ const html = `<!doctype html>
 <body>
 <div class="shell">
   <nav class="side">
-    ${renderNav("counter")}
+    ${renderNav("search")}
   </nav>
   <main>
-    <h1>Counter</h1>
-    <p class="sub">tokens/components/counter.tokens.json · onPrimary + onNeutral variants · generated — the CSS below is generated from the same resolved tokens driving every preview on this page, not hand-copied. Colors are CSS custom properties, not literal hex.</p>
+    <h1>Search</h1>
+    <p class="sub">tokens/components/search.tokens.json · generated — the CSS below is generated from the same resolved tokens driving every preview on this page, not hand-copied. Colors are CSS custom properties, not literal hex.</p>
 
     <div class="legend">
-      <div class="row"><b>Scope</b><span>Two surface variants exist so far — one per <a href="button.html">button</a> variant's fill. A standalone counter for plain page surfaces (nav badges, list rows) is deferred until a real use case needs it.</span></div>
-      <div class="row"><b>Sizing</b><span>Shared by both surfaces — mirrors button's sm/base/lg 1:1, height = the same dim step as that size's iconSize (16/20/24px), so the pill lines up with the icon beside it.</span></div>
-      <div class="row"><b>On Primary</b><span>inactive → fill.primaryActive bg + text.onFill label. active → white bg + text.primary label. Both chosen to pop or blend against a saturated blue fill.</span></div>
-      <div class="row"><b>On Neutral</b><span>inactive → fill.neutralActive bg + text.default label. active → fill.primary bg + text.onFill label. Neither of onPrimary's colors work here — gray.100 is too pale for a white "active" pill to show, and the dark navy "inactive" reads as loud rather than quiet against gray.</span></div>
+      <div class="row"><b>Fill + border</b><span>Same as <a href="input.html">Input</a>/<a href="select.html">Select</a> — surface.sunken bg + border.default hairline.</span></div>
+      <div class="row"><b>Sizes</b><span>sm 32px / base 40px / lg 48px — same grid, but no floating label at any size. Value/placeholder is 16px throughout (Safari-zoom-safe).</span></div>
+      <div class="row"><b>No floating label</b><span>Unlike Input/Select, the placeholder just vanishes the instant the field is focused, at every size — there's no 12px label to move it into.</span></div>
+      <div class="row"><b>Clear button</b><span>The trailing × icon only renders once there's a value — click to empty the field. Not present in the default/hover/focus/disabled examples below.</span></div>
+      <div class="row"><b>States</b><span>default / hover / focus / populated / disabled — no error state; a search box has no validation concept the way a form input/select does.</span></div>
     </div>
 
     <h2 class="big-section">CSS</h2>
-    <p class="section-desc">One base <code class="tok">.counter</code> class, a shared <code class="tok">--sm/--base/--lg</code> size modifier, and <code class="tok">--onPrimary/--onNeutral</code> combined with <code class="tok">--inactive/--active</code> for color.</p>
+    <p class="section-desc">One shared value/placeholder text style (16px at every size, no per-size label) plus size modifiers and state classes.</p>
     <pre class="code"><code>${esc(css)}</code></pre>
 
     <h2 class="big-section">Sizes</h2>
-    <p class="section-desc">Shared across both surface variants — shown here at onPrimary/inactive as the reference.</p>
+    <p class="section-desc">All 3 shown populated (with the clear icon), since that's the state most likely to reveal any size-related rendering issues (icon + text + clear icon all present).</p>
     <div class="story-grid">
-      ${sizeStories}
+      ${sizeStories()}
     </div>
 
-    ${surfaceSection("onPrimary")}
-    ${surfaceSection("onNeutral")}
+    <h2 class="big-section">States</h2>
+    <p class="section-desc">Base size.</p>
+    <div class="story-grid">
+      ${stateStories()}
+    </div>
 
     <p class="placeholder-note">Every code sample on this page is printed from the same resolved token values driving the live previews above it — copy it directly, nothing here is hand-typed.</p>
   </main>
@@ -240,5 +268,5 @@ const html = `<!doctype html>
 </html>
 `;
 
-fs.writeFileSync(path.join(root, "docs/counter.html"), html);
-console.log("wrote docs/counter.html");
+fs.writeFileSync(path.join(root, "docs/search.html"), html);
+console.log("wrote docs/search.html");

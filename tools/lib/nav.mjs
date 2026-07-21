@@ -10,6 +10,10 @@ export const NAV_ITEMS = {
   icons: { label: "Icons", href: "icons.html" },
   button: { label: "Button", href: "button.html" },
   counter: { label: "Counter", href: "counter.html" },
+  input: { label: "Input", href: "input.html" },
+  select: { label: "Select", href: "select.html" },
+  search: { label: "Search", href: "search.html" },
+  pagination: { label: "Pagination", href: "pagination.html" },
 };
 
 export function renderNav(activeKey) {
@@ -28,5 +32,9 @@ export function renderNav(activeKey) {
     ${link("icons")}
     <p class="nav-category">Components</p>
     ${link("button")}
-    ${link("counter")}`;
+    ${link("counter")}
+    ${link("input")}
+    ${link("select")}
+    ${link("search")}
+    ${link("pagination")}`;
 }

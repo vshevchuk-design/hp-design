@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>hp-design — Search</title>
+<style>
+  :root {
+    --bg-page: #f7f7f5; --bg-card: #ffffff; --bg-card-hover: #fbfbfa;
+    --border: #e4e3df; --border-strong: #d2d1cb;
+    --text-primary: #0e0e10; --text-secondary: #63625c; --text-muted: #918f87;
+    --accent: #0468c4; --accent-bg: #eff6ff;
+    --code-bg: #1e1e22; --code-text: #e4e3df;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --sans: -apple-system, "Segoe UI", system-ui, sans-serif;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327;
+      --border: #313035; --border-strong: #403f45;
+      --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68;
+      --accent: #5aa4ec; --accent-bg: #16283b;
+      --code-bg: #0d0d0f; --code-text: #d7d6d2;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327;
+    --border: #313035; --border-strong: #403f45;
+    --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68;
+    --accent: #5aa4ec; --accent-bg: #16283b;
+    --code-bg: #0d0d0f; --code-text: #d7d6d2;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg-page); color: var(--text-primary); font-family: var(--sans); }
+  .shell { display: flex; min-height: 100vh; }
+  nav.side { width: 220px; flex-shrink: 0; border-right: 0.5px solid var(--border); padding: 1.5rem 1rem; position: sticky; top: 0; height: 100vh; }
+  .brand { font-size: 14px; font-weight: 600; margin: 0 0 2px 8px; }
+  .brand-sub { font-size: 11.5px; color: var(--text-muted); margin: 0 0 1.5rem 8px; }
+  .navlink { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 8px; border-radius: 7px; font-size: 13px; text-decoration: none; color: var(--text-primary); margin-bottom: 1px; }
+  .navlink:hover { background: var(--bg-card-hover); }
+  .navlink.active { background: var(--accent-bg); color: var(--accent); font-weight: 600; }
+  .nav-category { font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin: 16px 8px 6px; }
+  main { flex: 1; padding: 4rem 4rem 6rem; max-width: 1120px; }
+
+  h1 { font-size: 36px; font-weight: 700; margin: 0 0 10px; letter-spacing: -0.02em; }
+  .sub { font-size: 14px; color: var(--text-secondary); margin: 0 0 2.5rem; }
+  h2.big-section { font-size: 24px; font-weight: 700; margin: 5.5rem 0 1.5rem; letter-spacing: -0.01em; padding-top: 2.5rem; border-top: 1px solid var(--border); }
+  h2.big-section:first-of-type { margin-top: 3rem; padding-top: 0; border-top: none; }
+  .section-desc { font-size: 13.5px; color: var(--text-secondary); margin: -0.5rem 0 1.5rem; max-width: 68ch; line-height: 1.6; }
+
+  .legend { font-size: 12.5px; color: var(--text-secondary); padding: 14px 18px; background: var(--bg-card); border: 0.5px solid var(--border); border-radius: 10px; margin-bottom: 1rem; line-height: 1.6; }
+  .legend .row { display: flex; gap: 14px; padding: 6px 0; border-bottom: 0.5px solid var(--border); }
+  .legend .row:last-child { border-bottom: none; }
+  .legend .row b { width: 150px; flex-shrink: 0; color: var(--text-primary); font-weight: 600; font-family: var(--mono); font-size: 11.5px; }
+  code.tok { font-family: var(--mono); font-size: 12px; color: var(--accent); }
+
+  pre.code { background: var(--code-bg); color: var(--code-text); border-radius: 10px; padding: 16px 18px; margin: 0; overflow-x: auto; font-family: var(--mono); font-size: 12px; line-height: 1.7; }
+  pre.code code { font-family: inherit; }
+
+  .story-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 28px; }
+  .story { border: 0.5px solid var(--border); border-radius: 14px; background: var(--bg-card); padding: 24px; display: flex; flex-direction: column; gap: 14px; }
+  .story h3 { font-size: 14px; font-weight: 600; margin: 0; font-family: var(--mono); }
+  .story-preview { min-height: 64px; display: flex; align-items: center; justify-content: center; padding: 12px 0; }
+  .story-preview .search { width: 100%; max-width: 260px; }
+  .story-note { font-size: 11.5px; color: var(--text-muted); margin: 0; line-height: 1.5; }
+
+  .placeholder-note { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-muted); border: 0.5px dashed var(--border-strong); border-radius: 6px; padding: 4px 10px; margin-top: 1.5rem; }
+
+  :root {
+  --tok-surface-sunken: #e8e8e8;
+  --tok-surface-disabled: #e8e8e8;
+  --tok-border-default: #d1d1d1;
+  --tok-border-strong: #b4b4b4;
+  --tok-border-focus: #077fec;
+  --tok-text-muted: #808080;
+  --tok-text-default: #181818;
+  --tok-text-disabled: #b4b4b4;
+  --tok-icon-default: #525252;
+  --tok-icon-disabled: #b4b4b4;
+  --tok-family-sans: 'Sora', sans-serif;
+}
+
+.search {
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  background: var(--tok-surface-sunken);
+  border: 1px solid var(--tok-border-default);
+  border-radius: 8px;
+  font-family: var(--tok-family-sans);
+  cursor: text;
+}
+.search__icon { flex-shrink: 0; color: var(--tok-icon-default); }
+.search__clear { flex-shrink: 0; margin-left: auto; color: var(--tok-icon-default); cursor: pointer; }
+.search__placeholder { color: var(--tok-text-muted); flex: 1; }
+.search__value { color: var(--tok-text-default); flex: 1; font-weight: 400; font-size: 16px; line-height: 1.2; }
+.search__placeholder { font-weight: 400; font-size: 16px; line-height: 1.2; }
+
+.search--sm { height: 32px; padding: 0 8px; gap: 8px; }
+.search--sm .search__icon, .search--sm .search__clear { width: 16px; height: 16px; }
+
+.search--base { height: 40px; padding: 0 12px; gap: 8px; }
+.search--base .search__icon, .search--base .search__clear { width: 20px; height: 20px; }
+
+.search--lg { height: 48px; padding: 0 16px; gap: 8px; }
+.search--lg .search__icon, .search--lg .search__clear { width: 24px; height: 24px; }
+
+.search:not(.search--disabled):hover, .search--hover { border-color: var(--tok-border-strong); }
+.search--focus { border-color: var(--tok-border-focus); }
+.search--disabled { background: var(--tok-surface-disabled); cursor: not-allowed; }
+.search--disabled .search__placeholder, .search--disabled .search__value { color: var(--tok-text-disabled); }
+.search--disabled .search__icon, .search--disabled .search__clear { color: var(--tok-icon-disabled); }
+</style>
+</head>
+<body>
+<div class="shell">
+  <nav class="side">
+    <p class="brand">hp-design</p>
+    <p class="brand-sub">Highpoint design system</p>
+    <a class="navlink" href="index.html">Overview</a>
+    <p class="nav-category">Tokens</p>
+    <a class="navlink" href="colors.html">Colors</a>
+    <a class="navlink" href="semantic-colors.html">Semantic colors</a>
+    <a class="navlink" href="typography.html">Typography</a>
+    <a class="navlink" href="layout.html">Layout</a>
+    <a class="navlink" href="icons.html">Icons</a>
+    <p class="nav-category">Components</p>
+    <a class="navlink" href="button.html">Button</a>
+    <a class="navlink" href="counter.html">Counter</a>
+    <a class="navlink" href="input.html">Input</a>
+    <a class="navlink" href="select.html">Select</a>
+    <a class="navlink active" href="search.html">Search</a>
+    <a class="navlink" href="pagination.html">Pagination</a>
+  </nav>
+  <main>
+    <h1>Search</h1>
+    <p class="sub">tokens/components/search.tokens.json · generated — the CSS below is generated from the same resolved tokens driving every preview on this page, not hand-copied. Colors are CSS custom properties, not literal hex.</p>
+
+    <div class="legend">
+      <div class="row"><b>Fill + border</b><span>Same as <a href="input.html">Input</a>/<a href="select.html">Select</a> — surface.sunken bg + border.default hairline.</span></div>
+      <div class="row"><b>Sizes</b><span>sm 32px / base 40px / lg 48px — same grid, but no floating label at any size. Value/placeholder is 16px throughout (Safari-zoom-safe).</span></div>
+      <div class="row"><b>No floating label</b><span>Unlike Input/Select, the placeholder just vanishes the instant the field is focused, at every size — there's no 12px label to move it into.</span></div>
+      <div class="row"><b>Clear button</b><span>The trailing × icon only renders once there's a value — click to empty the field. Not present in the default/hover/focus/disabled examples below.</span></div>
+      <div class="row"><b>States</b><span>default / hover / focus / populated / disabled — no error state; a search box has no validation concept the way a form input/select does.</span></div>
+    </div>
+
+    <h2 class="big-section">CSS</h2>
+    <p class="section-desc">One shared value/placeholder text style (16px at every size, no per-size label) plus size modifiers and state classes.</p>
+    <pre class="code"><code>:root {
+  --tok-surface-sunken: #e8e8e8;
+  --tok-surface-disabled: #e8e8e8;
+  --tok-border-default: #d1d1d1;
+  --tok-border-strong: #b4b4b4;
+  --tok-border-focus: #077fec;
+  --tok-text-muted: #808080;
+  --tok-text-default: #181818;
+  --tok-text-disabled: #b4b4b4;
+  --tok-icon-default: #525252;
+  --tok-icon-disabled: #b4b4b4;
+  --tok-family-sans: 'Sora', sans-serif;
+}
+
+.search {
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  background: var(--tok-surface-sunken);
+  border: 1px solid var(--tok-border-default);
+  border-radius: 8px;
+  font-family: var(--tok-family-sans);
+  cursor: text;
+}
+.search__icon { flex-shrink: 0; color: var(--tok-icon-default); }
+.search__clear { flex-shrink: 0; margin-left: auto; color: var(--tok-icon-default); cursor: pointer; }
+.search__placeholder { color: var(--tok-text-muted); flex: 1; }
+.search__value { color: var(--tok-text-default); flex: 1; font-weight: 400; font-size: 16px; line-height: 1.2; }
+.search__placeholder { font-weight: 400; font-size: 16px; line-height: 1.2; }
+
+.search--sm { height: 32px; padding: 0 8px; gap: 8px; }
+.search--sm .search__icon, .search--sm .search__clear { width: 16px; height: 16px; }
+
+.search--base { height: 40px; padding: 0 12px; gap: 8px; }
+.search--base .search__icon, .search--base .search__clear { width: 20px; height: 20px; }
+
+.search--lg { height: 48px; padding: 0 16px; gap: 8px; }
+.search--lg .search__icon, .search--lg .search__clear { width: 24px; height: 24px; }
+
+.search:not(.search--disabled):hover, .search--hover { border-color: var(--tok-border-strong); }
+.search--focus { border-color: var(--tok-border-focus); }
+.search--disabled { background: var(--tok-surface-disabled); cursor: not-allowed; }
+.search--disabled .search__placeholder, .search--disabled .search__value { color: var(--tok-text-disabled); }
+.search--disabled .search__icon, .search--disabled .search__clear { color: var(--tok-icon-disabled); }</code></pre>
+
+    <h2 class="big-section">Sizes</h2>
+    <p class="section-desc">All 3 shown populated (with the clear icon), since that's the state most likely to reveal any size-related rendering issues (icon + text + clear icon all present).</p>
+    <div class="story-grid">
+      
+      <div class="story">
+        <h3>sm — 32px</h3>
+        <div class="story-preview"><div class="search search--sm"><svg class="search__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg><span class="search__value">sneakers</span><svg class="search__clear" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></div></div>
+        <pre class="code"><code>&lt;div class="search search--sm"&gt;&lt;svg class="search__icon"&gt;&lt;!-- icon: search --&gt;&lt;/svg&gt;&lt;span class="search__value"&gt;sneakers&lt;/span&gt;&lt;svg class="search__clear"&gt;&lt;!-- icon: close --&gt;&lt;/svg&gt;&lt;/div&gt;</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>base — 40px</h3>
+        <div class="story-preview"><div class="search search--base"><svg class="search__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg><span class="search__value">sneakers</span><svg class="search__clear" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></div></div>
+        <pre class="code"><code>&lt;div class="search search--base"&gt;&lt;svg class="search__icon"&gt;&lt;!-- icon: search --&gt;&lt;/svg&gt;&lt;span class="search__value"&gt;sneakers&lt;/span&gt;&lt;svg class="search__clear"&gt;&lt;!-- icon: close --&gt;&lt;/svg&gt;&lt;/div&gt;</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>lg — 48px</h3>
+        <div class="story-preview"><div class="search search--lg"><svg class="search__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg><span class="search__value">sneakers</span><svg class="search__clear" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></div></div>
+        <pre class="code"><code>&lt;div class="search search--lg"&gt;&lt;svg class="search__icon"&gt;&lt;!-- icon: search --&gt;&lt;/svg&gt;&lt;span class="search__value"&gt;sneakers&lt;/span&gt;&lt;svg class="search__clear"&gt;&lt;!-- icon: close --&gt;&lt;/svg&gt;&lt;/div&gt;</code></pre>
+        
+      </div>
+    </div>
+
+    <h2 class="big-section">States</h2>
+    <p class="section-desc">Base size.</p>
+    <div class="story-grid">
+      
+      <div class="story">
+        <h3>default</h3>
+        <div class="story-preview"><div class="search search--base"><svg class="search__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg><span class="search__placeholder">Search</span></div></div>
+        <pre class="code"><code>&lt;div class="search search--base"&gt;&lt;svg class="search__icon"&gt;&lt;!-- icon: search --&gt;&lt;/svg&gt;&lt;span class="search__placeholder"&gt;Search&lt;/span&gt;&lt;/div&gt;</code></pre>
+        <p class="story-note">Empty, not focused — placeholder visible.</p>
+      </div>
+
+      <div class="story">
+        <h3>hover</h3>
+        <div class="story-preview"><div class="search search--base search--hover"><svg class="search__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg><span class="search__placeholder">Search</span></div></div>
+        <pre class="code"><code>&lt;div class="search search--base search--hover"&gt;&lt;svg class="search__icon"&gt;&lt;!-- icon: search --&gt;&lt;/svg&gt;&lt;span class="search__placeholder"&gt;Search&lt;/span&gt;&lt;/div&gt;</code></pre>
+        <p class="story-note">border.strong.</p>
+      </div>
+
+      <div class="story">
+        <h3>focus</h3>
+        <div class="story-preview"><div class="search search--base search--focus"><svg class="search__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg></div></div>
+        <pre class="code"><code>&lt;div class="search search--base search--focus"&gt;&lt;svg class="search__icon"&gt;&lt;!-- icon: search --&gt;&lt;/svg&gt;&lt;/div&gt;</code></pre>
+        <p class="story-note">Placeholder vanishes the instant the field is focused, at every size — no floated label to replace it with, the value area just starts empty.</p>
+      </div>
+
+      <div class="story">
+        <h3>populated (with clear)</h3>
+        <div class="story-preview"><div class="search search--base"><svg class="search__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg><span class="search__value">sneakers</span><svg class="search__clear" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></div></div>
+        <pre class="code"><code>&lt;div class="search search--base"&gt;&lt;svg class="search__icon"&gt;&lt;!-- icon: search --&gt;&lt;/svg&gt;&lt;span class="search__value"&gt;sneakers&lt;/span&gt;&lt;svg class="search__clear"&gt;&lt;!-- icon: close --&gt;&lt;/svg&gt;&lt;/div&gt;</code></pre>
+        <p class="story-note">Once there's a value, the clear (×) icon appears at the trailing edge — click to empty the field.</p>
+      </div>
+
+      <div class="story">
+        <h3>disabled</h3>
+        <div class="story-preview"><div class="search search--base search--disabled"><svg class="search__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg><span class="search__placeholder">Search</span></div></div>
+        <pre class="code"><code>&lt;div class="search search--base search--disabled"&gt;&lt;svg class="search__icon"&gt;&lt;!-- icon: search --&gt;&lt;/svg&gt;&lt;span class="search__placeholder"&gt;Search&lt;/span&gt;&lt;/div&gt;</code></pre>
+        <p class="story-note">surface.disabled equals surface.sunken — same recurring pattern as input/select/secondary-button.</p>
+      </div>
+    </div>
+
+    <p class="placeholder-note">Every code sample on this page is printed from the same resolved token values driving the live previews above it — copy it directly, nothing here is hand-typed.</p>
+  </main>
+</div>
+</body>
+</html>

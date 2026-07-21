@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>hp-design — Input</title>
+<style>
+  :root {
+    --bg-page: #f7f7f5; --bg-card: #ffffff; --bg-card-hover: #fbfbfa;
+    --border: #e4e3df; --border-strong: #d2d1cb;
+    --text-primary: #0e0e10; --text-secondary: #63625c; --text-muted: #918f87;
+    --accent: #0468c4; --accent-bg: #eff6ff;
+    --code-bg: #1e1e22; --code-text: #e4e3df;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --sans: -apple-system, "Segoe UI", system-ui, sans-serif;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327;
+      --border: #313035; --border-strong: #403f45;
+      --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68;
+      --accent: #5aa4ec; --accent-bg: #16283b;
+      --code-bg: #0d0d0f; --code-text: #d7d6d2;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327;
+    --border: #313035; --border-strong: #403f45;
+    --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68;
+    --accent: #5aa4ec; --accent-bg: #16283b;
+    --code-bg: #0d0d0f; --code-text: #d7d6d2;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg-page); color: var(--text-primary); font-family: var(--sans); }
+  .shell { display: flex; min-height: 100vh; }
+  nav.side { width: 220px; flex-shrink: 0; border-right: 0.5px solid var(--border); padding: 1.5rem 1rem; position: sticky; top: 0; height: 100vh; }
+  .brand { font-size: 14px; font-weight: 600; margin: 0 0 2px 8px; }
+  .brand-sub { font-size: 11.5px; color: var(--text-muted); margin: 0 0 1.5rem 8px; }
+  .navlink { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 8px; border-radius: 7px; font-size: 13px; text-decoration: none; color: var(--text-primary); margin-bottom: 1px; }
+  .navlink:hover { background: var(--bg-card-hover); }
+  .navlink.active { background: var(--accent-bg); color: var(--accent); font-weight: 600; }
+  .nav-category { font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin: 16px 8px 6px; }
+  main { flex: 1; padding: 4rem 4rem 6rem; max-width: 1120px; }
+
+  h1 { font-size: 36px; font-weight: 700; margin: 0 0 10px; letter-spacing: -0.02em; }
+  .sub { font-size: 14px; color: var(--text-secondary); margin: 0 0 2.5rem; }
+  h2.big-section { font-size: 24px; font-weight: 700; margin: 5.5rem 0 1.5rem; letter-spacing: -0.01em; padding-top: 2.5rem; border-top: 1px solid var(--border); }
+  h2.big-section:first-of-type { margin-top: 3rem; padding-top: 0; border-top: none; }
+  .section-desc { font-size: 13.5px; color: var(--text-secondary); margin: -0.5rem 0 1.5rem; max-width: 68ch; line-height: 1.6; }
+
+  .legend { font-size: 12.5px; color: var(--text-secondary); padding: 14px 18px; background: var(--bg-card); border: 0.5px solid var(--border); border-radius: 10px; margin-bottom: 1rem; line-height: 1.6; }
+  .legend .row { display: flex; gap: 14px; padding: 6px 0; border-bottom: 0.5px solid var(--border); }
+  .legend .row:last-child { border-bottom: none; }
+  .legend .row b { width: 150px; flex-shrink: 0; color: var(--text-primary); font-weight: 600; font-family: var(--mono); font-size: 11.5px; }
+  code.tok { font-family: var(--mono); font-size: 12px; color: var(--accent); }
+
+  pre.code { background: var(--code-bg); color: var(--code-text); border-radius: 10px; padding: 16px 18px; margin: 0; overflow-x: auto; font-family: var(--mono); font-size: 12px; line-height: 1.7; }
+  pre.code code { font-family: inherit; }
+
+  .story-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 28px; }
+  .story { border: 0.5px solid var(--border); border-radius: 14px; background: var(--bg-card); padding: 24px; display: flex; flex-direction: column; gap: 14px; }
+  .story h3 { font-size: 14px; font-weight: 600; margin: 0; font-family: var(--mono); }
+  .story-preview { min-height: 64px; display: flex; align-items: center; justify-content: center; padding: 12px 0; }
+  .story-preview .input { width: 100%; max-width: 260px; }
+  .story-note { font-size: 11.5px; color: var(--text-muted); margin: 0; line-height: 1.5; }
+
+  .placeholder-note { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-muted); border: 0.5px dashed var(--border-strong); border-radius: 6px; padding: 4px 10px; margin-top: 1.5rem; }
+
+  :root {
+  --tok-surface-sunken: #e8e8e8;
+  --tok-surface-disabled: #e8e8e8;
+  --tok-border-default: #d1d1d1;
+  --tok-border-strong: #b4b4b4;
+  --tok-border-focus: #077fec;
+  --tok-border-danger: #febebd;
+  --tok-text-muted: #808080;
+  --tok-text-default: #181818;
+  --tok-text-disabled: #b4b4b4;
+  --tok-text-primary: #0468c4;
+  --tok-icon-default: #525252;
+  --tok-icon-disabled: #b4b4b4;
+  --tok-family-sans: 'Sora', sans-serif;
+}
+
+.input {
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  background: var(--tok-surface-sunken);
+  border: 1px solid var(--tok-border-default);
+  border-radius: 8px;
+  font-family: var(--tok-family-sans);
+  cursor: text;
+}
+.input__icon { flex-shrink: 0; color: var(--tok-icon-default); }
+.input__placeholder { color: var(--tok-text-muted); }
+.input__value { color: var(--tok-text-default); }
+.input__stack { display: flex; flex-direction: column; justify-content: center; }
+.input__label { color: var(--tok-text-muted); }
+
+.input--sm { height: 32px; padding: 0 8px; gap: 8px; }
+.input--sm .input__icon { width: 16px; height: 16px; }
+.input--sm .input__placeholder, .input--sm .input__value { font-weight: 400; font-size: 16px; line-height: 1.2; }
+
+.input--base { height: 40px; padding: 0 12px; gap: 8px; }
+.input--base .input__icon { width: 20px; height: 20px; }
+.input--base .input__placeholder, .input--base .input__value { font-weight: 400; font-size: 16px; line-height: 1.2; }
+.input--base .input__stack { gap: 0px; }
+.input--base .input__label { font-weight: 400; font-size: 12px; line-height: 1.2; }
+
+.input--lg { height: 48px; padding: 0 16px; gap: 8px; }
+.input--lg .input__icon { width: 24px; height: 24px; }
+.input--lg .input__placeholder, .input--lg .input__value { font-weight: 400; font-size: 16px; line-height: 1.2; }
+.input--lg .input__stack { gap: 4px; }
+.input--lg .input__label { font-weight: 400; font-size: 12px; line-height: 1.2; }
+
+.input:not(.input--disabled):hover, .input--hover { border-color: var(--tok-border-strong); }
+.input--focus { border-color: var(--tok-border-focus); }
+.input--focus .input__label { color: var(--tok-text-primary); }
+.input--disabled { background: var(--tok-surface-disabled); cursor: not-allowed; }
+.input--disabled .input__placeholder, .input--disabled .input__value, .input--disabled .input__label { color: var(--tok-text-disabled); }
+.input--disabled .input__icon { color: var(--tok-icon-disabled); }
+.input--error { border-color: var(--tok-border-danger); }
+</style>
+</head>
+<body>
+<div class="shell">
+  <nav class="side">
+    <p class="brand">hp-design</p>
+    <p class="brand-sub">Highpoint design system</p>
+    <a class="navlink" href="index.html">Overview</a>
+    <p class="nav-category">Tokens</p>
+    <a class="navlink" href="colors.html">Colors</a>
+    <a class="navlink" href="semantic-colors.html">Semantic colors</a>
+    <a class="navlink" href="typography.html">Typography</a>
+    <a class="navlink" href="layout.html">Layout</a>
+    <a class="navlink" href="icons.html">Icons</a>
+    <p class="nav-category">Components</p>
+    <a class="navlink" href="button.html">Button</a>
+    <a class="navlink" href="counter.html">Counter</a>
+    <a class="navlink active" href="input.html">Input</a>
+    <a class="navlink" href="select.html">Select</a>
+    <a class="navlink" href="search.html">Search</a>
+    <a class="navlink" href="pagination.html">Pagination</a>
+  </nav>
+  <main>
+    <h1>Input</h1>
+    <p class="sub">tokens/components/input.tokens.json · generated — the CSS below is generated from the same resolved tokens driving every preview on this page, not hand-copied. Colors are CSS custom properties, not literal hex.</p>
+
+    <div class="legend">
+      <div class="row"><b>Fill + border</b><span>surface.sunken bg + border.default hairline — both already documented for exactly this ("Inputs...recessed" / "input borders at rest") from the semantic-color session, before this component existed. Not a pure outline, not a pure fill — both together.</span></div>
+      <div class="row"><b>Sizes</b><span>sm 32px (no floating label) / base 40px (default) / lg 48px. Value/placeholder text is 16px at every size — Safari on iOS auto-zooms the page on focus if it's smaller.</span></div>
+      <div class="row"><b>Floating label</b><span>base/lg only. Resting (empty, unfocused): one centered 16px placeholder line. Focused or populated: splits into a 12px label above the 16px value, vertically centered as a group via flexbox rather than hand-computed padding.</span></div>
+      <div class="row"><b>States</b><span>default → border.default · hover → border.strong · focus → border.focus + label turns text.primary (blue) · populated → colors revert to default, only the layout (label floated) persists · disabled → surface.disabled + *.disabled text/icon · error → border.danger.</span></div>
+    </div>
+
+    <h2 class="big-section">CSS</h2>
+    <p class="section-desc">One <code class="tok">:root</code> block of color custom properties, then a base <code class="tok">.input</code> class + <code class="tok">--sm/--base/--lg</code> size modifiers, then state modifiers as plain classes (also wired to real <code class="tok">:hover</code> for bonus interactivity where it doesn't conflict with a specific demonstrated state).</p>
+    <pre class="code"><code>:root {
+  --tok-surface-sunken: #e8e8e8;
+  --tok-surface-disabled: #e8e8e8;
+  --tok-border-default: #d1d1d1;
+  --tok-border-strong: #b4b4b4;
+  --tok-border-focus: #077fec;
+  --tok-border-danger: #febebd;
+  --tok-text-muted: #808080;
+  --tok-text-default: #181818;
+  --tok-text-disabled: #b4b4b4;
+  --tok-text-primary: #0468c4;
+  --tok-icon-default: #525252;
+  --tok-icon-disabled: #b4b4b4;
+  --tok-family-sans: 'Sora', sans-serif;
+}
+
+.input {
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  background: var(--tok-surface-sunken);
+  border: 1px solid var(--tok-border-default);
+  border-radius: 8px;
+  font-family: var(--tok-family-sans);
+  cursor: text;
+}
+.input__icon { flex-shrink: 0; color: var(--tok-icon-default); }
+.input__placeholder { color: var(--tok-text-muted); }
+.input__value { color: var(--tok-text-default); }
+.input__stack { display: flex; flex-direction: column; justify-content: center; }
+.input__label { color: var(--tok-text-muted); }
+
+.input--sm { height: 32px; padding: 0 8px; gap: 8px; }
+.input--sm .input__icon { width: 16px; height: 16px; }
+.input--sm .input__placeholder, .input--sm .input__value { font-weight: 400; font-size: 16px; line-height: 1.2; }
+
+.input--base { height: 40px; padding: 0 12px; gap: 8px; }
+.input--base .input__icon { width: 20px; height: 20px; }
+.input--base .input__placeholder, .input--base .input__value { font-weight: 400; font-size: 16px; line-height: 1.2; }
+.input--base .input__stack { gap: 0px; }
+.input--base .input__label { font-weight: 400; font-size: 12px; line-height: 1.2; }
+
+.input--lg { height: 48px; padding: 0 16px; gap: 8px; }
+.input--lg .input__icon { width: 24px; height: 24px; }
+.input--lg .input__placeholder, .input--lg .input__value { font-weight: 400; font-size: 16px; line-height: 1.2; }
+.input--lg .input__stack { gap: 4px; }
+.input--lg .input__label { font-weight: 400; font-size: 12px; line-height: 1.2; }
+
+.input:not(.input--disabled):hover, .input--hover { border-color: var(--tok-border-strong); }
+.input--focus { border-color: var(--tok-border-focus); }
+.input--focus .input__label { color: var(--tok-text-primary); }
+.input--disabled { background: var(--tok-surface-disabled); cursor: not-allowed; }
+.input--disabled .input__placeholder, .input--disabled .input__value, .input--disabled .input__label { color: var(--tok-text-disabled); }
+.input--disabled .input__icon { color: var(--tok-icon-disabled); }
+.input--error { border-color: var(--tok-border-danger); }</code></pre>
+
+    <h2 class="big-section">Sizes</h2>
+    <p class="section-desc">sm shows the resting single-line layout (its only layout). base/lg shown populated, to demonstrate the floated label at each size.</p>
+    <div class="story-grid">
+      
+      <div class="story">
+        <h3>sm — 32px</h3>
+        <div class="story-preview"><div class="input input--sm"><span class="input__placeholder">Email address</span></div></div>
+        <pre class="code"><code>&lt;div class="input input--sm"&gt;&lt;span class="input__placeholder"&gt;Email address&lt;/span&gt;&lt;/div&gt;</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>base — 40px</h3>
+        <div class="story-preview"><div class="input input--base"><div class="input__stack"><span class="input__label">Email address</span><span class="input__value">name@example.com</span></div></div></div>
+        <pre class="code"><code>&lt;div class="input input--base"&gt;&lt;div class="input__stack"&gt;&lt;span class="input__label"&gt;Email address&lt;/span&gt;&lt;span class="input__value"&gt;name@example.com&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>lg — 48px</h3>
+        <div class="story-preview"><div class="input input--lg"><div class="input__stack"><span class="input__label">Email address</span><span class="input__value">name@example.com</span></div></div></div>
+        <pre class="code"><code>&lt;div class="input input--lg"&gt;&lt;div class="input__stack"&gt;&lt;span class="input__label"&gt;Email address&lt;/span&gt;&lt;span class="input__value"&gt;name@example.com&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;</code></pre>
+        
+      </div>
+    </div>
+
+    <h2 class="big-section">Content variants</h2>
+    <p class="section-desc">Base size, populated. Icon sizing/gap mirrors the button component's own convention (16/20/24px, flat 8px gap).</p>
+    <div class="story-grid">
+      
+      <div class="story">
+        <h3>Value only</h3>
+        <div class="story-preview"><div class="input input--base"><div class="input__stack"><span class="input__label">Email address</span><span class="input__value">name@example.com</span></div></div></div>
+        <pre class="code"><code>&lt;div class="input input--base"&gt;&lt;div class="input__stack"&gt;&lt;span class="input__label"&gt;Email address&lt;/span&gt;&lt;span class="input__value"&gt;name@example.com&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>Icon left + value</h3>
+        <div class="story-preview"><div class="input input--base"><svg class="input__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg><div class="input__stack"><span class="input__label">Email address</span><span class="input__value">name@example.com</span></div></div></div>
+        <pre class="code"><code>&lt;div class="input input--base"&gt;&lt;svg class="input__icon"&gt;&lt;!-- icon: search --&gt;&lt;/svg&gt;&lt;div class="input__stack"&gt;&lt;span class="input__label"&gt;Email address&lt;/span&gt;&lt;span class="input__value"&gt;name@example.com&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;</code></pre>
+        
+      </div>
+    </div>
+
+    <h2 class="big-section">States</h2>
+    <p class="section-desc">Base size.</p>
+    <div class="story-grid">
+      
+      <div class="story">
+        <h3>default</h3>
+        <div class="story-preview"><div class="input input--base"><span class="input__placeholder">Email address</span></div></div>
+        <pre class="code"><code>&lt;div class="input input--base"&gt;&lt;span class="input__placeholder"&gt;Email address&lt;/span&gt;&lt;/div&gt;</code></pre>
+        <p class="story-note">Empty, not focused — placeholder centered at value size (16px), no floated label yet.</p>
+      </div>
+
+      <div class="story">
+        <h3>hover</h3>
+        <div class="story-preview"><div class="input input--base input--hover"><span class="input__placeholder">Email address</span></div></div>
+        <pre class="code"><code>&lt;div class="input input--base input--hover"&gt;&lt;span class="input__placeholder"&gt;Email address&lt;/span&gt;&lt;/div&gt;</code></pre>
+        <p class="story-note">border.strong — same rule already documented on that token before this component existed.</p>
+      </div>
+
+      <div class="story">
+        <h3>focus</h3>
+        <div class="story-preview"><div class="input input--base input--focus"><div class="input__stack"><span class="input__label">Email address</span><span class="input__value"></span></div></div></div>
+        <pre class="code"><code>&lt;div class="input input--base input--focus"&gt;&lt;div class="input__stack"&gt;&lt;span class="input__label"&gt;Email address&lt;/span&gt;&lt;span class="input__value"&gt;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;</code></pre>
+        <p class="story-note">Placeholder already floated into the label the instant the field is focused — value area starts empty, ready to type.</p>
+      </div>
+
+      <div class="story">
+        <h3>populated</h3>
+        <div class="story-preview"><div class="input input--base"><div class="input__stack"><span class="input__label">Email address</span><span class="input__value">name@example.com</span></div></div></div>
+        <pre class="code"><code>&lt;div class="input input--base"&gt;&lt;div class="input__stack"&gt;&lt;span class="input__label"&gt;Email address&lt;/span&gt;&lt;span class="input__value"&gt;name@example.com&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;</code></pre>
+        <p class="story-note">Has a value, not focused — label stays floated (layout doesn't revert) but every color returns to default.</p>
+      </div>
+
+      <div class="story">
+        <h3>disabled</h3>
+        <div class="story-preview"><div class="input input--base input--disabled"><span class="input__placeholder">Email address</span></div></div>
+        <pre class="code"><code>&lt;div class="input input--base input--disabled"&gt;&lt;span class="input__placeholder"&gt;Email address&lt;/span&gt;&lt;/div&gt;</code></pre>
+        <p class="story-note">surface.disabled equals surface.sunken (both gray.100) — same pattern as the secondary button's disabled state. Only text/icon fade.</p>
+      </div>
+
+      <div class="story">
+        <h3>error</h3>
+        <div class="story-preview"><div class="input input--base input--error"><div class="input__stack"><span class="input__label">Email address</span><span class="input__value">not-an-email</span></div></div></div>
+        <pre class="code"><code>&lt;div class="input input--base input--error"&gt;&lt;div class="input__stack"&gt;&lt;span class="input__label"&gt;Email address&lt;/span&gt;&lt;span class="input__value"&gt;not-an-email&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;</code></pre>
+        <p class="story-note">Scoped to the field's own border only — no separate helper-text element built here.</p>
+      </div>
+    </div>
+
+    <p class="placeholder-note">Every code sample on this page is printed from the same resolved token values driving the live previews above it — copy it directly, nothing here is hand-typed.</p>
+  </main>
+</div>
+</body>
+</html>

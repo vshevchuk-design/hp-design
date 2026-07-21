@@ -1,0 +1,89 @@
+{
+  "component": {
+    "input": {
+      "$description": "Single-line text field. sm has no floating label — the placeholder simply vanishes on focus/when typing, same text stays 16px throughout (see $description on size.sm). base/lg float the placeholder into a 12px label above the value on focus or once populated. Value/placeholder text is 16px at every size, deliberately — Safari on iOS auto-zooms the page on focus if an input's font-size is under 16px; going smaller (e.g. matching the button's 14px body size) would trigger that on every mobile focus.",
+      "radius": { "$type": "dimension", "$value": "{radius.default}" },
+      "size": {
+        "sm": {
+          "$description": "32px. No floating label — the box isn't tall enough to hold a 12px label + 16px value stacked and still read as anything but cramped. Placeholder disappears the moment the field is focused or has a value, same as a plain unlabeled input.",
+          "height": { "$type": "dimension", "$value": "{dim.8}" },
+          "paddingX": { "$type": "dimension", "$value": "{dim.2}" },
+          "gap": { "$type": "dimension", "$value": "{dim.2}" },
+          "iconSize": { "$type": "dimension", "$value": "{dim.4}" },
+          "value": {
+            "$type": "typography",
+            "$value": { "fontFamily": "{family.sans}", "fontWeight": "{weight.normal}", "fontSize": "{size.md}", "lineHeight": "{leading.tight}", "letterSpacing": "{tracking.normal}" }
+          }
+        },
+        "base": {
+          "$description": "40px, the default size. Floating label: 12px, sitting directly above the 16px value with 0 gap between their line-boxes and 2px from the stack to the field's own top/bottom edges — vertically centered via flexbox rather than hand-computed padding, since 12px/16px text at leading.tight doesn't sum to a value that divides evenly into 40px, and flex-centering doesn't need it to.",
+          "height": { "$type": "dimension", "$value": "{dim.10}" },
+          "paddingX": { "$type": "dimension", "$value": "{dim.3}" },
+          "gap": { "$type": "dimension", "$value": "{dim.2}" },
+          "iconSize": { "$type": "dimension", "$value": "{dim.5}" },
+          "labelGap": { "$type": "dimension", "$value": "{dim.0}" },
+          "value": {
+            "$type": "typography",
+            "$value": { "fontFamily": "{family.sans}", "fontWeight": "{weight.normal}", "fontSize": "{size.md}", "lineHeight": "{leading.tight}", "letterSpacing": "{tracking.normal}" }
+          },
+          "label": {
+            "$type": "typography",
+            "$value": { "fontFamily": "{family.sans}", "fontWeight": "{weight.normal}", "fontSize": "{size.sm}", "lineHeight": "{leading.tight}", "letterSpacing": "{tracking.normal}" }
+          }
+        },
+        "lg": {
+          "$description": "48px. Same 12px floating label as base, but with 4px between the label and value line-boxes and 4px from the stack to the field's top/bottom edges — more breathing room at the larger size. Same flex-centering approach as base.",
+          "height": { "$type": "dimension", "$value": "{dim.12}" },
+          "paddingX": { "$type": "dimension", "$value": "{dim.4}" },
+          "gap": { "$type": "dimension", "$value": "{dim.2}" },
+          "iconSize": { "$type": "dimension", "$value": "{dim.6}" },
+          "labelGap": { "$type": "dimension", "$value": "{dim.1}" },
+          "value": {
+            "$type": "typography",
+            "$value": { "fontFamily": "{family.sans}", "fontWeight": "{weight.normal}", "fontSize": "{size.md}", "lineHeight": "{leading.tight}", "letterSpacing": "{tracking.normal}" }
+          },
+          "label": {
+            "$type": "typography",
+            "$value": { "fontFamily": "{family.sans}", "fontWeight": "{weight.normal}", "fontSize": "{size.sm}", "lineHeight": "{leading.tight}", "letterSpacing": "{tracking.normal}" }
+          }
+        }
+      },
+      "state": {
+        "default": {
+          "$description": "Empty, not focused. surface.sunken + border.default are each already documented ('Inputs...recessed' / 'input borders at rest') from the semantic-color session, before this component existed.",
+          "bg": { "$type": "color", "$value": "{surface.sunken}" },
+          "border": { "$type": "color", "$value": "{border.default}" },
+          "placeholder": { "$type": "color", "$value": "{text.muted}" },
+          "value": { "$type": "color", "$value": "{text.default}" },
+          "icon": { "$type": "color", "$value": "{icon.default}" }
+        },
+        "hover": {
+          "border": { "$type": "color", "$value": "{border.strong}" },
+          "$description": "border.strong's own token description already says 'input border on hover' — written before this component existed."
+        },
+        "focus": {
+          "border": { "$type": "color", "$value": "{border.focus}" },
+          "label": { "$type": "color", "$value": "{text.primary}" },
+          "$description": "Floating label (base/lg only) turns brand-blue while focused — reverts to text.muted once blurred, even if still populated, so blue always means 'this is the active field', not 'this field has a value'."
+        },
+        "populated": {
+          "$description": "Has a value, not focused — the base/lg floating label stays up (that's a layout state, not a color one) but every color reverts to default. Named 'populated' rather than 'filled' to avoid colliding with the unrelated fill.* token family.",
+          "label": { "$type": "color", "$value": "{text.muted}" }
+        },
+        "disabled": {
+          "bg": { "$type": "color", "$value": "{surface.disabled}" },
+          "border": { "$type": "color", "$value": "{border.default}" },
+          "placeholder": { "$type": "color", "$value": "{text.disabled}" },
+          "value": { "$type": "color", "$value": "{text.disabled}" },
+          "icon": { "$type": "color", "$value": "{icon.disabled}" },
+          "label": { "$type": "color", "$value": "{text.disabled}" },
+          "$description": "surface.disabled and surface.sunken are both {color.gray.100} — same value, same pattern as fill.disabled==fill.neutral on the secondary button. Disabled doesn't change the background, only the text/icon/label fading out."
+        },
+        "error": {
+          "border": { "$type": "color", "$value": "{border.danger}" },
+          "$description": "Scoped to the field's own border only — a separate helper/error-message text element below the field isn't built here, wasn't asked for."
+        }
+      }
+    }
+  }
+}
