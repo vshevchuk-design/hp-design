@@ -90,8 +90,8 @@ const groupLabelGap = px(resolve(group.labelGap.$value));
 const groupLabelType = resolveToken(group.label);
 const groupHelperType = resolveToken(group.helper);
 
-const iconCheck = fs.readFileSync(path.join(root, "assets/icons/material-filled/check.svg"), "utf8").replace("<svg ", '<svg class="checkbox__icon" ');
-const iconRemove = fs.readFileSync(path.join(root, "assets/icons/material-filled/remove.svg"), "utf8").replace("<svg ", '<svg class="checkbox__icon" ');
+const iconCheck = fs.readFileSync(path.join(root, "assets/icons/material-filled/check.svg"), "utf8").replace("<svg ", '<svg class="checkbox__icon checkbox__icon--check" ');
+const iconRemove = fs.readFileSync(path.join(root, "assets/icons/material-filled/remove.svg"), "utf8").replace("<svg ", '<svg class="checkbox__icon checkbox__icon--remove" ');
 
 function typoCss(t) {
   return `font-weight: ${t.fontWeight}; font-size: ${px(t.fontSize)}; line-height: ${t.lineHeight};`;
@@ -102,7 +102,7 @@ const css = `${rootVars}
 .checkbox { display: inline-flex; align-items: center; gap: ${gap}; font-family: ${cv("family.sans")}; cursor: pointer; }
 .checkbox__input { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 .checkbox__box { box-sizing: border-box; width: ${box}; height: ${box}; border-radius: ${boxRadius}; border: ${borderWidth} solid ${cv("border.default")}; background: ${cv("surface.default")}; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.checkbox__icon { width: ${iconSize}; height: ${iconSize}; color: transparent; }
+.checkbox__icon { width: ${iconSize}; height: ${iconSize}; display: none; }
 .checkbox__label { color: ${cv("text.default")}; ${typoCss(labelType)} }
 
 .checkbox:hover .checkbox__box { border-color: ${cv("border.strong")}; }
@@ -110,13 +110,14 @@ const css = `${rootVars}
 .checkbox__input:checked ~ .checkbox__box, .checkbox__input:indeterminate ~ .checkbox__box {
   background: ${cv("fill.primary")}; border-color: ${cv("fill.primary")};
 }
-.checkbox__input:checked ~ .checkbox__box .checkbox__icon, .checkbox__input:indeterminate ~ .checkbox__box .checkbox__icon { color: ${cv("icon.onFill")}; }
+.checkbox__input:checked ~ .checkbox__box .checkbox__icon--check { display: block; color: ${cv("icon.onFill")}; }
+.checkbox__input:indeterminate ~ .checkbox__box .checkbox__icon--remove { display: block; color: ${cv("icon.onFill")}; }
 .checkbox__input:disabled ~ .checkbox__box { background: ${cv("surface.disabled")}; border-color: ${cv("border.default")}; cursor: not-allowed; }
 .checkbox__input:disabled ~ .checkbox__label { color: ${cv("text.disabled")}; }
 .checkbox__input:disabled:checked ~ .checkbox__box, .checkbox__input:disabled:indeterminate ~ .checkbox__box {
   background: ${cv("fill.disabled")}; border-color: ${cv("fill.disabled")};
 }
-.checkbox__input:disabled:checked ~ .checkbox__box .checkbox__icon, .checkbox__input:disabled:indeterminate ~ .checkbox__box .checkbox__icon { color: ${cv("icon.disabled")}; }
+.checkbox__input:disabled:checked ~ .checkbox__box .checkbox__icon--check, .checkbox__input:disabled:indeterminate ~ .checkbox__box .checkbox__icon--remove { color: ${cv("icon.disabled")}; }
 .checkbox:has(.checkbox__input:disabled) { cursor: not-allowed; }
 
 .checkbox-group { display: flex; flex-direction: column; gap: ${groupLabelGap}; }
@@ -125,8 +126,19 @@ const css = `${rootVars}
 .checkbox-group__label { color: ${cv("text.default")}; margin: 0; ${typoCss(groupLabelType)} }
 .checkbox-group__helper { color: ${cv("text.secondary")}; margin: 0; ${typoCss(groupHelperType)} }`;
 
-function ic(svg, live) {
-  return live ? svg : `<svg class="checkbox__icon"><!-- icon: ${svg === iconCheck ? "check" : "remove"} --></svg>`;
+function ic(svg, name, live) {
+  return live ? svg : `<svg class="checkbox__icon checkbox__icon--${name}"><!-- icon: ${name} --></svg>`;
+}
+
+// Both glyphs are always present in the markup — which one shows is decided
+// purely by CSS off the real input's :checked/:indeterminate state (display:
+// none by default). Earlier this only inserted whichever glyph matched the
+// state passed at build time, so clicking a live checkbox that started
+// unchecked toggled the box to fill.primary with no glyph inside it at all —
+// a plain blue square, no tick. Always rendering both fixes that for real
+// user interaction, not just the static story-card snapshots.
+function glyphs(live) {
+  return `${ic(iconCheck, "check", live)}${ic(iconRemove, "remove", live)}`;
 }
 
 function markup(id, { checked = false, indeterminate = false, disabled = false, hover = false, focused = false, live = true } = {}) {
@@ -135,11 +147,10 @@ function markup(id, { checked = false, indeterminate = false, disabled = false, 
     disabled ? " disabled" : "",
     indeterminate ? ' data-indeterminate="true"' : "",
   ].join("");
-  const glyph = checked ? ic(iconCheck, live) : indeterminate ? ic(iconRemove, live) : "";
   const extraStyle = hover ? ` style="border-color:${cv("border.strong")}"` : focused ? ` style="outline:${ringWidth} solid ${cv("border.focus")}; outline-offset:${ringOffset}"` : "";
   return `<label class="checkbox">
     <input type="checkbox" class="checkbox__input" id="${id}"${attrs} />
-    <span class="checkbox__box"${extraStyle}>${glyph}</span>
+    <span class="checkbox__box"${extraStyle}>${glyphs(live)}</span>
     <span class="checkbox__label">Label</span>
   </label>`;
 }
@@ -171,7 +182,7 @@ function groupExample(layout) {
   const items = ["Email", "SMS", "Push notifications"];
   const itemsHtml = items.map((label, i) => `      <label class="checkbox">
         <input type="checkbox" class="checkbox__input" id="cb-${layout}-${i}"${i === 0 ? " checked" : ""} />
-        <span class="checkbox__box">${i === 0 ? iconCheck : ""}</span>
+        <span class="checkbox__box">${glyphs(true)}</span>
         <span class="checkbox__label">${label}</span>
       </label>`).join("\n");
   return `<div class="checkbox-group checkbox-group--${layout}">
