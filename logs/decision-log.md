@@ -205,3 +205,11 @@ Added `component.button.ghost` — third, quietest tier below primary/secondary.
 - Extended the build-time size-identity assertion (previously primary-vs-secondary only) to check all three variants against primary's grid in one loop.
 - Generalized two spots that had hardcoded `key === "secondary"` conditionals (the counter-surface link text, the disabled-background note) to read from `counterSurfaceFor[key]` / add a ghost-specific branch instead of just secondary's — otherwise ghost's copy would have silently fallen back to the wrong (onPrimary) counter reference.
 - Regenerated all 13 docs pages; verified zero literal hex outside the printed `:root` blocks and that the build's own identical-size assertion passed for ghost without needing to loosen it.
+
+## 2026-07-21 — CLAUDE.md + status.md: the "hot-memory" tier finally earned its keep
+
+User asked for a session-handoff digest, worried about losing context between sessions. This is exactly the pain point flagged as a maybe-later item in the very first entry of this log ("adopt pieces lazily, only when a real repeated pain shows up... this log is the first small piece, deliberately without the hot-memory/wiki tiers yet") — the pain showed up, so the next piece got added, not before.
+
+- Added `CLAUDE.md` at the repo root — auto-loaded by Claude Code at the start of every session in this directory, no reminder needed. Kept deliberately short (it's loaded into every session's context whether needed or not): what the project is, the layering rule, the component build pattern, the load-bearing conventions most likely to get silently violated by a fresh session, and the file:// preview workaround. Points to `logs/status.md` as the first real read.
+- Added `logs/status.md` — a *maintained* (edited in place, not appended) snapshot: component inventory table, locked-in conventions, known non-bugs (so they don't get "fixed" again), open/deferred items, and a "next" pointer. This log (`decision-log.md`) stays exactly what it always was — append-only chronological history with the *why* behind each call — status.md is the fast-load summary sitting on top of it, not a replacement.
+- Going forward: update `status.md` in place whenever the component inventory or a locked-in convention changes; keep writing normal dated entries here for anything that needs the fuller reasoning preserved.
