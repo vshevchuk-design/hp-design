@@ -18,6 +18,8 @@ export const NAV_ITEMS = {
   tabs: { label: "Tabs", href: "tabs.html" },
   checkbox: { label: "Checkbox", href: "checkbox.html" },
   radio: { label: "Radio", href: "radio.html" },
+  box: { label: "Box", href: "box.html" },
+  card: { label: "Card", href: "card.html" },
 };
 
 export function renderNav(activeKey) {
@@ -44,5 +46,7 @@ export function renderNav(activeKey) {
     ${link("separator")}
     ${link("tabs")}
     ${link("checkbox")}
-    ${link("radio")}`;
+    ${link("radio")}
+    ${link("box")}
+    ${link("card")}`;
 }

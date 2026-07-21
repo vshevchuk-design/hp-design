@@ -46,7 +46,7 @@
           },
           "focused": {
             "ringColor": { "$type": "color", "$value": "{border.focus}" },
-            "ringWidth": { "$type": "dimension", "$value": "{dim.0_5}" },
+            "ringWidth": { "$type": "dimension", "$value": "{dim.1}" },
             "ringOffset": { "$type": "dimension", "$value": "{dim.0_5}" },
             "$description": "Additive outline (keyboard focus only) on top of whatever default/hover/pressed fill is already showing — not a fill swap, so it composes with any of the three above."
           },
@@ -102,7 +102,7 @@
           },
           "focused": {
             "ringColor": { "$type": "color", "$value": "{border.focus}" },
-            "ringWidth": { "$type": "dimension", "$value": "{dim.0_5}" },
+            "ringWidth": { "$type": "dimension", "$value": "{dim.1}" },
             "ringOffset": { "$type": "dimension", "$value": "{dim.0_5}" },
             "$description": "Same ring treatment as primary — border.focus is always blue regardless of the button's own role, per that token's own rule."
           },
@@ -158,7 +158,7 @@
           },
           "focused": {
             "ringColor": { "$type": "color", "$value": "{border.focus}" },
-            "ringWidth": { "$type": "dimension", "$value": "{dim.0_5}" },
+            "ringWidth": { "$type": "dimension", "$value": "{dim.1}" },
             "ringOffset": { "$type": "dimension", "$value": "{dim.0_5}" },
             "$description": "Same ring treatment as primary/secondary — border.focus is always blue regardless of the button's own role."
           },

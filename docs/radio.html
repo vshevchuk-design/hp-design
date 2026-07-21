@@ -72,9 +72,9 @@
   --tok-surface-default: #ffffff;
   --tok-surface-disabled: #e8e8e8;
   --tok-border-default: #d1d1d1;
-  --tok-border-strong: #b4b4b4;
-  --tok-border-focus: #077fec;
+  --tok-border-focus: #0468c4;
   --tok-fill-primary: #077fec;
+  --tok-fill-primary-hover: #0468c4;
   --tok-fill-disabled: #e8e8e8;
   --tok-text-default: #181818;
   --tok-text-disabled: #b4b4b4;
@@ -88,10 +88,12 @@
 .radio__dot { width: 8px; height: 8px; border-radius: 999px; background: transparent; }
 .radio__label { color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; }
 
-.radio:hover .radio__circle { border-color: var(--tok-border-strong); }
-.radio__input:focus-visible ~ .radio__circle { outline: 2px solid var(--tok-border-focus); outline-offset: 2px; }
+.radio:hover .radio__circle { border-color: var(--tok-fill-primary); }
+.radio__input:focus-visible ~ .radio__circle { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
 .radio__input:checked ~ .radio__circle { border-color: var(--tok-fill-primary); }
 .radio__input:checked ~ .radio__circle .radio__dot { background: var(--tok-fill-primary); }
+.radio:hover .radio__input:checked:not(:disabled) ~ .radio__circle { border-color: var(--tok-fill-primary-hover); }
+.radio:hover .radio__input:checked:not(:disabled) ~ .radio__circle .radio__dot { background: var(--tok-fill-primary-hover); }
 .radio__input:disabled ~ .radio__circle { background: var(--tok-surface-disabled); border-color: var(--tok-border-default); cursor: not-allowed; }
 .radio__input:disabled ~ .radio__label { color: var(--tok-text-disabled); }
 .radio__input:disabled:checked ~ .radio__circle .radio__dot { background: var(--tok-fill-disabled); }
@@ -127,6 +129,8 @@
     <a class="navlink" href="tabs.html">Tabs</a>
     <a class="navlink" href="checkbox.html">Checkbox</a>
     <a class="navlink active" href="radio.html">Radio</a>
+    <a class="navlink" href="box.html">Box</a>
+    <a class="navlink" href="card.html">Card</a>
   </nav>
   <main>
     <h1>Radio</h1>
@@ -136,7 +140,7 @@
       <div class="row"><b>Native input</b><span>A real <code class="tok">&lt;input type="radio"&gt;</code> stays in the DOM, visually hidden (clip-rect, not display:none) — grouping via matching <code class="tok">name</code>, keyboard, forms, screen readers all work for free.</span></div>
       <div class="row"><b>Single size</b><span>20px circle, 8px dot — no sm/base/lg grid, same rationale as <a href="checkbox.html">Checkbox</a>.</span></div>
       <div class="row"><b>Never fully fills</b><span>Unlike Checkbox, checked only recolors the outline and shows a small inner dot — both fill.primary, the circle background stays surface.default. Plain CSS circle, not an icon; every reference checked (Radix/MUI/Ant/Material) draws it this way.</span></div>
-      <div class="row"><b>States</b><span>default / hover / focused / checked / disabled / disabled+checked. No error state — not asked for.</span></div>
+      <div class="row"><b>States</b><span>default / hover / focused / checked / checked+hover / disabled / disabled+checked. No error state — not asked for.</span></div>
       <div class="row"><b>Groups</b><span>RadioGroup composes plain Radio items sharing one <code class="tok">name</code> under an optional heading + helper text, vertical or horizontal — no group-level error state.</span></div>
     </div>
 
@@ -145,9 +149,9 @@
   --tok-surface-default: #ffffff;
   --tok-surface-disabled: #e8e8e8;
   --tok-border-default: #d1d1d1;
-  --tok-border-strong: #b4b4b4;
-  --tok-border-focus: #077fec;
+  --tok-border-focus: #0468c4;
   --tok-fill-primary: #077fec;
+  --tok-fill-primary-hover: #0468c4;
   --tok-fill-disabled: #e8e8e8;
   --tok-text-default: #181818;
   --tok-text-disabled: #b4b4b4;
@@ -161,10 +165,12 @@
 .radio__dot { width: 8px; height: 8px; border-radius: 999px; background: transparent; }
 .radio__label { color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; }
 
-.radio:hover .radio__circle { border-color: var(--tok-border-strong); }
-.radio__input:focus-visible ~ .radio__circle { outline: 2px solid var(--tok-border-focus); outline-offset: 2px; }
+.radio:hover .radio__circle { border-color: var(--tok-fill-primary); }
+.radio__input:focus-visible ~ .radio__circle { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
 .radio__input:checked ~ .radio__circle { border-color: var(--tok-fill-primary); }
 .radio__input:checked ~ .radio__circle .radio__dot { background: var(--tok-fill-primary); }
+.radio:hover .radio__input:checked:not(:disabled) ~ .radio__circle { border-color: var(--tok-fill-primary-hover); }
+.radio:hover .radio__input:checked:not(:disabled) ~ .radio__circle .radio__dot { background: var(--tok-fill-primary-hover); }
 .radio__input:disabled ~ .radio__circle { background: var(--tok-surface-disabled); border-color: var(--tok-border-default); cursor: not-allowed; }
 .radio__input:disabled ~ .radio__label { color: var(--tok-text-disabled); }
 .radio__input:disabled:checked ~ .radio__circle .radio__dot { background: var(--tok-fill-disabled); }
@@ -199,27 +205,27 @@
         <h3>hover</h3>
         <div class="story-preview"><label class="radio">
     <input type="radio" class="radio__input" id="r-state-1" name="state-demo-1" />
-    <span class="radio__circle" style="border-color:var(--tok-border-strong)"><span class="radio__dot"></span></span>
+    <span class="radio__circle" style="border-color:var(--tok-fill-primary)"><span class="radio__dot"></span></span>
     <span class="radio__label">Label</span>
   </label></div>
         <pre class="code"><code>&lt;label class="radio"&gt;
     &lt;input type="radio" class="radio__input" id="r-state-1" name="state-demo-1" /&gt;
-    &lt;span class="radio__circle" style="border-color:var(--tok-border-strong)"&gt;&lt;span class="radio__dot"&gt;&lt;/span&gt;&lt;/span&gt;
+    &lt;span class="radio__circle" style="border-color:var(--tok-fill-primary)"&gt;&lt;span class="radio__dot"&gt;&lt;/span&gt;&lt;/span&gt;
     &lt;span class="radio__label"&gt;Label&lt;/span&gt;
   &lt;/label&gt;</code></pre>
-        <p class="story-note">border.strong. Real CSS uses :hover on the label; forced here via inline style so it screenshots without a real cursor.</p>
+        <p class="story-note">fill.primary (blue.500) — border.strong (gray) read as too weak a cue in practice. Real CSS uses :hover on the label; forced here via inline style so it screenshots without a real cursor.</p>
       </div>
 
       <div class="story">
         <h3>focused</h3>
         <div class="story-preview"><label class="radio">
     <input type="radio" class="radio__input" id="r-state-2" name="state-demo-2" />
-    <span class="radio__circle" style="outline:2px solid var(--tok-border-focus); outline-offset:2px"><span class="radio__dot"></span></span>
+    <span class="radio__circle" style="outline:4px solid var(--tok-border-focus); outline-offset:2px"><span class="radio__dot"></span></span>
     <span class="radio__label">Label</span>
   </label></div>
         <pre class="code"><code>&lt;label class="radio"&gt;
     &lt;input type="radio" class="radio__input" id="r-state-2" name="state-demo-2" /&gt;
-    &lt;span class="radio__circle" style="outline:2px solid var(--tok-border-focus); outline-offset:2px"&gt;&lt;span class="radio__dot"&gt;&lt;/span&gt;&lt;/span&gt;
+    &lt;span class="radio__circle" style="outline:4px solid var(--tok-border-focus); outline-offset:2px"&gt;&lt;span class="radio__dot"&gt;&lt;/span&gt;&lt;/span&gt;
     &lt;span class="radio__label"&gt;Label&lt;/span&gt;
   &lt;/label&gt;</code></pre>
         <p class="story-note">Additive ring (border.focus). Real CSS is :focus-visible on the input; forced here via inline style.</p>
@@ -241,14 +247,29 @@
       </div>
 
       <div class="story">
+        <h3>checked + hover</h3>
+        <div class="story-preview"><label class="radio">
+    <input type="radio" class="radio__input" id="r-state-4" name="state-demo-4" checked />
+    <span class="radio__circle" style="border-color:var(--tok-fill-primary-hover)"><span class="radio__dot" style="background:var(--tok-fill-primary-hover)"></span></span>
+    <span class="radio__label">Label</span>
+  </label></div>
+        <pre class="code"><code>&lt;label class="radio"&gt;
+    &lt;input type="radio" class="radio__input" id="r-state-4" name="state-demo-4" checked /&gt;
+    &lt;span class="radio__circle" style="border-color:var(--tok-fill-primary-hover)"&gt;&lt;span class="radio__dot" style="background:var(--tok-fill-primary-hover)"&gt;&lt;/span&gt;&lt;/span&gt;
+    &lt;span class="radio__label"&gt;Label&lt;/span&gt;
+  &lt;/label&gt;</code></pre>
+        <p class="story-note">fill.primaryHover (blue.600) on both outline and dot — same darken-on-hover Button primary already uses for its own filled background.</p>
+      </div>
+
+      <div class="story">
         <h3>disabled</h3>
         <div class="story-preview"><label class="radio">
-    <input type="radio" class="radio__input" id="r-state-4" name="state-demo-4" disabled />
+    <input type="radio" class="radio__input" id="r-state-5" name="state-demo-5" disabled />
     <span class="radio__circle"><span class="radio__dot"></span></span>
     <span class="radio__label">Label</span>
   </label></div>
         <pre class="code"><code>&lt;label class="radio"&gt;
-    &lt;input type="radio" class="radio__input" id="r-state-4" name="state-demo-4" disabled /&gt;
+    &lt;input type="radio" class="radio__input" id="r-state-5" name="state-demo-5" disabled /&gt;
     &lt;span class="radio__circle"&gt;&lt;span class="radio__dot"&gt;&lt;/span&gt;&lt;/span&gt;
     &lt;span class="radio__label"&gt;Label&lt;/span&gt;
   &lt;/label&gt;</code></pre>
@@ -258,12 +279,12 @@
       <div class="story">
         <h3>disabled + checked</h3>
         <div class="story-preview"><label class="radio">
-    <input type="radio" class="radio__input" id="r-state-5" name="state-demo-5" checked disabled />
+    <input type="radio" class="radio__input" id="r-state-6" name="state-demo-6" checked disabled />
     <span class="radio__circle"><span class="radio__dot"></span></span>
     <span class="radio__label">Label</span>
   </label></div>
         <pre class="code"><code>&lt;label class="radio"&gt;
-    &lt;input type="radio" class="radio__input" id="r-state-5" name="state-demo-5" checked disabled /&gt;
+    &lt;input type="radio" class="radio__input" id="r-state-6" name="state-demo-6" checked disabled /&gt;
     &lt;span class="radio__circle"&gt;&lt;span class="radio__dot"&gt;&lt;/span&gt;&lt;/span&gt;
     &lt;span class="radio__label"&gt;Label&lt;/span&gt;
   &lt;/label&gt;</code></pre>

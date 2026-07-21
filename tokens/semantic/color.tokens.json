@@ -64,7 +64,7 @@
     },
     "focus": {
       "$type": "color",
-      "$value": "{color.blue.500}",
+      "$value": "{color.blue.600}",
       "$description": "Focus ring — always this color regardless of the focused element's own role."
     },
     "primary": {

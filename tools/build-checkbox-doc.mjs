@@ -65,8 +65,8 @@ const cv = (tokenPath) => `var(${cssVarName(tokenPath)})`;
 
 const colorPaths = [
   "surface.default", "surface.disabled",
-  "border.default", "border.strong", "border.focus",
-  "fill.primary", "fill.disabled",
+  "border.default", "border.focus",
+  "fill.primary", "fill.primaryHover", "fill.disabled",
   "icon.onFill", "icon.disabled",
   "text.default", "text.disabled", "text.secondary",
 ];
@@ -105,10 +105,13 @@ const css = `${rootVars}
 .checkbox__icon { width: ${iconSize}; height: ${iconSize}; display: none; }
 .checkbox__label { color: ${cv("text.default")}; ${typoCss(labelType)} }
 
-.checkbox:hover .checkbox__box { border-color: ${cv("border.strong")}; }
+.checkbox:hover .checkbox__box { border-color: ${cv("fill.primary")}; }
 .checkbox__input:focus-visible ~ .checkbox__box { outline: ${ringWidth} solid ${cv("border.focus")}; outline-offset: ${ringOffset}; }
 .checkbox__input:checked ~ .checkbox__box, .checkbox__input:indeterminate ~ .checkbox__box {
   background: ${cv("fill.primary")}; border-color: ${cv("fill.primary")};
+}
+.checkbox:hover .checkbox__input:checked:not(:disabled) ~ .checkbox__box, .checkbox:hover .checkbox__input:indeterminate:not(:disabled) ~ .checkbox__box {
+  background: ${cv("fill.primaryHover")}; border-color: ${cv("fill.primaryHover")};
 }
 .checkbox__input:checked ~ .checkbox__box .checkbox__icon--check { display: block; color: ${cv("icon.onFill")}; }
 .checkbox__input:indeterminate ~ .checkbox__box .checkbox__icon--remove { display: block; color: ${cv("icon.onFill")}; }
@@ -147,7 +150,13 @@ function markup(id, { checked = false, indeterminate = false, disabled = false, 
     disabled ? " disabled" : "",
     indeterminate ? ' data-indeterminate="true"' : "",
   ].join("");
-  const extraStyle = hover ? ` style="border-color:${cv("border.strong")}"` : focused ? ` style="outline:${ringWidth} solid ${cv("border.focus")}; outline-offset:${ringOffset}"` : "";
+  const extraStyle = focused
+    ? ` style="outline:${ringWidth} solid ${cv("border.focus")}; outline-offset:${ringOffset}"`
+    : hover && (checked || indeterminate)
+    ? ` style="background:${cv("fill.primaryHover")}; border-color:${cv("fill.primaryHover")}"`
+    : hover
+    ? ` style="border-color:${cv("fill.primary")}"`
+    : "";
   return `<label class="checkbox">
     <input type="checkbox" class="checkbox__input" id="${id}"${attrs} />
     <span class="checkbox__box"${extraStyle}>${glyphs(live)}</span>
@@ -167,9 +176,10 @@ function storyCard(title, liveHtml, codeHtml, note = "") {
 
 const stateDefs = [
   { key: "default", label: "default", opts: {}, note: "Unchecked, on surface.default — not filled." },
-  { key: "hover", label: "hover", opts: { hover: true }, note: "border.strong. Real CSS uses :hover on the label; forced here via inline style so it screenshots without a real cursor." },
+  { key: "hover", label: "hover", opts: { hover: true }, note: "fill.primary (blue.500) border — border.strong (gray) read as too weak a cue in practice. Real CSS uses :hover on the label; forced here via inline style so it screenshots without a real cursor." },
   { key: "focused", label: "focused", opts: { focused: true }, note: "Additive ring (border.focus), composes on top of checked/unchecked. Real CSS is :focus-visible on the input; forced here via inline style." },
   { key: "checked", label: "checked", opts: { checked: true }, note: "bg + border both fill.primary, icon icon.onFill (check.svg)." },
+  { key: "checked-hover", label: "checked + hover", opts: { checked: true, hover: true }, note: "fill.primaryHover (blue.600) — the same darken-on-hover Button primary already uses for its own filled background." },
   { key: "indeterminate", label: "indeterminate", opts: { indeterminate: true }, note: "Same fill as checked, remove.svg dash instead of a tick — typical for a parent 'select all' row. Set via a tiny inline script (indeterminate is a JS-only DOM property, no HTML attribute)." },
   { key: "disabled", label: "disabled", opts: { disabled: true }, note: "surface.disabled, unlike checked/unchecked default which uses surface.default — a real visible change here (see token's own note)." },
   { key: "disabled-checked", label: "disabled + checked", opts: { disabled: true, checked: true }, note: "fill.disabled/icon.disabled — same pair Button secondary and Input already use for their own disabled states." },
@@ -281,7 +291,7 @@ const html = `<!doctype html>
       <div class="row"><b>Single size</b><span>20px box, 4px radius — no sm/base/lg grid, per explicit spec (this is a fixed-size control, not a field).</span></div>
       <div class="row"><b>Glyphs</b><span>check.svg (checked) / remove.svg (indeterminate) from the shared <a href="icons.html">Material icon set</a> — not bespoke assets.</span></div>
       <div class="row"><b>Unchecked ≠ disabled</b><span>Unchecked default sits on surface.default (not filled), so disabled's surface.disabled swap is an actual visible change — unlike Input, where those two already share the same gray.100 value.</span></div>
-      <div class="row"><b>States</b><span>default / hover / focused / checked / indeterminate / disabled / disabled+checked. No error state — not asked for, and there's no field validation concept here.</span></div>
+      <div class="row"><b>States</b><span>default / hover / focused / checked / checked+hover / indeterminate / disabled / disabled+checked. No error state — not asked for, and there's no field validation concept here.</span></div>
       <div class="row"><b>Groups</b><span>CheckboxGroup composes plain Checkbox items under an optional heading + helper text, vertical or horizontal — no group-level error state.</span></div>
     </div>
 

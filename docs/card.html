@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>hp-design — Card</title>
+<style>
+  :root {
+    --bg-page: #f7f7f5; --bg-card: #ffffff; --bg-card-hover: #fbfbfa;
+    --border: #e4e3df; --border-strong: #d2d1cb;
+    --text-primary: #0e0e10; --text-secondary: #63625c; --text-muted: #918f87;
+    --accent: #0468c4; --accent-bg: #eff6ff;
+    --code-bg: #1e1e22; --code-text: #e4e3df;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --sans: -apple-system, "Segoe UI", system-ui, sans-serif;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327;
+      --border: #313035; --border-strong: #403f45;
+      --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68;
+      --accent: #5aa4ec; --accent-bg: #16283b;
+      --code-bg: #0d0d0f; --code-text: #d7d6d2;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327;
+    --border: #313035; --border-strong: #403f45;
+    --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68;
+    --accent: #5aa4ec; --accent-bg: #16283b;
+    --code-bg: #0d0d0f; --code-text: #d7d6d2;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg-page); color: var(--text-primary); font-family: var(--sans); }
+  .shell { display: flex; min-height: 100vh; }
+  nav.side { width: 220px; flex-shrink: 0; border-right: 0.5px solid var(--border); padding: 1.5rem 1rem; position: sticky; top: 0; height: 100vh; }
+  .brand { font-size: 14px; font-weight: 600; margin: 0 0 2px 8px; }
+  .brand-sub { font-size: 11.5px; color: var(--text-muted); margin: 0 0 1.5rem 8px; }
+  .navlink { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 8px; border-radius: 7px; font-size: 13px; text-decoration: none; color: var(--text-primary); margin-bottom: 1px; }
+  .navlink:hover { background: var(--bg-card-hover); }
+  .navlink.active { background: var(--accent-bg); color: var(--accent); font-weight: 600; }
+  .nav-category { font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin: 16px 8px 6px; }
+  main { flex: 1; padding: 4rem 4rem 6rem; max-width: 1120px; }
+
+  h1 { font-size: 36px; font-weight: 700; margin: 0 0 10px; letter-spacing: -0.02em; }
+  .sub { font-size: 14px; color: var(--text-secondary); margin: 0 0 2.5rem; }
+  h2.big-section { font-size: 24px; font-weight: 700; margin: 5.5rem 0 1.5rem; letter-spacing: -0.01em; padding-top: 2.5rem; border-top: 1px solid var(--border); }
+  h2.big-section:first-of-type { margin-top: 3rem; padding-top: 0; border-top: none; }
+  .section-desc { font-size: 13.5px; color: var(--text-secondary); margin: -0.5rem 0 1.5rem; max-width: 68ch; line-height: 1.6; }
+
+  .legend { font-size: 12.5px; color: var(--text-secondary); padding: 14px 18px; background: var(--bg-card); border: 0.5px solid var(--border); border-radius: 10px; margin-bottom: 1rem; line-height: 1.6; }
+  .legend .row { display: flex; gap: 14px; padding: 6px 0; border-bottom: 0.5px solid var(--border); }
+  .legend .row:last-child { border-bottom: none; }
+  .legend .row b { width: 150px; flex-shrink: 0; color: var(--text-primary); font-weight: 600; font-family: var(--mono); font-size: 11.5px; }
+  code.tok { font-family: var(--mono); font-size: 12px; color: var(--accent); }
+
+  pre.code { background: var(--code-bg); color: var(--code-text); border-radius: 10px; padding: 16px 18px; margin: 0; overflow-x: auto; font-family: var(--mono); font-size: 12px; line-height: 1.7; }
+  pre.code code { font-family: inherit; }
+
+  .story-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 28px; }
+  .story { border: 0.5px solid var(--border); border-radius: 14px; background: var(--bg-card); padding: 24px; display: flex; flex-direction: column; gap: 14px; }
+  .story h3 { font-size: 14px; font-weight: 600; margin: 0; font-family: var(--mono); }
+  .story-preview { min-height: 64px; display: flex; align-items: center; justify-content: center; padding: 12px 0; }
+  .story-note { font-size: 11.5px; color: var(--text-muted); margin: 0; line-height: 1.5; }
+
+  .demo-card { width: 100%; max-width: 280px; }
+  .ph-line { display: block; border-radius: 4px; background: var(--border-strong); }
+  .ph-line--title { height: 15px; margin-bottom: 6px; }
+  .ph-line--body { height: 9px; background: var(--border); margin-bottom: 6px; }
+  .ph-line--body:last-child { margin-bottom: 0; }
+  .ph-pill { display: inline-block; height: 9px; border-radius: 4px; background: var(--border-strong); }
+
+  .placeholder-note { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-muted); border: 0.5px dashed var(--border-strong); border-radius: 6px; padding: 4px 10px; margin-top: 1.5rem; }
+
+  :root {
+  --tok-surface-default: #ffffff;
+  --tok-border-default: #d1d1d1;
+  --tok-border-focus: #0468c4;
+  --tok-fill-primary: #077fec;
+  --tok-bg-primary: #d9eaff;
+  --tok-text-default: #181818;
+  --tok-text-secondary: #696969;
+  --tok-family-sans: 'Sora', sans-serif;
+}
+
+.card { box-sizing: border-box; display: flex; flex-direction: column; gap: 12px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); border-radius: 8px; padding: 16px; font-family: var(--tok-family-sans); }
+.card__header { padding-bottom: 12px; border-bottom: 1px solid var(--tok-border-default); }
+.card__footer { padding-top: 12px; border-top: 1px solid var(--tok-border-default); display: flex; gap: 8px; }
+.card__title { margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 14px; line-height: 1.4; }
+.card__body-text { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 14px; line-height: 1.4; }
+
+.card--interactive { width: 100%; text-align: left; cursor: pointer; appearance: none; outline: none; }
+.card--interactive:hover { border-color: var(--tok-fill-primary); }
+.card--interactive:active { background: var(--tok-bg-primary); border-color: var(--tok-fill-primary); }
+.card--interactive:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
+</style>
+</head>
+<body>
+<div class="shell">
+  <nav class="side">
+    <p class="brand">hp-design</p>
+    <p class="brand-sub">Highpoint design system</p>
+    <a class="navlink" href="index.html">Overview</a>
+    <p class="nav-category">Tokens</p>
+    <a class="navlink" href="colors.html">Colors</a>
+    <a class="navlink" href="semantic-colors.html">Semantic colors</a>
+    <a class="navlink" href="typography.html">Typography</a>
+    <a class="navlink" href="layout.html">Layout</a>
+    <a class="navlink" href="icons.html">Icons</a>
+    <p class="nav-category">Components</p>
+    <a class="navlink" href="button.html">Button</a>
+    <a class="navlink" href="counter.html">Counter</a>
+    <a class="navlink" href="input.html">Input</a>
+    <a class="navlink" href="select.html">Select</a>
+    <a class="navlink" href="search.html">Search</a>
+    <a class="navlink" href="pagination.html">Pagination</a>
+    <a class="navlink" href="separator.html">Separator</a>
+    <a class="navlink" href="tabs.html">Tabs</a>
+    <a class="navlink" href="checkbox.html">Checkbox</a>
+    <a class="navlink" href="radio.html">Radio</a>
+    <a class="navlink" href="box.html">Box</a>
+    <a class="navlink active" href="card.html">Card</a>
+  </nav>
+  <main>
+    <h1>Card</h1>
+    <p class="sub">tokens/components/card.tokens.json · generated — the CSS below is generated from the same resolved tokens driving every preview on this page, not hand-copied. Colors are CSS custom properties, not literal hex.</p>
+
+    <div class="legend">
+      <div class="row"><b>Border, not shadow</b><span>surface.default + border.default + radius.default — no shadow/elevation token exists anywhere in this system yet; separation is drawn with a hairline border everywhere else (Input/Select/Search), and introducing one just for Card would be new token surface for no real need.</span></div>
+      <div class="row"><b>Built on Box</b><span>Same surface/border/padding roles as <a href="box.html">Box</a>, but Card fixes one specific combination for grouping content rather than staying fully generic.</span></div>
+      <div class="row"><b>Sections</b><span>title/header/footer are all optional — a card can be body-only. Header/footer are separated from the body by the same border.default hairline as the card's own edge — not Separator's full component, just its resolved color.</span></div>
+      <div class="row"><b>Interactive variant</b><span>Opt-in, for a card that's itself a click target. A real &lt;button&gt;, not a div with an onClick — :hover/:active/:focus-visible work natively. Deliberately <em>not</em> Button ghost/Pagination/Tabs' fill.neutralHover→fill.neutralActive progression — those are tuned for a small icon/pill area, and the same fill across a whole card reads too heavy. Hover/pressed both turn the border fill.primary (blue.500, the same brand blue Checkbox/Radio use checked); pressed additionally washes in bg.primary (blue.100) instead of a gray fill — one blue family, not blue-border-on-gray-fill. border.focus is a deliberately stronger blue.600 (system-wide) so keyboard focus still clearly out-ranks mouse hover.</span></div>
+      <div class="row"><b>No disabled state</b><span>Not asked for, and a static content card has no clear inert scenario the way a form field or button does.</span></div>
+    </div>
+
+    <h2 class="big-section">CSS</h2>
+    <pre class="code"><code>:root {
+  --tok-surface-default: #ffffff;
+  --tok-border-default: #d1d1d1;
+  --tok-border-focus: #0468c4;
+  --tok-fill-primary: #077fec;
+  --tok-bg-primary: #d9eaff;
+  --tok-text-default: #181818;
+  --tok-text-secondary: #696969;
+  --tok-family-sans: 'Sora', sans-serif;
+}
+
+.card { box-sizing: border-box; display: flex; flex-direction: column; gap: 12px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); border-radius: 8px; padding: 16px; font-family: var(--tok-family-sans); }
+.card__header { padding-bottom: 12px; border-bottom: 1px solid var(--tok-border-default); }
+.card__footer { padding-top: 12px; border-top: 1px solid var(--tok-border-default); display: flex; gap: 8px; }
+.card__title { margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 14px; line-height: 1.4; }
+.card__body-text { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 14px; line-height: 1.4; }
+
+.card--interactive { width: 100%; text-align: left; cursor: pointer; appearance: none; outline: none; }
+.card--interactive:hover { border-color: var(--tok-fill-primary); }
+.card--interactive:active { background: var(--tok-bg-primary); border-color: var(--tok-fill-primary); }
+.card--interactive:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }</code></pre>
+
+    <h2 class="big-section">Static</h2>
+    <p class="section-desc">The gray bars are docs-only placeholders standing in for arbitrary content, not a fixed set of "card types" — Card has no opinion on what goes inside. The printed code below each one shows real starter text instead of the bars.</p>
+    <div class="story-grid">
+      
+      <div class="story">
+        <h3>Title + body</h3>
+        <div class="story-preview"><div class="card demo-card">
+      <p class="card__title"><span class="ph-line ph-line--title" style="width:50%"></span></p>
+      <p class="card__body-text"><span class="ph-line ph-line--body" style="width:100%"></span><span class="ph-line ph-line--body" style="width:70%"></span></p>
+    </div></div>
+        <pre class="code"><code>&lt;div class="card"&gt;
+  &lt;p class="card__title"&gt;Card title&lt;/p&gt;
+  &lt;p class="card__body-text"&gt;Supporting text goes here.&lt;/p&gt;
+&lt;/div&gt;</code></pre>
+        
+      </div>
+      
+      <div class="story">
+        <h3>Body only</h3>
+        <div class="story-preview"><div class="card demo-card">
+      <p class="card__body-text"><span class="ph-line ph-line--body" style="width:100%"></span><span class="ph-line ph-line--body" style="width:85%"></span><span class="ph-line ph-line--body" style="width:40%"></span></p>
+    </div></div>
+        <pre class="code"><code>&lt;div class="card"&gt;
+  &lt;p class="card__body-text"&gt;Supporting text goes here. Title is optional — this card has none.&lt;/p&gt;
+&lt;/div&gt;</code></pre>
+        <p class="story-note">Title is entirely optional — a card can be just card__body-text (or genuinely anything) with no card__title at all.</p>
+      </div>
+      
+      <div class="story">
+        <h3>Header + body + footer</h3>
+        <div class="story-preview"><div class="card demo-card">
+      <div class="card__header">
+        <p class="card__title"><span class="ph-line ph-line--title" style="width:65%"></span></p>
+      </div>
+      <p class="card__body-text"><span class="ph-line ph-line--body" style="width:100%"></span><span class="ph-line ph-line--body" style="width:55%"></span></p>
+      <div class="card__footer">
+        <span class="card__body-text"><span class="ph-pill" style="width:64px"></span></span>
+        <span class="card__body-text"><span class="ph-pill" style="width:88px"></span></span>
+      </div>
+    </div></div>
+        <pre class="code"><code>&lt;div class="card"&gt;
+  &lt;div class="card__header"&gt;
+    &lt;p class="card__title"&gt;Section title&lt;/p&gt;
+  &lt;/div&gt;
+  &lt;p class="card__body-text"&gt;Body content goes here.&lt;/p&gt;
+  &lt;div class="card__footer"&gt;
+    &lt;span class="card__body-text"&gt;Action one&lt;/span&gt;
+    &lt;span class="card__body-text"&gt;Action two&lt;/span&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+        <p class="story-note">Header and footer are separated from the body by border.default, same hairline as the card's own edge — also optional, use only the sections a given card needs.</p>
+      </div>
+    </div>
+
+    <h2 class="big-section">Interactive</h2>
+    <p class="section-desc">A real &lt;button&gt; wearing the card's own surface/border/radius — clickable-card pattern, e.g. a project/site summary that navigates on click.</p>
+    <div class="story-grid">
+      
+      <div class="story">
+        <h3>default</h3>
+        <div class="story-preview"><button class="card card--interactive demo-card" style="">
+      <p class="card__title"><span class="ph-line ph-line--title" style="width:60%"></span></p>
+      <p class="card__body-text"><span class="ph-line ph-line--body" style="width:100%"></span><span class="ph-line ph-line--body" style="width:45%"></span></p>
+    </button></div>
+        <pre class="code"><code>&lt;button class="card card--interactive"&gt;
+  &lt;p class="card__title"&gt;Marketing site&lt;/p&gt;
+  &lt;p class="card__body-text"&gt;Last deployed 2 hours ago&lt;/p&gt;
+&lt;/button&gt;</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>hover</h3>
+        <div class="story-preview"><button class="card card--interactive demo-card" style="border-color:var(--tok-fill-primary)">
+      <p class="card__title"><span class="ph-line ph-line--title" style="width:60%"></span></p>
+      <p class="card__body-text"><span class="ph-line ph-line--body" style="width:100%"></span><span class="ph-line ph-line--body" style="width:45%"></span></p>
+    </button></div>
+        <pre class="code"><code>&lt;button class="card card--interactive"&gt;
+  &lt;p class="card__title"&gt;Marketing site&lt;/p&gt;
+  &lt;p class="card__body-text"&gt;Last deployed 2 hours ago&lt;/p&gt;
+&lt;/button&gt;</code></pre>
+        <p class="story-note">fill.primary (blue.500) — the same brand blue Checkbox/Radio use when checked. border.strong (gray) read as too weak a cue; border.primary (pale blue.200) paired with a gray fill on pressed read muddy — two color languages at once. border.focus moved to blue.600 system-wide so it stays the strongest, most certain state (keyboard focus needs to out-rank mouse hover).</p>
+      </div>
+
+      <div class="story">
+        <h3>pressed</h3>
+        <div class="story-preview"><button class="card card--interactive demo-card" style="background:var(--tok-bg-primary); border-color:var(--tok-fill-primary)">
+      <p class="card__title"><span class="ph-line ph-line--title" style="width:60%"></span></p>
+      <p class="card__body-text"><span class="ph-line ph-line--body" style="width:100%"></span><span class="ph-line ph-line--body" style="width:45%"></span></p>
+    </button></div>
+        <pre class="code"><code>&lt;button class="card card--interactive"&gt;
+  &lt;p class="card__title"&gt;Marketing site&lt;/p&gt;
+  &lt;p class="card__body-text"&gt;Last deployed 2 hours ago&lt;/p&gt;
+&lt;/button&gt;</code></pre>
+        <p class="story-note">Border stays fill.primary; the fill is bg.primary (blue.100, the same passive-tint role used for banners/badges) — one consistent blue family instead of mixing in gray.</p>
+      </div>
+
+      <div class="story">
+        <h3>focused</h3>
+        <div class="story-preview"><button class="card card--interactive demo-card" style="outline:4px solid var(--tok-border-focus); outline-offset:2px">
+      <p class="card__title"><span class="ph-line ph-line--title" style="width:60%"></span></p>
+      <p class="card__body-text"><span class="ph-line ph-line--body" style="width:100%"></span><span class="ph-line ph-line--body" style="width:45%"></span></p>
+    </button></div>
+        <pre class="code"><code>&lt;button class="card card--interactive"&gt;
+  &lt;p class="card__title"&gt;Marketing site&lt;/p&gt;
+  &lt;p class="card__body-text"&gt;Last deployed 2 hours ago&lt;/p&gt;
+&lt;/button&gt;</code></pre>
+        <p class="story-note">Additive ring, composes on top of hover/pressed. Real CSS is :focus-visible on the button, shown in the CSS above — forced here via inline style for a static screenshot.</p>
+      </div>
+    </div>
+
+    <p class="placeholder-note">Every code sample on this page is printed from the same resolved token values driving the live previews above it — copy it directly, nothing here is hand-typed.</p>
+  </main>
+</div>
+</body>
+</html>

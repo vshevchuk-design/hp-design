@@ -72,9 +72,9 @@
   --tok-surface-default: #ffffff;
   --tok-surface-disabled: #e8e8e8;
   --tok-border-default: #d1d1d1;
-  --tok-border-strong: #b4b4b4;
-  --tok-border-focus: #077fec;
+  --tok-border-focus: #0468c4;
   --tok-fill-primary: #077fec;
+  --tok-fill-primary-hover: #0468c4;
   --tok-fill-disabled: #e8e8e8;
   --tok-icon-on-fill: #ffffff;
   --tok-icon-disabled: #b4b4b4;
@@ -90,10 +90,13 @@
 .checkbox__icon { width: 16px; height: 16px; display: none; }
 .checkbox__label { color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; }
 
-.checkbox:hover .checkbox__box { border-color: var(--tok-border-strong); }
-.checkbox__input:focus-visible ~ .checkbox__box { outline: 2px solid var(--tok-border-focus); outline-offset: 2px; }
+.checkbox:hover .checkbox__box { border-color: var(--tok-fill-primary); }
+.checkbox__input:focus-visible ~ .checkbox__box { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
 .checkbox__input:checked ~ .checkbox__box, .checkbox__input:indeterminate ~ .checkbox__box {
   background: var(--tok-fill-primary); border-color: var(--tok-fill-primary);
+}
+.checkbox:hover .checkbox__input:checked:not(:disabled) ~ .checkbox__box, .checkbox:hover .checkbox__input:indeterminate:not(:disabled) ~ .checkbox__box {
+  background: var(--tok-fill-primary-hover); border-color: var(--tok-fill-primary-hover);
 }
 .checkbox__input:checked ~ .checkbox__box .checkbox__icon--check { display: block; color: var(--tok-icon-on-fill); }
 .checkbox__input:indeterminate ~ .checkbox__box .checkbox__icon--remove { display: block; color: var(--tok-icon-on-fill); }
@@ -135,6 +138,8 @@
     <a class="navlink" href="tabs.html">Tabs</a>
     <a class="navlink active" href="checkbox.html">Checkbox</a>
     <a class="navlink" href="radio.html">Radio</a>
+    <a class="navlink" href="box.html">Box</a>
+    <a class="navlink" href="card.html">Card</a>
   </nav>
   <main>
     <h1>Checkbox</h1>
@@ -145,7 +150,7 @@
       <div class="row"><b>Single size</b><span>20px box, 4px radius — no sm/base/lg grid, per explicit spec (this is a fixed-size control, not a field).</span></div>
       <div class="row"><b>Glyphs</b><span>check.svg (checked) / remove.svg (indeterminate) from the shared <a href="icons.html">Material icon set</a> — not bespoke assets.</span></div>
       <div class="row"><b>Unchecked ≠ disabled</b><span>Unchecked default sits on surface.default (not filled), so disabled's surface.disabled swap is an actual visible change — unlike Input, where those two already share the same gray.100 value.</span></div>
-      <div class="row"><b>States</b><span>default / hover / focused / checked / indeterminate / disabled / disabled+checked. No error state — not asked for, and there's no field validation concept here.</span></div>
+      <div class="row"><b>States</b><span>default / hover / focused / checked / checked+hover / indeterminate / disabled / disabled+checked. No error state — not asked for, and there's no field validation concept here.</span></div>
       <div class="row"><b>Groups</b><span>CheckboxGroup composes plain Checkbox items under an optional heading + helper text, vertical or horizontal — no group-level error state.</span></div>
     </div>
 
@@ -154,9 +159,9 @@
   --tok-surface-default: #ffffff;
   --tok-surface-disabled: #e8e8e8;
   --tok-border-default: #d1d1d1;
-  --tok-border-strong: #b4b4b4;
-  --tok-border-focus: #077fec;
+  --tok-border-focus: #0468c4;
   --tok-fill-primary: #077fec;
+  --tok-fill-primary-hover: #0468c4;
   --tok-fill-disabled: #e8e8e8;
   --tok-icon-on-fill: #ffffff;
   --tok-icon-disabled: #b4b4b4;
@@ -172,10 +177,13 @@
 .checkbox__icon { width: 16px; height: 16px; display: none; }
 .checkbox__label { color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; }
 
-.checkbox:hover .checkbox__box { border-color: var(--tok-border-strong); }
-.checkbox__input:focus-visible ~ .checkbox__box { outline: 2px solid var(--tok-border-focus); outline-offset: 2px; }
+.checkbox:hover .checkbox__box { border-color: var(--tok-fill-primary); }
+.checkbox__input:focus-visible ~ .checkbox__box { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
 .checkbox__input:checked ~ .checkbox__box, .checkbox__input:indeterminate ~ .checkbox__box {
   background: var(--tok-fill-primary); border-color: var(--tok-fill-primary);
+}
+.checkbox:hover .checkbox__input:checked:not(:disabled) ~ .checkbox__box, .checkbox:hover .checkbox__input:indeterminate:not(:disabled) ~ .checkbox__box {
+  background: var(--tok-fill-primary-hover); border-color: var(--tok-fill-primary-hover);
 }
 .checkbox__input:checked ~ .checkbox__box .checkbox__icon--check { display: block; color: var(--tok-icon-on-fill); }
 .checkbox__input:indeterminate ~ .checkbox__box .checkbox__icon--remove { display: block; color: var(--tok-icon-on-fill); }
@@ -216,27 +224,27 @@
         <h3>hover</h3>
         <div class="story-preview"><label class="checkbox">
     <input type="checkbox" class="checkbox__input" id="cb-state-1-live" />
-    <span class="checkbox__box" style="border-color:var(--tok-border-strong)"><svg class="checkbox__icon checkbox__icon--check" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg><svg class="checkbox__icon checkbox__icon--remove" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13H5v-2h14v2z"/></svg></span>
+    <span class="checkbox__box" style="border-color:var(--tok-fill-primary)"><svg class="checkbox__icon checkbox__icon--check" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg><svg class="checkbox__icon checkbox__icon--remove" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13H5v-2h14v2z"/></svg></span>
     <span class="checkbox__label">Label</span>
   </label></div>
         <pre class="code"><code>&lt;label class="checkbox"&gt;
     &lt;input type="checkbox" class="checkbox__input" id="cb-state-1" /&gt;
-    &lt;span class="checkbox__box" style="border-color:var(--tok-border-strong)"&gt;&lt;svg class="checkbox__icon checkbox__icon--check"&gt;&lt;!-- icon: check --&gt;&lt;/svg&gt;&lt;svg class="checkbox__icon checkbox__icon--remove"&gt;&lt;!-- icon: remove --&gt;&lt;/svg&gt;&lt;/span&gt;
+    &lt;span class="checkbox__box" style="border-color:var(--tok-fill-primary)"&gt;&lt;svg class="checkbox__icon checkbox__icon--check"&gt;&lt;!-- icon: check --&gt;&lt;/svg&gt;&lt;svg class="checkbox__icon checkbox__icon--remove"&gt;&lt;!-- icon: remove --&gt;&lt;/svg&gt;&lt;/span&gt;
     &lt;span class="checkbox__label"&gt;Label&lt;/span&gt;
   &lt;/label&gt;</code></pre>
-        <p class="story-note">border.strong. Real CSS uses :hover on the label; forced here via inline style so it screenshots without a real cursor.</p>
+        <p class="story-note">fill.primary (blue.500) border — border.strong (gray) read as too weak a cue in practice. Real CSS uses :hover on the label; forced here via inline style so it screenshots without a real cursor.</p>
       </div>
 
       <div class="story">
         <h3>focused</h3>
         <div class="story-preview"><label class="checkbox">
     <input type="checkbox" class="checkbox__input" id="cb-state-2-live" />
-    <span class="checkbox__box" style="outline:2px solid var(--tok-border-focus); outline-offset:2px"><svg class="checkbox__icon checkbox__icon--check" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg><svg class="checkbox__icon checkbox__icon--remove" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13H5v-2h14v2z"/></svg></span>
+    <span class="checkbox__box" style="outline:4px solid var(--tok-border-focus); outline-offset:2px"><svg class="checkbox__icon checkbox__icon--check" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg><svg class="checkbox__icon checkbox__icon--remove" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13H5v-2h14v2z"/></svg></span>
     <span class="checkbox__label">Label</span>
   </label></div>
         <pre class="code"><code>&lt;label class="checkbox"&gt;
     &lt;input type="checkbox" class="checkbox__input" id="cb-state-2" /&gt;
-    &lt;span class="checkbox__box" style="outline:2px solid var(--tok-border-focus); outline-offset:2px"&gt;&lt;svg class="checkbox__icon checkbox__icon--check"&gt;&lt;!-- icon: check --&gt;&lt;/svg&gt;&lt;svg class="checkbox__icon checkbox__icon--remove"&gt;&lt;!-- icon: remove --&gt;&lt;/svg&gt;&lt;/span&gt;
+    &lt;span class="checkbox__box" style="outline:4px solid var(--tok-border-focus); outline-offset:2px"&gt;&lt;svg class="checkbox__icon checkbox__icon--check"&gt;&lt;!-- icon: check --&gt;&lt;/svg&gt;&lt;svg class="checkbox__icon checkbox__icon--remove"&gt;&lt;!-- icon: remove --&gt;&lt;/svg&gt;&lt;/span&gt;
     &lt;span class="checkbox__label"&gt;Label&lt;/span&gt;
   &lt;/label&gt;</code></pre>
         <p class="story-note">Additive ring (border.focus), composes on top of checked/unchecked. Real CSS is :focus-visible on the input; forced here via inline style.</p>
@@ -258,14 +266,29 @@
       </div>
 
       <div class="story">
+        <h3>checked + hover</h3>
+        <div class="story-preview"><label class="checkbox">
+    <input type="checkbox" class="checkbox__input" id="cb-state-4-live" checked />
+    <span class="checkbox__box" style="background:var(--tok-fill-primary-hover); border-color:var(--tok-fill-primary-hover)"><svg class="checkbox__icon checkbox__icon--check" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg><svg class="checkbox__icon checkbox__icon--remove" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13H5v-2h14v2z"/></svg></span>
+    <span class="checkbox__label">Label</span>
+  </label></div>
+        <pre class="code"><code>&lt;label class="checkbox"&gt;
+    &lt;input type="checkbox" class="checkbox__input" id="cb-state-4" checked /&gt;
+    &lt;span class="checkbox__box" style="background:var(--tok-fill-primary-hover); border-color:var(--tok-fill-primary-hover)"&gt;&lt;svg class="checkbox__icon checkbox__icon--check"&gt;&lt;!-- icon: check --&gt;&lt;/svg&gt;&lt;svg class="checkbox__icon checkbox__icon--remove"&gt;&lt;!-- icon: remove --&gt;&lt;/svg&gt;&lt;/span&gt;
+    &lt;span class="checkbox__label"&gt;Label&lt;/span&gt;
+  &lt;/label&gt;</code></pre>
+        <p class="story-note">fill.primaryHover (blue.600) — the same darken-on-hover Button primary already uses for its own filled background.</p>
+      </div>
+
+      <div class="story">
         <h3>indeterminate</h3>
         <div class="story-preview"><label class="checkbox">
-    <input type="checkbox" class="checkbox__input" id="cb-state-4-live" data-indeterminate="true" />
+    <input type="checkbox" class="checkbox__input" id="cb-state-5-live" data-indeterminate="true" />
     <span class="checkbox__box"><svg class="checkbox__icon checkbox__icon--check" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg><svg class="checkbox__icon checkbox__icon--remove" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13H5v-2h14v2z"/></svg></span>
     <span class="checkbox__label">Label</span>
   </label></div>
         <pre class="code"><code>&lt;label class="checkbox"&gt;
-    &lt;input type="checkbox" class="checkbox__input" id="cb-state-4" data-indeterminate="true" /&gt;
+    &lt;input type="checkbox" class="checkbox__input" id="cb-state-5" data-indeterminate="true" /&gt;
     &lt;span class="checkbox__box"&gt;&lt;svg class="checkbox__icon checkbox__icon--check"&gt;&lt;!-- icon: check --&gt;&lt;/svg&gt;&lt;svg class="checkbox__icon checkbox__icon--remove"&gt;&lt;!-- icon: remove --&gt;&lt;/svg&gt;&lt;/span&gt;
     &lt;span class="checkbox__label"&gt;Label&lt;/span&gt;
   &lt;/label&gt;</code></pre>
@@ -275,12 +298,12 @@
       <div class="story">
         <h3>disabled</h3>
         <div class="story-preview"><label class="checkbox">
-    <input type="checkbox" class="checkbox__input" id="cb-state-5-live" disabled />
+    <input type="checkbox" class="checkbox__input" id="cb-state-6-live" disabled />
     <span class="checkbox__box"><svg class="checkbox__icon checkbox__icon--check" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg><svg class="checkbox__icon checkbox__icon--remove" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13H5v-2h14v2z"/></svg></span>
     <span class="checkbox__label">Label</span>
   </label></div>
         <pre class="code"><code>&lt;label class="checkbox"&gt;
-    &lt;input type="checkbox" class="checkbox__input" id="cb-state-5" disabled /&gt;
+    &lt;input type="checkbox" class="checkbox__input" id="cb-state-6" disabled /&gt;
     &lt;span class="checkbox__box"&gt;&lt;svg class="checkbox__icon checkbox__icon--check"&gt;&lt;!-- icon: check --&gt;&lt;/svg&gt;&lt;svg class="checkbox__icon checkbox__icon--remove"&gt;&lt;!-- icon: remove --&gt;&lt;/svg&gt;&lt;/span&gt;
     &lt;span class="checkbox__label"&gt;Label&lt;/span&gt;
   &lt;/label&gt;</code></pre>
@@ -290,12 +313,12 @@
       <div class="story">
         <h3>disabled + checked</h3>
         <div class="story-preview"><label class="checkbox">
-    <input type="checkbox" class="checkbox__input" id="cb-state-6-live" checked disabled />
+    <input type="checkbox" class="checkbox__input" id="cb-state-7-live" checked disabled />
     <span class="checkbox__box"><svg class="checkbox__icon checkbox__icon--check" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg><svg class="checkbox__icon checkbox__icon--remove" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13H5v-2h14v2z"/></svg></span>
     <span class="checkbox__label">Label</span>
   </label></div>
         <pre class="code"><code>&lt;label class="checkbox"&gt;
-    &lt;input type="checkbox" class="checkbox__input" id="cb-state-6" checked disabled /&gt;
+    &lt;input type="checkbox" class="checkbox__input" id="cb-state-7" checked disabled /&gt;
     &lt;span class="checkbox__box"&gt;&lt;svg class="checkbox__icon checkbox__icon--check"&gt;&lt;!-- icon: check --&gt;&lt;/svg&gt;&lt;svg class="checkbox__icon checkbox__icon--remove"&gt;&lt;!-- icon: remove --&gt;&lt;/svg&gt;&lt;/span&gt;
     &lt;span class="checkbox__label"&gt;Label&lt;/span&gt;
   &lt;/label&gt;</code></pre>

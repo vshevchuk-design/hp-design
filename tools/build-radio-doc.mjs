@@ -65,8 +65,8 @@ const cv = (tokenPath) => `var(${cssVarName(tokenPath)})`;
 
 const colorPaths = [
   "surface.default", "surface.disabled",
-  "border.default", "border.strong", "border.focus",
-  "fill.primary", "fill.disabled",
+  "border.default", "border.focus",
+  "fill.primary", "fill.primaryHover", "fill.disabled",
   "text.default", "text.disabled", "text.secondary",
 ];
 const colorValue = Object.fromEntries(colorPaths.map((p) => [p, resolve(p)]));
@@ -101,10 +101,12 @@ const css = `${rootVars}
 .radio__dot { width: ${dot}; height: ${dot}; border-radius: ${circleRadius}; background: transparent; }
 .radio__label { color: ${cv("text.default")}; ${typoCss(labelType)} }
 
-.radio:hover .radio__circle { border-color: ${cv("border.strong")}; }
+.radio:hover .radio__circle { border-color: ${cv("fill.primary")}; }
 .radio__input:focus-visible ~ .radio__circle { outline: ${ringWidth} solid ${cv("border.focus")}; outline-offset: ${ringOffset}; }
 .radio__input:checked ~ .radio__circle { border-color: ${cv("fill.primary")}; }
 .radio__input:checked ~ .radio__circle .radio__dot { background: ${cv("fill.primary")}; }
+.radio:hover .radio__input:checked:not(:disabled) ~ .radio__circle { border-color: ${cv("fill.primaryHover")}; }
+.radio:hover .radio__input:checked:not(:disabled) ~ .radio__circle .radio__dot { background: ${cv("fill.primaryHover")}; }
 .radio__input:disabled ~ .radio__circle { background: ${cv("surface.disabled")}; border-color: ${cv("border.default")}; cursor: not-allowed; }
 .radio__input:disabled ~ .radio__label { color: ${cv("text.disabled")}; }
 .radio__input:disabled:checked ~ .radio__circle .radio__dot { background: ${cv("fill.disabled")}; }
@@ -118,10 +120,19 @@ const css = `${rootVars}
 
 function markup(id, name, { checked = false, disabled = false, hover = false, focused = false } = {}) {
   const attrs = [checked ? " checked" : "", disabled ? " disabled" : ""].join("");
-  const extraStyle = hover ? ` style="border-color:${cv("border.strong")}"` : focused ? ` style="outline:${ringWidth} solid ${cv("border.focus")}; outline-offset:${ringOffset}"` : "";
+  let circleStyle = "";
+  let dotStyle = "";
+  if (focused) {
+    circleStyle = ` style="outline:${ringWidth} solid ${cv("border.focus")}; outline-offset:${ringOffset}"`;
+  } else if (hover && checked) {
+    circleStyle = ` style="border-color:${cv("fill.primaryHover")}"`;
+    dotStyle = ` style="background:${cv("fill.primaryHover")}"`;
+  } else if (hover) {
+    circleStyle = ` style="border-color:${cv("fill.primary")}"`;
+  }
   return `<label class="radio">
     <input type="radio" class="radio__input" id="${id}" name="${name}"${attrs} />
-    <span class="radio__circle"${extraStyle}><span class="radio__dot"></span></span>
+    <span class="radio__circle"${circleStyle}><span class="radio__dot"${dotStyle}></span></span>
     <span class="radio__label">Label</span>
   </label>`;
 }
@@ -138,9 +149,10 @@ function storyCard(title, liveHtml, codeHtml, note = "") {
 
 const stateDefs = [
   { key: "default", label: "default", opts: {}, note: "Unchecked, on surface.default — not filled." },
-  { key: "hover", label: "hover", opts: { hover: true }, note: "border.strong. Real CSS uses :hover on the label; forced here via inline style so it screenshots without a real cursor." },
+  { key: "hover", label: "hover", opts: { hover: true }, note: "fill.primary (blue.500) — border.strong (gray) read as too weak a cue in practice. Real CSS uses :hover on the label; forced here via inline style so it screenshots without a real cursor." },
   { key: "focused", label: "focused", opts: { focused: true }, note: "Additive ring (border.focus). Real CSS is :focus-visible on the input; forced here via inline style." },
   { key: "checked", label: "checked", opts: { checked: true }, note: "Outline and inner dot both resolve to fill.primary — the circle itself never fills, unlike Checkbox's box." },
+  { key: "checked-hover", label: "checked + hover", opts: { checked: true, hover: true }, note: "fill.primaryHover (blue.600) on both outline and dot — same darken-on-hover Button primary already uses for its own filled background." },
   { key: "disabled", label: "disabled", opts: { disabled: true }, note: "surface.disabled, unlike default which uses surface.default." },
   { key: "disabled-checked", label: "disabled + checked", opts: { disabled: true, checked: true }, note: "Border stays border.default (never fill.primary) while disabled — brand blue never shows on an inert control; dot is fill.disabled." },
 ];
@@ -255,7 +267,7 @@ const html = `<!doctype html>
       <div class="row"><b>Native input</b><span>A real <code class="tok">&lt;input type="radio"&gt;</code> stays in the DOM, visually hidden (clip-rect, not display:none) — grouping via matching <code class="tok">name</code>, keyboard, forms, screen readers all work for free.</span></div>
       <div class="row"><b>Single size</b><span>20px circle, 8px dot — no sm/base/lg grid, same rationale as <a href="checkbox.html">Checkbox</a>.</span></div>
       <div class="row"><b>Never fully fills</b><span>Unlike Checkbox, checked only recolors the outline and shows a small inner dot — both fill.primary, the circle background stays surface.default. Plain CSS circle, not an icon; every reference checked (Radix/MUI/Ant/Material) draws it this way.</span></div>
-      <div class="row"><b>States</b><span>default / hover / focused / checked / disabled / disabled+checked. No error state — not asked for.</span></div>
+      <div class="row"><b>States</b><span>default / hover / focused / checked / checked+hover / disabled / disabled+checked. No error state — not asked for.</span></div>
       <div class="row"><b>Groups</b><span>RadioGroup composes plain Radio items sharing one <code class="tok">name</code> under an optional heading + helper text, vertical or horizontal — no group-level error state.</span></div>
     </div>
 

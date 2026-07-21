@@ -1,0 +1,27 @@
+{
+  "component": {
+    "box": {
+      "$description": "The lowest-level layout primitive — a generic container exposing the surface/border/padding roles directly, with no fixed combination of its own (unlike Card, which picks one specific combination for content grouping). Radius isn't re-declared here: Box supports the full existing radius scale (tokens/primitives/radius.tokens.json) as-is, picked per use rather than fixed. Purely presentational, no interactive states — same as Separator.",
+      "surface": {
+        "$description": "Every semantic surface role except disabled (that one's a component-state concept, not a layout choice) — Box is how any of them gets used on a plain container.",
+        "page": { "$type": "color", "$value": "{surface.page}" },
+        "default": { "$type": "color", "$value": "{surface.default}" },
+        "sunken": { "$type": "color", "$value": "{surface.sunken}" },
+        "overlay": { "$type": "color", "$value": "{surface.overlay}" }
+      },
+      "border": {
+        "$type": "color",
+        "$value": "{border.default}",
+        "$description": "Optional hairline — Box's border is on/off, not a role choice (no hover/focus border here, this isn't an interactive field)."
+      },
+      "padding": {
+        "$description": "A curated subset of the dim scale, not the whole thing — these five cover what a generic container actually needs; anything more granular can still reach the raw dim.* tokens directly. Naming follows the same xs/sm/md/lg vocabulary as the radius scale.",
+        "none": { "$type": "dimension", "$value": "{dim.0}" },
+        "xs": { "$type": "dimension", "$value": "{dim.2}", "$description": "8px — the base gap, per dim's own legend." },
+        "sm": { "$type": "dimension", "$value": "{dim.3}", "$description": "12px." },
+        "md": { "$type": "dimension", "$value": "{dim.4}", "$description": "16px — 'comfortable padding — card/input padding' per dim's own legend." },
+        "lg": { "$type": "dimension", "$value": "{dim.6}", "$description": "24px — gap between distinct components, per dim's own legend." }
+      }
+    }
+  }
+}
