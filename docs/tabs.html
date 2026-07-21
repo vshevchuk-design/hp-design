@@ -69,7 +69,10 @@
   .full-bar-demo { border: 0.5px solid var(--border); border-radius: 14px; background: var(--bg-card); padding: 24px; display: flex; flex-direction: column; gap: 16px; max-width: 480px; }
   .full-bar-demo .story-preview { justify-content: flex-start; padding: 4px 0; }
 
-  .tab--hover-demo { background: var(--tok-fill-neutral-hover); color: var(--tok-text-default); }
+  /* .tab.tab--hover-demo (compound, not a single class) so this beats the
+     later-defined, equal-specificity .tab base rule on source order alone —
+     the actual bug: a single-class .tab--hover-demo lost that tie silently. */
+  .tab.tab--hover-demo { background: var(--tok-fill-neutral-hover); color: var(--tok-text-default); }
 
   .placeholder-note { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-muted); border: 0.5px dashed var(--border-strong); border-radius: 6px; padding: 4px 10px; margin-top: 1.5rem; }
 
@@ -106,8 +109,8 @@
 .tabs--segmented .tab--disabled .tab__icon, .tabs--underline .tab--disabled .tab__icon { color: var(--tok-icon-disabled); }
 
 .tabs--underline { display: inline-flex; align-items: stretch; gap: 24px; border-bottom: 1px solid var(--tok-border-default); max-width: 100%; overflow-x: auto; }
-.tabs--underline .tab { border-bottom: 2px solid transparent; margin-bottom: -1px; }
-.tabs--underline .tab:not(.tab--active):not(.tab--disabled):hover { color: var(--tok-text-default); }
+.tabs--underline .tab { border-bottom: 2px solid transparent; margin-bottom: -1px; border-radius: 8px 8px 0 0; }
+.tabs--underline .tab:not(.tab--active):not(.tab--disabled):hover { background: var(--tok-fill-neutral-hover); color: var(--tok-text-default); }
 .tabs--underline .tab--active { color: var(--tok-text-default); font-weight: 600; border-bottom-color: var(--tok-border-focus); }
 .tabs--underline .tab--disabled { color: var(--tok-text-disabled); cursor: not-allowed; }
 
@@ -186,8 +189,8 @@
 .tabs--segmented .tab--disabled .tab__icon, .tabs--underline .tab--disabled .tab__icon { color: var(--tok-icon-disabled); }
 
 .tabs--underline { display: inline-flex; align-items: stretch; gap: 24px; border-bottom: 1px solid var(--tok-border-default); max-width: 100%; overflow-x: auto; }
-.tabs--underline .tab { border-bottom: 2px solid transparent; margin-bottom: -1px; }
-.tabs--underline .tab:not(.tab--active):not(.tab--disabled):hover { color: var(--tok-text-default); }
+.tabs--underline .tab { border-bottom: 2px solid transparent; margin-bottom: -1px; border-radius: 8px 8px 0 0; }
+.tabs--underline .tab:not(.tab--active):not(.tab--disabled):hover { background: var(--tok-fill-neutral-hover); color: var(--tok-text-default); }
 .tabs--underline .tab--active { color: var(--tok-text-default); font-weight: 600; border-bottom-color: var(--tok-border-focus); }
 .tabs--underline .tab--disabled { color: var(--tok-text-disabled); cursor: not-allowed; }
 
@@ -274,8 +277,8 @@
       </div>
     </div>
 
-    <h2 class="big-section">States</h2>
-    <p class="section-desc">Base size, segmented, text-only.</p>
+    <h2 class="big-section">States — segmented</h2>
+    <p class="section-desc">Base size, text-only. Wrapped in the real track — a bare .tab has no background of its own.</p>
     <div class="story-grid">
       
       <div class="story">
@@ -303,6 +306,39 @@
         <h3>disabled</h3>
         <div class="story-preview"><div class="tabs tabs--segmented tabs--base"><button class="tab tab--segmented tab--base tab--disabled" disabled><span class="tab__label">Inbox</span></button></div></div>
         <pre class="code"><code>&lt;div class="tabs tabs--segmented tabs--base"&gt;&lt;button class="tab tab--segmented tab--base tab--disabled" disabled&gt;&lt;span class="tab__label"&gt;Inbox&lt;/span&gt;&lt;/button&gt;&lt;/div&gt;</code></pre>
+        
+      </div>
+    </div>
+
+    <h2 class="big-section">States — underline</h2>
+    <p class="section-desc">Base size, text-only. Hover gets the same fill.neutralHover pill segmented uses — darkening the text alone (the first draft of this) was hard to notice, so hover now gets a background too, matching common practice (GitHub, Notion, Linear all give underline-style tab hover a light background, reserving the colored bar for the active tab only).</p>
+    <div class="story-grid">
+      
+      <div class="story">
+        <h3>default</h3>
+        <div class="story-preview"><div class="tabs tabs--underline tabs--base"><button class="tab tab--underline tab--base"><span class="tab__label">Inbox</span></button></div></div>
+        <pre class="code"><code>&lt;div class="tabs tabs--underline tabs--base"&gt;&lt;button class="tab tab--underline tab--base"&gt;&lt;span class="tab__label"&gt;Inbox&lt;/span&gt;&lt;/button&gt;&lt;/div&gt;</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>hover</h3>
+        <div class="story-preview"><div class="tabs tabs--underline tabs--base"><button class="tab tab--underline tab--base tab--hover-demo"><span class="tab__label">Inbox</span></button></div></div>
+        <pre class="code"><code>&lt;div class="tabs tabs--underline tabs--base"&gt;&lt;button class="tab tab--underline tab--base tab--hover-demo"&gt;&lt;span class="tab__label"&gt;Inbox&lt;/span&gt;&lt;/button&gt;&lt;/div&gt;</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>active (selected)</h3>
+        <div class="story-preview"><div class="tabs tabs--underline tabs--base"><button class="tab tab--underline tab--base tab--active" aria-selected="true"><span class="tab__label">Inbox</span></button></div></div>
+        <pre class="code"><code>&lt;div class="tabs tabs--underline tabs--base"&gt;&lt;button class="tab tab--underline tab--base tab--active" aria-selected="true"&gt;&lt;span class="tab__label"&gt;Inbox&lt;/span&gt;&lt;/button&gt;&lt;/div&gt;</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>disabled</h3>
+        <div class="story-preview"><div class="tabs tabs--underline tabs--base"><button class="tab tab--underline tab--base tab--disabled" disabled><span class="tab__label">Inbox</span></button></div></div>
+        <pre class="code"><code>&lt;div class="tabs tabs--underline tabs--base"&gt;&lt;button class="tab tab--underline tab--base tab--disabled" disabled&gt;&lt;span class="tab__label"&gt;Inbox&lt;/span&gt;&lt;/button&gt;&lt;/div&gt;</code></pre>
         
       </div>
     </div>

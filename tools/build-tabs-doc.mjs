@@ -131,8 +131,8 @@ ${sizes
 .tabs--segmented .tab--disabled .tab__icon, .tabs--underline .tab--disabled .tab__icon { color: ${cv("icon.disabled")}; }
 
 .tabs--underline { display: inline-flex; align-items: stretch; gap: ${und.gap}; border-bottom: 1px solid ${cv("border.default")}; max-width: 100%; overflow-x: auto; }
-.tabs--underline .tab { border-bottom: 2px solid transparent; margin-bottom: -1px; }
-.tabs--underline .tab:not(.tab--active):not(.tab--disabled):hover { color: ${cv("text.default")}; }
+.tabs--underline .tab { border-bottom: 2px solid transparent; margin-bottom: -1px; border-radius: ${seg.pillRadius} ${seg.pillRadius} 0 0; }
+.tabs--underline .tab:not(.tab--active):not(.tab--disabled):hover { background: ${cv("fill.neutralHover")}; color: ${cv("text.default")}; }
 .tabs--underline .tab--active { color: ${cv("text.default")}; font-weight: ${activeWeightSegmented}; border-bottom-color: ${cv("border.focus")}; }
 .tabs--underline .tab--disabled { color: ${cv("text.disabled")}; cursor: not-allowed; }
 
@@ -205,19 +205,25 @@ const stateDefs = [
   { key: "active", label: "active (selected)" },
   { key: "disabled", label: "disabled" },
 ];
-// A bare .tab has no background of its own — only its .tabs--segmented parent
-// (the track) carries the surface.sunken fill, so every segmented example
-// needs that wrapper or it renders as invisible text floating on white.
-const trackWrap = (inner) => `<div class="tabs tabs--segmented tabs--base">${inner}</div>`;
-const stateStories = stateDefs
-  .map((s) => {
-    const opts = { style: "segmented", size: "base", content: "text", label: "Inbox", state: s.key === "hover" ? "default" : s.key };
-    const hoverClass = s.key === "hover" ? " tab--hover-demo" : "";
-    const live = trackWrap(tabItem({ ...opts, live: true }).replace('class="tab tab--segmented tab--base"', `class="tab tab--segmented tab--base${hoverClass}"`));
-    const code = trackWrap(tabItem({ ...opts, live: false }).replace('class="tab tab--segmented tab--base"', `class="tab tab--segmented tab--base${hoverClass}"`));
-    return storyCard(s.label, live, code);
-  })
-  .join("\n");
+// A bare .tab renders no background/indicator of its own — the hover/active
+// rules are all scoped as descendant selectors (.tabs--segmented .tab, etc),
+// and segmented's track fill only exists on the .tabs--segmented parent, so
+// every example needs the real wrapper or it's invisible text on white.
+function styleStateStories(style) {
+  const wrap = (inner) => `<div class="tabs tabs--${style} tabs--base">${inner}</div>`;
+  return stateDefs
+    .map((s) => {
+      const opts = { style, size: "base", content: "text", label: "Inbox", state: s.key === "hover" ? "default" : s.key };
+      const baseClass = `tab tab--${style} tab--base`;
+      const finalClass = s.key === "hover" ? `tab tab--${style} tab--base tab--hover-demo` : baseClass;
+      const live = wrap(tabItem({ ...opts, live: true }).replace(`class="${baseClass}"`, `class="${finalClass}"`));
+      const code = wrap(tabItem({ ...opts, live: false }).replace(`class="${baseClass}"`, `class="${finalClass}"`));
+      return storyCard(s.label, live, code);
+    })
+    .join("\n");
+}
+const stateStories = styleStateStories("segmented");
+const underlineStateStories = styleStateStories("underline");
 
 const manyTabs = tabBar(
   "underline",
@@ -297,7 +303,10 @@ const html = `<!doctype html>
   .full-bar-demo { border: 0.5px solid var(--border); border-radius: 14px; background: var(--bg-card); padding: 24px; display: flex; flex-direction: column; gap: 16px; max-width: 480px; }
   .full-bar-demo .story-preview { justify-content: flex-start; padding: 4px 0; }
 
-  .tab--hover-demo { background: ${cv("fill.neutralHover")}; color: ${cv("text.default")}; }
+  /* .tab.tab--hover-demo (compound, not a single class) so this beats the
+     later-defined, equal-specificity .tab base rule on source order alone —
+     the actual bug: a single-class .tab--hover-demo lost that tie silently. */
+  .tab.tab--hover-demo { background: ${cv("fill.neutralHover")}; color: ${cv("text.default")}; }
 
   .placeholder-note { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-muted); border: 0.5px dashed var(--border-strong); border-radius: 6px; padding: 4px 10px; margin-top: 1.5rem; }
 
@@ -341,10 +350,16 @@ const html = `<!doctype html>
       ${contentVariants}
     </div>
 
-    <h2 class="big-section">States</h2>
-    <p class="section-desc">Base size, segmented, text-only.</p>
+    <h2 class="big-section">States — segmented</h2>
+    <p class="section-desc">Base size, text-only. Wrapped in the real track — a bare .tab has no background of its own.</p>
     <div class="story-grid">
       ${stateStories}
+    </div>
+
+    <h2 class="big-section">States — underline</h2>
+    <p class="section-desc">Base size, text-only. Hover gets the same fill.neutralHover pill segmented uses — darkening the text alone (the first draft of this) was hard to notice, so hover now gets a background too, matching common practice (GitHub, Notion, Linear all give underline-style tab hover a light background, reserving the colored bar for the active tab only).</p>
+    <div class="story-grid">
+      ${underlineStateStories}
     </div>
 
     <h2 class="big-section">Many tabs</h2>
