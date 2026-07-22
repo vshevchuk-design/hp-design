@@ -26,6 +26,8 @@ export const NAV_ITEMS = {
   popover: { label: "Popover", href: "popover.html" },
   drawer: { label: "Drawer", href: "drawer.html" },
   modal: { label: "Modal", href: "modal.html" },
+  menu: { label: "Menu", href: "menu.html" },
+  listbox: { label: "Listbox", href: "listbox.html" },
 };
 
 export function renderNav(activeKey) {
@@ -60,5 +62,7 @@ export function renderNav(activeKey) {
     ${link("tooltip")}
     ${link("popover")}
     ${link("drawer")}
-    ${link("modal")}`;
+    ${link("modal")}
+    ${link("menu")}
+    ${link("listbox")}`;
 }

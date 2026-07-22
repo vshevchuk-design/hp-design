@@ -146,6 +146,8 @@ dialog.modal[open]::backdrop { opacity: 1; }
     <a class="navlink" href="popover.html">Popover</a>
     <a class="navlink" href="drawer.html">Drawer</a>
     <a class="navlink active" href="modal.html">Modal</a>
+    <a class="navlink" href="menu.html">Menu</a>
+    <a class="navlink" href="listbox.html">Listbox</a>
   </nav>
   <main>
     <h1>Modal</h1>
@@ -160,6 +162,7 @@ dialog.modal[open]::backdrop { opacity: 1; }
       <div class="row"><b>Click-outside</b><span>Not native — showModal() only gives Escape for free. A small script (below) closes on backdrop click, same as Drawer.</span></div>
       <div class="row"><b>Header/footer optional</b><span>Same composition philosophy as Card/Drawer — a Modal can be body-only. Each section is its own full-width band with its own padding, so the divider spans the whole modal edge to edge.</span></div>
       <div class="row"><b>Real button states</b><span>Close (×) and the footer actions are genuine interactive elements — the same fill.neutral/fill.neutralHover/fill.neutralActive/fill.danger recipe Button itself uses, not unstyled placeholders.</span></div>
+      <div class="row"><b>AlertDialog</b><span>Radix's term for a behavioral variant, not a visual one — same tokens, but no close (×), no click-outside, no Escape. For confirmations critical enough that an accidental dismiss would be bad. Use sparingly; most confirmations don't need it.</span></div>
     </div>
 
     <h2 class="big-section">CSS</h2>
@@ -218,11 +221,17 @@ dialog.modal[open]::backdrop { opacity: 1; }
 });</code></pre>
 
     <h2 class="big-section">Click-outside-to-close</h2>
-    <p class="section-desc">showModal() doesn't give this for free — same gotcha and same fix as Drawer.</p>
+    <p class="section-desc">showModal() doesn't give this for free — same gotcha and same fix as Drawer. Skips any dialog marked <code class="tok">data-alert</code>.</p>
     <pre class="code"><code>document.querySelectorAll('dialog.modal').forEach((dlg) =&gt; {
   dlg.addEventListener('click', (e) =&gt; {
-    if (e.target === dlg) dlg.close();
+    if (e.target === dlg &amp;&amp; !dlg.hasAttribute('data-alert')) dlg.close();
   });
+});</code></pre>
+
+    <h2 class="big-section">AlertDialog: blocking Escape</h2>
+    <p class="section-desc">&lt;dialog&gt; fires a native <code class="tok">cancel</code> event right before Escape would close it — preventDefault() stops it. Only attached to <code class="tok">data-alert</code> dialogs; a plain Modal never sees this listener and keeps closing on Escape as normal.</p>
+    <pre class="code"><code>document.querySelectorAll('dialog.modal[data-alert]').forEach((dlg) =&gt; {
+  dlg.addEventListener('cancel', (e) =&gt; e.preventDefault());
 });</code></pre>
 
     <h2 class="big-section">Examples</h2>
@@ -288,6 +297,41 @@ dialog.modal[open]::backdrop { opacity: 1; }
 &lt;/dialog&gt;</code></pre>
         <p class="story-note">No header, no footer, no close button — Escape and click-outside are the only ways to dismiss this one, which is exactly why click-outside isn't optional.</p>
       </div>
+      
+      <div class="story">
+        <h3>AlertDialog</h3>
+        <div class="story-preview"><button class="ov-btn ov-btn--danger" data-modal-open="modal-alert">Delete account</button>
+    <dialog class="modal" id="modal-alert" data-alert>
+      <div class="modal__content">
+        <div class="modal__header">
+          <p class="modal__title">Delete your account?</p>
+        </div>
+        <div class="modal__body">
+          <p class="modal__body-text">This is permanent — your account, projects, and billing history are all deleted immediately. There's no undo.</p>
+        </div>
+        <div class="modal__footer">
+          <form method="dialog"><button class="ov-btn ov-btn--secondary">Cancel</button></form>
+          <form method="dialog"><button class="ov-btn ov-btn--danger">Delete my account</button></form>
+        </div>
+      </div>
+    </dialog></div>
+        <pre class="code"><code>&lt;button data-modal-open="modal-alert"&gt;Delete account&lt;/button&gt;
+&lt;dialog class="modal" id="modal-alert" data-alert&gt;
+  &lt;div class="modal__content"&gt;
+    &lt;div class="modal__header"&gt;
+      &lt;p class="modal__title"&gt;Delete your account?&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;div class="modal__body"&gt;
+      &lt;p class="modal__body-text"&gt;This is permanent…&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;div class="modal__footer"&gt;
+      &lt;form method="dialog"&gt;&lt;button&gt;Cancel&lt;/button&gt;&lt;/form&gt;
+      &lt;form method="dialog"&gt;&lt;button&gt;Delete my account&lt;/button&gt;&lt;/form&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/dialog&gt;</code></pre>
+        <p class="story-note">No close (×), no click-outside, Escape blocked — only Cancel/Delete my account dismiss it. Try clicking outside or pressing Escape here specifically; it won't close.</p>
+      </div>
     </div>
 
     <p class="placeholder-note">Every code sample on this page is printed from the same resolved token values driving the live previews above it — copy it directly, nothing here is hand-typed.</p>
@@ -298,9 +342,12 @@ dialog.modal[open]::backdrop { opacity: 1; }
     document.getElementById(btn.dataset.modalOpen).showModal();
   });
 });</script>
+<script>document.querySelectorAll('dialog.modal[data-alert]').forEach((dlg) => {
+  dlg.addEventListener('cancel', (e) => e.preventDefault());
+});</script>
 <script>document.querySelectorAll('dialog.modal').forEach((dlg) => {
   dlg.addEventListener('click', (e) => {
-    if (e.target === dlg) dlg.close();
+    if (e.target === dlg && !dlg.hasAttribute('data-alert')) dlg.close();
   });
 });</script>
 </body>

@@ -15,7 +15,10 @@
       "titleColor": { "$type": "color", "$value": "{text.default}" },
       "body": { "$type": "typography", "$value": "{text-style.body-base}" },
       "bodyColor": { "$type": "color", "$value": "{text.secondary}" },
-      "closeIcon": { "$type": "color", "$value": "{icon.secondary}" }
+      "closeIcon": { "$type": "color", "$value": "{icon.secondary}" },
+      "alert": {
+        "$description": "AlertDialog (Radix's term) — a behavioral variant, not a visual one: identical bg/radius/shadow/padding to plain Modal, zero new tokens. The difference is what the JS does, not what anything looks like. For a genuinely critical confirmation (irreversible delete, destructive action) the dismiss-on-outside-click and Escape-to-close both get disabled, and there's no header close (×) — the only way out is clicking one of the footer actions. Reuses Modal's own showModal()/native-<dialog> mechanism; the click-outside script skips any dialog carrying the alert marker, and Escape is blocked by preventDefault()-ing the dialog's native 'cancel' event. Use sparingly — most confirmations don't need to be this strict; a plain Modal with Cancel/Delete already covers the common case."
+      }
     }
   }
 }

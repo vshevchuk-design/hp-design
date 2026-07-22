@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>hp-design — Listbox</title>
+<style>
+  :root {
+    --bg-page: #f7f7f5; --bg-card: #ffffff; --bg-card-hover: #fbfbfa;
+    --border: #e4e3df; --border-strong: #d2d1cb;
+    --text-primary: #0e0e10; --text-secondary: #63625c; --text-muted: #918f87;
+    --accent: #0468c4; --accent-bg: #eff6ff;
+    --code-bg: #1e1e22; --code-text: #e4e3df;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --sans: -apple-system, "Segoe UI", system-ui, sans-serif;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327;
+      --border: #313035; --border-strong: #403f45;
+      --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68;
+      --accent: #5aa4ec; --accent-bg: #16283b;
+      --code-bg: #0d0d0f; --code-text: #d7d6d2;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327;
+    --border: #313035; --border-strong: #403f45;
+    --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68;
+    --accent: #5aa4ec; --accent-bg: #16283b;
+    --code-bg: #0d0d0f; --code-text: #d7d6d2;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg-page); color: var(--text-primary); font-family: var(--sans); }
+  .shell { display: flex; min-height: 100vh; }
+  nav.side { width: 220px; flex-shrink: 0; border-right: 0.5px solid var(--border); padding: 1.5rem 1rem; position: sticky; top: 0; height: 100vh; }
+  .brand { font-size: 14px; font-weight: 600; margin: 0 0 2px 8px; }
+  .brand-sub { font-size: 11.5px; color: var(--text-muted); margin: 0 0 1.5rem 8px; }
+  .navlink { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 8px; border-radius: 7px; font-size: 13px; text-decoration: none; color: var(--text-primary); margin-bottom: 1px; }
+  .navlink:hover { background: var(--bg-card-hover); }
+  .navlink.active { background: var(--accent-bg); color: var(--accent); font-weight: 600; }
+  .nav-category { font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin: 16px 8px 6px; }
+  main { flex: 1; padding: 4rem 4rem 6rem; max-width: 1120px; }
+
+  h1 { font-size: 36px; font-weight: 700; margin: 0 0 10px; letter-spacing: -0.02em; }
+  .sub { font-size: 14px; color: var(--text-secondary); margin: 0 0 2.5rem; }
+  h2.big-section { font-size: 24px; font-weight: 700; margin: 5.5rem 0 1.5rem; letter-spacing: -0.01em; padding-top: 2.5rem; border-top: 1px solid var(--border); }
+  h2.big-section:first-of-type { margin-top: 3rem; padding-top: 0; border-top: none; }
+  .section-desc { font-size: 13.5px; color: var(--text-secondary); margin: -0.5rem 0 1.5rem; max-width: 68ch; line-height: 1.6; }
+
+  .legend { font-size: 12.5px; color: var(--text-secondary); padding: 14px 18px; background: var(--bg-card); border: 0.5px solid var(--border); border-radius: 10px; margin-bottom: 1rem; line-height: 1.6; }
+  .legend .row { display: flex; gap: 14px; padding: 6px 0; border-bottom: 0.5px solid var(--border); }
+  .legend .row:last-child { border-bottom: none; }
+  .legend .row b { width: 150px; flex-shrink: 0; color: var(--text-primary); font-weight: 600; font-family: var(--mono); font-size: 11.5px; }
+  code.tok { font-family: var(--mono); font-size: 12px; color: var(--accent); }
+
+  pre.code { background: var(--code-bg); color: var(--code-text); border-radius: 10px; padding: 16px 18px; margin: 0; overflow-x: auto; font-family: var(--mono); font-size: 12px; line-height: 1.7; }
+  pre.code code { font-family: inherit; }
+
+  .story-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 28px; }
+  .story { border: 0.5px solid var(--border); border-radius: 14px; background: var(--bg-card); padding: 24px; display: flex; flex-direction: column; gap: 14px; }
+  .story h3 { font-size: 14px; font-weight: 600; margin: 0; font-family: var(--mono); }
+  .story-preview { min-height: 64px; display: flex; align-items: center; justify-content: center; padding: 12px 0; }
+  .story-note { font-size: 11.5px; color: var(--text-muted); margin: 0; line-height: 1.5; }
+
+  .ov-btn { box-sizing: border-box; height: 40px; padding: 0 12px; border-radius: 8px; border: none; cursor: pointer; font-family: var(--sans); font-weight: 600; font-size: 14px; line-height: 1.4; }
+  .ov-btn--secondary { background: var(--tok-fill-neutral); color: var(--tok-text-default); }
+  .ov-btn--secondary:hover { background: var(--tok-fill-neutral-hover); }
+  .ov-btn--secondary:active { background: var(--tok-fill-neutral-active); }
+  .ov-btn:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
+
+  .placeholder-note { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-muted); border: 0.5px dashed var(--border-strong); border-radius: 6px; padding: 4px 10px; margin-top: 1.5rem; }
+
+  :root {
+  --tok-surface-default: #ffffff;
+  --tok-surface-sunken: #e8e8e8;
+  --tok-border-default: #d1d1d1;
+  --tok-border-focus: #0468c4;
+  --tok-text-default: #181818;
+  --tok-text-secondary: #696969;
+  --tok-text-disabled: #b4b4b4;
+  --tok-text-muted: #808080;
+  --tok-text-primary: #0468c4;
+  --tok-icon-default: #525252;
+  --tok-icon-on-fill: #ffffff;
+  --tok-fill-neutral: #e8e8e8;
+  --tok-fill-neutral-hover: #d1d1d1;
+  --tok-fill-neutral-active: #b4b4b4;
+  --tok-fill-primary: #077fec;
+  --tok-family-sans: 'Sora', sans-serif;
+}
+
+.listbox { margin: 0; box-sizing: border-box; padding: 4px; border-radius: 8px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); box-shadow: 0px 2px 8px 0px rgba(21, 25, 30, 0.10); font-family: var(--tok-family-sans); min-width: 220px; }
+.listbox__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; max-height: 288px; overflow: auto; }
+.listbox__option { width: 100%; box-sizing: border-box; display: flex; align-items: center; gap: 8px; padding: 8px 8px; border: none; background: none; border-radius: 4px; cursor: pointer; text-align: left; color: var(--tok-text-default); font-family: inherit; font-weight: 400; font-size: 14px; line-height: 1.4; }
+.listbox__option:hover { background: var(--tok-fill-neutral-hover); }
+.listbox__checkmark { width: 16px; height: 16px; margin-left: auto; color: var(--tok-fill-primary); flex-shrink: 0; }
+
+.listbox__cb-option { width: 100%; box-sizing: border-box; display: flex; align-items: center; gap: 8px; padding: 8px 8px; border-radius: 4px; cursor: pointer; }
+.listbox__cb-option:hover { background: var(--tok-fill-neutral-hover); }
+.listbox__cb-input { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.listbox__cb-box { box-sizing: border-box; width: 20px; height: 20px; border-radius: 4px; border: 2px solid var(--tok-border-default); background: var(--tok-surface-default); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.listbox__cb-icon { width: 16px; height: 16px; display: none; }
+.listbox__cb-input:checked ~ .listbox__cb-box { background: var(--tok-fill-primary); border-color: var(--tok-fill-primary); }
+.listbox__cb-input:checked ~ .listbox__cb-box .listbox__cb-icon { display: block; color: var(--tok-icon-on-fill); }
+.listbox__cb-label { color: var(--tok-text-default); font-family: inherit; font-weight: 400; font-size: 14px; line-height: 1.4; }
+
+.listbox__search-wrap { padding: 4px 4px 4px; margin-bottom: 2px; border-bottom: 1px solid var(--tok-border-default); }
+.listbox__search { display: flex; align-items: center; box-sizing: border-box; height: 32px; padding: 0 8px; gap: 8px; border-radius: 8px; background: var(--tok-surface-sunken); border: 1px solid var(--tok-border-default); }
+.listbox__search-icon { width: 16px; height: 16px; color: var(--tok-icon-default); flex-shrink: 0; }
+.listbox__search input { border: none; background: none; outline: none; width: 100%; color: var(--tok-text-default); font-family: inherit; font-weight: 400; font-size: 16px; line-height: 1.2; }
+.listbox__search input::placeholder { color: var(--tok-text-muted); }
+
+.listbox__select-all { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 4px 8px; }
+.listbox__select-all-label { color: var(--tok-text-secondary); margin: 0; font-weight: 400; font-size: 12px; line-height: 1.4; }
+.listbox__clear { border: none; background: none; padding: 0; cursor: pointer; color: var(--tok-text-primary); font-weight: 400; font-size: 12px; line-height: 1.4; text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="shell">
+  <nav class="side">
+    <p class="brand">hp-design</p>
+    <p class="brand-sub">Highpoint design system</p>
+    <a class="navlink" href="index.html">Overview</a>
+    <p class="nav-category">Tokens</p>
+    <a class="navlink" href="colors.html">Colors</a>
+    <a class="navlink" href="semantic-colors.html">Semantic colors</a>
+    <a class="navlink" href="typography.html">Typography</a>
+    <a class="navlink" href="layout.html">Layout</a>
+    <a class="navlink" href="icons.html">Icons</a>
+    <p class="nav-category">Components</p>
+    <a class="navlink" href="button.html">Button</a>
+    <a class="navlink" href="counter.html">Counter</a>
+    <a class="navlink" href="input.html">Input</a>
+    <a class="navlink" href="select.html">Select</a>
+    <a class="navlink" href="search.html">Search</a>
+    <a class="navlink" href="pagination.html">Pagination</a>
+    <a class="navlink" href="separator.html">Separator</a>
+    <a class="navlink" href="tabs.html">Tabs</a>
+    <a class="navlink" href="checkbox.html">Checkbox</a>
+    <a class="navlink" href="radio.html">Radio</a>
+    <a class="navlink" href="box.html">Box</a>
+    <a class="navlink" href="card.html">Card</a>
+    <a class="navlink" href="switch.html">Switch</a>
+    <a class="navlink" href="grid.html">Grid</a>
+    <a class="navlink" href="tooltip.html">Tooltip</a>
+    <a class="navlink" href="popover.html">Popover</a>
+    <a class="navlink" href="drawer.html">Drawer</a>
+    <a class="navlink" href="modal.html">Modal</a>
+    <a class="navlink" href="menu.html">Menu</a>
+    <a class="navlink active" href="listbox.html">Listbox</a>
+  </nav>
+  <main>
+    <h1>Listbox</h1>
+    <p class="sub">tokens/components/listbox.tokens.json · generated — the CSS below is generated from the same resolved tokens driving every preview on this page, not hand-copied. Colors are CSS custom properties, not literal hex.</p>
+
+    <div class="legend">
+      <div class="row"><b>Not Menu</b><span>Options carry persistent selection state (checked/selected) — Menu's items are one-shot actions with no state. Different ARIA role too: listbox/option here vs. menu/menuitem there.</span></div>
+      <div class="row"><b>Same panel shell</b><span>border.default + shadow.sm + radius.default, native popover attribute, same positioning script as Menu/Popover.</span></div>
+      <div class="row"><b>Single-select</b><span>Trailing checkmark (check.svg, fill.primary) on the selected option, no background tint — same convention as Radix Select / a native &lt;select&gt;. Picking an option would close the listbox in a real implementation.</span></div>
+      <div class="row"><b>Multi-select</b><span>A real Checkbox marker per option — literally the Checkbox component's own tokens (dim.5 box, radius.xs, fill.primary checked), not re-derived. Stays open across picks.</span></div>
+      <div class="row"><b>Search + select-all</b><span>Search reuses Search component's own sm-size tokens verbatim. "Clear all" uses text-style.link-sm (the underlined-link style), not a button — both only shown for the multi-select variant, where a long option list actually benefits from them.</span></div>
+      <div class="row"><b>Static demo only</b><span>No real keyboard nav, live search filtering, or ARIA roles implemented — same caveat as Menu, this is a tokens+visual reference.</span></div>
+    </div>
+
+    <h2 class="big-section">CSS</h2>
+    <pre class="code"><code>:root {
+  --tok-surface-default: #ffffff;
+  --tok-surface-sunken: #e8e8e8;
+  --tok-border-default: #d1d1d1;
+  --tok-border-focus: #0468c4;
+  --tok-text-default: #181818;
+  --tok-text-secondary: #696969;
+  --tok-text-disabled: #b4b4b4;
+  --tok-text-muted: #808080;
+  --tok-text-primary: #0468c4;
+  --tok-icon-default: #525252;
+  --tok-icon-on-fill: #ffffff;
+  --tok-fill-neutral: #e8e8e8;
+  --tok-fill-neutral-hover: #d1d1d1;
+  --tok-fill-neutral-active: #b4b4b4;
+  --tok-fill-primary: #077fec;
+  --tok-family-sans: 'Sora', sans-serif;
+}
+
+.listbox { margin: 0; box-sizing: border-box; padding: 4px; border-radius: 8px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); box-shadow: 0px 2px 8px 0px rgba(21, 25, 30, 0.10); font-family: var(--tok-family-sans); min-width: 220px; }
+.listbox__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; max-height: 288px; overflow: auto; }
+.listbox__option { width: 100%; box-sizing: border-box; display: flex; align-items: center; gap: 8px; padding: 8px 8px; border: none; background: none; border-radius: 4px; cursor: pointer; text-align: left; color: var(--tok-text-default); font-family: inherit; font-weight: 400; font-size: 14px; line-height: 1.4; }
+.listbox__option:hover { background: var(--tok-fill-neutral-hover); }
+.listbox__checkmark { width: 16px; height: 16px; margin-left: auto; color: var(--tok-fill-primary); flex-shrink: 0; }
+
+.listbox__cb-option { width: 100%; box-sizing: border-box; display: flex; align-items: center; gap: 8px; padding: 8px 8px; border-radius: 4px; cursor: pointer; }
+.listbox__cb-option:hover { background: var(--tok-fill-neutral-hover); }
+.listbox__cb-input { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.listbox__cb-box { box-sizing: border-box; width: 20px; height: 20px; border-radius: 4px; border: 2px solid var(--tok-border-default); background: var(--tok-surface-default); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.listbox__cb-icon { width: 16px; height: 16px; display: none; }
+.listbox__cb-input:checked ~ .listbox__cb-box { background: var(--tok-fill-primary); border-color: var(--tok-fill-primary); }
+.listbox__cb-input:checked ~ .listbox__cb-box .listbox__cb-icon { display: block; color: var(--tok-icon-on-fill); }
+.listbox__cb-label { color: var(--tok-text-default); font-family: inherit; font-weight: 400; font-size: 14px; line-height: 1.4; }
+
+.listbox__search-wrap { padding: 4px 4px 4px; margin-bottom: 2px; border-bottom: 1px solid var(--tok-border-default); }
+.listbox__search { display: flex; align-items: center; box-sizing: border-box; height: 32px; padding: 0 8px; gap: 8px; border-radius: 8px; background: var(--tok-surface-sunken); border: 1px solid var(--tok-border-default); }
+.listbox__search-icon { width: 16px; height: 16px; color: var(--tok-icon-default); flex-shrink: 0; }
+.listbox__search input { border: none; background: none; outline: none; width: 100%; color: var(--tok-text-default); font-family: inherit; font-weight: 400; font-size: 16px; line-height: 1.2; }
+.listbox__search input::placeholder { color: var(--tok-text-muted); }
+
+.listbox__select-all { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 4px 8px; }
+.listbox__select-all-label { color: var(--tok-text-secondary); margin: 0; font-weight: 400; font-size: 12px; line-height: 1.4; }
+.listbox__clear { border: none; background: none; padding: 0; cursor: pointer; color: var(--tok-text-primary); font-weight: 400; font-size: 12px; line-height: 1.4; text-decoration: underline; }</code></pre>
+
+    <h2 class="big-section">Positioning script</h2>
+    <p class="section-desc">Identical to Menu/Popover's.</p>
+    <pre class="code"><code>document.querySelectorAll('[popovertarget]').forEach((trigger) =&gt; {
+  trigger.addEventListener('click', () =&gt; {
+    const panel = document.getElementById(trigger.getAttribute('popovertarget'));
+    const rect = trigger.getBoundingClientRect();
+    panel.style.top = (rect.bottom + 8) + 'px';
+    panel.style.left = rect.left + 'px';
+  });
+});</code></pre>
+
+    <h2 class="big-section">Examples</h2>
+    <p class="section-desc">Click to open for real.</p>
+    <div class="story-grid">
+      
+      <div class="story">
+        <h3>Single-select</h3>
+        <div class="story-preview"><button class="ov-btn ov-btn--secondary" popovertarget="listbox-single">Country: Poland</button>
+    <div id="listbox-single" class="listbox" popover>
+      <ul class="listbox__list">
+        <li><button class="listbox__option">Ukraine</button></li>
+        <li><button class="listbox__option">Poland<svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li>
+        <li><button class="listbox__option">Germany</button></li>
+        <li><button class="listbox__option">France</button></li>
+      </ul>
+    </div></div>
+        <pre class="code"><code>&lt;button popovertarget="listbox-single"&gt;Country: Poland&lt;/button&gt;
+&lt;div id="listbox-single" class="listbox" popover&gt;
+  &lt;ul class="listbox__list"&gt;
+    &lt;li&gt;&lt;button class="listbox__option"&gt;Ukraine&lt;/button&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;button class="listbox__option"&gt;Poland&lt;svg class="listbox__checkmark"&gt;…&lt;/svg&gt;&lt;/button&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;button class="listbox__option"&gt;Germany&lt;/button&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;button class="listbox__option"&gt;France&lt;/button&gt;&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/div&gt;</code></pre>
+        <p class="story-note">Poland is selected — trailing checkmark, no other visual change.</p>
+      </div>
+      
+      <div class="story">
+        <h3>Multi-select, with search + select-all</h3>
+        <div class="story-preview"><button class="ov-btn ov-btn--secondary" popovertarget="listbox-multi">Labels (2)</button>
+    <div id="listbox-multi" class="listbox" popover>
+      <div class="listbox__search-wrap">
+        <div class="listbox__search"><svg class="listbox__search-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg><input type="text" placeholder="Search labels…" /></div>
+      </div>
+      <div class="listbox__select-all">
+        <p class="listbox__select-all-label">2 of 4 selected</p>
+        <button class="listbox__clear">Clear all</button>
+      </div>
+      <ul class="listbox__list">
+        <li><label class="listbox__cb-option" for="lb-multi-0">
+          <input type="checkbox" class="listbox__cb-input" id="lb-multi-0" checked />
+          <span class="listbox__cb-box"><svg class="listbox__cb-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
+          <span class="listbox__cb-label">Bug</span>
+        </label></li>
+        <li><label class="listbox__cb-option" for="lb-multi-1">
+          <input type="checkbox" class="listbox__cb-input" id="lb-multi-1" checked />
+          <span class="listbox__cb-box"><svg class="listbox__cb-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
+          <span class="listbox__cb-label">Feature request</span>
+        </label></li>
+        <li><label class="listbox__cb-option" for="lb-multi-2">
+          <input type="checkbox" class="listbox__cb-input" id="lb-multi-2" />
+          <span class="listbox__cb-box"><svg class="listbox__cb-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
+          <span class="listbox__cb-label">Documentation</span>
+        </label></li>
+        <li><label class="listbox__cb-option" for="lb-multi-3">
+          <input type="checkbox" class="listbox__cb-input" id="lb-multi-3" />
+          <span class="listbox__cb-box"><svg class="listbox__cb-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
+          <span class="listbox__cb-label">Question</span>
+        </label></li>
+      </ul>
+    </div></div>
+        <pre class="code"><code>&lt;button popovertarget="listbox-multi"&gt;Labels (2)&lt;/button&gt;
+&lt;div id="listbox-multi" class="listbox" popover&gt;
+  &lt;div class="listbox__search-wrap"&gt;
+    &lt;div class="listbox__search"&gt;…&lt;input type="text" placeholder="Search labels…" /&gt;&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="listbox__select-all"&gt;
+    &lt;p class="listbox__select-all-label"&gt;2 of 4 selected&lt;/p&gt;
+    &lt;button class="listbox__clear"&gt;Clear all&lt;/button&gt;
+  &lt;/div&gt;
+  &lt;ul class="listbox__list"&gt;
+    &lt;li&gt;&lt;label class="listbox__cb-option"&gt;
+      &lt;input type="checkbox" class="listbox__cb-input" checked /&gt;
+      &lt;span class="listbox__cb-box"&gt;…&lt;/span&gt;
+      &lt;span class="listbox__cb-label"&gt;Bug&lt;/span&gt;
+    &lt;/label&gt;&lt;/li&gt;
+    …
+  &lt;/ul&gt;
+&lt;/div&gt;</code></pre>
+        <p class="story-note">Bug and Feature request are checked. Clicking a checkbox in a real implementation wouldn't close the panel.</p>
+      </div>
+    </div>
+
+    <p class="placeholder-note">Every code sample on this page is printed from the same resolved token values driving the live previews above it — copy it directly, nothing here is hand-typed.</p>
+  </main>
+</div>
+<script>document.querySelectorAll('[popovertarget]').forEach((trigger) => {
+  trigger.addEventListener('click', () => {
+    const panel = document.getElementById(trigger.getAttribute('popovertarget'));
+    const rect = trigger.getBoundingClientRect();
+    panel.style.top = (rect.bottom + 8) + 'px';
+    panel.style.left = rect.left + 'px';
+  });
+});</script>
+</body>
+</html>

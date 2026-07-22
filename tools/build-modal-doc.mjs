@@ -166,6 +166,41 @@ ${withFooter ? `    <div class="modal__footer">
 </dialog>`;
 }
 
+function alertMarkup(id) {
+  return `<button class="ov-btn ov-btn--danger" data-modal-open="${id}">Delete account</button>
+    <dialog class="modal" id="${id}" data-alert>
+      <div class="modal__content">
+        <div class="modal__header">
+          <p class="modal__title">Delete your account?</p>
+        </div>
+        <div class="modal__body">
+          <p class="modal__body-text">This is permanent — your account, projects, and billing history are all deleted immediately. There's no undo.</p>
+        </div>
+        <div class="modal__footer">
+          <form method="dialog"><button class="ov-btn ov-btn--secondary">Cancel</button></form>
+          <form method="dialog"><button class="ov-btn ov-btn--danger">Delete my account</button></form>
+        </div>
+      </div>
+    </dialog>`;
+}
+function alertCode(id) {
+  return `<button data-modal-open="${id}">Delete account</button>
+<dialog class="modal" id="${id}" data-alert>
+  <div class="modal__content">
+    <div class="modal__header">
+      <p class="modal__title">Delete your account?</p>
+    </div>
+    <div class="modal__body">
+      <p class="modal__body-text">This is permanent…</p>
+    </div>
+    <div class="modal__footer">
+      <form method="dialog"><button>Cancel</button></form>
+      <form method="dialog"><button>Delete my account</button></form>
+    </div>
+  </div>
+</dialog>`;
+}
+
 const openScript = `document.querySelectorAll('[data-modal-open]').forEach((btn) => {
   btn.addEventListener('click', () => {
     document.getElementById(btn.dataset.modalOpen).showModal();
@@ -176,10 +211,20 @@ const openScript = `document.querySelectorAll('[data-modal-open]').forEach((btn)
 // same gotcha as Drawer, same fix: the dialog's own padding is 0 and
 // .modal__content fills 100% of it, so a click landing on the <dialog>
 // element itself (not a descendant) can only mean it hit the backdrop.
+// AlertDialog instances (data-alert) are deliberately skipped — a critical
+// confirmation shouldn't be dismissible by an accidental outside click.
 const dismissScript = `document.querySelectorAll('dialog.modal').forEach((dlg) => {
   dlg.addEventListener('click', (e) => {
-    if (e.target === dlg) dlg.close();
+    if (e.target === dlg && !dlg.hasAttribute('data-alert')) dlg.close();
   });
+});`;
+
+// AlertDialog also blocks Escape — <dialog> fires a cancel event (native,
+// distinct from 'close') right before Escape would close it; preventDefault
+// stops that. Regular Modal instances don't listen for this at all, so
+// Escape keeps working for them exactly as showModal() already provides.
+const alertScript = `document.querySelectorAll('dialog.modal[data-alert]').forEach((dlg) => {
+  dlg.addEventListener('cancel', (e) => e.preventDefault());
 });`;
 
 const html = `<!doctype html>
@@ -273,6 +318,7 @@ const html = `<!doctype html>
       <div class="row"><b>Click-outside</b><span>Not native — showModal() only gives Escape for free. A small script (below) closes on backdrop click, same as Drawer.</span></div>
       <div class="row"><b>Header/footer optional</b><span>Same composition philosophy as Card/Drawer — a Modal can be body-only. Each section is its own full-width band with its own padding, so the divider spans the whole modal edge to edge.</span></div>
       <div class="row"><b>Real button states</b><span>Close (×) and the footer actions are genuine interactive elements — the same fill.neutral/fill.neutralHover/fill.neutralActive/fill.danger recipe Button itself uses, not unstyled placeholders.</span></div>
+      <div class="row"><b>AlertDialog</b><span>Radix's term for a behavioral variant, not a visual one — same tokens, but no close (×), no click-outside, no Escape. For confirmations critical enough that an accidental dismiss would be bad. Use sparingly; most confirmations don't need it.</span></div>
     </div>
 
     <h2 class="big-section">CSS</h2>
@@ -283,20 +329,26 @@ const html = `<!doctype html>
     <pre class="code"><code>${esc(openScript)}</code></pre>
 
     <h2 class="big-section">Click-outside-to-close</h2>
-    <p class="section-desc">showModal() doesn't give this for free — same gotcha and same fix as Drawer.</p>
+    <p class="section-desc">showModal() doesn't give this for free — same gotcha and same fix as Drawer. Skips any dialog marked <code class="tok">data-alert</code>.</p>
     <pre class="code"><code>${esc(dismissScript)}</code></pre>
+
+    <h2 class="big-section">AlertDialog: blocking Escape</h2>
+    <p class="section-desc">&lt;dialog&gt; fires a native <code class="tok">cancel</code> event right before Escape would close it — preventDefault() stops it. Only attached to <code class="tok">data-alert</code> dialogs; a plain Modal never sees this listener and keeps closing on Escape as normal.</p>
+    <pre class="code"><code>${esc(alertScript)}</code></pre>
 
     <h2 class="big-section">Examples</h2>
     <p class="section-desc">Click to open for real — try pressing Escape, clicking outside the panel, or clicking Cancel/Delete.</p>
     <div class="story-grid">
       ${storyCard("Confirm dialog", modalMarkup("modal-basic"), modalCode("modal-basic"))}
       ${storyCard("body only", modalMarkup("modal-plain", { withHeader: false, withFooter: false }), modalCode("modal-plain", { withHeader: false, withFooter: false }), "No header, no footer, no close button — Escape and click-outside are the only ways to dismiss this one, which is exactly why click-outside isn't optional.")}
+      ${storyCard("AlertDialog", alertMarkup("modal-alert"), alertCode("modal-alert"), "No close (×), no click-outside, Escape blocked — only Cancel/Delete my account dismiss it. Try clicking outside or pressing Escape here specifically; it won't close.")}
     </div>
 
     <p class="placeholder-note">Every code sample on this page is printed from the same resolved token values driving the live previews above it — copy it directly, nothing here is hand-typed.</p>
   </main>
 </div>
 <script>${openScript}</script>
+<script>${alertScript}</script>
 <script>${dismissScript}</script>
 </body>
 </html>
