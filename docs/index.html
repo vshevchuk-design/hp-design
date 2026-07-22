@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="uk">
+<html lang="en">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -105,15 +105,16 @@
     <a class="navlink" href="modal.html">Modal</a>
     <a class="navlink" href="menu.html">Menu</a>
     <a class="navlink" href="listbox.html">Listbox</a>
+    <a class="navlink" href="avatar.html">Avatar</a>
   </nav>
   <main>
     <h1>hp-design</h1>
-    <p class="lede">Дизайн-система для продуктів Highpoint. Джерело правди для токенів і компонентів — усе інше (прототипи, продукти) будується строго на них.</p>
+    <p class="lede">Design system for Highpoint products. The source of truth for tokens and components — everything else (prototypes, products) is built strictly on top of them.</p>
 
     <div class="grid">
       <a class="card" href="colors.html">
         <div class="card-head"><h2>Colors</h2><span class="tag">10 ramps</span></div>
-        <p>OKLCH primitive ramps (25→950) + валідована категорійна палітра для графіків.</p>
+        <p>OKLCH primitive ramps (25→950) + a validated categorical palette for charts.</p>
         <div class="swatchline">
           <span style="background:#077fec"></span>
           <span style="background:#de394b"></span>
@@ -127,7 +128,7 @@
       </a>
       <a class="card" href="semantic-colors.html">
         <div class="card-head"><h2>Semantic colors</h2><span class="tag">7 groups</span></div>
-        <p>surface · bg · border · text · icon · fill · status — побудовані поверх primitives.</p>
+        <p>surface · bg · border · text · icon · fill · status — built on top of primitives.</p>
       </a>
       <a class="card" href="typography.html">
         <div class="card-head"><h2>Typography</h2><span class="tag">Sora</span></div>
@@ -139,87 +140,91 @@
       </a>
       <a class="card" href="icons.html">
         <div class="card-head"><h2>Icons</h2><span class="tag">136</span></div>
-        <p>Material Icons, Filled style, SVG — currentColor, розширюється за потреби.</p>
+        <p>Material Icons, Filled style, SVG — currentColor, extended as real need appears.</p>
       </a>
       <a class="card" href="button.html">
         <div class="card-head"><h2>Button</h2><span class="tag">Primary · Secondary · Ghost</span></div>
-        <p>sm/base/lg · 5 контентних варіантів · 5 станів.</p>
+        <p>sm/base/lg · 5 content variants · 5 states.</p>
       </a>
       <a class="card" href="counter.html">
         <div class="card-head"><h2>Counter</h2><span class="tag">onPrimary · onNeutral</span></div>
-        <p>Числовий бейдж всередині кнопки. Inactive/active.</p>
+        <p>Numeric badge sitting inside a button. Inactive/active.</p>
       </a>
       <a class="card" href="input.html">
         <div class="card-head"><h2>Input</h2><span class="tag">sm · base · lg</span></div>
-        <p>Floating label на base/lg, 16px значення (Safari-safe), 6 станів.</p>
+        <p>Floating label at base/lg, 16px value text (Safari-safe), 6 states.</p>
       </a>
       <a class="card" href="select.html">
         <div class="card-head"><h2>Select</h2><span class="tag">sm · base · lg</span></div>
-        <p>Той самий грід, що й Input, + завжди видимий chevron.</p>
+        <p>Same grid as Input, + an always-visible chevron.</p>
       </a>
       <a class="card" href="search.html">
         <div class="card-head"><h2>Search</h2><span class="tag">sm · base · lg</span></div>
-        <p>Без floating label, лупа зліва, хрестик очищення при вводі.</p>
+        <p>No floating label, leading search icon, clear (×) shown once there's a value.</p>
       </a>
       <a class="card" href="pagination.html">
-        <div class="card-head"><h2>Pagination</h2><span class="tag">1 розмір</span></div>
-        <p>Перша/остання сторінка завжди видимі, без стрілок туди-сюди.</p>
+        <div class="card-head"><h2>Pagination</h2><span class="tag">1 size</span></div>
+        <p>First/last page always visible, no jump-to-first/last arrows.</p>
       </a>
       <a class="card" href="separator.html">
-        <div class="card-head"><h2>Separator</h2><span class="tag">без станів</span></div>
-        <p>Горизонтальний/вертикальний + варіант з лейблом посередині.</p>
+        <div class="card-head"><h2>Separator</h2><span class="tag">no states</span></div>
+        <p>Horizontal/vertical + a with-label variant, centered.</p>
       </a>
       <a class="card" href="tabs.html">
         <div class="card-head"><h2>Tabs</h2><span class="tag">segmented · underline</span></div>
-        <p>sm · base, каунтер перевикористовує onNeutral, без жорсткого ліміту на кількість.</p>
+        <p>sm · base, counter reuses onNeutral, no hard cap on tab count.</p>
       </a>
       <a class="card" href="checkbox.html">
-        <div class="card-head"><h2>Checkbox</h2><span class="tag">1 розмір</span></div>
-        <p>Нативний input, check/indeterminate з Material-іконок, групи vertical/horizontal.</p>
+        <div class="card-head"><h2>Checkbox</h2><span class="tag">1 size</span></div>
+        <p>Native input, check/indeterminate from Material icons, vertical/horizontal groups.</p>
       </a>
       <a class="card" href="radio.html">
-        <div class="card-head"><h2>Radio</h2><span class="tag">1 розмір</span></div>
-        <p>Нативний input, обідок + крапка (без іконки), групи vertical/horizontal.</p>
+        <div class="card-head"><h2>Radio</h2><span class="tag">1 size</span></div>
+        <p>Native input, ring + dot (no icon), vertical/horizontal groups.</p>
       </a>
       <a class="card" href="box.html">
-        <div class="card-head"><h2>Box</h2><span class="tag">без станів</span></div>
-        <p>Найнижчий layout-примітив — surface/border/padding напряму, вся шкала radius.</p>
+        <div class="card-head"><h2>Box</h2><span class="tag">no states</span></div>
+        <p>The lowest layout primitive — surface/border/padding directly, the full radius scale.</p>
       </a>
       <a class="card" href="card.html">
-        <div class="card-head"><h2>Card</h2><span class="tag">border, без тіні</span></div>
-        <p>surface.default + border.default + radius.default, опційний interactive-варіант.</p>
+        <div class="card-head"><h2>Card</h2><span class="tag">border, no shadow</span></div>
+        <p>surface.default + border.default + radius.default, optional interactive variant.</p>
       </a>
       <a class="card" href="switch.html">
-        <div class="card-head"><h2>Switch</h2><span class="tag">1 розмір</span></div>
-        <p>Нативний input, трек завжди залитий, повзунок анімується transform'ом.</p>
+        <div class="card-head"><h2>Switch</h2><span class="tag">1 size</span></div>
+        <p>Native input, track always filled, thumb animates via transform.</p>
       </a>
       <a class="card" href="grid.html">
         <div class="card-head"><h2>Grid</h2><span class="tag">gap: 0/8/12/16/24</span></div>
-        <p>Тільки gap токенізовано (та сама шкала, що й падінги Box), + auto-fit без брейкпоінтів.</p>
+        <p>Only gap is tokenized (same scale as Box's padding), + auto-fit with no breakpoints.</p>
       </a>
       <a class="card" href="tooltip.html">
-        <div class="card-head"><h2>Tooltip</h2><span class="tag">чистий CSS</span></div>
-        <p>Перший споживач shadow.sm і surface.inverse — :hover/:focus-within, без JS.</p>
+        <div class="card-head"><h2>Tooltip</h2><span class="tag">pure CSS</span></div>
+        <p>First consumer of shadow.sm and surface.inverse — :hover/:focus-within, no JS.</p>
       </a>
       <a class="card" href="popover.html">
         <div class="card-head"><h2>Popover</h2><span class="tag">native popover API</span></div>
-        <p>Реальний popovertarget — top-layer, outside-click/Escape безкоштовно з коробки.</p>
+        <p>Real popovertarget — top-layer, outside-click/Escape free out of the box.</p>
       </a>
       <a class="card" href="drawer.html">
         <div class="card-head"><h2>Drawer</h2><span class="tag">native &lt;dialog&gt;</span></div>
-        <p>showModal(), focus-trap/Escape/backdrop нативно, анімація через @starting-style.</p>
+        <p>showModal(), focus-trap/Escape/backdrop native, animated via @starting-style.</p>
       </a>
       <a class="card" href="modal.html">
         <div class="card-head"><h2>Modal</h2><span class="tag">native &lt;dialog&gt;</span></div>
-        <p>По центру — showModal() центрує безкоштовно, radius.xl, shadow.lg, + AlertDialog-варіант.</p>
+        <p>Centered — showModal() centers for free, radius.xl, shadow.lg, + AlertDialog variant.</p>
       </a>
       <a class="card" href="menu.html">
-        <div class="card-head"><h2>Menu</h2><span class="tag">на базі Popover</span></div>
-        <p>Список дій (не Listbox) — text/icon-варіанти, роздільник, destructive-пункт.</p>
+        <div class="card-head"><h2>Menu</h2><span class="tag">built on Popover</span></div>
+        <p>Action list (not Listbox) — text/icon variants, divider, destructive item.</p>
       </a>
       <a class="card" href="listbox.html">
-        <div class="card-head"><h2>Listbox</h2><span class="tag">на базі Popover</span></div>
-        <p>Опції зі станом вибору — single (checkmark) і multi-select (реальний Checkbox), search + select-all.</p>
+        <div class="card-head"><h2>Listbox</h2><span class="tag">built on Popover</span></div>
+        <p>Options with selection state — single (checkmark) and multi-select (real Checkbox), search + select-all.</p>
+      </a>
+      <a class="card" href="avatar.html">
+        <div class="card-head"><h2>Avatar</h2><span class="tag">sm · base · lg</span></div>
+        <p>Photo → initials → icon. Initials color is deterministic (hash of the name), 8 hues.</p>
       </a>
     </div>
   </main>

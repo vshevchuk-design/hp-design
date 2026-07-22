@@ -29,11 +29,23 @@ function textColorFor(hex) {
   return L > 0.6 ? "#141414" : "#fdfdfd";
 }
 
-const groups = ["surface", "bg", "border", "text", "icon", "fill", "status"];
+const groups = ["surface", "bg", "border", "text", "icon", "fill", "status", "avatar"];
+
+// Most groups are flat (name.key -> a token with $value). "avatar" nests one
+// level deeper (name.hue.bg / name.hue.text) for its 8-slot identity palette —
+// walk down to whichever depth actually holds a $value instead of assuming flat.
+function leaves(node, prefix) {
+  if (node && typeof node === "object" && "$value" in node) return [[prefix, node]];
+  return Object.entries(node)
+    .filter(([k]) => !k.startsWith("$"))
+    .flatMap(([k, v]) => leaves(v, prefix ? `${prefix}.${k}` : k));
+}
 
 function renderGroup(name) {
   const g = semantic[name];
-  const rows = Object.entries(g).filter(([k]) => !k.startsWith("$"));
+  const rows = Object.entries(g)
+    .filter(([k]) => !k.startsWith("$"))
+    .flatMap(([key, tok]) => leaves(tok, key));
   return `
     <h3 class="sub-section">${name}</h3>
     <div class="legend"><div class="row"><span>${g.$description || ""}</span></div></div>
@@ -56,7 +68,7 @@ function renderGroup(name) {
 }
 
 const html = `<!doctype html>
-<html lang="uk">
+<html lang="en">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />

@@ -36,7 +36,7 @@ const categorical = Object.entries(chartTokens.color.chart).map(([slot, tok]) =>
 });
 
 const html = `<!doctype html>
-<html lang="uk">
+<html lang="en">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -119,7 +119,7 @@ const html = `<!doctype html>
   </nav>
   <main>
     <h1>Colors — primitives</h1>
-    <p class="sub">tokens/primitives/color.tokens.json · generated, не редагувати hex вручну</p>
+    <p class="sub">tokens/primitives/color.tokens.json · generated — don't hand-edit hex</p>
 
     <div class="legend">
       <div class="row"><b><span class="dot text"></span>Step 600</b><span>AA text-safe on white, ≥4.5:1 — body text, links, small icons, anything read as text.</span></div>

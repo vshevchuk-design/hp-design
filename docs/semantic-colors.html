@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="uk">
+<html lang="en">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -91,6 +91,7 @@
     <a class="navlink" href="modal.html">Modal</a>
     <a class="navlink" href="menu.html">Menu</a>
     <a class="navlink" href="listbox.html">Listbox</a>
+    <a class="navlink" href="avatar.html">Avatar</a>
   </nav>
   <main>
     <h1>Semantic colors</h1>
@@ -393,6 +394,91 @@
         <code class="tok-name">status.info</code>
         <span class="tok-alias">color.blue.500</span>
         <span class="tok-hex">#077fec</span>
+      </div>
+    </div>
+
+    <h3 class="sub-section">avatar</h3>
+    <div class="legend"><div class="row"><span>Categorical identity tints for Avatar's initials fallback — a person with no photo gets one of these 8 hues assigned deterministically (hash their name to a slot), so distinct people read as distinct colors across a list instead of every fallback avatar being the same gray. Same hue order and reasoning as tokens/primitives/chart-series.tokens.json (validated CVD-safe adjacency) but a separate token set on purpose: chart-series sits at the 500 step for saturated lines/bars on a white plot area, this sits at 100 (bg, pastel) / 600 (text, AA-safe — same step text.primary/success/danger/warning already use) for a quiet fallback badge, not a data mark. Don't reuse chart-series' own tokens here, and don't reuse these for charts.</span></div></div>
+    <div class="swatch-grid">
+      <div class="tok-card" style="background:#d9eaff;color:#141414">
+        <code class="tok-name">avatar.blue.bg</code>
+        <span class="tok-alias">color.blue.100</span>
+        <span class="tok-hex">#d9eaff</span>
+      </div>
+      <div class="tok-card" style="background:#0468c4;color:#fdfdfd">
+        <code class="tok-name">avatar.blue.text</code>
+        <span class="tok-alias">color.blue.600</span>
+        <span class="tok-hex">#0468c4</span>
+      </div>
+      <div class="tok-card" style="background:#acffc2;color:#141414">
+        <code class="tok-name">avatar.green.bg</code>
+        <span class="tok-alias">color.green.100</span>
+        <span class="tok-hex">#acffc2</span>
+      </div>
+      <div class="tok-card" style="background:#057e3f;color:#fdfdfd">
+        <code class="tok-name">avatar.green.text</code>
+        <span class="tok-alias">color.green.600</span>
+        <span class="tok-hex">#057e3f</span>
+      </div>
+      <div class="tok-card" style="background:#ffddec;color:#141414">
+        <code class="tok-name">avatar.magenta.bg</code>
+        <span class="tok-alias">color.magenta.100</span>
+        <span class="tok-hex">#ffddec</span>
+      </div>
+      <div class="tok-card" style="background:#b51c79;color:#fdfdfd">
+        <code class="tok-name">avatar.magenta.text</code>
+        <span class="tok-alias">color.magenta.600</span>
+        <span class="tok-hex">#b51c79</span>
+      </div>
+      <div class="tok-card" style="background:#ffe2c5;color:#141414">
+        <code class="tok-name">avatar.amber.bg</code>
+        <span class="tok-alias">color.amber.100</span>
+        <span class="tok-hex">#ffe2c5</span>
+      </div>
+      <div class="tok-card" style="background:#935a03;color:#fdfdfd">
+        <code class="tok-name">avatar.amber.text</code>
+        <span class="tok-alias">color.amber.600</span>
+        <span class="tok-hex">#935a03</span>
+      </div>
+      <div class="tok-card" style="background:#88fffe;color:#141414">
+        <code class="tok-name">avatar.teal.bg</code>
+        <span class="tok-alias">color.teal.100</span>
+        <span class="tok-hex">#88fffe</span>
+      </div>
+      <div class="tok-card" style="background:#057878;color:#fdfdfd">
+        <code class="tok-name">avatar.teal.text</code>
+        <span class="tok-alias">color.teal.600</span>
+        <span class="tok-hex">#057878</span>
+      </div>
+      <div class="tok-card" style="background:#ffe1d5;color:#141414">
+        <code class="tok-name">avatar.orange.bg</code>
+        <span class="tok-alias">color.orange.100</span>
+        <span class="tok-hex">#ffe1d5</span>
+      </div>
+      <div class="tok-card" style="background:#ae4103;color:#fdfdfd">
+        <code class="tok-name">avatar.orange.text</code>
+        <span class="tok-alias">color.orange.600</span>
+        <span class="tok-hex">#ae4103</span>
+      </div>
+      <div class="tok-card" style="background:#e8e4ff;color:#141414">
+        <code class="tok-name">avatar.violet.bg</code>
+        <span class="tok-alias">color.violet.100</span>
+        <span class="tok-hex">#e8e4ff</span>
+      </div>
+      <div class="tok-card" style="background:#743ed8;color:#fdfdfd">
+        <code class="tok-name">avatar.violet.text</code>
+        <span class="tok-alias">color.violet.600</span>
+        <span class="tok-hex">#743ed8</span>
+      </div>
+      <div class="tok-card" style="background:#ffdfde;color:#141414">
+        <code class="tok-name">avatar.red.bg</code>
+        <span class="tok-alias">color.red.100</span>
+        <span class="tok-hex">#ffdfde</span>
+      </div>
+      <div class="tok-card" style="background:#c11435;color:#fdfdfd">
+        <code class="tok-name">avatar.red.text</code>
+        <span class="tok-alias">color.red.600</span>
+        <span class="tok-hex">#c11435</span>
       </div>
     </div>
   </main>

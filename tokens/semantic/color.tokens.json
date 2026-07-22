@@ -246,5 +246,40 @@
       "$type": "color",
       "$value": "{color.blue.500}"
     }
+  },
+  "avatar": {
+    "$description": "Categorical identity tints for Avatar's initials fallback — a person with no photo gets one of these 8 hues assigned deterministically (hash their name to a slot), so distinct people read as distinct colors across a list instead of every fallback avatar being the same gray. Same hue order and reasoning as tokens/primitives/chart-series.tokens.json (validated CVD-safe adjacency) but a separate token set on purpose: chart-series sits at the 500 step for saturated lines/bars on a white plot area, this sits at 100 (bg, pastel) / 600 (text, AA-safe — same step text.primary/success/danger/warning already use) for a quiet fallback badge, not a data mark. Don't reuse chart-series' own tokens here, and don't reuse these for charts.",
+    "blue": {
+      "bg": { "$type": "color", "$value": "{color.blue.100}" },
+      "text": { "$type": "color", "$value": "{color.blue.600}" }
+    },
+    "green": {
+      "bg": { "$type": "color", "$value": "{color.green.100}" },
+      "text": { "$type": "color", "$value": "{color.green.600}" }
+    },
+    "magenta": {
+      "bg": { "$type": "color", "$value": "{color.magenta.100}" },
+      "text": { "$type": "color", "$value": "{color.magenta.600}" }
+    },
+    "amber": {
+      "bg": { "$type": "color", "$value": "{color.amber.100}" },
+      "text": { "$type": "color", "$value": "{color.amber.600}" }
+    },
+    "teal": {
+      "bg": { "$type": "color", "$value": "{color.teal.100}" },
+      "text": { "$type": "color", "$value": "{color.teal.600}" }
+    },
+    "orange": {
+      "bg": { "$type": "color", "$value": "{color.orange.100}" },
+      "text": { "$type": "color", "$value": "{color.orange.600}" }
+    },
+    "violet": {
+      "bg": { "$type": "color", "$value": "{color.violet.100}" },
+      "text": { "$type": "color", "$value": "{color.violet.600}" }
+    },
+    "red": {
+      "bg": { "$type": "color", "$value": "{color.red.100}" },
+      "text": { "$type": "color", "$value": "{color.red.600}" }
+    }
   }
 }

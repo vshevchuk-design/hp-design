@@ -18,6 +18,10 @@ Hard rules established over many rounds of fixing violations — see `logs/statu
 - When reusing another component's tokens (e.g. Tabs' counter reusing `counter.onNeutral`), resolve the real values from that token file — never retype a color-role name by hand. Caught real bugs from doing this wrong twice.
 - Icon color needs its own explicit rule per state — don't rely on `currentColor` inheriting from the label unless you've checked they're actually the same token value.
 
+## Language
+
+Chat with the user happens in Ukrainian. Every docs-site artifact (`docs/*.html` — legends, section prose, story titles/notes, sample data) is English, `<html lang="en">` on every page. This was broken once (Avatar's first draft shipped fully in Ukrainian) because the rule only ever lived in prior-session conversation — it's written down here now so it doesn't get re-broken from a fresh session.
+
 ## Verifying visually
 
 The Browser preview tool is unreliable with `file://` URLs in this repo (treated as outside the sandbox's project root — stale snapshots, "no site open" errors). Workaround: `cd docs && python3 -m http.server 8743 &`, then preview `http://localhost:8743/X.html` instead. Kill the server when done.
