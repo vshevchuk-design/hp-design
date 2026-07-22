@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>hp-design — Tooltip</title>
+<style>
+  :root {
+    --bg-page: #f7f7f5; --bg-card: #ffffff; --bg-card-hover: #fbfbfa;
+    --border: #e4e3df; --border-strong: #d2d1cb;
+    --text-primary: #0e0e10; --text-secondary: #63625c; --text-muted: #918f87;
+    --accent: #0468c4; --accent-bg: #eff6ff;
+    --code-bg: #1e1e22; --code-text: #e4e3df;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --sans: -apple-system, "Segoe UI", system-ui, sans-serif;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327;
+      --border: #313035; --border-strong: #403f45;
+      --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68;
+      --accent: #5aa4ec; --accent-bg: #16283b;
+      --code-bg: #0d0d0f; --code-text: #d7d6d2;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327;
+    --border: #313035; --border-strong: #403f45;
+    --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68;
+    --accent: #5aa4ec; --accent-bg: #16283b;
+    --code-bg: #0d0d0f; --code-text: #d7d6d2;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg-page); color: var(--text-primary); font-family: var(--sans); }
+  .shell { display: flex; min-height: 100vh; }
+  nav.side { width: 220px; flex-shrink: 0; border-right: 0.5px solid var(--border); padding: 1.5rem 1rem; position: sticky; top: 0; height: 100vh; }
+  .brand { font-size: 14px; font-weight: 600; margin: 0 0 2px 8px; }
+  .brand-sub { font-size: 11.5px; color: var(--text-muted); margin: 0 0 1.5rem 8px; }
+  .navlink { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 8px; border-radius: 7px; font-size: 13px; text-decoration: none; color: var(--text-primary); margin-bottom: 1px; }
+  .navlink:hover { background: var(--bg-card-hover); }
+  .navlink.active { background: var(--accent-bg); color: var(--accent); font-weight: 600; }
+  .nav-category { font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin: 16px 8px 6px; }
+  main { flex: 1; padding: 4rem 4rem 6rem; max-width: 1120px; }
+
+  h1 { font-size: 36px; font-weight: 700; margin: 0 0 10px; letter-spacing: -0.02em; }
+  .sub { font-size: 14px; color: var(--text-secondary); margin: 0 0 2.5rem; }
+  h2.big-section { font-size: 24px; font-weight: 700; margin: 5.5rem 0 1.5rem; letter-spacing: -0.01em; padding-top: 2.5rem; border-top: 1px solid var(--border); }
+  h2.big-section:first-of-type { margin-top: 3rem; padding-top: 0; border-top: none; }
+  .section-desc { font-size: 13.5px; color: var(--text-secondary); margin: -0.5rem 0 1.5rem; max-width: 68ch; line-height: 1.6; }
+
+  .legend { font-size: 12.5px; color: var(--text-secondary); padding: 14px 18px; background: var(--bg-card); border: 0.5px solid var(--border); border-radius: 10px; margin-bottom: 1rem; line-height: 1.6; }
+  .legend .row { display: flex; gap: 14px; padding: 6px 0; border-bottom: 0.5px solid var(--border); }
+  .legend .row:last-child { border-bottom: none; }
+  .legend .row b { width: 150px; flex-shrink: 0; color: var(--text-primary); font-weight: 600; font-family: var(--mono); font-size: 11.5px; }
+  code.tok { font-family: var(--mono); font-size: 12px; color: var(--accent); }
+
+  pre.code { background: var(--code-bg); color: var(--code-text); border-radius: 10px; padding: 16px 18px; margin: 0; overflow-x: auto; font-family: var(--mono); font-size: 12px; line-height: 1.7; }
+  pre.code code { font-family: inherit; }
+
+  .story-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 28px; }
+  .story { border: 0.5px solid var(--border); border-radius: 14px; background: var(--bg-card); padding: 24px; display: flex; flex-direction: column; gap: 14px; overflow: visible; }
+  .story h3 { font-size: 14px; font-weight: 600; margin: 0; font-family: var(--mono); }
+  .story-preview { min-height: 90px; display: flex; align-items: center; justify-content: center; padding: 12px 0; }
+  .story-note { font-size: 11.5px; color: var(--text-muted); margin: 0; line-height: 1.5; }
+
+  .demo-trigger { font-family: var(--sans); font-size: 14px; padding: 8px 14px; border-radius: 8px; border: 1px solid var(--tok-border-default); background: var(--tok-surface-default); color: var(--tok-text-default); cursor: pointer; }
+  .demo-force-show .tooltip { opacity: 1 !important; transition-delay: 0s !important; }
+
+  .placeholder-note { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-muted); border: 0.5px dashed var(--border-strong); border-radius: 6px; padding: 4px 10px; margin-top: 1.5rem; }
+
+  :root {
+  --tok-surface-inverse: #2b2b2b;
+  --tok-text-on-fill: #ffffff;
+  --tok-surface-default: #ffffff;
+  --tok-border-default: #d1d1d1;
+  --tok-text-default: #181818;
+  --tok-family-sans: 'Sora', sans-serif;
+}
+
+.tooltip-wrapper { position: relative; display: inline-block; }
+.tooltip { position: absolute; z-index: 1; box-sizing: border-box; padding: 4px 8px; border-radius: 8px; background: var(--tok-surface-inverse); color: var(--tok-text-on-fill); box-shadow: 0px 2px 8px 0px rgba(21, 25, 30, 0.10); white-space: nowrap; font-family: var(--tok-family-sans); font-weight: 400; font-size: 12px; line-height: 1.4;
+  opacity: 0; pointer-events: none; transition: opacity 0.1s ease; }
+.tooltip-wrapper:hover .tooltip, .tooltip-wrapper:focus-within .tooltip { opacity: 1; transition-delay: 400ms; }
+.tooltip::after { content: ""; position: absolute; width: 8px; height: 8px; background: var(--tok-surface-inverse); transform: rotate(45deg); }
+
+.tooltip--top { bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); }
+.tooltip--top::after { bottom: -4px; left: 50%; margin-left: -4px; }
+.tooltip--bottom { top: calc(100% + 6px); left: 50%; transform: translateX(-50%); }
+.tooltip--bottom::after { top: -4px; left: 50%; margin-left: -4px; }
+.tooltip--left { right: calc(100% + 6px); top: 50%; transform: translateY(-50%); }
+.tooltip--left::after { right: -4px; top: 50%; margin-top: -4px; }
+.tooltip--right { left: calc(100% + 6px); top: 50%; transform: translateY(-50%); }
+.tooltip--right::after { left: -4px; top: 50%; margin-top: -4px; }
+</style>
+</head>
+<body>
+<div class="shell">
+  <nav class="side">
+    <p class="brand">hp-design</p>
+    <p class="brand-sub">Highpoint design system</p>
+    <a class="navlink" href="index.html">Overview</a>
+    <p class="nav-category">Tokens</p>
+    <a class="navlink" href="colors.html">Colors</a>
+    <a class="navlink" href="semantic-colors.html">Semantic colors</a>
+    <a class="navlink" href="typography.html">Typography</a>
+    <a class="navlink" href="layout.html">Layout</a>
+    <a class="navlink" href="icons.html">Icons</a>
+    <p class="nav-category">Components</p>
+    <a class="navlink" href="button.html">Button</a>
+    <a class="navlink" href="counter.html">Counter</a>
+    <a class="navlink" href="input.html">Input</a>
+    <a class="navlink" href="select.html">Select</a>
+    <a class="navlink" href="search.html">Search</a>
+    <a class="navlink" href="pagination.html">Pagination</a>
+    <a class="navlink" href="separator.html">Separator</a>
+    <a class="navlink" href="tabs.html">Tabs</a>
+    <a class="navlink" href="checkbox.html">Checkbox</a>
+    <a class="navlink" href="radio.html">Radio</a>
+    <a class="navlink" href="box.html">Box</a>
+    <a class="navlink" href="card.html">Card</a>
+    <a class="navlink" href="switch.html">Switch</a>
+    <a class="navlink" href="grid.html">Grid</a>
+    <a class="navlink active" href="tooltip.html">Tooltip</a>
+    <a class="navlink" href="popover.html">Popover</a>
+    <a class="navlink" href="drawer.html">Drawer</a>
+    <a class="navlink" href="modal.html">Modal</a>
+  </nav>
+  <main>
+    <h1>Tooltip</h1>
+    <p class="sub">tokens/components/tooltip.tokens.json · generated — the CSS below is generated from the same resolved tokens driving every preview on this page, not hand-copied. Colors are CSS custom properties, not literal hex.</p>
+
+    <div class="legend">
+      <div class="row"><b>Pure CSS</b><span>:hover/:focus-within on a wrapper + position:absolute — no JS, no native popover API. Unlike <a href="popover.html">Popover</a>, a tooltip only ever tracks its trigger's own hover/focus, never needs outside-click dismissal.</span></div>
+      <div class="row"><b>First shadow consumer</b><span>surface.inverse (the one dark surface role in this system) + shadow.sm — the first component to use either, added specifically for the floating/overlay family. See shadow.tokens.json's own $description for why a shadow is warranted here but nowhere else.</span></div>
+      <div class="row"><b>Arrow</b><span>A small rotated square (::after, same bg as the bubble) pointing at the trigger — makes the trigger-tooltip relationship unambiguous at a glance.</span></div>
+      <div class="row"><b>Show delay, no hide delay</b><span>400ms delay before appearing (so passing the mouse over a trigger doesn't flash a tooltip), disappears immediately on hover/focus-out — standard practice.</span></div>
+      <div class="row"><b>Placement</b><span>top/bottom/left/right, plain CSS positioning (no collision detection — a real app would want a positioning library for that; out of scope for a static token demo).</span></div>
+    </div>
+
+    <h2 class="big-section">CSS</h2>
+    <pre class="code"><code>:root {
+  --tok-surface-inverse: #2b2b2b;
+  --tok-text-on-fill: #ffffff;
+  --tok-surface-default: #ffffff;
+  --tok-border-default: #d1d1d1;
+  --tok-text-default: #181818;
+  --tok-family-sans: 'Sora', sans-serif;
+}
+
+.tooltip-wrapper { position: relative; display: inline-block; }
+.tooltip { position: absolute; z-index: 1; box-sizing: border-box; padding: 4px 8px; border-radius: 8px; background: var(--tok-surface-inverse); color: var(--tok-text-on-fill); box-shadow: 0px 2px 8px 0px rgba(21, 25, 30, 0.10); white-space: nowrap; font-family: var(--tok-family-sans); font-weight: 400; font-size: 12px; line-height: 1.4;
+  opacity: 0; pointer-events: none; transition: opacity 0.1s ease; }
+.tooltip-wrapper:hover .tooltip, .tooltip-wrapper:focus-within .tooltip { opacity: 1; transition-delay: 400ms; }
+.tooltip::after { content: ""; position: absolute; width: 8px; height: 8px; background: var(--tok-surface-inverse); transform: rotate(45deg); }
+
+.tooltip--top { bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); }
+.tooltip--top::after { bottom: -4px; left: 50%; margin-left: -4px; }
+.tooltip--bottom { top: calc(100% + 6px); left: 50%; transform: translateX(-50%); }
+.tooltip--bottom::after { top: -4px; left: 50%; margin-left: -4px; }
+.tooltip--left { right: calc(100% + 6px); top: 50%; transform: translateY(-50%); }
+.tooltip--left::after { right: -4px; top: 50%; margin-top: -4px; }
+.tooltip--right { left: calc(100% + 6px); top: 50%; transform: translateY(-50%); }
+.tooltip--right::after { left: -4px; top: 50%; margin-top: -4px; }</code></pre>
+
+    <h2 class="big-section">Placement</h2>
+    <p class="section-desc">All four forced visible (via a docs-only class) so every placement is visible at once — try hovering any of the real buttons to see the actual :hover/:focus-within behavior, including the show delay.</p>
+    <div class="story-grid">
+      
+      <div class="story">
+        <h3>top</h3>
+        <div class="story-preview"><span class="tooltip-wrapper demo-force-show">
+      <button class="demo-trigger">Hover me</button>
+      <span class="tooltip tooltip--top">Tooltip label</span>
+    </span></div>
+        <pre class="code"><code>&lt;span class="tooltip-wrapper"&gt;
+  &lt;button&gt;Hover me&lt;/button&gt;
+  &lt;span class="tooltip tooltip--top"&gt;Tooltip label&lt;/span&gt;
+&lt;/span&gt;</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>bottom</h3>
+        <div class="story-preview"><span class="tooltip-wrapper demo-force-show">
+      <button class="demo-trigger">Hover me</button>
+      <span class="tooltip tooltip--bottom">Tooltip label</span>
+    </span></div>
+        <pre class="code"><code>&lt;span class="tooltip-wrapper"&gt;
+  &lt;button&gt;Hover me&lt;/button&gt;
+  &lt;span class="tooltip tooltip--bottom"&gt;Tooltip label&lt;/span&gt;
+&lt;/span&gt;</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>left</h3>
+        <div class="story-preview"><span class="tooltip-wrapper demo-force-show">
+      <button class="demo-trigger">Hover me</button>
+      <span class="tooltip tooltip--left">Tooltip label</span>
+    </span></div>
+        <pre class="code"><code>&lt;span class="tooltip-wrapper"&gt;
+  &lt;button&gt;Hover me&lt;/button&gt;
+  &lt;span class="tooltip tooltip--left"&gt;Tooltip label&lt;/span&gt;
+&lt;/span&gt;</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>right</h3>
+        <div class="story-preview"><span class="tooltip-wrapper demo-force-show">
+      <button class="demo-trigger">Hover me</button>
+      <span class="tooltip tooltip--right">Tooltip label</span>
+    </span></div>
+        <pre class="code"><code>&lt;span class="tooltip-wrapper"&gt;
+  &lt;button&gt;Hover me&lt;/button&gt;
+  &lt;span class="tooltip tooltip--right"&gt;Tooltip label&lt;/span&gt;
+&lt;/span&gt;</code></pre>
+        
+      </div>
+    </div>
+
+    <p class="placeholder-note">Every code sample on this page is printed from the same resolved token values driving the live previews above it — copy it directly, nothing here is hand-typed.</p>
+  </main>
+</div>
+</body>
+</html>

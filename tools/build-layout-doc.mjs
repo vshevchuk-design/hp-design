@@ -1,5 +1,6 @@
 // Regenerates docs/layout.html from tokens/primitives/dimension.tokens.json,
-// radius.tokens.json, z-index.tokens.json. Run: node tools/build-layout-doc.mjs
+// radius.tokens.json, z-index.tokens.json, shadow.tokens.json.
+// Run: node tools/build-layout-doc.mjs
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -9,6 +10,7 @@ const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const dim = JSON.parse(fs.readFileSync(path.join(root, "tokens/primitives/dimension.tokens.json"))).dim;
 const radius = JSON.parse(fs.readFileSync(path.join(root, "tokens/primitives/radius.tokens.json"))).radius;
 const z = JSON.parse(fs.readFileSync(path.join(root, "tokens/primitives/z-index.tokens.json"))).z;
+const shadow = JSON.parse(fs.readFileSync(path.join(root, "tokens/primitives/shadow.tokens.json"))).shadow;
 
 function resolveDim(ref) {
   const key = ref.replace(/[{}]/g, "").split(".")[1];
@@ -28,6 +30,11 @@ const dimRows = Object.entries(dim)
   .sort((a, b) => a[1].$value.value - b[1].$value.value);
 const radiusRows = Object.entries(radius).filter(([k]) => !k.startsWith("$"));
 const zRows = Object.entries(z).filter(([k]) => !k.startsWith("$"));
+const shadowRows = Object.entries(shadow).filter(([k]) => !k.startsWith("$"));
+function shadowCss(v) {
+  const px2 = (d) => `${d.value}${d.unit}`;
+  return `${px2(v.offsetX)} ${px2(v.offsetY)} ${px2(v.blur)} ${px2(v.spread)} ${v.color}`;
+}
 
 const dimLegend = [
   ["0_5 (2px)", "Hairline gaps — icon-to-text micro adjustments."],
@@ -130,6 +137,7 @@ const html = `<!doctype html>
   .swatch-row { display: flex; align-items: center; gap: 10px; }
   .dim-bar { height: 8px; background: var(--accent); border-radius: 2px; }
   .radius-box { width: 72px; height: 72px; background: var(--accent-bg); border: 1.5px solid var(--accent); flex-shrink: 0; }
+  .shadow-box { width: 72px; height: 44px; background: var(--bg-card); border-radius: 8px; flex-shrink: 0; margin: 8px; }
   .ctx { color: var(--text-secondary); font-size: 12px; white-space: nowrap; }
   .table-wrap { overflow-x: auto; }
 </style>
@@ -180,6 +188,22 @@ const html = `<!doctype html>
     <table class="scale">
       <tr><th>Token</th><th>Value</th><th>Context</th></tr>
       ${zRows.map(([k, v]) => `<tr><td><code class="tok">--z-${k}</code></td><td>${v.$value}</td><td class="ctx">${zContext[k] || ""}</td></tr>`).join("\n      ")}
+    </table>
+    </div>
+
+    <h3 class="sub-section">Shadow</h3>
+    <div class="legend">
+      <div class="row"><b>Floating UI only</b><span>Added 2026-07-21, specifically for Tooltip/Popover/Drawer/Modal — every other surface in this system (Input/Select/Search fields, Card) draws separation with a border.default hairline, never a shadow. Not a general-purpose elevation scale to reach for elsewhere.</span></div>
+    </div>
+    <div class="table-wrap">
+    <table class="scale">
+      <tr><th>Token</th><th>Used by</th><th>CSS</th><th>Preview</th></tr>
+      ${shadowRows
+        .map(([k, v]) => {
+          const used = { sm: "Tooltip, Popover", md: "Drawer", lg: "Modal" }[k] || "";
+          return `<tr><td><code class="tok">--shadow-${k}</code></td><td class="ctx">${used}</td><td class="ctx">${shadowCss(v.$value)}</td><td><div class="shadow-box" style="box-shadow:${shadowCss(v.$value)}"></div></td></tr>`;
+        })
+        .join("\n      ")}
     </table>
     </div>
   </main>

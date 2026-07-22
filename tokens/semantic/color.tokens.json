@@ -25,6 +25,11 @@
       "$type": "color",
       "$value": "{color.gray.100}",
       "$description": "Disabled control background."
+    },
+    "inverse": {
+      "$type": "color",
+      "$value": "{color.gray.900}",
+      "$description": "The one dark surface role in an otherwise light-themed system — Tooltip's background. Pair with text.onFill/icon.onFill (white), never text.default. Added 2026-07-21 for the overlay-family components; not a general 'dark mode' token, scoped to small inverse-context UI."
     }
   },
   "bg": {

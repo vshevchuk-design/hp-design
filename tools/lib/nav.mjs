@@ -22,6 +22,10 @@ export const NAV_ITEMS = {
   card: { label: "Card", href: "card.html" },
   switch: { label: "Switch", href: "switch.html" },
   grid: { label: "Grid", href: "grid.html" },
+  tooltip: { label: "Tooltip", href: "tooltip.html" },
+  popover: { label: "Popover", href: "popover.html" },
+  drawer: { label: "Drawer", href: "drawer.html" },
+  modal: { label: "Modal", href: "modal.html" },
 };
 
 export function renderNav(activeKey) {
@@ -52,5 +56,9 @@ export function renderNav(activeKey) {
     ${link("box")}
     ${link("card")}
     ${link("switch")}
-    ${link("grid")}`;
+    ${link("grid")}
+    ${link("tooltip")}
+    ${link("popover")}
+    ${link("drawer")}
+    ${link("modal")}`;
 }
