@@ -147,6 +147,7 @@ const html = `<!doctype html>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>hp-design — Switch</title>
+<link rel="stylesheet" href="../assets/fonts/sora/sora.css" />
 <style>
   :root {
     --bg-page: #f7f7f5; --bg-card: #ffffff; --bg-card-hover: #fbfbfa;
