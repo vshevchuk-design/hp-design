@@ -40,6 +40,39 @@
         },
         "valueColor": { "$type": "color", "$value": "{text.default}" }
       },
+      "inbox": {
+        "$description": "Second content shape for the same interactive row — the Message Center inbox-list layout (avatar + department identity + timestamp + subject + preview + flag + optional Expires), as opposed to the Department/Received metadata-row shape above. Same shell, same hover/pressed/selected/focused (component.threadListItem.state) — only what's inside differs. Avatar is a real Avatar (resolved from avatar.tokens.json, base size), keyed off the department name (not a person) — same fallback-color hashing logic, just fed a department string instead of a person's name, so 'Academic Advising' always lands on the same identity color. No 'Handled by' row and no right-aligned Expires column (both present in the live inbox screenshot) — deliberately dropped/repositioned per explicit request: Expires moves to a left-aligned row directly under the preview text instead.",
+        "avatarGap": { "$type": "dimension", "$value": "{dim.3}" },
+        "lineGap": { "$type": "dimension", "$value": "{dim.1}" },
+        "identity": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{family.sans}",
+            "fontWeight": "{weight.semibold}",
+            "fontSize": "{size.sm}",
+            "lineHeight": "{leading.tight}",
+            "letterSpacing": "{tracking.normal}"
+          }
+        },
+        "identityColor": { "$type": "color", "$value": "{text.default}" },
+        "time": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{family.sans}",
+            "fontWeight": "{weight.normal}",
+            "fontSize": "{size.xs}",
+            "lineHeight": "{leading.tight}",
+            "letterSpacing": "{tracking.normal}"
+          }
+        },
+        "timeColor": { "$type": "color", "$value": "{text.muted}" },
+        "preview": { "$type": "typography", "$value": "{text-style.body-sm}" },
+        "previewColor": { "$type": "color", "$value": "{text.muted}" },
+        "flag": {
+          "iconSize": { "$type": "dimension", "$value": "{dim.4}" },
+          "color": { "$type": "color", "$value": "{icon.muted}" }
+        }
+      },
       "state": {
         "hover": {
           "border": { "$type": "color", "$value": "{fill.primary}" }

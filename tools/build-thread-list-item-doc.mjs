@@ -30,6 +30,7 @@ const semantic = load("tokens/semantic/color.tokens.json");
 const threadListItem = load("tokens/components/thread-list-item.tokens.json").component.threadListItem;
 const card = load("tokens/components/card.tokens.json").component.card;
 const badge = load("tokens/components/badge.tokens.json").component.badge;
+const avatar = load("tokens/components/avatar.tokens.json").component.avatar;
 
 const registry = {
   color: colorPrim,
@@ -85,10 +86,27 @@ assertSameRef(threadListItem.state.focused.ringColor, card.interactive.state.foc
 assertSameRef(threadListItem.state.focused.ringWidth, card.interactive.state.focused.ringWidth, "focused.ringWidth");
 assertSameRef(threadListItem.state.focused.ringOffset, card.interactive.state.focused.ringOffset, "focused.ringOffset");
 
+// ---- Inbox row's avatar is keyed off a department name, not a person —
+// same hash(name) % 8 identity-color logic Avatar itself uses, just fed a
+// different kind of string. Only resolve the hue slots the demo actually uses. ----
+const AVATAR_HUES = ["blue", "green", "magenta", "amber", "teal", "orange", "violet", "red"];
+function initialsOf(name) {
+  const parts = name.trim().split(/\s+/);
+  return parts.length > 1 ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase() : parts[0].slice(0, 2).toUpperCase();
+}
+function hueOf(name) {
+  let sum = 0;
+  for (const ch of name) sum += ch.charCodeAt(0);
+  return AVATAR_HUES[sum % AVATAR_HUES.length];
+}
+const inboxDepartments = ["Academic Advising", "Financial Aid", "Registrar"];
+const usedHues = [...new Set(inboxDepartments.map(hueOf))];
+
 const colorPaths = [
   "surface.default", "border.default", "text.default", "icon.muted", "text.muted",
   "fill.primary", "bg.primary", "border.focus",
-  "bg.danger", "text.danger",
+  "bg.danger", "text.danger", "bg.warning", "text.warning", "bg.neutral",
+  ...usedHues.flatMap((h) => [`avatar.${h}.bg`, `avatar.${h}.text`]),
 ];
 const colorValue = Object.fromEntries(colorPaths.map((p) => [p, resolve(p)]));
 const fontSans = resolve("family.sans");
@@ -110,6 +128,7 @@ function typoCss(t) {
 }
 
 const iconChevron = fs.readFileSync(path.join(root, "assets/icons/material-filled/chevron_right.svg"), "utf8").replace("<svg ", '<svg class="thread-item__chevron" ');
+const iconFlag = fs.readFileSync(path.join(root, "assets/icons/material-filled/flag.svg"), "utf8").replace("<svg ", '<svg class="thread-item-inbox__flag" ');
 
 // ---- Badge, resolved from its own tokens (not retyped) — sm size, role=danger,
 // tint fill, used for the Expires value in place of the live app's bare
@@ -119,7 +138,25 @@ const badgeSm = badge.size.sm;
 const badgeHeight = px(resolve(badgeSm.height.$value));
 const badgePaddingX = px(resolve(badgeSm.paddingX.$value));
 const badgeLabelType = resolveToken(badgeSm.label);
-const badgeDangerTint = { bg: refPath(badge.role.danger.tint.bg.$value), text: refPath(badge.role.danger.tint.text.$value) };
+const badgeTint = (role) => ({ bg: refPath(badge.role[role].tint.bg.$value), text: refPath(badge.role[role].tint.text.$value) });
+const badgeDangerTint = badgeTint("danger");
+const badgeWarningTint = badgeTint("warning");
+const badgeNeutralTint = badgeTint("neutral");
+
+// ---- Avatar, resolved from its own tokens (not retyped) — base size only ----
+const avatarRadius = px(resolve(avatar.radius.$value));
+const avatarBase = avatar.size.base;
+const avatarDiameter = px(resolve(avatarBase.diameter.$value));
+const avatarInitialsType = resolveToken(avatarBase.initials);
+
+// ---- Inbox row's own fields ----
+const inbox = threadListItem.inbox;
+const inboxAvatarGap = px(resolve(inbox.avatarGap.$value));
+const inboxLineGap = px(resolve(inbox.lineGap.$value));
+const inboxIdentityType = resolveToken(inbox.identity);
+const inboxTimeType = resolveToken(inbox.time);
+const inboxPreviewType = resolveToken(get(inbox.preview.$value));
+const inboxFlagSize = px(resolve(inbox.flag.iconSize.$value));
 
 const css = `${rootVars}
 
@@ -139,7 +176,29 @@ const css = `${rootVars}
 .thread-item--selected { background: ${cv("bg.primary")}; border-color: ${cv("fill.primary")}; }
 
 .badge { box-sizing: border-box; display: inline-flex; align-items: center; border-radius: ${badgeRadius}; height: ${badgeHeight}; padding: 0 ${badgePaddingX}; ${typoCss(badgeLabelType)} white-space: nowrap; }
-.badge--role-danger { background: ${cv(badgeDangerTint.bg)}; color: ${cv(badgeDangerTint.text)}; }`;
+.badge--role-danger { background: ${cv(badgeDangerTint.bg)}; color: ${cv(badgeDangerTint.text)}; }
+.badge--role-warning { background: ${cv(badgeWarningTint.bg)}; color: ${cv(badgeWarningTint.text)}; }
+.badge--role-neutral { background: ${cv(badgeNeutralTint.bg)}; color: ${cv(badgeNeutralTint.text)}; }
+
+.avatar { box-sizing: border-box; position: relative; display: inline-flex; flex-shrink: 0; align-items: center; justify-content: center; overflow: hidden; border-radius: ${avatarRadius}; width: ${avatarDiameter}; height: ${avatarDiameter}; font-family: ${cv("family.sans")}; user-select: none; }
+.avatar__initials { text-transform: uppercase; ${typoCss(avatarInitialsType)} }
+${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.avatar--${h} .avatar__initials { color: ${cv(`avatar.${h}.text`)}; }`).join("\n")}
+
+.thread-item-inbox { box-sizing: border-box; width: 100%; text-align: left; appearance: none; cursor: pointer; display: flex; align-items: flex-start; gap: ${inboxAvatarGap}; padding: ${padding}; border-radius: ${radius}; background: ${cv("surface.default")}; border: 1px solid ${cv("border.default")}; font-family: ${cv("family.sans")}; }
+.thread-item-inbox__main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: ${inboxLineGap}; }
+.thread-item-inbox__top { display: flex; align-items: baseline; justify-content: space-between; gap: ${px(resolve("dim.2"))}; }
+.thread-item-inbox__identity { color: ${cv("text.default")}; ${typoCss(inboxIdentityType)} }
+.thread-item-inbox__time { flex-shrink: 0; color: ${cv("text.muted")}; ${typoCss(inboxTimeType)} }
+.thread-item-inbox__subject { color: ${cv("text.default")}; ${typoCss(subjectType)} }
+.thread-item-inbox__preview-row { display: flex; align-items: center; justify-content: space-between; gap: ${px(resolve("dim.2"))}; }
+.thread-item-inbox__preview { flex: 1; min-width: 0; color: ${cv("text.muted")}; ${typoCss(inboxPreviewType)} white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.thread-item-inbox__flag { flex-shrink: 0; width: ${inboxFlagSize}; height: ${inboxFlagSize}; color: ${cv("icon.muted")}; }
+.thread-item-inbox__expires { margin-top: ${px(resolve("dim.0_5"))}; }
+
+.thread-item-inbox:not(.thread-item-inbox--selected):hover { border-color: ${cv("fill.primary")}; }
+.thread-item-inbox:not(.thread-item-inbox--selected):active { background: ${cv("bg.primary")}; border-color: ${cv("fill.primary")}; }
+.thread-item-inbox:focus-visible { outline: ${ringWidth} solid ${cv("border.focus")}; outline-offset: ${ringOffset}; }
+.thread-item-inbox--selected { background: ${cv("bg.primary")}; border-color: ${cv("fill.primary")}; }`;
 
 function metaRow(label, valueHtml) {
   return `<div class="thread-item__row"><span class="thread-item__label">${label}</span>${valueHtml}</div>`;
@@ -159,6 +218,34 @@ function threadItemMarkup({ subject, rows, selected = false }) {
       <div class="thread-item__divider"></div>
       <div class="thread-item__metadata">
         ${rows.join("\n        ")}
+      </div>
+    </button>`;
+}
+
+// ---- Inbox row markup — avatar keyed off the department name, no
+// "Handled by" row, Expires is a left-aligned row under the preview text
+// instead of the live app's right-aligned column. ----
+function inboxAvatarMarkup(department) {
+  const hue = hueOf(department);
+  return `<span class="avatar avatar--${hue}" role="img" aria-label="${department}"><span class="avatar__initials">${initialsOf(department)}</span></span>`;
+}
+function expiresBadge(label, role) {
+  return `<span class="badge badge--role-${role}">${label}</span>`;
+}
+function threadInboxItemMarkup({ department, time, subject, preview, expires, selected = false }) {
+  return `<button class="thread-item-inbox${selected ? " thread-item-inbox--selected" : ""}">
+      ${inboxAvatarMarkup(department)}
+      <div class="thread-item-inbox__main">
+        <div class="thread-item-inbox__top">
+          <span class="thread-item-inbox__identity">${department}</span>
+          <span class="thread-item-inbox__time">${time}</span>
+        </div>
+        <div class="thread-item-inbox__subject">${subject}</div>
+        <div class="thread-item-inbox__preview-row">
+          <span class="thread-item-inbox__preview">${preview}</span>
+          ${iconFlag}
+        </div>
+        ${expires ? `<div class="thread-item-inbox__expires">${expires}</div>` : ""}
       </div>
     </button>`;
 }
@@ -209,6 +296,56 @@ function metadataStories() {
   return defs.map((d) => storyCard(d.title, d.html, d.html, d.note || "")).join("\n");
 }
 
+// ---- Inbox row stories ----
+function inboxStories() {
+  const defs = [
+    {
+      title: "default",
+      html: threadInboxItemMarkup({ department: "Academic Advising", time: "3:56 PM", subject: "Question about fall registration", preview: "Hi Alexander, I wanted to check whether …" }),
+    },
+    {
+      title: "with Expires (warning)",
+      html: threadInboxItemMarkup({ department: "Financial Aid", time: "Jul 10", subject: "Course withdrawal deadline", preview: "Hey Alex, I did alright on my quiz b…", expires: expiresBadge("Expires Jul 20", "warning") }),
+      note: "Expires sits on its own row, left-aligned under the preview text — moved here from the live app's right-aligned column next to the timestamp.",
+    },
+    {
+      title: "with Expires (expired)",
+      html: threadInboxItemMarkup({ department: "Academic Advising", time: "Jul 8", subject: "Advisement Outreach", preview: "Thank you for the details about the…", expires: expiresBadge("Expired Jul 10", "danger") }),
+    },
+  ];
+  return defs.map((d) => storyCard(d.title, d.html, d.html, d.note || "")).join("\n");
+}
+
+// ---- Inbox row: in context, a real single-select list matching the live
+// Message Center inbox (avatar/department/subject/preview/flag), minus the
+// "Handled by" row the live app also shows — dropped per explicit request. ----
+const inboxListDemo = `<div class="thread-item-inbox-demo" style="display:flex; flex-direction:column; gap:12px; max-width:400px;">
+      ${threadInboxItemMarkup({ department: "Academic Advising", time: "3:56 PM", subject: "Question about fall registration", preview: "Hi Alexander, I wanted to check whether …", selected: true })}
+      ${threadInboxItemMarkup({ department: "Academic Advising", time: "11:20 AM", subject: "Satisfactory Academic Progress Plan", preview: "Okay I will contact my advisor soon. Tha…" })}
+      ${threadInboxItemMarkup({ department: "Financial Aid", time: "Jul 10", subject: "Course withdrawal deadline", preview: "Hey Alex, I did alright on my quiz b…", expires: expiresBadge("Expires Jul 20", "warning") })}
+      ${threadInboxItemMarkup({ department: "Academic Advising", time: "Jul 8", subject: "Advisement Outreach", preview: "Thank you for the details about the…", expires: expiresBadge("Expired Jul 10", "danger") })}
+      ${threadInboxItemMarkup({ department: "Academic Advising", time: "Jun 30", subject: "Study Session", preview: "That works for me — I can make th…", expires: expiresBadge("Expires Sep 30", "neutral") })}
+    </div>`;
+const inboxListDemoCode = `<div class="thread-item-inbox-demo">
+  <button class="thread-item-inbox thread-item-inbox--selected">…</button>
+  <button class="thread-item-inbox">…</button>
+  …
+</div>
+<script>
+  document.querySelectorAll(".thread-item-inbox-demo .thread-item-inbox").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      btn.parentElement.querySelectorAll(".thread-item-inbox").forEach((b) => b.classList.remove("thread-item-inbox--selected"));
+      btn.classList.add("thread-item-inbox--selected");
+    });
+  });
+</script>`;
+const inboxJs = `document.querySelectorAll(".thread-item-inbox-demo .thread-item-inbox").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    btn.parentElement.querySelectorAll(".thread-item-inbox").forEach((b) => b.classList.remove("thread-item-inbox--selected"));
+    btn.classList.add("thread-item-inbox--selected");
+  });
+});`;
+
 // ---- In context: a real, single-select list ----
 const listDemo = `<div class="thread-item-demo" style="display:flex; flex-direction:column; gap:12px; max-width:360px;">
       ${threadItemMarkup({ subject: "Winter Intersession", rows: [metaRow("Department:", textValue("Academic Advising")), metaRow("Received:", textValue("12/19/2025"))], selected: true })}
@@ -234,7 +371,9 @@ const js = `document.querySelectorAll(".thread-item-demo .thread-item").forEach(
     btn.parentElement.querySelectorAll(".thread-item").forEach((b) => b.classList.remove("thread-item--selected"));
     btn.classList.add("thread-item--selected");
   });
-});`;
+});
+
+${inboxJs}`;
 
 const html = `<!doctype html>
 <html lang="en">
@@ -325,6 +464,7 @@ const html = `<!doctype html>
       <div class="row"><b>Metadata rows</b><span>Label:value pairs, same line, spread apart — Department/Received/Regarding/Expires, matching the live app exactly. size.xs both, differentiated by color (muted label, default value) not weight.</span></div>
       <div class="row"><b>Expires uses Badge now</b><span>The live app shows an expiry as bare red-colored text. This component uses a real Badge (role=danger, tint, sm) for that value instead — the thread list was literally one of the driving use cases Badge was built for.</span></div>
       <div class="row"><b>No unread indicator</b><span>Not asked for — deferred rather than built speculatively.</span></div>
+      <div class="row"><b>Inbox row (2nd shape)</b><span>Same shell/states, different content — avatar + department identity + timestamp + subject + preview + flag, matching the Message Center inbox-list screenshot. Avatar is keyed off the department name (not a person), reusing Avatar's own hash(name) % 8 fallback-color logic. No "Handled by" row, and Expires moves to a left-aligned row under the preview text instead of the live app's right-aligned column.</span></div>
     </div>
 
     <h2 class="big-section">CSS</h2>
@@ -350,6 +490,17 @@ const html = `<!doctype html>
     <p class="section-desc">A real, single-select thread list — click any row.</p>
     <div class="usage-preview">${listDemo}</div>
     <pre class="code"><code>${esc(listDemoCode)}</code></pre>
+
+    <h2 class="big-section">Inbox row</h2>
+    <p class="section-desc">The Message Center inbox-list shape — avatar, department identity + timestamp, subject, preview, flag, optional Expires. Same interactive shell/states as above, different content.</p>
+    <div class="story-grid">
+      ${inboxStories()}
+    </div>
+
+    <h2 class="big-section">Inbox row — in context</h2>
+    <p class="section-desc">A real, single-select inbox list — click any row.</p>
+    <div class="usage-preview">${inboxListDemo}</div>
+    <pre class="code"><code>${esc(inboxListDemoCode)}</code></pre>
   </main>
 </div>
 <script>${js}</script>

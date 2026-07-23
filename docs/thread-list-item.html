@@ -80,6 +80,13 @@
   --tok-border-focus: #0468c4;
   --tok-bg-danger: #ffdfde;
   --tok-text-danger: #c11435;
+  --tok-bg-warning: #ffe2c5;
+  --tok-text-warning: #935a03;
+  --tok-bg-neutral: #e8e8e8;
+  --tok-avatar-teal-bg: #88fffe;
+  --tok-avatar-teal-text: #057878;
+  --tok-avatar-amber-bg: #ffe2c5;
+  --tok-avatar-amber-text: #935a03;
   --tok-family-sans: 'Sora', sans-serif;
 }
 
@@ -100,6 +107,31 @@
 
 .badge { box-sizing: border-box; display: inline-flex; align-items: center; border-radius: 999px; height: 16px; padding: 0 4px; font-weight: 600; font-size: 10px; line-height: 1; white-space: nowrap; }
 .badge--role-danger { background: var(--tok-bg-danger); color: var(--tok-text-danger); }
+.badge--role-warning { background: var(--tok-bg-warning); color: var(--tok-text-warning); }
+.badge--role-neutral { background: var(--tok-bg-neutral); color: var(--tok-text-default); }
+
+.avatar { box-sizing: border-box; position: relative; display: inline-flex; flex-shrink: 0; align-items: center; justify-content: center; overflow: hidden; border-radius: 999px; width: 40px; height: 40px; font-family: var(--tok-family-sans); user-select: none; }
+.avatar__initials { text-transform: uppercase; font-weight: 600; font-size: 14px; line-height: 1; }
+.avatar--teal { background: var(--tok-avatar-teal-bg); }
+.avatar--teal .avatar__initials { color: var(--tok-avatar-teal-text); }
+.avatar--amber { background: var(--tok-avatar-amber-bg); }
+.avatar--amber .avatar__initials { color: var(--tok-avatar-amber-text); }
+
+.thread-item-inbox { box-sizing: border-box; width: 100%; text-align: left; appearance: none; cursor: pointer; display: flex; align-items: flex-start; gap: 12px; padding: 16px; border-radius: 8px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); font-family: var(--tok-family-sans); }
+.thread-item-inbox__main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.thread-item-inbox__top { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.thread-item-inbox__identity { color: var(--tok-text-default); font-weight: 600; font-size: 12px; line-height: 1.2; }
+.thread-item-inbox__time { flex-shrink: 0; color: var(--tok-text-muted); font-weight: 400; font-size: 10px; line-height: 1.2; }
+.thread-item-inbox__subject { color: var(--tok-text-default); font-weight: 600; font-size: 14px; line-height: 1.4; }
+.thread-item-inbox__preview-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.thread-item-inbox__preview { flex: 1; min-width: 0; color: var(--tok-text-muted); font-weight: 400; font-size: 12px; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.thread-item-inbox__flag { flex-shrink: 0; width: 16px; height: 16px; color: var(--tok-icon-muted); }
+.thread-item-inbox__expires { margin-top: 2px; }
+
+.thread-item-inbox:not(.thread-item-inbox--selected):hover { border-color: var(--tok-fill-primary); }
+.thread-item-inbox:not(.thread-item-inbox--selected):active { background: var(--tok-bg-primary); border-color: var(--tok-fill-primary); }
+.thread-item-inbox:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
+.thread-item-inbox--selected { background: var(--tok-bg-primary); border-color: var(--tok-fill-primary); }
 </style>
 </head>
 <body>
@@ -154,6 +186,7 @@
       <div class="row"><b>Metadata rows</b><span>Label:value pairs, same line, spread apart — Department/Received/Regarding/Expires, matching the live app exactly. size.xs both, differentiated by color (muted label, default value) not weight.</span></div>
       <div class="row"><b>Expires uses Badge now</b><span>The live app shows an expiry as bare red-colored text. This component uses a real Badge (role=danger, tint, sm) for that value instead — the thread list was literally one of the driving use cases Badge was built for.</span></div>
       <div class="row"><b>No unread indicator</b><span>Not asked for — deferred rather than built speculatively.</span></div>
+      <div class="row"><b>Inbox row (2nd shape)</b><span>Same shell/states, different content — avatar + department identity + timestamp + subject + preview + flag, matching the Message Center inbox-list screenshot. Avatar is keyed off the department name (not a person), reusing Avatar's own hash(name) % 8 fallback-color logic. No "Handled by" row, and Expires moves to a left-aligned row under the preview text instead of the live app's right-aligned column.</span></div>
     </div>
 
     <h2 class="big-section">CSS</h2>
@@ -168,6 +201,13 @@
   --tok-border-focus: #0468c4;
   --tok-bg-danger: #ffdfde;
   --tok-text-danger: #c11435;
+  --tok-bg-warning: #ffe2c5;
+  --tok-text-warning: #935a03;
+  --tok-bg-neutral: #e8e8e8;
+  --tok-avatar-teal-bg: #88fffe;
+  --tok-avatar-teal-text: #057878;
+  --tok-avatar-amber-bg: #ffe2c5;
+  --tok-avatar-amber-text: #935a03;
   --tok-family-sans: 'Sora', sans-serif;
 }
 
@@ -187,7 +227,32 @@
 .thread-item--selected { background: var(--tok-bg-primary); border-color: var(--tok-fill-primary); }
 
 .badge { box-sizing: border-box; display: inline-flex; align-items: center; border-radius: 999px; height: 16px; padding: 0 4px; font-weight: 600; font-size: 10px; line-height: 1; white-space: nowrap; }
-.badge--role-danger { background: var(--tok-bg-danger); color: var(--tok-text-danger); }</code></pre>
+.badge--role-danger { background: var(--tok-bg-danger); color: var(--tok-text-danger); }
+.badge--role-warning { background: var(--tok-bg-warning); color: var(--tok-text-warning); }
+.badge--role-neutral { background: var(--tok-bg-neutral); color: var(--tok-text-default); }
+
+.avatar { box-sizing: border-box; position: relative; display: inline-flex; flex-shrink: 0; align-items: center; justify-content: center; overflow: hidden; border-radius: 999px; width: 40px; height: 40px; font-family: var(--tok-family-sans); user-select: none; }
+.avatar__initials { text-transform: uppercase; font-weight: 600; font-size: 14px; line-height: 1; }
+.avatar--teal { background: var(--tok-avatar-teal-bg); }
+.avatar--teal .avatar__initials { color: var(--tok-avatar-teal-text); }
+.avatar--amber { background: var(--tok-avatar-amber-bg); }
+.avatar--amber .avatar__initials { color: var(--tok-avatar-amber-text); }
+
+.thread-item-inbox { box-sizing: border-box; width: 100%; text-align: left; appearance: none; cursor: pointer; display: flex; align-items: flex-start; gap: 12px; padding: 16px; border-radius: 8px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); font-family: var(--tok-family-sans); }
+.thread-item-inbox__main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.thread-item-inbox__top { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.thread-item-inbox__identity { color: var(--tok-text-default); font-weight: 600; font-size: 12px; line-height: 1.2; }
+.thread-item-inbox__time { flex-shrink: 0; color: var(--tok-text-muted); font-weight: 400; font-size: 10px; line-height: 1.2; }
+.thread-item-inbox__subject { color: var(--tok-text-default); font-weight: 600; font-size: 14px; line-height: 1.4; }
+.thread-item-inbox__preview-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.thread-item-inbox__preview { flex: 1; min-width: 0; color: var(--tok-text-muted); font-weight: 400; font-size: 12px; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.thread-item-inbox__flag { flex-shrink: 0; width: 16px; height: 16px; color: var(--tok-icon-muted); }
+.thread-item-inbox__expires { margin-top: 2px; }
+
+.thread-item-inbox:not(.thread-item-inbox--selected):hover { border-color: var(--tok-fill-primary); }
+.thread-item-inbox:not(.thread-item-inbox--selected):active { background: var(--tok-bg-primary); border-color: var(--tok-fill-primary); }
+.thread-item-inbox:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
+.thread-item-inbox--selected { background: var(--tok-bg-primary); border-color: var(--tok-fill-primary); }</code></pre>
 
     <h2 class="big-section">JS</h2>
     <p class="section-desc">The only script this page needs — click-to-select for the "In context" demo below.</p>
@@ -195,6 +260,13 @@
   btn.addEventListener("click", () =&gt; {
     btn.parentElement.querySelectorAll(".thread-item").forEach((b) =&gt; b.classList.remove("thread-item--selected"));
     btn.classList.add("thread-item--selected");
+  });
+});
+
+document.querySelectorAll(".thread-item-inbox-demo .thread-item-inbox").forEach((btn) =&gt; {
+  btn.addEventListener("click", () =&gt; {
+    btn.parentElement.querySelectorAll(".thread-item-inbox").forEach((b) =&gt; b.classList.remove("thread-item-inbox--selected"));
+    btn.classList.add("thread-item-inbox--selected");
   });
 });</code></pre>
 
@@ -385,12 +457,222 @@
     });
   });
 &lt;/script&gt;</code></pre>
+
+    <h2 class="big-section">Inbox row</h2>
+    <p class="section-desc">The Message Center inbox-list shape — avatar, department identity + timestamp, subject, preview, flag, optional Expires. Same interactive shell/states as above, different content.</p>
+    <div class="story-grid">
+      
+      <div class="story">
+        <h3>default</h3>
+        <div class="story-preview"><button class="thread-item-inbox">
+      <span class="avatar avatar--teal" role="img" aria-label="Academic Advising"><span class="avatar__initials">AA</span></span>
+      <div class="thread-item-inbox__main">
+        <div class="thread-item-inbox__top">
+          <span class="thread-item-inbox__identity">Academic Advising</span>
+          <span class="thread-item-inbox__time">3:56 PM</span>
+        </div>
+        <div class="thread-item-inbox__subject">Question about fall registration</div>
+        <div class="thread-item-inbox__preview-row">
+          <span class="thread-item-inbox__preview">Hi Alexander, I wanted to check whether …</span>
+          <svg class="thread-item-inbox__flag" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg>
+        </div>
+        
+      </div>
+    </button></div>
+        <pre class="code"><code>&lt;button class="thread-item-inbox"&gt;
+      &lt;span class="avatar avatar--teal" role="img" aria-label="Academic Advising"&gt;&lt;span class="avatar__initials"&gt;AA&lt;/span&gt;&lt;/span&gt;
+      &lt;div class="thread-item-inbox__main"&gt;
+        &lt;div class="thread-item-inbox__top"&gt;
+          &lt;span class="thread-item-inbox__identity"&gt;Academic Advising&lt;/span&gt;
+          &lt;span class="thread-item-inbox__time"&gt;3:56 PM&lt;/span&gt;
+        &lt;/div&gt;
+        &lt;div class="thread-item-inbox__subject"&gt;Question about fall registration&lt;/div&gt;
+        &lt;div class="thread-item-inbox__preview-row"&gt;
+          &lt;span class="thread-item-inbox__preview"&gt;Hi Alexander, I wanted to check whether …&lt;/span&gt;
+          &lt;svg class="thread-item-inbox__flag" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"&gt;&lt;path d="M0 0h24v24H0z" fill="none"/&gt;&lt;path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/&gt;&lt;/svg&gt;
+        &lt;/div&gt;
+        
+      &lt;/div&gt;
+    &lt;/button&gt;</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>with Expires (warning)</h3>
+        <div class="story-preview"><button class="thread-item-inbox">
+      <span class="avatar avatar--amber" role="img" aria-label="Financial Aid"><span class="avatar__initials">FA</span></span>
+      <div class="thread-item-inbox__main">
+        <div class="thread-item-inbox__top">
+          <span class="thread-item-inbox__identity">Financial Aid</span>
+          <span class="thread-item-inbox__time">Jul 10</span>
+        </div>
+        <div class="thread-item-inbox__subject">Course withdrawal deadline</div>
+        <div class="thread-item-inbox__preview-row">
+          <span class="thread-item-inbox__preview">Hey Alex, I did alright on my quiz b…</span>
+          <svg class="thread-item-inbox__flag" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg>
+        </div>
+        <div class="thread-item-inbox__expires"><span class="badge badge--role-warning">Expires Jul 20</span></div>
+      </div>
+    </button></div>
+        <pre class="code"><code>&lt;button class="thread-item-inbox"&gt;
+      &lt;span class="avatar avatar--amber" role="img" aria-label="Financial Aid"&gt;&lt;span class="avatar__initials"&gt;FA&lt;/span&gt;&lt;/span&gt;
+      &lt;div class="thread-item-inbox__main"&gt;
+        &lt;div class="thread-item-inbox__top"&gt;
+          &lt;span class="thread-item-inbox__identity"&gt;Financial Aid&lt;/span&gt;
+          &lt;span class="thread-item-inbox__time"&gt;Jul 10&lt;/span&gt;
+        &lt;/div&gt;
+        &lt;div class="thread-item-inbox__subject"&gt;Course withdrawal deadline&lt;/div&gt;
+        &lt;div class="thread-item-inbox__preview-row"&gt;
+          &lt;span class="thread-item-inbox__preview"&gt;Hey Alex, I did alright on my quiz b…&lt;/span&gt;
+          &lt;svg class="thread-item-inbox__flag" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"&gt;&lt;path d="M0 0h24v24H0z" fill="none"/&gt;&lt;path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/&gt;&lt;/svg&gt;
+        &lt;/div&gt;
+        &lt;div class="thread-item-inbox__expires"&gt;&lt;span class="badge badge--role-warning"&gt;Expires Jul 20&lt;/span&gt;&lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/button&gt;</code></pre>
+        <p class="story-note">Expires sits on its own row, left-aligned under the preview text — moved here from the live app's right-aligned column next to the timestamp.</p>
+      </div>
+
+      <div class="story">
+        <h3>with Expires (expired)</h3>
+        <div class="story-preview"><button class="thread-item-inbox">
+      <span class="avatar avatar--teal" role="img" aria-label="Academic Advising"><span class="avatar__initials">AA</span></span>
+      <div class="thread-item-inbox__main">
+        <div class="thread-item-inbox__top">
+          <span class="thread-item-inbox__identity">Academic Advising</span>
+          <span class="thread-item-inbox__time">Jul 8</span>
+        </div>
+        <div class="thread-item-inbox__subject">Advisement Outreach</div>
+        <div class="thread-item-inbox__preview-row">
+          <span class="thread-item-inbox__preview">Thank you for the details about the…</span>
+          <svg class="thread-item-inbox__flag" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg>
+        </div>
+        <div class="thread-item-inbox__expires"><span class="badge badge--role-danger">Expired Jul 10</span></div>
+      </div>
+    </button></div>
+        <pre class="code"><code>&lt;button class="thread-item-inbox"&gt;
+      &lt;span class="avatar avatar--teal" role="img" aria-label="Academic Advising"&gt;&lt;span class="avatar__initials"&gt;AA&lt;/span&gt;&lt;/span&gt;
+      &lt;div class="thread-item-inbox__main"&gt;
+        &lt;div class="thread-item-inbox__top"&gt;
+          &lt;span class="thread-item-inbox__identity"&gt;Academic Advising&lt;/span&gt;
+          &lt;span class="thread-item-inbox__time"&gt;Jul 8&lt;/span&gt;
+        &lt;/div&gt;
+        &lt;div class="thread-item-inbox__subject"&gt;Advisement Outreach&lt;/div&gt;
+        &lt;div class="thread-item-inbox__preview-row"&gt;
+          &lt;span class="thread-item-inbox__preview"&gt;Thank you for the details about the…&lt;/span&gt;
+          &lt;svg class="thread-item-inbox__flag" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"&gt;&lt;path d="M0 0h24v24H0z" fill="none"/&gt;&lt;path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/&gt;&lt;/svg&gt;
+        &lt;/div&gt;
+        &lt;div class="thread-item-inbox__expires"&gt;&lt;span class="badge badge--role-danger"&gt;Expired Jul 10&lt;/span&gt;&lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/button&gt;</code></pre>
+        
+      </div>
+    </div>
+
+    <h2 class="big-section">Inbox row — in context</h2>
+    <p class="section-desc">A real, single-select inbox list — click any row.</p>
+    <div class="usage-preview"><div class="thread-item-inbox-demo" style="display:flex; flex-direction:column; gap:12px; max-width:400px;">
+      <button class="thread-item-inbox thread-item-inbox--selected">
+      <span class="avatar avatar--teal" role="img" aria-label="Academic Advising"><span class="avatar__initials">AA</span></span>
+      <div class="thread-item-inbox__main">
+        <div class="thread-item-inbox__top">
+          <span class="thread-item-inbox__identity">Academic Advising</span>
+          <span class="thread-item-inbox__time">3:56 PM</span>
+        </div>
+        <div class="thread-item-inbox__subject">Question about fall registration</div>
+        <div class="thread-item-inbox__preview-row">
+          <span class="thread-item-inbox__preview">Hi Alexander, I wanted to check whether …</span>
+          <svg class="thread-item-inbox__flag" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg>
+        </div>
+        
+      </div>
+    </button>
+      <button class="thread-item-inbox">
+      <span class="avatar avatar--teal" role="img" aria-label="Academic Advising"><span class="avatar__initials">AA</span></span>
+      <div class="thread-item-inbox__main">
+        <div class="thread-item-inbox__top">
+          <span class="thread-item-inbox__identity">Academic Advising</span>
+          <span class="thread-item-inbox__time">11:20 AM</span>
+        </div>
+        <div class="thread-item-inbox__subject">Satisfactory Academic Progress Plan</div>
+        <div class="thread-item-inbox__preview-row">
+          <span class="thread-item-inbox__preview">Okay I will contact my advisor soon. Tha…</span>
+          <svg class="thread-item-inbox__flag" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg>
+        </div>
+        
+      </div>
+    </button>
+      <button class="thread-item-inbox">
+      <span class="avatar avatar--amber" role="img" aria-label="Financial Aid"><span class="avatar__initials">FA</span></span>
+      <div class="thread-item-inbox__main">
+        <div class="thread-item-inbox__top">
+          <span class="thread-item-inbox__identity">Financial Aid</span>
+          <span class="thread-item-inbox__time">Jul 10</span>
+        </div>
+        <div class="thread-item-inbox__subject">Course withdrawal deadline</div>
+        <div class="thread-item-inbox__preview-row">
+          <span class="thread-item-inbox__preview">Hey Alex, I did alright on my quiz b…</span>
+          <svg class="thread-item-inbox__flag" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg>
+        </div>
+        <div class="thread-item-inbox__expires"><span class="badge badge--role-warning">Expires Jul 20</span></div>
+      </div>
+    </button>
+      <button class="thread-item-inbox">
+      <span class="avatar avatar--teal" role="img" aria-label="Academic Advising"><span class="avatar__initials">AA</span></span>
+      <div class="thread-item-inbox__main">
+        <div class="thread-item-inbox__top">
+          <span class="thread-item-inbox__identity">Academic Advising</span>
+          <span class="thread-item-inbox__time">Jul 8</span>
+        </div>
+        <div class="thread-item-inbox__subject">Advisement Outreach</div>
+        <div class="thread-item-inbox__preview-row">
+          <span class="thread-item-inbox__preview">Thank you for the details about the…</span>
+          <svg class="thread-item-inbox__flag" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg>
+        </div>
+        <div class="thread-item-inbox__expires"><span class="badge badge--role-danger">Expired Jul 10</span></div>
+      </div>
+    </button>
+      <button class="thread-item-inbox">
+      <span class="avatar avatar--teal" role="img" aria-label="Academic Advising"><span class="avatar__initials">AA</span></span>
+      <div class="thread-item-inbox__main">
+        <div class="thread-item-inbox__top">
+          <span class="thread-item-inbox__identity">Academic Advising</span>
+          <span class="thread-item-inbox__time">Jun 30</span>
+        </div>
+        <div class="thread-item-inbox__subject">Study Session</div>
+        <div class="thread-item-inbox__preview-row">
+          <span class="thread-item-inbox__preview">That works for me — I can make th…</span>
+          <svg class="thread-item-inbox__flag" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg>
+        </div>
+        <div class="thread-item-inbox__expires"><span class="badge badge--role-neutral">Expires Sep 30</span></div>
+      </div>
+    </button>
+    </div></div>
+    <pre class="code"><code>&lt;div class="thread-item-inbox-demo"&gt;
+  &lt;button class="thread-item-inbox thread-item-inbox--selected"&gt;…&lt;/button&gt;
+  &lt;button class="thread-item-inbox"&gt;…&lt;/button&gt;
+  …
+&lt;/div&gt;
+&lt;script&gt;
+  document.querySelectorAll(".thread-item-inbox-demo .thread-item-inbox").forEach((btn) =&gt; {
+    btn.addEventListener("click", () =&gt; {
+      btn.parentElement.querySelectorAll(".thread-item-inbox").forEach((b) =&gt; b.classList.remove("thread-item-inbox--selected"));
+      btn.classList.add("thread-item-inbox--selected");
+    });
+  });
+&lt;/script&gt;</code></pre>
   </main>
 </div>
 <script>document.querySelectorAll(".thread-item-demo .thread-item").forEach((btn) => {
   btn.addEventListener("click", () => {
     btn.parentElement.querySelectorAll(".thread-item").forEach((b) => b.classList.remove("thread-item--selected"));
     btn.classList.add("thread-item--selected");
+  });
+});
+
+document.querySelectorAll(".thread-item-inbox-demo .thread-item-inbox").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    btn.parentElement.querySelectorAll(".thread-item-inbox").forEach((b) => b.classList.remove("thread-item-inbox--selected"));
+    btn.classList.add("thread-item-inbox--selected");
   });
 });</script>
 </body>
