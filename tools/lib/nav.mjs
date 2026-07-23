@@ -29,6 +29,13 @@ export const NAV_ITEMS = {
   menu: { label: "Menu", href: "menu.html" },
   listbox: { label: "Listbox", href: "listbox.html" },
   avatar: { label: "Avatar", href: "avatar.html" },
+  badge: { label: "Badge", href: "badge.html" },
+  chip: { label: "Chip", href: "chip.html" },
+  attachment: { label: "Attachment", href: "attachment.html" },
+  message: { label: "Message", href: "message.html" },
+  bubble: { label: "Bubble", href: "bubble.html" },
+  "thread-list-item": { label: "ThreadListItem", href: "thread-list-item.html" },
+  composer: { label: "Composer", href: "composer.html" },
 };
 
 export function renderNav(activeKey) {
@@ -66,5 +73,12 @@ export function renderNav(activeKey) {
     ${link("modal")}
     ${link("menu")}
     ${link("listbox")}
-    ${link("avatar")}`;
+    ${link("avatar")}
+    ${link("badge")}
+    ${link("chip")}
+    ${link("attachment")}
+    ${link("message")}
+    ${link("bubble")}
+    ${link("thread-list-item")}
+    ${link("composer")}`;
 }

@@ -1,0 +1,124 @@
+{
+  "component": {
+    "chip": {
+      "$description": "Interactive small pill — the checkbox-like sibling deliberately split from Badge (display-only). Two kinds sharing one shell (radius/size/icon-slot): 'toggle' (filter selection — click flips checked/unchecked, e.g. 'I'm Involved'/'Flagged'/'Expires Soon') and 'removable' (a selected value with a trailing dismiss — e.g. a chosen option in a multi-select, a recipient chip). Same ARIA-role-driven split reasoning as Menu/Listbox and Badge/Chip themselves: a toggle is checkbox-like, a removable chip is a dismissible tag, neither is a passive status display (that's Badge). Sizes sit one rung between Badge (16/20/24) and Button (32/40/48) on purpose — a chip is clickable like a button but reads as a small pill like Badge, so its height ladder (24/32/40) is literally Button's own ladder shifted down one dim-step (dim.6/8/10) at every size.",
+      "radius": { "$type": "dimension", "$value": "{radius.full}" },
+      "size": {
+        "$description": "Label composed directly from typography primitives (weight.semibold, leading.none) rather than a text-style.* alias — same reasoning Badge/Counter/Avatar's own labels already established: reading-paragraph leading adds vertical air a tight pill doesn't have room for.",
+        "sm": {
+          "height": { "$type": "dimension", "$value": "{dim.6}" },
+          "paddingX": { "$type": "dimension", "$value": "{dim.2}" },
+          "gap": { "$type": "dimension", "$value": "{dim.1}" },
+          "iconSize": { "$type": "dimension", "$value": "{dim.3}" },
+          "label": {
+            "$type": "typography",
+            "$value": {
+              "fontFamily": "{family.sans}",
+              "fontWeight": "{weight.semibold}",
+              "fontSize": "{size.sm}",
+              "lineHeight": "{leading.none}",
+              "letterSpacing": "{tracking.normal}"
+            }
+          }
+        },
+        "base": {
+          "height": { "$type": "dimension", "$value": "{dim.8}" },
+          "paddingX": { "$type": "dimension", "$value": "{dim.3}" },
+          "gap": { "$type": "dimension", "$value": "{dim.1_5}" },
+          "iconSize": { "$type": "dimension", "$value": "{dim.4}" },
+          "label": {
+            "$type": "typography",
+            "$value": {
+              "fontFamily": "{family.sans}",
+              "fontWeight": "{weight.semibold}",
+              "fontSize": "{size.base}",
+              "lineHeight": "{leading.none}",
+              "letterSpacing": "{tracking.normal}"
+            }
+          }
+        },
+        "lg": {
+          "height": { "$type": "dimension", "$value": "{dim.10}" },
+          "paddingX": { "$type": "dimension", "$value": "{dim.4}" },
+          "gap": { "$type": "dimension", "$value": "{dim.2}" },
+          "iconSize": { "$type": "dimension", "$value": "{dim.5}" },
+          "label": {
+            "$type": "typography",
+            "$value": {
+              "fontFamily": "{family.sans}",
+              "fontWeight": "{weight.semibold}",
+              "fontSize": "{size.md}",
+              "lineHeight": "{leading.none}",
+              "letterSpacing": "{tracking.normal}"
+            }
+          }
+        }
+      },
+      "toggle": {
+        "$description": "Filter-selection chip — click flips checked/unchecked, exactly the Checkbox/Radio/Switch mental model in pill form. 'checkedOutline' is a second checked treatment, not a state ladder rung: use it (instead of solid 'checked') when the chip carries a Counter — a chip summarizing 'N sub-selections inside' (e.g. a 'Filters' trigger chip showing the drawer's active-filter count) is an aggregate/trigger, not a single boolean, so filling it fully solid would overstate it. Solid checked = a real one-thing-is-on toggle (no counter). Outline checked reuses Badge's own tint recipe (bg.primary+text.primary) plus a border for the extra definition an interactive element needs that a passive Badge doesn't.",
+        "default": {
+          "bg": { "$type": "color", "$value": "{surface.default}" },
+          "border": { "$type": "color", "$value": "{border.default}" },
+          "text": { "$type": "color", "$value": "{text.default}" },
+          "icon": { "$type": "color", "$value": "{icon.default}" }
+        },
+        "hover": {
+          "border": { "$type": "color", "$value": "{fill.primary}" },
+          "$description": "fill.primary, not border.strong — same 'plain gray reads as too weak a cue' lesson Checkbox/Radio/Card's own unchecked-hover already applied. Toggle-specific: this previews 'clicking turns this on', which a passive removable chip's hover never means (see removable.hover below)."
+        },
+        "checked": {
+          "bg": { "$type": "color", "$value": "{fill.primary}" },
+          "text": { "$type": "color", "$value": "{text.onFill}" },
+          "icon": { "$type": "color", "$value": "{icon.onFill}" }
+        },
+        "checkedHover": {
+          "bg": { "$type": "color", "$value": "{fill.primaryHover}" }
+        },
+        "checkedOutline": {
+          "bg": { "$type": "color", "$value": "{bg.primary}" },
+          "border": { "$type": "color", "$value": "{fill.primary}" },
+          "text": { "$type": "color", "$value": "{text.primary}" },
+          "icon": { "$type": "color", "$value": "{icon.primary}" }
+        },
+        "disabled": {
+          "text": { "$type": "color", "$value": "{text.disabled}" },
+          "icon": { "$type": "color", "$value": "{icon.disabled}" },
+          "$description": "Unchecked disabled — bg/border stay default's, only text/icon fade, same 'disabled keeps its background' convention as Button/Input/Checkbox."
+        },
+        "checkedDisabled": {
+          "bg": { "$type": "color", "$value": "{fill.disabled}" },
+          "text": { "$type": "color", "$value": "{text.disabled}" }
+        }
+      },
+      "removable": {
+        "$description": "A selected value with a trailing dismiss (×) — a chosen multi-select option, a recipient/tag chip. Existence IS the selection; there's no checked/unchecked ladder, only present-or-removed. Shares 'toggle.default''s exact visual (bg/border/text/icon) on purpose — both read as 'a quiet chip sitting on the page' at rest, no reason to invent a second resting look.",
+        "default": {
+          "bg": { "$type": "color", "$value": "{surface.default}" },
+          "border": { "$type": "color", "$value": "{border.default}" },
+          "text": { "$type": "color", "$value": "{text.default}" },
+          "icon": { "$type": "color", "$value": "{icon.default}" }
+        },
+        "hover": {
+          "border": { "$type": "color", "$value": "{border.strong}" },
+          "$description": "Plain border.strong, deliberately NOT fill.primary — a removable chip isn't a toggle, hovering its body doesn't mean 'clicking turns this blue', so it gets the ordinary Card-style hover, not the toggle-specific activation cue."
+        },
+        "disabled": {
+          "text": { "$type": "color", "$value": "{text.disabled}" },
+          "icon": { "$type": "color", "$value": "{icon.disabled}" }
+        },
+        "remove": {
+          "$description": "The trailing (×) button's own recipe — resolved from Popover/Drawer/Modal's own close-button tokens, not retyped: transparent → fill.neutralHover → fill.neutralActive, icon.secondary at rest.",
+          "icon": { "$type": "color", "$value": "{icon.secondary}" },
+          "hoverBg": { "$type": "color", "$value": "{fill.neutralHover}" },
+          "activeBg": { "$type": "color", "$value": "{fill.neutralActive}" }
+        }
+      },
+      "focus": {
+        "$description": "Shared by both kinds — same system-wide ring (border.focus, dim.1 width, dim.0_5 offset) every focusable component uses.",
+        "ringColor": { "$type": "color", "$value": "{border.focus}" },
+        "ringWidth": { "$type": "dimension", "$value": "{dim.1}" },
+        "ringOffset": { "$type": "dimension", "$value": "{dim.0_5}" }
+      }
+    }
+  }
+}

@@ -41,7 +41,7 @@
   .shell { display: flex; min-height: 100vh; }
   nav.side {
     width: 220px; flex-shrink: 0; border-right: 0.5px solid var(--border);
-    padding: 1.5rem 1rem; position: sticky; top: 0; height: 100vh;
+    padding: 1.5rem 1rem; position: sticky; top: 0; height: 100vh; overflow-y: auto;
   }
   .brand { font-size: 14px; font-weight: 600; margin: 0 0 2px 8px; }
   .brand-sub { font-size: 11.5px; color: var(--text-muted); margin: 0 0 1.5rem 8px; }
@@ -106,6 +106,13 @@
     <a class="navlink" href="menu.html">Menu</a>
     <a class="navlink" href="listbox.html">Listbox</a>
     <a class="navlink" href="avatar.html">Avatar</a>
+    <a class="navlink" href="badge.html">Badge</a>
+    <a class="navlink" href="chip.html">Chip</a>
+    <a class="navlink" href="attachment.html">Attachment</a>
+    <a class="navlink" href="message.html">Message</a>
+    <a class="navlink" href="bubble.html">Bubble</a>
+    <a class="navlink" href="thread-list-item.html">ThreadListItem</a>
+    <a class="navlink" href="composer.html">Composer</a>
   </nav>
   <main>
     <h1>hp-design</h1>
@@ -225,6 +232,34 @@
       <a class="card" href="avatar.html">
         <div class="card-head"><h2>Avatar</h2><span class="tag">sm · base · lg</span></div>
         <p>Photo → initials → icon. Initials color is deterministic (hash of the name), 8 hues.</p>
+      </a>
+      <a class="card" href="badge.html">
+        <div class="card-head"><h2>Badge</h2><span class="tag">sm · base · lg</span></div>
+        <p>Status/tag pill — 5 semantic roles + 10 decorative colors, tint/solid fill.</p>
+      </a>
+      <a class="card" href="chip.html">
+        <div class="card-head"><h2>Chip</h2><span class="tag">sm · base · lg</span></div>
+        <p>Interactive pill — toggle (filter) and removable (dismissible tag) kinds.</p>
+      </a>
+      <a class="card" href="attachment.html">
+        <div class="card-head"><h2>Attachment</h2><span class="tag">idle · uploading · done</span></div>
+        <p>File/image row — composer remove button, message-display real download link.</p>
+      </a>
+      <a class="card" href="message.html">
+        <div class="card-head"><h2>Message</h2><span class="tag">chrome: none by default</span></div>
+        <p>Rich institution-authored content block — headings, links, images, CTA. No bubble shape.</p>
+      </a>
+      <a class="card" href="bubble.html">
+        <div class="card-head"><h2>Bubble</h2><span class="tag">self · other</span></div>
+        <p>Plain conversational reply — text ± one Attachment. self defaults to tint, not solid.</p>
+      </a>
+      <a class="card" href="thread-list-item.html">
+        <div class="card-head"><h2>ThreadListItem</h2><span class="tag">built on Card</span></div>
+        <p>Left-rail row — subject, metadata, Badge value, selected state (persistent pressed).</p>
+      </a>
+      <a class="card" href="composer.html">
+        <div class="card-head"><h2>Composer</h2><span class="tag">simple · rich</span></div>
+        <p>Reply input — simple (student) vs. rich (staff, B/I/U + AI Assist + Switch). Family's last piece.</p>
       </a>
     </div>
   </main>

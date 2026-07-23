@@ -177,7 +177,7 @@ const html = `<!doctype html>
   * { box-sizing: border-box; }
   body { margin: 0; background: var(--bg-page); color: var(--text-primary); font-family: var(--sans); }
   .shell { display: flex; min-height: 100vh; }
-  nav.side { width: 220px; flex-shrink: 0; border-right: 0.5px solid var(--border); padding: 1.5rem 1rem; position: sticky; top: 0; height: 100vh; }
+  nav.side { width: 220px; flex-shrink: 0; border-right: 0.5px solid var(--border); padding: 1.5rem 1rem; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
   .brand { font-size: 14px; font-weight: 600; margin: 0 0 2px 8px; }
   .brand-sub { font-size: 11.5px; color: var(--text-muted); margin: 0 0 1.5rem 8px; }
   .navlink { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 8px; border-radius: 7px; font-size: 13px; text-decoration: none; color: var(--text-primary); margin-bottom: 1px; }

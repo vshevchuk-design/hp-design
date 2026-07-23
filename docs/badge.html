@@ -1,0 +1,499 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>hp-design — Badge</title>
+<style>
+  :root {
+    --bg-page: #f7f7f5; --bg-card: #ffffff; --bg-card-hover: #fbfbfa;
+    --border: #e4e3df; --border-strong: #d2d1cb;
+    --text-primary: #0e0e10; --text-secondary: #63625c; --text-muted: #918f87;
+    --accent: #0468c4; --accent-bg: #eff6ff;
+    --code-bg: #1e1e22; --code-text: #e4e3df;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --sans: -apple-system, "Segoe UI", system-ui, sans-serif;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327;
+      --border: #313035; --border-strong: #403f45;
+      --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68;
+      --accent: #5aa4ec; --accent-bg: #16283b;
+      --code-bg: #0d0d0f; --code-text: #d7d6d2;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327;
+    --border: #313035; --border-strong: #403f45;
+    --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68;
+    --accent: #5aa4ec; --accent-bg: #16283b;
+    --code-bg: #0d0d0f; --code-text: #d7d6d2;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg-page); color: var(--text-primary); font-family: var(--sans); }
+  .shell { display: flex; min-height: 100vh; }
+  nav.side { width: 220px; flex-shrink: 0; border-right: 0.5px solid var(--border); padding: 1.5rem 1rem; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+  .brand { font-size: 14px; font-weight: 600; margin: 0 0 2px 8px; }
+  .brand-sub { font-size: 11.5px; color: var(--text-muted); margin: 0 0 1.5rem 8px; }
+  .navlink { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 8px; border-radius: 7px; font-size: 13px; text-decoration: none; color: var(--text-primary); margin-bottom: 1px; }
+  .navlink:hover { background: var(--bg-card-hover); }
+  .navlink.active { background: var(--accent-bg); color: var(--accent); font-weight: 600; }
+  .nav-category { font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin: 16px 8px 6px; }
+  main { flex: 1; padding: 4rem 4rem 6rem; max-width: 1120px; }
+
+  h1 { font-size: 36px; font-weight: 700; margin: 0 0 10px; letter-spacing: -0.02em; }
+  .sub { font-size: 14px; color: var(--text-secondary); margin: 0 0 2.5rem; }
+  h2.big-section { font-size: 24px; font-weight: 700; margin: 5.5rem 0 1.5rem; letter-spacing: -0.01em; padding-top: 2.5rem; border-top: 1px solid var(--border); }
+  h2.big-section:first-of-type { margin-top: 3rem; padding-top: 0; border-top: none; }
+  .section-desc { font-size: 13.5px; color: var(--text-secondary); margin: -0.5rem 0 1.5rem; max-width: 68ch; line-height: 1.6; }
+
+  .legend { font-size: 12.5px; color: var(--text-secondary); padding: 14px 18px; background: var(--bg-card); border: 0.5px solid var(--border); border-radius: 10px; margin-bottom: 1rem; line-height: 1.6; }
+  .legend .row { display: flex; gap: 14px; padding: 6px 0; border-bottom: 0.5px solid var(--border); }
+  .legend .row:last-child { border-bottom: none; }
+  .legend .row b { width: 150px; flex-shrink: 0; color: var(--text-primary); font-weight: 600; font-family: var(--mono); font-size: 11.5px; }
+  code.tok { font-family: var(--mono); font-size: 12px; color: var(--accent); }
+
+  pre.code { background: var(--code-bg); color: var(--code-text); border-radius: 10px; padding: 16px 18px; margin: 0; overflow-x: auto; font-family: var(--mono); font-size: 12px; line-height: 1.7; }
+  pre.code code { font-family: inherit; }
+
+  .story-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 24px; }
+  .story { border: 0.5px solid var(--border); border-radius: 14px; background: var(--bg-card); padding: 22px; display: flex; flex-direction: column; gap: 12px; }
+  .story h3 { font-size: 14px; font-weight: 600; margin: 0; font-family: var(--mono); }
+  .story-preview { min-height: 40px; display: flex; align-items: center; justify-content: center; padding: 12px 0; }
+  .story-note { font-size: 11.5px; color: var(--text-muted); margin: 0; line-height: 1.5; }
+
+  .usage-preview { border: 0.5px solid var(--border); border-radius: 14px; background: var(--bg-card); padding: 20px 24px; margin-bottom: 1rem; }
+
+  :root {
+  --tok-bg-neutral: #e8e8e8;
+  --tok-text-default: #181818;
+  --tok-fill-neutral: #e8e8e8;
+  --tok-bg-primary: #d9eaff;
+  --tok-text-primary: #0468c4;
+  --tok-fill-primary: #077fec;
+  --tok-text-on-fill: #ffffff;
+  --tok-bg-success: #acffc2;
+  --tok-text-success: #057e3f;
+  --tok-fill-success: #0a994e;
+  --tok-bg-warning: #ffe2c5;
+  --tok-text-warning: #935a03;
+  --tok-fill-warning: #b26f07;
+  --tok-bg-danger: #ffdfde;
+  --tok-text-danger: #c11435;
+  --tok-fill-danger: #de394b;
+  --tok-tag-gray-tint-bg: #e8e8e8;
+  --tok-tag-gray-tint-text: #181818;
+  --tok-tag-gray-solid-bg: #808080;
+  --tok-tag-gray-solid-text: #ffffff;
+  --tok-tag-blue-tint-bg: #d9eaff;
+  --tok-tag-blue-tint-text: #0468c4;
+  --tok-tag-blue-solid-bg: #077fec;
+  --tok-tag-blue-solid-text: #ffffff;
+  --tok-tag-red-tint-bg: #ffdfde;
+  --tok-tag-red-tint-text: #c11435;
+  --tok-tag-red-solid-bg: #de394b;
+  --tok-tag-red-solid-text: #ffffff;
+  --tok-tag-green-tint-bg: #acffc2;
+  --tok-tag-green-tint-text: #057e3f;
+  --tok-tag-green-solid-bg: #0a994e;
+  --tok-tag-green-solid-text: #ffffff;
+  --tok-tag-amber-tint-bg: #ffe2c5;
+  --tok-tag-amber-tint-text: #935a03;
+  --tok-tag-amber-solid-bg: #b26f07;
+  --tok-tag-amber-solid-text: #ffffff;
+  --tok-tag-orange-tint-bg: #ffe1d5;
+  --tok-tag-orange-tint-text: #ae4103;
+  --tok-tag-orange-solid-bg: #d35006;
+  --tok-tag-orange-solid-text: #ffffff;
+  --tok-tag-violet-tint-bg: #e8e4ff;
+  --tok-tag-violet-tint-text: #743ed8;
+  --tok-tag-violet-solid-bg: #8a5af4;
+  --tok-tag-violet-solid-text: #ffffff;
+  --tok-tag-magenta-tint-bg: #ffddec;
+  --tok-tag-magenta-tint-text: #b51c79;
+  --tok-tag-magenta-solid-bg: #d13d91;
+  --tok-tag-magenta-solid-text: #ffffff;
+  --tok-tag-teal-tint-bg: #88fffe;
+  --tok-tag-teal-tint-text: #057878;
+  --tok-tag-teal-solid-bg: #0a9393;
+  --tok-tag-teal-solid-text: #ffffff;
+  --tok-tag-brown-tint-bg: #ffe1d1;
+  --tok-tag-brown-tint-text: #925837;
+  --tok-tag-brown-solid-bg: #ac704e;
+  --tok-tag-brown-solid-text: #ffffff;
+  --tok-family-sans: 'Sora', sans-serif;
+}
+
+.badge { box-sizing: border-box; display: inline-flex; align-items: center; border-radius: 999px; font-family: var(--tok-family-sans); white-space: nowrap; }
+.badge--sm { height: 16px; padding: 0 4px; font-weight: 600; font-size: 10px; line-height: 1; }
+.badge--base { height: 20px; padding: 0 6px; font-weight: 600; font-size: 12px; line-height: 1; }
+.badge--lg { height: 24px; padding: 0 6px; font-weight: 600; font-size: 14px; line-height: 1; }
+.badge--role-neutral.badge--tint { background: var(--tok-bg-neutral); color: var(--tok-text-default); }
+.badge--role-neutral.badge--solid { background: var(--tok-fill-neutral); color: var(--tok-text-default); }
+.badge--role-primary.badge--tint { background: var(--tok-bg-primary); color: var(--tok-text-primary); }
+.badge--role-primary.badge--solid { background: var(--tok-fill-primary); color: var(--tok-text-on-fill); }
+.badge--role-success.badge--tint { background: var(--tok-bg-success); color: var(--tok-text-success); }
+.badge--role-success.badge--solid { background: var(--tok-fill-success); color: var(--tok-text-on-fill); }
+.badge--role-warning.badge--tint { background: var(--tok-bg-warning); color: var(--tok-text-warning); }
+.badge--role-warning.badge--solid { background: var(--tok-fill-warning); color: var(--tok-text-on-fill); }
+.badge--role-danger.badge--tint { background: var(--tok-bg-danger); color: var(--tok-text-danger); }
+.badge--role-danger.badge--solid { background: var(--tok-fill-danger); color: var(--tok-text-on-fill); }
+.badge--color-gray.badge--tint { background: var(--tok-tag-gray-tint-bg); color: var(--tok-tag-gray-tint-text); }
+.badge--color-gray.badge--solid { background: var(--tok-tag-gray-solid-bg); color: var(--tok-tag-gray-solid-text); }
+.badge--color-blue.badge--tint { background: var(--tok-tag-blue-tint-bg); color: var(--tok-tag-blue-tint-text); }
+.badge--color-blue.badge--solid { background: var(--tok-tag-blue-solid-bg); color: var(--tok-tag-blue-solid-text); }
+.badge--color-red.badge--tint { background: var(--tok-tag-red-tint-bg); color: var(--tok-tag-red-tint-text); }
+.badge--color-red.badge--solid { background: var(--tok-tag-red-solid-bg); color: var(--tok-tag-red-solid-text); }
+.badge--color-green.badge--tint { background: var(--tok-tag-green-tint-bg); color: var(--tok-tag-green-tint-text); }
+.badge--color-green.badge--solid { background: var(--tok-tag-green-solid-bg); color: var(--tok-tag-green-solid-text); }
+.badge--color-amber.badge--tint { background: var(--tok-tag-amber-tint-bg); color: var(--tok-tag-amber-tint-text); }
+.badge--color-amber.badge--solid { background: var(--tok-tag-amber-solid-bg); color: var(--tok-tag-amber-solid-text); }
+.badge--color-orange.badge--tint { background: var(--tok-tag-orange-tint-bg); color: var(--tok-tag-orange-tint-text); }
+.badge--color-orange.badge--solid { background: var(--tok-tag-orange-solid-bg); color: var(--tok-tag-orange-solid-text); }
+.badge--color-violet.badge--tint { background: var(--tok-tag-violet-tint-bg); color: var(--tok-tag-violet-tint-text); }
+.badge--color-violet.badge--solid { background: var(--tok-tag-violet-solid-bg); color: var(--tok-tag-violet-solid-text); }
+.badge--color-magenta.badge--tint { background: var(--tok-tag-magenta-tint-bg); color: var(--tok-tag-magenta-tint-text); }
+.badge--color-magenta.badge--solid { background: var(--tok-tag-magenta-solid-bg); color: var(--tok-tag-magenta-solid-text); }
+.badge--color-teal.badge--tint { background: var(--tok-tag-teal-tint-bg); color: var(--tok-tag-teal-tint-text); }
+.badge--color-teal.badge--solid { background: var(--tok-tag-teal-solid-bg); color: var(--tok-tag-teal-solid-text); }
+.badge--color-brown.badge--tint { background: var(--tok-tag-brown-tint-bg); color: var(--tok-tag-brown-tint-text); }
+.badge--color-brown.badge--solid { background: var(--tok-tag-brown-solid-bg); color: var(--tok-tag-brown-solid-text); }
+</style>
+</head>
+<body>
+<div class="shell">
+  <nav class="side">
+    <p class="brand">hp-design</p>
+    <p class="brand-sub">Highpoint design system</p>
+    <a class="navlink" href="index.html">Overview</a>
+    <p class="nav-category">Tokens</p>
+    <a class="navlink" href="colors.html">Colors</a>
+    <a class="navlink" href="semantic-colors.html">Semantic colors</a>
+    <a class="navlink" href="typography.html">Typography</a>
+    <a class="navlink" href="layout.html">Layout</a>
+    <a class="navlink" href="icons.html">Icons</a>
+    <p class="nav-category">Components</p>
+    <a class="navlink" href="button.html">Button</a>
+    <a class="navlink" href="counter.html">Counter</a>
+    <a class="navlink" href="input.html">Input</a>
+    <a class="navlink" href="select.html">Select</a>
+    <a class="navlink" href="search.html">Search</a>
+    <a class="navlink" href="pagination.html">Pagination</a>
+    <a class="navlink" href="separator.html">Separator</a>
+    <a class="navlink" href="tabs.html">Tabs</a>
+    <a class="navlink" href="checkbox.html">Checkbox</a>
+    <a class="navlink" href="radio.html">Radio</a>
+    <a class="navlink" href="box.html">Box</a>
+    <a class="navlink" href="card.html">Card</a>
+    <a class="navlink" href="switch.html">Switch</a>
+    <a class="navlink" href="grid.html">Grid</a>
+    <a class="navlink" href="tooltip.html">Tooltip</a>
+    <a class="navlink" href="popover.html">Popover</a>
+    <a class="navlink" href="drawer.html">Drawer</a>
+    <a class="navlink" href="modal.html">Modal</a>
+    <a class="navlink" href="menu.html">Menu</a>
+    <a class="navlink" href="listbox.html">Listbox</a>
+    <a class="navlink" href="avatar.html">Avatar</a>
+    <a class="navlink active" href="badge.html">Badge</a>
+    <a class="navlink" href="chip.html">Chip</a>
+    <a class="navlink" href="attachment.html">Attachment</a>
+    <a class="navlink" href="message.html">Message</a>
+    <a class="navlink" href="bubble.html">Bubble</a>
+    <a class="navlink" href="thread-list-item.html">ThreadListItem</a>
+    <a class="navlink" href="composer.html">Composer</a>
+  </nav>
+  <main>
+    <h1>Badge</h1>
+    <p class="sub">tokens/components/badge.tokens.json · generated — the CSS below is generated from the same resolved tokens driving every preview on this page, nothing hand-copied. Colors are CSS custom properties, not literal hex.</p>
+
+    <div class="legend">
+      <div class="row"><b>Purpose</b><span>A non-interactive display pill — status/expiry indicators in Message Center's thread list, and a generic tag/label for any other product surface. Display only — no click, no dismiss.</span></div>
+      <div class="row"><b>role vs. color</b><span>Two independent axes, never combined. <code class="tok">role</code> = 5 meaningful states (neutral/primary/success/warning/danger), reusing the exact same <code class="tok">bg.*</code>/<code class="tok">fill.*</code>/<code class="tok">text.*</code> roles Button/Card/Menu already use. <code class="tok">color</code> = 10 decorative hues for generic tagging, unrelated to status meaning — picking <code class="tok">color="orange"</code> means "I want an orange label," not "this is a warning."</span></div>
+      <div class="row"><b>tint vs. solid</b><span>Every role and color supports both: <code class="tok">tint</code> (pale bg + colored text, 100/600 step) and <code class="tok">solid</code> (saturated bg + <code class="tok">text.onFill</code>, 500 step) — the same intensity pair Button/Card/Menu already split into <code class="tok">bg.*</code> vs. <code class="tok">fill.*</code>.</span></div>
+      <div class="row"><b>Not Chip</b><span>The interactive filter-toggle sibling (checked/unchecked, clickable) is a separate component on purpose — a status/tag pill and a checkbox-like control are different ARIA roles, same reasoning the Menu/Listbox split already established.</span></div>
+      <div class="row"><b>Zero-to-minimal new tokens</b><span>Every <code class="tok">role</code> pair and 5 of the 10 <code class="tok">color</code> pairs (gray/blue/red/green/amber) are pure reuses of existing semantic tokens. Only orange/violet/magenta/teal/brown needed new leaf color references (<code class="tok">tag.*</code>, tokens/semantic/color.tokens.json).</span></div>
+      <div class="row"><b>Sizes</b><span>sm 16 / base 20 / lg 24 — deliberately mirrors Counter's own height/paddingX/label ladder (resolved from Counter's real values, not re-guessed) so the two small-pill components line up when they sit side by side.</span></div>
+    </div>
+
+    <h2 class="big-section">CSS</h2>
+    <pre class="code"><code>:root {
+  --tok-bg-neutral: #e8e8e8;
+  --tok-text-default: #181818;
+  --tok-fill-neutral: #e8e8e8;
+  --tok-bg-primary: #d9eaff;
+  --tok-text-primary: #0468c4;
+  --tok-fill-primary: #077fec;
+  --tok-text-on-fill: #ffffff;
+  --tok-bg-success: #acffc2;
+  --tok-text-success: #057e3f;
+  --tok-fill-success: #0a994e;
+  --tok-bg-warning: #ffe2c5;
+  --tok-text-warning: #935a03;
+  --tok-fill-warning: #b26f07;
+  --tok-bg-danger: #ffdfde;
+  --tok-text-danger: #c11435;
+  --tok-fill-danger: #de394b;
+  --tok-tag-gray-tint-bg: #e8e8e8;
+  --tok-tag-gray-tint-text: #181818;
+  --tok-tag-gray-solid-bg: #808080;
+  --tok-tag-gray-solid-text: #ffffff;
+  --tok-tag-blue-tint-bg: #d9eaff;
+  --tok-tag-blue-tint-text: #0468c4;
+  --tok-tag-blue-solid-bg: #077fec;
+  --tok-tag-blue-solid-text: #ffffff;
+  --tok-tag-red-tint-bg: #ffdfde;
+  --tok-tag-red-tint-text: #c11435;
+  --tok-tag-red-solid-bg: #de394b;
+  --tok-tag-red-solid-text: #ffffff;
+  --tok-tag-green-tint-bg: #acffc2;
+  --tok-tag-green-tint-text: #057e3f;
+  --tok-tag-green-solid-bg: #0a994e;
+  --tok-tag-green-solid-text: #ffffff;
+  --tok-tag-amber-tint-bg: #ffe2c5;
+  --tok-tag-amber-tint-text: #935a03;
+  --tok-tag-amber-solid-bg: #b26f07;
+  --tok-tag-amber-solid-text: #ffffff;
+  --tok-tag-orange-tint-bg: #ffe1d5;
+  --tok-tag-orange-tint-text: #ae4103;
+  --tok-tag-orange-solid-bg: #d35006;
+  --tok-tag-orange-solid-text: #ffffff;
+  --tok-tag-violet-tint-bg: #e8e4ff;
+  --tok-tag-violet-tint-text: #743ed8;
+  --tok-tag-violet-solid-bg: #8a5af4;
+  --tok-tag-violet-solid-text: #ffffff;
+  --tok-tag-magenta-tint-bg: #ffddec;
+  --tok-tag-magenta-tint-text: #b51c79;
+  --tok-tag-magenta-solid-bg: #d13d91;
+  --tok-tag-magenta-solid-text: #ffffff;
+  --tok-tag-teal-tint-bg: #88fffe;
+  --tok-tag-teal-tint-text: #057878;
+  --tok-tag-teal-solid-bg: #0a9393;
+  --tok-tag-teal-solid-text: #ffffff;
+  --tok-tag-brown-tint-bg: #ffe1d1;
+  --tok-tag-brown-tint-text: #925837;
+  --tok-tag-brown-solid-bg: #ac704e;
+  --tok-tag-brown-solid-text: #ffffff;
+  --tok-family-sans: 'Sora', sans-serif;
+}
+
+.badge { box-sizing: border-box; display: inline-flex; align-items: center; border-radius: 999px; font-family: var(--tok-family-sans); white-space: nowrap; }
+.badge--sm { height: 16px; padding: 0 4px; font-weight: 600; font-size: 10px; line-height: 1; }
+.badge--base { height: 20px; padding: 0 6px; font-weight: 600; font-size: 12px; line-height: 1; }
+.badge--lg { height: 24px; padding: 0 6px; font-weight: 600; font-size: 14px; line-height: 1; }
+.badge--role-neutral.badge--tint { background: var(--tok-bg-neutral); color: var(--tok-text-default); }
+.badge--role-neutral.badge--solid { background: var(--tok-fill-neutral); color: var(--tok-text-default); }
+.badge--role-primary.badge--tint { background: var(--tok-bg-primary); color: var(--tok-text-primary); }
+.badge--role-primary.badge--solid { background: var(--tok-fill-primary); color: var(--tok-text-on-fill); }
+.badge--role-success.badge--tint { background: var(--tok-bg-success); color: var(--tok-text-success); }
+.badge--role-success.badge--solid { background: var(--tok-fill-success); color: var(--tok-text-on-fill); }
+.badge--role-warning.badge--tint { background: var(--tok-bg-warning); color: var(--tok-text-warning); }
+.badge--role-warning.badge--solid { background: var(--tok-fill-warning); color: var(--tok-text-on-fill); }
+.badge--role-danger.badge--tint { background: var(--tok-bg-danger); color: var(--tok-text-danger); }
+.badge--role-danger.badge--solid { background: var(--tok-fill-danger); color: var(--tok-text-on-fill); }
+.badge--color-gray.badge--tint { background: var(--tok-tag-gray-tint-bg); color: var(--tok-tag-gray-tint-text); }
+.badge--color-gray.badge--solid { background: var(--tok-tag-gray-solid-bg); color: var(--tok-tag-gray-solid-text); }
+.badge--color-blue.badge--tint { background: var(--tok-tag-blue-tint-bg); color: var(--tok-tag-blue-tint-text); }
+.badge--color-blue.badge--solid { background: var(--tok-tag-blue-solid-bg); color: var(--tok-tag-blue-solid-text); }
+.badge--color-red.badge--tint { background: var(--tok-tag-red-tint-bg); color: var(--tok-tag-red-tint-text); }
+.badge--color-red.badge--solid { background: var(--tok-tag-red-solid-bg); color: var(--tok-tag-red-solid-text); }
+.badge--color-green.badge--tint { background: var(--tok-tag-green-tint-bg); color: var(--tok-tag-green-tint-text); }
+.badge--color-green.badge--solid { background: var(--tok-tag-green-solid-bg); color: var(--tok-tag-green-solid-text); }
+.badge--color-amber.badge--tint { background: var(--tok-tag-amber-tint-bg); color: var(--tok-tag-amber-tint-text); }
+.badge--color-amber.badge--solid { background: var(--tok-tag-amber-solid-bg); color: var(--tok-tag-amber-solid-text); }
+.badge--color-orange.badge--tint { background: var(--tok-tag-orange-tint-bg); color: var(--tok-tag-orange-tint-text); }
+.badge--color-orange.badge--solid { background: var(--tok-tag-orange-solid-bg); color: var(--tok-tag-orange-solid-text); }
+.badge--color-violet.badge--tint { background: var(--tok-tag-violet-tint-bg); color: var(--tok-tag-violet-tint-text); }
+.badge--color-violet.badge--solid { background: var(--tok-tag-violet-solid-bg); color: var(--tok-tag-violet-solid-text); }
+.badge--color-magenta.badge--tint { background: var(--tok-tag-magenta-tint-bg); color: var(--tok-tag-magenta-tint-text); }
+.badge--color-magenta.badge--solid { background: var(--tok-tag-magenta-solid-bg); color: var(--tok-tag-magenta-solid-text); }
+.badge--color-teal.badge--tint { background: var(--tok-tag-teal-tint-bg); color: var(--tok-tag-teal-tint-text); }
+.badge--color-teal.badge--solid { background: var(--tok-tag-teal-solid-bg); color: var(--tok-tag-teal-solid-text); }
+.badge--color-brown.badge--tint { background: var(--tok-tag-brown-tint-bg); color: var(--tok-tag-brown-tint-text); }
+.badge--color-brown.badge--solid { background: var(--tok-tag-brown-solid-bg); color: var(--tok-tag-brown-solid-text); }</code></pre>
+
+    <h2 class="big-section">Sizes</h2>
+    <p class="section-desc">sm / base / lg, role="primary" tint as the reference.</p>
+    <div class="story-grid">
+      
+      <div class="story">
+        <h3>sm — 16px</h3>
+        <div class="story-preview"><span class="badge badge--sm badge--tint badge--role-primary">In Inbox</span></div>
+        <pre class="code"><code>&lt;span class="badge badge--sm badge--tint badge--role-primary"&gt;In Inbox&lt;/span&gt;</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>base — 20px</h3>
+        <div class="story-preview"><span class="badge badge--base badge--tint badge--role-primary">In Inbox</span></div>
+        <pre class="code"><code>&lt;span class="badge badge--base badge--tint badge--role-primary"&gt;In Inbox&lt;/span&gt;</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>lg — 24px</h3>
+        <div class="story-preview"><span class="badge badge--lg badge--tint badge--role-primary">In Inbox</span></div>
+        <pre class="code"><code>&lt;span class="badge badge--lg badge--tint badge--role-primary"&gt;In Inbox&lt;/span&gt;</code></pre>
+        
+      </div>
+    </div>
+
+    <h2 class="big-section">Roles</h2>
+    <p class="section-desc">5 roles × tint/solid, base size. Left = tint, right = solid, in every card.</p>
+    <div class="story-grid">
+      
+      <div class="story">
+        <h3>neutral</h3>
+        <div class="story-preview"><div style="display:flex; gap:10px; align-items:center;"><span class="badge badge--base badge--tint badge--role-neutral">Label</span><span class="badge badge--base badge--solid badge--role-neutral">Label</span></div></div>
+        <pre class="code"><code>&lt;span class="badge badge--base badge--tint badge--role-neutral"&gt;Label&lt;/span&gt;
+&lt;span class="badge badge--base badge--solid badge--role-neutral"&gt;Label&lt;/span&gt;</code></pre>
+        <p class="story-note">bg.neutral/fill.neutral + text.default — the one role without a colored text counterpart.</p>
+      </div>
+
+      <div class="story">
+        <h3>primary</h3>
+        <div class="story-preview"><div style="display:flex; gap:10px; align-items:center;"><span class="badge badge--base badge--tint badge--role-primary">Label</span><span class="badge badge--base badge--solid badge--role-primary">Label</span></div></div>
+        <pre class="code"><code>&lt;span class="badge badge--base badge--tint badge--role-primary"&gt;Label&lt;/span&gt;
+&lt;span class="badge badge--base badge--solid badge--role-primary"&gt;Label&lt;/span&gt;</code></pre>
+        <p class="story-note">bg.primary/fill.primary + text.primary/text.onFill — an open/active thread, or any 'in progress' status.</p>
+      </div>
+
+      <div class="story">
+        <h3>success</h3>
+        <div class="story-preview"><div style="display:flex; gap:10px; align-items:center;"><span class="badge badge--base badge--tint badge--role-success">Label</span><span class="badge badge--base badge--solid badge--role-success">Label</span></div></div>
+        <pre class="code"><code>&lt;span class="badge badge--base badge--tint badge--role-success"&gt;Label&lt;/span&gt;
+&lt;span class="badge badge--base badge--solid badge--role-success"&gt;Label&lt;/span&gt;</code></pre>
+        <p class="story-note">bg.success/fill.success + text.success/text.onFill.</p>
+      </div>
+
+      <div class="story">
+        <h3>warning</h3>
+        <div class="story-preview"><div style="display:flex; gap:10px; align-items:center;"><span class="badge badge--base badge--tint badge--role-warning">Label</span><span class="badge badge--base badge--solid badge--role-warning">Label</span></div></div>
+        <pre class="code"><code>&lt;span class="badge badge--base badge--tint badge--role-warning"&gt;Label&lt;/span&gt;
+&lt;span class="badge badge--base badge--solid badge--role-warning"&gt;Label&lt;/span&gt;</code></pre>
+        <p class="story-note">bg.warning/fill.warning + text.warning/text.onFill — an upcoming expiry, not yet expired.</p>
+      </div>
+
+      <div class="story">
+        <h3>danger</h3>
+        <div class="story-preview"><div style="display:flex; gap:10px; align-items:center;"><span class="badge badge--base badge--tint badge--role-danger">Label</span><span class="badge badge--base badge--solid badge--role-danger">Label</span></div></div>
+        <pre class="code"><code>&lt;span class="badge badge--base badge--tint badge--role-danger"&gt;Label&lt;/span&gt;
+&lt;span class="badge badge--base badge--solid badge--role-danger"&gt;Label&lt;/span&gt;</code></pre>
+        <p class="story-note">bg.danger/fill.danger + text.danger/text.onFill — already past its expiry date.</p>
+      </div>
+    </div>
+
+    <h2 class="big-section">Colors</h2>
+    <p class="section-desc">10 decorative hues × tint/solid, base size. gray/blue/red/green/amber are aliases of the role tokens above; orange/violet/magenta/teal/brown are new.</p>
+    <div class="story-grid">
+      
+      <div class="story">
+        <h3>gray</h3>
+        <div class="story-preview"><div style="display:flex; gap:10px; align-items:center;"><span class="badge badge--base badge--tint badge--color-gray">Label</span><span class="badge badge--base badge--solid badge--color-gray">Label</span></div></div>
+        <pre class="code"><code>&lt;span class="badge badge--base badge--tint badge--color-gray"&gt;Label&lt;/span&gt;
+&lt;span class="badge badge--base badge--solid badge--color-gray"&gt;Label&lt;/span&gt;</code></pre>
+        <p class="story-note">Tint aliases role="neutral". Solid does not — fill.neutral is the same pale value as its own tint, so solid uses a real filled color.gray.500 + white instead.</p>
+      </div>
+
+      <div class="story">
+        <h3>blue</h3>
+        <div class="story-preview"><div style="display:flex; gap:10px; align-items:center;"><span class="badge badge--base badge--tint badge--color-blue">Label</span><span class="badge badge--base badge--solid badge--color-blue">Label</span></div></div>
+        <pre class="code"><code>&lt;span class="badge badge--base badge--tint badge--color-blue"&gt;Label&lt;/span&gt;
+&lt;span class="badge badge--base badge--solid badge--color-blue"&gt;Label&lt;/span&gt;</code></pre>
+        <p class="story-note">Alias of role="primary" — same tokens, renders identically.</p>
+      </div>
+
+      <div class="story">
+        <h3>red</h3>
+        <div class="story-preview"><div style="display:flex; gap:10px; align-items:center;"><span class="badge badge--base badge--tint badge--color-red">Label</span><span class="badge badge--base badge--solid badge--color-red">Label</span></div></div>
+        <pre class="code"><code>&lt;span class="badge badge--base badge--tint badge--color-red"&gt;Label&lt;/span&gt;
+&lt;span class="badge badge--base badge--solid badge--color-red"&gt;Label&lt;/span&gt;</code></pre>
+        <p class="story-note">Alias of role="danger" — same tokens, renders identically.</p>
+      </div>
+
+      <div class="story">
+        <h3>green</h3>
+        <div class="story-preview"><div style="display:flex; gap:10px; align-items:center;"><span class="badge badge--base badge--tint badge--color-green">Label</span><span class="badge badge--base badge--solid badge--color-green">Label</span></div></div>
+        <pre class="code"><code>&lt;span class="badge badge--base badge--tint badge--color-green"&gt;Label&lt;/span&gt;
+&lt;span class="badge badge--base badge--solid badge--color-green"&gt;Label&lt;/span&gt;</code></pre>
+        <p class="story-note">Alias of role="success" — same tokens, renders identically.</p>
+      </div>
+
+      <div class="story">
+        <h3>amber</h3>
+        <div class="story-preview"><div style="display:flex; gap:10px; align-items:center;"><span class="badge badge--base badge--tint badge--color-amber">Label</span><span class="badge badge--base badge--solid badge--color-amber">Label</span></div></div>
+        <pre class="code"><code>&lt;span class="badge badge--base badge--tint badge--color-amber"&gt;Label&lt;/span&gt;
+&lt;span class="badge badge--base badge--solid badge--color-amber"&gt;Label&lt;/span&gt;</code></pre>
+        <p class="story-note">Alias of role="warning" — same tokens, renders identically.</p>
+      </div>
+
+      <div class="story">
+        <h3>orange</h3>
+        <div class="story-preview"><div style="display:flex; gap:10px; align-items:center;"><span class="badge badge--base badge--tint badge--color-orange">Label</span><span class="badge badge--base badge--solid badge--color-orange">Label</span></div></div>
+        <pre class="code"><code>&lt;span class="badge badge--base badge--tint badge--color-orange"&gt;Label&lt;/span&gt;
+&lt;span class="badge badge--base badge--solid badge--color-orange"&gt;Label&lt;/span&gt;</code></pre>
+        <p class="story-note">New leaf color — not tied to any status role.</p>
+      </div>
+
+      <div class="story">
+        <h3>violet</h3>
+        <div class="story-preview"><div style="display:flex; gap:10px; align-items:center;"><span class="badge badge--base badge--tint badge--color-violet">Label</span><span class="badge badge--base badge--solid badge--color-violet">Label</span></div></div>
+        <pre class="code"><code>&lt;span class="badge badge--base badge--tint badge--color-violet"&gt;Label&lt;/span&gt;
+&lt;span class="badge badge--base badge--solid badge--color-violet"&gt;Label&lt;/span&gt;</code></pre>
+        <p class="story-note">New leaf color — not tied to any status role.</p>
+      </div>
+
+      <div class="story">
+        <h3>magenta</h3>
+        <div class="story-preview"><div style="display:flex; gap:10px; align-items:center;"><span class="badge badge--base badge--tint badge--color-magenta">Label</span><span class="badge badge--base badge--solid badge--color-magenta">Label</span></div></div>
+        <pre class="code"><code>&lt;span class="badge badge--base badge--tint badge--color-magenta"&gt;Label&lt;/span&gt;
+&lt;span class="badge badge--base badge--solid badge--color-magenta"&gt;Label&lt;/span&gt;</code></pre>
+        <p class="story-note">New leaf color — not tied to any status role.</p>
+      </div>
+
+      <div class="story">
+        <h3>teal</h3>
+        <div class="story-preview"><div style="display:flex; gap:10px; align-items:center;"><span class="badge badge--base badge--tint badge--color-teal">Label</span><span class="badge badge--base badge--solid badge--color-teal">Label</span></div></div>
+        <pre class="code"><code>&lt;span class="badge badge--base badge--tint badge--color-teal"&gt;Label&lt;/span&gt;
+&lt;span class="badge badge--base badge--solid badge--color-teal"&gt;Label&lt;/span&gt;</code></pre>
+        <p class="story-note">New leaf color — not tied to any status role.</p>
+      </div>
+
+      <div class="story">
+        <h3>brown</h3>
+        <div class="story-preview"><div style="display:flex; gap:10px; align-items:center;"><span class="badge badge--base badge--tint badge--color-brown">Label</span><span class="badge badge--base badge--solid badge--color-brown">Label</span></div></div>
+        <pre class="code"><code>&lt;span class="badge badge--base badge--tint badge--color-brown"&gt;Label&lt;/span&gt;
+&lt;span class="badge badge--base badge--solid badge--color-brown"&gt;Label&lt;/span&gt;</code></pre>
+        <p class="story-note">New leaf color — not tied to any status role.</p>
+      </div>
+    </div>
+
+    <h2 class="big-section">In context</h2>
+    <p class="section-desc">Two real usage sketches — the driving Message Center case (role, status/expiry) and a generic tagging case (color, unrelated to status).</p>
+    <div class="usage-preview"><div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+      <span class="badge badge--base badge--tint badge--role-primary">In Inbox</span>
+      <span style="color:var(--tok-text-secondary); font-family:var(--tok-family-sans); font-size:13px;">Course withdrawal deadline</span>
+      <span class="badge badge--base badge--tint badge--role-warning">Expires Jul 20</span>
+    </div></div>
+    <pre class="code"><code>&lt;div class="thread-list-item"&gt;
+  &lt;span class="badge badge--base badge--tint badge--role-primary"&gt;In Inbox&lt;/span&gt;
+  &lt;span class="subject"&gt;Course withdrawal deadline&lt;/span&gt;
+  &lt;span class="badge badge--base badge--tint badge--role-warning"&gt;Expires Jul 20&lt;/span&gt;
+&lt;/div&gt;</code></pre>
+    <div class="usage-preview" style="margin-top:1.5rem;"><div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+      <span class="badge badge--sm badge--tint badge--color-violet">Design</span>
+      <span class="badge badge--sm badge--tint badge--color-teal">Engineering</span>
+      <span class="badge badge--sm badge--solid badge--color-orange">Urgent</span>
+    </div></div>
+    <pre class="code"><code>&lt;div class="label-list"&gt;
+  &lt;span class="badge badge--sm badge--tint badge--color-violet"&gt;Design&lt;/span&gt;
+  &lt;span class="badge badge--sm badge--tint badge--color-teal"&gt;Engineering&lt;/span&gt;
+  &lt;span class="badge badge--sm badge--solid badge--color-orange"&gt;Urgent&lt;/span&gt;
+&lt;/div&gt;</code></pre>
+  </main>
+</div>
+</body>
+</html>

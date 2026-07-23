@@ -33,7 +33,7 @@
   * { box-sizing: border-box; }
   body { margin: 0; background: var(--bg-page); color: var(--text-primary); font-family: var(--sans); }
   .shell { display: flex; min-height: 100vh; }
-  nav.side { width: 220px; flex-shrink: 0; border-right: 0.5px solid var(--border); padding: 1.5rem 1rem; position: sticky; top: 0; height: 100vh; }
+  nav.side { width: 220px; flex-shrink: 0; border-right: 0.5px solid var(--border); padding: 1.5rem 1rem; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
   .brand { font-size: 14px; font-weight: 600; margin: 0 0 2px 8px; }
   .brand-sub { font-size: 11.5px; color: var(--text-muted); margin: 0 0 1.5rem 8px; }
   .navlink { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 8px; border-radius: 7px; font-size: 13px; text-decoration: none; color: var(--text-primary); margin-bottom: 1px; }
@@ -95,10 +95,17 @@
     <a class="navlink" href="menu.html">Menu</a>
     <a class="navlink" href="listbox.html">Listbox</a>
     <a class="navlink" href="avatar.html">Avatar</a>
+    <a class="navlink" href="badge.html">Badge</a>
+    <a class="navlink" href="chip.html">Chip</a>
+    <a class="navlink" href="attachment.html">Attachment</a>
+    <a class="navlink" href="message.html">Message</a>
+    <a class="navlink" href="bubble.html">Bubble</a>
+    <a class="navlink" href="thread-list-item.html">ThreadListItem</a>
+    <a class="navlink" href="composer.html">Composer</a>
   </nav>
   <main>
     <h1>Icons</h1>
-    <p class="sub">assets/icons/material-filled/*.svg · Material Icons, "Filled" style, Apache 2.0 · 136 icons so far — extracted on demand, not the full ~2100-icon set</p>
+    <p class="sub">assets/icons/material-filled/*.svg · Material Icons, "Filled" style, Apache 2.0 · 142 icons so far — extracted on demand, not the full ~2100-icon set</p>
 
     <div class="legend">
       <div class="row"><b>Source</b><span>google/material-design-icons, "Filled" style, 24px SVG. Extracted selectively (this batch matched an existing product icon audit + common UI basics) — add more the same way as new needs come up, not a one-time full import.</span></div>
@@ -191,6 +198,11 @@
       <div class="icon-card" data-name="attach_money">
         <div class="icon-glyph"><svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg></div>
         <code class="icon-name">attach_money</code>
+        <span class="icon-used">not yet used</span>
+      </div>
+      <div class="icon-card" data-name="auto_awesome">
+        <div class="icon-glyph"><svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg></div>
+        <code class="icon-name">auto_awesome</code>
         <span class="icon-used">not yet used</span>
       </div>
       <div class="icon-card" data-name="ballot">
@@ -433,6 +445,21 @@
         <code class="icon-name">folder_shared</code>
         <span class="icon-used">not yet used</span>
       </div>
+      <div class="icon-card" data-name="format_bold">
+        <div class="icon-glyph"><svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.6 10.79c.97-.67 1.65-1.77 1.65-2.79 0-2.26-1.75-4-4-4H7v14h7.04c2.09 0 3.71-1.7 3.71-3.79 0-1.52-.86-2.82-2.15-3.42zM10 6.5h3c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-3v-3zm3.5 9H10v-3h3.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5z"/></svg></div>
+        <code class="icon-name">format_bold</code>
+        <span class="icon-used">not yet used</span>
+      </div>
+      <div class="icon-card" data-name="format_italic">
+        <div class="icon-glyph"><svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 4v3h2.21l-3.42 8H6v3h8v-3h-2.21l3.42-8H18V4z"/></svg></div>
+        <code class="icon-name">format_italic</code>
+        <span class="icon-used">not yet used</span>
+      </div>
+      <div class="icon-card" data-name="format_underlined">
+        <div class="icon-glyph"><svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 17c3.31 0 6-2.69 6-6V3h-2.5v8c0 1.93-1.57 3.5-3.5 3.5S8.5 12.93 8.5 11V3H6v8c0 3.31 2.69 6 6 6zm-7 2v2h14v-2H5z"/></svg></div>
+        <code class="icon-name">format_underlined</code>
+        <span class="icon-used">not yet used</span>
+      </div>
       <div class="icon-card" data-name="fullscreen">
         <div class="icon-glyph"><svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg></div>
         <code class="icon-name">fullscreen</code>
@@ -536,6 +563,11 @@
       <div class="icon-card" data-name="live_tv">
         <div class="icon-glyph"><svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M21 6h-7.59l3.29-3.29L16 2l-4 4-4-4-.71.71L10.59 6H3c-1.1 0-2 .89-2 2v12c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.11-.9-2-2-2zm0 14H3V8h18v12zM9 10v8l7-4z"/></svg></div>
         <code class="icon-name">live_tv</code>
+        <span class="icon-used">not yet used</span>
+      </div>
+      <div class="icon-card" data-name="local_offer">
+        <div class="icon-glyph"><svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="m21.41 11.58-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.55-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z"/></svg></div>
+        <code class="icon-name">local_offer</code>
         <span class="icon-used">not yet used</span>
       </div>
       <div class="icon-card" data-name="local_parking">
@@ -676,6 +708,11 @@
       <div class="icon-card" data-name="search">
         <div class="icon-glyph"><svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg></div>
         <code class="icon-name">search</code>
+        <span class="icon-used">not yet used</span>
+      </div>
+      <div class="icon-card" data-name="send">
+        <div class="icon-glyph"><svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg></div>
+        <code class="icon-name">send</code>
         <span class="icon-used">not yet used</span>
       </div>
       <div class="icon-card" data-name="settings">

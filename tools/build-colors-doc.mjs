@@ -72,7 +72,7 @@ const html = `<!doctype html>
   .shell { display: flex; min-height: 100vh; }
   nav.side {
     width: 220px; flex-shrink: 0; border-right: 0.5px solid var(--border);
-    padding: 1.5rem 1rem; position: sticky; top: 0; height: 100vh;
+    padding: 1.5rem 1rem; position: sticky; top: 0; height: 100vh; overflow-y: auto;
   }
   .brand { font-size: 14px; font-weight: 600; margin: 0 0 2px 8px; }
   .brand-sub { font-size: 11.5px; color: var(--text-muted); margin: 0 0 1.5rem 8px; }
