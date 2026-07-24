@@ -31,6 +31,7 @@ const semantic = load("tokens/semantic/color.tokens.json");
 const bubble = load("tokens/components/bubble.tokens.json").component.bubble;
 const avatar = load("tokens/components/avatar.tokens.json").component.avatar;
 const attachment = load("tokens/components/attachment.tokens.json").component.attachment;
+const message = load("tokens/components/message.tokens.json").component.message;
 
 const registry = {
   color: colorPrim,
@@ -70,7 +71,7 @@ const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, 
 const cv = (tokenPath) => `var(${cssVarName(tokenPath)})`;
 
 const colorPaths = [
-  "bg.primary", "text.default", "fill.primary", "text.onFill",
+  "bg.primary", "text.default", "text.secondary", "fill.primary", "text.onFill",
   "surface.default", "border.default", "text.muted",
   "avatar.blue.bg", "avatar.blue.text", "avatar.green.bg", "avatar.green.text",
   "surface.sunken", "icon.secondary",
@@ -89,10 +90,14 @@ function typoCss(t) {
   return `font-weight: ${t.fontWeight}; font-size: ${px(t.fontSize)}; line-height: ${t.lineHeight};`;
 }
 
-// ---- Avatar, resolved from its own tokens (not retyped) — same approach Message used ----
+// ---- Avatar, resolved from its own tokens (not retyped) — same approach and
+// same SM size as Message's own sender row (2026-07-24 rebalance), and the
+// sender name color is Message's own sender.nameColor token, not retyped ----
 const avatarRadius = px(resolve(avatar.radius.$value));
-const avatarDiameter = px(resolve(avatar.size.base.diameter.$value));
-const avatarInitialsType = resolveToken(avatar.size.base.initials);
+const avatarDiameter = px(resolve(avatar.size.sm.diameter.$value));
+const avatarInitialsType = resolveToken(avatar.size.sm.initials);
+const refPath = (ref) => ref.replace(/[{}]/g, "");
+const senderNameColor = refPath(message.sender.nameColor.$value);
 
 // ---- Attachment, resolved from its own tokens (not retyped) — for the
 // nested-in-a-bubble story only ----
@@ -115,7 +120,7 @@ const css = `${rootVars}
 .bubble-row--other { align-self: flex-start; align-items: flex-start; }
 .bubble-sender { display: flex; align-items: center; gap: ${px(resolve("dim.2"))}; }
 .bubble-sender__text { margin: 0; font-size: 12px; }
-.bubble-sender__name { color: ${cv("text.default")}; font-weight: 600; }
+.bubble-sender__name { color: ${cv(senderNameColor)}; font-weight: 600; }
 .bubble-sender__meta { color: ${cv("text.muted")}; }
 
 .avatar { box-sizing: border-box; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; border-radius: ${avatarRadius}; width: ${avatarDiameter}; height: ${avatarDiameter}; user-select: none; }

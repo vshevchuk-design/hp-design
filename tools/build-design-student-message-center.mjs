@@ -184,18 +184,29 @@ const lbLabelType = resolveToken(listbox.label);
 const lbShadow = resolveToken(listbox.shadow);
 const lbShadowCss = `${px(lbShadow.offsetX)} ${px(lbShadow.offsetY)} ${px(lbShadow.blur)} ${px(lbShadow.spread)} ${lbShadow.color}`;
 
-// ---- ThreadListItem (inbox shape) ----
-const tliRadius = px(resolve(threadListItem.radius.$value));
+// ---- ThreadListItem (inbox shape, 2026-07-24 full-bleed redesign:
+// flat divider-separated rows + required unread/read state pair) ----
 const tliPadding = px(resolve(threadListItem.padding.$value));
 const tliSubjectType = resolveToken(get(threadListItem.subject.$value));
 const tliRingWidth = px(resolve(threadListItem.state.focused.ringWidth.$value));
-const tliRingOffset = px(resolve(threadListItem.state.focused.ringOffset.$value));
 const inbox = threadListItem.inbox;
 const inboxAvatarGap = px(resolve(inbox.avatarGap.$value));
 const inboxLineGap = px(resolve(inbox.lineGap.$value));
 const inboxIdentityType = resolveToken(inbox.identity);
 const inboxTimeType = resolveToken(inbox.time);
 const inboxPreviewType = resolveToken(get(inbox.preview.$value));
+const inboxList = {
+  divider: refPath(inbox.list.divider.$value),
+  hoverBg: refPath(inbox.list.hoverBg.$value),
+  activeBg: refPath(inbox.list.activeBg.$value),
+};
+const inboxStateCss = (key) => {
+  const s = inbox[key];
+  return `.thread-item-inbox--${key} { background: ${cv(refPath(s.bg.$value))}; }
+.thread-item-inbox--${key} .thread-item-inbox__identity { color: ${cv(refPath(s.identityColor.$value))}; font-weight: ${resolve(s.identityWeight.$value)}; }
+.thread-item-inbox--${key} .thread-item-inbox__subject { color: ${cv(refPath(s.subjectColor.$value))}; font-weight: ${resolve(s.subjectWeight.$value)}; }
+.thread-item-inbox--${key} .thread-item-inbox__preview { color: ${cv(refPath(s.previewColor.$value))}; }`;
+};
 
 // ---- Badge (sm, warning/danger tint) — Expires values ----
 const badgeRadius = px(resolve(badge.radius.$value));
@@ -207,16 +218,29 @@ const badgeTint = (role) => ({ bg: refPath(badge.role[role].tint.bg.$value), tex
 const badgeWarningTint = badgeTint("warning");
 const badgeDangerTint = badgeTint("danger");
 
-// ---- Avatar (base) ----
+// ---- Avatar (base for list rows, sm for sender rows — the 2026-07-24
+// sender-row rebalance: 40px next to one small text line read top-heavy) ----
 const avatarRadius = px(resolve(avatar.radius.$value));
 const avatarDiameter = px(resolve(avatar.size.base.diameter.$value));
 const avatarInitialsType = resolveToken(avatar.size.base.initials);
+const avatarSmDiameter = px(resolve(avatar.size.sm.diameter.$value));
+const avatarSmInitialsType = resolveToken(avatar.size.sm.initials);
 
 // ---- Message ----
 const msgGap = px(resolve(message.gap.$value));
 const msgSenderGap = px(resolve(message.sender.gap.$value));
 const msgNameType = resolveToken(message.sender.name);
+const msgNameColor = refPath(message.sender.nameColor.$value);
 const msgMetaType = resolveToken(message.sender.meta);
+// chrome: card — used for institution messages in the thread view per
+// explicit 2026-07-24 feedback (a chromeless message floating on the page
+// read oddly); Card's own recipe via Message's chrome.card tokens.
+const msgCard = {
+  bg: refPath(message.chrome.card.bg.$value),
+  border: refPath(message.chrome.card.border.$value),
+  radius: px(resolve(message.chrome.card.radius.$value)),
+  padding: px(resolve(message.chrome.card.padding.$value)),
+};
 const msgBodyGap = px(resolve(message.body.gap.$value));
 const msgParagraphType = resolveToken(get(message.body.paragraph.$value));
 const msgLinkType = resolveToken(get(message.body.link.$value));
@@ -318,18 +342,21 @@ const componentCss = `/* ---- component recipes, resolved from each component's 
 .listbox__checkmark { width: ${lbCheckmarkSize}; height: ${lbCheckmarkSize}; margin-left: auto; color: ${cv("fill.primary")}; flex-shrink: 0; display: none; }
 .listbox__option--selected .listbox__checkmark { display: block; }
 
-.thread-item-inbox { box-sizing: border-box; width: 100%; text-align: left; appearance: none; cursor: pointer; display: flex; align-items: flex-start; gap: ${inboxAvatarGap}; padding: ${tliPadding}; border-radius: ${tliRadius}; background: ${cv("surface.default")}; border: 1px solid ${cv("border.default")}; font-family: ${cv("family.sans")}; }
+.thread-list { display: flex; flex-direction: column; }
+.thread-item-inbox { box-sizing: border-box; width: 100%; text-align: left; appearance: none; cursor: pointer; display: flex; align-items: flex-start; gap: ${inboxAvatarGap}; padding: ${tliPadding}; border: none; border-bottom: 1px solid ${cv(inboxList.divider)}; font-family: ${cv("family.sans")}; }
 .thread-item-inbox__main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: ${inboxLineGap}; }
 .thread-item-inbox__top { display: flex; align-items: baseline; justify-content: space-between; gap: ${px(resolve("dim.2"))}; }
-.thread-item-inbox__identity { color: ${cv("text.default")}; ${typoCss(inboxIdentityType)} }
+.thread-item-inbox__identity { ${typoCss(inboxIdentityType)} }
 .thread-item-inbox__time { flex-shrink: 0; color: ${cv("text.muted")}; ${typoCss(inboxTimeType)} }
-.thread-item-inbox__subject { color: ${cv("text.default")}; ${typoCss(tliSubjectType)} }
+.thread-item-inbox__subject { ${typoCss(tliSubjectType)} }
 .thread-item-inbox__preview { color: ${cv("text.muted")}; ${typoCss(inboxPreviewType)} white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .thread-item-inbox__expires { margin-top: ${px(resolve("dim.0_5"))}; }
-.thread-item-inbox:not(.thread-item-inbox--selected):hover { border-color: ${cv("fill.primary")}; }
-.thread-item-inbox:not(.thread-item-inbox--selected):active { background: ${cv("bg.primary")}; border-color: ${cv("fill.primary")}; }
-.thread-item-inbox:focus-visible { outline: ${tliRingWidth} solid ${cv("border.focus")}; outline-offset: ${tliRingOffset}; }
-.thread-item-inbox--selected { background: ${cv("bg.primary")}; border-color: ${cv("fill.primary")}; }
+${inboxStateCss("unread")}
+${inboxStateCss("read")}
+.thread-item-inbox:not(.thread-item-inbox--selected):hover { background: ${cv(inboxList.hoverBg)}; }
+.thread-item-inbox:not(.thread-item-inbox--selected):active { background: ${cv(inboxList.activeBg)}; }
+.thread-item-inbox:focus-visible { outline: ${tliRingWidth} solid ${cv("border.focus")}; outline-offset: -${tliRingWidth}; }
+.thread-item-inbox--selected { background: ${cv("bg.primary")}; }
 
 .badge { box-sizing: border-box; display: inline-flex; align-items: center; border-radius: ${badgeRadius}; height: ${badgeHeight}; padding: 0 ${badgePaddingX}; ${typoCss(badgeLabelType)} white-space: nowrap; }
 .badge--role-warning { background: ${cv(badgeWarningTint.bg)}; color: ${cv(badgeWarningTint.text)}; }
@@ -337,13 +364,16 @@ const componentCss = `/* ---- component recipes, resolved from each component's 
 
 .avatar { box-sizing: border-box; position: relative; display: inline-flex; flex-shrink: 0; align-items: center; justify-content: center; overflow: hidden; border-radius: ${avatarRadius}; width: ${avatarDiameter}; height: ${avatarDiameter}; font-family: ${cv("family.sans")}; user-select: none; }
 .avatar__initials { text-transform: uppercase; ${typoCss(avatarInitialsType)} }
+.avatar--sm { width: ${avatarSmDiameter}; height: ${avatarSmDiameter}; }
+.avatar--sm .avatar__initials { ${typoCss(avatarSmInitialsType)} }
 ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.avatar--${h} .avatar__initials { color: ${cv(`avatar.${h}.text`)}; }`).join("\n")}
 
 .message { display: flex; flex-direction: column; gap: ${msgGap}; font-family: ${cv("family.sans")}; max-width: 640px; }
 .message__sender { display: flex; align-items: center; gap: ${msgSenderGap}; }
 .message__sender-line { margin: 0; }
-.message__name { color: ${cv("text.default")}; ${typoCss(msgNameType)} }
+.message__name { color: ${cv(msgNameColor)}; ${typoCss(msgNameType)} }
 .message__meta { color: ${cv("text.muted")}; ${typoCss(msgMetaType)} }
+.message--card { background: ${cv(msgCard.bg)}; border: 1px solid ${cv(msgCard.border)}; border-radius: ${msgCard.radius}; padding: ${msgCard.padding}; }
 .message__body { display: flex; flex-direction: column; gap: ${msgBodyGap}; }
 .message__body p { margin: 0; color: ${cv("text.default")}; ${typoCss(msgParagraphType)} }
 .message__body strong { font-weight: ${msgStrongWeight}; }
@@ -366,7 +396,7 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
 .bubble-row--other { align-self: flex-start; align-items: flex-start; }
 .bubble-sender { display: flex; align-items: center; gap: ${px(resolve("dim.2"))}; }
 .bubble-sender__text { margin: 0; font-size: 12px; }
-.bubble-sender__name { color: ${cv("text.default")}; font-weight: 600; }
+.bubble-sender__name { color: ${cv(msgNameColor)}; font-weight: 600; }
 .bubble-sender__meta { color: ${cv("text.muted")}; }
 .bubble { box-sizing: border-box; display: flex; flex-direction: column; gap: ${bubGap}; padding: ${bubPaddingY} ${bubPaddingX}; border-radius: ${bubRadius}; }
 .bubble p { margin: 0; ${typoCss(bubTextType)} }
@@ -430,7 +460,7 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .mc-rail__controls .select { flex-shrink: 0; min-width: 120px; }
 .mc-rail__count { padding: 0 ${px(resolve("dim.4"))}; display: flex; flex-direction: column; gap: ${px(resolve("dim.2"))}; }
 .mc-count { color: ${cv("text.muted")}; ${typoCss(labelSmType)}${labelSmExt.textTransform ? ` text-transform: ${labelSmExt.textTransform};` : ""}${labelSmExt.letterSpacing ? ` letter-spacing: ${labelSmExt.letterSpacing};` : ""} }
-.mc-list { flex: 1; overflow-y: auto; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))} ${px(resolve("dim.4"))}; display: flex; flex-direction: column; gap: ${px(resolve("dim.3"))}; }
+.mc-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
 .mc-list[hidden] { display: none; }
 
 .mc-empty { flex: 1; display: flex; align-items: center; justify-content: center; }
@@ -469,9 +499,9 @@ ${layoutCss}`;
 
 // ================= markup builders =================
 
-function avatarMarkup(name) {
+function avatarMarkup(name, size = "base") {
   const hue = hueOf(name);
-  return `<span class="avatar avatar--${hue}" role="img" aria-label="${name}"><span class="avatar__initials">${initialsOf(name)}</span></span>`;
+  return `<span class="avatar avatar--${hue}${size === "sm" ? " avatar--sm" : ""}" role="img" aria-label="${name}"><span class="avatar__initials">${initialsOf(name)}</span></span>`;
 }
 function attachmentMarkup(title, description) {
   return `<a class="attachment" href="#" download>
@@ -484,12 +514,15 @@ function attachmentMarkup(title, description) {
 }
 function messageSender(name, meta) {
   return `<div class="message__sender">
-            ${avatarMarkup(name)}
+            ${avatarMarkup(name, "sm")}
             <p class="message__sender-line"><span class="message__name">${name}</span><span class="message__meta"> -- ${meta}</span></p>
           </div>`;
 }
+// Institution messages render with the card chrome (white bubble) in the
+// thread view — explicit 2026-07-24 call, see message.chrome.card's own
+// $description.
 function messageMarkup(sender, meta, bodyHtml) {
-  return `<div class="message">
+  return `<div class="message message--card">
           ${messageSender(sender, meta)}
           <div class="message__body">
             ${bodyHtml}
@@ -498,7 +531,7 @@ function messageMarkup(sender, meta, bodyHtml) {
 }
 function bubbleRow({ role, name, meta, text, attachmentHtml = "" }) {
   const senderText = `<p class="bubble-sender__text"><span class="bubble-sender__name">${name}</span> <span class="bubble-sender__meta">-- ${meta}</span></p>`;
-  const av = avatarMarkup(name);
+  const av = avatarMarkup(name, "sm");
   const sender = `<div class="bubble-sender">${role === "self" ? senderText + av : av + senderText}</div>`;
   const fillClass = role === "self" ? " bubble--tint" : "";
   return `<div class="bubble-row bubble-row--${role}">
@@ -510,7 +543,7 @@ function bubbleRow({ role, name, meta, text, attachmentHtml = "" }) {
 // ---- thread data ----
 const threads = [
   {
-    id: "winter", archived: false,
+    id: "winter", archived: false, unread: true,
     department: "Academic Advising", date: "12/19/2025", subject: "Winter Intersession",
     preview: "Are you looking to stay on track or get ahead in your degree progress?",
     meta: { Department: "Academic Advising", Status: "Open", Institution: "PeopleSoft University" },
@@ -529,7 +562,7 @@ const threads = [
     ],
   },
   {
-    id: "hello", archived: false,
+    id: "hello", archived: false, unread: true,
     department: "Academic Advising", date: "12/18/2025", subject: "Hello World",
     preview: "This is a test announcement from Academic Advising.",
     meta: { Department: "Academic Advising", Status: "Open", Institution: "PeopleSoft University" },
@@ -614,7 +647,7 @@ const threads = [
 
 function rowMarkup(t, idx) {
   const expires = t.expires ? `<div class="thread-item-inbox__expires"><span class="badge badge--role-${t.expires.role}">${t.expires.label}</span></div>` : "";
-  return `<button class="thread-item-inbox" data-thread="${t.id}" data-idx="${idx}" data-subject="${esc(t.subject)}" data-department="${esc(t.department)}">
+  return `<button class="thread-item-inbox thread-item-inbox--${t.unread ? "unread" : "read"}" data-thread="${t.id}" data-idx="${idx}" data-subject="${esc(t.subject)}" data-department="${esc(t.department)}">
         ${avatarMarkup(t.department)}
         <div class="thread-item-inbox__main">
           <div class="thread-item-inbox__top">
@@ -672,7 +705,7 @@ const sortOptions = [
 // ---- the appended-on-Send self bubble template, reused by the app script.
 // Static sender markup is generated here at build time (same avatar recipe);
 // the user's text is injected via textContent, never innerHTML. ----
-const selfBubbleSender = `<div class="bubble-sender"><p class="bubble-sender__text"><span class="bubble-sender__name">${SELF.name}</span> <span class="bubble-sender__meta">-- Just now</span></p><span class="avatar avatar--${SELF.hue}" role="img" aria-label="${SELF.name}"><span class="avatar__initials">${SELF.initials}</span></span></div>`;
+const selfBubbleSender = `<div class="bubble-sender"><p class="bubble-sender__text"><span class="bubble-sender__name">${SELF.name}</span> <span class="bubble-sender__meta">-- Just now</span></p><span class="avatar avatar--${SELF.hue} avatar--sm" role="img" aria-label="${SELF.name}"><span class="avatar__initials">${SELF.initials}</span></span></div>`;
 
 const appJs = `(function () {
   var mc = document.querySelector(".mc");
@@ -702,11 +735,13 @@ const appJs = `(function () {
     rows("inbox").concat(rows("archived")).forEach(function (r) { r.classList.remove("thread-item-inbox--selected"); });
   }
 
-  // thread selection — single-select across both lists
+  // thread selection — single-select across both lists; opening a thread
+  // also marks it read (removes the unread state), the real product behavior
   document.querySelectorAll(".thread-item-inbox").forEach(function (row) {
     row.addEventListener("click", function () {
       rows("inbox").concat(rows("archived")).forEach(function (r) { r.classList.remove("thread-item-inbox--selected"); });
-      row.classList.add("thread-item-inbox--selected");
+      row.classList.remove("thread-item-inbox--unread");
+      row.classList.add("thread-item-inbox--read", "thread-item-inbox--selected");
       showPane(row.dataset.thread);
       mc.classList.add("mc--thread-open");
     });

@@ -71,11 +71,15 @@
 
   :root {
   --tok-surface-default: #ffffff;
+  --tok-surface-sunken: #e8e8e8;
   --tok-border-default: #d1d1d1;
   --tok-text-default: #181818;
+  --tok-text-secondary: #696969;
   --tok-icon-muted: #989898;
   --tok-text-muted: #808080;
   --tok-fill-primary: #077fec;
+  --tok-fill-neutral-hover: #d1d1d1;
+  --tok-fill-neutral-active: #b4b4b4;
   --tok-bg-primary: #d9eaff;
   --tok-border-focus: #0468c4;
   --tok-bg-danger: #ffdfde;
@@ -117,21 +121,31 @@
 .avatar--amber { background: var(--tok-avatar-amber-bg); }
 .avatar--amber .avatar__initials { color: var(--tok-avatar-amber-text); }
 
-.thread-item-inbox { box-sizing: border-box; width: 100%; text-align: left; appearance: none; cursor: pointer; display: flex; align-items: flex-start; gap: 12px; padding: 16px; border-radius: 8px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); font-family: var(--tok-family-sans); }
+.thread-list { display: flex; flex-direction: column; }
+.thread-item-inbox { box-sizing: border-box; width: 100%; text-align: left; appearance: none; cursor: pointer; display: flex; align-items: flex-start; gap: 12px; padding: 16px; border: none; border-bottom: 1px solid var(--tok-border-default); font-family: var(--tok-family-sans); }
 .thread-item-inbox__main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
 .thread-item-inbox__top { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
-.thread-item-inbox__identity { color: var(--tok-text-default); font-weight: 600; font-size: 12px; line-height: 1.2; }
+.thread-item-inbox__identity { font-weight: 600; font-size: 12px; line-height: 1.2; }
 .thread-item-inbox__time { flex-shrink: 0; color: var(--tok-text-muted); font-weight: 400; font-size: 10px; line-height: 1.2; }
-.thread-item-inbox__subject { color: var(--tok-text-default); font-weight: 600; font-size: 14px; line-height: 1.4; }
+.thread-item-inbox__subject { font-weight: 600; font-size: 14px; line-height: 1.4; }
 .thread-item-inbox__preview-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.thread-item-inbox__preview { flex: 1; min-width: 0; color: var(--tok-text-muted); font-weight: 400; font-size: 12px; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.thread-item-inbox__preview { flex: 1; min-width: 0; font-weight: 400; font-size: 12px; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .thread-item-inbox__flag { flex-shrink: 0; width: 16px; height: 16px; color: var(--tok-icon-muted); }
 .thread-item-inbox__expires { margin-top: 2px; }
 
-.thread-item-inbox:not(.thread-item-inbox--selected):hover { border-color: var(--tok-fill-primary); }
-.thread-item-inbox:not(.thread-item-inbox--selected):active { background: var(--tok-bg-primary); border-color: var(--tok-fill-primary); }
-.thread-item-inbox:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
-.thread-item-inbox--selected { background: var(--tok-bg-primary); border-color: var(--tok-fill-primary); }
+.thread-item-inbox--unread { background: var(--tok-surface-default); }
+.thread-item-inbox--unread .thread-item-inbox__identity { color: var(--tok-text-default); font-weight: 600; }
+.thread-item-inbox--unread .thread-item-inbox__subject { color: var(--tok-text-default); font-weight: 600; }
+.thread-item-inbox--unread .thread-item-inbox__preview { color: var(--tok-text-secondary); }
+.thread-item-inbox--read { background: var(--tok-surface-sunken); }
+.thread-item-inbox--read .thread-item-inbox__identity { color: var(--tok-text-secondary); font-weight: 400; }
+.thread-item-inbox--read .thread-item-inbox__subject { color: var(--tok-text-secondary); font-weight: 400; }
+.thread-item-inbox--read .thread-item-inbox__preview { color: var(--tok-text-muted); }
+
+.thread-item-inbox:not(.thread-item-inbox--selected):hover { background: var(--tok-fill-neutral-hover); }
+.thread-item-inbox:not(.thread-item-inbox--selected):active { background: var(--tok-fill-neutral-active); }
+.thread-item-inbox:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: -4px; }
+.thread-item-inbox--selected { background: var(--tok-bg-primary); }
 </style>
 </head>
 <body>
@@ -219,17 +233,23 @@
       <div class="row"><b>Metadata rows</b><span>Label:value pairs, same line, spread apart — Department/Received/Regarding/Expires, matching the live app exactly. size.xs both, differentiated by color (muted label, default value) not weight.</span></div>
       <div class="row"><b>Expires uses Badge now</b><span>The live app shows an expiry as bare red-colored text. This component uses a real Badge (role=danger, tint, sm) for that value instead — the thread list was literally one of the driving use cases Badge was built for.</span></div>
       <div class="row"><b>No unread indicator</b><span>Not asked for — deferred rather than built speculatively.</span></div>
-      <div class="row"><b>Inbox row (2nd shape)</b><span>Same shell/states, different content — avatar + department identity + timestamp + subject + preview + flag, matching the Message Center inbox-list screenshot. Avatar is keyed off the department name (not a person), reusing Avatar's own hash(name) % 8 fallback-color logic. No "Handled by" row, and Expires moves to a left-aligned row under the preview text instead of the live app's right-aligned column.</span></div>
+      <div class="row"><b>Inbox row (2nd shape)</b><span>Avatar + department identity + timestamp + subject + preview + flag, matching the Message Center inbox-list screenshot. Avatar is keyed off the department name (not a person), reusing Avatar's own hash(name) % 8 fallback-color logic. No "Handled by" row, and Expires moves to a left-aligned row under the preview text instead of the live app's right-aligned column.</span></div>
+      <div class="row"><b>Full-bleed list (2026-07-24)</b><span>Redesigned per explicit feedback, following the staff-mockup reference: inbox rows are flat, full-bleed rows separated by a 1px divider — no radius, no own border, no gaps between rows. Hover/pressed use the ghost fill.neutralHover/fill.neutralActive progression (a flat row has no border for the card shell's blue hover border to attach to); selected keeps the persistent bg.primary fill, borderless. The card metadata shape above is unchanged.</span></div>
+      <div class="row"><b>unread / read</b><span>Every inbox row is in exactly one of two states: <code class="tok">unread</code> (surface.default bg, semibold text.default identity/subject, text.secondary preview) or <code class="tok">read</code> (surface.page bg, normal-weight text.secondary identity/subject, text.muted preview). Clicking a row in the demo below marks it read for real.</span></div>
     </div>
 
     <h2 class="big-section">CSS</h2>
     <pre class="code"><code>:root {
   --tok-surface-default: #ffffff;
+  --tok-surface-sunken: #e8e8e8;
   --tok-border-default: #d1d1d1;
   --tok-text-default: #181818;
+  --tok-text-secondary: #696969;
   --tok-icon-muted: #989898;
   --tok-text-muted: #808080;
   --tok-fill-primary: #077fec;
+  --tok-fill-neutral-hover: #d1d1d1;
+  --tok-fill-neutral-active: #b4b4b4;
   --tok-bg-primary: #d9eaff;
   --tok-border-focus: #0468c4;
   --tok-bg-danger: #ffdfde;
@@ -271,21 +291,31 @@
 .avatar--amber { background: var(--tok-avatar-amber-bg); }
 .avatar--amber .avatar__initials { color: var(--tok-avatar-amber-text); }
 
-.thread-item-inbox { box-sizing: border-box; width: 100%; text-align: left; appearance: none; cursor: pointer; display: flex; align-items: flex-start; gap: 12px; padding: 16px; border-radius: 8px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); font-family: var(--tok-family-sans); }
+.thread-list { display: flex; flex-direction: column; }
+.thread-item-inbox { box-sizing: border-box; width: 100%; text-align: left; appearance: none; cursor: pointer; display: flex; align-items: flex-start; gap: 12px; padding: 16px; border: none; border-bottom: 1px solid var(--tok-border-default); font-family: var(--tok-family-sans); }
 .thread-item-inbox__main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
 .thread-item-inbox__top { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
-.thread-item-inbox__identity { color: var(--tok-text-default); font-weight: 600; font-size: 12px; line-height: 1.2; }
+.thread-item-inbox__identity { font-weight: 600; font-size: 12px; line-height: 1.2; }
 .thread-item-inbox__time { flex-shrink: 0; color: var(--tok-text-muted); font-weight: 400; font-size: 10px; line-height: 1.2; }
-.thread-item-inbox__subject { color: var(--tok-text-default); font-weight: 600; font-size: 14px; line-height: 1.4; }
+.thread-item-inbox__subject { font-weight: 600; font-size: 14px; line-height: 1.4; }
 .thread-item-inbox__preview-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.thread-item-inbox__preview { flex: 1; min-width: 0; color: var(--tok-text-muted); font-weight: 400; font-size: 12px; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.thread-item-inbox__preview { flex: 1; min-width: 0; font-weight: 400; font-size: 12px; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .thread-item-inbox__flag { flex-shrink: 0; width: 16px; height: 16px; color: var(--tok-icon-muted); }
 .thread-item-inbox__expires { margin-top: 2px; }
 
-.thread-item-inbox:not(.thread-item-inbox--selected):hover { border-color: var(--tok-fill-primary); }
-.thread-item-inbox:not(.thread-item-inbox--selected):active { background: var(--tok-bg-primary); border-color: var(--tok-fill-primary); }
-.thread-item-inbox:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
-.thread-item-inbox--selected { background: var(--tok-bg-primary); border-color: var(--tok-fill-primary); }</code></pre>
+.thread-item-inbox--unread { background: var(--tok-surface-default); }
+.thread-item-inbox--unread .thread-item-inbox__identity { color: var(--tok-text-default); font-weight: 600; }
+.thread-item-inbox--unread .thread-item-inbox__subject { color: var(--tok-text-default); font-weight: 600; }
+.thread-item-inbox--unread .thread-item-inbox__preview { color: var(--tok-text-secondary); }
+.thread-item-inbox--read { background: var(--tok-surface-sunken); }
+.thread-item-inbox--read .thread-item-inbox__identity { color: var(--tok-text-secondary); font-weight: 400; }
+.thread-item-inbox--read .thread-item-inbox__subject { color: var(--tok-text-secondary); font-weight: 400; }
+.thread-item-inbox--read .thread-item-inbox__preview { color: var(--tok-text-muted); }
+
+.thread-item-inbox:not(.thread-item-inbox--selected):hover { background: var(--tok-fill-neutral-hover); }
+.thread-item-inbox:not(.thread-item-inbox--selected):active { background: var(--tok-fill-neutral-active); }
+.thread-item-inbox:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: -4px; }
+.thread-item-inbox--selected { background: var(--tok-bg-primary); }</code></pre>
 
     <h2 class="big-section">JS</h2>
     <p class="section-desc">The only script this page needs — click-to-select for the "In context" demo below.</p>
@@ -299,7 +329,8 @@
 document.querySelectorAll(".thread-item-inbox-demo .thread-item-inbox").forEach((btn) =&gt; {
   btn.addEventListener("click", () =&gt; {
     btn.parentElement.querySelectorAll(".thread-item-inbox").forEach((b) =&gt; b.classList.remove("thread-item-inbox--selected"));
-    btn.classList.add("thread-item-inbox--selected");
+    btn.classList.remove("thread-item-inbox--unread");
+    btn.classList.add("thread-item-inbox--read", "thread-item-inbox--selected");
   });
 });</code></pre>
 
@@ -492,12 +523,12 @@ document.querySelectorAll(".thread-item-inbox-demo .thread-item-inbox").forEach(
 &lt;/script&gt;</code></pre>
 
     <h2 class="big-section">Inbox row</h2>
-    <p class="section-desc">The Message Center inbox-list shape — avatar, department identity + timestamp, subject, preview, flag, optional Expires. Same interactive shell/states as above, different content.</p>
+    <p class="section-desc">The Message Center inbox-list shape — avatar, department identity + timestamp, subject, preview, flag, optional Expires. Full-bleed flat rows with a divider (no card border/radius/gaps), each in an unread or read state.</p>
     <div class="story-grid">
       
       <div class="story">
-        <h3>default</h3>
-        <div class="story-preview"><button class="thread-item-inbox">
+        <h3>unread</h3>
+        <div class="story-preview"><div class="thread-list"><button class="thread-item-inbox thread-item-inbox--unread">
       <span class="avatar avatar--teal" role="img" aria-label="Academic Advising"><span class="avatar__initials">AA</span></span>
       <div class="thread-item-inbox__main">
         <div class="thread-item-inbox__top">
@@ -511,8 +542,8 @@ document.querySelectorAll(".thread-item-inbox-demo .thread-item-inbox").forEach(
         </div>
         
       </div>
-    </button></div>
-        <pre class="code"><code>&lt;button class="thread-item-inbox"&gt;
+    </button></div></div>
+        <pre class="code"><code>&lt;button class="thread-item-inbox thread-item-inbox--unread"&gt;
       &lt;span class="avatar avatar--teal" role="img" aria-label="Academic Advising"&gt;&lt;span class="avatar__initials"&gt;AA&lt;/span&gt;&lt;/span&gt;
       &lt;div class="thread-item-inbox__main"&gt;
         &lt;div class="thread-item-inbox__top"&gt;
@@ -527,12 +558,82 @@ document.querySelectorAll(".thread-item-inbox-demo .thread-item-inbox").forEach(
         
       &lt;/div&gt;
     &lt;/button&gt;</code></pre>
+        <p class="story-note">surface.default bg, identity/subject at weight.semibold in text.default, preview text.secondary — whiter and higher-contrast than read.</p>
+      </div>
+
+      <div class="story">
+        <h3>read</h3>
+        <div class="story-preview"><div class="thread-list"><button class="thread-item-inbox thread-item-inbox--read">
+      <span class="avatar avatar--teal" role="img" aria-label="Academic Advising"><span class="avatar__initials">AA</span></span>
+      <div class="thread-item-inbox__main">
+        <div class="thread-item-inbox__top">
+          <span class="thread-item-inbox__identity">Academic Advising</span>
+          <span class="thread-item-inbox__time">3:56 PM</span>
+        </div>
+        <div class="thread-item-inbox__subject">Question about fall registration</div>
+        <div class="thread-item-inbox__preview-row">
+          <span class="thread-item-inbox__preview">Hi Alexander, I wanted to check whether …</span>
+          <svg class="thread-item-inbox__flag" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg>
+        </div>
         
+      </div>
+    </button></div></div>
+        <pre class="code"><code>&lt;button class="thread-item-inbox thread-item-inbox--read"&gt;
+      &lt;span class="avatar avatar--teal" role="img" aria-label="Academic Advising"&gt;&lt;span class="avatar__initials"&gt;AA&lt;/span&gt;&lt;/span&gt;
+      &lt;div class="thread-item-inbox__main"&gt;
+        &lt;div class="thread-item-inbox__top"&gt;
+          &lt;span class="thread-item-inbox__identity"&gt;Academic Advising&lt;/span&gt;
+          &lt;span class="thread-item-inbox__time"&gt;3:56 PM&lt;/span&gt;
+        &lt;/div&gt;
+        &lt;div class="thread-item-inbox__subject"&gt;Question about fall registration&lt;/div&gt;
+        &lt;div class="thread-item-inbox__preview-row"&gt;
+          &lt;span class="thread-item-inbox__preview"&gt;Hi Alexander, I wanted to check whether …&lt;/span&gt;
+          &lt;svg class="thread-item-inbox__flag" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"&gt;&lt;path d="M0 0h24v24H0z" fill="none"/&gt;&lt;path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/&gt;&lt;/svg&gt;
+        &lt;/div&gt;
+        
+      &lt;/div&gt;
+    &lt;/button&gt;</code></pre>
+        <p class="story-note">surface.page bg (blends into the rail), identity/subject at weight.normal in text.secondary, preview text.muted.</p>
+      </div>
+
+      <div class="story">
+        <h3>selected</h3>
+        <div class="story-preview"><div class="thread-list"><button class="thread-item-inbox thread-item-inbox--read thread-item-inbox--selected">
+      <span class="avatar avatar--teal" role="img" aria-label="Academic Advising"><span class="avatar__initials">AA</span></span>
+      <div class="thread-item-inbox__main">
+        <div class="thread-item-inbox__top">
+          <span class="thread-item-inbox__identity">Academic Advising</span>
+          <span class="thread-item-inbox__time">3:56 PM</span>
+        </div>
+        <div class="thread-item-inbox__subject">Question about fall registration</div>
+        <div class="thread-item-inbox__preview-row">
+          <span class="thread-item-inbox__preview">Hi Alexander, I wanted to check whether …</span>
+          <svg class="thread-item-inbox__flag" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg>
+        </div>
+        
+      </div>
+    </button></div></div>
+        <pre class="code"><code>&lt;button class="thread-item-inbox thread-item-inbox--read thread-item-inbox--selected"&gt;
+      &lt;span class="avatar avatar--teal" role="img" aria-label="Academic Advising"&gt;&lt;span class="avatar__initials"&gt;AA&lt;/span&gt;&lt;/span&gt;
+      &lt;div class="thread-item-inbox__main"&gt;
+        &lt;div class="thread-item-inbox__top"&gt;
+          &lt;span class="thread-item-inbox__identity"&gt;Academic Advising&lt;/span&gt;
+          &lt;span class="thread-item-inbox__time"&gt;3:56 PM&lt;/span&gt;
+        &lt;/div&gt;
+        &lt;div class="thread-item-inbox__subject"&gt;Question about fall registration&lt;/div&gt;
+        &lt;div class="thread-item-inbox__preview-row"&gt;
+          &lt;span class="thread-item-inbox__preview"&gt;Hi Alexander, I wanted to check whether …&lt;/span&gt;
+          &lt;svg class="thread-item-inbox__flag" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"&gt;&lt;path d="M0 0h24v24H0z" fill="none"/&gt;&lt;path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/&gt;&lt;/svg&gt;
+        &lt;/div&gt;
+        
+      &lt;/div&gt;
+    &lt;/button&gt;</code></pre>
+        <p class="story-note">bg.primary, applied persistently — same meaning as the card shape's selected, minus the border (a flat row has none).</p>
       </div>
 
       <div class="story">
         <h3>with Expires (warning)</h3>
-        <div class="story-preview"><button class="thread-item-inbox">
+        <div class="story-preview"><div class="thread-list"><button class="thread-item-inbox thread-item-inbox--unread">
       <span class="avatar avatar--amber" role="img" aria-label="Financial Aid"><span class="avatar__initials">FA</span></span>
       <div class="thread-item-inbox__main">
         <div class="thread-item-inbox__top">
@@ -546,8 +647,8 @@ document.querySelectorAll(".thread-item-inbox-demo .thread-item-inbox").forEach(
         </div>
         <div class="thread-item-inbox__expires"><span class="badge badge--role-warning">Expires Jul 20</span></div>
       </div>
-    </button></div>
-        <pre class="code"><code>&lt;button class="thread-item-inbox"&gt;
+    </button></div></div>
+        <pre class="code"><code>&lt;button class="thread-item-inbox thread-item-inbox--unread"&gt;
       &lt;span class="avatar avatar--amber" role="img" aria-label="Financial Aid"&gt;&lt;span class="avatar__initials"&gt;FA&lt;/span&gt;&lt;/span&gt;
       &lt;div class="thread-item-inbox__main"&gt;
         &lt;div class="thread-item-inbox__top"&gt;
@@ -567,7 +668,7 @@ document.querySelectorAll(".thread-item-inbox-demo .thread-item-inbox").forEach(
 
       <div class="story">
         <h3>with Expires (expired)</h3>
-        <div class="story-preview"><button class="thread-item-inbox">
+        <div class="story-preview"><div class="thread-list"><button class="thread-item-inbox thread-item-inbox--read">
       <span class="avatar avatar--teal" role="img" aria-label="Academic Advising"><span class="avatar__initials">AA</span></span>
       <div class="thread-item-inbox__main">
         <div class="thread-item-inbox__top">
@@ -581,8 +682,8 @@ document.querySelectorAll(".thread-item-inbox-demo .thread-item-inbox").forEach(
         </div>
         <div class="thread-item-inbox__expires"><span class="badge badge--role-danger">Expired Jul 10</span></div>
       </div>
-    </button></div>
-        <pre class="code"><code>&lt;button class="thread-item-inbox"&gt;
+    </button></div></div>
+        <pre class="code"><code>&lt;button class="thread-item-inbox thread-item-inbox--read"&gt;
       &lt;span class="avatar avatar--teal" role="img" aria-label="Academic Advising"&gt;&lt;span class="avatar__initials"&gt;AA&lt;/span&gt;&lt;/span&gt;
       &lt;div class="thread-item-inbox__main"&gt;
         &lt;div class="thread-item-inbox__top"&gt;
@@ -602,9 +703,9 @@ document.querySelectorAll(".thread-item-inbox-demo .thread-item-inbox").forEach(
     </div>
 
     <h2 class="big-section">Inbox row — in context</h2>
-    <p class="section-desc">A real, single-select inbox list — click any row.</p>
-    <div class="usage-preview"><div class="thread-item-inbox-demo" style="display:flex; flex-direction:column; gap:12px; max-width:400px;">
-      <button class="thread-item-inbox thread-item-inbox--selected">
+    <p class="section-desc">A real, single-select inbox list — click any row to select it and mark it read.</p>
+    <div class="usage-preview"><div class="thread-list thread-item-inbox-demo" style="max-width:400px; border:1px solid var(--tok-border-default); border-bottom:none;">
+      <button class="thread-item-inbox thread-item-inbox--unread">
       <span class="avatar avatar--teal" role="img" aria-label="Academic Advising"><span class="avatar__initials">AA</span></span>
       <div class="thread-item-inbox__main">
         <div class="thread-item-inbox__top">
@@ -619,7 +720,7 @@ document.querySelectorAll(".thread-item-inbox-demo .thread-item-inbox").forEach(
         
       </div>
     </button>
-      <button class="thread-item-inbox">
+      <button class="thread-item-inbox thread-item-inbox--unread">
       <span class="avatar avatar--teal" role="img" aria-label="Academic Advising"><span class="avatar__initials">AA</span></span>
       <div class="thread-item-inbox__main">
         <div class="thread-item-inbox__top">
@@ -634,7 +735,7 @@ document.querySelectorAll(".thread-item-inbox-demo .thread-item-inbox").forEach(
         
       </div>
     </button>
-      <button class="thread-item-inbox">
+      <button class="thread-item-inbox thread-item-inbox--read thread-item-inbox--selected">
       <span class="avatar avatar--amber" role="img" aria-label="Financial Aid"><span class="avatar__initials">FA</span></span>
       <div class="thread-item-inbox__main">
         <div class="thread-item-inbox__top">
@@ -649,7 +750,7 @@ document.querySelectorAll(".thread-item-inbox-demo .thread-item-inbox").forEach(
         <div class="thread-item-inbox__expires"><span class="badge badge--role-warning">Expires Jul 20</span></div>
       </div>
     </button>
-      <button class="thread-item-inbox">
+      <button class="thread-item-inbox thread-item-inbox--read">
       <span class="avatar avatar--teal" role="img" aria-label="Academic Advising"><span class="avatar__initials">AA</span></span>
       <div class="thread-item-inbox__main">
         <div class="thread-item-inbox__top">
@@ -664,7 +765,7 @@ document.querySelectorAll(".thread-item-inbox-demo .thread-item-inbox").forEach(
         <div class="thread-item-inbox__expires"><span class="badge badge--role-danger">Expired Jul 10</span></div>
       </div>
     </button>
-      <button class="thread-item-inbox">
+      <button class="thread-item-inbox thread-item-inbox--read">
       <span class="avatar avatar--teal" role="img" aria-label="Academic Advising"><span class="avatar__initials">AA</span></span>
       <div class="thread-item-inbox__main">
         <div class="thread-item-inbox__top">
@@ -680,16 +781,19 @@ document.querySelectorAll(".thread-item-inbox-demo .thread-item-inbox").forEach(
       </div>
     </button>
     </div></div>
-    <pre class="code"><code>&lt;div class="thread-item-inbox-demo"&gt;
-  &lt;button class="thread-item-inbox thread-item-inbox--selected"&gt;…&lt;/button&gt;
-  &lt;button class="thread-item-inbox"&gt;…&lt;/button&gt;
+    <pre class="code"><code>&lt;div class="thread-list"&gt;
+  &lt;button class="thread-item-inbox thread-item-inbox--unread"&gt;…&lt;/button&gt;
+  &lt;button class="thread-item-inbox thread-item-inbox--unread"&gt;…&lt;/button&gt;
+  &lt;button class="thread-item-inbox thread-item-inbox--read thread-item-inbox--selected"&gt;…&lt;/button&gt;
   …
 &lt;/div&gt;
 &lt;script&gt;
+  // click selects the row and marks it read — real single-select
   document.querySelectorAll(".thread-item-inbox-demo .thread-item-inbox").forEach((btn) =&gt; {
     btn.addEventListener("click", () =&gt; {
       btn.parentElement.querySelectorAll(".thread-item-inbox").forEach((b) =&gt; b.classList.remove("thread-item-inbox--selected"));
-      btn.classList.add("thread-item-inbox--selected");
+      btn.classList.remove("thread-item-inbox--unread");
+      btn.classList.add("thread-item-inbox--read", "thread-item-inbox--selected");
     });
   });
 &lt;/script&gt;</code></pre>
@@ -705,7 +809,8 @@ document.querySelectorAll(".thread-item-inbox-demo .thread-item-inbox").forEach(
 document.querySelectorAll(".thread-item-inbox-demo .thread-item-inbox").forEach((btn) => {
   btn.addEventListener("click", () => {
     btn.parentElement.querySelectorAll(".thread-item-inbox").forEach((b) => b.classList.remove("thread-item-inbox--selected"));
-    btn.classList.add("thread-item-inbox--selected");
+    btn.classList.remove("thread-item-inbox--unread");
+    btn.classList.add("thread-item-inbox--read", "thread-item-inbox--selected");
   });
 });</script>
 </body>

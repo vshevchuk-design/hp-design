@@ -103,8 +103,8 @@ const inboxDepartments = ["Academic Advising", "Financial Aid", "Registrar"];
 const usedHues = [...new Set(inboxDepartments.map(hueOf))];
 
 const colorPaths = [
-  "surface.default", "border.default", "text.default", "icon.muted", "text.muted",
-  "fill.primary", "bg.primary", "border.focus",
+  "surface.default", "surface.sunken", "border.default", "text.default", "text.secondary", "icon.muted", "text.muted",
+  "fill.primary", "fill.neutralHover", "fill.neutralActive", "bg.primary", "border.focus",
   "bg.danger", "text.danger", "bg.warning", "text.warning", "bg.neutral",
   ...usedHues.flatMap((h) => [`avatar.${h}.bg`, `avatar.${h}.text`]),
 ];
@@ -157,6 +157,20 @@ const inboxIdentityType = resolveToken(inbox.identity);
 const inboxTimeType = resolveToken(inbox.time);
 const inboxPreviewType = resolveToken(get(inbox.preview.$value));
 const inboxFlagSize = px(resolve(inbox.flag.iconSize.$value));
+// ---- 2026-07-24 full-bleed redesign: flat rows + divider, ghost hover, and
+// the required unread/read state pair (whiter+heavier vs. grayer+lighter) ----
+const inboxList = {
+  divider: refPath(inbox.list.divider.$value),
+  hoverBg: refPath(inbox.list.hoverBg.$value),
+  activeBg: refPath(inbox.list.activeBg.$value),
+};
+const inboxStateCss = (key) => {
+  const s = inbox[key];
+  return `.thread-item-inbox--${key} { background: ${cv(refPath(s.bg.$value))}; }
+.thread-item-inbox--${key} .thread-item-inbox__identity { color: ${cv(refPath(s.identityColor.$value))}; font-weight: ${resolve(s.identityWeight.$value)}; }
+.thread-item-inbox--${key} .thread-item-inbox__subject { color: ${cv(refPath(s.subjectColor.$value))}; font-weight: ${resolve(s.subjectWeight.$value)}; }
+.thread-item-inbox--${key} .thread-item-inbox__preview { color: ${cv(refPath(s.previewColor.$value))}; }`;
+};
 
 const css = `${rootVars}
 
@@ -184,21 +198,25 @@ const css = `${rootVars}
 .avatar__initials { text-transform: uppercase; ${typoCss(avatarInitialsType)} }
 ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.avatar--${h} .avatar__initials { color: ${cv(`avatar.${h}.text`)}; }`).join("\n")}
 
-.thread-item-inbox { box-sizing: border-box; width: 100%; text-align: left; appearance: none; cursor: pointer; display: flex; align-items: flex-start; gap: ${inboxAvatarGap}; padding: ${padding}; border-radius: ${radius}; background: ${cv("surface.default")}; border: 1px solid ${cv("border.default")}; font-family: ${cv("family.sans")}; }
+.thread-list { display: flex; flex-direction: column; }
+.thread-item-inbox { box-sizing: border-box; width: 100%; text-align: left; appearance: none; cursor: pointer; display: flex; align-items: flex-start; gap: ${inboxAvatarGap}; padding: ${padding}; border: none; border-bottom: 1px solid ${cv(inboxList.divider)}; font-family: ${cv("family.sans")}; }
 .thread-item-inbox__main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: ${inboxLineGap}; }
 .thread-item-inbox__top { display: flex; align-items: baseline; justify-content: space-between; gap: ${px(resolve("dim.2"))}; }
-.thread-item-inbox__identity { color: ${cv("text.default")}; ${typoCss(inboxIdentityType)} }
+.thread-item-inbox__identity { ${typoCss(inboxIdentityType)} }
 .thread-item-inbox__time { flex-shrink: 0; color: ${cv("text.muted")}; ${typoCss(inboxTimeType)} }
-.thread-item-inbox__subject { color: ${cv("text.default")}; ${typoCss(subjectType)} }
+.thread-item-inbox__subject { ${typoCss(subjectType)} }
 .thread-item-inbox__preview-row { display: flex; align-items: center; justify-content: space-between; gap: ${px(resolve("dim.2"))}; }
-.thread-item-inbox__preview { flex: 1; min-width: 0; color: ${cv("text.muted")}; ${typoCss(inboxPreviewType)} white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.thread-item-inbox__preview { flex: 1; min-width: 0; ${typoCss(inboxPreviewType)} white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .thread-item-inbox__flag { flex-shrink: 0; width: ${inboxFlagSize}; height: ${inboxFlagSize}; color: ${cv("icon.muted")}; }
 .thread-item-inbox__expires { margin-top: ${px(resolve("dim.0_5"))}; }
 
-.thread-item-inbox:not(.thread-item-inbox--selected):hover { border-color: ${cv("fill.primary")}; }
-.thread-item-inbox:not(.thread-item-inbox--selected):active { background: ${cv("bg.primary")}; border-color: ${cv("fill.primary")}; }
-.thread-item-inbox:focus-visible { outline: ${ringWidth} solid ${cv("border.focus")}; outline-offset: ${ringOffset}; }
-.thread-item-inbox--selected { background: ${cv("bg.primary")}; border-color: ${cv("fill.primary")}; }`;
+${inboxStateCss("unread")}
+${inboxStateCss("read")}
+
+.thread-item-inbox:not(.thread-item-inbox--selected):hover { background: ${cv(inboxList.hoverBg)}; }
+.thread-item-inbox:not(.thread-item-inbox--selected):active { background: ${cv(inboxList.activeBg)}; }
+.thread-item-inbox:focus-visible { outline: ${ringWidth} solid ${cv("border.focus")}; outline-offset: -${ringWidth}; }
+.thread-item-inbox--selected { background: ${cv("bg.primary")}; }`;
 
 function metaRow(label, valueHtml) {
   return `<div class="thread-item__row"><span class="thread-item__label">${label}</span>${valueHtml}</div>`;
@@ -232,8 +250,8 @@ function inboxAvatarMarkup(department) {
 function expiresBadge(label, role) {
   return `<span class="badge badge--role-${role}">${label}</span>`;
 }
-function threadInboxItemMarkup({ department, time, subject, preview, expires, selected = false }) {
-  return `<button class="thread-item-inbox${selected ? " thread-item-inbox--selected" : ""}">
+function threadInboxItemMarkup({ department, time, subject, preview, expires, state = "read", selected = false }) {
+  return `<button class="thread-item-inbox thread-item-inbox--${state}${selected ? " thread-item-inbox--selected" : ""}">
       ${inboxAvatarMarkup(department)}
       <div class="thread-item-inbox__main">
         <div class="thread-item-inbox__top">
@@ -296,53 +314,69 @@ function metadataStories() {
   return defs.map((d) => storyCard(d.title, d.html, d.html, d.note || "")).join("\n");
 }
 
-// ---- Inbox row stories ----
+// ---- Inbox row stories — every row is either unread or read, never neither ----
 function inboxStories() {
   const defs = [
     {
-      title: "default",
-      html: threadInboxItemMarkup({ department: "Academic Advising", time: "3:56 PM", subject: "Question about fall registration", preview: "Hi Alexander, I wanted to check whether …" }),
+      title: "unread",
+      html: threadInboxItemMarkup({ department: "Academic Advising", time: "3:56 PM", subject: "Question about fall registration", preview: "Hi Alexander, I wanted to check whether …", state: "unread" }),
+      note: "surface.default bg, identity/subject at weight.semibold in text.default, preview text.secondary — whiter and higher-contrast than read.",
+    },
+    {
+      title: "read",
+      html: threadInboxItemMarkup({ department: "Academic Advising", time: "3:56 PM", subject: "Question about fall registration", preview: "Hi Alexander, I wanted to check whether …", state: "read" }),
+      note: "surface.page bg (blends into the rail), identity/subject at weight.normal in text.secondary, preview text.muted.",
+    },
+    {
+      title: "selected",
+      html: threadInboxItemMarkup({ department: "Academic Advising", time: "3:56 PM", subject: "Question about fall registration", preview: "Hi Alexander, I wanted to check whether …", state: "read", selected: true }),
+      note: "bg.primary, applied persistently — same meaning as the card shape's selected, minus the border (a flat row has none).",
     },
     {
       title: "with Expires (warning)",
-      html: threadInboxItemMarkup({ department: "Financial Aid", time: "Jul 10", subject: "Course withdrawal deadline", preview: "Hey Alex, I did alright on my quiz b…", expires: expiresBadge("Expires Jul 20", "warning") }),
+      html: threadInboxItemMarkup({ department: "Financial Aid", time: "Jul 10", subject: "Course withdrawal deadline", preview: "Hey Alex, I did alright on my quiz b…", state: "unread", expires: expiresBadge("Expires Jul 20", "warning") }),
       note: "Expires sits on its own row, left-aligned under the preview text — moved here from the live app's right-aligned column next to the timestamp.",
     },
     {
       title: "with Expires (expired)",
-      html: threadInboxItemMarkup({ department: "Academic Advising", time: "Jul 8", subject: "Advisement Outreach", preview: "Thank you for the details about the…", expires: expiresBadge("Expired Jul 10", "danger") }),
+      html: threadInboxItemMarkup({ department: "Academic Advising", time: "Jul 8", subject: "Advisement Outreach", preview: "Thank you for the details about the…", state: "read", expires: expiresBadge("Expired Jul 10", "danger") }),
     },
   ];
-  return defs.map((d) => storyCard(d.title, d.html, d.html, d.note || "")).join("\n");
+  return defs.map((d) => storyCard(d.title, `<div class="thread-list">${d.html}</div>`, d.html, d.note || "")).join("\n");
 }
 
-// ---- Inbox row: in context, a real single-select list matching the live
-// Message Center inbox (avatar/department/subject/preview/flag), minus the
-// "Handled by" row the live app also shows — dropped per explicit request. ----
-const inboxListDemo = `<div class="thread-item-inbox-demo" style="display:flex; flex-direction:column; gap:12px; max-width:400px;">
-      ${threadInboxItemMarkup({ department: "Academic Advising", time: "3:56 PM", subject: "Question about fall registration", preview: "Hi Alexander, I wanted to check whether …", selected: true })}
-      ${threadInboxItemMarkup({ department: "Academic Advising", time: "11:20 AM", subject: "Satisfactory Academic Progress Plan", preview: "Okay I will contact my advisor soon. Tha…" })}
-      ${threadInboxItemMarkup({ department: "Financial Aid", time: "Jul 10", subject: "Course withdrawal deadline", preview: "Hey Alex, I did alright on my quiz b…", expires: expiresBadge("Expires Jul 20", "warning") })}
-      ${threadInboxItemMarkup({ department: "Academic Advising", time: "Jul 8", subject: "Advisement Outreach", preview: "Thank you for the details about the…", expires: expiresBadge("Expired Jul 10", "danger") })}
-      ${threadInboxItemMarkup({ department: "Academic Advising", time: "Jun 30", subject: "Study Session", preview: "That works for me — I can make th…", expires: expiresBadge("Expires Sep 30", "neutral") })}
+// ---- Inbox row: in context — a real single-select, full-bleed list. Clicking
+// a row selects it AND marks it read (the real product behavior: opening a
+// thread clears its unread state), so the unread→read transition is live
+// here, not a forced screenshot pair. ----
+const inboxListDemo = `<div class="thread-list thread-item-inbox-demo" style="max-width:400px; border:1px solid var(${cssVarName(inboxList.divider)}); border-bottom:none;">
+      ${threadInboxItemMarkup({ department: "Academic Advising", time: "3:56 PM", subject: "Question about fall registration", preview: "Hi Alexander, I wanted to check whether …", state: "unread" })}
+      ${threadInboxItemMarkup({ department: "Academic Advising", time: "11:20 AM", subject: "Satisfactory Academic Progress Plan", preview: "Okay I will contact my advisor soon. Tha…", state: "unread" })}
+      ${threadInboxItemMarkup({ department: "Financial Aid", time: "Jul 10", subject: "Course withdrawal deadline", preview: "Hey Alex, I did alright on my quiz b…", state: "read", selected: true, expires: expiresBadge("Expires Jul 20", "warning") })}
+      ${threadInboxItemMarkup({ department: "Academic Advising", time: "Jul 8", subject: "Advisement Outreach", preview: "Thank you for the details about the…", state: "read", expires: expiresBadge("Expired Jul 10", "danger") })}
+      ${threadInboxItemMarkup({ department: "Academic Advising", time: "Jun 30", subject: "Study Session", preview: "That works for me — I can make th…", state: "read", expires: expiresBadge("Expires Sep 30", "neutral") })}
     </div>`;
-const inboxListDemoCode = `<div class="thread-item-inbox-demo">
-  <button class="thread-item-inbox thread-item-inbox--selected">…</button>
-  <button class="thread-item-inbox">…</button>
+const inboxListDemoCode = `<div class="thread-list">
+  <button class="thread-item-inbox thread-item-inbox--unread">…</button>
+  <button class="thread-item-inbox thread-item-inbox--unread">…</button>
+  <button class="thread-item-inbox thread-item-inbox--read thread-item-inbox--selected">…</button>
   …
 </div>
 <script>
+  // click selects the row and marks it read — real single-select
   document.querySelectorAll(".thread-item-inbox-demo .thread-item-inbox").forEach((btn) => {
     btn.addEventListener("click", () => {
       btn.parentElement.querySelectorAll(".thread-item-inbox").forEach((b) => b.classList.remove("thread-item-inbox--selected"));
-      btn.classList.add("thread-item-inbox--selected");
+      btn.classList.remove("thread-item-inbox--unread");
+      btn.classList.add("thread-item-inbox--read", "thread-item-inbox--selected");
     });
   });
 </script>`;
 const inboxJs = `document.querySelectorAll(".thread-item-inbox-demo .thread-item-inbox").forEach((btn) => {
   btn.addEventListener("click", () => {
     btn.parentElement.querySelectorAll(".thread-item-inbox").forEach((b) => b.classList.remove("thread-item-inbox--selected"));
-    btn.classList.add("thread-item-inbox--selected");
+    btn.classList.remove("thread-item-inbox--unread");
+    btn.classList.add("thread-item-inbox--read", "thread-item-inbox--selected");
   });
 });`;
 
@@ -464,7 +498,9 @@ const html = `<!doctype html>
       <div class="row"><b>Metadata rows</b><span>Label:value pairs, same line, spread apart — Department/Received/Regarding/Expires, matching the live app exactly. size.xs both, differentiated by color (muted label, default value) not weight.</span></div>
       <div class="row"><b>Expires uses Badge now</b><span>The live app shows an expiry as bare red-colored text. This component uses a real Badge (role=danger, tint, sm) for that value instead — the thread list was literally one of the driving use cases Badge was built for.</span></div>
       <div class="row"><b>No unread indicator</b><span>Not asked for — deferred rather than built speculatively.</span></div>
-      <div class="row"><b>Inbox row (2nd shape)</b><span>Same shell/states, different content — avatar + department identity + timestamp + subject + preview + flag, matching the Message Center inbox-list screenshot. Avatar is keyed off the department name (not a person), reusing Avatar's own hash(name) % 8 fallback-color logic. No "Handled by" row, and Expires moves to a left-aligned row under the preview text instead of the live app's right-aligned column.</span></div>
+      <div class="row"><b>Inbox row (2nd shape)</b><span>Avatar + department identity + timestamp + subject + preview + flag, matching the Message Center inbox-list screenshot. Avatar is keyed off the department name (not a person), reusing Avatar's own hash(name) % 8 fallback-color logic. No "Handled by" row, and Expires moves to a left-aligned row under the preview text instead of the live app's right-aligned column.</span></div>
+      <div class="row"><b>Full-bleed list (2026-07-24)</b><span>Redesigned per explicit feedback, following the staff-mockup reference: inbox rows are flat, full-bleed rows separated by a 1px divider — no radius, no own border, no gaps between rows. Hover/pressed use the ghost fill.neutralHover/fill.neutralActive progression (a flat row has no border for the card shell's blue hover border to attach to); selected keeps the persistent bg.primary fill, borderless. The card metadata shape above is unchanged.</span></div>
+      <div class="row"><b>unread / read</b><span>Every inbox row is in exactly one of two states: <code class="tok">unread</code> (surface.default bg, semibold text.default identity/subject, text.secondary preview) or <code class="tok">read</code> (surface.page bg, normal-weight text.secondary identity/subject, text.muted preview). Clicking a row in the demo below marks it read for real.</span></div>
     </div>
 
     <h2 class="big-section">CSS</h2>
@@ -492,13 +528,13 @@ const html = `<!doctype html>
     <pre class="code"><code>${esc(listDemoCode)}</code></pre>
 
     <h2 class="big-section">Inbox row</h2>
-    <p class="section-desc">The Message Center inbox-list shape — avatar, department identity + timestamp, subject, preview, flag, optional Expires. Same interactive shell/states as above, different content.</p>
+    <p class="section-desc">The Message Center inbox-list shape — avatar, department identity + timestamp, subject, preview, flag, optional Expires. Full-bleed flat rows with a divider (no card border/radius/gaps), each in an unread or read state.</p>
     <div class="story-grid">
       ${inboxStories()}
     </div>
 
     <h2 class="big-section">Inbox row — in context</h2>
-    <p class="section-desc">A real, single-select inbox list — click any row.</p>
+    <p class="section-desc">A real, single-select inbox list — click any row to select it and mark it read.</p>
     <div class="usage-preview">${inboxListDemo}</div>
     <pre class="code"><code>${esc(inboxListDemoCode)}</code></pre>
   </main>

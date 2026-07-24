@@ -71,7 +71,7 @@ const cv = (tokenPath) => `var(${cssVarName(tokenPath)})`;
 const refPath = (ref) => ref.replace(/[{}]/g, "");
 
 const colorPaths = [
-  "text.default", "text.muted", "text.primary",
+  "text.default", "text.secondary", "text.muted", "text.primary",
   "surface.default", "border.default",
   "avatar.blue.bg", "avatar.blue.text",
   "fill.primary", "fill.primaryHover", "text.onFill",
@@ -84,6 +84,7 @@ const rootVars = renderRootVars([...colorPaths.map((p) => [p, colorValue[p]]), [
 const gap = px(resolve(message.gap.$value));
 const senderGap = px(resolve(message.sender.gap.$value));
 const nameType = resolveToken(message.sender.name);
+const nameColor = refPath(message.sender.nameColor.$value);
 const metaType = resolveToken(message.sender.meta);
 const bodyGap = px(resolve(message.body.gap.$value));
 const paragraphType = resolveToken(get(message.body.paragraph.$value));
@@ -112,11 +113,12 @@ function typoCss(t) {
   return `font-weight: ${t.fontWeight}; font-size: ${px(t.fontSize)}; line-height: ${t.lineHeight};`;
 }
 
-// ---- Avatar, resolved from its own tokens (not retyped) — only the base
-// size + one identity hue is needed for the sender-row demo ----
+// ---- Avatar, resolved from its own tokens (not retyped) — the SM size
+// (32px) per the 2026-07-24 sender-row rebalance (base 40px read top-heavy
+// next to one small text line) + one identity hue for the demo ----
 const avatarRadius = px(resolve(avatar.radius.$value));
-const avatarDiameter = px(resolve(avatar.size.base.diameter.$value));
-const avatarInitialsType = resolveToken(avatar.size.base.initials);
+const avatarDiameter = px(resolve(avatar.size.sm.diameter.$value));
+const avatarInitialsType = resolveToken(avatar.size.sm.initials);
 
 // ---- Button primary, resolved from its own tokens (not retyped) — only the
 // base-size recipe is needed for the CTA demo ----
@@ -150,7 +152,7 @@ const css = `${rootVars}
 .message { display: flex; flex-direction: column; gap: ${gap}; font-family: ${cv("family.sans")}; max-width: 640px; }
 .message__sender { display: flex; align-items: center; gap: ${senderGap}; }
 .message__sender-line { margin: 0; }
-.message__name { color: ${cv("text.default")}; ${typoCss(nameType)} }
+.message__name { color: ${cv(nameColor)}; ${typoCss(nameType)} }
 .message__meta { color: ${cv("text.muted")}; ${typoCss(metaType)} }
 
 .message__body { display: flex; flex-direction: column; gap: ${bodyGap}; }
@@ -216,7 +218,7 @@ function anatomyStories() {
     {
       title: "Sender row",
       html: `<div class="message">${senderMarkup("Alexander Robinson", "Dec 19, 2:54 PM")}</div>`,
-      note: "Avatar (its own component, resolved not retyped) + one line: name (semibold) + \" -- \" + timestamp (muted). Matches the live app exactly — not two stacked lines.",
+      note: "Avatar (its own component, resolved not retyped — SM size, 32px) + one line: name (semibold, text.secondary) + \" -- \" + timestamp (muted). Rebalanced 2026-07-24: smaller avatar + gray name so the sender line stops competing with the body.",
     },
     {
       title: "Paragraph + inline emphasis",

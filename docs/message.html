@@ -71,6 +71,7 @@
 
   :root {
   --tok-text-default: #181818;
+  --tok-text-secondary: #696969;
   --tok-text-muted: #808080;
   --tok-text-primary: #0468c4;
   --tok-surface-default: #ffffff;
@@ -88,7 +89,7 @@
 .message { display: flex; flex-direction: column; gap: 12px; font-family: var(--tok-family-sans); max-width: 640px; }
 .message__sender { display: flex; align-items: center; gap: 8px; }
 .message__sender-line { margin: 0; }
-.message__name { color: var(--tok-text-default); font-weight: 600; font-size: 12px; line-height: 1.2; }
+.message__name { color: var(--tok-text-secondary); font-weight: 600; font-size: 12px; line-height: 1.2; }
 .message__meta { color: var(--tok-text-muted); font-weight: 400; font-size: 12px; line-height: 1.2; }
 
 .message__body { display: flex; flex-direction: column; gap: 12px; }
@@ -111,8 +112,8 @@
 
 .message--card { background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); border-radius: 8px; padding: 16px; }
 
-.avatar { box-sizing: border-box; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; width: 40px; height: 40px; background: var(--tok-avatar-blue-bg); user-select: none; }
-.avatar__initials { color: var(--tok-avatar-blue-text); text-transform: uppercase; font-weight: 600; font-size: 14px; line-height: 1; }
+.avatar { box-sizing: border-box; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; width: 32px; height: 32px; background: var(--tok-avatar-blue-bg); user-select: none; }
+.avatar__initials { color: var(--tok-avatar-blue-text); text-transform: uppercase; font-weight: 600; font-size: 12px; line-height: 1; }
 
 .btn { display: inline-flex; align-items: center; justify-content: center; height: 40px; padding: 0 12px; border: none; border-radius: 8px; background: var(--tok-fill-primary); color: var(--tok-text-on-fill); font-weight: 600; font-size: 14px; line-height: 1.4; cursor: pointer; }
 .btn:hover { background: var(--tok-fill-primary-hover); }
@@ -208,6 +209,7 @@
     <h2 class="big-section">CSS</h2>
     <pre class="code"><code>:root {
   --tok-text-default: #181818;
+  --tok-text-secondary: #696969;
   --tok-text-muted: #808080;
   --tok-text-primary: #0468c4;
   --tok-surface-default: #ffffff;
@@ -225,7 +227,7 @@
 .message { display: flex; flex-direction: column; gap: 12px; font-family: var(--tok-family-sans); max-width: 640px; }
 .message__sender { display: flex; align-items: center; gap: 8px; }
 .message__sender-line { margin: 0; }
-.message__name { color: var(--tok-text-default); font-weight: 600; font-size: 12px; line-height: 1.2; }
+.message__name { color: var(--tok-text-secondary); font-weight: 600; font-size: 12px; line-height: 1.2; }
 .message__meta { color: var(--tok-text-muted); font-weight: 400; font-size: 12px; line-height: 1.2; }
 
 .message__body { display: flex; flex-direction: column; gap: 12px; }
@@ -248,8 +250,8 @@
 
 .message--card { background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); border-radius: 8px; padding: 16px; }
 
-.avatar { box-sizing: border-box; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; width: 40px; height: 40px; background: var(--tok-avatar-blue-bg); user-select: none; }
-.avatar__initials { color: var(--tok-avatar-blue-text); text-transform: uppercase; font-weight: 600; font-size: 14px; line-height: 1; }
+.avatar { box-sizing: border-box; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; width: 32px; height: 32px; background: var(--tok-avatar-blue-bg); user-select: none; }
+.avatar__initials { color: var(--tok-avatar-blue-text); text-transform: uppercase; font-weight: 600; font-size: 12px; line-height: 1; }
 
 .btn { display: inline-flex; align-items: center; justify-content: center; height: 40px; padding: 0 12px; border: none; border-radius: 8px; background: var(--tok-fill-primary); color: var(--tok-text-on-fill); font-weight: 600; font-size: 14px; line-height: 1.4; cursor: pointer; }
 .btn:hover { background: var(--tok-fill-primary-hover); }</code></pre>
@@ -268,7 +270,7 @@
       &lt;span class="avatar"&gt;&lt;span class="avatar__initials"&gt;AR&lt;/span&gt;&lt;/span&gt;
       &lt;p class="message__sender-line"&gt;&lt;span class="message__name"&gt;Alexander Robinson&lt;/span&gt;&lt;span class="message__meta"&gt; -- Dec 19, 2:54 PM&lt;/span&gt;&lt;/p&gt;
     &lt;/div&gt;&lt;/div&gt;</code></pre>
-        <p class="story-note">Avatar (its own component, resolved not retyped) + one line: name (semibold) + " -- " + timestamp (muted). Matches the live app exactly — not two stacked lines.</p>
+        <p class="story-note">Avatar (its own component, resolved not retyped — SM size, 32px) + one line: name (semibold, text.secondary) + " -- " + timestamp (muted). Rebalanced 2026-07-24: smaller avatar + gray name so the sender line stops competing with the body.</p>
       </div>
 
       <div class="story">

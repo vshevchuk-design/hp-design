@@ -4,7 +4,7 @@
       "$description": "The fourth piece of the Message/Bubble/Attachment family (see the approved plan) and the actual centerpiece of the original ask — the rich, institution-authored content block (headings-as-bold-labels, mixed text, bulleted links, images, one or more file Attachments, one CTA button). Chrome default is NONE — a plain block, sender row (Avatar + name + timestamp, one line, matching the real live desktop Message Center app exactly) above a body, no bubble shape, no border, no fill. This is a deliberate choice over the staff-mobile mockups' white-bubble chrome for the same content: the live product is the source of truth, the mockup's chrome is documented as an optional 'card' variant below, not built as the default. Deliberately NOT the same component as Bubble (the plain-text-only reply sibling, not yet built) — content-type split, not sender-based, confirmed against the actual screenshots: even a staff member's own short reply renders as a Bubble, and this rich block is reserved for genuinely formatted content. Sizing/typography mostly reuses existing pieces wholesale (Avatar, Button for the CTA, text-style.body-base/link-base) rather than recomposing them — only the layout rhythm (gaps) and two small pieces (sender-row typography, list spacing) are new.",
       "gap": { "$type": "dimension", "$value": "{dim.3}" },
       "sender": {
-        "$description": "Avatar + a single text line ('Name -- Dec 19, 2:54 PM'), matching the live app exactly — not two stacked lines.",
+        "$description": "Avatar + a single text line ('Name -- Dec 19, 2:54 PM') — not two stacked lines. 2026-07-24 rebalance per explicit feedback: the avatar is the SM size (32px, resolved from avatar.tokens.json), not base — a 40px avatar next to one small text line read top-heavy — and the name is text.secondary, not text.default, so the sender line stops competing with the body for attention (the timestamp stays text.muted, one step quieter still).",
         "gap": { "$type": "dimension", "$value": "{dim.2}" },
         "name": {
           "$type": "typography",
@@ -16,7 +16,7 @@
             "letterSpacing": "{tracking.normal}"
           }
         },
-        "nameColor": { "$type": "color", "$value": "{text.default}" },
+        "nameColor": { "$type": "color", "$value": "{text.secondary}" },
         "meta": {
           "$type": "typography",
           "$value": {
@@ -56,7 +56,7 @@
       },
       "chrome": {
         "card": {
-          "$description": "Optional, NOT the default — reuses Card's own exact recipe (surface.default + border.default + radius.default + dim.4 padding) rather than inventing a lookalike. Use only when a surface genuinely needs the mobile-mockup-style bubble look; the live product's own default is chromeless.",
+          "$description": "Optional chrome — reuses Card's own exact recipe (surface.default + border.default + radius.default + dim.4 padding) rather than inventing a lookalike. The component default remains chromeless, but the Message Center thread view DOES use this variant per explicit 2026-07-24 feedback (a chromeless institution message floating on the page read oddly there) — partially reversing the earlier 'live product outranks mockup' call for that one surface.",
           "bg": { "$type": "color", "$value": "{surface.default}" },
           "border": { "$type": "color", "$value": "{border.default}" },
           "radius": { "$type": "dimension", "$value": "{radius.default}" },

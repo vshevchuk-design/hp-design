@@ -84,18 +84,27 @@
 .listbox__checkmark { width: 16px; height: 16px; margin-left: auto; color: var(--tok-fill-primary); flex-shrink: 0; display: none; }
 .listbox__option--selected .listbox__checkmark { display: block; }
 
-.thread-item-inbox { box-sizing: border-box; width: 100%; text-align: left; appearance: none; cursor: pointer; display: flex; align-items: flex-start; gap: 12px; padding: 16px; border-radius: 8px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); font-family: var(--tok-family-sans); }
+.thread-list { display: flex; flex-direction: column; }
+.thread-item-inbox { box-sizing: border-box; width: 100%; text-align: left; appearance: none; cursor: pointer; display: flex; align-items: flex-start; gap: 12px; padding: 16px; border: none; border-bottom: 1px solid var(--tok-border-default); font-family: var(--tok-family-sans); }
 .thread-item-inbox__main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
 .thread-item-inbox__top { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
-.thread-item-inbox__identity { color: var(--tok-text-default); font-weight: 600; font-size: 12px; line-height: 1.2; }
+.thread-item-inbox__identity { font-weight: 600; font-size: 12px; line-height: 1.2; }
 .thread-item-inbox__time { flex-shrink: 0; color: var(--tok-text-muted); font-weight: 400; font-size: 10px; line-height: 1.2; }
-.thread-item-inbox__subject { color: var(--tok-text-default); font-weight: 600; font-size: 14px; line-height: 1.4; }
+.thread-item-inbox__subject { font-weight: 600; font-size: 14px; line-height: 1.4; }
 .thread-item-inbox__preview { color: var(--tok-text-muted); font-weight: 400; font-size: 12px; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .thread-item-inbox__expires { margin-top: 2px; }
-.thread-item-inbox:not(.thread-item-inbox--selected):hover { border-color: var(--tok-fill-primary); }
-.thread-item-inbox:not(.thread-item-inbox--selected):active { background: var(--tok-bg-primary); border-color: var(--tok-fill-primary); }
-.thread-item-inbox:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
-.thread-item-inbox--selected { background: var(--tok-bg-primary); border-color: var(--tok-fill-primary); }
+.thread-item-inbox--unread { background: var(--tok-surface-default); }
+.thread-item-inbox--unread .thread-item-inbox__identity { color: var(--tok-text-default); font-weight: 600; }
+.thread-item-inbox--unread .thread-item-inbox__subject { color: var(--tok-text-default); font-weight: 600; }
+.thread-item-inbox--unread .thread-item-inbox__preview { color: var(--tok-text-secondary); }
+.thread-item-inbox--read { background: var(--tok-surface-sunken); }
+.thread-item-inbox--read .thread-item-inbox__identity { color: var(--tok-text-secondary); font-weight: 400; }
+.thread-item-inbox--read .thread-item-inbox__subject { color: var(--tok-text-secondary); font-weight: 400; }
+.thread-item-inbox--read .thread-item-inbox__preview { color: var(--tok-text-muted); }
+.thread-item-inbox:not(.thread-item-inbox--selected):hover { background: var(--tok-fill-neutral-hover); }
+.thread-item-inbox:not(.thread-item-inbox--selected):active { background: var(--tok-fill-neutral-active); }
+.thread-item-inbox:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: -4px; }
+.thread-item-inbox--selected { background: var(--tok-bg-primary); }
 
 .badge { box-sizing: border-box; display: inline-flex; align-items: center; border-radius: 999px; height: 16px; padding: 0 4px; font-weight: 600; font-size: 10px; line-height: 1; white-space: nowrap; }
 .badge--role-warning { background: var(--tok-bg-warning); color: var(--tok-text-warning); }
@@ -103,6 +112,8 @@
 
 .avatar { box-sizing: border-box; position: relative; display: inline-flex; flex-shrink: 0; align-items: center; justify-content: center; overflow: hidden; border-radius: 999px; width: 40px; height: 40px; font-family: var(--tok-family-sans); user-select: none; }
 .avatar__initials { text-transform: uppercase; font-weight: 600; font-size: 14px; line-height: 1; }
+.avatar--sm { width: 32px; height: 32px; }
+.avatar--sm .avatar__initials { font-weight: 600; font-size: 12px; line-height: 1; }
 .avatar--teal { background: var(--tok-avatar-teal-bg); }
 .avatar--teal .avatar__initials { color: var(--tok-avatar-teal-text); }
 .avatar--orange { background: var(--tok-avatar-orange-bg); }
@@ -119,8 +130,9 @@
 .message { display: flex; flex-direction: column; gap: 12px; font-family: var(--tok-family-sans); max-width: 640px; }
 .message__sender { display: flex; align-items: center; gap: 8px; }
 .message__sender-line { margin: 0; }
-.message__name { color: var(--tok-text-default); font-weight: 600; font-size: 12px; line-height: 1.2; }
+.message__name { color: var(--tok-text-secondary); font-weight: 600; font-size: 12px; line-height: 1.2; }
 .message__meta { color: var(--tok-text-muted); font-weight: 400; font-size: 12px; line-height: 1.2; }
+.message--card { background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); border-radius: 8px; padding: 16px; }
 .message__body { display: flex; flex-direction: column; gap: 12px; }
 .message__body p { margin: 0; color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; }
 .message__body strong { font-weight: 600; }
@@ -143,7 +155,7 @@
 .bubble-row--other { align-self: flex-start; align-items: flex-start; }
 .bubble-sender { display: flex; align-items: center; gap: 8px; }
 .bubble-sender__text { margin: 0; font-size: 12px; }
-.bubble-sender__name { color: var(--tok-text-default); font-weight: 600; }
+.bubble-sender__name { color: var(--tok-text-secondary); font-weight: 600; }
 .bubble-sender__meta { color: var(--tok-text-muted); }
 .bubble { box-sizing: border-box; display: flex; flex-direction: column; gap: 6px; padding: 8px 12px; border-radius: 16px; }
 .bubble p { margin: 0; font-weight: 400; font-size: 14px; line-height: 1.4; }
@@ -206,7 +218,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .mc-rail__controls .select { flex-shrink: 0; min-width: 120px; }
 .mc-rail__count { padding: 0 16px; display: flex; flex-direction: column; gap: 8px; }
 .mc-count { color: var(--tok-text-muted); font-weight: 700; font-size: 12px; line-height: 1.4; text-transform: uppercase; }
-.mc-list { flex: 1; overflow-y: auto; padding: 12px 16px 16px; display: flex; flex-direction: column; gap: 12px; }
+.mc-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
 .mc-list[hidden] { display: none; }
 
 .mc-empty { flex: 1; display: flex; align-items: center; justify-content: center; }
@@ -272,7 +284,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         <hr class="separator" />
       </div>
       <div class="mc-list" data-list="inbox">
-        <button class="thread-item-inbox" data-thread="winter" data-idx="0" data-subject="Winter Intersession" data-department="Academic Advising">
+        <button class="thread-item-inbox thread-item-inbox--unread" data-thread="winter" data-idx="0" data-subject="Winter Intersession" data-department="Academic Advising">
         <span class="avatar avatar--teal" role="img" aria-label="Academic Advising"><span class="avatar__initials">AA</span></span>
         <div class="thread-item-inbox__main">
           <div class="thread-item-inbox__top">
@@ -284,7 +296,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           
         </div>
       </button>
-        <button class="thread-item-inbox" data-thread="hello" data-idx="1" data-subject="Hello World" data-department="Academic Advising">
+        <button class="thread-item-inbox thread-item-inbox--unread" data-thread="hello" data-idx="1" data-subject="Hello World" data-department="Academic Advising">
         <span class="avatar avatar--teal" role="img" aria-label="Academic Advising"><span class="avatar__initials">AA</span></span>
         <div class="thread-item-inbox__main">
           <div class="thread-item-inbox__top">
@@ -296,7 +308,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           
         </div>
       </button>
-        <button class="thread-item-inbox" data-thread="registrar" data-idx="2" data-subject="Office of the Registrar Message" data-department="Office of the Registrar">
+        <button class="thread-item-inbox thread-item-inbox--read" data-thread="registrar" data-idx="2" data-subject="Office of the Registrar Message" data-department="Office of the Registrar">
         <span class="avatar avatar--orange" role="img" aria-label="Office of the Registrar"><span class="avatar__initials">OR</span></span>
         <div class="thread-item-inbox__main">
           <div class="thread-item-inbox__top">
@@ -308,7 +320,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           
         </div>
       </button>
-        <button class="thread-item-inbox" data-thread="waiver" data-idx="3" data-subject="Requirement Waiver Request" data-department="English Dept">
+        <button class="thread-item-inbox thread-item-inbox--read" data-thread="waiver" data-idx="3" data-subject="Requirement Waiver Request" data-department="English Dept">
         <span class="avatar avatar--red" role="img" aria-label="English Dept"><span class="avatar__initials">ED</span></span>
         <div class="thread-item-inbox__main">
           <div class="thread-item-inbox__top">
@@ -320,7 +332,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           
         </div>
       </button>
-        <button class="thread-item-inbox" data-thread="pell" data-idx="4" data-subject="Close to Pell Lifetime Limits" data-department="Financial Aid">
+        <button class="thread-item-inbox thread-item-inbox--read" data-thread="pell" data-idx="4" data-subject="Close to Pell Lifetime Limits" data-department="Financial Aid">
         <span class="avatar avatar--amber" role="img" aria-label="Financial Aid"><span class="avatar__initials">FA</span></span>
         <div class="thread-item-inbox__main">
           <div class="thread-item-inbox__top">
@@ -332,7 +344,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <div class="thread-item-inbox__expires"><span class="badge badge--role-warning">Expires 03/01/2027</span></div>
         </div>
       </button>
-        <button class="thread-item-inbox" data-thread="important" data-idx="5" data-subject="Important Information" data-department="Financial Aid">
+        <button class="thread-item-inbox thread-item-inbox--read" data-thread="important" data-idx="5" data-subject="Important Information" data-department="Financial Aid">
         <span class="avatar avatar--amber" role="img" aria-label="Financial Aid"><span class="avatar__initials">FA</span></span>
         <div class="thread-item-inbox__main">
           <div class="thread-item-inbox__top">
@@ -346,7 +358,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
       </button>
       </div>
       <div class="mc-list" data-list="archived" hidden>
-        <button class="thread-item-inbox" data-thread="outreach" data-idx="6" data-subject="Advisement Outreach" data-department="Academic Advising">
+        <button class="thread-item-inbox thread-item-inbox--read" data-thread="outreach" data-idx="6" data-subject="Advisement Outreach" data-department="Academic Advising">
         <span class="avatar avatar--teal" role="img" aria-label="Academic Advising"><span class="avatar__initials">AA</span></span>
         <div class="thread-item-inbox__main">
           <div class="thread-item-inbox__top">
@@ -358,7 +370,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <div class="thread-item-inbox__expires"><span class="badge badge--role-danger">Expired Jul 10</span></div>
         </div>
       </button>
-        <button class="thread-item-inbox" data-thread="study" data-idx="7" data-subject="Study Session" data-department="Academic Advising">
+        <button class="thread-item-inbox thread-item-inbox--read" data-thread="study" data-idx="7" data-subject="Study Session" data-department="Academic Advising">
         <span class="avatar avatar--teal" role="img" aria-label="Academic Advising"><span class="avatar__initials">AA</span></span>
         <div class="thread-item-inbox__main">
           <div class="thread-item-inbox__top">
@@ -389,9 +401,9 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <div class="mc-thread__meta-item"><span class="mc-thread__meta-label">Institution</span><span class="mc-thread__meta-value">PeopleSoft University</span></div>
         </div>
         <div class="mc-thread__scroll">
-          <div class="message">
+          <div class="message message--card">
           <div class="message__sender">
-            <span class="avatar avatar--violet" role="img" aria-label="Alexander Robinson"><span class="avatar__initials">AR</span></span>
+            <span class="avatar avatar--violet avatar--sm" role="img" aria-label="Alexander Robinson"><span class="avatar__initials">AR</span></span>
             <p class="message__sender-line"><span class="message__name">Alexander Robinson</span><span class="message__meta"> -- Dec 19, 2:54 PM</span></p>
           </div>
           <div class="message__body">
@@ -408,7 +420,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           </div>
         </div>
           <div class="bubble-row bubble-row--self">
-          <div class="bubble-sender"><p class="bubble-sender__text"><span class="bubble-sender__name">George Amalor</span> <span class="bubble-sender__meta">-- Jul 22, 5:42 AM</span></p><span class="avatar avatar--orange" role="img" aria-label="George Amalor"><span class="avatar__initials">GA</span></span></div>
+          <div class="bubble-sender"><p class="bubble-sender__text"><span class="bubble-sender__name">George Amalor</span> <span class="bubble-sender__meta">-- Jul 22, 5:42 AM</span></p><span class="avatar avatar--orange avatar--sm" role="img" aria-label="George Amalor"><span class="avatar__initials">GA</span></span></div>
           <div class="bubble bubble--self bubble--tint"><p>Thank you — I will look into registering for the Winter term.</p></div>
         </div>
         </div>
@@ -437,9 +449,9 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <div class="mc-thread__meta-item"><span class="mc-thread__meta-label">Institution</span><span class="mc-thread__meta-value">PeopleSoft University</span></div>
         </div>
         <div class="mc-thread__scroll">
-          <div class="message">
+          <div class="message message--card">
           <div class="message__sender">
-            <span class="avatar avatar--violet" role="img" aria-label="Alexander Robinson"><span class="avatar__initials">AR</span></span>
+            <span class="avatar avatar--violet avatar--sm" role="img" aria-label="Alexander Robinson"><span class="avatar__initials">AR</span></span>
             <p class="message__sender-line"><span class="message__name">Alexander Robinson</span><span class="message__meta"> -- Dec 18, 11:02 AM</span></p>
           </div>
           <div class="message__body">
@@ -472,9 +484,9 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <div class="mc-thread__meta-item"><span class="mc-thread__meta-label">Institution</span><span class="mc-thread__meta-value">PeopleSoft University</span></div>
         </div>
         <div class="mc-thread__scroll">
-          <div class="message">
+          <div class="message message--card">
           <div class="message__sender">
-            <span class="avatar avatar--magenta" role="img" aria-label="Betty Locherty"><span class="avatar__initials">BL</span></span>
+            <span class="avatar avatar--magenta avatar--sm" role="img" aria-label="Betty Locherty"><span class="avatar__initials">BL</span></span>
             <p class="message__sender-line"><span class="message__name">Betty Locherty</span><span class="message__meta"> -- Dec 18, 9:15 AM</span></p>
           </div>
           <div class="message__body">
@@ -517,11 +529,11 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         </div>
         <div class="mc-thread__scroll">
           <div class="bubble-row bubble-row--other">
-          <div class="bubble-sender"><span class="avatar avatar--magenta" role="img" aria-label="Ava Robinson"><span class="avatar__initials">AR</span></span><p class="bubble-sender__text"><span class="bubble-sender__name">Ava Robinson</span> <span class="bubble-sender__meta">-- Mar 02, 1:05 PM</span></p></div>
+          <div class="bubble-sender"><span class="avatar avatar--magenta avatar--sm" role="img" aria-label="Ava Robinson"><span class="avatar__initials">AR</span></span><p class="bubble-sender__text"><span class="bubble-sender__name">Ava Robinson</span> <span class="bubble-sender__meta">-- Mar 02, 1:05 PM</span></p></div>
           <div class="bubble bubble--other"><p>Please submit your waiver request to Enrollment Services.</p></div>
         </div>
           <div class="bubble-row bubble-row--self">
-          <div class="bubble-sender"><p class="bubble-sender__text"><span class="bubble-sender__name">George Amalor</span> <span class="bubble-sender__meta">-- Mar 02, 1:08 PM</span></p><span class="avatar avatar--orange" role="img" aria-label="George Amalor"><span class="avatar__initials">GA</span></span></div>
+          <div class="bubble-sender"><p class="bubble-sender__text"><span class="bubble-sender__name">George Amalor</span> <span class="bubble-sender__meta">-- Mar 02, 1:08 PM</span></p><span class="avatar avatar--orange avatar--sm" role="img" aria-label="George Amalor"><span class="avatar__initials">GA</span></span></div>
           <div class="bubble bubble--self bubble--tint"><p>Thanks for letting me know. I will submit it today.</p><a class="attachment" href="#" download>
               <span class="attachment__media"><svg class="attachment__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M6 2c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6H6zm7 7V3.5L18.5 9H13z"/></svg></span>
               <span class="attachment__content">
@@ -557,9 +569,9 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <div class="mc-thread__meta-item"><span class="mc-thread__meta-label">Institution</span><span class="mc-thread__meta-value">PeopleSoft University</span></div>
         </div>
         <div class="mc-thread__scroll">
-          <div class="message">
+          <div class="message message--card">
           <div class="message__sender">
-            <span class="avatar avatar--magenta" role="img" aria-label="Betty Locherty"><span class="avatar__initials">BL</span></span>
+            <span class="avatar avatar--magenta avatar--sm" role="img" aria-label="Betty Locherty"><span class="avatar__initials">BL</span></span>
             <p class="message__sender-line"><span class="message__name">Betty Locherty</span><span class="message__meta"> -- Mar 01, 2:55 PM</span></p>
           </div>
           <div class="message__body">
@@ -600,9 +612,9 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <div class="mc-thread__meta-item"><span class="mc-thread__meta-label">Institution</span><span class="mc-thread__meta-value">PeopleSoft University</span></div>
         </div>
         <div class="mc-thread__scroll">
-          <div class="message">
+          <div class="message message--card">
           <div class="message__sender">
-            <span class="avatar avatar--magenta" role="img" aria-label="Betty Locherty"><span class="avatar__initials">BL</span></span>
+            <span class="avatar avatar--magenta avatar--sm" role="img" aria-label="Betty Locherty"><span class="avatar__initials">BL</span></span>
             <p class="message__sender-line"><span class="message__name">Betty Locherty</span><span class="message__meta"> -- Feb 27, 8:40 AM</span></p>
           </div>
           <div class="message__body">
@@ -640,9 +652,9 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <div class="mc-thread__meta-item"><span class="mc-thread__meta-label">Institution</span><span class="mc-thread__meta-value">PeopleSoft University</span></div>
         </div>
         <div class="mc-thread__scroll">
-          <div class="message">
+          <div class="message message--card">
           <div class="message__sender">
-            <span class="avatar avatar--violet" role="img" aria-label="Alexander Robinson"><span class="avatar__initials">AR</span></span>
+            <span class="avatar avatar--violet avatar--sm" role="img" aria-label="Alexander Robinson"><span class="avatar__initials">AR</span></span>
             <p class="message__sender-line"><span class="message__name">Alexander Robinson</span><span class="message__meta"> -- Jul 08, 10:20 AM</span></p>
           </div>
           <div class="message__body">
@@ -676,11 +688,11 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         </div>
         <div class="mc-thread__scroll">
           <div class="bubble-row bubble-row--other">
-          <div class="bubble-sender"><span class="avatar avatar--violet" role="img" aria-label="Alexander Robinson"><span class="avatar__initials">AR</span></span><p class="bubble-sender__text"><span class="bubble-sender__name">Alexander Robinson</span> <span class="bubble-sender__meta">-- Jun 30, 3:12 PM</span></p></div>
+          <div class="bubble-sender"><span class="avatar avatar--violet avatar--sm" role="img" aria-label="Alexander Robinson"><span class="avatar__initials">AR</span></span><p class="bubble-sender__text"><span class="bubble-sender__name">Alexander Robinson</span> <span class="bubble-sender__meta">-- Jun 30, 3:12 PM</span></p></div>
           <div class="bubble bubble--other"><p>We are hosting a study session on Thursday at 4 PM in the library, room 204.</p></div>
         </div>
           <div class="bubble-row bubble-row--self">
-          <div class="bubble-sender"><p class="bubble-sender__text"><span class="bubble-sender__name">George Amalor</span> <span class="bubble-sender__meta">-- Jun 30, 3:20 PM</span></p><span class="avatar avatar--orange" role="img" aria-label="George Amalor"><span class="avatar__initials">GA</span></span></div>
+          <div class="bubble-sender"><p class="bubble-sender__text"><span class="bubble-sender__name">George Amalor</span> <span class="bubble-sender__meta">-- Jun 30, 3:20 PM</span></p><span class="avatar avatar--orange avatar--sm" role="img" aria-label="George Amalor"><span class="avatar__initials">GA</span></span></div>
           <div class="bubble bubble--self bubble--tint"><p>That works for me — I can make that time.</p></div>
         </div>
         </div>
@@ -726,11 +738,13 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     rows("inbox").concat(rows("archived")).forEach(function (r) { r.classList.remove("thread-item-inbox--selected"); });
   }
 
-  // thread selection — single-select across both lists
+  // thread selection — single-select across both lists; opening a thread
+  // also marks it read (removes the unread state), the real product behavior
   document.querySelectorAll(".thread-item-inbox").forEach(function (row) {
     row.addEventListener("click", function () {
       rows("inbox").concat(rows("archived")).forEach(function (r) { r.classList.remove("thread-item-inbox--selected"); });
-      row.classList.add("thread-item-inbox--selected");
+      row.classList.remove("thread-item-inbox--unread");
+      row.classList.add("thread-item-inbox--read", "thread-item-inbox--selected");
       showPane(row.dataset.thread);
       mc.classList.add("mc--thread-open");
     });
@@ -809,7 +823,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   });
 
   // composer — Send appends a real self Bubble (tint, the default)
-  var SELF_SENDER = "<div class=\"bubble-sender\"><p class=\"bubble-sender__text\"><span class=\"bubble-sender__name\">George Amalor</span> <span class=\"bubble-sender__meta\">-- Just now</span></p><span class=\"avatar avatar--orange\" role=\"img\" aria-label=\"George Amalor\"><span class=\"avatar__initials\">GA</span></span></div>";
+  var SELF_SENDER = "<div class=\"bubble-sender\"><p class=\"bubble-sender__text\"><span class=\"bubble-sender__name\">George Amalor</span> <span class=\"bubble-sender__meta\">-- Just now</span></p><span class=\"avatar avatar--orange avatar--sm\" role=\"img\" aria-label=\"George Amalor\"><span class=\"avatar__initials\">GA</span></span></div>";
   document.querySelectorAll(".mc-composer").forEach(function (form) {
     form.addEventListener("submit", function (e) {
       e.preventDefault();
