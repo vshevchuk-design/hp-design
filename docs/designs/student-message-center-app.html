@@ -124,7 +124,9 @@
 .thread-item-inbox:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: -4px; }
 .thread-item-inbox--selected { background: var(--tok-bg-primary); }
 
-.badge { box-sizing: border-box; display: inline-flex; align-items: center; border-radius: 999px; height: 16px; padding: 0 4px; font-weight: 600; font-size: 10px; line-height: 1; white-space: nowrap; }
+.badge { box-sizing: border-box; display: inline-flex; align-items: center; border-radius: 999px; white-space: nowrap; }
+.badge--sm { height: 16px; padding: 0 4px; font-weight: 600; font-size: 10px; line-height: 1; }
+.badge--base { height: 20px; padding: 0 6px; font-weight: 600; font-size: 12px; line-height: 1; }
 .badge--role-warning { background: var(--tok-bg-warning); color: var(--tok-text-warning); }
 .badge--role-danger { background: var(--tok-bg-danger); color: var(--tok-text-danger); }
 .badge--role-neutral { background: var(--tok-bg-neutral); color: var(--tok-text-default); }
@@ -278,11 +280,10 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .mc-thread__back { order: 1; }
 .mc-thread__actions { order: 2; margin-left: auto; display: flex; gap: 8px; }
 .mc-thread__subject { order: 3; width: 100%; min-width: 0; margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 18px; line-height: 1.4; }
-.mc-thread__tags { order: 4; width: 100%; display: flex; flex-wrap: nowrap; overflow-x: auto; gap: 6px; }
-.mc-thread__tag { display: inline-flex; align-items: center; gap: 4px; background: var(--tok-bg-neutral); border-radius: 999px; padding: 4px 12px; color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; white-space: nowrap; }
-/* on mobile the pills show only the values — "Academic Advising" reads fine
-   without a "Department:" prefix at that width; prefixes return at >=768 */
-.mc-thread__tag-label { display: none; color: var(--tok-text-muted); }
+/* value-only pills at every width (no "Department:" prefixes), plus real
+   Badges (base size) for the thread's Expires and Archived states */
+.mc-thread__tags { order: 4; width: 100%; display: flex; align-items: center; flex-wrap: nowrap; overflow-x: auto; gap: 6px; }
+.mc-thread__tag { display: inline-flex; align-items: center; background: var(--tok-bg-neutral); border-radius: 999px; padding: 4px 12px; color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; white-space: nowrap; }
 .mc-thread__scroll { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 24px; }
 .mc-thread__composer { flex-shrink: 0; padding: 12px 16px 16px; }
 
@@ -298,7 +299,6 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   .mc__rail, .mc--thread-open .mc__rail { display: flex; flex: none; width: 320px; border-right: 1px solid var(--tok-border-default); }
   .mc__reading { display: flex; }
   .mc-thread__back { display: none; }
-  .mc-thread__tag-label { display: inline; }
   /* subject shares the row with the actions on every split view — a long
      subject simply wraps to a second line instead of dropping below the
      buttons (an actions-only top row read as a hole on the tablet) */
@@ -365,7 +365,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
             <span class="thread-item-inbox__preview">Are you looking to stay on track or get ahead in your degree progress?</span>
             <button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
           </div>
-          <div class="thread-item-inbox__expires thread-item-inbox__expires--scope-only"><span class="badge badge--role-neutral thread-item-inbox__scope">Inbox</span></div>
+          <div class="thread-item-inbox__expires thread-item-inbox__expires--scope-only"><span class="badge badge--sm badge--role-neutral thread-item-inbox__scope">Inbox</span></div>
         </div>
       </div>
         <div class="thread-item-inbox thread-item-inbox--unread" role="button" tabindex="0" data-thread="hello" data-idx="1" data-subject="Hello World" data-department="Academic Advising">
@@ -380,7 +380,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
             <span class="thread-item-inbox__preview">This is a test announcement from Academic Advising.</span>
             <button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
           </div>
-          <div class="thread-item-inbox__expires thread-item-inbox__expires--scope-only"><span class="badge badge--role-neutral thread-item-inbox__scope">Inbox</span></div>
+          <div class="thread-item-inbox__expires thread-item-inbox__expires--scope-only"><span class="badge badge--sm badge--role-neutral thread-item-inbox__scope">Inbox</span></div>
         </div>
       </div>
         <div class="thread-item-inbox thread-item-inbox--read" role="button" tabindex="0" data-thread="registrar" data-idx="2" data-subject="Office of the Registrar Message" data-department="Office of the Registrar">
@@ -395,7 +395,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
             <span class="thread-item-inbox__preview">Your requested transcript is attached below.</span>
             <button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
           </div>
-          <div class="thread-item-inbox__expires thread-item-inbox__expires--scope-only"><span class="badge badge--role-neutral thread-item-inbox__scope">Inbox</span></div>
+          <div class="thread-item-inbox__expires thread-item-inbox__expires--scope-only"><span class="badge badge--sm badge--role-neutral thread-item-inbox__scope">Inbox</span></div>
         </div>
       </div>
         <div class="thread-item-inbox thread-item-inbox--read" role="button" tabindex="0" data-thread="fafsa" data-idx="3" data-subject="FAFSA Verification Documents" data-department="Financial Aid" data-expires="warning">
@@ -410,7 +410,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
             <span class="thread-item-inbox__preview">Please upload the requested verification documents before the deadline.</span>
             <button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
           </div>
-          <div class="thread-item-inbox__expires"><span class="badge badge--role-warning">Expires 08/01/2026</span><span class="badge badge--role-neutral thread-item-inbox__scope">Inbox</span></div>
+          <div class="thread-item-inbox__expires"><span class="badge badge--sm badge--role-warning">Expires 08/01/2026</span><span class="badge badge--sm badge--role-neutral thread-item-inbox__scope">Inbox</span></div>
         </div>
       </div>
         <div class="thread-item-inbox thread-item-inbox--read" role="button" tabindex="0" data-thread="advising-appt" data-idx="4" data-subject="Advising Appointment Confirmation" data-department="Academic Advising" data-expires="danger">
@@ -425,7 +425,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
             <span class="thread-item-inbox__preview">Your appointment window has passed — please rebook if still needed.</span>
             <button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
           </div>
-          <div class="thread-item-inbox__expires"><span class="badge badge--role-danger">Expired 07/10/2026</span><span class="badge badge--role-neutral thread-item-inbox__scope">Inbox</span></div>
+          <div class="thread-item-inbox__expires"><span class="badge badge--sm badge--role-danger">Expired 07/10/2026</span><span class="badge badge--sm badge--role-neutral thread-item-inbox__scope">Inbox</span></div>
         </div>
       </div>
         <div class="thread-item-inbox thread-item-inbox--unread" role="button" tabindex="0" data-thread="transcript-ready" data-idx="5" data-subject="Transcript Ready for Pickup" data-department="Office of the Registrar" data-expires="neutral">
@@ -440,7 +440,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
             <span class="thread-item-inbox__preview">Your official transcript is ready at the Registrar's front desk.</span>
             <button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
           </div>
-          <div class="thread-item-inbox__expires"><span class="badge badge--role-neutral">Expires 12/31/2027</span><span class="badge badge--role-neutral thread-item-inbox__scope">Inbox</span></div>
+          <div class="thread-item-inbox__expires"><span class="badge badge--sm badge--role-neutral">Expires 12/31/2027</span><span class="badge badge--sm badge--role-neutral thread-item-inbox__scope">Inbox</span></div>
         </div>
       </div>
         <div class="thread-item-inbox thread-item-inbox--read" role="button" tabindex="0" data-thread="waiver" data-idx="6" data-subject="Requirement Waiver Request" data-department="English Dept">
@@ -455,7 +455,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
             <span class="thread-item-inbox__preview">Please submit your waiver request to Enrollment Services.</span>
             <button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
           </div>
-          <div class="thread-item-inbox__expires thread-item-inbox__expires--scope-only"><span class="badge badge--role-neutral thread-item-inbox__scope">Inbox</span></div>
+          <div class="thread-item-inbox__expires thread-item-inbox__expires--scope-only"><span class="badge badge--sm badge--role-neutral thread-item-inbox__scope">Inbox</span></div>
         </div>
       </div>
         <div class="thread-item-inbox thread-item-inbox--read" role="button" tabindex="0" data-thread="pell" data-idx="7" data-subject="Close to Pell Lifetime Limits" data-department="Financial Aid" data-expires="neutral">
@@ -470,7 +470,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
             <span class="thread-item-inbox__preview">You are approaching the lifetime limit of Federal Pell Grant.</span>
             <button class="thread-item-inbox__flag-btn" type="button" aria-pressed="true" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
           </div>
-          <div class="thread-item-inbox__expires"><span class="badge badge--role-neutral">Expires 03/01/2027</span><span class="badge badge--role-neutral thread-item-inbox__scope">Inbox</span></div>
+          <div class="thread-item-inbox__expires"><span class="badge badge--sm badge--role-neutral">Expires 03/01/2027</span><span class="badge badge--sm badge--role-neutral thread-item-inbox__scope">Inbox</span></div>
         </div>
       </div>
         <div class="thread-item-inbox thread-item-inbox--read" role="button" tabindex="0" data-thread="important" data-idx="8" data-subject="Important Information" data-department="Financial Aid">
@@ -485,7 +485,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
             <span class="thread-item-inbox__preview">This notice provides information about the 2024-2025 financial aid process.</span>
             <button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
           </div>
-          <div class="thread-item-inbox__expires thread-item-inbox__expires--scope-only"><span class="badge badge--role-neutral thread-item-inbox__scope">Inbox</span></div>
+          <div class="thread-item-inbox__expires thread-item-inbox__expires--scope-only"><span class="badge badge--sm badge--role-neutral thread-item-inbox__scope">Inbox</span></div>
         </div>
       </div>
         </div>
@@ -502,7 +502,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
             <span class="thread-item-inbox__preview">Thank you for the details about the upcoming term.</span>
             <button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
           </div>
-          <div class="thread-item-inbox__expires"><span class="badge badge--role-danger">Expired Jul 10</span><span class="badge badge--role-neutral thread-item-inbox__scope">Archived</span></div>
+          <div class="thread-item-inbox__expires"><span class="badge badge--sm badge--role-danger">Expired Jul 10</span><span class="badge badge--sm badge--role-neutral thread-item-inbox__scope">Archived</span></div>
         </div>
       </div>
         <div class="thread-item-inbox thread-item-inbox--read" role="button" tabindex="0" data-thread="study" data-idx="10" data-subject="Study Session" data-department="Academic Advising">
@@ -517,7 +517,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
             <span class="thread-item-inbox__preview">That works for me — I can make that time.</span>
             <button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
           </div>
-          <div class="thread-item-inbox__expires thread-item-inbox__expires--scope-only"><span class="badge badge--role-neutral thread-item-inbox__scope">Archived</span></div>
+          <div class="thread-item-inbox__expires thread-item-inbox__expires--scope-only"><span class="badge badge--sm badge--role-neutral thread-item-inbox__scope">Archived</span></div>
         </div>
       </div>
         </div>
@@ -537,8 +537,10 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           </div>
           <h2 class="mc-thread__subject">Winter Intersession</h2>
           <div class="mc-thread__tags">
-            <span class="mc-thread__tag"><span class="mc-thread__tag-label">Department:</span> Academic Advising</span>
-            <span class="mc-thread__tag"><span class="mc-thread__tag-label">Institution:</span> PeopleSoft University</span>
+            <span class="mc-thread__tag">Academic Advising</span>
+            <span class="mc-thread__tag">PeopleSoft University</span>
+            
+            
           </div>
         </header>
         <div class="mc-thread__scroll">
@@ -584,8 +586,10 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           </div>
           <h2 class="mc-thread__subject">Hello World</h2>
           <div class="mc-thread__tags">
-            <span class="mc-thread__tag"><span class="mc-thread__tag-label">Department:</span> Academic Advising</span>
-            <span class="mc-thread__tag"><span class="mc-thread__tag-label">Institution:</span> PeopleSoft University</span>
+            <span class="mc-thread__tag">Academic Advising</span>
+            <span class="mc-thread__tag">PeopleSoft University</span>
+            
+            
           </div>
         </header>
         <div class="mc-thread__scroll">
@@ -618,8 +622,10 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           </div>
           <h2 class="mc-thread__subject">Office of the Registrar Message</h2>
           <div class="mc-thread__tags">
-            <span class="mc-thread__tag"><span class="mc-thread__tag-label">Department:</span> Office of the Registrar</span>
-            <span class="mc-thread__tag"><span class="mc-thread__tag-label">Institution:</span> PeopleSoft University</span>
+            <span class="mc-thread__tag">Office of the Registrar</span>
+            <span class="mc-thread__tag">PeopleSoft University</span>
+            
+            
           </div>
         </header>
         <div class="mc-thread__scroll">
@@ -661,8 +667,10 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           </div>
           <h2 class="mc-thread__subject">FAFSA Verification Documents</h2>
           <div class="mc-thread__tags">
-            <span class="mc-thread__tag"><span class="mc-thread__tag-label">Department:</span> Financial Aid</span>
-            <span class="mc-thread__tag"><span class="mc-thread__tag-label">Institution:</span> PeopleSoft University</span>
+            <span class="mc-thread__tag">Financial Aid</span>
+            <span class="mc-thread__tag">PeopleSoft University</span>
+            <span class="badge badge--base badge--role-warning">Expires 08/01/2026</span>
+            
           </div>
         </header>
         <div class="mc-thread__scroll">
@@ -695,8 +703,10 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           </div>
           <h2 class="mc-thread__subject">Advising Appointment Confirmation</h2>
           <div class="mc-thread__tags">
-            <span class="mc-thread__tag"><span class="mc-thread__tag-label">Department:</span> Academic Advising</span>
-            <span class="mc-thread__tag"><span class="mc-thread__tag-label">Institution:</span> PeopleSoft University</span>
+            <span class="mc-thread__tag">Academic Advising</span>
+            <span class="mc-thread__tag">PeopleSoft University</span>
+            <span class="badge badge--base badge--role-danger">Expired 07/10/2026</span>
+            
           </div>
         </header>
         <div class="mc-thread__scroll">
@@ -729,8 +739,10 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           </div>
           <h2 class="mc-thread__subject">Transcript Ready for Pickup</h2>
           <div class="mc-thread__tags">
-            <span class="mc-thread__tag"><span class="mc-thread__tag-label">Department:</span> Office of the Registrar</span>
-            <span class="mc-thread__tag"><span class="mc-thread__tag-label">Institution:</span> PeopleSoft University</span>
+            <span class="mc-thread__tag">Office of the Registrar</span>
+            <span class="mc-thread__tag">PeopleSoft University</span>
+            <span class="badge badge--base badge--role-neutral">Expires 12/31/2027</span>
+            
           </div>
         </header>
         <div class="mc-thread__scroll">
@@ -763,8 +775,10 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           </div>
           <h2 class="mc-thread__subject">Requirement Waiver Request</h2>
           <div class="mc-thread__tags">
-            <span class="mc-thread__tag"><span class="mc-thread__tag-label">Department:</span> English Dept</span>
-            <span class="mc-thread__tag"><span class="mc-thread__tag-label">Institution:</span> PeopleSoft University</span>
+            <span class="mc-thread__tag">English Dept</span>
+            <span class="mc-thread__tag">PeopleSoft University</span>
+            
+            
           </div>
         </header>
         <div class="mc-thread__scroll">
@@ -802,8 +816,10 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           </div>
           <h2 class="mc-thread__subject">Close to Pell Lifetime Limits</h2>
           <div class="mc-thread__tags">
-            <span class="mc-thread__tag"><span class="mc-thread__tag-label">Department:</span> Financial Aid</span>
-            <span class="mc-thread__tag"><span class="mc-thread__tag-label">Institution:</span> PeopleSoft University</span>
+            <span class="mc-thread__tag">Financial Aid</span>
+            <span class="mc-thread__tag">PeopleSoft University</span>
+            <span class="badge badge--base badge--role-neutral">Expires 03/01/2027</span>
+            
           </div>
         </header>
         <div class="mc-thread__scroll">
@@ -843,8 +859,10 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           </div>
           <h2 class="mc-thread__subject">Important Information</h2>
           <div class="mc-thread__tags">
-            <span class="mc-thread__tag"><span class="mc-thread__tag-label">Department:</span> Financial Aid</span>
-            <span class="mc-thread__tag"><span class="mc-thread__tag-label">Institution:</span> PeopleSoft University</span>
+            <span class="mc-thread__tag">Financial Aid</span>
+            <span class="mc-thread__tag">PeopleSoft University</span>
+            
+            
           </div>
         </header>
         <div class="mc-thread__scroll">
@@ -882,8 +900,10 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           </div>
           <h2 class="mc-thread__subject">Advisement Outreach</h2>
           <div class="mc-thread__tags">
-            <span class="mc-thread__tag"><span class="mc-thread__tag-label">Department:</span> Academic Advising</span>
-            <span class="mc-thread__tag"><span class="mc-thread__tag-label">Institution:</span> PeopleSoft University</span>
+            <span class="mc-thread__tag">Academic Advising</span>
+            <span class="mc-thread__tag">PeopleSoft University</span>
+            <span class="badge badge--base badge--role-danger">Expired Jul 10</span>
+            <span class="badge badge--base badge--role-neutral">Archived</span>
           </div>
         </header>
         <div class="mc-thread__scroll">
@@ -916,8 +936,10 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           </div>
           <h2 class="mc-thread__subject">Study Session</h2>
           <div class="mc-thread__tags">
-            <span class="mc-thread__tag"><span class="mc-thread__tag-label">Department:</span> Academic Advising</span>
-            <span class="mc-thread__tag"><span class="mc-thread__tag-label">Institution:</span> PeopleSoft University</span>
+            <span class="mc-thread__tag">Academic Advising</span>
+            <span class="mc-thread__tag">PeopleSoft University</span>
+            
+            <span class="badge badge--base badge--role-neutral">Archived</span>
           </div>
         </header>
         <div class="mc-thread__scroll">
@@ -1194,6 +1216,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         row.querySelector(".thread-item-inbox__scope").textContent = "Archived";
         lists.archived.insertBefore(row, lists.archived.firstChild);
       }
+      btn.closest(".mc-thread").querySelector(".mc-thread__tags").insertAdjacentHTML("beforeend", '<span class="badge badge--base badge--role-neutral">Archived</span>');
       btn.remove();
       closeThread();
       applyFilter();

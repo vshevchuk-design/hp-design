@@ -511,3 +511,8 @@ The user reported "filters don't work" and "search splits the screen in half" �
 ## 2026-07-24 (cont. 9) — Tablet header goes inline too
 
 - The tablet-only stacked header (actions-only top row, subject below) got called out immediately once the split view actually rendered — an actions-only first row reads as a hole. Reverted the cont. 8 exception: **subject shares the row with the actions on every split view (≥768), wrapping to a second line when it doesn't fit**, instead of dropping below the buttons. The stacked header is now mobile-only (<768), where the Back button justifies the separate top row.
+
+## 2026-07-24 (cont. 10) — Value-only header pills everywhere + Expires/Archived badges in the thread header
+
+- The "Department:"/"Institution:" prefixes are gone at EVERY width now (the ≥768 return of the prefixes lasted one round) — "Financial Aid · PeopleSoft University" reads fine bare, per explicit call.
+- **The thread header's tag row now also carries the thread's state badges**: a real Badge (BASE size — the row list keeps sm) for Expires (warning/danger/neutral, same role as the row's own badge) and an "Archived" neutral Badge on archived threads. Badge CSS refactored into `.badge--sm` / `.badge--base` size modifiers to support the two sizes side by side. Archiving a thread live also appends the Archived badge to its open header, so the pane can't disagree with the list it just moved to.

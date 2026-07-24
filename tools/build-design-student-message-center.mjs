@@ -271,6 +271,10 @@ const badgeSm = badge.size.sm;
 const badgeHeight = px(resolve(badgeSm.height.$value));
 const badgePaddingX = px(resolve(badgeSm.paddingX.$value));
 const badgeLabelType = resolveToken(badgeSm.label);
+const badgeBase = badge.size.base;
+const badgeBaseHeight = px(resolve(badgeBase.height.$value));
+const badgeBasePaddingX = px(resolve(badgeBase.paddingX.$value));
+const badgeBaseLabelType = resolveToken(badgeBase.label);
 const badgeTint = (role) => ({ bg: refPath(badge.role[role].tint.bg.$value), text: refPath(badge.role[role].tint.text.$value) });
 const badgeWarningTint = badgeTint("warning");
 const badgeDangerTint = badgeTint("danger");
@@ -446,7 +450,9 @@ ${inboxStateCss("read")}
 .thread-item-inbox:focus-visible { outline: ${tliRingWidth} solid ${cv("border.focus")}; outline-offset: -${tliRingWidth}; }
 .thread-item-inbox--selected { background: ${cv("bg.primary")}; }
 
-.badge { box-sizing: border-box; display: inline-flex; align-items: center; border-radius: ${badgeRadius}; height: ${badgeHeight}; padding: 0 ${badgePaddingX}; ${typoCss(badgeLabelType)} white-space: nowrap; }
+.badge { box-sizing: border-box; display: inline-flex; align-items: center; border-radius: ${badgeRadius}; white-space: nowrap; }
+.badge--sm { height: ${badgeHeight}; padding: 0 ${badgePaddingX}; ${typoCss(badgeLabelType)} }
+.badge--base { height: ${badgeBaseHeight}; padding: 0 ${badgeBasePaddingX}; ${typoCss(badgeBaseLabelType)} }
 .badge--role-warning { background: ${cv(badgeWarningTint.bg)}; color: ${cv(badgeWarningTint.text)}; }
 .badge--role-danger { background: ${cv(badgeDangerTint.bg)}; color: ${cv(badgeDangerTint.text)}; }
 .badge--role-neutral { background: ${cv(badgeNeutralTint.bg)}; color: ${cv(badgeNeutralTint.text)}; }
@@ -590,11 +596,10 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .mc-thread__back { order: 1; }
 .mc-thread__actions { order: 2; margin-left: auto; display: flex; gap: ${px(resolve("dim.2"))}; }
 .mc-thread__subject { order: 3; width: 100%; min-width: 0; margin: 0; color: ${cv("text.default")}; ${typoCss(headingLgType)} }
-.mc-thread__tags { order: 4; width: 100%; display: flex; flex-wrap: nowrap; overflow-x: auto; gap: ${px(resolve("dim.1_5"))}; }
-.mc-thread__tag { display: inline-flex; align-items: center; gap: ${px(resolve("dim.1"))}; background: ${cv("bg.neutral")}; border-radius: ${px(resolve("radius.full"))}; padding: ${px(resolve("dim.1"))} ${px(resolve("dim.3"))}; color: ${cv("text.secondary")}; ${typoCss(bodySmType)} white-space: nowrap; }
-/* on mobile the pills show only the values — "Academic Advising" reads fine
-   without a "Department:" prefix at that width; prefixes return at >=768 */
-.mc-thread__tag-label { display: none; color: ${cv("text.muted")}; }
+/* value-only pills at every width (no "Department:" prefixes), plus real
+   Badges (base size) for the thread's Expires and Archived states */
+.mc-thread__tags { order: 4; width: 100%; display: flex; align-items: center; flex-wrap: nowrap; overflow-x: auto; gap: ${px(resolve("dim.1_5"))}; }
+.mc-thread__tag { display: inline-flex; align-items: center; background: ${cv("bg.neutral")}; border-radius: ${px(resolve("radius.full"))}; padding: ${px(resolve("dim.1"))} ${px(resolve("dim.3"))}; color: ${cv("text.secondary")}; ${typoCss(bodySmType)} white-space: nowrap; }
 .mc-thread__scroll { flex: 1; overflow-y: auto; padding: ${px(resolve("dim.4"))}; display: flex; flex-direction: column; gap: ${px(resolve("dim.6"))}; }
 .mc-thread__composer { flex-shrink: 0; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))} ${px(resolve("dim.4"))}; }
 
@@ -610,7 +615,6 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
   .mc__rail, .mc--thread-open .mc__rail { display: flex; flex: none; width: 320px; border-right: 1px solid ${cv("border.default")}; }
   .mc__reading { display: flex; }
   .mc-thread__back { display: none; }
-  .mc-thread__tag-label { display: inline; }
   /* subject shares the row with the actions on every split view — a long
      subject simply wraps to a second line instead of dropping below the
      buttons (an actions-only top row read as a hole on the tablet) */
@@ -815,8 +819,8 @@ const threads = [
 // while searching, when both lists render as one combined result set.
 function rowMarkup(t, idx) {
   const badges = [
-    t.expires ? `<span class="badge badge--role-${t.expires.role}">${t.expires.label}</span>` : "",
-    `<span class="badge badge--role-neutral thread-item-inbox__scope">${t.archived ? "Archived" : "Inbox"}</span>`,
+    t.expires ? `<span class="badge badge--sm badge--role-${t.expires.role}">${t.expires.label}</span>` : "",
+    `<span class="badge badge--sm badge--role-neutral thread-item-inbox__scope">${t.archived ? "Archived" : "Inbox"}</span>`,
   ].join("");
   return `<div class="thread-item-inbox thread-item-inbox--${t.unread ? "unread" : "read"}" role="button" tabindex="0" data-thread="${t.id}" data-idx="${idx}" data-subject="${esc(t.subject)}" data-department="${esc(t.department)}"${t.expires ? ` data-expires="${t.expires.role}"` : ""}>
         ${avatarMarkup(t.department, "sm")}
@@ -846,8 +850,10 @@ function threadPane(t) {
           </div>
           <h2 class="mc-thread__subject">${t.subject}</h2>
           <div class="mc-thread__tags">
-            <span class="mc-thread__tag"><span class="mc-thread__tag-label">Department:</span> ${t.department}</span>
-            <span class="mc-thread__tag"><span class="mc-thread__tag-label">Institution:</span> ${t.meta.Institution}</span>
+            <span class="mc-thread__tag">${t.department}</span>
+            <span class="mc-thread__tag">${t.meta.Institution}</span>
+            ${t.expires ? `<span class="badge badge--base badge--role-${t.expires.role}">${t.expires.label}</span>` : ""}
+            ${t.archived ? `<span class="badge badge--base badge--role-neutral">Archived</span>` : ""}
           </div>
         </header>
         <div class="mc-thread__scroll">
@@ -1126,6 +1132,7 @@ const appJs = `(function () {
         row.querySelector(".thread-item-inbox__scope").textContent = "Archived";
         lists.archived.insertBefore(row, lists.archived.firstChild);
       }
+      btn.closest(".mc-thread").querySelector(".mc-thread__tags").insertAdjacentHTML("beforeend", '<span class="badge badge--base badge--role-neutral">Archived</span>');
       btn.remove();
       closeThread();
       applyFilter();
