@@ -597,8 +597,10 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .mc-thread__actions { order: 2; margin-left: auto; display: flex; gap: ${px(resolve("dim.2"))}; }
 .mc-thread__subject { order: 3; width: 100%; min-width: 0; margin: 0; color: ${cv("text.default")}; ${typoCss(headingLgType)} }
 /* value-only pills at every width (no "Department:" prefixes), plus real
-   Badges (base size) for the thread's Expires and Archived states */
-.mc-thread__tags { order: 4; width: 100%; display: flex; align-items: center; flex-wrap: nowrap; overflow-x: auto; gap: ${px(resolve("dim.1_5"))}; }
+   Badges (base size) for the thread's Expires and Archived states. The row
+   wraps to a second line when tight — never a horizontal scroll that would
+   clip a badge mid-word */
+.mc-thread__tags { order: 4; width: 100%; display: flex; align-items: center; flex-wrap: wrap; gap: ${px(resolve("dim.1_5"))}; }
 .mc-thread__tag { display: inline-flex; align-items: center; background: ${cv("bg.neutral")}; border-radius: ${px(resolve("radius.full"))}; padding: ${px(resolve("dim.1"))} ${px(resolve("dim.3"))}; color: ${cv("text.secondary")}; ${typoCss(bodySmType)} white-space: nowrap; }
 .mc-thread__scroll { flex: 1; overflow-y: auto; padding: ${px(resolve("dim.4"))}; display: flex; flex-direction: column; gap: ${px(resolve("dim.6"))}; }
 .mc-thread__composer { flex-shrink: 0; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))} ${px(resolve("dim.4"))}; }

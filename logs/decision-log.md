@@ -516,3 +516,7 @@ The user reported "filters don't work" and "search splits the screen in half" �
 
 - The "Department:"/"Institution:" prefixes are gone at EVERY width now (the ≥768 return of the prefixes lasted one round) — "Financial Aid · PeopleSoft University" reads fine bare, per explicit call.
 - **The thread header's tag row now also carries the thread's state badges**: a real Badge (BASE size — the row list keeps sm) for Expires (warning/danger/neutral, same role as the row's own badge) and an "Archived" neutral Badge on archived threads. Badge CSS refactored into `.badge--sm` / `.badge--base` size modifiers to support the two sizes side by side. Archiving a thread live also appends the Archived badge to its open header, so the pane can't disagree with the list it just moved to.
+
+## 2026-07-24 (cont. 11) — Header tag row wraps instead of scrolling
+
+- The nowrap+overflow-x header tag row clipped badges mid-word ("Expi…") on mobile/tablet — switched to flex-wrap at every width, per explicit request: the row grows to a second (or third) line when tight, a horizontal scroll never hides a state badge. The one-line-scroll idea lasted exactly one round against real content widths.
