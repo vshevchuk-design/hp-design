@@ -2,7 +2,19 @@
 
 Update this file whenever component inventory or conventions change. For chronological history and the reasoning behind each decision, see `decision-log.md` — this file is the fast-load summary, that one is the archive.
 
-Last updated: 2026-07-23.
+Last updated: 2026-07-24.
+
+## Designs layer (prototype explorer) — added 2026-07-24
+
+The sidebar on every docs page now has **DS / Designs tabs** (top of nav). DS = the design system (everything below). Designs = a prototype explorer: an accordion per product → interactive prototype pages under `docs/designs/`. All of it lives in `tools/lib/nav.mjs` (`DESIGN_PRODUCTS` + tab styles/script emitted inline by `renderNav`, so it stays a one-file change; `renderNav` takes `{ basePath }` for pages one directory deeper). **`docs/index.html` has no generator — its sidebar block was hand-updated and must be kept in sync by hand**, same trap as its Sora font link.
+
+First entry: **Student Message Center** (`tools/build-design-student-message-center.mjs` → `docs/designs/student-message-center.html` viewer + `student-message-center-app.html` standalone app).
+- Viewer = docs chrome + a real DS segmented Tabs (Mobile 375 / Tablet 768 / Desktop) around an iframe; mobile-first default.
+- The app is built **strictly from DS components, every recipe resolved from its own token file** (tabs/search/select/listbox/thread-list-item inbox shape/badge/avatar/message/attachment/bubble/composer simple/button/separator); the only non-component CSS is the `mc-*` composition layer (shell/panes/breakpoints — literal 768/1024px, per Grid's "structural, not tokenized" precedent).
+- Functional scope = the live *student* desktop app (Inbox/Archived, search, sort, thread list, reading pane, simple composer). Staff-mockup features (flags, Handled by, filters, Resolve) deliberately absent. Rows use ThreadListItem's **inbox** shape per explicit request (the live student app shows the older card shape).
+- Sort By = the **Select-trigger + Listbox popover composition** (first live wiring of the "Select's natural next step" note below — the Select *component* still documents only the closed trigger).
+- All interactions real: selection, tab switching, live search + count, sort reorder, Send appends a self Bubble (tint), Archive really moves the thread, mobile one-pane flow with back.
+- Icons still missing from the set for this area (non-blocking, text used instead): `archive`, `inbox`, `smartphone`, `tablet`.
 
 ## Components built (28, + 1 behavioral variant)
 

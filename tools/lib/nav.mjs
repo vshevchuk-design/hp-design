@@ -1,6 +1,15 @@
 // Shared sidebar nav — single source of truth for every docs/*.html build script,
 // so adding/moving a page (like splitting Components into per-component pages)
 // is a one-file change instead of hand-editing every generator's copy-pasted block.
+//
+// Two panes, switched by the DS / Designs tabs at the top:
+//   DS      — the design system itself (tokens + components), the original nav.
+//   Designs — the prototype explorer: an accordion per product (Message Center
+//             first), each holding its interactive prototype pages under
+//             docs/designs/. The pane containing the active page is the one
+//             shown on load; the tabs just toggle in-page, no navigation.
+// The tab styles/script are emitted inline here so this stays a one-file
+// change — the per-page chrome CSS in each build script doesn't know about it.
 export const NAV_ITEMS = {
   overview: { label: "Overview", href: "index.html" },
   colors: { label: "Colors", href: "colors.html" },
@@ -38,13 +47,64 @@ export const NAV_ITEMS = {
   composer: { label: "Composer", href: "composer.html" },
 };
 
-export function renderNav(activeKey) {
+// Products → prototype pages shown in the Designs pane. Keys are the
+// activeKey a designs page passes to renderNav (e.g. "student-message-center").
+export const DESIGN_PRODUCTS = {
+  "message-center": {
+    label: "Message Center",
+    items: {
+      "student-message-center": { label: "Student Message Center", href: "designs/student-message-center.html" },
+    },
+  },
+};
+
+const NAV_CHROME = `<style>
+  .nav-tabs { display: flex; gap: 3px; margin: 0 0 14px; padding: 3px; background: var(--bg-card); border: 0.5px solid var(--border); border-radius: 9px; }
+  .nav-tab { flex: 1; border: none; background: transparent; padding: 6px 0; border-radius: 6px; font-size: 12px; font-weight: 600; color: var(--text-secondary); cursor: pointer; font-family: inherit; }
+  .nav-tab:hover { background: var(--bg-card-hover); color: var(--text-primary); }
+  .nav-tab.active { background: var(--accent-bg); color: var(--accent); }
+  .nav-pane { display: none; }
+  .nav-pane.active { display: block; }
+  .nav-acc { margin: 0; }
+  .nav-acc summary { list-style: none; display: flex; align-items: center; justify-content: space-between; cursor: pointer; font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin: 16px 8px 6px; user-select: none; }
+  .nav-acc summary::-webkit-details-marker { display: none; }
+  .nav-acc summary::after { content: ""; width: 5px; height: 5px; border-right: 1.5px solid var(--text-muted); border-bottom: 1.5px solid var(--text-muted); transform: rotate(-45deg); transition: transform 0.12s; }
+  .nav-acc[open] summary::after { transform: rotate(45deg); }
+</style>`;
+
+const NAV_SCRIPT = `<script>
+  document.querySelectorAll(".nav-tab").forEach((tab) => {
+    tab.addEventListener("click", () => {
+      document.querySelectorAll(".nav-tab").forEach((t) => t.classList.toggle("active", t === tab));
+      document.querySelectorAll(".nav-pane").forEach((p) => p.classList.toggle("active", p.dataset.pane === tab.dataset.pane));
+    });
+  });
+</script>`;
+
+export function renderNav(activeKey, { basePath = "" } = {}) {
   const link = (key) => {
     const item = NAV_ITEMS[key];
-    return `<a class="navlink${key === activeKey ? " active" : ""}" href="${item.href}">${item.label}</a>`;
+    return `<a class="navlink${key === activeKey ? " active" : ""}" href="${basePath}${item.href}">${item.label}</a>`;
   };
+  const designsActive = Object.values(DESIGN_PRODUCTS).some((p) => Object.keys(p.items).includes(activeKey));
+  const designsPane = Object.entries(DESIGN_PRODUCTS)
+    .map(
+      ([, product]) => `<details class="nav-acc" open>
+      <summary>${product.label}</summary>
+      ${Object.entries(product.items)
+        .map(([key, item]) => `<a class="navlink${key === activeKey ? " active" : ""}" href="${basePath}${item.href}">${item.label}</a>`)
+        .join("\n      ")}
+    </details>`
+    )
+    .join("\n    ");
   return `<p class="brand">hp-design</p>
     <p class="brand-sub">Highpoint design system</p>
+    ${NAV_CHROME}
+    <div class="nav-tabs" role="tablist">
+      <button class="nav-tab${designsActive ? "" : " active"}" data-pane="ds" type="button">DS</button>
+      <button class="nav-tab${designsActive ? " active" : ""}" data-pane="designs" type="button">Designs</button>
+    </div>
+    <div class="nav-pane nav-pane--ds${designsActive ? "" : " active"}" data-pane="ds">
     ${link("overview")}
     <p class="nav-category">Tokens</p>
     ${link("colors")}
@@ -80,5 +140,10 @@ export function renderNav(activeKey) {
     ${link("message")}
     ${link("bubble")}
     ${link("thread-list-item")}
-    ${link("composer")}`;
+    ${link("composer")}
+    </div>
+    <div class="nav-pane nav-pane--designs${designsActive ? " active" : ""}" data-pane="designs">
+    ${designsPane}
+    </div>
+    ${NAV_SCRIPT}`;
 }
