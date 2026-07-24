@@ -102,8 +102,9 @@
 .thread-item-inbox__subject { font-weight: 600; font-size: 14px; line-height: 1.4; }
 .thread-item-inbox__preview-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .thread-item-inbox__preview { flex: 1; min-width: 0; color: var(--tok-text-muted); font-weight: 400; font-size: 12px; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.thread-item-inbox__flag-btn { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; border: none; background: none; padding: 2px; margin: -2px 0; border-radius: 4px; cursor: pointer; color: var(--tok-icon-muted); }
-.thread-item-inbox__flag-btn svg { width: 16px; height: 16px; display: block; }
+.thread-item-inbox[hidden] { display: none; }
+.thread-item-inbox__flag-btn { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; border: none; background: none; padding: 4px; margin: -4px 0; border-radius: 4px; cursor: pointer; color: var(--tok-icon-muted); }
+.thread-item-inbox__flag-btn svg { width: 20px; height: 20px; display: block; }
 .thread-item-inbox__flag-btn:hover { background: var(--tok-fill-neutral-hover); }
 .thread-item-inbox__flag-btn:focus-visible { outline: 2px solid var(--tok-border-focus); outline-offset: 0; }
 .thread-item-inbox__flag-btn .thread-item-inbox__flag-filled { display: none; color: var(--tok-icon-warning); }
@@ -230,13 +231,19 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .mc--thread-open .mc__rail { display: none; }
 .mc--thread-open .mc__reading { display: flex; }
 
-.mc-rail__search { padding: 12px 16px 0; }
-.mc-rail__search .search { display: flex; width: 100%; }
-.mc-rail__tabs { padding: 12px 16px 0; }
+.mc-rail__topbar { display: flex; align-items: center; gap: 8px; padding: 12px 16px 0; }
+.mc-rail__topbar .tabs--segmented { flex: 1; }
+.mc-rail__topbar .search { flex: 1; display: none; }
+.mc--search-open .mc-rail__topbar .tabs--segmented, .mc--search-open .mc-search-open-btn { display: none; }
+.mc--search-open .mc-rail__topbar .search { display: flex; }
 .mc-rail__chips { display: flex; gap: 8px; padding: 12px 16px; overflow-x: auto; }
 .mc-rail__count { display: flex; flex-direction: column; gap: 8px; }
 .mc-count { padding: 0 16px; color: var(--tok-text-muted); font-weight: 700; font-size: 12px; line-height: 1.4; text-transform: uppercase; }
-.mc-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
+/* one shared scroll container for both lists — during a search they render
+   stacked as a single combined result set, not two half-height panes each
+   with its own scrollbar */
+.mc-rail__lists { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; }
+.mc-list { display: flex; flex-direction: column; }
 .mc-list[hidden] { display: none; }
 
 .mc-empty { flex: 1; display: flex; align-items: center; justify-content: center; }
@@ -281,17 +288,16 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   <header class="mc__topbar"><h1>Message Center</h1></header>
   <div class="mc__body">
     <aside class="mc__rail" aria-label="Thread list">
-      <div class="mc-rail__search">
-        <div class="search search--base">
-          <svg class="search__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-          <input class="search__input" id="mc-search-input" placeholder="Search all threads" aria-label="Search all threads" />
-          <button class="search__clear" id="mc-search-clear" type="button" aria-label="Clear search" hidden><svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
-        </div>
-      </div>
-      <div class="mc-rail__tabs">
+      <div class="mc-rail__topbar">
         <div class="tabs tabs--segmented tabs--base" role="tablist">
           <button class="tab tab--base tab--active" role="tab" aria-selected="true" data-tab="inbox">Inbox<span class="counter counter--base counter--onNeutral counter--active" id="mc-unread-counter">2</span></button>
           <button class="tab tab--base" role="tab" aria-selected="false" data-tab="archived">Archived</button>
+        </div>
+        <button class="btn btn--ghost btn--base btn--icon-only mc-search-open-btn" type="button" aria-label="Search threads"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg></button>
+        <div class="search search--base">
+          <svg class="search__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+          <input class="search__input" id="mc-search-input" placeholder="Search all threads" aria-label="Search all threads" />
+          <button class="search__clear" id="mc-search-clear" type="button" aria-label="Clear or close search"><svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
         </div>
       </div>
       <div class="mc-rail__chips">
@@ -313,8 +319,9 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         <span class="mc-count" id="mc-count">6 THREADS</span>
         <hr class="separator" />
       </div>
-      <div class="mc-list" data-list="inbox">
-        <div class="thread-item-inbox thread-item-inbox--unread" role="button" tabindex="0" data-thread="winter" data-idx="0" data-subject="Winter Intersession" data-department="Academic Advising">
+      <div class="mc-rail__lists">
+        <div class="mc-list" data-list="inbox">
+          <div class="thread-item-inbox thread-item-inbox--unread" role="button" tabindex="0" data-thread="winter" data-idx="0" data-subject="Winter Intersession" data-department="Academic Advising">
         <span class="avatar avatar--teal" role="img" aria-label="Academic Advising"><span class="avatar__initials">AA</span></span>
         <div class="thread-item-inbox__main">
           <div class="thread-item-inbox__top">
@@ -404,9 +411,9 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <div class="thread-item-inbox__expires thread-item-inbox__expires--scope-only"><span class="badge badge--role-neutral thread-item-inbox__scope">Inbox</span></div>
         </div>
       </div>
-      </div>
-      <div class="mc-list" data-list="archived" hidden>
-        <div class="thread-item-inbox thread-item-inbox--read" role="button" tabindex="0" data-thread="outreach" data-idx="6" data-subject="Advisement Outreach" data-department="Academic Advising" data-expires="danger">
+        </div>
+        <div class="mc-list" data-list="archived" hidden>
+          <div class="thread-item-inbox thread-item-inbox--read" role="button" tabindex="0" data-thread="outreach" data-idx="6" data-subject="Advisement Outreach" data-department="Academic Advising" data-expires="danger">
         <span class="avatar avatar--teal" role="img" aria-label="Academic Advising"><span class="avatar__initials">AA</span></span>
         <div class="thread-item-inbox__main">
           <div class="thread-item-inbox__top">
@@ -436,6 +443,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <div class="thread-item-inbox__expires thread-item-inbox__expires--scope-only"><span class="badge badge--role-neutral thread-item-inbox__scope">Archived</span></div>
         </div>
       </div>
+        </div>
       </div>
     </aside>
     <section class="mc__reading" aria-label="Thread">
@@ -802,7 +810,6 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     allRows().forEach(function (r) { r.hidden = !rowMatches(r); });
     var visible = allRows().filter(function (r) { return !r.hidden && !r.closest(".mc-list").hidden; }).length;
     countEl.textContent = visible + (visible === 1 ? " THREAD" : " THREADS");
-    searchClear.hidden = !searching;
   }
   function updateUnreadCounter() {
     var n = rows("inbox").filter(function (r) { return r.classList.contains("thread-item-inbox--unread"); }).length;
@@ -870,12 +877,30 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     });
   });
 
-  // live search — combined cross-tab results while a query is present
-  searchInput.addEventListener("input", applyFilter);
-  searchClear.addEventListener("click", function () {
+  // search is an icon button beside the tabs; opening it swaps the tabs for
+  // the expanded field. The × clears a non-empty query, closes when empty.
+  var searchOpenBtn = document.querySelector(".mc-search-open-btn");
+  function closeSearch() {
+    mc.classList.remove("mc--search-open");
     searchInput.value = "";
     applyFilter();
+  }
+  searchOpenBtn.addEventListener("click", function () {
+    mc.classList.add("mc--search-open");
     searchInput.focus();
+  });
+  searchInput.addEventListener("input", applyFilter);
+  searchInput.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") closeSearch();
+  });
+  searchClear.addEventListener("click", function () {
+    if (searchInput.value.trim() !== "") {
+      searchInput.value = "";
+      applyFilter();
+      searchInput.focus();
+    } else {
+      closeSearch();
+    }
   });
 
   // filter chips — Unread / Expires soon / Flagged, freely combinable (AND)

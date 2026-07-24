@@ -130,6 +130,7 @@ const rootVars = renderRootVars([...colorPaths.map((p) => [p, colorValue[p]]), [
 // ---- icons ----
 const iconOf = (name, cls) => fs.readFileSync(path.join(root, `assets/icons/material-filled/${name}.svg`), "utf8").replace("<svg ", `<svg class="${cls}" `);
 const iconSearch = iconOf("search", "search__icon");
+const iconSearchBtn = iconOf("search", "btn__icon");
 const iconClear = iconOf("close", "search__clear");
 const iconChevronDown = iconOf("expand_more", "chip__icon");
 const iconCheckmark = iconOf("check", "listbox__checkmark");
@@ -400,7 +401,8 @@ const componentCss = `/* ---- component recipes, resolved from each component's 
 .thread-item-inbox__subject { ${typoCss(tliSubjectType)} }
 .thread-item-inbox__preview-row { display: flex; align-items: center; justify-content: space-between; gap: ${px(resolve("dim.2"))}; }
 .thread-item-inbox__preview { flex: 1; min-width: 0; color: ${cv("text.muted")}; ${typoCss(inboxPreviewType)} white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.thread-item-inbox__flag-btn { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; border: none; background: none; padding: ${px(resolve("dim.0_5"))}; margin: -${px(resolve("dim.0_5"))} 0; border-radius: ${px(resolve("radius.xs"))}; cursor: pointer; color: ${cv(refPath(inbox.flag.color.$value))}; }
+.thread-item-inbox[hidden] { display: none; }
+.thread-item-inbox__flag-btn { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; border: none; background: none; padding: ${px(resolve("dim.1"))}; margin: -${px(resolve("dim.1"))} 0; border-radius: ${px(resolve("radius.xs"))}; cursor: pointer; color: ${cv(refPath(inbox.flag.color.$value))}; }
 .thread-item-inbox__flag-btn svg { width: ${px(resolve(inbox.flag.iconSize.$value))}; height: ${px(resolve(inbox.flag.iconSize.$value))}; display: block; }
 .thread-item-inbox__flag-btn:hover { background: ${cv("fill.neutralHover")}; }
 .thread-item-inbox__flag-btn:focus-visible { outline: 2px solid ${cv("border.focus")}; outline-offset: 0; }
@@ -512,13 +514,19 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .mc--thread-open .mc__rail { display: none; }
 .mc--thread-open .mc__reading { display: flex; }
 
-.mc-rail__search { padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))} 0; }
-.mc-rail__search .search { display: flex; width: 100%; }
-.mc-rail__tabs { padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))} 0; }
+.mc-rail__topbar { display: flex; align-items: center; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))} 0; }
+.mc-rail__topbar .tabs--segmented { flex: 1; }
+.mc-rail__topbar .search { flex: 1; display: none; }
+.mc--search-open .mc-rail__topbar .tabs--segmented, .mc--search-open .mc-search-open-btn { display: none; }
+.mc--search-open .mc-rail__topbar .search { display: flex; }
 .mc-rail__chips { display: flex; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))}; overflow-x: auto; }
 .mc-rail__count { display: flex; flex-direction: column; gap: ${px(resolve("dim.2"))}; }
 .mc-count { padding: 0 ${px(resolve("dim.4"))}; color: ${cv("text.muted")}; ${typoCss(labelSmType)}${labelSmExt.textTransform ? ` text-transform: ${labelSmExt.textTransform};` : ""}${labelSmExt.letterSpacing ? ` letter-spacing: ${labelSmExt.letterSpacing};` : ""} }
-.mc-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
+/* one shared scroll container for both lists — during a search they render
+   stacked as a single combined result set, not two half-height panes each
+   with its own scrollbar */
+.mc-rail__lists { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; }
+.mc-list { display: flex; flex-direction: column; }
 .mc-list[hidden] { display: none; }
 
 .mc-empty { flex: 1; display: flex; align-items: center; justify-content: center; }
@@ -818,7 +826,6 @@ const appJs = `(function () {
     allRows().forEach(function (r) { r.hidden = !rowMatches(r); });
     var visible = allRows().filter(function (r) { return !r.hidden && !r.closest(".mc-list").hidden; }).length;
     countEl.textContent = visible + (visible === 1 ? " THREAD" : " THREADS");
-    searchClear.hidden = !searching;
   }
   function updateUnreadCounter() {
     var n = rows("inbox").filter(function (r) { return r.classList.contains("thread-item-inbox--unread"); }).length;
@@ -886,12 +893,30 @@ const appJs = `(function () {
     });
   });
 
-  // live search — combined cross-tab results while a query is present
-  searchInput.addEventListener("input", applyFilter);
-  searchClear.addEventListener("click", function () {
+  // search is an icon button beside the tabs; opening it swaps the tabs for
+  // the expanded field. The × clears a non-empty query, closes when empty.
+  var searchOpenBtn = document.querySelector(".mc-search-open-btn");
+  function closeSearch() {
+    mc.classList.remove("mc--search-open");
     searchInput.value = "";
     applyFilter();
+  }
+  searchOpenBtn.addEventListener("click", function () {
+    mc.classList.add("mc--search-open");
     searchInput.focus();
+  });
+  searchInput.addEventListener("input", applyFilter);
+  searchInput.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") closeSearch();
+  });
+  searchClear.addEventListener("click", function () {
+    if (searchInput.value.trim() !== "") {
+      searchInput.value = "";
+      applyFilter();
+      searchInput.focus();
+    } else {
+      closeSearch();
+    }
   });
 
   // filter chips — Unread / Expires soon / Flagged, freely combinable (AND)
@@ -994,17 +1019,16 @@ ${appCss}
   <header class="mc__topbar"><h1>Message Center</h1></header>
   <div class="mc__body">
     <aside class="mc__rail" aria-label="Thread list">
-      <div class="mc-rail__search">
-        <div class="search search--base">
-          ${iconSearch}
-          <input class="search__input" id="mc-search-input" placeholder="Search all threads" aria-label="Search all threads" />
-          <button class="search__clear" id="mc-search-clear" type="button" aria-label="Clear search" hidden>${iconClear.replace('<svg class="search__clear" ', '<svg ')}</button>
-        </div>
-      </div>
-      <div class="mc-rail__tabs">
+      <div class="mc-rail__topbar">
         <div class="tabs tabs--segmented tabs--base" role="tablist">
           <button class="tab tab--base tab--active" role="tab" aria-selected="true" data-tab="inbox">Inbox<span class="counter counter--base counter--onNeutral counter--active" id="mc-unread-counter">${threads.filter((t) => !t.archived && t.unread).length}</span></button>
           <button class="tab tab--base" role="tab" aria-selected="false" data-tab="archived">Archived</button>
+        </div>
+        <button class="btn btn--ghost btn--base btn--icon-only mc-search-open-btn" type="button" aria-label="Search threads">${iconSearchBtn}</button>
+        <div class="search search--base">
+          ${iconSearch}
+          <input class="search__input" id="mc-search-input" placeholder="Search all threads" aria-label="Search all threads" />
+          <button class="search__clear" id="mc-search-clear" type="button" aria-label="Clear or close search">${iconClear.replace('<svg class="search__clear" ', '<svg ')}</button>
         </div>
       </div>
       <div class="mc-rail__chips">
@@ -1023,11 +1047,13 @@ ${appCss}
         <span class="mc-count" id="mc-count">${inboxThreads.length} THREADS</span>
         <hr class="separator" />
       </div>
-      <div class="mc-list" data-list="inbox">
-        ${inboxThreads.map((t, i) => rowMarkup(t, i)).join("\n        ")}
-      </div>
-      <div class="mc-list" data-list="archived" hidden>
-        ${archivedThreads.map((t, i) => rowMarkup(t, inboxThreads.length + i)).join("\n        ")}
+      <div class="mc-rail__lists">
+        <div class="mc-list" data-list="inbox">
+          ${inboxThreads.map((t, i) => rowMarkup(t, i)).join("\n        ")}
+        </div>
+        <div class="mc-list" data-list="archived" hidden>
+          ${archivedThreads.map((t, i) => rowMarkup(t, inboxThreads.length + i)).join("\n        ")}
+        </div>
       </div>
     </aside>
     <section class="mc__reading" aria-label="Thread">

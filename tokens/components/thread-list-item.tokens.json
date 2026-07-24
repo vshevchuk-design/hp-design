@@ -68,7 +68,7 @@
         "preview": { "$type": "typography", "$value": "{text-style.body-sm}" },
         "flag": {
           "$description": "2026-07-24: the flag became a real, clickable per-thread toggle (student marks a thread important), not a static staff-side glyph. Unflagged = the OUTLINED flag icon (assets/icons/material-outlined/flag.svg — first outlined icon in the repo, sourced 2026-07-24) in icon.muted; flagged = the FILLED flag (material-filled/flag.svg) in icon.warning (yellow). Because the row now contains a nested interactive element, the inbox row is a <div role='button' tabindex='0'> with a real nested <button> for the flag — the same no-interactive-inside-interactive resolution Attachment's idle shape already established (a real <button> can't nest another one).",
-          "iconSize": { "$type": "dimension", "$value": "{dim.4}" },
+          "iconSize": { "$type": "dimension", "$value": "{dim.5}" },
           "color": { "$type": "color", "$value": "{icon.muted}" },
           "flaggedColor": { "$type": "color", "$value": "{icon.warning}" }
         },

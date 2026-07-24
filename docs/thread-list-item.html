@@ -131,8 +131,9 @@
 .thread-item-inbox__subject { font-weight: 600; font-size: 14px; line-height: 1.4; }
 .thread-item-inbox__preview-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .thread-item-inbox__preview { flex: 1; min-width: 0; font-weight: 400; font-size: 12px; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.thread-item-inbox__flag-btn { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; border: none; background: none; padding: 2px; margin: -2px 0; border-radius: 4px; cursor: pointer; color: var(--tok-icon-muted); }
-.thread-item-inbox__flag-btn svg { width: 16px; height: 16px; display: block; }
+.thread-item-inbox[hidden] { display: none; }
+.thread-item-inbox__flag-btn { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; border: none; background: none; padding: 4px; margin: -4px 0; border-radius: 4px; cursor: pointer; color: var(--tok-icon-muted); }
+.thread-item-inbox__flag-btn svg { width: 20px; height: 20px; display: block; }
 .thread-item-inbox__flag-btn:hover { background: var(--tok-fill-neutral-hover); }
 .thread-item-inbox__flag-btn:focus-visible { outline: 2px solid var(--tok-border-focus); outline-offset: 0; }
 .thread-item-inbox__flag-btn .thread-item-inbox__flag-filled { display: none; color: var(--tok-icon-warning); }
@@ -309,8 +310,9 @@
 .thread-item-inbox__subject { font-weight: 600; font-size: 14px; line-height: 1.4; }
 .thread-item-inbox__preview-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .thread-item-inbox__preview { flex: 1; min-width: 0; font-weight: 400; font-size: 12px; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.thread-item-inbox__flag-btn { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; border: none; background: none; padding: 2px; margin: -2px 0; border-radius: 4px; cursor: pointer; color: var(--tok-icon-muted); }
-.thread-item-inbox__flag-btn svg { width: 16px; height: 16px; display: block; }
+.thread-item-inbox[hidden] { display: none; }
+.thread-item-inbox__flag-btn { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; border: none; background: none; padding: 4px; margin: -4px 0; border-radius: 4px; cursor: pointer; color: var(--tok-icon-muted); }
+.thread-item-inbox__flag-btn svg { width: 20px; height: 20px; display: block; }
 .thread-item-inbox__flag-btn:hover { background: var(--tok-fill-neutral-hover); }
 .thread-item-inbox__flag-btn:focus-visible { outline: 2px solid var(--tok-border-focus); outline-offset: 0; }
 .thread-item-inbox__flag-btn .thread-item-inbox__flag-filled { display: none; color: var(--tok-icon-warning); }
