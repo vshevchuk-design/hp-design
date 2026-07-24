@@ -73,8 +73,12 @@
 .frame-wrap { border: 0.5px solid var(--border); border-radius: 14px; background: var(--bg-card); padding: 24px; display: flex; justify-content: center; overflow-x: auto; }
 .device { border: 1px solid var(--tok-border-default); background: #fff; overflow: hidden; transition: width 0.2s ease, height 0.2s ease, border-radius 0.2s ease; flex-shrink: 0; }
 .device iframe { width: 100%; height: 100%; border: none; display: block; }
-.device--mobile { width: 375px; height: 812px; max-height: 78vh; border-radius: 28px; }
-.device--tablet { width: 768px; height: 1024px; max-height: 78vh; border-radius: 20px; }
+/* +2px compensates the frame's own 1px borders (border-box), so the iframe's
+   INTERNAL viewport is exactly 375/768 — without it the tablet frame's inner
+   width was 766px and the app's min-width:768 split-view media query never
+   fired, leaving the tablet stuck in the one-pane mobile layout */
+.device--mobile { width: 377px; height: 814px; max-height: 78vh; border-radius: 28px; }
+.device--tablet { width: 770px; height: 1026px; max-height: 78vh; border-radius: 20px; }
 .device--desktop { width: 100%; height: 78vh; border-radius: 12px; }
 </style>
 </head>

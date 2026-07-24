@@ -347,6 +347,11 @@ const btnSecPaddingX = px(resolve(btnSecBase.paddingX.$value));
 const btnSecGap = px(resolve(btnSecBase.gap.$value));
 const btnSecIconSize = px(resolve(btnSecBase.iconSize.$value));
 const btnSecLabelType = resolveToken(get(btnSecBase.label.$value));
+const btnSecSm = button.secondary.size.sm;
+const btnSecSmHeight = px(resolve(btnSecSm.height.$value));
+const btnSecSmPaddingX = px(resolve(btnSecSm.paddingX.$value));
+const btnSecSmIconSize = px(resolve(btnSecSm.iconSize.$value));
+const btnSecSmLabelType = resolveToken(get(btnSecSm.label.$value));
 const btnGhostBase = button.ghost.size.base;
 const btnGhostHeight = px(resolve(btnGhostBase.height.$value));
 const btnGhostIconSize = px(resolve(btnGhostBase.iconSize.$value));
@@ -365,7 +370,6 @@ const labelSmNode = get("{text-style.label-sm}");
 const labelSmType = resolveToken(labelSmNode);
 const labelSmExt = labelSmNode.$extensions?.["hp.design/text"] || {};
 const titleXlType = resolveToken(get("{text-style.title-xl}"));
-const headingMdType = resolveToken(get("{text-style.heading-md}"));
 const headingLgType = resolveToken(get("{text-style.heading-lg}"));
 const bodySmType = resolveToken(get("{text-style.body-sm}"));
 // link-base for the search "Close" label — $extensions fetched directly from
@@ -515,6 +519,9 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
 .btn--secondary.btn--base { height: ${btnSecHeight}; padding: 0 ${btnSecPaddingX}; gap: ${btnSecGap}; ${typoCss(btnSecLabelType)} }
 .btn--secondary.btn--base .btn__icon { width: ${btnSecIconSize}; height: ${btnSecIconSize}; }
 .btn--secondary.btn--base.btn--icon-only { width: ${btnSecHeight}; padding: 0; }
+.btn--secondary.btn--sm { height: ${btnSecSmHeight}; padding: 0 ${btnSecSmPaddingX}; ${typoCss(btnSecSmLabelType)} }
+.btn--secondary.btn--sm .btn__icon { width: ${btnSecSmIconSize}; height: ${btnSecSmIconSize}; }
+.btn--secondary.btn--sm.btn--icon-only { width: ${btnSecSmHeight}; padding: 0; }
 .btn--ghost { background: transparent; color: ${cv("text.secondary")}; }
 .btn--ghost .btn__icon { color: ${cv("icon.secondary")}; }
 .btn--ghost:hover { background: ${cv("fill.neutralHover")}; }
@@ -582,10 +589,12 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .mc-thread__bar { flex-shrink: 0; display: flex; flex-wrap: wrap; align-items: center; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))}; background: ${cv("surface.default")}; border-bottom: 1px solid ${cv("border.default")}; }
 .mc-thread__back { order: 1; }
 .mc-thread__actions { order: 2; margin-left: auto; display: flex; gap: ${px(resolve("dim.2"))}; }
-.mc-thread__subject { order: 3; width: 100%; min-width: 0; margin: 0; color: ${cv("text.default")}; ${typoCss(headingMdType)} }
-.mc-thread__tags { order: 4; width: 100%; display: flex; flex-wrap: wrap; gap: ${px(resolve("dim.1_5"))}; }
+.mc-thread__subject { order: 3; width: 100%; min-width: 0; margin: 0; color: ${cv("text.default")}; ${typoCss(headingLgType)} }
+.mc-thread__tags { order: 4; width: 100%; display: flex; flex-wrap: nowrap; overflow-x: auto; gap: ${px(resolve("dim.1_5"))}; }
 .mc-thread__tag { display: inline-flex; align-items: center; gap: ${px(resolve("dim.1"))}; background: ${cv("bg.neutral")}; border-radius: ${px(resolve("radius.full"))}; padding: ${px(resolve("dim.1"))} ${px(resolve("dim.3"))}; color: ${cv("text.secondary")}; ${typoCss(bodySmType)} white-space: nowrap; }
-.mc-thread__tag-label { color: ${cv("text.muted")}; }
+/* on mobile the pills show only the values — "Academic Advising" reads fine
+   without a "Department:" prefix at that width; prefixes return at >=768 */
+.mc-thread__tag-label { display: none; color: ${cv("text.muted")}; }
 .mc-thread__scroll { flex: 1; overflow-y: auto; padding: ${px(resolve("dim.4"))}; display: flex; flex-direction: column; gap: ${px(resolve("dim.6"))}; }
 .mc-thread__composer { flex-shrink: 0; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))} ${px(resolve("dim.4"))}; }
 
@@ -601,13 +610,16 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
   .mc__rail, .mc--thread-open .mc__rail { display: flex; flex: none; width: 320px; border-right: 1px solid ${cv("border.default")}; }
   .mc__reading { display: flex; }
   .mc-thread__back { display: none; }
-  .mc-thread__subject { order: 1; width: auto; flex: 1; ${typoCss(headingLgType)} }
-  .mc-thread__actions { margin-left: 0; }
+  .mc-thread__tag-label { display: inline; }
 }
 @media (min-width: 1024px) {
   .mc__rail, .mc--thread-open .mc__rail { width: 380px; }
   .mc__topbar { padding: ${px(resolve("dim.4"))} ${px(resolve("dim.6"))}; }
-  .mc-thread__bar, .mc-thread__meta { padding-left: ${px(resolve("dim.6"))}; padding-right: ${px(resolve("dim.6"))}; }
+  .mc-thread__bar { padding-left: ${px(resolve("dim.6"))}; padding-right: ${px(resolve("dim.6"))}; }
+  /* only here is the reading pane wide enough for the subject to share the
+     row with the actions — the 768–1023 split view keeps the stacked header */
+  .mc-thread__subject { order: 1; width: auto; flex: 1; }
+  .mc-thread__actions { margin-left: 0; }
   .mc-thread__scroll { padding: ${px(resolve("dim.6"))}; }
   .mc-thread__composer { padding: ${px(resolve("dim.4"))} ${px(resolve("dim.6"))} ${px(resolve("dim.6"))}; }
 }`;
@@ -823,13 +835,13 @@ function rowMarkup(t, idx) {
 }
 
 function threadPane(t) {
-  const archiveBtn = t.archived ? "" : `<button class="btn btn--secondary btn--base mc-archive" type="button" data-thread="${t.id}">Archive</button>`;
+  const archiveBtn = t.archived ? "" : `<button class="btn btn--secondary btn--sm mc-archive" type="button" data-thread="${t.id}">Archive</button>`;
   return `<article class="mc-thread" data-thread="${t.id}" hidden>
         <header class="mc-thread__bar">
           <button class="btn btn--ghost btn--sm mc-thread__back" type="button">${iconBack}Back</button>
           <div class="mc-thread__actions">
             ${archiveBtn}
-            <button class="btn btn--secondary btn--base btn--icon-only mc-print" type="button" aria-label="Print thread">${iconPrint}</button>
+            <button class="btn btn--secondary btn--sm btn--icon-only mc-print" type="button" aria-label="Print thread">${iconPrint}</button>
           </div>
           <h2 class="mc-thread__subject">${t.subject}</h2>
           <div class="mc-thread__tags">
@@ -1223,8 +1235,12 @@ const viewerCss = `${viewerRootVars}
 .frame-wrap { border: 0.5px solid var(--border); border-radius: 14px; background: var(--bg-card); padding: 24px; display: flex; justify-content: center; overflow-x: auto; }
 .device { border: 1px solid ${cv("border.default")}; background: #fff; overflow: hidden; transition: width 0.2s ease, height 0.2s ease, border-radius 0.2s ease; flex-shrink: 0; }
 .device iframe { width: 100%; height: 100%; border: none; display: block; }
-.device--mobile { width: 375px; height: 812px; max-height: 78vh; border-radius: 28px; }
-.device--tablet { width: 768px; height: 1024px; max-height: 78vh; border-radius: 20px; }
+/* +2px compensates the frame's own 1px borders (border-box), so the iframe's
+   INTERNAL viewport is exactly 375/768 — without it the tablet frame's inner
+   width was 766px and the app's min-width:768 split-view media query never
+   fired, leaving the tablet stuck in the one-pane mobile layout */
+.device--mobile { width: 377px; height: 814px; max-height: 78vh; border-radius: 28px; }
+.device--tablet { width: 770px; height: 1026px; max-height: 78vh; border-radius: 20px; }
 .device--desktop { width: 100%; height: 78vh; border-radius: 12px; }`;
 
 const viewerJs = `document.querySelectorAll(".device-bar .tab").forEach((tab) => {
