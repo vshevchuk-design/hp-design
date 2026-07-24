@@ -489,6 +489,9 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
 .message__body li { padding-left: ${msgListIndent}; position: relative; color: ${cv("text.default")}; ${typoCss(msgParagraphType)} }
 .message__body li::before { content: "•"; position: absolute; left: ${px(resolve("dim.1_5"))}; color: ${cv("text.muted")}; }
 .message__body a { color: ${cv("text.primary")}; ${typoCss(msgLinkType)} text-decoration: ${msgLinkExtensions.textDecoration || "none"}; }
+/* an Attachment's done shape IS an <a download> — keep the body-link
+   underline/color off it, its own title/description styles apply instead */
+.message__body a.attachment { text-decoration: none; }
 .message__attachments { display: flex; flex-direction: column; gap: ${msgAttachmentsGap}; }
 .message__cta { margin-top: ${msgCtaMarginTop}; align-self: flex-start; }
 
@@ -571,6 +574,9 @@ html, body { height: 100%; }
 body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.sans")}; color: ${cv("text.default")}; }
 .mc { height: 100dvh; display: flex; flex-direction: column; }
 .mc__topbar { flex-shrink: 0; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))}; background: ${cv("surface.default")}; border-bottom: 1px solid ${cv("border.default")}; }
+/* on mobile an open thread takes the whole screen — the app's own
+   "Message Center" topbar leaves, the thread bar (Back …) is the header */
+.mc--thread-open .mc__topbar { display: none; }
 .mc__topbar h1 { margin: 0; color: ${cv("text.default")}; ${typoCss(titleXlType)} }
 .mc__body { flex: 1; display: flex; min-height: 0; }
 
@@ -638,6 +644,7 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 @media (min-width: 768px) {
   .mc__rail, .mc--thread-open .mc__rail { display: flex; flex: none; width: 320px; border-right: 1px solid ${cv("border.default")}; }
   .mc__reading { display: flex; }
+  .mc--thread-open .mc__topbar { display: block; }
   .mc-thread__back { display: none; }
   /* subject shares the row with the actions on every split view — a long
      subject simply wraps to a second line instead of dropping below the
