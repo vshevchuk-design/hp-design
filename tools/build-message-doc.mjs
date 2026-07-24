@@ -173,7 +173,7 @@ const css = `${rootVars}
 .attachment__title { margin: 0; color: ${cv("text.default")}; ${typoCss(attTitleType)} white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .attachment__description { margin: 0; color: ${cv("text.muted")}; ${typoCss(attDescType)} }
 
-.message--card { background: ${cv(cardChrome.bg)}; border: 1px solid ${cv(cardChrome.border)}; border-radius: ${cardChrome.radius}; padding: ${cardChrome.padding}; }
+.message--card .message__body { background: ${cv(cardChrome.bg)}; border: 1px solid ${cv(cardChrome.border)}; border-radius: ${cardChrome.radius}; padding: ${cardChrome.padding}; }
 
 .avatar { box-sizing: border-box; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; border-radius: ${avatarRadius}; width: ${avatarDiameter}; height: ${avatarDiameter}; background: ${cv("avatar.blue.bg")}; user-select: none; }
 .avatar__initials { color: ${cv("avatar.blue.text")}; text-transform: uppercase; ${typoCss(avatarInitialsType)} }
@@ -419,7 +419,7 @@ const html = `<!doctype html>
     <pre class="code"><code>${esc(attachmentExampleCode)}</code></pre>
 
     <h2 class="big-section">Optional — chrome: card</h2>
-    <p class="section-desc">The staff-mobile mockups' white-bubble treatment, reusing Card's own exact recipe. Not the default.</p>
+    <p class="section-desc">The white-bubble treatment, reusing Card's own exact recipe — used by the Message Center thread view. The chrome wraps the body only: the sender row sits above the bubble, same anatomy as Bubble's own sender row. Not the component default.</p>
     <div class="usage-preview">${cardExample}</div>
     <pre class="code"><code>${esc(cardExampleCode)}</code></pre>
   </main>

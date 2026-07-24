@@ -350,6 +350,12 @@ const btnSecLabelType = resolveToken(get(btnSecBase.label.$value));
 const btnGhostBase = button.ghost.size.base;
 const btnGhostHeight = px(resolve(btnGhostBase.height.$value));
 const btnGhostIconSize = px(resolve(btnGhostBase.iconSize.$value));
+const btnGhostSm = button.ghost.size.sm;
+const btnGhostSmHeight = px(resolve(btnGhostSm.height.$value));
+const btnGhostSmPaddingX = px(resolve(btnGhostSm.paddingX.$value));
+const btnGhostSmGap = px(resolve(btnGhostSm.gap.$value));
+const btnGhostSmIconSize = px(resolve(btnGhostSm.iconSize.$value));
+const btnGhostSmLabelType = resolveToken(get(btnGhostSm.label.$value));
 const btnRingWidth = px(resolve(button.primary.state.focused.ringWidth.$value));
 const btnRingOffset = px(resolve(button.primary.state.focused.ringOffset.$value));
 
@@ -359,6 +365,8 @@ const labelSmNode = get("{text-style.label-sm}");
 const labelSmType = resolveToken(labelSmNode);
 const labelSmExt = labelSmNode.$extensions?.["hp.design/text"] || {};
 const titleXlType = resolveToken(get("{text-style.title-xl}"));
+const headingMdType = resolveToken(get("{text-style.heading-md}"));
+const headingLgType = resolveToken(get("{text-style.heading-lg}"));
 const bodySmType = resolveToken(get("{text-style.body-sm}"));
 // link-base for the search "Close" label — $extensions fetched directly from
 // the node, since resolveToken() drops them (documented gap)
@@ -450,7 +458,7 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
 .message__sender-line { margin: 0; }
 .message__name { color: ${cv(msgNameColor)}; ${typoCss(msgNameType)} }
 .message__meta { color: ${cv("text.muted")}; ${typoCss(msgMetaType)} }
-.message--card { background: ${cv(msgCard.bg)}; border: 1px solid ${cv(msgCard.border)}; border-radius: ${msgCard.radius}; padding: ${msgCard.padding}; }
+.message--card .message__body { background: ${cv(msgCard.bg)}; border: 1px solid ${cv(msgCard.border)}; border-radius: ${msgCard.radius}; padding: ${msgCard.padding}; }
 .message__body { display: flex; flex-direction: column; gap: ${msgBodyGap}; }
 .message__body p { margin: 0; color: ${cv("text.default")}; ${typoCss(msgParagraphType)} }
 .message__body strong { font-weight: ${msgStrongWeight}; }
@@ -513,6 +521,8 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
 .btn--ghost:active { background: ${cv("fill.neutralActive")}; }
 .btn--ghost.btn--base.btn--icon-only { width: ${btnGhostHeight}; height: ${btnGhostHeight}; padding: 0; }
 .btn--ghost.btn--base.btn--icon-only .btn__icon { width: ${btnGhostIconSize}; height: ${btnGhostIconSize}; }
+.btn--ghost.btn--sm { height: ${btnGhostSmHeight}; padding: 0 ${btnGhostSmPaddingX}; gap: ${btnGhostSmGap}; ${typoCss(btnGhostSmLabelType)} }
+.btn--ghost.btn--sm .btn__icon { width: ${btnGhostSmIconSize}; height: ${btnGhostSmIconSize}; }
 
 .separator { border: none; border-top: 1px solid ${cv(separatorColor)}; margin: 0; }
 
@@ -565,13 +575,17 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .mc-empty[hidden] { display: none; }
 .mc-thread { flex: 1; display: flex; flex-direction: column; min-height: 0; }
 .mc-thread[hidden] { display: none; }
-.mc-thread__bar { flex-shrink: 0; display: flex; align-items: center; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))}; background: ${cv("surface.default")}; border-bottom: 1px solid ${cv("border.default")}; }
-.mc-thread__subject { flex: 1; min-width: 0; margin: 0; color: ${cv("text.default")}; ${typoCss(titleXlType)} }
-.mc-thread__actions { display: flex; gap: ${px(resolve("dim.2"))}; }
-.mc-thread__meta { flex-shrink: 0; display: flex; flex-wrap: wrap; gap: ${px(resolve("dim.2"))} ${px(resolve("dim.8"))}; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))}; border-bottom: 1px solid ${cv("border.default")}; }
-.mc-thread__meta-item { display: flex; flex-direction: column; gap: 2px; }
-.mc-thread__meta-label { color: ${cv("text.muted")}; ${typoCss(labelSmType)}${labelSmExt.textTransform ? ` text-transform: ${labelSmExt.textTransform};` : ""} }
-.mc-thread__meta-value { color: ${cv("text.default")}; ${typoCss(bodySmType)} }
+/* mobile-first thread header: [Back … actions] row, then the subject, then
+   the Department/Institution tag pills; the bar's own bottom border is the
+   separator under the tags. Desktop reflows via order — back hides, subject
+   shares the row with the actions. */
+.mc-thread__bar { flex-shrink: 0; display: flex; flex-wrap: wrap; align-items: center; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))}; background: ${cv("surface.default")}; border-bottom: 1px solid ${cv("border.default")}; }
+.mc-thread__back { order: 1; }
+.mc-thread__actions { order: 2; margin-left: auto; display: flex; gap: ${px(resolve("dim.2"))}; }
+.mc-thread__subject { order: 3; width: 100%; min-width: 0; margin: 0; color: ${cv("text.default")}; ${typoCss(headingMdType)} }
+.mc-thread__tags { order: 4; width: 100%; display: flex; flex-wrap: wrap; gap: ${px(resolve("dim.1_5"))}; }
+.mc-thread__tag { display: inline-flex; align-items: center; gap: ${px(resolve("dim.1"))}; background: ${cv("bg.neutral")}; border-radius: ${px(resolve("radius.full"))}; padding: ${px(resolve("dim.1"))} ${px(resolve("dim.3"))}; color: ${cv("text.secondary")}; ${typoCss(bodySmType)} white-space: nowrap; }
+.mc-thread__tag-label { color: ${cv("text.muted")}; }
 .mc-thread__scroll { flex: 1; overflow-y: auto; padding: ${px(resolve("dim.4"))}; display: flex; flex-direction: column; gap: ${px(resolve("dim.6"))}; }
 .mc-thread__composer { flex-shrink: 0; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))} ${px(resolve("dim.4"))}; }
 
@@ -587,6 +601,8 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
   .mc__rail, .mc--thread-open .mc__rail { display: flex; flex: none; width: 320px; border-right: 1px solid ${cv("border.default")}; }
   .mc__reading { display: flex; }
   .mc-thread__back { display: none; }
+  .mc-thread__subject { order: 1; width: auto; flex: 1; ${typoCss(headingLgType)} }
+  .mc-thread__actions { margin-left: 0; }
 }
 @media (min-width: 1024px) {
   .mc__rail, .mc--thread-open .mc__rail { width: 380px; }
@@ -807,22 +823,20 @@ function rowMarkup(t, idx) {
 }
 
 function threadPane(t) {
-  const metaItems = Object.entries(t.meta)
-    .map(([label, value]) => `<div class="mc-thread__meta-item"><span class="mc-thread__meta-label">${label}</span><span class="mc-thread__meta-value">${value}</span></div>`)
-    .join("\n          ");
   const archiveBtn = t.archived ? "" : `<button class="btn btn--secondary btn--base mc-archive" type="button" data-thread="${t.id}">Archive</button>`;
   return `<article class="mc-thread" data-thread="${t.id}" hidden>
         <header class="mc-thread__bar">
-          <button class="btn btn--ghost btn--base btn--icon-only mc-thread__back" type="button" aria-label="Back to thread list">${iconBack}</button>
-          <h2 class="mc-thread__subject">${t.subject}</h2>
+          <button class="btn btn--ghost btn--sm mc-thread__back" type="button">${iconBack}Back</button>
           <div class="mc-thread__actions">
             ${archiveBtn}
             <button class="btn btn--secondary btn--base btn--icon-only mc-print" type="button" aria-label="Print thread">${iconPrint}</button>
           </div>
+          <h2 class="mc-thread__subject">${t.subject}</h2>
+          <div class="mc-thread__tags">
+            <span class="mc-thread__tag"><span class="mc-thread__tag-label">Department:</span> ${t.department}</span>
+            <span class="mc-thread__tag"><span class="mc-thread__tag-label">Institution:</span> ${t.meta.Institution}</span>
+          </div>
         </header>
-        <div class="mc-thread__meta">
-          ${metaItems}
-        </div>
         <div class="mc-thread__scroll">
           ${t.content.join("\n          ")}
         </div>

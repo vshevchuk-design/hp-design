@@ -110,7 +110,7 @@
 .attachment__title { margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 12px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .attachment__description { margin: 0; color: var(--tok-text-muted); font-weight: 400; font-size: 10px; line-height: 1.2; }
 
-.message--card { background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); border-radius: 8px; padding: 16px; }
+.message--card .message__body { background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); border-radius: 8px; padding: 16px; }
 
 .avatar { box-sizing: border-box; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; width: 32px; height: 32px; background: var(--tok-avatar-blue-bg); user-select: none; }
 .avatar__initials { color: var(--tok-avatar-blue-text); text-transform: uppercase; font-weight: 600; font-size: 12px; line-height: 1; }
@@ -249,7 +249,7 @@
 .attachment__title { margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 12px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .attachment__description { margin: 0; color: var(--tok-text-muted); font-weight: 400; font-size: 10px; line-height: 1.2; }
 
-.message--card { background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); border-radius: 8px; padding: 16px; }
+.message--card .message__body { background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); border-radius: 8px; padding: 16px; }
 
 .avatar { box-sizing: border-box; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; width: 32px; height: 32px; background: var(--tok-avatar-blue-bg); user-select: none; }
 .avatar__initials { color: var(--tok-avatar-blue-text); text-transform: uppercase; font-weight: 600; font-size: 12px; line-height: 1; }
@@ -398,7 +398,7 @@
 &lt;/div&gt;</code></pre>
 
     <h2 class="big-section">Optional — chrome: card</h2>
-    <p class="section-desc">The staff-mobile mockups' white-bubble treatment, reusing Card's own exact recipe. Not the default.</p>
+    <p class="section-desc">The white-bubble treatment, reusing Card's own exact recipe — used by the Message Center thread view. The chrome wraps the body only: the sender row sits above the bubble, same anatomy as Bubble's own sender row. Not the component default.</p>
     <div class="usage-preview"><div class="message message--card">
       <div class="message__sender">
       <span class="avatar"><span class="avatar__initials">BL</span></span>
