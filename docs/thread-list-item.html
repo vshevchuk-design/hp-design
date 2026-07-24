@@ -71,7 +71,7 @@
 
   :root {
   --tok-surface-default: #ffffff;
-  --tok-surface-sunken: #e8e8e8;
+  --tok-surface-dim: #f5f5f5;
   --tok-border-default: #d1d1d1;
   --tok-text-default: #181818;
   --tok-text-secondary: #696969;
@@ -82,6 +82,7 @@
   --tok-fill-neutral-active: #b4b4b4;
   --tok-bg-primary: #d9eaff;
   --tok-border-focus: #0468c4;
+  --tok-icon-warning: #b26f07;
   --tok-bg-danger: #ffdfde;
   --tok-text-danger: #c11435;
   --tok-bg-warning: #ffe2c5;
@@ -130,14 +131,20 @@
 .thread-item-inbox__subject { font-weight: 600; font-size: 14px; line-height: 1.4; }
 .thread-item-inbox__preview-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .thread-item-inbox__preview { flex: 1; min-width: 0; font-weight: 400; font-size: 12px; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.thread-item-inbox__flag { flex-shrink: 0; width: 16px; height: 16px; color: var(--tok-icon-muted); }
+.thread-item-inbox__flag-btn { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; border: none; background: none; padding: 2px; margin: -2px 0; border-radius: 4px; cursor: pointer; color: var(--tok-icon-muted); }
+.thread-item-inbox__flag-btn svg { width: 16px; height: 16px; display: block; }
+.thread-item-inbox__flag-btn:hover { background: var(--tok-fill-neutral-hover); }
+.thread-item-inbox__flag-btn:focus-visible { outline: 2px solid var(--tok-border-focus); outline-offset: 0; }
+.thread-item-inbox__flag-btn .thread-item-inbox__flag-filled { display: none; color: var(--tok-icon-warning); }
+.thread-item-inbox__flag-btn[aria-pressed="true"] .thread-item-inbox__flag-outlined { display: none; }
+.thread-item-inbox__flag-btn[aria-pressed="true"] .thread-item-inbox__flag-filled { display: block; }
 .thread-item-inbox__expires { margin-top: 2px; }
 
 .thread-item-inbox--unread { background: var(--tok-surface-default); }
 .thread-item-inbox--unread .thread-item-inbox__identity { color: var(--tok-text-default); font-weight: 600; }
 .thread-item-inbox--unread .thread-item-inbox__subject { color: var(--tok-text-default); font-weight: 600; }
 .thread-item-inbox--unread .thread-item-inbox__preview { color: var(--tok-text-secondary); }
-.thread-item-inbox--read { background: var(--tok-surface-sunken); }
+.thread-item-inbox--read { background: var(--tok-surface-dim); }
 .thread-item-inbox--read .thread-item-inbox__identity { color: var(--tok-text-secondary); font-weight: 400; }
 .thread-item-inbox--read .thread-item-inbox__subject { color: var(--tok-text-secondary); font-weight: 400; }
 .thread-item-inbox--read .thread-item-inbox__preview { color: var(--tok-text-muted); }
@@ -235,13 +242,14 @@
       <div class="row"><b>No unread indicator</b><span>Not asked for — deferred rather than built speculatively.</span></div>
       <div class="row"><b>Inbox row (2nd shape)</b><span>Avatar + department identity + timestamp + subject + preview + flag, matching the Message Center inbox-list screenshot. Avatar is keyed off the department name (not a person), reusing Avatar's own hash(name) % 8 fallback-color logic. No "Handled by" row, and Expires moves to a left-aligned row under the preview text instead of the live app's right-aligned column.</span></div>
       <div class="row"><b>Full-bleed list (2026-07-24)</b><span>Redesigned per explicit feedback, following the staff-mockup reference: inbox rows are flat, full-bleed rows separated by a 1px divider — no radius, no own border, no gaps between rows. Hover/pressed use the ghost fill.neutralHover/fill.neutralActive progression (a flat row has no border for the card shell's blue hover border to attach to); selected keeps the persistent bg.primary fill, borderless. The card metadata shape above is unchanged.</span></div>
-      <div class="row"><b>unread / read</b><span>Every inbox row is in exactly one of two states: <code class="tok">unread</code> (surface.default bg, semibold text.default identity/subject, text.secondary preview) or <code class="tok">read</code> (surface.page bg, normal-weight text.secondary identity/subject, text.muted preview). Clicking a row in the demo below marks it read for real.</span></div>
+      <div class="row"><b>unread / read</b><span>Every inbox row is in exactly one of two states: <code class="tok">unread</code> (surface.default bg, semibold text.default identity/subject, text.secondary preview) or <code class="tok">read</code> (surface.dim bg — a semantic role added for exactly this, one step lighter than sunken — normal-weight text.secondary identity/subject, text.muted preview). Clicking a row in the demo below marks it read for real.</span></div>
+      <div class="row"><b>Flag toggle (2026-07-24)</b><span>The flag is a real per-thread importance toggle, not a static glyph: outlined <code class="tok">icon.muted</code> flag when off, filled <code class="tok">icon.warning</code> flag when on, swapped via aria-pressed. Because the row now contains a nested interactive element, the row itself is a <code class="tok">&lt;div role="button" tabindex="0"&gt;</code> — a real &lt;button&gt; can't nest another one, the same resolution Attachment's idle shape already used.</span></div>
     </div>
 
     <h2 class="big-section">CSS</h2>
     <pre class="code"><code>:root {
   --tok-surface-default: #ffffff;
-  --tok-surface-sunken: #e8e8e8;
+  --tok-surface-dim: #f5f5f5;
   --tok-border-default: #d1d1d1;
   --tok-text-default: #181818;
   --tok-text-secondary: #696969;
@@ -252,6 +260,7 @@
   --tok-fill-neutral-active: #b4b4b4;
   --tok-bg-primary: #d9eaff;
   --tok-border-focus: #0468c4;
+  --tok-icon-warning: #b26f07;
   --tok-bg-danger: #ffdfde;
   --tok-text-danger: #c11435;
   --tok-bg-warning: #ffe2c5;
@@ -300,14 +309,20 @@
 .thread-item-inbox__subject { font-weight: 600; font-size: 14px; line-height: 1.4; }
 .thread-item-inbox__preview-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .thread-item-inbox__preview { flex: 1; min-width: 0; font-weight: 400; font-size: 12px; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.thread-item-inbox__flag { flex-shrink: 0; width: 16px; height: 16px; color: var(--tok-icon-muted); }
+.thread-item-inbox__flag-btn { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; border: none; background: none; padding: 2px; margin: -2px 0; border-radius: 4px; cursor: pointer; color: var(--tok-icon-muted); }
+.thread-item-inbox__flag-btn svg { width: 16px; height: 16px; display: block; }
+.thread-item-inbox__flag-btn:hover { background: var(--tok-fill-neutral-hover); }
+.thread-item-inbox__flag-btn:focus-visible { outline: 2px solid var(--tok-border-focus); outline-offset: 0; }
+.thread-item-inbox__flag-btn .thread-item-inbox__flag-filled { display: none; color: var(--tok-icon-warning); }
+.thread-item-inbox__flag-btn[aria-pressed="true"] .thread-item-inbox__flag-outlined { display: none; }
+.thread-item-inbox__flag-btn[aria-pressed="true"] .thread-item-inbox__flag-filled { display: block; }
 .thread-item-inbox__expires { margin-top: 2px; }
 
 .thread-item-inbox--unread { background: var(--tok-surface-default); }
 .thread-item-inbox--unread .thread-item-inbox__identity { color: var(--tok-text-default); font-weight: 600; }
 .thread-item-inbox--unread .thread-item-inbox__subject { color: var(--tok-text-default); font-weight: 600; }
 .thread-item-inbox--unread .thread-item-inbox__preview { color: var(--tok-text-secondary); }
-.thread-item-inbox--read { background: var(--tok-surface-sunken); }
+.thread-item-inbox--read { background: var(--tok-surface-dim); }
 .thread-item-inbox--read .thread-item-inbox__identity { color: var(--tok-text-secondary); font-weight: 400; }
 .thread-item-inbox--read .thread-item-inbox__subject { color: var(--tok-text-secondary); font-weight: 400; }
 .thread-item-inbox--read .thread-item-inbox__preview { color: var(--tok-text-muted); }
@@ -326,11 +341,24 @@
   });
 });
 
-document.querySelectorAll(".thread-item-inbox-demo .thread-item-inbox").forEach((btn) =&gt; {
-  btn.addEventListener("click", () =&gt; {
-    btn.parentElement.querySelectorAll(".thread-item-inbox").forEach((b) =&gt; b.classList.remove("thread-item-inbox--selected"));
-    btn.classList.remove("thread-item-inbox--unread");
-    btn.classList.add("thread-item-inbox--read", "thread-item-inbox--selected");
+// every flag on the page is a real toggle; stopPropagation keeps a flag
+// click from also selecting/reading the row it sits in
+document.querySelectorAll(".thread-item-inbox__flag-btn").forEach((flag) =&gt; {
+  flag.addEventListener("click", (e) =&gt; {
+    e.stopPropagation();
+    flag.setAttribute("aria-pressed", flag.getAttribute("aria-pressed") === "true" ? "false" : "true");
+  });
+});
+document.querySelectorAll(".thread-item-inbox-demo .thread-item-inbox").forEach((row) =&gt; {
+  const activate = () =&gt; {
+    row.parentElement.querySelectorAll(".thread-item-inbox").forEach((b) =&gt; b.classList.remove("thread-item-inbox--selected"));
+    row.classList.remove("thread-item-inbox--unread");
+    row.classList.add("thread-item-inbox--read", "thread-item-inbox--selected");
+  };
+  row.addEventListener("click", activate);
+  // role="button" divs don't get Enter/Space for free the way a real &lt;button&gt; does
+  row.addEventListener("keydown", (e) =&gt; {
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); activate(); }
   });
 });</code></pre>
 
@@ -528,7 +556,7 @@ document.querySelectorAll(".thread-item-inbox-demo .thread-item-inbox").forEach(
       
       <div class="story">
         <h3>unread</h3>
-        <div class="story-preview"><div class="thread-list"><button class="thread-item-inbox thread-item-inbox--unread">
+        <div class="story-preview"><div class="thread-list"><div class="thread-item-inbox thread-item-inbox--unread" role="button" tabindex="0">
       <span class="avatar avatar--teal" role="img" aria-label="Academic Advising"><span class="avatar__initials">AA</span></span>
       <div class="thread-item-inbox__main">
         <div class="thread-item-inbox__top">
@@ -538,12 +566,12 @@ document.querySelectorAll(".thread-item-inbox-demo .thread-item-inbox").forEach(
         <div class="thread-item-inbox__subject">Question about fall registration</div>
         <div class="thread-item-inbox__preview-row">
           <span class="thread-item-inbox__preview">Hi Alexander, I wanted to check whether …</span>
-          <svg class="thread-item-inbox__flag" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg>
+          <button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
         </div>
         
       </div>
-    </button></div></div>
-        <pre class="code"><code>&lt;button class="thread-item-inbox thread-item-inbox--unread"&gt;
+    </div></div></div>
+        <pre class="code"><code>&lt;div class="thread-item-inbox thread-item-inbox--unread" role="button" tabindex="0"&gt;
       &lt;span class="avatar avatar--teal" role="img" aria-label="Academic Advising"&gt;&lt;span class="avatar__initials"&gt;AA&lt;/span&gt;&lt;/span&gt;
       &lt;div class="thread-item-inbox__main"&gt;
         &lt;div class="thread-item-inbox__top"&gt;
@@ -553,17 +581,17 @@ document.querySelectorAll(".thread-item-inbox-demo .thread-item-inbox").forEach(
         &lt;div class="thread-item-inbox__subject"&gt;Question about fall registration&lt;/div&gt;
         &lt;div class="thread-item-inbox__preview-row"&gt;
           &lt;span class="thread-item-inbox__preview"&gt;Hi Alexander, I wanted to check whether …&lt;/span&gt;
-          &lt;svg class="thread-item-inbox__flag" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"&gt;&lt;path d="M0 0h24v24H0z" fill="none"/&gt;&lt;path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/&gt;&lt;/svg&gt;
+          &lt;button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"&gt;&lt;svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"&gt;&lt;path d="M0 0h24v24H0V0z" fill="none"/&gt;&lt;path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/&gt;&lt;/svg&gt;&lt;svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"&gt;&lt;path d="M0 0h24v24H0z" fill="none"/&gt;&lt;path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/&gt;&lt;/svg&gt;&lt;/button&gt;
         &lt;/div&gt;
         
       &lt;/div&gt;
-    &lt;/button&gt;</code></pre>
+    &lt;/div&gt;</code></pre>
         <p class="story-note">surface.default bg, identity/subject at weight.semibold in text.default, preview text.secondary — whiter and higher-contrast than read.</p>
       </div>
 
       <div class="story">
         <h3>read</h3>
-        <div class="story-preview"><div class="thread-list"><button class="thread-item-inbox thread-item-inbox--read">
+        <div class="story-preview"><div class="thread-list"><div class="thread-item-inbox thread-item-inbox--read" role="button" tabindex="0">
       <span class="avatar avatar--teal" role="img" aria-label="Academic Advising"><span class="avatar__initials">AA</span></span>
       <div class="thread-item-inbox__main">
         <div class="thread-item-inbox__top">
@@ -573,12 +601,12 @@ document.querySelectorAll(".thread-item-inbox-demo .thread-item-inbox").forEach(
         <div class="thread-item-inbox__subject">Question about fall registration</div>
         <div class="thread-item-inbox__preview-row">
           <span class="thread-item-inbox__preview">Hi Alexander, I wanted to check whether …</span>
-          <svg class="thread-item-inbox__flag" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg>
+          <button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
         </div>
         
       </div>
-    </button></div></div>
-        <pre class="code"><code>&lt;button class="thread-item-inbox thread-item-inbox--read"&gt;
+    </div></div></div>
+        <pre class="code"><code>&lt;div class="thread-item-inbox thread-item-inbox--read" role="button" tabindex="0"&gt;
       &lt;span class="avatar avatar--teal" role="img" aria-label="Academic Advising"&gt;&lt;span class="avatar__initials"&gt;AA&lt;/span&gt;&lt;/span&gt;
       &lt;div class="thread-item-inbox__main"&gt;
         &lt;div class="thread-item-inbox__top"&gt;
@@ -588,17 +616,17 @@ document.querySelectorAll(".thread-item-inbox-demo .thread-item-inbox").forEach(
         &lt;div class="thread-item-inbox__subject"&gt;Question about fall registration&lt;/div&gt;
         &lt;div class="thread-item-inbox__preview-row"&gt;
           &lt;span class="thread-item-inbox__preview"&gt;Hi Alexander, I wanted to check whether …&lt;/span&gt;
-          &lt;svg class="thread-item-inbox__flag" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"&gt;&lt;path d="M0 0h24v24H0z" fill="none"/&gt;&lt;path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/&gt;&lt;/svg&gt;
+          &lt;button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"&gt;&lt;svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"&gt;&lt;path d="M0 0h24v24H0V0z" fill="none"/&gt;&lt;path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/&gt;&lt;/svg&gt;&lt;svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"&gt;&lt;path d="M0 0h24v24H0z" fill="none"/&gt;&lt;path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/&gt;&lt;/svg&gt;&lt;/button&gt;
         &lt;/div&gt;
         
       &lt;/div&gt;
-    &lt;/button&gt;</code></pre>
+    &lt;/div&gt;</code></pre>
         <p class="story-note">surface.page bg (blends into the rail), identity/subject at weight.normal in text.secondary, preview text.muted.</p>
       </div>
 
       <div class="story">
         <h3>selected</h3>
-        <div class="story-preview"><div class="thread-list"><button class="thread-item-inbox thread-item-inbox--read thread-item-inbox--selected">
+        <div class="story-preview"><div class="thread-list"><div class="thread-item-inbox thread-item-inbox--read thread-item-inbox--selected" role="button" tabindex="0">
       <span class="avatar avatar--teal" role="img" aria-label="Academic Advising"><span class="avatar__initials">AA</span></span>
       <div class="thread-item-inbox__main">
         <div class="thread-item-inbox__top">
@@ -608,12 +636,12 @@ document.querySelectorAll(".thread-item-inbox-demo .thread-item-inbox").forEach(
         <div class="thread-item-inbox__subject">Question about fall registration</div>
         <div class="thread-item-inbox__preview-row">
           <span class="thread-item-inbox__preview">Hi Alexander, I wanted to check whether …</span>
-          <svg class="thread-item-inbox__flag" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg>
+          <button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
         </div>
         
       </div>
-    </button></div></div>
-        <pre class="code"><code>&lt;button class="thread-item-inbox thread-item-inbox--read thread-item-inbox--selected"&gt;
+    </div></div></div>
+        <pre class="code"><code>&lt;div class="thread-item-inbox thread-item-inbox--read thread-item-inbox--selected" role="button" tabindex="0"&gt;
       &lt;span class="avatar avatar--teal" role="img" aria-label="Academic Advising"&gt;&lt;span class="avatar__initials"&gt;AA&lt;/span&gt;&lt;/span&gt;
       &lt;div class="thread-item-inbox__main"&gt;
         &lt;div class="thread-item-inbox__top"&gt;
@@ -623,17 +651,17 @@ document.querySelectorAll(".thread-item-inbox-demo .thread-item-inbox").forEach(
         &lt;div class="thread-item-inbox__subject"&gt;Question about fall registration&lt;/div&gt;
         &lt;div class="thread-item-inbox__preview-row"&gt;
           &lt;span class="thread-item-inbox__preview"&gt;Hi Alexander, I wanted to check whether …&lt;/span&gt;
-          &lt;svg class="thread-item-inbox__flag" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"&gt;&lt;path d="M0 0h24v24H0z" fill="none"/&gt;&lt;path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/&gt;&lt;/svg&gt;
+          &lt;button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"&gt;&lt;svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"&gt;&lt;path d="M0 0h24v24H0V0z" fill="none"/&gt;&lt;path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/&gt;&lt;/svg&gt;&lt;svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"&gt;&lt;path d="M0 0h24v24H0z" fill="none"/&gt;&lt;path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/&gt;&lt;/svg&gt;&lt;/button&gt;
         &lt;/div&gt;
         
       &lt;/div&gt;
-    &lt;/button&gt;</code></pre>
+    &lt;/div&gt;</code></pre>
         <p class="story-note">bg.primary, applied persistently — same meaning as the card shape's selected, minus the border (a flat row has none).</p>
       </div>
 
       <div class="story">
-        <h3>with Expires (warning)</h3>
-        <div class="story-preview"><div class="thread-list"><button class="thread-item-inbox thread-item-inbox--unread">
+        <h3>flagged</h3>
+        <div class="story-preview"><div class="thread-list"><div class="thread-item-inbox thread-item-inbox--unread" role="button" tabindex="0">
       <span class="avatar avatar--amber" role="img" aria-label="Financial Aid"><span class="avatar__initials">FA</span></span>
       <div class="thread-item-inbox__main">
         <div class="thread-item-inbox__top">
@@ -643,12 +671,12 @@ document.querySelectorAll(".thread-item-inbox-demo .thread-item-inbox").forEach(
         <div class="thread-item-inbox__subject">Course withdrawal deadline</div>
         <div class="thread-item-inbox__preview-row">
           <span class="thread-item-inbox__preview">Hey Alex, I did alright on my quiz b…</span>
-          <svg class="thread-item-inbox__flag" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg>
+          <button class="thread-item-inbox__flag-btn" type="button" aria-pressed="true" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
         </div>
-        <div class="thread-item-inbox__expires"><span class="badge badge--role-warning">Expires Jul 20</span></div>
+        
       </div>
-    </button></div></div>
-        <pre class="code"><code>&lt;button class="thread-item-inbox thread-item-inbox--unread"&gt;
+    </div></div></div>
+        <pre class="code"><code>&lt;div class="thread-item-inbox thread-item-inbox--unread" role="button" tabindex="0"&gt;
       &lt;span class="avatar avatar--amber" role="img" aria-label="Financial Aid"&gt;&lt;span class="avatar__initials"&gt;FA&lt;/span&gt;&lt;/span&gt;
       &lt;div class="thread-item-inbox__main"&gt;
         &lt;div class="thread-item-inbox__top"&gt;
@@ -658,84 +686,17 @@ document.querySelectorAll(".thread-item-inbox-demo .thread-item-inbox").forEach(
         &lt;div class="thread-item-inbox__subject"&gt;Course withdrawal deadline&lt;/div&gt;
         &lt;div class="thread-item-inbox__preview-row"&gt;
           &lt;span class="thread-item-inbox__preview"&gt;Hey Alex, I did alright on my quiz b…&lt;/span&gt;
-          &lt;svg class="thread-item-inbox__flag" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"&gt;&lt;path d="M0 0h24v24H0z" fill="none"/&gt;&lt;path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/&gt;&lt;/svg&gt;
+          &lt;button class="thread-item-inbox__flag-btn" type="button" aria-pressed="true" aria-label="Flag thread"&gt;&lt;svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"&gt;&lt;path d="M0 0h24v24H0V0z" fill="none"/&gt;&lt;path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/&gt;&lt;/svg&gt;&lt;svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"&gt;&lt;path d="M0 0h24v24H0z" fill="none"/&gt;&lt;path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/&gt;&lt;/svg&gt;&lt;/button&gt;
         &lt;/div&gt;
-        &lt;div class="thread-item-inbox__expires"&gt;&lt;span class="badge badge--role-warning"&gt;Expires Jul 20&lt;/span&gt;&lt;/div&gt;
+        
       &lt;/div&gt;
-    &lt;/button&gt;</code></pre>
-        <p class="story-note">Expires sits on its own row, left-aligned under the preview text — moved here from the live app's right-aligned column next to the timestamp.</p>
+    &lt;/div&gt;</code></pre>
+        <p class="story-note">The flag is a real per-thread toggle (click it — it works, and doesn't open the row): outlined flag in icon.muted when off, filled flag in icon.warning when on. Both glyphs always in the DOM, swapped via aria-pressed CSS.</p>
       </div>
 
       <div class="story">
-        <h3>with Expires (expired)</h3>
-        <div class="story-preview"><div class="thread-list"><button class="thread-item-inbox thread-item-inbox--read">
-      <span class="avatar avatar--teal" role="img" aria-label="Academic Advising"><span class="avatar__initials">AA</span></span>
-      <div class="thread-item-inbox__main">
-        <div class="thread-item-inbox__top">
-          <span class="thread-item-inbox__identity">Academic Advising</span>
-          <span class="thread-item-inbox__time">Jul 8</span>
-        </div>
-        <div class="thread-item-inbox__subject">Advisement Outreach</div>
-        <div class="thread-item-inbox__preview-row">
-          <span class="thread-item-inbox__preview">Thank you for the details about the…</span>
-          <svg class="thread-item-inbox__flag" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg>
-        </div>
-        <div class="thread-item-inbox__expires"><span class="badge badge--role-danger">Expired Jul 10</span></div>
-      </div>
-    </button></div></div>
-        <pre class="code"><code>&lt;button class="thread-item-inbox thread-item-inbox--read"&gt;
-      &lt;span class="avatar avatar--teal" role="img" aria-label="Academic Advising"&gt;&lt;span class="avatar__initials"&gt;AA&lt;/span&gt;&lt;/span&gt;
-      &lt;div class="thread-item-inbox__main"&gt;
-        &lt;div class="thread-item-inbox__top"&gt;
-          &lt;span class="thread-item-inbox__identity"&gt;Academic Advising&lt;/span&gt;
-          &lt;span class="thread-item-inbox__time"&gt;Jul 8&lt;/span&gt;
-        &lt;/div&gt;
-        &lt;div class="thread-item-inbox__subject"&gt;Advisement Outreach&lt;/div&gt;
-        &lt;div class="thread-item-inbox__preview-row"&gt;
-          &lt;span class="thread-item-inbox__preview"&gt;Thank you for the details about the…&lt;/span&gt;
-          &lt;svg class="thread-item-inbox__flag" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"&gt;&lt;path d="M0 0h24v24H0z" fill="none"/&gt;&lt;path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/&gt;&lt;/svg&gt;
-        &lt;/div&gt;
-        &lt;div class="thread-item-inbox__expires"&gt;&lt;span class="badge badge--role-danger"&gt;Expired Jul 10&lt;/span&gt;&lt;/div&gt;
-      &lt;/div&gt;
-    &lt;/button&gt;</code></pre>
-        
-      </div>
-    </div>
-
-    <h2 class="big-section">Inbox row — in context</h2>
-    <p class="section-desc">A real, single-select inbox list — click any row to select it and mark it read.</p>
-    <div class="usage-preview"><div class="thread-list thread-item-inbox-demo" style="max-width:400px; border:1px solid var(--tok-border-default); border-bottom:none;">
-      <button class="thread-item-inbox thread-item-inbox--unread">
-      <span class="avatar avatar--teal" role="img" aria-label="Academic Advising"><span class="avatar__initials">AA</span></span>
-      <div class="thread-item-inbox__main">
-        <div class="thread-item-inbox__top">
-          <span class="thread-item-inbox__identity">Academic Advising</span>
-          <span class="thread-item-inbox__time">3:56 PM</span>
-        </div>
-        <div class="thread-item-inbox__subject">Question about fall registration</div>
-        <div class="thread-item-inbox__preview-row">
-          <span class="thread-item-inbox__preview">Hi Alexander, I wanted to check whether …</span>
-          <svg class="thread-item-inbox__flag" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg>
-        </div>
-        
-      </div>
-    </button>
-      <button class="thread-item-inbox thread-item-inbox--unread">
-      <span class="avatar avatar--teal" role="img" aria-label="Academic Advising"><span class="avatar__initials">AA</span></span>
-      <div class="thread-item-inbox__main">
-        <div class="thread-item-inbox__top">
-          <span class="thread-item-inbox__identity">Academic Advising</span>
-          <span class="thread-item-inbox__time">11:20 AM</span>
-        </div>
-        <div class="thread-item-inbox__subject">Satisfactory Academic Progress Plan</div>
-        <div class="thread-item-inbox__preview-row">
-          <span class="thread-item-inbox__preview">Okay I will contact my advisor soon. Tha…</span>
-          <svg class="thread-item-inbox__flag" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg>
-        </div>
-        
-      </div>
-    </button>
-      <button class="thread-item-inbox thread-item-inbox--read thread-item-inbox--selected">
+        <h3>with Expires (warning)</h3>
+        <div class="story-preview"><div class="thread-list"><div class="thread-item-inbox thread-item-inbox--unread" role="button" tabindex="0">
       <span class="avatar avatar--amber" role="img" aria-label="Financial Aid"><span class="avatar__initials">FA</span></span>
       <div class="thread-item-inbox__main">
         <div class="thread-item-inbox__top">
@@ -745,12 +706,32 @@ document.querySelectorAll(".thread-item-inbox-demo .thread-item-inbox").forEach(
         <div class="thread-item-inbox__subject">Course withdrawal deadline</div>
         <div class="thread-item-inbox__preview-row">
           <span class="thread-item-inbox__preview">Hey Alex, I did alright on my quiz b…</span>
-          <svg class="thread-item-inbox__flag" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg>
+          <button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
         </div>
         <div class="thread-item-inbox__expires"><span class="badge badge--role-warning">Expires Jul 20</span></div>
       </div>
-    </button>
-      <button class="thread-item-inbox thread-item-inbox--read">
+    </div></div></div>
+        <pre class="code"><code>&lt;div class="thread-item-inbox thread-item-inbox--unread" role="button" tabindex="0"&gt;
+      &lt;span class="avatar avatar--amber" role="img" aria-label="Financial Aid"&gt;&lt;span class="avatar__initials"&gt;FA&lt;/span&gt;&lt;/span&gt;
+      &lt;div class="thread-item-inbox__main"&gt;
+        &lt;div class="thread-item-inbox__top"&gt;
+          &lt;span class="thread-item-inbox__identity"&gt;Financial Aid&lt;/span&gt;
+          &lt;span class="thread-item-inbox__time"&gt;Jul 10&lt;/span&gt;
+        &lt;/div&gt;
+        &lt;div class="thread-item-inbox__subject"&gt;Course withdrawal deadline&lt;/div&gt;
+        &lt;div class="thread-item-inbox__preview-row"&gt;
+          &lt;span class="thread-item-inbox__preview"&gt;Hey Alex, I did alright on my quiz b…&lt;/span&gt;
+          &lt;button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"&gt;&lt;svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"&gt;&lt;path d="M0 0h24v24H0V0z" fill="none"/&gt;&lt;path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/&gt;&lt;/svg&gt;&lt;svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"&gt;&lt;path d="M0 0h24v24H0z" fill="none"/&gt;&lt;path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/&gt;&lt;/svg&gt;&lt;/button&gt;
+        &lt;/div&gt;
+        &lt;div class="thread-item-inbox__expires"&gt;&lt;span class="badge badge--role-warning"&gt;Expires Jul 20&lt;/span&gt;&lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;</code></pre>
+        <p class="story-note">Expires sits on its own row, left-aligned under the preview text — moved here from the live app's right-aligned column next to the timestamp.</p>
+      </div>
+
+      <div class="story">
+        <h3>with Expires (expired)</h3>
+        <div class="story-preview"><div class="thread-list"><div class="thread-item-inbox thread-item-inbox--read" role="button" tabindex="0">
       <span class="avatar avatar--teal" role="img" aria-label="Academic Advising"><span class="avatar__initials">AA</span></span>
       <div class="thread-item-inbox__main">
         <div class="thread-item-inbox__top">
@@ -760,12 +741,94 @@ document.querySelectorAll(".thread-item-inbox-demo .thread-item-inbox").forEach(
         <div class="thread-item-inbox__subject">Advisement Outreach</div>
         <div class="thread-item-inbox__preview-row">
           <span class="thread-item-inbox__preview">Thank you for the details about the…</span>
-          <svg class="thread-item-inbox__flag" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg>
+          <button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
         </div>
         <div class="thread-item-inbox__expires"><span class="badge badge--role-danger">Expired Jul 10</span></div>
       </div>
-    </button>
-      <button class="thread-item-inbox thread-item-inbox--read">
+    </div></div></div>
+        <pre class="code"><code>&lt;div class="thread-item-inbox thread-item-inbox--read" role="button" tabindex="0"&gt;
+      &lt;span class="avatar avatar--teal" role="img" aria-label="Academic Advising"&gt;&lt;span class="avatar__initials"&gt;AA&lt;/span&gt;&lt;/span&gt;
+      &lt;div class="thread-item-inbox__main"&gt;
+        &lt;div class="thread-item-inbox__top"&gt;
+          &lt;span class="thread-item-inbox__identity"&gt;Academic Advising&lt;/span&gt;
+          &lt;span class="thread-item-inbox__time"&gt;Jul 8&lt;/span&gt;
+        &lt;/div&gt;
+        &lt;div class="thread-item-inbox__subject"&gt;Advisement Outreach&lt;/div&gt;
+        &lt;div class="thread-item-inbox__preview-row"&gt;
+          &lt;span class="thread-item-inbox__preview"&gt;Thank you for the details about the…&lt;/span&gt;
+          &lt;button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"&gt;&lt;svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"&gt;&lt;path d="M0 0h24v24H0V0z" fill="none"/&gt;&lt;path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/&gt;&lt;/svg&gt;&lt;svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"&gt;&lt;path d="M0 0h24v24H0z" fill="none"/&gt;&lt;path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/&gt;&lt;/svg&gt;&lt;/button&gt;
+        &lt;/div&gt;
+        &lt;div class="thread-item-inbox__expires"&gt;&lt;span class="badge badge--role-danger"&gt;Expired Jul 10&lt;/span&gt;&lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;</code></pre>
+        
+      </div>
+    </div>
+
+    <h2 class="big-section">Inbox row — in context</h2>
+    <p class="section-desc">A real, single-select inbox list — click any row to select it and mark it read.</p>
+    <div class="usage-preview"><div class="thread-list thread-item-inbox-demo" style="max-width:400px; border:1px solid var(--tok-border-default); border-bottom:none;">
+      <div class="thread-item-inbox thread-item-inbox--unread" role="button" tabindex="0">
+      <span class="avatar avatar--teal" role="img" aria-label="Academic Advising"><span class="avatar__initials">AA</span></span>
+      <div class="thread-item-inbox__main">
+        <div class="thread-item-inbox__top">
+          <span class="thread-item-inbox__identity">Academic Advising</span>
+          <span class="thread-item-inbox__time">3:56 PM</span>
+        </div>
+        <div class="thread-item-inbox__subject">Question about fall registration</div>
+        <div class="thread-item-inbox__preview-row">
+          <span class="thread-item-inbox__preview">Hi Alexander, I wanted to check whether …</span>
+          <button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
+        </div>
+        
+      </div>
+    </div>
+      <div class="thread-item-inbox thread-item-inbox--unread" role="button" tabindex="0">
+      <span class="avatar avatar--teal" role="img" aria-label="Academic Advising"><span class="avatar__initials">AA</span></span>
+      <div class="thread-item-inbox__main">
+        <div class="thread-item-inbox__top">
+          <span class="thread-item-inbox__identity">Academic Advising</span>
+          <span class="thread-item-inbox__time">11:20 AM</span>
+        </div>
+        <div class="thread-item-inbox__subject">Satisfactory Academic Progress Plan</div>
+        <div class="thread-item-inbox__preview-row">
+          <span class="thread-item-inbox__preview">Okay I will contact my advisor soon. Tha…</span>
+          <button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
+        </div>
+        
+      </div>
+    </div>
+      <div class="thread-item-inbox thread-item-inbox--read thread-item-inbox--selected" role="button" tabindex="0">
+      <span class="avatar avatar--amber" role="img" aria-label="Financial Aid"><span class="avatar__initials">FA</span></span>
+      <div class="thread-item-inbox__main">
+        <div class="thread-item-inbox__top">
+          <span class="thread-item-inbox__identity">Financial Aid</span>
+          <span class="thread-item-inbox__time">Jul 10</span>
+        </div>
+        <div class="thread-item-inbox__subject">Course withdrawal deadline</div>
+        <div class="thread-item-inbox__preview-row">
+          <span class="thread-item-inbox__preview">Hey Alex, I did alright on my quiz b…</span>
+          <button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
+        </div>
+        <div class="thread-item-inbox__expires"><span class="badge badge--role-warning">Expires Jul 20</span></div>
+      </div>
+    </div>
+      <div class="thread-item-inbox thread-item-inbox--read" role="button" tabindex="0">
+      <span class="avatar avatar--teal" role="img" aria-label="Academic Advising"><span class="avatar__initials">AA</span></span>
+      <div class="thread-item-inbox__main">
+        <div class="thread-item-inbox__top">
+          <span class="thread-item-inbox__identity">Academic Advising</span>
+          <span class="thread-item-inbox__time">Jul 8</span>
+        </div>
+        <div class="thread-item-inbox__subject">Advisement Outreach</div>
+        <div class="thread-item-inbox__preview-row">
+          <span class="thread-item-inbox__preview">Thank you for the details about the…</span>
+          <button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
+        </div>
+        <div class="thread-item-inbox__expires"><span class="badge badge--role-danger">Expired Jul 10</span></div>
+      </div>
+    </div>
+      <div class="thread-item-inbox thread-item-inbox--read" role="button" tabindex="0">
       <span class="avatar avatar--teal" role="img" aria-label="Academic Advising"><span class="avatar__initials">AA</span></span>
       <div class="thread-item-inbox__main">
         <div class="thread-item-inbox__top">
@@ -775,25 +838,36 @@ document.querySelectorAll(".thread-item-inbox-demo .thread-item-inbox").forEach(
         <div class="thread-item-inbox__subject">Study Session</div>
         <div class="thread-item-inbox__preview-row">
           <span class="thread-item-inbox__preview">That works for me — I can make th…</span>
-          <svg class="thread-item-inbox__flag" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg>
+          <button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
         </div>
         <div class="thread-item-inbox__expires"><span class="badge badge--role-neutral">Expires Sep 30</span></div>
       </div>
-    </button>
+    </div>
     </div></div>
     <pre class="code"><code>&lt;div class="thread-list"&gt;
-  &lt;button class="thread-item-inbox thread-item-inbox--unread"&gt;…&lt;/button&gt;
-  &lt;button class="thread-item-inbox thread-item-inbox--unread"&gt;…&lt;/button&gt;
-  &lt;button class="thread-item-inbox thread-item-inbox--read thread-item-inbox--selected"&gt;…&lt;/button&gt;
+  &lt;div class="thread-item-inbox thread-item-inbox--unread" role="button" tabindex="0"&gt;
+    …
+    &lt;button class="thread-item-inbox__flag-btn" aria-pressed="false" aria-label="Flag thread"&gt;
+      &lt;!-- icon: flag (outlined) --&gt;&lt;!-- icon: flag (filled) --&gt;
+    &lt;/button&gt;
+    …
+  &lt;/div&gt;
+  &lt;div class="thread-item-inbox thread-item-inbox--read thread-item-inbox--selected" role="button" tabindex="0"&gt;…&lt;/div&gt;
   …
 &lt;/div&gt;
 &lt;script&gt;
-  // click selects the row and marks it read — real single-select
-  document.querySelectorAll(".thread-item-inbox-demo .thread-item-inbox").forEach((btn) =&gt; {
-    btn.addEventListener("click", () =&gt; {
-      btn.parentElement.querySelectorAll(".thread-item-inbox").forEach((b) =&gt; b.classList.remove("thread-item-inbox--selected"));
-      btn.classList.remove("thread-item-inbox--unread");
-      btn.classList.add("thread-item-inbox--read", "thread-item-inbox--selected");
+  // flag toggles without opening the row; row click selects + marks read
+  document.querySelectorAll(".thread-item-inbox__flag-btn").forEach((flag) =&gt; {
+    flag.addEventListener("click", (e) =&gt; {
+      e.stopPropagation();
+      flag.setAttribute("aria-pressed", flag.getAttribute("aria-pressed") === "true" ? "false" : "true");
+    });
+  });
+  document.querySelectorAll(".thread-item-inbox").forEach((row) =&gt; {
+    row.addEventListener("click", () =&gt; {
+      row.parentElement.querySelectorAll(".thread-item-inbox").forEach((b) =&gt; b.classList.remove("thread-item-inbox--selected"));
+      row.classList.remove("thread-item-inbox--unread");
+      row.classList.add("thread-item-inbox--read", "thread-item-inbox--selected");
     });
   });
 &lt;/script&gt;</code></pre>
@@ -806,11 +880,24 @@ document.querySelectorAll(".thread-item-inbox-demo .thread-item-inbox").forEach(
   });
 });
 
-document.querySelectorAll(".thread-item-inbox-demo .thread-item-inbox").forEach((btn) => {
-  btn.addEventListener("click", () => {
-    btn.parentElement.querySelectorAll(".thread-item-inbox").forEach((b) => b.classList.remove("thread-item-inbox--selected"));
-    btn.classList.remove("thread-item-inbox--unread");
-    btn.classList.add("thread-item-inbox--read", "thread-item-inbox--selected");
+// every flag on the page is a real toggle; stopPropagation keeps a flag
+// click from also selecting/reading the row it sits in
+document.querySelectorAll(".thread-item-inbox__flag-btn").forEach((flag) => {
+  flag.addEventListener("click", (e) => {
+    e.stopPropagation();
+    flag.setAttribute("aria-pressed", flag.getAttribute("aria-pressed") === "true" ? "false" : "true");
+  });
+});
+document.querySelectorAll(".thread-item-inbox-demo .thread-item-inbox").forEach((row) => {
+  const activate = () => {
+    row.parentElement.querySelectorAll(".thread-item-inbox").forEach((b) => b.classList.remove("thread-item-inbox--selected"));
+    row.classList.remove("thread-item-inbox--unread");
+    row.classList.add("thread-item-inbox--read", "thread-item-inbox--selected");
+  };
+  row.addEventListener("click", activate);
+  // role="button" divs don't get Enter/Space for free the way a real <button> does
+  row.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); activate(); }
   });
 });</script>
 </body>

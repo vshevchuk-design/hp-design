@@ -67,8 +67,10 @@
         "timeColor": { "$type": "color", "$value": "{text.muted}" },
         "preview": { "$type": "typography", "$value": "{text-style.body-sm}" },
         "flag": {
+          "$description": "2026-07-24: the flag became a real, clickable per-thread toggle (student marks a thread important), not a static staff-side glyph. Unflagged = the OUTLINED flag icon (assets/icons/material-outlined/flag.svg — first outlined icon in the repo, sourced 2026-07-24) in icon.muted; flagged = the FILLED flag (material-filled/flag.svg) in icon.warning (yellow). Because the row now contains a nested interactive element, the inbox row is a <div role='button' tabindex='0'> with a real nested <button> for the flag — the same no-interactive-inside-interactive resolution Attachment's idle shape already established (a real <button> can't nest another one).",
           "iconSize": { "$type": "dimension", "$value": "{dim.4}" },
-          "color": { "$type": "color", "$value": "{icon.muted}" }
+          "color": { "$type": "color", "$value": "{icon.muted}" },
+          "flaggedColor": { "$type": "color", "$value": "{icon.warning}" }
         },
         "list": {
           "$description": "The full-bleed list presentation: rows separated by a 1px divider, no per-row radius/border/gaps. Hover/pressed reuse the established ghost progression (transparent-ish rest → fill.neutralHover → fill.neutralActive) because a flat borderless row has nothing for the card shell's blue hover border to attach to.",
@@ -86,8 +88,8 @@
           "previewColor": { "$type": "color", "$value": "{text.secondary}" }
         },
         "read": {
-          "$description": "Already-opened thread — grayer and lower-contrast: surface.sunken bg (NOT surface.page — that's literally white, same as unread's surface.default, so it can't dim anything; surface.sunken's own $description explicitly sanctions 'table row stripes', which is exactly what a read row is), text.secondary identity/subject at weight.normal, text.muted preview.",
-          "bg": { "$type": "color", "$value": "{surface.sunken}" },
+          "$description": "Already-opened thread — grayer and lower-contrast: surface.dim bg (2026-07-24: first tried surface.page — literally white, dims nothing — then surface.sunken/gray.100, which explicit feedback called too heavy next to unread's white; surface.dim/gray.50 was added to the semantic layer for exactly this), text.secondary identity/subject at weight.normal, text.muted preview.",
+          "bg": { "$type": "color", "$value": "{surface.dim}" },
           "identityColor": { "$type": "color", "$value": "{text.secondary}" },
           "identityWeight": { "$type": "fontWeight", "$value": "{weight.normal}" },
           "subjectColor": { "$type": "color", "$value": "{text.secondary}" },

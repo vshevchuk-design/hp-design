@@ -10,6 +10,7 @@
   --tok-surface-page: #ffffff;
   --tok-surface-default: #ffffff;
   --tok-surface-sunken: #e8e8e8;
+  --tok-surface-dim: #f5f5f5;
   --tok-border-default: #d1d1d1;
   --tok-border-strong: #b4b4b4;
   --tok-border-focus: #0468c4;
@@ -22,6 +23,8 @@
   --tok-icon-secondary: #808080;
   --tok-icon-muted: #989898;
   --tok-icon-on-fill: #ffffff;
+  --tok-icon-primary: #077fec;
+  --tok-icon-warning: #b26f07;
   --tok-fill-primary: #077fec;
   --tok-fill-primary-hover: #0468c4;
   --tok-fill-primary-active: #01519c;
@@ -29,6 +32,7 @@
   --tok-fill-neutral-hover: #d1d1d1;
   --tok-fill-neutral-active: #b4b4b4;
   --tok-bg-primary: #d9eaff;
+  --tok-bg-neutral: #e8e8e8;
   --tok-bg-warning: #ffe2c5;
   --tok-text-warning: #935a03;
   --tok-bg-danger: #ffdfde;
@@ -49,12 +53,27 @@
 }
 
 /* ---- component recipes, resolved from each component's own token file ---- */
-.tabs--underline { display: flex; align-items: stretch; gap: 24px; border-bottom: 1px solid var(--tok-border-default); }
+.tabs--segmented { display: flex; align-items: center; gap: 4px; background: var(--tok-surface-sunken); border-radius: 12px; padding: 4px; }
 .tab { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: none; background: transparent; cursor: pointer; white-space: nowrap; color: var(--tok-text-secondary); font-family: var(--tok-family-sans); font-weight: 400; font-size: 14px; line-height: 1.2; }
 .tab--base { height: 40px; padding: 0 12px; }
-.tabs--underline .tab { flex: 1; border-bottom: 2px solid transparent; margin-bottom: -1px; border-radius: 8px 8px 0 0; }
-.tabs--underline .tab:not(.tab--active):hover { background: var(--tok-fill-neutral-hover); color: var(--tok-text-default); }
-.tabs--underline .tab--active { color: var(--tok-text-default); font-weight: 600; border-bottom-color: var(--tok-border-focus); }
+.tabs--segmented .tab { flex: 1; border-radius: 8px; }
+.tabs--segmented .tab:not(.tab--active):hover { background: var(--tok-fill-neutral-hover); color: var(--tok-text-default); }
+.tabs--segmented .tab--active { background: var(--tok-surface-default); color: var(--tok-text-default); font-weight: 600; }
+
+.counter { display: inline-flex; align-items: center; justify-content: center; font-variant-numeric: tabular-nums; font-family: var(--tok-family-sans); font-weight: 700; border-radius: 999px; }
+.counter[hidden] { display: none; }
+.counter--base { height: 20px; min-width: 20px; padding: 0 6px; font-size: 12px; line-height: 1; }
+.counter--onNeutral.counter--inactive { background: var(--tok-fill-neutral-active); color: var(--tok-text-default); }
+.counter--onNeutral.counter--active { background: var(--tok-fill-primary); color: var(--tok-text-on-fill); }
+
+.chip { box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 32px; padding: 0 12px; border-radius: 999px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); color: var(--tok-text-default); cursor: pointer; white-space: nowrap; flex-shrink: 0; font-family: var(--tok-family-sans); font-weight: 600; font-size: 14px; line-height: 1; }
+.chip .chip__icon { width: 16px; height: 16px; color: var(--tok-icon-default); }
+.chip:not([aria-pressed="true"]):not(.chip--checked-outline):hover { border-color: var(--tok-fill-primary); }
+.chip[aria-pressed="true"] { background: var(--tok-fill-primary); border-color: var(--tok-fill-primary); color: var(--tok-text-on-fill); }
+.chip[aria-pressed="true"]:hover { background: var(--tok-fill-primary-hover); border-color: var(--tok-fill-primary-hover); }
+.chip--checked-outline { background: var(--tok-bg-primary); border-color: var(--tok-fill-primary); color: var(--tok-text-primary); }
+.chip--checked-outline .chip__icon { color: var(--tok-icon-primary); }
+.chip:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
 
 .search { display: inline-flex; align-items: center; box-sizing: border-box; background: var(--tok-surface-sunken); border: 1px solid var(--tok-border-default); border-radius: 8px; font-family: var(--tok-family-sans); cursor: text; }
 .search--base { height: 40px; padding: 0 12px; gap: 8px; }
@@ -66,16 +85,6 @@
 .search__input::placeholder { color: var(--tok-text-muted); }
 .search:hover { border-color: var(--tok-border-strong); }
 .search:focus-within { border-color: var(--tok-border-focus); }
-
-.select { display: inline-flex; align-items: center; box-sizing: border-box; background: var(--tok-surface-sunken); border: 1px solid var(--tok-border-default); border-radius: 8px; font-family: var(--tok-family-sans); cursor: pointer; text-align: left; }
-.select--base { height: 40px; padding: 0 12px; gap: 8px; }
-.select--base .select__chevron { width: 20px; height: 20px; }
-.select__chevron { flex-shrink: 0; margin-left: auto; color: var(--tok-icon-default); }
-.select__stack { display: flex; flex-direction: column; justify-content: center; flex: 1; min-width: 0; gap: 0px; }
-.select__label { color: var(--tok-text-muted); font-weight: 400; font-size: 12px; line-height: 1.2; }
-.select__value { color: var(--tok-text-default); font-weight: 400; font-size: 16px; line-height: 1.2; }
-.select:hover { border-color: var(--tok-border-strong); }
-.select:focus-visible { outline: none; border-color: var(--tok-border-focus); }
 
 .listbox { margin: 0; box-sizing: border-box; padding: 4px; border-radius: 8px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); box-shadow: 0px 2px 8px 0px rgba(21, 25, 30, 0.10); font-family: var(--tok-family-sans); min-width: 200px; }
 .listbox__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
@@ -91,13 +100,21 @@
 .thread-item-inbox__identity { font-weight: 600; font-size: 12px; line-height: 1.2; }
 .thread-item-inbox__time { flex-shrink: 0; color: var(--tok-text-muted); font-weight: 400; font-size: 10px; line-height: 1.2; }
 .thread-item-inbox__subject { font-weight: 600; font-size: 14px; line-height: 1.4; }
-.thread-item-inbox__preview { color: var(--tok-text-muted); font-weight: 400; font-size: 12px; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.thread-item-inbox__expires { margin-top: 2px; }
+.thread-item-inbox__preview-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.thread-item-inbox__preview { flex: 1; min-width: 0; color: var(--tok-text-muted); font-weight: 400; font-size: 12px; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.thread-item-inbox__flag-btn { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; border: none; background: none; padding: 2px; margin: -2px 0; border-radius: 4px; cursor: pointer; color: var(--tok-icon-muted); }
+.thread-item-inbox__flag-btn svg { width: 16px; height: 16px; display: block; }
+.thread-item-inbox__flag-btn:hover { background: var(--tok-fill-neutral-hover); }
+.thread-item-inbox__flag-btn:focus-visible { outline: 2px solid var(--tok-border-focus); outline-offset: 0; }
+.thread-item-inbox__flag-btn .thread-item-inbox__flag-filled { display: none; color: var(--tok-icon-warning); }
+.thread-item-inbox__flag-btn[aria-pressed="true"] .thread-item-inbox__flag-outlined { display: none; }
+.thread-item-inbox__flag-btn[aria-pressed="true"] .thread-item-inbox__flag-filled { display: block; }
+.thread-item-inbox__expires { margin-top: 2px; display: flex; flex-wrap: wrap; gap: 4px; }
 .thread-item-inbox--unread { background: var(--tok-surface-default); }
 .thread-item-inbox--unread .thread-item-inbox__identity { color: var(--tok-text-default); font-weight: 600; }
 .thread-item-inbox--unread .thread-item-inbox__subject { color: var(--tok-text-default); font-weight: 600; }
 .thread-item-inbox--unread .thread-item-inbox__preview { color: var(--tok-text-secondary); }
-.thread-item-inbox--read { background: var(--tok-surface-sunken); }
+.thread-item-inbox--read { background: var(--tok-surface-dim); }
 .thread-item-inbox--read .thread-item-inbox__identity { color: var(--tok-text-secondary); font-weight: 400; }
 .thread-item-inbox--read .thread-item-inbox__subject { color: var(--tok-text-secondary); font-weight: 400; }
 .thread-item-inbox--read .thread-item-inbox__preview { color: var(--tok-text-muted); }
@@ -109,6 +126,7 @@
 .badge { box-sizing: border-box; display: inline-flex; align-items: center; border-radius: 999px; height: 16px; padding: 0 4px; font-weight: 600; font-size: 10px; line-height: 1; white-space: nowrap; }
 .badge--role-warning { background: var(--tok-bg-warning); color: var(--tok-text-warning); }
 .badge--role-danger { background: var(--tok-bg-danger); color: var(--tok-text-danger); }
+.badge--role-neutral { background: var(--tok-bg-neutral); color: var(--tok-text-default); }
 
 .avatar { box-sizing: border-box; position: relative; display: inline-flex; flex-shrink: 0; align-items: center; justify-content: center; overflow: hidden; border-radius: 999px; width: 40px; height: 40px; font-family: var(--tok-family-sans); user-select: none; }
 .avatar__initials { text-transform: uppercase; font-weight: 600; font-size: 14px; line-height: 1; }
@@ -212,12 +230,12 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .mc--thread-open .mc__rail { display: none; }
 .mc--thread-open .mc__reading { display: flex; }
 
-.mc-rail__tabs { padding: 8px 16px 0; }
-.mc-rail__controls { display: flex; gap: 8px; padding: 12px 16px; }
-.mc-rail__controls .search { flex: 1; min-width: 0; }
-.mc-rail__controls .select { flex-shrink: 0; min-width: 120px; }
-.mc-rail__count { padding: 0 16px; display: flex; flex-direction: column; gap: 8px; }
-.mc-count { color: var(--tok-text-muted); font-weight: 700; font-size: 12px; line-height: 1.4; text-transform: uppercase; }
+.mc-rail__search { padding: 12px 16px 0; }
+.mc-rail__search .search { display: flex; width: 100%; }
+.mc-rail__tabs { padding: 12px 16px 0; }
+.mc-rail__chips { display: flex; gap: 8px; padding: 12px 16px; overflow-x: auto; }
+.mc-rail__count { display: flex; flex-direction: column; gap: 8px; }
+.mc-count { padding: 0 16px; color: var(--tok-text-muted); font-weight: 700; font-size: 12px; line-height: 1.4; text-transform: uppercase; }
 .mc-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
 .mc-list[hidden] { display: none; }
 
@@ -235,6 +253,14 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .mc-thread__meta-value { color: var(--tok-text-default); font-weight: 400; font-size: 12px; line-height: 1.4; }
 .mc-thread__scroll { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 24px; }
 .mc-thread__composer { flex-shrink: 0; padding: 12px 16px 16px; }
+
+/* search-scope badges (Inbox/Archived) — declared here, after the component
+   recipes, so their display:none outranks .badge's own display in the
+   cascade; visible only while a search query is active */
+.thread-item-inbox__expires .thread-item-inbox__scope { display: none; }
+.mc--searching .thread-item-inbox__expires .thread-item-inbox__scope { display: inline-flex; }
+.thread-item-inbox__expires--scope-only { display: none; }
+.mc--searching .thread-item-inbox__expires--scope-only { display: flex; }
 
 @media (min-width: 768px) {
   .mc__rail, .mc--thread-open .mc__rail { display: flex; flex: none; width: 320px; border-right: 1px solid var(--tok-border-default); }
@@ -255,27 +281,31 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   <header class="mc__topbar"><h1>Message Center</h1></header>
   <div class="mc__body">
     <aside class="mc__rail" aria-label="Thread list">
+      <div class="mc-rail__search">
+        <div class="search search--base">
+          <svg class="search__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+          <input class="search__input" id="mc-search-input" placeholder="Search all threads" aria-label="Search all threads" />
+          <button class="search__clear" id="mc-search-clear" type="button" aria-label="Clear search" hidden><svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
+        </div>
+      </div>
       <div class="mc-rail__tabs">
-        <div class="tabs tabs--underline tabs--base" role="tablist">
-          <button class="tab tab--base tab--active" role="tab" aria-selected="true" data-tab="inbox">Inbox</button>
+        <div class="tabs tabs--segmented tabs--base" role="tablist">
+          <button class="tab tab--base tab--active" role="tab" aria-selected="true" data-tab="inbox">Inbox<span class="counter counter--base counter--onNeutral counter--active" id="mc-unread-counter">2</span></button>
           <button class="tab tab--base" role="tab" aria-selected="false" data-tab="archived">Archived</button>
         </div>
       </div>
-      <div class="mc-rail__controls">
-        <div class="search search--base">
-          <svg class="search__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-          <input class="search__input" id="mc-search-input" placeholder="Search" aria-label="Search threads" />
-          <button class="search__clear" id="mc-search-clear" type="button" aria-label="Clear search" hidden><svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
-        </div>
-        <button class="select select--base" id="mc-sort-trigger" type="button" popovertarget="mc-sort-listbox">
-          <span class="select__stack"><span class="select__label">Sort By</span><span class="select__value" id="mc-sort-value">Date</span></span>
-          <svg class="select__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>
-        </button>
-        <div class="listbox" id="mc-sort-listbox" popover>
-          <ul class="listbox__list" role="listbox" aria-label="Sort threads by">
-            <li><button class="listbox__option listbox__option--selected" role="option" aria-selected="true" data-key="idx" data-label="Date" type="button">Date<svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li>
-            <li><button class="listbox__option" role="option" aria-selected="false" data-key="subject" data-label="Subject" type="button">Subject<svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li>
-            <li><button class="listbox__option" role="option" aria-selected="false" data-key="department" data-label="Department" type="button">Department<svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li>
+      <div class="mc-rail__chips">
+        <button class="chip chip--base" type="button" aria-pressed="false" data-filter="unread">Unread</button>
+        <button class="chip chip--base" type="button" aria-pressed="false" data-filter="expires">Expires soon</button>
+        <button class="chip chip--base" type="button" aria-pressed="false" data-filter="flagged">Flagged</button>
+        <button class="chip chip--base" type="button" id="mc-dept-chip" popovertarget="mc-dept-listbox" aria-haspopup="listbox"><span id="mc-dept-label">Department</span><svg class="chip__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+        <div class="listbox" id="mc-dept-listbox" popover>
+          <ul class="listbox__list" role="listbox" aria-label="Filter by department">
+            <li><button class="listbox__option listbox__option--selected" role="option" aria-selected="true" data-dept="" type="button">All departments<svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li>
+            <li><button class="listbox__option" role="option" aria-selected="false" data-dept="Academic Advising" type="button">Academic Advising<svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li>
+            <li><button class="listbox__option" role="option" aria-selected="false" data-dept="Office of the Registrar" type="button">Office of the Registrar<svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li>
+            <li><button class="listbox__option" role="option" aria-selected="false" data-dept="English Dept" type="button">English Dept<svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li>
+            <li><button class="listbox__option" role="option" aria-selected="false" data-dept="Financial Aid" type="button">Financial Aid<svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li>
           </ul>
         </div>
       </div>
@@ -284,7 +314,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         <hr class="separator" />
       </div>
       <div class="mc-list" data-list="inbox">
-        <button class="thread-item-inbox thread-item-inbox--unread" data-thread="winter" data-idx="0" data-subject="Winter Intersession" data-department="Academic Advising">
+        <div class="thread-item-inbox thread-item-inbox--unread" role="button" tabindex="0" data-thread="winter" data-idx="0" data-subject="Winter Intersession" data-department="Academic Advising">
         <span class="avatar avatar--teal" role="img" aria-label="Academic Advising"><span class="avatar__initials">AA</span></span>
         <div class="thread-item-inbox__main">
           <div class="thread-item-inbox__top">
@@ -292,11 +322,14 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
             <span class="thread-item-inbox__time">12/19/2025</span>
           </div>
           <div class="thread-item-inbox__subject">Winter Intersession</div>
-          <div class="thread-item-inbox__preview">Are you looking to stay on track or get ahead in your degree progress?</div>
-          
+          <div class="thread-item-inbox__preview-row">
+            <span class="thread-item-inbox__preview">Are you looking to stay on track or get ahead in your degree progress?</span>
+            <button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
+          </div>
+          <div class="thread-item-inbox__expires thread-item-inbox__expires--scope-only"><span class="badge badge--role-neutral thread-item-inbox__scope">Inbox</span></div>
         </div>
-      </button>
-        <button class="thread-item-inbox thread-item-inbox--unread" data-thread="hello" data-idx="1" data-subject="Hello World" data-department="Academic Advising">
+      </div>
+        <div class="thread-item-inbox thread-item-inbox--unread" role="button" tabindex="0" data-thread="hello" data-idx="1" data-subject="Hello World" data-department="Academic Advising">
         <span class="avatar avatar--teal" role="img" aria-label="Academic Advising"><span class="avatar__initials">AA</span></span>
         <div class="thread-item-inbox__main">
           <div class="thread-item-inbox__top">
@@ -304,11 +337,14 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
             <span class="thread-item-inbox__time">12/18/2025</span>
           </div>
           <div class="thread-item-inbox__subject">Hello World</div>
-          <div class="thread-item-inbox__preview">This is a test announcement from Academic Advising.</div>
-          
+          <div class="thread-item-inbox__preview-row">
+            <span class="thread-item-inbox__preview">This is a test announcement from Academic Advising.</span>
+            <button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
+          </div>
+          <div class="thread-item-inbox__expires thread-item-inbox__expires--scope-only"><span class="badge badge--role-neutral thread-item-inbox__scope">Inbox</span></div>
         </div>
-      </button>
-        <button class="thread-item-inbox thread-item-inbox--read" data-thread="registrar" data-idx="2" data-subject="Office of the Registrar Message" data-department="Office of the Registrar">
+      </div>
+        <div class="thread-item-inbox thread-item-inbox--read" role="button" tabindex="0" data-thread="registrar" data-idx="2" data-subject="Office of the Registrar Message" data-department="Office of the Registrar">
         <span class="avatar avatar--orange" role="img" aria-label="Office of the Registrar"><span class="avatar__initials">OR</span></span>
         <div class="thread-item-inbox__main">
           <div class="thread-item-inbox__top">
@@ -316,11 +352,14 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
             <span class="thread-item-inbox__time">12/18/2025</span>
           </div>
           <div class="thread-item-inbox__subject">Office of the Registrar Message</div>
-          <div class="thread-item-inbox__preview">Your requested transcript is attached below.</div>
-          
+          <div class="thread-item-inbox__preview-row">
+            <span class="thread-item-inbox__preview">Your requested transcript is attached below.</span>
+            <button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
+          </div>
+          <div class="thread-item-inbox__expires thread-item-inbox__expires--scope-only"><span class="badge badge--role-neutral thread-item-inbox__scope">Inbox</span></div>
         </div>
-      </button>
-        <button class="thread-item-inbox thread-item-inbox--read" data-thread="waiver" data-idx="3" data-subject="Requirement Waiver Request" data-department="English Dept">
+      </div>
+        <div class="thread-item-inbox thread-item-inbox--read" role="button" tabindex="0" data-thread="waiver" data-idx="3" data-subject="Requirement Waiver Request" data-department="English Dept">
         <span class="avatar avatar--red" role="img" aria-label="English Dept"><span class="avatar__initials">ED</span></span>
         <div class="thread-item-inbox__main">
           <div class="thread-item-inbox__top">
@@ -328,11 +367,14 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
             <span class="thread-item-inbox__time">03/02/2024</span>
           </div>
           <div class="thread-item-inbox__subject">Requirement Waiver Request</div>
-          <div class="thread-item-inbox__preview">Please submit your waiver request to Enrollment Services.</div>
-          
+          <div class="thread-item-inbox__preview-row">
+            <span class="thread-item-inbox__preview">Please submit your waiver request to Enrollment Services.</span>
+            <button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
+          </div>
+          <div class="thread-item-inbox__expires thread-item-inbox__expires--scope-only"><span class="badge badge--role-neutral thread-item-inbox__scope">Inbox</span></div>
         </div>
-      </button>
-        <button class="thread-item-inbox thread-item-inbox--read" data-thread="pell" data-idx="4" data-subject="Close to Pell Lifetime Limits" data-department="Financial Aid">
+      </div>
+        <div class="thread-item-inbox thread-item-inbox--read" role="button" tabindex="0" data-thread="pell" data-idx="4" data-subject="Close to Pell Lifetime Limits" data-department="Financial Aid" data-expires="warning">
         <span class="avatar avatar--amber" role="img" aria-label="Financial Aid"><span class="avatar__initials">FA</span></span>
         <div class="thread-item-inbox__main">
           <div class="thread-item-inbox__top">
@@ -340,11 +382,14 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
             <span class="thread-item-inbox__time">03/01/2024</span>
           </div>
           <div class="thread-item-inbox__subject">Close to Pell Lifetime Limits</div>
-          <div class="thread-item-inbox__preview">You are approaching the lifetime limit of Federal Pell Grant.</div>
-          <div class="thread-item-inbox__expires"><span class="badge badge--role-warning">Expires 03/01/2027</span></div>
+          <div class="thread-item-inbox__preview-row">
+            <span class="thread-item-inbox__preview">You are approaching the lifetime limit of Federal Pell Grant.</span>
+            <button class="thread-item-inbox__flag-btn" type="button" aria-pressed="true" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
+          </div>
+          <div class="thread-item-inbox__expires"><span class="badge badge--role-warning">Expires 03/01/2027</span><span class="badge badge--role-neutral thread-item-inbox__scope">Inbox</span></div>
         </div>
-      </button>
-        <button class="thread-item-inbox thread-item-inbox--read" data-thread="important" data-idx="5" data-subject="Important Information" data-department="Financial Aid">
+      </div>
+        <div class="thread-item-inbox thread-item-inbox--read" role="button" tabindex="0" data-thread="important" data-idx="5" data-subject="Important Information" data-department="Financial Aid">
         <span class="avatar avatar--amber" role="img" aria-label="Financial Aid"><span class="avatar__initials">FA</span></span>
         <div class="thread-item-inbox__main">
           <div class="thread-item-inbox__top">
@@ -352,13 +397,16 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
             <span class="thread-item-inbox__time">02/27/2024</span>
           </div>
           <div class="thread-item-inbox__subject">Important Information</div>
-          <div class="thread-item-inbox__preview">This notice provides information about the 2024-2025 financial aid process.</div>
-          
+          <div class="thread-item-inbox__preview-row">
+            <span class="thread-item-inbox__preview">This notice provides information about the 2024-2025 financial aid process.</span>
+            <button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
+          </div>
+          <div class="thread-item-inbox__expires thread-item-inbox__expires--scope-only"><span class="badge badge--role-neutral thread-item-inbox__scope">Inbox</span></div>
         </div>
-      </button>
+      </div>
       </div>
       <div class="mc-list" data-list="archived" hidden>
-        <button class="thread-item-inbox thread-item-inbox--read" data-thread="outreach" data-idx="6" data-subject="Advisement Outreach" data-department="Academic Advising">
+        <div class="thread-item-inbox thread-item-inbox--read" role="button" tabindex="0" data-thread="outreach" data-idx="6" data-subject="Advisement Outreach" data-department="Academic Advising" data-expires="danger">
         <span class="avatar avatar--teal" role="img" aria-label="Academic Advising"><span class="avatar__initials">AA</span></span>
         <div class="thread-item-inbox__main">
           <div class="thread-item-inbox__top">
@@ -366,11 +414,14 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
             <span class="thread-item-inbox__time">07/08/2025</span>
           </div>
           <div class="thread-item-inbox__subject">Advisement Outreach</div>
-          <div class="thread-item-inbox__preview">Thank you for the details about the upcoming term.</div>
-          <div class="thread-item-inbox__expires"><span class="badge badge--role-danger">Expired Jul 10</span></div>
+          <div class="thread-item-inbox__preview-row">
+            <span class="thread-item-inbox__preview">Thank you for the details about the upcoming term.</span>
+            <button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
+          </div>
+          <div class="thread-item-inbox__expires"><span class="badge badge--role-danger">Expired Jul 10</span><span class="badge badge--role-neutral thread-item-inbox__scope">Archived</span></div>
         </div>
-      </button>
-        <button class="thread-item-inbox thread-item-inbox--read" data-thread="study" data-idx="7" data-subject="Study Session" data-department="Academic Advising">
+      </div>
+        <div class="thread-item-inbox thread-item-inbox--read" role="button" tabindex="0" data-thread="study" data-idx="7" data-subject="Study Session" data-department="Academic Advising">
         <span class="avatar avatar--teal" role="img" aria-label="Academic Advising"><span class="avatar__initials">AA</span></span>
         <div class="thread-item-inbox__main">
           <div class="thread-item-inbox__top">
@@ -378,10 +429,13 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
             <span class="thread-item-inbox__time">06/30/2025</span>
           </div>
           <div class="thread-item-inbox__subject">Study Session</div>
-          <div class="thread-item-inbox__preview">That works for me — I can make that time.</div>
-          
+          <div class="thread-item-inbox__preview-row">
+            <span class="thread-item-inbox__preview">That works for me — I can make that time.</span>
+            <button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
+          </div>
+          <div class="thread-item-inbox__expires thread-item-inbox__expires--scope-only"><span class="badge badge--role-neutral thread-item-inbox__scope">Archived</span></div>
         </div>
-      </button>
+      </div>
       </div>
     </aside>
     <section class="mc__reading" aria-label="Thread">
@@ -718,14 +772,42 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   var countEl = document.getElementById("mc-count");
   var searchInput = document.getElementById("mc-search-input");
   var searchClear = document.getElementById("mc-search-clear");
+  var unreadCounter = document.getElementById("mc-unread-counter");
   var activeList = "inbox";
+  var filters = { unread: false, expires: false, flagged: false };
+  var dept = null;
 
   function rows(listKey) {
     return Array.prototype.slice.call(lists[listKey].querySelectorAll(".thread-item-inbox"));
   }
-  function updateCount() {
-    var visible = rows(activeList).filter(function (r) { return !r.hidden; }).length;
+  function allRows() {
+    return rows("inbox").concat(rows("archived"));
+  }
+  function rowMatches(r) {
+    var q = searchInput.value.trim().toLowerCase();
+    if (q && r.textContent.toLowerCase().indexOf(q) === -1) return false;
+    if (filters.unread && !r.classList.contains("thread-item-inbox--unread")) return false;
+    if (filters.expires && !r.hasAttribute("data-expires")) return false;
+    if (filters.flagged && r.querySelector(".thread-item-inbox__flag-btn").getAttribute("aria-pressed") !== "true") return false;
+    if (dept && r.dataset.department !== dept) return false;
+    return true;
+  }
+  // While searching, the tab split is suspended: both lists show as one
+  // combined result set and every row reveals its Inbox/Archived scope badge.
+  function applyFilter() {
+    var searching = searchInput.value.trim() !== "";
+    mc.classList.toggle("mc--searching", searching);
+    lists.inbox.hidden = searching ? false : activeList !== "inbox";
+    lists.archived.hidden = searching ? false : activeList !== "archived";
+    allRows().forEach(function (r) { r.hidden = !rowMatches(r); });
+    var visible = allRows().filter(function (r) { return !r.hidden && !r.closest(".mc-list").hidden; }).length;
     countEl.textContent = visible + (visible === 1 ? " THREAD" : " THREADS");
+    searchClear.hidden = !searching;
+  }
+  function updateUnreadCounter() {
+    var n = rows("inbox").filter(function (r) { return r.classList.contains("thread-item-inbox--unread"); }).length;
+    unreadCounter.textContent = n;
+    unreadCounter.hidden = n === 0;
   }
   function showPane(id) {
     panes.forEach(function (p) { p.hidden = p.dataset.thread !== id; });
@@ -739,15 +821,33 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   }
 
   // thread selection — single-select across both lists; opening a thread
-  // also marks it read (removes the unread state), the real product behavior
+  // also marks it read (removes the unread state), the real product behavior.
+  // Rows are role="button" divs (they nest the flag toggle), so Enter/Space
+  // need wiring by hand — a real <button> would have given them for free.
   document.querySelectorAll(".thread-item-inbox").forEach(function (row) {
-    row.addEventListener("click", function () {
-      rows("inbox").concat(rows("archived")).forEach(function (r) { r.classList.remove("thread-item-inbox--selected"); });
+    function activate() {
+      allRows().forEach(function (r) { r.classList.remove("thread-item-inbox--selected"); });
       row.classList.remove("thread-item-inbox--unread");
       row.classList.add("thread-item-inbox--read", "thread-item-inbox--selected");
       showPane(row.dataset.thread);
       mc.classList.add("mc--thread-open");
+      updateUnreadCounter();
+      if (filters.unread) applyFilter();
+    }
+    row.addEventListener("click", activate);
+    row.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); activate(); }
     });
+  });
+
+  // flag toggle — marks a thread important without opening it
+  document.querySelectorAll(".thread-item-inbox__flag-btn").forEach(function (flag) {
+    flag.addEventListener("click", function (e) {
+      e.stopPropagation();
+      flag.setAttribute("aria-pressed", flag.getAttribute("aria-pressed") === "true" ? "false" : "true");
+      if (filters.flagged) applyFilter();
+    });
+    flag.addEventListener("keydown", function (e) { e.stopPropagation(); });
   });
 
   // back (mobile only)
@@ -755,7 +855,8 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     btn.addEventListener("click", function () { mc.classList.remove("mc--thread-open"); });
   });
 
-  // Inbox / Archived tabs
+  // Inbox / Archived tabs — the unread Counter also swaps its onNeutral
+  // active/inactive surface with the tab it sits on, same as Tabs' own docs
   document.querySelectorAll(".mc-rail__tabs .tab").forEach(function (tab) {
     tab.addEventListener("click", function () {
       document.querySelectorAll(".mc-rail__tabs .tab").forEach(function (t) {
@@ -763,23 +864,13 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         t.setAttribute("aria-selected", t === tab ? "true" : "false");
       });
       activeList = tab.dataset.tab;
-      lists.inbox.hidden = activeList !== "inbox";
-      lists.archived.hidden = activeList !== "archived";
+      unreadCounter.classList.toggle("counter--active", activeList === "inbox");
+      unreadCounter.classList.toggle("counter--inactive", activeList !== "inbox");
       applyFilter();
     });
   });
 
-  // live search filter
-  function applyFilter() {
-    var q = searchInput.value.trim().toLowerCase();
-    ["inbox", "archived"].forEach(function (key) {
-      rows(key).forEach(function (r) {
-        r.hidden = q !== "" && r.textContent.toLowerCase().indexOf(q) === -1;
-      });
-    });
-    searchClear.hidden = q === "";
-    updateCount();
-  }
+  // live search — combined cross-tab results while a query is present
   searchInput.addEventListener("input", applyFilter);
   searchClear.addEventListener("click", function () {
     searchInput.value = "";
@@ -787,38 +878,40 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     searchInput.focus();
   });
 
-  // Sort By — Select trigger + Listbox popover
-  var sortTrigger = document.getElementById("mc-sort-trigger");
-  var sortListbox = document.getElementById("mc-sort-listbox");
-  var sortValue = document.getElementById("mc-sort-value");
-  sortListbox.addEventListener("toggle", function (e) {
+  // filter chips — Unread / Expires soon / Flagged, freely combinable (AND)
+  document.querySelectorAll(".mc-rail__chips .chip[data-filter]").forEach(function (chipEl) {
+    chipEl.addEventListener("click", function () {
+      var pressed = chipEl.getAttribute("aria-pressed") !== "true";
+      chipEl.setAttribute("aria-pressed", pressed ? "true" : "false");
+      filters[chipEl.dataset.filter] = pressed;
+      applyFilter();
+    });
+  });
+
+  // Department — a dropdown chip: Chip trigger + single-select Listbox popover
+  var deptChip = document.getElementById("mc-dept-chip");
+  var deptLabel = document.getElementById("mc-dept-label");
+  var deptListbox = document.getElementById("mc-dept-listbox");
+  deptListbox.addEventListener("toggle", function (e) {
     if (e.newState === "open") {
-      var r = sortTrigger.getBoundingClientRect();
-      sortListbox.style.position = "fixed";
-      sortListbox.style.margin = "0";
-      sortListbox.style.top = r.bottom + 4 + "px";
-      sortListbox.style.left = Math.max(8, r.right - sortListbox.offsetWidth) + "px";
+      var r = deptChip.getBoundingClientRect();
+      deptListbox.style.position = "fixed";
+      deptListbox.style.margin = "0";
+      deptListbox.style.top = r.bottom + 4 + "px";
+      deptListbox.style.left = Math.max(8, Math.min(r.left, window.innerWidth - deptListbox.offsetWidth - 8)) + "px";
     }
   });
-  function sortLists(key) {
-    ["inbox", "archived"].forEach(function (listKey) {
-      var list = lists[listKey];
-      var sorted = rows(listKey).sort(function (a, b) {
-        if (key === "idx") return Number(a.dataset.idx) - Number(b.dataset.idx);
-        return a.dataset[key].localeCompare(b.dataset[key]);
-      });
-      sorted.forEach(function (r) { list.appendChild(r); });
-    });
-  }
-  sortListbox.querySelectorAll(".listbox__option").forEach(function (opt) {
+  deptListbox.querySelectorAll(".listbox__option").forEach(function (opt) {
     opt.addEventListener("click", function () {
-      sortListbox.querySelectorAll(".listbox__option").forEach(function (o) {
+      deptListbox.querySelectorAll(".listbox__option").forEach(function (o) {
         o.classList.toggle("listbox__option--selected", o === opt);
         o.setAttribute("aria-selected", o === opt ? "true" : "false");
       });
-      sortValue.textContent = opt.dataset.label;
-      sortLists(opt.dataset.key);
-      sortListbox.hidePopover();
+      dept = opt.dataset.dept || null;
+      deptLabel.textContent = dept || "Department";
+      deptChip.classList.toggle("chip--checked-outline", !!dept);
+      deptListbox.hidePopover();
+      applyFilter();
     });
   });
 
@@ -842,18 +935,21 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     });
   });
 
-  // Archive — really moves the thread's row to the Archived list
+  // Archive — really moves the thread's row to the Archived list (and flips
+  // the row's search-scope badge to match its new home)
   document.querySelectorAll(".mc-archive").forEach(function (btn) {
     btn.addEventListener("click", function () {
       var id = btn.dataset.thread;
       var row = lists.inbox.querySelector('[data-thread="' + id + '"]');
       if (row) {
         row.classList.remove("thread-item-inbox--selected");
+        row.querySelector(".thread-item-inbox__scope").textContent = "Archived";
         lists.archived.insertBefore(row, lists.archived.firstChild);
       }
       btn.remove();
       closeThread();
       applyFilter();
+      updateUnreadCounter();
     });
   });
 
@@ -862,7 +958,8 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     btn.addEventListener("click", function () { window.print(); });
   });
 
-  updateCount();
+  applyFilter();
+  updateUnreadCounter();
 })();
 </script>
 </body>

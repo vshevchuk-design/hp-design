@@ -103,8 +103,8 @@ const inboxDepartments = ["Academic Advising", "Financial Aid", "Registrar"];
 const usedHues = [...new Set(inboxDepartments.map(hueOf))];
 
 const colorPaths = [
-  "surface.default", "surface.sunken", "border.default", "text.default", "text.secondary", "icon.muted", "text.muted",
-  "fill.primary", "fill.neutralHover", "fill.neutralActive", "bg.primary", "border.focus",
+  "surface.default", "surface.dim", "border.default", "text.default", "text.secondary", "icon.muted", "text.muted",
+  "fill.primary", "fill.neutralHover", "fill.neutralActive", "bg.primary", "border.focus", "icon.warning",
   "bg.danger", "text.danger", "bg.warning", "text.warning", "bg.neutral",
   ...usedHues.flatMap((h) => [`avatar.${h}.bg`, `avatar.${h}.text`]),
 ];
@@ -128,7 +128,12 @@ function typoCss(t) {
 }
 
 const iconChevron = fs.readFileSync(path.join(root, "assets/icons/material-filled/chevron_right.svg"), "utf8").replace("<svg ", '<svg class="thread-item__chevron" ');
-const iconFlag = fs.readFileSync(path.join(root, "assets/icons/material-filled/flag.svg"), "utf8").replace("<svg ", '<svg class="thread-item-inbox__flag" ');
+// Flag is a real toggle now (2026-07-24): both glyphs always in the DOM,
+// shown/hidden via CSS off the button's aria-pressed — the same "render every
+// state glyph, let the cascade drive it" rule Checkbox established.
+const iconFlagOutlined = fs.readFileSync(path.join(root, "assets/icons/material-outlined/flag.svg"), "utf8").replace("<svg ", '<svg class="thread-item-inbox__flag-outlined" ');
+const iconFlagFilled = fs.readFileSync(path.join(root, "assets/icons/material-filled/flag.svg"), "utf8").replace("<svg ", '<svg class="thread-item-inbox__flag-filled" ');
+const flagButton = (flagged) => `<button class="thread-item-inbox__flag-btn" type="button" aria-pressed="${flagged}" aria-label="Flag thread">${iconFlagOutlined}${iconFlagFilled}</button>`;
 
 // ---- Badge, resolved from its own tokens (not retyped) — sm size, role=danger,
 // tint fill, used for the Expires value in place of the live app's bare
@@ -207,7 +212,13 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
 .thread-item-inbox__subject { ${typoCss(subjectType)} }
 .thread-item-inbox__preview-row { display: flex; align-items: center; justify-content: space-between; gap: ${px(resolve("dim.2"))}; }
 .thread-item-inbox__preview { flex: 1; min-width: 0; ${typoCss(inboxPreviewType)} white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.thread-item-inbox__flag { flex-shrink: 0; width: ${inboxFlagSize}; height: ${inboxFlagSize}; color: ${cv("icon.muted")}; }
+.thread-item-inbox__flag-btn { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; border: none; background: none; padding: ${px(resolve("dim.0_5"))}; margin: -${px(resolve("dim.0_5"))} 0; border-radius: ${px(resolve("radius.xs"))}; cursor: pointer; color: ${cv(refPath(inbox.flag.color.$value))}; }
+.thread-item-inbox__flag-btn svg { width: ${inboxFlagSize}; height: ${inboxFlagSize}; display: block; }
+.thread-item-inbox__flag-btn:hover { background: ${cv("fill.neutralHover")}; }
+.thread-item-inbox__flag-btn:focus-visible { outline: 2px solid ${cv("border.focus")}; outline-offset: 0; }
+.thread-item-inbox__flag-btn .thread-item-inbox__flag-filled { display: none; color: ${cv(refPath(inbox.flag.flaggedColor.$value))}; }
+.thread-item-inbox__flag-btn[aria-pressed="true"] .thread-item-inbox__flag-outlined { display: none; }
+.thread-item-inbox__flag-btn[aria-pressed="true"] .thread-item-inbox__flag-filled { display: block; }
 .thread-item-inbox__expires { margin-top: ${px(resolve("dim.0_5"))}; }
 
 ${inboxStateCss("unread")}
@@ -250,8 +261,11 @@ function inboxAvatarMarkup(department) {
 function expiresBadge(label, role) {
   return `<span class="badge badge--role-${role}">${label}</span>`;
 }
-function threadInboxItemMarkup({ department, time, subject, preview, expires, state = "read", selected = false }) {
-  return `<button class="thread-item-inbox thread-item-inbox--${state}${selected ? " thread-item-inbox--selected" : ""}">
+// The row is a <div role="button"> (not a <button>) since 2026-07-24 — it now
+// contains a genuinely interactive child (the flag toggle), and a real button
+// can't nest another one; same resolution Attachment's idle shape uses.
+function threadInboxItemMarkup({ department, time, subject, preview, expires, state = "read", selected = false, flagged = false }) {
+  return `<div class="thread-item-inbox thread-item-inbox--${state}${selected ? " thread-item-inbox--selected" : ""}" role="button" tabindex="0">
       ${inboxAvatarMarkup(department)}
       <div class="thread-item-inbox__main">
         <div class="thread-item-inbox__top">
@@ -261,11 +275,11 @@ function threadInboxItemMarkup({ department, time, subject, preview, expires, st
         <div class="thread-item-inbox__subject">${subject}</div>
         <div class="thread-item-inbox__preview-row">
           <span class="thread-item-inbox__preview">${preview}</span>
-          ${iconFlag}
+          ${flagButton(flagged)}
         </div>
         ${expires ? `<div class="thread-item-inbox__expires">${expires}</div>` : ""}
       </div>
-    </button>`;
+    </div>`;
 }
 
 function storyCard(title, liveHtml, codeHtml, note = "") {
@@ -333,6 +347,11 @@ function inboxStories() {
       note: "bg.primary, applied persistently — same meaning as the card shape's selected, minus the border (a flat row has none).",
     },
     {
+      title: "flagged",
+      html: threadInboxItemMarkup({ department: "Financial Aid", time: "Jul 10", subject: "Course withdrawal deadline", preview: "Hey Alex, I did alright on my quiz b…", state: "unread", flagged: true }),
+      note: "The flag is a real per-thread toggle (click it — it works, and doesn't open the row): outlined flag in icon.muted when off, filled flag in icon.warning when on. Both glyphs always in the DOM, swapped via aria-pressed CSS.",
+    },
+    {
       title: "with Expires (warning)",
       html: threadInboxItemMarkup({ department: "Financial Aid", time: "Jul 10", subject: "Course withdrawal deadline", preview: "Hey Alex, I did alright on my quiz b…", state: "unread", expires: expiresBadge("Expires Jul 20", "warning") }),
       note: "Expires sits on its own row, left-aligned under the preview text — moved here from the live app's right-aligned column next to the timestamp.",
@@ -357,26 +376,50 @@ const inboxListDemo = `<div class="thread-list thread-item-inbox-demo" style="ma
       ${threadInboxItemMarkup({ department: "Academic Advising", time: "Jun 30", subject: "Study Session", preview: "That works for me — I can make th…", state: "read", expires: expiresBadge("Expires Sep 30", "neutral") })}
     </div>`;
 const inboxListDemoCode = `<div class="thread-list">
-  <button class="thread-item-inbox thread-item-inbox--unread">…</button>
-  <button class="thread-item-inbox thread-item-inbox--unread">…</button>
-  <button class="thread-item-inbox thread-item-inbox--read thread-item-inbox--selected">…</button>
+  <div class="thread-item-inbox thread-item-inbox--unread" role="button" tabindex="0">
+    …
+    <button class="thread-item-inbox__flag-btn" aria-pressed="false" aria-label="Flag thread">
+      <!-- icon: flag (outlined) --><!-- icon: flag (filled) -->
+    </button>
+    …
+  </div>
+  <div class="thread-item-inbox thread-item-inbox--read thread-item-inbox--selected" role="button" tabindex="0">…</div>
   …
 </div>
 <script>
-  // click selects the row and marks it read — real single-select
-  document.querySelectorAll(".thread-item-inbox-demo .thread-item-inbox").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      btn.parentElement.querySelectorAll(".thread-item-inbox").forEach((b) => b.classList.remove("thread-item-inbox--selected"));
-      btn.classList.remove("thread-item-inbox--unread");
-      btn.classList.add("thread-item-inbox--read", "thread-item-inbox--selected");
+  // flag toggles without opening the row; row click selects + marks read
+  document.querySelectorAll(".thread-item-inbox__flag-btn").forEach((flag) => {
+    flag.addEventListener("click", (e) => {
+      e.stopPropagation();
+      flag.setAttribute("aria-pressed", flag.getAttribute("aria-pressed") === "true" ? "false" : "true");
+    });
+  });
+  document.querySelectorAll(".thread-item-inbox").forEach((row) => {
+    row.addEventListener("click", () => {
+      row.parentElement.querySelectorAll(".thread-item-inbox").forEach((b) => b.classList.remove("thread-item-inbox--selected"));
+      row.classList.remove("thread-item-inbox--unread");
+      row.classList.add("thread-item-inbox--read", "thread-item-inbox--selected");
     });
   });
 </script>`;
-const inboxJs = `document.querySelectorAll(".thread-item-inbox-demo .thread-item-inbox").forEach((btn) => {
-  btn.addEventListener("click", () => {
-    btn.parentElement.querySelectorAll(".thread-item-inbox").forEach((b) => b.classList.remove("thread-item-inbox--selected"));
-    btn.classList.remove("thread-item-inbox--unread");
-    btn.classList.add("thread-item-inbox--read", "thread-item-inbox--selected");
+const inboxJs = `// every flag on the page is a real toggle; stopPropagation keeps a flag
+// click from also selecting/reading the row it sits in
+document.querySelectorAll(".thread-item-inbox__flag-btn").forEach((flag) => {
+  flag.addEventListener("click", (e) => {
+    e.stopPropagation();
+    flag.setAttribute("aria-pressed", flag.getAttribute("aria-pressed") === "true" ? "false" : "true");
+  });
+});
+document.querySelectorAll(".thread-item-inbox-demo .thread-item-inbox").forEach((row) => {
+  const activate = () => {
+    row.parentElement.querySelectorAll(".thread-item-inbox").forEach((b) => b.classList.remove("thread-item-inbox--selected"));
+    row.classList.remove("thread-item-inbox--unread");
+    row.classList.add("thread-item-inbox--read", "thread-item-inbox--selected");
+  };
+  row.addEventListener("click", activate);
+  // role="button" divs don't get Enter/Space for free the way a real <button> does
+  row.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); activate(); }
   });
 });`;
 
@@ -500,7 +543,8 @@ const html = `<!doctype html>
       <div class="row"><b>No unread indicator</b><span>Not asked for — deferred rather than built speculatively.</span></div>
       <div class="row"><b>Inbox row (2nd shape)</b><span>Avatar + department identity + timestamp + subject + preview + flag, matching the Message Center inbox-list screenshot. Avatar is keyed off the department name (not a person), reusing Avatar's own hash(name) % 8 fallback-color logic. No "Handled by" row, and Expires moves to a left-aligned row under the preview text instead of the live app's right-aligned column.</span></div>
       <div class="row"><b>Full-bleed list (2026-07-24)</b><span>Redesigned per explicit feedback, following the staff-mockup reference: inbox rows are flat, full-bleed rows separated by a 1px divider — no radius, no own border, no gaps between rows. Hover/pressed use the ghost fill.neutralHover/fill.neutralActive progression (a flat row has no border for the card shell's blue hover border to attach to); selected keeps the persistent bg.primary fill, borderless. The card metadata shape above is unchanged.</span></div>
-      <div class="row"><b>unread / read</b><span>Every inbox row is in exactly one of two states: <code class="tok">unread</code> (surface.default bg, semibold text.default identity/subject, text.secondary preview) or <code class="tok">read</code> (surface.page bg, normal-weight text.secondary identity/subject, text.muted preview). Clicking a row in the demo below marks it read for real.</span></div>
+      <div class="row"><b>unread / read</b><span>Every inbox row is in exactly one of two states: <code class="tok">unread</code> (surface.default bg, semibold text.default identity/subject, text.secondary preview) or <code class="tok">read</code> (surface.dim bg — a semantic role added for exactly this, one step lighter than sunken — normal-weight text.secondary identity/subject, text.muted preview). Clicking a row in the demo below marks it read for real.</span></div>
+      <div class="row"><b>Flag toggle (2026-07-24)</b><span>The flag is a real per-thread importance toggle, not a static glyph: outlined <code class="tok">icon.muted</code> flag when off, filled <code class="tok">icon.warning</code> flag when on, swapped via aria-pressed. Because the row now contains a nested interactive element, the row itself is a <code class="tok">&lt;div role="button" tabindex="0"&gt;</code> — a real &lt;button&gt; can't nest another one, the same resolution Attachment's idle shape already used.</span></div>
     </div>
 
     <h2 class="big-section">CSS</h2>

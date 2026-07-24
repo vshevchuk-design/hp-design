@@ -16,6 +16,11 @@
       "$value": "{color.gray.100}",
       "$description": "Inputs, table row stripes, code blocks — recessed relative to a default surface. Reach for this rarely; it's the exception, not the norm."
     },
+    "dim": {
+      "$type": "color",
+      "$value": "{color.gray.50}",
+      "$description": "A barely-dimmed surface, one step lighter than sunken — for de-emphasized rows that must read quieter than surface.default without looking recessed like a form field (added 2026-07-24 for ThreadListItem's read inbox rows: sunken/gray.100 read as too heavy a stripe next to unread's white; explicit feedback asked for gray.25-or-50 territory). Use for read/visited/muted list rows, not as a generic nested-container background — the same restraint rule as sunken."
+    },
     "overlay": {
       "$type": "color",
       "$value": "rgba(21, 25, 30, 0.5)",

@@ -36,8 +36,9 @@ const textStyle = load("tokens/primitives/text-styles.tokens.json")["text-style"
 const semantic = load("tokens/semantic/color.tokens.json");
 const tabs = load("tokens/components/tabs.tokens.json").component.tabs;
 const search = load("tokens/components/search.tokens.json").component.search;
-const select = load("tokens/components/select.tokens.json").component.select;
 const listbox = load("tokens/components/listbox.tokens.json").component.listbox;
+const chip = load("tokens/components/chip.tokens.json").component.chip;
+const counter = load("tokens/components/counter.tokens.json").component.counter;
 const threadListItem = load("tokens/components/thread-list-item.tokens.json").component.threadListItem;
 const badge = load("tokens/components/badge.tokens.json").component.badge;
 const avatar = load("tokens/components/avatar.tokens.json").component.avatar;
@@ -113,13 +114,13 @@ const identityNames = [
 const usedHues = [...new Set(identityNames.map(hueOf))];
 
 const colorPaths = [
-  "surface.page", "surface.default", "surface.sunken",
+  "surface.page", "surface.default", "surface.sunken", "surface.dim",
   "border.default", "border.strong", "border.focus",
   "text.default", "text.secondary", "text.muted", "text.primary", "text.onFill",
-  "icon.default", "icon.secondary", "icon.muted", "icon.onFill",
+  "icon.default", "icon.secondary", "icon.muted", "icon.onFill", "icon.primary", "icon.warning",
   "fill.primary", "fill.primaryHover", "fill.primaryActive",
   "fill.neutral", "fill.neutralHover", "fill.neutralActive",
-  "bg.primary", "bg.warning", "text.warning", "bg.danger", "text.danger",
+  "bg.primary", "bg.neutral", "bg.warning", "text.warning", "bg.danger", "text.danger",
   ...usedHues.flatMap((h) => [`avatar.${h}.bg`, `avatar.${h}.text`]),
 ];
 const colorValue = Object.fromEntries(colorPaths.map((p) => [p, resolve(p)]));
@@ -130,8 +131,10 @@ const rootVars = renderRootVars([...colorPaths.map((p) => [p, colorValue[p]]), [
 const iconOf = (name, cls) => fs.readFileSync(path.join(root, `assets/icons/material-filled/${name}.svg`), "utf8").replace("<svg ", `<svg class="${cls}" `);
 const iconSearch = iconOf("search", "search__icon");
 const iconClear = iconOf("close", "search__clear");
-const iconChevronDown = iconOf("expand_more", "select__chevron");
+const iconChevronDown = iconOf("expand_more", "chip__icon");
 const iconCheckmark = iconOf("check", "listbox__checkmark");
+const iconFlagOutlined = fs.readFileSync(path.join(root, "assets/icons/material-outlined/flag.svg"), "utf8").replace("<svg ", '<svg class="thread-item-inbox__flag-outlined" ');
+const iconFlagFilled = fs.readFileSync(path.join(root, "assets/icons/material-filled/flag.svg"), "utf8").replace("<svg ", '<svg class="thread-item-inbox__flag-filled" ');
 const iconBack = iconOf("arrow_back", "btn__icon");
 const iconPrint = iconOf("print", "btn__icon");
 const iconAttach = iconOf("attach_file", "composer__icon");
@@ -158,18 +161,58 @@ const searchBase = {
   iconSize: px(resolve(search.size.base.iconSize.$value)),
 };
 
-// ---- Select (base, floated label) — the Sort By trigger ----
-const selectRadius = px(resolve(select.radius.$value));
-const selBase = select.size.base;
-const selectBase = {
-  height: px(resolve(selBase.height.$value)),
-  paddingX: px(resolve(selBase.paddingX.$value)),
-  gap: px(resolve(selBase.gap.$value)),
-  iconSize: px(resolve(selBase.iconSize.$value)),
-  value: resolveToken(selBase.value),
-  label: resolveToken(selBase.label),
-  labelGap: px(resolve(selBase.labelGap.$value)),
+// ---- Tabs (segmented, base) — replaced the underline pair 2026-07-24 per
+// explicit feedback ("tabs in a block"), matching the staff-mockup reference ----
+const segTrackRadiusApp = px(resolve(tabs.segmented.trackRadius.$value));
+const segTrackPaddingApp = px(resolve(tabs.segmented.trackPadding.$value));
+const segPillRadiusApp = px(resolve(tabs.segmented.pillRadius.$value));
+
+// ---- Counter (base, onNeutral) — unread count on the Inbox tab, resolved
+// from counter.tokens.json exactly the way tabs' own docs page does ----
+const counterRadius = px(resolve(counter.radius.$value));
+const counterBase = {
+  height: px(resolve(counter.size.base.height.$value)),
+  minWidth: px(resolve(counter.size.base.minWidth.$value)),
+  paddingX: px(resolve(counter.size.base.paddingX.$value)),
+  label: resolveToken(counter.size.base.label),
 };
+const counterOnNeutral = {
+  inactiveBg: refPath(counter.onNeutral.state.inactive.bg.$value),
+  inactiveLabel: refPath(counter.onNeutral.state.inactive.label.$value),
+  activeBg: refPath(counter.onNeutral.state.active.bg.$value),
+  activeLabel: refPath(counter.onNeutral.state.active.label.$value),
+};
+
+// ---- Chip (base, toggle) — the filter row (Unread / Expires soon / Flagged)
+// replaced Sort By 2026-07-24. The Department filter is a "dropdown chip":
+// Chip as the trigger (checkedOutline when a department is active — the same
+// aggregate/trigger semantics Chip's own "Filters · 3" case established) +
+// the same single-select Listbox panel Sort By used. A composition, not a
+// new component — Select+Listbox in Chip's clothes. ----
+const chipRadius = px(resolve(chip.radius.$value));
+const chipBase = {
+  height: px(resolve(chip.size.base.height.$value)),
+  paddingX: px(resolve(chip.size.base.paddingX.$value)),
+  gap: px(resolve(chip.size.base.gap.$value)),
+  iconSize: px(resolve(chip.size.base.iconSize.$value)),
+  label: resolveToken(chip.size.base.label),
+};
+const chipToggle = {
+  bg: refPath(chip.toggle.default.bg.$value),
+  border: refPath(chip.toggle.default.border.$value),
+  text: refPath(chip.toggle.default.text.$value),
+  icon: refPath(chip.toggle.default.icon.$value),
+  hoverBorder: refPath(chip.toggle.hover.border.$value),
+  checkedBg: refPath(chip.toggle.checked.bg.$value),
+  checkedText: refPath(chip.toggle.checked.text.$value),
+  checkedHoverBg: refPath(chip.toggle.checkedHover.bg.$value),
+  coBg: refPath(chip.toggle.checkedOutline.bg.$value),
+  coBorder: refPath(chip.toggle.checkedOutline.border.$value),
+  coText: refPath(chip.toggle.checkedOutline.text.$value),
+  coIcon: refPath(chip.toggle.checkedOutline.icon.$value),
+};
+const chipRingWidth = px(resolve(chip.focus.ringWidth.$value));
+const chipRingOffset = px(resolve(chip.focus.ringOffset.$value));
 
 // ---- Listbox (single-select) — the Sort By panel ----
 const lbRadius = px(resolve(listbox.radius.$value));
@@ -217,6 +260,7 @@ const badgeLabelType = resolveToken(badgeSm.label);
 const badgeTint = (role) => ({ bg: refPath(badge.role[role].tint.bg.$value), text: refPath(badge.role[role].tint.text.$value) });
 const badgeWarningTint = badgeTint("warning");
 const badgeDangerTint = badgeTint("danger");
+const badgeNeutralTint = badgeTint("neutral");
 
 // ---- Avatar (base for list rows, sm for sender rows — the 2026-07-24
 // sender-row rebalance: 40px next to one small text line read top-heavy) ----
@@ -307,12 +351,27 @@ const bodySmType = resolveToken(get("{text-style.body-sm}"));
 // ================= app CSS =================
 
 const componentCss = `/* ---- component recipes, resolved from each component's own token file ---- */
-.tabs--underline { display: flex; align-items: stretch; gap: ${tabUnderlineGap}; border-bottom: 1px solid ${cv("border.default")}; }
+.tabs--segmented { display: flex; align-items: center; gap: ${segTrackPaddingApp}; background: ${cv("surface.sunken")}; border-radius: ${segTrackRadiusApp}; padding: ${segTrackPaddingApp}; }
 .tab { display: inline-flex; align-items: center; justify-content: center; gap: ${tabItemGap}; border: none; background: transparent; cursor: pointer; white-space: nowrap; color: ${cv("text.secondary")}; font-family: ${cv("family.sans")}; ${typoCss(tabItemLabel)} }
 .tab--base { height: ${tabBase.height}; padding: 0 ${tabBase.paddingX}; }
-.tabs--underline .tab { flex: 1; border-bottom: 2px solid transparent; margin-bottom: -1px; border-radius: ${tabPillRadius} ${tabPillRadius} 0 0; }
-.tabs--underline .tab:not(.tab--active):hover { background: ${cv("fill.neutralHover")}; color: ${cv("text.default")}; }
-.tabs--underline .tab--active { color: ${cv("text.default")}; font-weight: ${tabActiveWeight}; border-bottom-color: ${cv("border.focus")}; }
+.tabs--segmented .tab { flex: 1; border-radius: ${segPillRadiusApp}; }
+.tabs--segmented .tab:not(.tab--active):hover { background: ${cv("fill.neutralHover")}; color: ${cv("text.default")}; }
+.tabs--segmented .tab--active { background: ${cv("surface.default")}; color: ${cv("text.default")}; font-weight: ${tabActiveWeight}; }
+
+.counter { display: inline-flex; align-items: center; justify-content: center; font-variant-numeric: tabular-nums; font-family: ${cv("family.sans")}; font-weight: ${counterBase.label.fontWeight}; border-radius: ${counterRadius}; }
+.counter[hidden] { display: none; }
+.counter--base { height: ${counterBase.height}; min-width: ${counterBase.minWidth}; padding: 0 ${counterBase.paddingX}; font-size: ${px(counterBase.label.fontSize)}; line-height: ${counterBase.label.lineHeight}; }
+.counter--onNeutral.counter--inactive { background: ${cv(counterOnNeutral.inactiveBg)}; color: ${cv(counterOnNeutral.inactiveLabel)}; }
+.counter--onNeutral.counter--active { background: ${cv(counterOnNeutral.activeBg)}; color: ${cv(counterOnNeutral.activeLabel)}; }
+
+.chip { box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; gap: ${chipBase.gap}; height: ${chipBase.height}; padding: 0 ${chipBase.paddingX}; border-radius: ${chipRadius}; background: ${cv(chipToggle.bg)}; border: 1px solid ${cv(chipToggle.border)}; color: ${cv(chipToggle.text)}; cursor: pointer; white-space: nowrap; flex-shrink: 0; font-family: ${cv("family.sans")}; ${typoCss(chipBase.label)} }
+.chip .chip__icon { width: ${chipBase.iconSize}; height: ${chipBase.iconSize}; color: ${cv(chipToggle.icon)}; }
+.chip:not([aria-pressed="true"]):not(.chip--checked-outline):hover { border-color: ${cv(chipToggle.hoverBorder)}; }
+.chip[aria-pressed="true"] { background: ${cv(chipToggle.checkedBg)}; border-color: ${cv(chipToggle.checkedBg)}; color: ${cv(chipToggle.checkedText)}; }
+.chip[aria-pressed="true"]:hover { background: ${cv(chipToggle.checkedHoverBg)}; border-color: ${cv(chipToggle.checkedHoverBg)}; }
+.chip--checked-outline { background: ${cv(chipToggle.coBg)}; border-color: ${cv(chipToggle.coBorder)}; color: ${cv(chipToggle.coText)}; }
+.chip--checked-outline .chip__icon { color: ${cv(chipToggle.coIcon)}; }
+.chip:focus-visible { outline: ${chipRingWidth} solid ${cv("border.focus")}; outline-offset: ${chipRingOffset}; }
 
 .search { display: inline-flex; align-items: center; box-sizing: border-box; background: ${cv("surface.sunken")}; border: 1px solid ${cv("border.default")}; border-radius: ${searchRadius}; font-family: ${cv("family.sans")}; cursor: text; }
 .search--base { height: ${searchBase.height}; padding: 0 ${searchBase.paddingX}; gap: ${searchBase.gap}; }
@@ -324,16 +383,6 @@ const componentCss = `/* ---- component recipes, resolved from each component's 
 .search__input::placeholder { color: ${cv("text.muted")}; }
 .search:hover { border-color: ${cv("border.strong")}; }
 .search:focus-within { border-color: ${cv("border.focus")}; }
-
-.select { display: inline-flex; align-items: center; box-sizing: border-box; background: ${cv("surface.sunken")}; border: 1px solid ${cv("border.default")}; border-radius: ${selectRadius}; font-family: ${cv("family.sans")}; cursor: pointer; text-align: left; }
-.select--base { height: ${selectBase.height}; padding: 0 ${selectBase.paddingX}; gap: ${selectBase.gap}; }
-.select--base .select__chevron { width: ${selectBase.iconSize}; height: ${selectBase.iconSize}; }
-.select__chevron { flex-shrink: 0; margin-left: auto; color: ${cv("icon.default")}; }
-.select__stack { display: flex; flex-direction: column; justify-content: center; flex: 1; min-width: 0; gap: ${selectBase.labelGap}; }
-.select__label { color: ${cv("text.muted")}; ${typoCss(selectBase.label)} }
-.select__value { color: ${cv("text.default")}; ${typoCss(selectBase.value)} }
-.select:hover { border-color: ${cv("border.strong")}; }
-.select:focus-visible { outline: none; border-color: ${cv("border.focus")}; }
 
 .listbox { margin: 0; box-sizing: border-box; padding: ${lbPadding}; border-radius: ${lbRadius}; background: ${cv("surface.default")}; border: 1px solid ${cv("border.default")}; box-shadow: ${lbShadowCss}; font-family: ${cv("family.sans")}; min-width: 200px; }
 .listbox__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: ${lbGap}; }
@@ -349,8 +398,16 @@ const componentCss = `/* ---- component recipes, resolved from each component's 
 .thread-item-inbox__identity { ${typoCss(inboxIdentityType)} }
 .thread-item-inbox__time { flex-shrink: 0; color: ${cv("text.muted")}; ${typoCss(inboxTimeType)} }
 .thread-item-inbox__subject { ${typoCss(tliSubjectType)} }
-.thread-item-inbox__preview { color: ${cv("text.muted")}; ${typoCss(inboxPreviewType)} white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.thread-item-inbox__expires { margin-top: ${px(resolve("dim.0_5"))}; }
+.thread-item-inbox__preview-row { display: flex; align-items: center; justify-content: space-between; gap: ${px(resolve("dim.2"))}; }
+.thread-item-inbox__preview { flex: 1; min-width: 0; color: ${cv("text.muted")}; ${typoCss(inboxPreviewType)} white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.thread-item-inbox__flag-btn { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; border: none; background: none; padding: ${px(resolve("dim.0_5"))}; margin: -${px(resolve("dim.0_5"))} 0; border-radius: ${px(resolve("radius.xs"))}; cursor: pointer; color: ${cv(refPath(inbox.flag.color.$value))}; }
+.thread-item-inbox__flag-btn svg { width: ${px(resolve(inbox.flag.iconSize.$value))}; height: ${px(resolve(inbox.flag.iconSize.$value))}; display: block; }
+.thread-item-inbox__flag-btn:hover { background: ${cv("fill.neutralHover")}; }
+.thread-item-inbox__flag-btn:focus-visible { outline: 2px solid ${cv("border.focus")}; outline-offset: 0; }
+.thread-item-inbox__flag-btn .thread-item-inbox__flag-filled { display: none; color: ${cv(refPath(inbox.flag.flaggedColor.$value))}; }
+.thread-item-inbox__flag-btn[aria-pressed="true"] .thread-item-inbox__flag-outlined { display: none; }
+.thread-item-inbox__flag-btn[aria-pressed="true"] .thread-item-inbox__flag-filled { display: block; }
+.thread-item-inbox__expires { margin-top: ${px(resolve("dim.0_5"))}; display: flex; flex-wrap: wrap; gap: ${px(resolve("dim.1"))}; }
 ${inboxStateCss("unread")}
 ${inboxStateCss("read")}
 .thread-item-inbox:not(.thread-item-inbox--selected):hover { background: ${cv(inboxList.hoverBg)}; }
@@ -361,6 +418,7 @@ ${inboxStateCss("read")}
 .badge { box-sizing: border-box; display: inline-flex; align-items: center; border-radius: ${badgeRadius}; height: ${badgeHeight}; padding: 0 ${badgePaddingX}; ${typoCss(badgeLabelType)} white-space: nowrap; }
 .badge--role-warning { background: ${cv(badgeWarningTint.bg)}; color: ${cv(badgeWarningTint.text)}; }
 .badge--role-danger { background: ${cv(badgeDangerTint.bg)}; color: ${cv(badgeDangerTint.text)}; }
+.badge--role-neutral { background: ${cv(badgeNeutralTint.bg)}; color: ${cv(badgeNeutralTint.text)}; }
 
 .avatar { box-sizing: border-box; position: relative; display: inline-flex; flex-shrink: 0; align-items: center; justify-content: center; overflow: hidden; border-radius: ${avatarRadius}; width: ${avatarDiameter}; height: ${avatarDiameter}; font-family: ${cv("family.sans")}; user-select: none; }
 .avatar__initials { text-transform: uppercase; ${typoCss(avatarInitialsType)} }
@@ -454,12 +512,12 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .mc--thread-open .mc__rail { display: none; }
 .mc--thread-open .mc__reading { display: flex; }
 
-.mc-rail__tabs { padding: ${px(resolve("dim.2"))} ${px(resolve("dim.4"))} 0; }
-.mc-rail__controls { display: flex; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))}; }
-.mc-rail__controls .search { flex: 1; min-width: 0; }
-.mc-rail__controls .select { flex-shrink: 0; min-width: 120px; }
-.mc-rail__count { padding: 0 ${px(resolve("dim.4"))}; display: flex; flex-direction: column; gap: ${px(resolve("dim.2"))}; }
-.mc-count { color: ${cv("text.muted")}; ${typoCss(labelSmType)}${labelSmExt.textTransform ? ` text-transform: ${labelSmExt.textTransform};` : ""}${labelSmExt.letterSpacing ? ` letter-spacing: ${labelSmExt.letterSpacing};` : ""} }
+.mc-rail__search { padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))} 0; }
+.mc-rail__search .search { display: flex; width: 100%; }
+.mc-rail__tabs { padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))} 0; }
+.mc-rail__chips { display: flex; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))}; overflow-x: auto; }
+.mc-rail__count { display: flex; flex-direction: column; gap: ${px(resolve("dim.2"))}; }
+.mc-count { padding: 0 ${px(resolve("dim.4"))}; color: ${cv("text.muted")}; ${typoCss(labelSmType)}${labelSmExt.textTransform ? ` text-transform: ${labelSmExt.textTransform};` : ""}${labelSmExt.letterSpacing ? ` letter-spacing: ${labelSmExt.letterSpacing};` : ""} }
 .mc-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
 .mc-list[hidden] { display: none; }
 
@@ -477,6 +535,14 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .mc-thread__meta-value { color: ${cv("text.default")}; ${typoCss(bodySmType)} }
 .mc-thread__scroll { flex: 1; overflow-y: auto; padding: ${px(resolve("dim.4"))}; display: flex; flex-direction: column; gap: ${px(resolve("dim.6"))}; }
 .mc-thread__composer { flex-shrink: 0; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))} ${px(resolve("dim.4"))}; }
+
+/* search-scope badges (Inbox/Archived) — declared here, after the component
+   recipes, so their display:none outranks .badge's own display in the
+   cascade; visible only while a search query is active */
+.thread-item-inbox__expires .thread-item-inbox__scope { display: none; }
+.mc--searching .thread-item-inbox__expires .thread-item-inbox__scope { display: inline-flex; }
+.thread-item-inbox__expires--scope-only { display: none; }
+.mc--searching .thread-item-inbox__expires--scope-only { display: flex; }
 
 @media (min-width: 768px) {
   .mc__rail, .mc--thread-open .mc__rail { display: flex; flex: none; width: 320px; border-right: 1px solid ${cv("border.default")}; }
@@ -593,7 +659,7 @@ const threads = [
     ],
   },
   {
-    id: "pell", archived: false,
+    id: "pell", archived: false, flagged: true,
     department: "Financial Aid", date: "03/01/2024", subject: "Close to Pell Lifetime Limits",
     preview: "You are approaching the lifetime limit of Federal Pell Grant.",
     expires: { label: "Expires 03/01/2027", role: "warning" },
@@ -645,9 +711,16 @@ const threads = [
   },
 ];
 
+// Row is a <div role="button"> — it nests a real flag toggle <button>, and a
+// real button can't nest another (same resolution as Attachment's idle shape).
+// The scope badge (Inbox/Archived) is always in the DOM, shown via CSS only
+// while searching, when both lists render as one combined result set.
 function rowMarkup(t, idx) {
-  const expires = t.expires ? `<div class="thread-item-inbox__expires"><span class="badge badge--role-${t.expires.role}">${t.expires.label}</span></div>` : "";
-  return `<button class="thread-item-inbox thread-item-inbox--${t.unread ? "unread" : "read"}" data-thread="${t.id}" data-idx="${idx}" data-subject="${esc(t.subject)}" data-department="${esc(t.department)}">
+  const badges = [
+    t.expires ? `<span class="badge badge--role-${t.expires.role}">${t.expires.label}</span>` : "",
+    `<span class="badge badge--role-neutral thread-item-inbox__scope">${t.archived ? "Archived" : "Inbox"}</span>`,
+  ].join("");
+  return `<div class="thread-item-inbox thread-item-inbox--${t.unread ? "unread" : "read"}" role="button" tabindex="0" data-thread="${t.id}" data-idx="${idx}" data-subject="${esc(t.subject)}" data-department="${esc(t.department)}"${t.expires ? ` data-expires="${t.expires.role}"` : ""}>
         ${avatarMarkup(t.department)}
         <div class="thread-item-inbox__main">
           <div class="thread-item-inbox__top">
@@ -655,10 +728,13 @@ function rowMarkup(t, idx) {
             <span class="thread-item-inbox__time">${t.date}</span>
           </div>
           <div class="thread-item-inbox__subject">${t.subject}</div>
-          <div class="thread-item-inbox__preview">${t.preview}</div>
-          ${expires}
+          <div class="thread-item-inbox__preview-row">
+            <span class="thread-item-inbox__preview">${t.preview}</span>
+            <button class="thread-item-inbox__flag-btn" type="button" aria-pressed="${t.flagged ? "true" : "false"}" aria-label="Flag thread">${iconFlagOutlined}${iconFlagFilled}</button>
+          </div>
+          <div class="thread-item-inbox__expires${t.expires ? "" : " thread-item-inbox__expires--scope-only"}">${badges}</div>
         </div>
-      </button>`;
+      </div>`;
 }
 
 function threadPane(t) {
@@ -696,11 +772,8 @@ function threadPane(t) {
 const inboxThreads = threads.filter((t) => !t.archived);
 const archivedThreads = threads.filter((t) => t.archived);
 
-const sortOptions = [
-  { key: "idx", label: "Date" },
-  { key: "subject", label: "Subject" },
-  { key: "department", label: "Department" },
-];
+// Department filter options — single-select: "All departments" or exactly one.
+const departments = [...new Set(threads.map((t) => t.department))];
 
 // ---- the appended-on-Send self bubble template, reused by the app script.
 // Static sender markup is generated here at build time (same avatar recipe);
@@ -715,14 +788,42 @@ const appJs = `(function () {
   var countEl = document.getElementById("mc-count");
   var searchInput = document.getElementById("mc-search-input");
   var searchClear = document.getElementById("mc-search-clear");
+  var unreadCounter = document.getElementById("mc-unread-counter");
   var activeList = "inbox";
+  var filters = { unread: false, expires: false, flagged: false };
+  var dept = null;
 
   function rows(listKey) {
     return Array.prototype.slice.call(lists[listKey].querySelectorAll(".thread-item-inbox"));
   }
-  function updateCount() {
-    var visible = rows(activeList).filter(function (r) { return !r.hidden; }).length;
+  function allRows() {
+    return rows("inbox").concat(rows("archived"));
+  }
+  function rowMatches(r) {
+    var q = searchInput.value.trim().toLowerCase();
+    if (q && r.textContent.toLowerCase().indexOf(q) === -1) return false;
+    if (filters.unread && !r.classList.contains("thread-item-inbox--unread")) return false;
+    if (filters.expires && !r.hasAttribute("data-expires")) return false;
+    if (filters.flagged && r.querySelector(".thread-item-inbox__flag-btn").getAttribute("aria-pressed") !== "true") return false;
+    if (dept && r.dataset.department !== dept) return false;
+    return true;
+  }
+  // While searching, the tab split is suspended: both lists show as one
+  // combined result set and every row reveals its Inbox/Archived scope badge.
+  function applyFilter() {
+    var searching = searchInput.value.trim() !== "";
+    mc.classList.toggle("mc--searching", searching);
+    lists.inbox.hidden = searching ? false : activeList !== "inbox";
+    lists.archived.hidden = searching ? false : activeList !== "archived";
+    allRows().forEach(function (r) { r.hidden = !rowMatches(r); });
+    var visible = allRows().filter(function (r) { return !r.hidden && !r.closest(".mc-list").hidden; }).length;
     countEl.textContent = visible + (visible === 1 ? " THREAD" : " THREADS");
+    searchClear.hidden = !searching;
+  }
+  function updateUnreadCounter() {
+    var n = rows("inbox").filter(function (r) { return r.classList.contains("thread-item-inbox--unread"); }).length;
+    unreadCounter.textContent = n;
+    unreadCounter.hidden = n === 0;
   }
   function showPane(id) {
     panes.forEach(function (p) { p.hidden = p.dataset.thread !== id; });
@@ -736,15 +837,33 @@ const appJs = `(function () {
   }
 
   // thread selection — single-select across both lists; opening a thread
-  // also marks it read (removes the unread state), the real product behavior
+  // also marks it read (removes the unread state), the real product behavior.
+  // Rows are role="button" divs (they nest the flag toggle), so Enter/Space
+  // need wiring by hand — a real <button> would have given them for free.
   document.querySelectorAll(".thread-item-inbox").forEach(function (row) {
-    row.addEventListener("click", function () {
-      rows("inbox").concat(rows("archived")).forEach(function (r) { r.classList.remove("thread-item-inbox--selected"); });
+    function activate() {
+      allRows().forEach(function (r) { r.classList.remove("thread-item-inbox--selected"); });
       row.classList.remove("thread-item-inbox--unread");
       row.classList.add("thread-item-inbox--read", "thread-item-inbox--selected");
       showPane(row.dataset.thread);
       mc.classList.add("mc--thread-open");
+      updateUnreadCounter();
+      if (filters.unread) applyFilter();
+    }
+    row.addEventListener("click", activate);
+    row.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); activate(); }
     });
+  });
+
+  // flag toggle — marks a thread important without opening it
+  document.querySelectorAll(".thread-item-inbox__flag-btn").forEach(function (flag) {
+    flag.addEventListener("click", function (e) {
+      e.stopPropagation();
+      flag.setAttribute("aria-pressed", flag.getAttribute("aria-pressed") === "true" ? "false" : "true");
+      if (filters.flagged) applyFilter();
+    });
+    flag.addEventListener("keydown", function (e) { e.stopPropagation(); });
   });
 
   // back (mobile only)
@@ -752,7 +871,8 @@ const appJs = `(function () {
     btn.addEventListener("click", function () { mc.classList.remove("mc--thread-open"); });
   });
 
-  // Inbox / Archived tabs
+  // Inbox / Archived tabs — the unread Counter also swaps its onNeutral
+  // active/inactive surface with the tab it sits on, same as Tabs' own docs
   document.querySelectorAll(".mc-rail__tabs .tab").forEach(function (tab) {
     tab.addEventListener("click", function () {
       document.querySelectorAll(".mc-rail__tabs .tab").forEach(function (t) {
@@ -760,23 +880,13 @@ const appJs = `(function () {
         t.setAttribute("aria-selected", t === tab ? "true" : "false");
       });
       activeList = tab.dataset.tab;
-      lists.inbox.hidden = activeList !== "inbox";
-      lists.archived.hidden = activeList !== "archived";
+      unreadCounter.classList.toggle("counter--active", activeList === "inbox");
+      unreadCounter.classList.toggle("counter--inactive", activeList !== "inbox");
       applyFilter();
     });
   });
 
-  // live search filter
-  function applyFilter() {
-    var q = searchInput.value.trim().toLowerCase();
-    ["inbox", "archived"].forEach(function (key) {
-      rows(key).forEach(function (r) {
-        r.hidden = q !== "" && r.textContent.toLowerCase().indexOf(q) === -1;
-      });
-    });
-    searchClear.hidden = q === "";
-    updateCount();
-  }
+  // live search — combined cross-tab results while a query is present
   searchInput.addEventListener("input", applyFilter);
   searchClear.addEventListener("click", function () {
     searchInput.value = "";
@@ -784,38 +894,40 @@ const appJs = `(function () {
     searchInput.focus();
   });
 
-  // Sort By — Select trigger + Listbox popover
-  var sortTrigger = document.getElementById("mc-sort-trigger");
-  var sortListbox = document.getElementById("mc-sort-listbox");
-  var sortValue = document.getElementById("mc-sort-value");
-  sortListbox.addEventListener("toggle", function (e) {
+  // filter chips — Unread / Expires soon / Flagged, freely combinable (AND)
+  document.querySelectorAll(".mc-rail__chips .chip[data-filter]").forEach(function (chipEl) {
+    chipEl.addEventListener("click", function () {
+      var pressed = chipEl.getAttribute("aria-pressed") !== "true";
+      chipEl.setAttribute("aria-pressed", pressed ? "true" : "false");
+      filters[chipEl.dataset.filter] = pressed;
+      applyFilter();
+    });
+  });
+
+  // Department — a dropdown chip: Chip trigger + single-select Listbox popover
+  var deptChip = document.getElementById("mc-dept-chip");
+  var deptLabel = document.getElementById("mc-dept-label");
+  var deptListbox = document.getElementById("mc-dept-listbox");
+  deptListbox.addEventListener("toggle", function (e) {
     if (e.newState === "open") {
-      var r = sortTrigger.getBoundingClientRect();
-      sortListbox.style.position = "fixed";
-      sortListbox.style.margin = "0";
-      sortListbox.style.top = r.bottom + 4 + "px";
-      sortListbox.style.left = Math.max(8, r.right - sortListbox.offsetWidth) + "px";
+      var r = deptChip.getBoundingClientRect();
+      deptListbox.style.position = "fixed";
+      deptListbox.style.margin = "0";
+      deptListbox.style.top = r.bottom + 4 + "px";
+      deptListbox.style.left = Math.max(8, Math.min(r.left, window.innerWidth - deptListbox.offsetWidth - 8)) + "px";
     }
   });
-  function sortLists(key) {
-    ["inbox", "archived"].forEach(function (listKey) {
-      var list = lists[listKey];
-      var sorted = rows(listKey).sort(function (a, b) {
-        if (key === "idx") return Number(a.dataset.idx) - Number(b.dataset.idx);
-        return a.dataset[key].localeCompare(b.dataset[key]);
-      });
-      sorted.forEach(function (r) { list.appendChild(r); });
-    });
-  }
-  sortListbox.querySelectorAll(".listbox__option").forEach(function (opt) {
+  deptListbox.querySelectorAll(".listbox__option").forEach(function (opt) {
     opt.addEventListener("click", function () {
-      sortListbox.querySelectorAll(".listbox__option").forEach(function (o) {
+      deptListbox.querySelectorAll(".listbox__option").forEach(function (o) {
         o.classList.toggle("listbox__option--selected", o === opt);
         o.setAttribute("aria-selected", o === opt ? "true" : "false");
       });
-      sortValue.textContent = opt.dataset.label;
-      sortLists(opt.dataset.key);
-      sortListbox.hidePopover();
+      dept = opt.dataset.dept || null;
+      deptLabel.textContent = dept || "Department";
+      deptChip.classList.toggle("chip--checked-outline", !!dept);
+      deptListbox.hidePopover();
+      applyFilter();
     });
   });
 
@@ -839,18 +951,21 @@ const appJs = `(function () {
     });
   });
 
-  // Archive — really moves the thread's row to the Archived list
+  // Archive — really moves the thread's row to the Archived list (and flips
+  // the row's search-scope badge to match its new home)
   document.querySelectorAll(".mc-archive").forEach(function (btn) {
     btn.addEventListener("click", function () {
       var id = btn.dataset.thread;
       var row = lists.inbox.querySelector('[data-thread="' + id + '"]');
       if (row) {
         row.classList.remove("thread-item-inbox--selected");
+        row.querySelector(".thread-item-inbox__scope").textContent = "Archived";
         lists.archived.insertBefore(row, lists.archived.firstChild);
       }
       btn.remove();
       closeThread();
       applyFilter();
+      updateUnreadCounter();
     });
   });
 
@@ -859,7 +974,8 @@ const appJs = `(function () {
     btn.addEventListener("click", function () { window.print(); });
   });
 
-  updateCount();
+  applyFilter();
+  updateUnreadCounter();
 })();`;
 
 const appHtml = `<!doctype html>
@@ -878,25 +994,28 @@ ${appCss}
   <header class="mc__topbar"><h1>Message Center</h1></header>
   <div class="mc__body">
     <aside class="mc__rail" aria-label="Thread list">
+      <div class="mc-rail__search">
+        <div class="search search--base">
+          ${iconSearch}
+          <input class="search__input" id="mc-search-input" placeholder="Search all threads" aria-label="Search all threads" />
+          <button class="search__clear" id="mc-search-clear" type="button" aria-label="Clear search" hidden>${iconClear.replace('<svg class="search__clear" ', '<svg ')}</button>
+        </div>
+      </div>
       <div class="mc-rail__tabs">
-        <div class="tabs tabs--underline tabs--base" role="tablist">
-          <button class="tab tab--base tab--active" role="tab" aria-selected="true" data-tab="inbox">Inbox</button>
+        <div class="tabs tabs--segmented tabs--base" role="tablist">
+          <button class="tab tab--base tab--active" role="tab" aria-selected="true" data-tab="inbox">Inbox<span class="counter counter--base counter--onNeutral counter--active" id="mc-unread-counter">${threads.filter((t) => !t.archived && t.unread).length}</span></button>
           <button class="tab tab--base" role="tab" aria-selected="false" data-tab="archived">Archived</button>
         </div>
       </div>
-      <div class="mc-rail__controls">
-        <div class="search search--base">
-          ${iconSearch}
-          <input class="search__input" id="mc-search-input" placeholder="Search" aria-label="Search threads" />
-          <button class="search__clear" id="mc-search-clear" type="button" aria-label="Clear search" hidden>${iconClear.replace('<svg class="search__clear" ', '<svg ')}</button>
-        </div>
-        <button class="select select--base" id="mc-sort-trigger" type="button" popovertarget="mc-sort-listbox">
-          <span class="select__stack"><span class="select__label">Sort By</span><span class="select__value" id="mc-sort-value">Date</span></span>
-          ${iconChevronDown}
-        </button>
-        <div class="listbox" id="mc-sort-listbox" popover>
-          <ul class="listbox__list" role="listbox" aria-label="Sort threads by">
-            ${sortOptions.map((o, i) => `<li><button class="listbox__option${i === 0 ? " listbox__option--selected" : ""}" role="option" aria-selected="${i === 0}" data-key="${o.key}" data-label="${o.label}" type="button">${o.label}${iconCheckmark}</button></li>`).join("\n            ")}
+      <div class="mc-rail__chips">
+        <button class="chip chip--base" type="button" aria-pressed="false" data-filter="unread">Unread</button>
+        <button class="chip chip--base" type="button" aria-pressed="false" data-filter="expires">Expires soon</button>
+        <button class="chip chip--base" type="button" aria-pressed="false" data-filter="flagged">Flagged</button>
+        <button class="chip chip--base" type="button" id="mc-dept-chip" popovertarget="mc-dept-listbox" aria-haspopup="listbox"><span id="mc-dept-label">Department</span>${iconChevronDown}</button>
+        <div class="listbox" id="mc-dept-listbox" popover>
+          <ul class="listbox__list" role="listbox" aria-label="Filter by department">
+            <li><button class="listbox__option listbox__option--selected" role="option" aria-selected="true" data-dept="" type="button">All departments${iconCheckmark}</button></li>
+            ${departments.map((d) => `<li><button class="listbox__option" role="option" aria-selected="false" data-dept="${esc(d)}" type="button">${d}${iconCheckmark}</button></li>`).join("\n            ")}
           </ul>
         </div>
       </div>
