@@ -524,3 +524,7 @@ The user reported "filters don't work" and "search splits the screen in half" �
 ## 2026-07-24 (cont. 12) — Header meta: pills → one plain 12px line
 
 - Department/Institution stopped being pills after all: now one plain body-sm (12px) text.secondary line — "Financial Aid · PeopleSoft University" (middle dot separator) — at every width, per explicit call: pills carried too much visual weight for what is quiet context. The Expires/Archived state Badges keep their tinted pill form right after the line — state stays loud, context goes quiet, which is the correct hierarchy the pill version was muddling.
+
+## 2026-07-24 (cont. 13) — Header state badges down to sm
+
+- The header's Expires/Archived badges dropped from base to **sm** (the same size the thread list rows use), letting them sit inline right after the "dept · institution" line even on mobile — base-size badges pushed onto their own line at 375px. The short-lived `.badge--base` modifier is gone from the prototype CSS again; wrap remains as the fallback for genuinely long combinations.

@@ -271,10 +271,6 @@ const badgeSm = badge.size.sm;
 const badgeHeight = px(resolve(badgeSm.height.$value));
 const badgePaddingX = px(resolve(badgeSm.paddingX.$value));
 const badgeLabelType = resolveToken(badgeSm.label);
-const badgeBase = badge.size.base;
-const badgeBaseHeight = px(resolve(badgeBase.height.$value));
-const badgeBasePaddingX = px(resolve(badgeBase.paddingX.$value));
-const badgeBaseLabelType = resolveToken(badgeBase.label);
 const badgeTint = (role) => ({ bg: refPath(badge.role[role].tint.bg.$value), text: refPath(badge.role[role].tint.text.$value) });
 const badgeWarningTint = badgeTint("warning");
 const badgeDangerTint = badgeTint("danger");
@@ -452,7 +448,6 @@ ${inboxStateCss("read")}
 
 .badge { box-sizing: border-box; display: inline-flex; align-items: center; border-radius: ${badgeRadius}; white-space: nowrap; }
 .badge--sm { height: ${badgeHeight}; padding: 0 ${badgePaddingX}; ${typoCss(badgeLabelType)} }
-.badge--base { height: ${badgeBaseHeight}; padding: 0 ${badgeBasePaddingX}; ${typoCss(badgeBaseLabelType)} }
 .badge--role-warning { background: ${cv(badgeWarningTint.bg)}; color: ${cv(badgeWarningTint.text)}; }
 .badge--role-danger { background: ${cv(badgeDangerTint.bg)}; color: ${cv(badgeDangerTint.text)}; }
 .badge--role-neutral { background: ${cv(badgeNeutralTint.bg)}; color: ${cv(badgeNeutralTint.text)}; }
@@ -853,8 +848,8 @@ function threadPane(t) {
           <h2 class="mc-thread__subject">${t.subject}</h2>
           <div class="mc-thread__tags">
             <span class="mc-thread__meta-line">${t.department} · ${t.meta.Institution}</span>
-            ${t.expires ? `<span class="badge badge--base badge--role-${t.expires.role}">${t.expires.label}</span>` : ""}
-            ${t.archived ? `<span class="badge badge--base badge--role-neutral">Archived</span>` : ""}
+            ${t.expires ? `<span class="badge badge--sm badge--role-${t.expires.role}">${t.expires.label}</span>` : ""}
+            ${t.archived ? `<span class="badge badge--sm badge--role-neutral">Archived</span>` : ""}
           </div>
         </header>
         <div class="mc-thread__scroll">
@@ -1133,7 +1128,7 @@ const appJs = `(function () {
         row.querySelector(".thread-item-inbox__scope").textContent = "Archived";
         lists.archived.insertBefore(row, lists.archived.firstChild);
       }
-      btn.closest(".mc-thread").querySelector(".mc-thread__tags").insertAdjacentHTML("beforeend", '<span class="badge badge--base badge--role-neutral">Archived</span>');
+      btn.closest(".mc-thread").querySelector(".mc-thread__tags").insertAdjacentHTML("beforeend", '<span class="badge badge--sm badge--role-neutral">Archived</span>');
       btn.remove();
       closeThread();
       applyFilter();

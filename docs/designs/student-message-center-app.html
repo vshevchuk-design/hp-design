@@ -126,7 +126,6 @@
 
 .badge { box-sizing: border-box; display: inline-flex; align-items: center; border-radius: 999px; white-space: nowrap; }
 .badge--sm { height: 16px; padding: 0 4px; font-weight: 600; font-size: 10px; line-height: 1; }
-.badge--base { height: 20px; padding: 0 6px; font-weight: 600; font-size: 12px; line-height: 1; }
 .badge--role-warning { background: var(--tok-bg-warning); color: var(--tok-text-warning); }
 .badge--role-danger { background: var(--tok-bg-danger); color: var(--tok-text-danger); }
 .badge--role-neutral { background: var(--tok-bg-neutral); color: var(--tok-text-default); }
@@ -667,7 +666,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <h2 class="mc-thread__subject">FAFSA Verification Documents</h2>
           <div class="mc-thread__tags">
             <span class="mc-thread__meta-line">Financial Aid · PeopleSoft University</span>
-            <span class="badge badge--base badge--role-warning">Expires 08/01/2026</span>
+            <span class="badge badge--sm badge--role-warning">Expires 08/01/2026</span>
             
           </div>
         </header>
@@ -702,7 +701,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <h2 class="mc-thread__subject">Advising Appointment Confirmation</h2>
           <div class="mc-thread__tags">
             <span class="mc-thread__meta-line">Academic Advising · PeopleSoft University</span>
-            <span class="badge badge--base badge--role-danger">Expired 07/10/2026</span>
+            <span class="badge badge--sm badge--role-danger">Expired 07/10/2026</span>
             
           </div>
         </header>
@@ -737,7 +736,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <h2 class="mc-thread__subject">Transcript Ready for Pickup</h2>
           <div class="mc-thread__tags">
             <span class="mc-thread__meta-line">Office of the Registrar · PeopleSoft University</span>
-            <span class="badge badge--base badge--role-neutral">Expires 12/31/2027</span>
+            <span class="badge badge--sm badge--role-neutral">Expires 12/31/2027</span>
             
           </div>
         </header>
@@ -812,7 +811,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <h2 class="mc-thread__subject">Close to Pell Lifetime Limits</h2>
           <div class="mc-thread__tags">
             <span class="mc-thread__meta-line">Financial Aid · PeopleSoft University</span>
-            <span class="badge badge--base badge--role-neutral">Expires 03/01/2027</span>
+            <span class="badge badge--sm badge--role-neutral">Expires 03/01/2027</span>
             
           </div>
         </header>
@@ -894,8 +893,8 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <h2 class="mc-thread__subject">Advisement Outreach</h2>
           <div class="mc-thread__tags">
             <span class="mc-thread__meta-line">Academic Advising · PeopleSoft University</span>
-            <span class="badge badge--base badge--role-danger">Expired Jul 10</span>
-            <span class="badge badge--base badge--role-neutral">Archived</span>
+            <span class="badge badge--sm badge--role-danger">Expired Jul 10</span>
+            <span class="badge badge--sm badge--role-neutral">Archived</span>
           </div>
         </header>
         <div class="mc-thread__scroll">
@@ -930,7 +929,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <div class="mc-thread__tags">
             <span class="mc-thread__meta-line">Academic Advising · PeopleSoft University</span>
             
-            <span class="badge badge--base badge--role-neutral">Archived</span>
+            <span class="badge badge--sm badge--role-neutral">Archived</span>
           </div>
         </header>
         <div class="mc-thread__scroll">
@@ -1207,7 +1206,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         row.querySelector(".thread-item-inbox__scope").textContent = "Archived";
         lists.archived.insertBefore(row, lists.archived.firstChild);
       }
-      btn.closest(".mc-thread").querySelector(".mc-thread__tags").insertAdjacentHTML("beforeend", '<span class="badge badge--base badge--role-neutral">Archived</span>');
+      btn.closest(".mc-thread").querySelector(".mc-thread__tags").insertAdjacentHTML("beforeend", '<span class="badge badge--sm badge--role-neutral">Archived</span>');
       btn.remove();
       closeThread();
       applyFilter();
