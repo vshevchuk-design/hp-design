@@ -611,15 +611,16 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
   .mc__reading { display: flex; }
   .mc-thread__back { display: none; }
   .mc-thread__tag-label { display: inline; }
+  /* subject shares the row with the actions on every split view — a long
+     subject simply wraps to a second line instead of dropping below the
+     buttons (an actions-only top row read as a hole on the tablet) */
+  .mc-thread__subject { order: 1; width: auto; flex: 1; }
+  .mc-thread__actions { margin-left: 0; }
 }
 @media (min-width: 1024px) {
   .mc__rail, .mc--thread-open .mc__rail { width: 380px; }
   .mc__topbar { padding: ${px(resolve("dim.4"))} ${px(resolve("dim.6"))}; }
   .mc-thread__bar { padding-left: ${px(resolve("dim.6"))}; padding-right: ${px(resolve("dim.6"))}; }
-  /* only here is the reading pane wide enough for the subject to share the
-     row with the actions — the 768–1023 split view keeps the stacked header */
-  .mc-thread__subject { order: 1; width: auto; flex: 1; }
-  .mc-thread__actions { margin-left: 0; }
   .mc-thread__scroll { padding: ${px(resolve("dim.6"))}; }
   .mc-thread__composer { padding: ${px(resolve("dim.4"))} ${px(resolve("dim.6"))} ${px(resolve("dim.6"))}; }
 }`;

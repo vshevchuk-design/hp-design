@@ -299,15 +299,16 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   .mc__reading { display: flex; }
   .mc-thread__back { display: none; }
   .mc-thread__tag-label { display: inline; }
+  /* subject shares the row with the actions on every split view — a long
+     subject simply wraps to a second line instead of dropping below the
+     buttons (an actions-only top row read as a hole on the tablet) */
+  .mc-thread__subject { order: 1; width: auto; flex: 1; }
+  .mc-thread__actions { margin-left: 0; }
 }
 @media (min-width: 1024px) {
   .mc__rail, .mc--thread-open .mc__rail { width: 380px; }
   .mc__topbar { padding: 16px 24px; }
   .mc-thread__bar { padding-left: 24px; padding-right: 24px; }
-  /* only here is the reading pane wide enough for the subject to share the
-     row with the actions — the 768–1023 split view keeps the stacked header */
-  .mc-thread__subject { order: 1; width: auto; flex: 1; }
-  .mc-thread__actions { margin-left: 0; }
   .mc-thread__scroll { padding: 24px; }
   .mc-thread__composer { padding: 16px 24px 24px; }
 }
