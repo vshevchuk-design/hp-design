@@ -520,3 +520,7 @@ The user reported "filters don't work" and "search splits the screen in half" �
 ## 2026-07-24 (cont. 11) — Header tag row wraps instead of scrolling
 
 - The nowrap+overflow-x header tag row clipped badges mid-word ("Expi…") on mobile/tablet — switched to flex-wrap at every width, per explicit request: the row grows to a second (or third) line when tight, a horizontal scroll never hides a state badge. The one-line-scroll idea lasted exactly one round against real content widths.
+
+## 2026-07-24 (cont. 12) — Header meta: pills → one plain 12px line
+
+- Department/Institution stopped being pills after all: now one plain body-sm (12px) text.secondary line — "Financial Aid · PeopleSoft University" (middle dot separator) — at every width, per explicit call: pills carried too much visual weight for what is quiet context. The Expires/Archived state Badges keep their tinted pill form right after the line — state stays loud, context goes quiet, which is the correct hierarchy the pill version was muddling.

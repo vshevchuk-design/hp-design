@@ -280,12 +280,12 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .mc-thread__back { order: 1; }
 .mc-thread__actions { order: 2; margin-left: auto; display: flex; gap: 8px; }
 .mc-thread__subject { order: 3; width: 100%; min-width: 0; margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 18px; line-height: 1.4; }
-/* value-only pills at every width (no "Department:" prefixes), plus real
-   Badges (base size) for the thread's Expires and Archived states. The row
-   wraps to a second line when tight — never a horizontal scroll that would
-   clip a badge mid-word */
-.mc-thread__tags { order: 4; width: 100%; display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
-.mc-thread__tag { display: inline-flex; align-items: center; background: var(--tok-bg-neutral); border-radius: 999px; padding: 4px 12px; color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; white-space: nowrap; }
+/* department · institution as one plain 12px line (pills lasted one round —
+   too much visual weight for what is quiet context), followed by real Badges
+   (base size) for the thread's Expires and Archived states. The row wraps
+   when tight — never a horizontal scroll that would clip a badge mid-word */
+.mc-thread__tags { order: 4; width: 100%; display: flex; align-items: center; flex-wrap: wrap; gap: 6px 8px; }
+.mc-thread__meta-line { color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
 .mc-thread__scroll { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 24px; }
 .mc-thread__composer { flex-shrink: 0; padding: 12px 16px 16px; }
 
@@ -539,8 +539,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           </div>
           <h2 class="mc-thread__subject">Winter Intersession</h2>
           <div class="mc-thread__tags">
-            <span class="mc-thread__tag">Academic Advising</span>
-            <span class="mc-thread__tag">PeopleSoft University</span>
+            <span class="mc-thread__meta-line">Academic Advising · PeopleSoft University</span>
             
             
           </div>
@@ -588,8 +587,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           </div>
           <h2 class="mc-thread__subject">Hello World</h2>
           <div class="mc-thread__tags">
-            <span class="mc-thread__tag">Academic Advising</span>
-            <span class="mc-thread__tag">PeopleSoft University</span>
+            <span class="mc-thread__meta-line">Academic Advising · PeopleSoft University</span>
             
             
           </div>
@@ -624,8 +622,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           </div>
           <h2 class="mc-thread__subject">Office of the Registrar Message</h2>
           <div class="mc-thread__tags">
-            <span class="mc-thread__tag">Office of the Registrar</span>
-            <span class="mc-thread__tag">PeopleSoft University</span>
+            <span class="mc-thread__meta-line">Office of the Registrar · PeopleSoft University</span>
             
             
           </div>
@@ -669,8 +666,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           </div>
           <h2 class="mc-thread__subject">FAFSA Verification Documents</h2>
           <div class="mc-thread__tags">
-            <span class="mc-thread__tag">Financial Aid</span>
-            <span class="mc-thread__tag">PeopleSoft University</span>
+            <span class="mc-thread__meta-line">Financial Aid · PeopleSoft University</span>
             <span class="badge badge--base badge--role-warning">Expires 08/01/2026</span>
             
           </div>
@@ -705,8 +701,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           </div>
           <h2 class="mc-thread__subject">Advising Appointment Confirmation</h2>
           <div class="mc-thread__tags">
-            <span class="mc-thread__tag">Academic Advising</span>
-            <span class="mc-thread__tag">PeopleSoft University</span>
+            <span class="mc-thread__meta-line">Academic Advising · PeopleSoft University</span>
             <span class="badge badge--base badge--role-danger">Expired 07/10/2026</span>
             
           </div>
@@ -741,8 +736,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           </div>
           <h2 class="mc-thread__subject">Transcript Ready for Pickup</h2>
           <div class="mc-thread__tags">
-            <span class="mc-thread__tag">Office of the Registrar</span>
-            <span class="mc-thread__tag">PeopleSoft University</span>
+            <span class="mc-thread__meta-line">Office of the Registrar · PeopleSoft University</span>
             <span class="badge badge--base badge--role-neutral">Expires 12/31/2027</span>
             
           </div>
@@ -777,8 +771,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           </div>
           <h2 class="mc-thread__subject">Requirement Waiver Request</h2>
           <div class="mc-thread__tags">
-            <span class="mc-thread__tag">English Dept</span>
-            <span class="mc-thread__tag">PeopleSoft University</span>
+            <span class="mc-thread__meta-line">English Dept · PeopleSoft University</span>
             
             
           </div>
@@ -818,8 +811,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           </div>
           <h2 class="mc-thread__subject">Close to Pell Lifetime Limits</h2>
           <div class="mc-thread__tags">
-            <span class="mc-thread__tag">Financial Aid</span>
-            <span class="mc-thread__tag">PeopleSoft University</span>
+            <span class="mc-thread__meta-line">Financial Aid · PeopleSoft University</span>
             <span class="badge badge--base badge--role-neutral">Expires 03/01/2027</span>
             
           </div>
@@ -861,8 +853,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           </div>
           <h2 class="mc-thread__subject">Important Information</h2>
           <div class="mc-thread__tags">
-            <span class="mc-thread__tag">Financial Aid</span>
-            <span class="mc-thread__tag">PeopleSoft University</span>
+            <span class="mc-thread__meta-line">Financial Aid · PeopleSoft University</span>
             
             
           </div>
@@ -902,8 +893,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           </div>
           <h2 class="mc-thread__subject">Advisement Outreach</h2>
           <div class="mc-thread__tags">
-            <span class="mc-thread__tag">Academic Advising</span>
-            <span class="mc-thread__tag">PeopleSoft University</span>
+            <span class="mc-thread__meta-line">Academic Advising · PeopleSoft University</span>
             <span class="badge badge--base badge--role-danger">Expired Jul 10</span>
             <span class="badge badge--base badge--role-neutral">Archived</span>
           </div>
@@ -938,8 +928,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           </div>
           <h2 class="mc-thread__subject">Study Session</h2>
           <div class="mc-thread__tags">
-            <span class="mc-thread__tag">Academic Advising</span>
-            <span class="mc-thread__tag">PeopleSoft University</span>
+            <span class="mc-thread__meta-line">Academic Advising · PeopleSoft University</span>
             
             <span class="badge badge--base badge--role-neutral">Archived</span>
           </div>
