@@ -98,6 +98,9 @@ const avatarDiameter = px(resolve(avatar.size.sm.diameter.$value));
 const avatarInitialsType = resolveToken(avatar.size.sm.initials);
 const refPath = (ref) => ref.replace(/[{}]/g, "");
 const senderNameColor = refPath(message.sender.nameColor.$value);
+const senderNameType = resolveToken(message.sender.name);
+const senderMetaType = resolveToken(message.sender.meta);
+const senderGap = px(resolve(message.sender.gap.$value));
 
 // ---- Attachment, resolved from its own tokens (not retyped) — for the
 // nested-in-a-bubble story only ----
@@ -118,10 +121,10 @@ const css = `${rootVars}
 .bubble-row { display: flex; flex-direction: column; gap: ${px(resolve("dim.2"))}; max-width: 75%; font-family: ${cv("family.sans")}; }
 .bubble-row--self { align-self: flex-end; align-items: flex-end; }
 .bubble-row--other { align-self: flex-start; align-items: flex-start; }
-.bubble-sender { display: flex; align-items: center; gap: ${px(resolve("dim.2"))}; }
-.bubble-sender__text { margin: 0; font-size: 12px; }
-.bubble-sender__name { color: ${cv(senderNameColor)}; font-weight: 600; }
-.bubble-sender__meta { color: ${cv("text.muted")}; }
+.bubble-sender { display: flex; align-items: center; gap: ${senderGap}; }
+.bubble-sender__text { margin: 0; }
+.bubble-sender__name { color: ${cv(senderNameColor)}; ${typoCss(senderNameType)} }
+.bubble-sender__meta { color: ${cv("text.muted")}; ${typoCss(senderMetaType)} }
 
 .avatar { box-sizing: border-box; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; border-radius: ${avatarRadius}; width: ${avatarDiameter}; height: ${avatarDiameter}; user-select: none; }
 .avatar__initials { text-transform: uppercase; ${typoCss(avatarInitialsType)} }

@@ -262,6 +262,7 @@ const lbShadowCss = `${px(lbShadow.offsetX)} ${px(lbShadow.offsetY)} ${px(lbShad
 const tliPadding = px(resolve(threadListItem.padding.$value));
 const tliSubjectType = resolveToken(get(threadListItem.subject.$value));
 const tliRingWidth = px(resolve(threadListItem.state.focused.ringWidth.$value));
+const tliSelectedBg = refPath(threadListItem.state.selected.bg.$value);
 const inbox = threadListItem.inbox;
 const inboxAvatarGap = px(resolve(inbox.avatarGap.$value));
 const inboxLineGap = px(resolve(inbox.lineGap.$value));
@@ -461,7 +462,7 @@ ${inboxStateCss("read")}
 .thread-item-inbox:not(.thread-item-inbox--selected):hover { background: ${cv(inboxList.hoverBg)}; }
 .thread-item-inbox:not(.thread-item-inbox--selected):active { background: ${cv(inboxList.activeBg)}; }
 .thread-item-inbox:focus-visible { outline: ${tliRingWidth} solid ${cv("border.focus")}; outline-offset: -${tliRingWidth}; }
-.thread-item-inbox--selected { background: ${cv("bg.primary")}; }
+.thread-item-inbox--selected { background: ${cv(tliSelectedBg)}; }
 
 .badge { box-sizing: border-box; display: inline-flex; align-items: center; border-radius: ${badgeRadius}; white-space: nowrap; }
 .badge--sm { height: ${badgeHeight}; padding: 0 ${badgePaddingX}; ${typoCss(badgeLabelType)} }
@@ -505,10 +506,10 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
 .bubble-row { display: flex; flex-direction: column; gap: ${px(resolve("dim.2"))}; max-width: 75%; font-family: ${cv("family.sans")}; }
 .bubble-row--self { align-self: flex-end; align-items: flex-end; }
 .bubble-row--other { align-self: flex-start; align-items: flex-start; }
-.bubble-sender { display: flex; align-items: center; gap: ${px(resolve("dim.2"))}; }
-.bubble-sender__text { margin: 0; font-size: 12px; }
-.bubble-sender__name { color: ${cv(msgNameColor)}; font-weight: 600; }
-.bubble-sender__meta { color: ${cv("text.muted")}; }
+.bubble-sender { display: flex; align-items: center; gap: ${msgSenderGap}; }
+.bubble-sender__text { margin: 0; }
+.bubble-sender__name { color: ${cv(msgNameColor)}; ${typoCss(msgNameType)} }
+.bubble-sender__meta { color: ${cv("text.muted")}; ${typoCss(msgMetaType)} }
 .bubble { box-sizing: border-box; display: flex; flex-direction: column; gap: ${bubGap}; padding: ${bubPaddingY} ${bubPaddingX}; border-radius: ${bubRadius}; }
 .bubble p { margin: 0; ${typoCss(bubTextType)} }
 .bubble--self.bubble--tint { background: ${cv("bg.primary")}; color: ${cv("text.default")}; }

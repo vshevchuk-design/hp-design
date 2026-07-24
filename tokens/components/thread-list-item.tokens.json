@@ -1,49 +1,25 @@
 {
   "component": {
     "threadListItem": {
-      "$description": "The sixth piece of the family — the left-rail clickable row (subject + 2-column Department/Received-style metadata + chevron + a persistent selected accent), the actual list Message Center's thread pane is built from. Built on Card's own `interactive` shell per the approved plan — hover/pressed/focused colors are the exact same semantic values Card's interactive variant already resolved to (fill.primary border on hover, bg.primary+fill.primary on pressed, border.focus ring), verified at build time against Card's real resolved values (not retyped, and not cross-referenced at the token level either — this project's components never alias a sibling component's own tokens directly, only resolve-and-compare in the build script, same discipline as every other reuse in this family). 'selected' reuses the identical pressed pair, applied persistently rather than only on click — a selected row is functionally 'as if permanently pressed'. Where the live desktop app shows an expiry as bare red-colored text ('Expires: 03/01/2027'), this component upgrades that specific value to a real Badge (danger role) instead of inventing a second ad-hoc red-text convention now that a proper component exists for exactly this. No unread indicator (dot/bold subject) — not asked for, deferred rather than built speculatively.",
-      "radius": { "$type": "dimension", "$value": "{radius.default}" },
-      "padding": { "$type": "dimension", "$value": "{dim.4}" },
-      "gap": { "$type": "dimension", "$value": "{dim.2}" },
-      "bg": { "$type": "color", "$value": "{surface.default}" },
-      "border": { "$type": "color", "$value": "{border.default}" },
-      "divider": { "$type": "color", "$value": "{border.default}" },
-      "subject": { "$type": "typography", "$value": "{text-style.heading-base}" },
-      "subjectColor": { "$type": "color", "$value": "{text.default}" },
-      "chevron": {
-        "iconSize": { "$type": "dimension", "$value": "{dim.4}" },
-        "color": { "$type": "color", "$value": "{icon.muted}" }
+      "$description": "The Message Center thread-list row — SINCE 2026-07-24 THE INBOX SHAPE IS THE ONLY SHAPE. The original card/metadata-row shape (subject + chevron + Department/Received label:value rows, built on Card's interactive shell with a build-time assertion against Card's real tokens) was removed per explicit request once the inbox redesign fully replaced it in the prototype — see decision-log 2026-07-24 for its history. What remains: a full-bleed flat row (avatar + identity + timestamp + subject + preview + flag toggle + optional Expires badge) with required unread/read states — see the inbox group below for all of it.",
+      "padding": {
+        "$type": "dimension",
+        "$value": "{dim.4}"
       },
-      "metadata": {
-        "$description": "Label:value rows, same line, spread apart (label left, value right) — matches the live app's own Department/Received/Regarding/Expires rows exactly. Both label and value at size.xs — secondary information, deliberately smaller than the subject; differentiated by color (muted vs. default), not weight.",
-        "gap": { "$type": "dimension", "$value": "{dim.1}" },
-        "label": {
-          "$type": "typography",
-          "$value": {
-            "fontFamily": "{family.sans}",
-            "fontWeight": "{weight.normal}",
-            "fontSize": "{size.xs}",
-            "lineHeight": "{leading.tight}",
-            "letterSpacing": "{tracking.normal}"
-          }
-        },
-        "labelColor": { "$type": "color", "$value": "{text.muted}" },
-        "value": {
-          "$type": "typography",
-          "$value": {
-            "fontFamily": "{family.sans}",
-            "fontWeight": "{weight.normal}",
-            "fontSize": "{size.xs}",
-            "lineHeight": "{leading.tight}",
-            "letterSpacing": "{tracking.normal}"
-          }
-        },
-        "valueColor": { "$type": "color", "$value": "{text.default}" }
+      "subject": {
+        "$type": "typography",
+        "$value": "{text-style.heading-base}"
       },
       "inbox": {
-        "$description": "Second content shape for the same interactive row — the Message Center inbox-list layout (avatar + department identity + timestamp + subject + preview + flag + optional Expires), as opposed to the Department/Received metadata-row shape above. Avatar is a real Avatar (resolved from avatar.tokens.json — SM size, 32px, since 2026-07-24 feedback; was base/40px), keyed off the department name (not a person) — same fallback-color hashing logic, just fed a department string instead of a person's name, so 'Academic Advising' always lands on the same identity color. No 'Handled by' row and no right-aligned Expires column (both present in the live inbox screenshot) — deliberately dropped/repositioned per explicit request: Expires moves to a left-aligned row directly under the preview text instead. REDESIGNED 2026-07-24 per explicit feedback, following the staff-mockup reference: no longer a rounded, bordered card sitting in a padded/gapped list — inbox rows are FULL-BLEED flat rows (no radius, no own border, no gaps) separated by a 1px list.divider, filling the rail edge to edge. Every row is in one of two required states: 'unread' (whiter, higher contrast, heavier weights) or 'read' (grayer, lower contrast, normal weights) — see those groups below. Because a flat row has no border to color, hover/pressed leave the card shell's blue-border language and use the ghost fill.neutralHover/fill.neutralActive convention instead (list.hoverBg/list.activeBg); 'selected' keeps the persistent bg.primary fill, just without the border. The card metadata-row shape above keeps the original Card-interactive shell states unchanged.",
-        "avatarGap": { "$type": "dimension", "$value": "{dim.3}" },
-        "lineGap": { "$type": "dimension", "$value": "{dim.1}" },
+        "$description": "The Message Center inbox-list row layout (avatar + department identity + timestamp + subject + preview + flag + optional Expires) — the component's only shape since the card/metadata-row shape was removed 2026-07-24. Avatar is a real Avatar (resolved from avatar.tokens.json — SM size, 32px, since 2026-07-24 feedback; was base/40px), keyed off the department name (not a person) — same fallback-color hashing logic, just fed a department string instead of a person's name, so 'Academic Advising' always lands on the same identity color. No 'Handled by' row and no right-aligned Expires column (both present in the live inbox screenshot) — deliberately dropped/repositioned per explicit request: Expires moves to a left-aligned row directly under the preview text instead. REDESIGNED 2026-07-24 per explicit feedback, following the staff-mockup reference: not a rounded, bordered card sitting in a padded/gapped list — inbox rows are FULL-BLEED flat rows (no radius, no own border, no gaps) separated by a 1px list.divider, filling the rail edge to edge. Every row is in one of two required states: 'unread' (whiter, higher contrast, heavier weights) or 'read' (grayer, lower contrast, normal weights) — see those groups below. Because a flat row has no border to color, hover/pressed use the ghost fill.neutralHover/fill.neutralActive convention (list.hoverBg/list.activeBg); 'selected' is the persistent state.selected.bg fill.",
+        "avatarGap": {
+          "$type": "dimension",
+          "$value": "{dim.3}"
+        },
+        "lineGap": {
+          "$type": "dimension",
+          "$value": "{dim.1}"
+        },
         "identity": {
           "$type": "typography",
           "$value": {
@@ -64,56 +40,120 @@
             "letterSpacing": "{tracking.normal}"
           }
         },
-        "timeColor": { "$type": "color", "$value": "{text.muted}" },
-        "preview": { "$type": "typography", "$value": "{text-style.body-sm}" },
+        "timeColor": {
+          "$type": "color",
+          "$value": "{text.muted}"
+        },
+        "preview": {
+          "$type": "typography",
+          "$value": "{text-style.body-sm}"
+        },
         "flag": {
           "$description": "2026-07-24: the flag became a real, clickable per-thread toggle (student marks a thread important), not a static staff-side glyph. Unflagged = the OUTLINED flag icon (assets/icons/material-outlined/flag.svg — first outlined icon in the repo, sourced 2026-07-24) in icon.muted; flagged = the FILLED flag (material-filled/flag.svg) in icon.warning (yellow). Because the row now contains a nested interactive element, the inbox row is a <div role='button' tabindex='0'> with a real nested <button> for the flag — the same no-interactive-inside-interactive resolution Attachment's idle shape already established (a real <button> can't nest another one).",
-          "iconSize": { "$type": "dimension", "$value": "{dim.5}" },
-          "color": { "$type": "color", "$value": "{icon.muted}" },
-          "flaggedColor": { "$type": "color", "$value": "{icon.warning}" }
+          "iconSize": {
+            "$type": "dimension",
+            "$value": "{dim.5}"
+          },
+          "color": {
+            "$type": "color",
+            "$value": "{icon.muted}"
+          },
+          "flaggedColor": {
+            "$type": "color",
+            "$value": "{icon.warning}"
+          }
         },
         "list": {
           "$description": "The full-bleed list presentation: rows separated by a 1px divider, no per-row radius/border/gaps. Hover/pressed reuse the established ghost progression (transparent-ish rest → fill.neutralHover → fill.neutralActive) because a flat borderless row has nothing for the card shell's blue hover border to attach to.",
-          "divider": { "$type": "color", "$value": "{border.default}" },
-          "hoverBg": { "$type": "color", "$value": "{fill.neutralHover}" },
-          "activeBg": { "$type": "color", "$value": "{fill.neutralActive}" }
+          "divider": {
+            "$type": "color",
+            "$value": "{border.default}"
+          },
+          "hoverBg": {
+            "$type": "color",
+            "$value": "{fill.neutralHover}"
+          },
+          "activeBg": {
+            "$type": "color",
+            "$value": "{fill.neutralActive}"
+          }
         },
         "unread": {
           "$description": "A thread with activity the viewer hasn't opened yet — whiter and higher-contrast than 'read': surface.default bg, text.default identity/subject at weight.semibold, preview one step darker (text.secondary) than read's. Identity/subject keep their shared base typography (size/leading) from inbox.identity / threadListItem.subject — only weight and color swap per state.",
-          "bg": { "$type": "color", "$value": "{surface.default}" },
-          "identityColor": { "$type": "color", "$value": "{text.default}" },
-          "identityWeight": { "$type": "fontWeight", "$value": "{weight.semibold}" },
-          "subjectColor": { "$type": "color", "$value": "{text.default}" },
-          "subjectWeight": { "$type": "fontWeight", "$value": "{weight.semibold}" },
-          "previewColor": { "$type": "color", "$value": "{text.secondary}" }
+          "bg": {
+            "$type": "color",
+            "$value": "{surface.default}"
+          },
+          "identityColor": {
+            "$type": "color",
+            "$value": "{text.default}"
+          },
+          "identityWeight": {
+            "$type": "fontWeight",
+            "$value": "{weight.semibold}"
+          },
+          "subjectColor": {
+            "$type": "color",
+            "$value": "{text.default}"
+          },
+          "subjectWeight": {
+            "$type": "fontWeight",
+            "$value": "{weight.semibold}"
+          },
+          "previewColor": {
+            "$type": "color",
+            "$value": "{text.secondary}"
+          }
         },
         "read": {
           "$description": "Already-opened thread — grayer and lower-contrast: surface.dim bg (2026-07-24: first tried surface.page — literally white, dims nothing — then surface.sunken/gray.100, which explicit feedback called too heavy next to unread's white; surface.dim/gray.50 was added to the semantic layer for exactly this), text.secondary identity/subject at weight.normal, text.muted preview.",
-          "bg": { "$type": "color", "$value": "{surface.dim}" },
-          "identityColor": { "$type": "color", "$value": "{text.secondary}" },
-          "identityWeight": { "$type": "fontWeight", "$value": "{weight.normal}" },
-          "subjectColor": { "$type": "color", "$value": "{text.secondary}" },
-          "subjectWeight": { "$type": "fontWeight", "$value": "{weight.normal}" },
-          "previewColor": { "$type": "color", "$value": "{text.muted}" }
+          "bg": {
+            "$type": "color",
+            "$value": "{surface.dim}"
+          },
+          "identityColor": {
+            "$type": "color",
+            "$value": "{text.secondary}"
+          },
+          "identityWeight": {
+            "$type": "fontWeight",
+            "$value": "{weight.normal}"
+          },
+          "subjectColor": {
+            "$type": "color",
+            "$value": "{text.secondary}"
+          },
+          "subjectWeight": {
+            "$type": "fontWeight",
+            "$value": "{weight.normal}"
+          },
+          "previewColor": {
+            "$type": "color",
+            "$value": "{text.muted}"
+          }
         }
       },
       "state": {
-        "hover": {
-          "border": { "$type": "color", "$value": "{fill.primary}" }
-        },
-        "pressed": {
-          "bg": { "$type": "color", "$value": "{bg.primary}" },
-          "border": { "$type": "color", "$value": "{fill.primary}" }
-        },
         "selected": {
-          "$description": "The exact same pair as 'pressed', applied persistently (the row is currently open in the reading pane) rather than only for the moment of a click.",
-          "bg": { "$type": "color", "$value": "{bg.primary}" },
-          "border": { "$type": "color", "$value": "{fill.primary}" }
+          "$description": "Persistent bg.primary fill for the thread currently open in the reading pane — the meaning survives from the original Card-interactive shell even though the card shape itself is gone (2026-07-24): a selected row is 'as if permanently pressed'.",
+          "bg": {
+            "$type": "color",
+            "$value": "{bg.primary}"
+          }
         },
         "focused": {
-          "ringColor": { "$type": "color", "$value": "{border.focus}" },
-          "ringWidth": { "$type": "dimension", "$value": "{dim.1}" },
-          "ringOffset": { "$type": "dimension", "$value": "{dim.0_5}" }
+          "ringColor": {
+            "$type": "color",
+            "$value": "{border.focus}"
+          },
+          "ringWidth": {
+            "$type": "dimension",
+            "$value": "{dim.1}"
+          },
+          "ringOffset": {
+            "$type": "dimension",
+            "$value": "{dim.0_5}"
+          }
         }
       }
     }
