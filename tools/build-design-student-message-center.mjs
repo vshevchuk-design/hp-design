@@ -40,6 +40,7 @@ const listbox = load("tokens/components/listbox.tokens.json").component.listbox;
 const chip = load("tokens/components/chip.tokens.json").component.chip;
 const counter = load("tokens/components/counter.tokens.json").component.counter;
 const emptyState = load("tokens/components/empty-state.tokens.json").component.emptyState;
+const toast = load("tokens/components/toast.tokens.json").component.toast;
 const threadListItem = load("tokens/components/thread-list-item.tokens.json").component.threadListItem;
 const badge = load("tokens/components/badge.tokens.json").component.badge;
 const avatar = load("tokens/components/avatar.tokens.json").component.avatar;
@@ -121,7 +122,7 @@ const colorPaths = [
   "icon.default", "icon.secondary", "icon.muted", "icon.onFill", "icon.primary", "icon.warning",
   "fill.primary", "fill.primaryHover", "fill.primaryActive",
   "fill.neutral", "fill.neutralHover", "fill.neutralActive",
-  "bg.primary", "bg.neutral", "bg.warning", "text.warning", "bg.danger", "text.danger",
+  "bg.primary", "bg.neutral", "bg.warning", "text.warning", "bg.danger", "text.danger", "status.success",
   ...usedHues.flatMap((h) => [`avatar.${h}.bg`, `avatar.${h}.text`]),
 ];
 const colorValue = Object.fromEntries(colorPaths.map((p) => [p, resolve(p)]));
@@ -180,6 +181,21 @@ const counterSm = {
   paddingX: px(resolve(counter.size.sm.paddingX.$value)),
   label: resolveToken(counter.size.sm.label),
 };
+
+// ---- Toast — resolved from its own token file (built 2026-07-24, with the
+// archive confirmation here as its driving use case) ----
+const toastRadius = px(resolve(toast.radius.$value));
+const toastPaddingX = px(resolve(toast.paddingX.$value));
+const toastPaddingY = px(resolve(toast.paddingY.$value));
+const toastGap = px(resolve(toast.gap.$value));
+const toastOffsetTop = px(resolve(toast.offsetTop.$value));
+const toastIconSize = px(resolve(toast.iconSize.$value));
+const toastLabelType = resolveToken(get(toast.label.$value));
+const toastLabelColor = refPath(toast.labelColor.$value);
+const toastShadow = resolveToken(toast.shadow);
+const toastShadowCss = `${px(toastShadow.offsetX)} ${px(toastShadow.offsetY)} ${px(toastShadow.blur)} ${px(toastShadow.spread)} ${toastShadow.color}`;
+const toastSuccessIconPath = refPath(toast.role.success.icon.$value);
+const iconToastSuccess = fs.readFileSync(path.join(root, "assets/icons/material-filled/check_circle.svg"), "utf8").replace("<svg ", '<svg class="toast__icon" ');
 
 // ---- EmptyState — resolved from its own token file (built 2026-07-24 for
 // exactly this prototype's three empty surfaces) ----
@@ -275,6 +291,7 @@ const badgeTint = (role) => ({ bg: refPath(badge.role[role].tint.bg.$value), tex
 const badgeWarningTint = badgeTint("warning");
 const badgeDangerTint = badgeTint("danger");
 const badgeNeutralTint = badgeTint("neutral");
+const badgePrimaryTint = badgeTint("primary");
 
 // ---- Avatar (base for list rows, sm for sender rows — the 2026-07-24
 // sender-row rebalance: 40px next to one small text line read top-heavy) ----
@@ -451,6 +468,7 @@ ${inboxStateCss("read")}
 .badge--role-warning { background: ${cv(badgeWarningTint.bg)}; color: ${cv(badgeWarningTint.text)}; }
 .badge--role-danger { background: ${cv(badgeDangerTint.bg)}; color: ${cv(badgeDangerTint.text)}; }
 .badge--role-neutral { background: ${cv(badgeNeutralTint.bg)}; color: ${cv(badgeNeutralTint.text)}; }
+.badge--role-primary { background: ${cv(badgePrimaryTint.bg)}; color: ${cv(badgePrimaryTint.text)}; }
 
 .avatar { box-sizing: border-box; position: relative; display: inline-flex; flex-shrink: 0; align-items: center; justify-content: center; overflow: hidden; border-radius: ${avatarRadius}; width: ${avatarDiameter}; height: ${avatarDiameter}; font-family: ${cv("family.sans")}; user-select: none; }
 .avatar__initials { text-transform: uppercase; ${typoCss(avatarInitialsType)} }
@@ -535,7 +553,16 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
 .separator { border: none; border-top: 1px solid ${cv(separatorColor)}; margin: 0; }
 
 .empty-state { box-sizing: border-box; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; padding: ${esPadding}; font-family: ${cv("family.sans")}; }
-.empty-state__text { background: ${cv(esPillBg)}; color: ${cv(esTextColor)}; border-radius: ${esPillRadius}; padding: ${esPillPaddingY} ${esPillPaddingX}; ${typoCss(esTextType)} text-align: center; }`;
+.empty-state__text { background: ${cv(esPillBg)}; color: ${cv(esTextColor)}; border-radius: ${esPillRadius}; padding: ${esPillPaddingY} ${esPillPaddingX}; ${typoCss(esTextType)} text-align: center; }
+
+.toast { position: fixed; inset: auto; top: ${toastOffsetTop}; left: 50%; transform: translateX(-50%); margin: 0; box-sizing: border-box; display: flex; align-items: center; gap: ${toastGap}; padding: ${toastPaddingY} ${toastPaddingX}; border-radius: ${toastRadius}; background: ${cv("surface.default")}; border: 1px solid ${cv("border.default")}; box-shadow: ${toastShadowCss}; font-family: ${cv("family.sans")}; }
+.toast__icon { flex-shrink: 0; width: ${toastIconSize}; height: ${toastIconSize}; }
+.toast__label { color: ${cv(toastLabelColor)}; ${typoCss(toastLabelType)} white-space: nowrap; }
+.toast--success .toast__icon { color: ${cv(toastSuccessIconPath)}; }
+.toast:popover-open { opacity: 1; translate: 0 0; transition: opacity 0.18s ease, translate 0.18s ease; }
+@starting-style {
+  .toast:popover-open { opacity: 0; translate: 0 -8px; }
+}`;
 
 // ---- the mc-* composition layer: app shell, panes, breakpoints — mobile-first ----
 const layoutCss = `/* ---- mc-* composition layer (app shell) — mobile-first, 768px / 1024px structural breakpoints (not tokenized, same call as Grid) ---- */
@@ -817,7 +844,7 @@ const threads = [
 function rowMarkup(t, idx) {
   const badges = [
     t.expires ? `<span class="badge badge--sm badge--role-${t.expires.role}">${t.expires.label}</span>` : "",
-    `<span class="badge badge--sm badge--role-neutral thread-item-inbox__scope">${t.archived ? "Archived" : "Inbox"}</span>`,
+    `<span class="badge badge--sm badge--role-${t.archived ? "neutral" : "primary"} thread-item-inbox__scope">${t.archived ? "Archived" : "Inbox"}</span>`,
   ].join("");
   return `<div class="thread-item-inbox thread-item-inbox--${t.unread ? "unread" : "read"}" role="button" tabindex="0" data-thread="${t.id}" data-idx="${idx}" data-subject="${esc(t.subject)}" data-department="${esc(t.department)}"${t.expires ? ` data-expires="${t.expires.role}"` : ""}>
         ${avatarMarkup(t.department, "sm")}
@@ -1117,15 +1144,35 @@ const appJs = `(function () {
     });
   });
 
-  // Archive — really moves the thread's row to the Archived list (and flips
-  // the row's search-scope badge to match its new home)
+  // Toast — popover="manual": free top-layer, no light-dismiss; a toast
+  // leaves on its own timer (the real component, resolved from its tokens)
+  var TOAST_SUCCESS_ICON = ${JSON.stringify(iconToastSuccess)};
+  function showToast(role, text, duration) {
+    var t = document.createElement("div");
+    t.className = "toast toast--" + role;
+    t.setAttribute("popover", "manual");
+    t.setAttribute("role", role === "danger" ? "alert" : "status");
+    t.innerHTML = TOAST_SUCCESS_ICON + '<span class="toast__label"></span>';
+    t.querySelector(".toast__label").textContent = text;
+    document.body.appendChild(t);
+    t.showPopover();
+    setTimeout(function () { t.hidePopover(); t.remove(); }, duration || 3200);
+  }
+
+  // Archive — really moves the thread's row to the Archived list (flips the
+  // row's search-scope badge to match its new home) and confirms with a toast
   document.querySelectorAll(".mc-archive").forEach(function (btn) {
     btn.addEventListener("click", function () {
       var id = btn.dataset.thread;
       var row = lists.inbox.querySelector('[data-thread="' + id + '"]');
+      var subject = "";
       if (row) {
+        subject = row.dataset.subject;
         row.classList.remove("thread-item-inbox--selected");
-        row.querySelector(".thread-item-inbox__scope").textContent = "Archived";
+        var scope = row.querySelector(".thread-item-inbox__scope");
+        scope.textContent = "Archived";
+        scope.classList.remove("badge--role-primary");
+        scope.classList.add("badge--role-neutral");
         lists.archived.insertBefore(row, lists.archived.firstChild);
       }
       btn.closest(".mc-thread").querySelector(".mc-thread__tags").insertAdjacentHTML("beforeend", '<span class="badge badge--sm badge--role-neutral">Archived</span>');
@@ -1133,6 +1180,7 @@ const appJs = `(function () {
       closeThread();
       applyFilter();
       updateUnreadCounter();
+      showToast("success", '"' + subject + '" archived');
     });
   });
 

@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>hp-design — Toast</title>
+<link rel="stylesheet" href="../assets/fonts/sora/sora.css" />
+<style>
+  :root {
+    --bg-page: #f7f7f5; --bg-card: #ffffff; --bg-card-hover: #fbfbfa;
+    --border: #e4e3df; --border-strong: #d2d1cb;
+    --text-primary: #0e0e10; --text-secondary: #63625c; --text-muted: #918f87;
+    --accent: #0468c4; --accent-bg: #eff6ff;
+    --code-bg: #1e1e22; --code-text: #e4e3df;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --sans: -apple-system, "Segoe UI", system-ui, sans-serif;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327;
+      --border: #313035; --border-strong: #403f45;
+      --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68;
+      --accent: #5aa4ec; --accent-bg: #16283b;
+      --code-bg: #0d0d0f; --code-text: #d7d6d2;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327;
+    --border: #313035; --border-strong: #403f45;
+    --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68;
+    --accent: #5aa4ec; --accent-bg: #16283b;
+    --code-bg: #0d0d0f; --code-text: #d7d6d2;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg-page); color: var(--text-primary); font-family: var(--sans); }
+  .shell { display: flex; min-height: 100vh; }
+  nav.side { width: 220px; flex-shrink: 0; border-right: 0.5px solid var(--border); padding: 1.5rem 1rem; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+  .brand { font-size: 14px; font-weight: 600; margin: 0 0 2px 8px; }
+  .brand-sub { font-size: 11.5px; color: var(--text-muted); margin: 0 0 1.5rem 8px; }
+  .navlink { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 8px; border-radius: 7px; font-size: 13px; text-decoration: none; color: var(--text-primary); margin-bottom: 1px; }
+  .navlink:hover { background: var(--bg-card-hover); }
+  .navlink.active { background: var(--accent-bg); color: var(--accent); font-weight: 600; }
+  .nav-category { font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin: 16px 8px 6px; }
+  main { flex: 1; padding: 4rem 4rem 6rem; max-width: 1120px; }
+
+  h1 { font-size: 36px; font-weight: 700; margin: 0 0 10px; letter-spacing: -0.02em; }
+  .sub { font-size: 14px; color: var(--text-secondary); margin: 0 0 2.5rem; }
+  h2.big-section { font-size: 24px; font-weight: 700; margin: 5.5rem 0 1.5rem; letter-spacing: -0.01em; padding-top: 2.5rem; border-top: 1px solid var(--border); }
+  h2.big-section:first-of-type { margin-top: 3rem; padding-top: 0; border-top: none; }
+  .section-desc { font-size: 13.5px; color: var(--text-secondary); margin: -0.5rem 0 1.5rem; max-width: 68ch; line-height: 1.6; }
+
+  .legend { font-size: 12.5px; color: var(--text-secondary); padding: 14px 18px; background: var(--bg-card); border: 0.5px solid var(--border); border-radius: 10px; margin-bottom: 1rem; line-height: 1.6; }
+  .legend .row { display: flex; gap: 14px; padding: 6px 0; border-bottom: 0.5px solid var(--border); }
+  .legend .row:last-child { border-bottom: none; }
+  .legend .row b { width: 150px; flex-shrink: 0; color: var(--text-primary); font-weight: 600; font-family: var(--mono); font-size: 11.5px; }
+  code.tok { font-family: var(--mono); font-size: 12px; color: var(--accent); }
+
+  pre.code { background: var(--code-bg); color: var(--code-text); border-radius: 10px; padding: 16px 18px; margin: 0; overflow-x: auto; font-family: var(--mono); font-size: 12px; line-height: 1.7; }
+  pre.code code { font-family: inherit; }
+
+  .story-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
+  .story { border: 0.5px solid var(--border); border-radius: 14px; background: var(--bg-card); padding: 22px; display: flex; flex-direction: column; gap: 12px; }
+  .story h3 { font-size: 14px; font-weight: 600; margin: 0; font-family: var(--mono); }
+  .story-preview { min-height: 56px; padding: 12px 0; }
+  .story-note { font-size: 11.5px; color: var(--text-muted); margin: 0; line-height: 1.5; }
+
+  .usage-preview { border: 0.5px solid var(--border); border-radius: 14px; background: var(--bg-card); padding: 24px; margin-bottom: 1rem; display: flex; gap: 12px; flex-wrap: wrap; }
+  .demo-btn { border: 0.5px solid var(--border-strong); background: var(--bg-card); color: var(--text-primary); border-radius: 8px; padding: 8px 14px; font-size: 13px; cursor: pointer; font-family: var(--sans); }
+  .demo-btn:hover { background: var(--bg-card-hover); }
+
+  :root {
+  --tok-surface-default: #ffffff;
+  --tok-border-default: #d1d1d1;
+  --tok-text-default: #181818;
+  --tok-status-success: #0a994e;
+  --tok-status-danger: #de394b;
+  --tok-status-warning: #b26f07;
+  --tok-family-sans: 'Sora', sans-serif;
+}
+
+.toast { position: fixed; inset: auto; top: 24px; left: 50%; transform: translateX(-50%); margin: 0; box-sizing: border-box; display: flex; align-items: center; gap: 8px; padding: 12px 16px; border-radius: 8px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); box-shadow: 0px 2px 8px 0px rgba(21, 25, 30, 0.10); font-family: var(--tok-family-sans); }
+.toast__icon { flex-shrink: 0; width: 20px; height: 20px; }
+.toast__label { color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; white-space: nowrap; }
+.toast--success .toast__icon { color: var(--tok-status-success); }
+.toast--danger .toast__icon { color: var(--tok-status-danger); }
+.toast--warning .toast__icon { color: var(--tok-status-warning); }
+
+/* entry transition — same @starting-style approach as Drawer/Modal */
+.toast:popover-open { opacity: 1; translate: 0 0; transition: opacity 0.18s ease, translate 0.18s ease; }
+@starting-style {
+  .toast:popover-open { opacity: 0; translate: 0 -8px; }
+}
+</style>
+</head>
+<body>
+<div class="shell">
+  <nav class="side">
+    <p class="brand">hp-design</p>
+    <p class="brand-sub">Highpoint design system</p>
+    <style>
+  .nav-tabs { display: flex; gap: 3px; margin: 0 0 14px; padding: 3px; background: var(--bg-card); border: 0.5px solid var(--border); border-radius: 9px; }
+  .nav-tab { flex: 1; border: none; background: transparent; padding: 6px 0; border-radius: 6px; font-size: 12px; font-weight: 600; color: var(--text-secondary); cursor: pointer; font-family: inherit; }
+  .nav-tab:hover { background: var(--bg-card-hover); color: var(--text-primary); }
+  .nav-tab.active { background: var(--accent-bg); color: var(--accent); }
+  .nav-pane { display: none; }
+  .nav-pane.active { display: block; }
+  .nav-acc { margin: 0; }
+  .nav-acc summary { list-style: none; display: flex; align-items: center; justify-content: space-between; cursor: pointer; font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin: 16px 8px 6px; user-select: none; }
+  .nav-acc summary::-webkit-details-marker { display: none; }
+  .nav-acc summary::after { content: ""; width: 5px; height: 5px; border-right: 1.5px solid var(--text-muted); border-bottom: 1.5px solid var(--text-muted); transform: rotate(-45deg); transition: transform 0.12s; }
+  .nav-acc[open] summary::after { transform: rotate(45deg); }
+</style>
+    <div class="nav-tabs" role="tablist">
+      <button class="nav-tab active" data-pane="ds" type="button">DS</button>
+      <button class="nav-tab" data-pane="designs" type="button">Designs</button>
+    </div>
+    <div class="nav-pane nav-pane--ds active" data-pane="ds">
+    <a class="navlink" href="index.html">Overview</a>
+    <p class="nav-category">Tokens</p>
+    <a class="navlink" href="colors.html">Colors</a>
+    <a class="navlink" href="semantic-colors.html">Semantic colors</a>
+    <a class="navlink" href="typography.html">Typography</a>
+    <a class="navlink" href="layout.html">Layout</a>
+    <a class="navlink" href="icons.html">Icons</a>
+    <p class="nav-category">Components</p>
+    <a class="navlink" href="button.html">Button</a>
+    <a class="navlink" href="counter.html">Counter</a>
+    <a class="navlink" href="input.html">Input</a>
+    <a class="navlink" href="select.html">Select</a>
+    <a class="navlink" href="search.html">Search</a>
+    <a class="navlink" href="pagination.html">Pagination</a>
+    <a class="navlink" href="separator.html">Separator</a>
+    <a class="navlink" href="tabs.html">Tabs</a>
+    <a class="navlink" href="checkbox.html">Checkbox</a>
+    <a class="navlink" href="radio.html">Radio</a>
+    <a class="navlink" href="box.html">Box</a>
+    <a class="navlink" href="card.html">Card</a>
+    <a class="navlink" href="switch.html">Switch</a>
+    <a class="navlink" href="grid.html">Grid</a>
+    <a class="navlink" href="tooltip.html">Tooltip</a>
+    <a class="navlink" href="popover.html">Popover</a>
+    <a class="navlink" href="drawer.html">Drawer</a>
+    <a class="navlink" href="modal.html">Modal</a>
+    <a class="navlink" href="menu.html">Menu</a>
+    <a class="navlink" href="listbox.html">Listbox</a>
+    <a class="navlink" href="avatar.html">Avatar</a>
+    <a class="navlink" href="badge.html">Badge</a>
+    <a class="navlink" href="chip.html">Chip</a>
+    <a class="navlink" href="attachment.html">Attachment</a>
+    <a class="navlink" href="message.html">Message</a>
+    <a class="navlink" href="bubble.html">Bubble</a>
+    <a class="navlink" href="thread-list-item.html">ThreadListItem</a>
+    <a class="navlink" href="composer.html">Composer</a>
+    <a class="navlink" href="empty-state.html">EmptyState</a>
+    <a class="navlink active" href="toast.html">Toast</a>
+    </div>
+    <div class="nav-pane nav-pane--designs" data-pane="designs">
+    <details class="nav-acc" open>
+      <summary>Message Center</summary>
+      <a class="navlink" href="designs/student-message-center.html">Student Message Center</a>
+    </details>
+    </div>
+    <script>
+  document.querySelectorAll(".nav-tab").forEach((tab) => {
+    tab.addEventListener("click", () => {
+      document.querySelectorAll(".nav-tab").forEach((t) => t.classList.toggle("active", t === tab));
+      document.querySelectorAll(".nav-pane").forEach((p) => p.classList.toggle("active", p.dataset.pane === tab.dataset.pane));
+    });
+  });
+</script>
+  </nav>
+  <main>
+    <h1>Toast</h1>
+    <p class="sub">tokens/components/toast.tokens.json · generated — the CSS below is generated from the same resolved tokens driving every preview on this page, nothing hand-copied. Colors are CSS custom properties, not literal hex. Press the buttons in "Live" — real toasts, real top layer, real timer.</p>
+
+    <div class="legend">
+      <div class="row"><b>Why "Toast"</b><span>The industry name for transient, self-dismissing feedback — Radix Toast, shadcn's toast, Sonner, Material's Snackbar and Ant's <code class="tok">message</code> are all this one pattern with different default positions. "Notification" usually means the richer, longer-lived card with a title, body and actions — deliberately NOT built yet.</span></div>
+      <div class="row"><b>Top-center, one line</b><span>Role icon + text, fixed at <code class="tok">toast.offsetTop</code> from the viewport top, horizontally centered. Auto-dismisses (default 3200ms in the helper below).</span></div>
+      <div class="row"><b>Neutral surface, colored icon</b><span>The shell stays white + hairline + shadow.sm at every role (Popover's own floating recipe) — only the icon carries the meaning: <code class="tok">status.success/danger/warning</code>, the status.* group's first consumer ("badges, alerts, form validation" per its own $description).</span></div>
+      <div class="row"><b>Native-first</b><span><code class="tok">popover="manual"</code> + <code class="tok">showPopover()</code> — free top-layer, and "manual" opts out of light-dismiss: a toast leaves on its own timer, not because the user clicked elsewhere. Entry via @starting-style, same as Drawer/Modal.</span></div>
+      <div class="row"><b>Deferred</b><span>Close (×) button, inline action link, title+body notification variant, stacking manager for simultaneous toasts — none needed by the driving use case (Message Center's archive confirmation), none built speculatively.</span></div>
+    </div>
+
+    <h2 class="big-section">CSS</h2>
+    <pre class="code"><code>:root {
+  --tok-surface-default: #ffffff;
+  --tok-border-default: #d1d1d1;
+  --tok-text-default: #181818;
+  --tok-status-success: #0a994e;
+  --tok-status-danger: #de394b;
+  --tok-status-warning: #b26f07;
+  --tok-family-sans: 'Sora', sans-serif;
+}
+
+.toast { position: fixed; inset: auto; top: 24px; left: 50%; transform: translateX(-50%); margin: 0; box-sizing: border-box; display: flex; align-items: center; gap: 8px; padding: 12px 16px; border-radius: 8px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); box-shadow: 0px 2px 8px 0px rgba(21, 25, 30, 0.10); font-family: var(--tok-family-sans); }
+.toast__icon { flex-shrink: 0; width: 20px; height: 20px; }
+.toast__label { color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; white-space: nowrap; }
+.toast--success .toast__icon { color: var(--tok-status-success); }
+.toast--danger .toast__icon { color: var(--tok-status-danger); }
+.toast--warning .toast__icon { color: var(--tok-status-warning); }
+
+/* entry transition — same @starting-style approach as Drawer/Modal */
+.toast:popover-open { opacity: 1; translate: 0 0; transition: opacity 0.18s ease, translate 0.18s ease; }
+@starting-style {
+  .toast:popover-open { opacity: 0; translate: 0 -8px; }
+}</code></pre>
+
+    <h2 class="big-section">JS</h2>
+    <p class="section-desc">The whole behavior — create, show, auto-dismiss.</p>
+    <pre class="code"><code>// popover="manual": free top-layer, and NO light-dismiss — a toast leaves
+// on its own timer, not because the user clicked elsewhere.
+const TOAST_ICONS = {"success":"&lt;svg class=\"toast__icon\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"&gt;&lt;path d=\"M0 0h24v24H0z\" fill=\"none\"/&gt;&lt;path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z\"/&gt;&lt;/svg&gt;","danger":"&lt;svg class=\"toast__icon\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"&gt;&lt;path d=\"M0 0h24v24H0z\" fill=\"none\"/&gt;&lt;path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z\"/&gt;&lt;/svg&gt;","warning":"&lt;svg class=\"toast__icon\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"&gt;&lt;path d=\"M0 0h24v24H0z\" fill=\"none\"/&gt;&lt;path d=\"M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z\"/&gt;&lt;/svg&gt;"};
+function showToast(role, text, duration = 3200) {
+  const t = document.createElement("div");
+  t.className = "toast toast--" + role;
+  t.setAttribute("popover", "manual");
+  t.setAttribute("role", role === "danger" ? "alert" : "status");
+  t.innerHTML = TOAST_ICONS[role] + '&lt;span class="toast__label"&gt;&lt;/span&gt;';
+  t.querySelector(".toast__label").textContent = text;
+  document.body.appendChild(t);
+  t.showPopover();
+  setTimeout(() =&gt; { t.hidePopover(); t.remove(); }, duration);
+}</code></pre>
+
+    <h2 class="big-section">Roles</h2>
+    <p class="section-desc">success / danger / warning — same shell, different status icon.</p>
+    <div class="story-grid">
+      
+      <div class="story">
+        <h3>success</h3>
+        <div class="story-preview"><div class="toast toast--success" style="position: static; transform: none;"><svg class="toast__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg><span class="toast__label">Thread archived</span></div></div>
+        <pre class="code"><code>&lt;div class="toast toast--success" popover="manual" role="status"&gt;&lt;svg class="toast__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"&gt;&lt;path d="M0 0h24v24H0z" fill="none"/&gt;&lt;path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/&gt;&lt;/svg&gt;&lt;span class="toast__label"&gt;Thread archived&lt;/span&gt;&lt;/div&gt;</code></pre>
+        <p class="story-note">Forced inline via style for this static preview — the real component is fixed top-center in the top layer.</p>
+      </div>
+
+      <div class="story">
+        <h3>danger</h3>
+        <div class="story-preview"><div class="toast toast--danger" style="position: static; transform: none;"><svg class="toast__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg><span class="toast__label">Could not send the message</span></div></div>
+        <pre class="code"><code>&lt;div class="toast toast--danger" popover="manual" role="status"&gt;&lt;svg class="toast__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"&gt;&lt;path d="M0 0h24v24H0z" fill="none"/&gt;&lt;path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/&gt;&lt;/svg&gt;&lt;span class="toast__label"&gt;Could not send the message&lt;/span&gt;&lt;/div&gt;</code></pre>
+        <p class="story-note">Forced inline via style for this static preview — the real component is fixed top-center in the top layer.</p>
+      </div>
+
+      <div class="story">
+        <h3>warning</h3>
+        <div class="story-preview"><div class="toast toast--warning" style="position: static; transform: none;"><svg class="toast__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg><span class="toast__label">This thread expires tomorrow</span></div></div>
+        <pre class="code"><code>&lt;div class="toast toast--warning" popover="manual" role="status"&gt;&lt;svg class="toast__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"&gt;&lt;path d="M0 0h24v24H0z" fill="none"/&gt;&lt;path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/&gt;&lt;/svg&gt;&lt;span class="toast__label"&gt;This thread expires tomorrow&lt;/span&gt;&lt;/div&gt;</code></pre>
+        <p class="story-note">Forced inline via style for this static preview — the real component is fixed top-center in the top layer.</p>
+      </div>
+    </div>
+
+    <h2 class="big-section">Live</h2>
+    <p class="section-desc">Real toasts in the real top layer.</p>
+    <div class="usage-preview">
+      <button class="demo-btn" onclick="showToast('success', 'Thread archived')">Show success</button>
+      <button class="demo-btn" onclick="showToast('danger', 'Could not send the message')">Show danger</button>
+      <button class="demo-btn" onclick="showToast('warning', 'This thread expires tomorrow')">Show warning</button>
+    </div>
+  </main>
+</div>
+<script>
+// popover="manual": free top-layer, and NO light-dismiss — a toast leaves
+// on its own timer, not because the user clicked elsewhere.
+const TOAST_ICONS = {"success":"<svg class=\"toast__icon\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z\"/></svg>","danger":"<svg class=\"toast__icon\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z\"/></svg>","warning":"<svg class=\"toast__icon\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z\"/></svg>"};
+function showToast(role, text, duration = 3200) {
+  const t = document.createElement("div");
+  t.className = "toast toast--" + role;
+  t.setAttribute("popover", "manual");
+  t.setAttribute("role", role === "danger" ? "alert" : "status");
+  t.innerHTML = TOAST_ICONS[role] + '<span class="toast__label"></span>';
+  t.querySelector(".toast__label").textContent = text;
+  document.body.appendChild(t);
+  t.showPopover();
+  setTimeout(() => { t.hidePopover(); t.remove(); }, duration);
+}
+</script>
+</body>
+</html>

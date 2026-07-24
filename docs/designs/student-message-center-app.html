@@ -37,6 +37,7 @@
   --tok-text-warning: #935a03;
   --tok-bg-danger: #ffdfde;
   --tok-text-danger: #c11435;
+  --tok-status-success: #0a994e;
   --tok-avatar-teal-bg: #88fffe;
   --tok-avatar-teal-text: #057878;
   --tok-avatar-orange-bg: #ffe1d5;
@@ -129,6 +130,7 @@
 .badge--role-warning { background: var(--tok-bg-warning); color: var(--tok-text-warning); }
 .badge--role-danger { background: var(--tok-bg-danger); color: var(--tok-text-danger); }
 .badge--role-neutral { background: var(--tok-bg-neutral); color: var(--tok-text-default); }
+.badge--role-primary { background: var(--tok-bg-primary); color: var(--tok-text-primary); }
 
 .avatar { box-sizing: border-box; position: relative; display: inline-flex; flex-shrink: 0; align-items: center; justify-content: center; overflow: hidden; border-radius: 999px; width: 40px; height: 40px; font-family: var(--tok-family-sans); user-select: none; }
 .avatar__initials { text-transform: uppercase; font-weight: 600; font-size: 14px; line-height: 1; }
@@ -225,6 +227,15 @@
 
 .empty-state { box-sizing: border-box; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; padding: 24px; font-family: var(--tok-family-sans); }
 .empty-state__text { background: var(--tok-bg-neutral); color: var(--tok-text-secondary); border-radius: 999px; padding: 8px 16px; font-weight: 400; font-size: 14px; line-height: 1.4; text-align: center; }
+
+.toast { position: fixed; inset: auto; top: 24px; left: 50%; transform: translateX(-50%); margin: 0; box-sizing: border-box; display: flex; align-items: center; gap: 8px; padding: 12px 16px; border-radius: 8px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); box-shadow: 0px 2px 8px 0px rgba(21, 25, 30, 0.10); font-family: var(--tok-family-sans); }
+.toast__icon { flex-shrink: 0; width: 20px; height: 20px; }
+.toast__label { color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; white-space: nowrap; }
+.toast--success .toast__icon { color: var(--tok-status-success); }
+.toast:popover-open { opacity: 1; translate: 0 0; transition: opacity 0.18s ease, translate 0.18s ease; }
+@starting-style {
+  .toast:popover-open { opacity: 0; translate: 0 -8px; }
+}
 
 /* ---- mc-* composition layer (app shell) — mobile-first, 768px / 1024px structural breakpoints (not tokenized, same call as Grid) ---- */
 * { box-sizing: border-box; }
@@ -366,7 +377,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
             <span class="thread-item-inbox__preview">Are you looking to stay on track or get ahead in your degree progress?</span>
             <button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
           </div>
-          <div class="thread-item-inbox__expires thread-item-inbox__expires--scope-only"><span class="badge badge--sm badge--role-neutral thread-item-inbox__scope">Inbox</span></div>
+          <div class="thread-item-inbox__expires thread-item-inbox__expires--scope-only"><span class="badge badge--sm badge--role-primary thread-item-inbox__scope">Inbox</span></div>
         </div>
       </div>
         <div class="thread-item-inbox thread-item-inbox--unread" role="button" tabindex="0" data-thread="hello" data-idx="1" data-subject="Hello World" data-department="Academic Advising">
@@ -381,7 +392,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
             <span class="thread-item-inbox__preview">This is a test announcement from Academic Advising.</span>
             <button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
           </div>
-          <div class="thread-item-inbox__expires thread-item-inbox__expires--scope-only"><span class="badge badge--sm badge--role-neutral thread-item-inbox__scope">Inbox</span></div>
+          <div class="thread-item-inbox__expires thread-item-inbox__expires--scope-only"><span class="badge badge--sm badge--role-primary thread-item-inbox__scope">Inbox</span></div>
         </div>
       </div>
         <div class="thread-item-inbox thread-item-inbox--read" role="button" tabindex="0" data-thread="registrar" data-idx="2" data-subject="Office of the Registrar Message" data-department="Office of the Registrar">
@@ -396,7 +407,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
             <span class="thread-item-inbox__preview">Your requested transcript is attached below.</span>
             <button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
           </div>
-          <div class="thread-item-inbox__expires thread-item-inbox__expires--scope-only"><span class="badge badge--sm badge--role-neutral thread-item-inbox__scope">Inbox</span></div>
+          <div class="thread-item-inbox__expires thread-item-inbox__expires--scope-only"><span class="badge badge--sm badge--role-primary thread-item-inbox__scope">Inbox</span></div>
         </div>
       </div>
         <div class="thread-item-inbox thread-item-inbox--read" role="button" tabindex="0" data-thread="fafsa" data-idx="3" data-subject="FAFSA Verification Documents" data-department="Financial Aid" data-expires="warning">
@@ -411,7 +422,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
             <span class="thread-item-inbox__preview">Please upload the requested verification documents before the deadline.</span>
             <button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
           </div>
-          <div class="thread-item-inbox__expires"><span class="badge badge--sm badge--role-warning">Expires 08/01/2026</span><span class="badge badge--sm badge--role-neutral thread-item-inbox__scope">Inbox</span></div>
+          <div class="thread-item-inbox__expires"><span class="badge badge--sm badge--role-warning">Expires 08/01/2026</span><span class="badge badge--sm badge--role-primary thread-item-inbox__scope">Inbox</span></div>
         </div>
       </div>
         <div class="thread-item-inbox thread-item-inbox--read" role="button" tabindex="0" data-thread="advising-appt" data-idx="4" data-subject="Advising Appointment Confirmation" data-department="Academic Advising" data-expires="danger">
@@ -426,7 +437,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
             <span class="thread-item-inbox__preview">Your appointment window has passed — please rebook if still needed.</span>
             <button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
           </div>
-          <div class="thread-item-inbox__expires"><span class="badge badge--sm badge--role-danger">Expired 07/10/2026</span><span class="badge badge--sm badge--role-neutral thread-item-inbox__scope">Inbox</span></div>
+          <div class="thread-item-inbox__expires"><span class="badge badge--sm badge--role-danger">Expired 07/10/2026</span><span class="badge badge--sm badge--role-primary thread-item-inbox__scope">Inbox</span></div>
         </div>
       </div>
         <div class="thread-item-inbox thread-item-inbox--unread" role="button" tabindex="0" data-thread="transcript-ready" data-idx="5" data-subject="Transcript Ready for Pickup" data-department="Office of the Registrar" data-expires="neutral">
@@ -441,7 +452,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
             <span class="thread-item-inbox__preview">Your official transcript is ready at the Registrar's front desk.</span>
             <button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
           </div>
-          <div class="thread-item-inbox__expires"><span class="badge badge--sm badge--role-neutral">Expires 12/31/2027</span><span class="badge badge--sm badge--role-neutral thread-item-inbox__scope">Inbox</span></div>
+          <div class="thread-item-inbox__expires"><span class="badge badge--sm badge--role-neutral">Expires 12/31/2027</span><span class="badge badge--sm badge--role-primary thread-item-inbox__scope">Inbox</span></div>
         </div>
       </div>
         <div class="thread-item-inbox thread-item-inbox--read" role="button" tabindex="0" data-thread="waiver" data-idx="6" data-subject="Requirement Waiver Request" data-department="English Dept">
@@ -456,7 +467,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
             <span class="thread-item-inbox__preview">Please submit your waiver request to Enrollment Services.</span>
             <button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
           </div>
-          <div class="thread-item-inbox__expires thread-item-inbox__expires--scope-only"><span class="badge badge--sm badge--role-neutral thread-item-inbox__scope">Inbox</span></div>
+          <div class="thread-item-inbox__expires thread-item-inbox__expires--scope-only"><span class="badge badge--sm badge--role-primary thread-item-inbox__scope">Inbox</span></div>
         </div>
       </div>
         <div class="thread-item-inbox thread-item-inbox--read" role="button" tabindex="0" data-thread="pell" data-idx="7" data-subject="Close to Pell Lifetime Limits" data-department="Financial Aid" data-expires="neutral">
@@ -471,7 +482,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
             <span class="thread-item-inbox__preview">You are approaching the lifetime limit of Federal Pell Grant.</span>
             <button class="thread-item-inbox__flag-btn" type="button" aria-pressed="true" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
           </div>
-          <div class="thread-item-inbox__expires"><span class="badge badge--sm badge--role-neutral">Expires 03/01/2027</span><span class="badge badge--sm badge--role-neutral thread-item-inbox__scope">Inbox</span></div>
+          <div class="thread-item-inbox__expires"><span class="badge badge--sm badge--role-neutral">Expires 03/01/2027</span><span class="badge badge--sm badge--role-primary thread-item-inbox__scope">Inbox</span></div>
         </div>
       </div>
         <div class="thread-item-inbox thread-item-inbox--read" role="button" tabindex="0" data-thread="important" data-idx="8" data-subject="Important Information" data-department="Financial Aid">
@@ -486,7 +497,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
             <span class="thread-item-inbox__preview">This notice provides information about the 2024-2025 financial aid process.</span>
             <button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
           </div>
-          <div class="thread-item-inbox__expires thread-item-inbox__expires--scope-only"><span class="badge badge--sm badge--role-neutral thread-item-inbox__scope">Inbox</span></div>
+          <div class="thread-item-inbox__expires thread-item-inbox__expires--scope-only"><span class="badge badge--sm badge--role-primary thread-item-inbox__scope">Inbox</span></div>
         </div>
       </div>
         </div>
@@ -1195,15 +1206,35 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     });
   });
 
-  // Archive — really moves the thread's row to the Archived list (and flips
-  // the row's search-scope badge to match its new home)
+  // Toast — popover="manual": free top-layer, no light-dismiss; a toast
+  // leaves on its own timer (the real component, resolved from its tokens)
+  var TOAST_SUCCESS_ICON = "<svg class=\"toast__icon\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z\"/></svg>";
+  function showToast(role, text, duration) {
+    var t = document.createElement("div");
+    t.className = "toast toast--" + role;
+    t.setAttribute("popover", "manual");
+    t.setAttribute("role", role === "danger" ? "alert" : "status");
+    t.innerHTML = TOAST_SUCCESS_ICON + '<span class="toast__label"></span>';
+    t.querySelector(".toast__label").textContent = text;
+    document.body.appendChild(t);
+    t.showPopover();
+    setTimeout(function () { t.hidePopover(); t.remove(); }, duration || 3200);
+  }
+
+  // Archive — really moves the thread's row to the Archived list (flips the
+  // row's search-scope badge to match its new home) and confirms with a toast
   document.querySelectorAll(".mc-archive").forEach(function (btn) {
     btn.addEventListener("click", function () {
       var id = btn.dataset.thread;
       var row = lists.inbox.querySelector('[data-thread="' + id + '"]');
+      var subject = "";
       if (row) {
+        subject = row.dataset.subject;
         row.classList.remove("thread-item-inbox--selected");
-        row.querySelector(".thread-item-inbox__scope").textContent = "Archived";
+        var scope = row.querySelector(".thread-item-inbox__scope");
+        scope.textContent = "Archived";
+        scope.classList.remove("badge--role-primary");
+        scope.classList.add("badge--role-neutral");
         lists.archived.insertBefore(row, lists.archived.firstChild);
       }
       btn.closest(".mc-thread").querySelector(".mc-thread__tags").insertAdjacentHTML("beforeend", '<span class="badge badge--sm badge--role-neutral">Archived</span>');
@@ -1211,6 +1242,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
       closeThread();
       applyFilter();
       updateUnreadCounter();
+      showToast("success", '"' + subject + '" archived');
     });
   });
 
