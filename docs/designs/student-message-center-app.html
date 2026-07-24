@@ -240,6 +240,10 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .mc--search-open .mc-rail__topbar .tabs--segmented, .mc--search-open .mc-search-open-btn { display: none; }
 .mc--search-open .mc-rail__topbar .search { display: flex; }
 .mc-rail__chips { display: flex; gap: 8px; padding: 12px 16px; overflow-x: auto; }
+/* Unread / Expires soon only make sense for the Inbox; search is global, so
+   the whole filter row leaves while it's open */
+.mc--archived .chip[data-filter="unread"], .mc--archived .chip[data-filter="expires"] { display: none; }
+.mc--search-open .mc-rail__chips { display: none; }
 .mc-rail__count { display: flex; flex-direction: column; gap: 8px; }
 .mc-count { padding: 0 16px; color: var(--tok-text-muted); font-weight: 700; font-size: 12px; line-height: 1.4; text-transform: uppercase; }
 /* one shared scroll container for both lists — during a search they render
@@ -1051,12 +1055,36 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
       activeList = tab.dataset.tab;
       unreadCounter.classList.toggle("counter--active", activeList === "inbox");
       unreadCounter.classList.toggle("counter--inactive", activeList !== "inbox");
+      // Unread/Expires soon are Inbox-only concepts — hidden on Archived,
+      // and reset so they can't keep filtering invisibly
+      mc.classList.toggle("mc--archived", activeList === "archived");
+      if (activeList === "archived") resetChipFilters(["unread", "expires"]);
       applyFilter();
     });
   });
 
+  // resets some/all chip filters so a hidden chip can't keep filtering
+  // invisibly (used when switching to Archived and when opening search)
+  function resetChipFilters(keys) {
+    keys.forEach(function (key) {
+      var chipEl = document.querySelector('.mc-rail__chips .chip[data-filter="' + key + '"]');
+      if (chipEl) chipEl.setAttribute("aria-pressed", "false");
+      filters[key] = false;
+    });
+  }
+  function resetDeptFilter() {
+    dept = null;
+    document.getElementById("mc-dept-label").textContent = "Department";
+    document.getElementById("mc-dept-chip").classList.remove("chip--checked-outline");
+    document.querySelectorAll("#mc-dept-listbox .listbox__option").forEach(function (o, i) {
+      o.classList.toggle("listbox__option--selected", i === 0);
+      o.setAttribute("aria-selected", i === 0 ? "true" : "false");
+    });
+  }
+
   // search is an icon button beside the tabs; opening it swaps the tabs for
-  // the expanded field. The × clears a non-empty query, closes when empty.
+  // the expanded field and retires the whole filter row (search is global —
+  // chips don't apply). The × clears a non-empty query, closes when empty.
   var searchOpenBtn = document.querySelector(".mc-search-open-btn");
   function closeSearch() {
     mc.classList.remove("mc--search-open");
@@ -1065,6 +1093,8 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   }
   searchOpenBtn.addEventListener("click", function () {
     mc.classList.add("mc--search-open");
+    resetChipFilters(["unread", "expires", "flagged"]);
+    resetDeptFilter();
     applyFilter();
     searchInput.focus();
   });

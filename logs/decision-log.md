@@ -483,3 +483,8 @@ The user reported "filters don't work" and "search splits the screen in half" �
 - **Search trigger got a background**: Button ghost → **Button secondary** (fill.neutral) icon-only base, per explicit ask.
 - **Three expiry tiers in the data now**: soon (warning tint — FAFSA Verification), expired (danger tint — Advising Appointment), and far/not-soon (**neutral gray tint — Transcript Ready, and Pell reclassified**: its 03/01/2027 date was never "soon"; it had been warning only because the tier didn't exist). The "Expires soon" chip matches warning+danger only — a far-off neutral expiry deliberately doesn't count, per explicit spec. Inbox is 9 threads now, unread 3.
 - The search-open button now calls applyFilter() immediately, so the type-to-search EmptyState appears on open, not on first keystroke.
+
+## 2026-07-24 (cont. 5) — Context-aware filter chips
+
+- **Archived shows only Flagged + Department** — Unread and Expires soon are Inbox-only concepts (an archived thread is by definition dealt with), hidden via an `mc--archived` class per explicit request. Switching to Archived also *resets* the two hidden chips (aria-pressed + state), so a chip that's no longer visible can't keep filtering invisibly — the same trap class as the earlier "hidden rows still displayed" bug, caught at design time instead of by the user this round.
+- **Search shows no chips at all** — search is global, the whole filter row leaves while search is open (`.mc--search-open .mc-rail__chips { display:none }`), and opening search resets every chip filter including Department for the same no-invisible-filtering reason. Closing search brings the row back in its clean state.
