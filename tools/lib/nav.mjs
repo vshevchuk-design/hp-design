@@ -10,6 +10,19 @@
 //             shown on load; the tabs just toggle in-page, no navigation.
 // The tab styles/script are emitted inline here so this stays a one-file
 // change — the per-page chrome CSS in each build script doesn't know about it.
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+// Inlined (not <img>-linked) so it needs no basePath juggling and so the
+// wordmark can follow the docs chrome's own text color in dark mode — the
+// source asset's #090D19 text fill is swapped for currentColor at build time;
+// the blue mark + white glyph stay fixed brand colors.
+const NAV_ROOT = path.dirname(path.dirname(path.dirname(fileURLToPath(import.meta.url))));
+const LOGO_SVG = fs
+  .readFileSync(path.join(NAV_ROOT, "assets/highpoint-logo.svg"), "utf8")
+  .replace(/fill="#090D19"/g, 'fill="currentColor"');
+
 export const NAV_ITEMS = {
   overview: { label: "Overview", href: "index.html" },
   colors: { label: "Colors", href: "colors.html" },
@@ -61,7 +74,10 @@ export const DESIGN_PRODUCTS = {
 };
 
 const NAV_CHROME = `<style>
-  .nav-tabs { display: flex; gap: 3px; margin: 0 0 14px; padding: 3px; background: var(--bg-card); border: 0.5px solid var(--border); border-radius: 9px; }
+  .nav-logo { color: var(--text-primary); margin: 2px 0 16px 8px; }
+  .nav-logo svg { display: block; }
+  .nav-pane .brand { margin: 12px 0 10px 8px; }
+  .nav-tabs { display: flex; gap: 3px; margin: 0 0 4px; padding: 3px; background: var(--bg-card); border: 0.5px solid var(--border); border-radius: 9px; }
   .nav-tab { flex: 1; border: none; background: transparent; padding: 6px 0; border-radius: 6px; font-size: 12px; font-weight: 600; color: var(--text-secondary); cursor: pointer; font-family: inherit; }
   .nav-tab:hover { background: var(--bg-card-hover); color: var(--text-primary); }
   .nav-tab.active { background: var(--accent-bg); color: var(--accent); }
@@ -99,14 +115,14 @@ export function renderNav(activeKey, { basePath = "" } = {}) {
     </details>`
     )
     .join("\n    ");
-  return `<p class="brand">hp-design</p>
-    <p class="brand-sub">Highpoint design system</p>
-    ${NAV_CHROME}
+  return `${NAV_CHROME}
+    <div class="nav-logo">${LOGO_SVG}</div>
     <div class="nav-tabs" role="tablist">
       <button class="nav-tab${designsActive ? "" : " active"}" data-pane="ds" type="button">DS</button>
       <button class="nav-tab${designsActive ? " active" : ""}" data-pane="designs" type="button">Designs</button>
     </div>
     <div class="nav-pane nav-pane--ds${designsActive ? "" : " active"}" data-pane="ds">
+    <p class="brand">Design System</p>
     ${link("overview")}
     <p class="nav-category">Tokens</p>
     ${link("colors")}
@@ -147,6 +163,7 @@ export function renderNav(activeKey, { basePath = "" } = {}) {
     ${link("toast")}
     </div>
     <div class="nav-pane nav-pane--designs${designsActive ? " active" : ""}" data-pane="designs">
+    <p class="brand">Design Prototypes</p>
     ${designsPane}
     </div>
     ${NAV_SCRIPT}`;

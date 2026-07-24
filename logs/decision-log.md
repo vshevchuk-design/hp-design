@@ -540,3 +540,8 @@ The user reported "filters don't work" and "search splits the screen in half" �
 
 - **On mobile an open thread now takes the whole screen**: the app's own "Message Center" topbar hides under `.mc--thread-open` (<768 only — split views keep it), the thread bar with Back becomes the top of the screen. One less stacked header on a small viewport.
 - **The blue underline on Attachments was the `.message__body a` link rule leaking**: Attachment's done shape IS an `<a download>`, so the body's link styling (text.primary + underline) hit it and drew through the title/description. Fixed with a scoped `.message__body a.attachment { text-decoration: none; }` override. Worth remembering for real ports: any generic `a` styling inside Message's body needs to exempt component anchors nested in the flow (Attachment today, anything link-shaped tomorrow) — the docs pages never caught this because their body-attachment stories use `<span class="attachment">`, not the real done-shape anchor.
+
+## 2026-07-24 (cont. 16) — Sidebar branding: Highpoint logo + per-pane titles
+
+- The sidebar now leads with the **Highpoint logo** (new source asset `assets/highpoint-logo.svg`), inlined by `renderNav` at build time rather than <img>-linked — no basePath juggling for the designs/ pages, and the wordmark's #090D19 text fill is swapped to `currentColor` so it follows the docs chrome's text color in dark mode (the blue mark + white glyph stay fixed brand colors).
+- The "hp-design / Highpoint design system" brand block is gone; each pane now titles itself UNDER the tabs — **"Design System"** on the DS pane, **"Design Prototypes"** on the Designs pane. One-file change in nav.mjs + the usual hand-sync of docs/index.html (its no-generator sidebar caught up in the same pass).
