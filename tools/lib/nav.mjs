@@ -45,6 +45,7 @@ export const NAV_ITEMS = {
   bubble: { label: "Bubble", href: "bubble.html" },
   "thread-list-item": { label: "ThreadListItem", href: "thread-list-item.html" },
   composer: { label: "Composer", href: "composer.html" },
+  "empty-state": { label: "EmptyState", href: "empty-state.html" },
 };
 
 // Products → prototype pages shown in the Designs pane. Keys are the
@@ -141,6 +142,7 @@ export function renderNav(activeKey, { basePath = "" } = {}) {
     ${link("bubble")}
     ${link("thread-list-item")}
     ${link("composer")}
+    ${link("empty-state")}
     </div>
     <div class="nav-pane nav-pane--designs${designsActive ? " active" : ""}" data-pane="designs">
     ${designsPane}

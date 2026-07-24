@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>hp-design — Grid</title>
+<title>hp-design — EmptyState</title>
 <link rel="stylesheet" href="../assets/fonts/sora/sora.css" />
 <style>
   :root {
@@ -61,35 +61,20 @@
   pre.code { background: var(--code-bg); color: var(--code-text); border-radius: 10px; padding: 16px 18px; margin: 0; overflow-x: auto; font-family: var(--mono); font-size: 12px; line-height: 1.7; }
   pre.code code { font-family: inherit; }
 
-  .story-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 28px; }
-  .story { border: 0.5px solid var(--border); border-radius: 14px; background: var(--bg-card); padding: 24px; display: flex; flex-direction: column; gap: 14px; }
+  .story-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
+  .story { border: 0.5px solid var(--border); border-radius: 14px; background: var(--bg-card); padding: 22px; display: flex; flex-direction: column; gap: 12px; }
   .story h3 { font-size: 14px; font-weight: 600; margin: 0; font-family: var(--mono); }
-  .story-preview { min-height: 64px; display: flex; align-items: center; justify-content: center; padding: 12px 0; }
+  .story-preview { min-height: 56px; padding: 12px 0; }
   .story-note { font-size: 11.5px; color: var(--text-muted); margin: 0; line-height: 1.5; }
 
-  .demo-grid { width: 100%; }
-  .grid-cell { background: var(--tok-surface-sunken); border: 1px solid var(--tok-border-default); border-radius: 6px; color: var(--tok-text-secondary); font-family: var(--mono); font-size: 12px; display: flex; align-items: center; justify-content: center; height: 44px; }
-
-  .placeholder-note { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-muted); border: 0.5px dashed var(--border-strong); border-radius: 6px; padding: 4px 10px; margin-top: 1.5rem; }
-
   :root {
-  --tok-surface-sunken: #e8e8e8;
-  --tok-border-default: #d1d1d1;
+  --tok-bg-neutral: #e8e8e8;
   --tok-text-secondary: #696969;
   --tok-family-sans: 'Sora', sans-serif;
 }
 
-.grid { display: grid; }
-.grid--gap-none { gap: 0px; }
-.grid--gap-xs { gap: 8px; }
-.grid--gap-sm { gap: 12px; }
-.grid--gap-md { gap: 16px; }
-.grid--gap-lg { gap: 24px; }
-.grid--cols-2 { grid-template-columns: repeat(2, 1fr); }
-.grid--cols-3 { grid-template-columns: repeat(3, 1fr); }
-.grid--cols-4 { grid-template-columns: repeat(4, 1fr); }
-.grid--cols-6 { grid-template-columns: repeat(6, 1fr); }
-.grid--auto { grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); }
+.empty-state { box-sizing: border-box; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; padding: 24px; font-family: var(--tok-family-sans); }
+.empty-state__text { background: var(--tok-bg-neutral); color: var(--tok-text-secondary); border-radius: 999px; padding: 8px 16px; font-weight: 400; font-size: 14px; line-height: 1.4; text-align: center; }
 </style>
 </head>
 <body>
@@ -136,7 +121,7 @@
     <a class="navlink" href="box.html">Box</a>
     <a class="navlink" href="card.html">Card</a>
     <a class="navlink" href="switch.html">Switch</a>
-    <a class="navlink active" href="grid.html">Grid</a>
+    <a class="navlink" href="grid.html">Grid</a>
     <a class="navlink" href="tooltip.html">Tooltip</a>
     <a class="navlink" href="popover.html">Popover</a>
     <a class="navlink" href="drawer.html">Drawer</a>
@@ -151,7 +136,7 @@
     <a class="navlink" href="bubble.html">Bubble</a>
     <a class="navlink" href="thread-list-item.html">ThreadListItem</a>
     <a class="navlink" href="composer.html">Composer</a>
-    <a class="navlink" href="empty-state.html">EmptyState</a>
+    <a class="navlink active" href="empty-state.html">EmptyState</a>
     </div>
     <div class="nav-pane nav-pane--designs" data-pane="designs">
     <details class="nav-acc" open>
@@ -169,128 +154,44 @@
 </script>
   </nav>
   <main>
-    <h1>Grid</h1>
-    <p class="sub">tokens/components/grid.tokens.json · generated — the CSS below is generated from the same resolved tokens driving every preview on this page, not hand-copied. Colors are CSS custom properties, not literal hex.</p>
+    <h1>EmptyState</h1>
+    <p class="sub">tokens/components/empty-state.tokens.json · generated — the CSS below is generated from the same resolved tokens driving every preview on this page, nothing hand-copied. Colors are CSS custom properties, not literal hex.</p>
 
     <div class="legend">
-      <div class="row"><b>Gap only</b><span>The only tokenized property is gap — column count/sizing is a per-use structural decision, not a design-token scale (same reasoning Box applied to not tokenizing radius).</span></div>
-      <div class="row"><b>Gap scale</b><span>none/xs/sm/md/lg — 0/8/12/16/24 — the <em>exact same</em> steps and dim aliases as <a href="box.html">Box</a>'s padding scale, reused rather than inventing a second spacing scale.</span></div>
-      <div class="row"><b>Fixed columns</b><span>Plain <code class="tok">repeat(N, 1fr)</code> — 2/3/4/6 shown, any count works the same way.</span></div>
-      <div class="row"><b>Auto-fit</b><span>Responsive without a single breakpoint token — <code class="tok">repeat(auto-fit, minmax(…, 1fr))</code>, the exact pattern this docs site's own .story-grid already uses on every page.</span></div>
-      <div class="row"><b>No states</b><span>Purely presentational — same as Box/Separator, a layout container never reacts to hover/focus/press.</span></div>
+      <div class="row"><b>What it is</b><span>A placeholder for an area whose content is currently absent — a reading pane before a selection, a search before typing, a filter with no matches. It fills the space the content would occupy and centers one line of hint text.</span></div>
+      <div class="row"><b>The pill</b><span>The hint sits on a long, weak, fully-rounded gray pill — <code class="tok">bg.neutral</code> (Badge's own neutral-tint fill) + <code class="tok">radius.full</code>, with wider paddingX than a Badge so it reads "long" — a quiet chip anchored in the space, not bare text floating in a void.</span></div>
+      <div class="row"><b>Text only, on purpose</b><span>No heading, no illustration, no action button — this is the minimal variant, built for the Message Center prototype's three empty surfaces. Richer variants are deferred until a real surface needs them.</span></div>
+      <div class="row"><b>Purely presentational</b><span>No states, no interactivity — same category as Separator/Box/Grid.</span></div>
     </div>
 
     <h2 class="big-section">CSS</h2>
     <pre class="code"><code>:root {
-  --tok-surface-sunken: #e8e8e8;
-  --tok-border-default: #d1d1d1;
+  --tok-bg-neutral: #e8e8e8;
   --tok-text-secondary: #696969;
   --tok-family-sans: 'Sora', sans-serif;
 }
 
-.grid { display: grid; }
-.grid--gap-none { gap: 0px; }
-.grid--gap-xs { gap: 8px; }
-.grid--gap-sm { gap: 12px; }
-.grid--gap-md { gap: 16px; }
-.grid--gap-lg { gap: 24px; }
-.grid--cols-2 { grid-template-columns: repeat(2, 1fr); }
-.grid--cols-3 { grid-template-columns: repeat(3, 1fr); }
-.grid--cols-4 { grid-template-columns: repeat(4, 1fr); }
-.grid--cols-6 { grid-template-columns: repeat(6, 1fr); }
-.grid--auto { grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); }</code></pre>
+.empty-state { box-sizing: border-box; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; padding: 24px; font-family: var(--tok-family-sans); }
+.empty-state__text { background: var(--tok-bg-neutral); color: var(--tok-text-secondary); border-radius: 999px; padding: 8px 16px; font-weight: 400; font-size: 14px; line-height: 1.4; text-align: center; }</code></pre>
 
-    <h2 class="big-section">Fixed columns</h2>
-    <p class="section-desc">gap.xs (8px) throughout.</p>
+    <h2 class="big-section">Stories</h2>
+    <p class="section-desc">The component fills whatever box it's given — the dashed frames below are demo chrome, not part of the component.</p>
     <div class="story-grid">
       
       <div class="story">
-        <h3>2 columns</h3>
-        <div class="story-preview"><div class="grid grid--cols-2 grid--gap-xs demo-grid"><div class="grid-cell">1</div><div class="grid-cell">2</div><div class="grid-cell">3</div><div class="grid-cell">4</div></div></div>
-        <pre class="code"><code>&lt;div class="grid grid--cols-2 grid--gap-xs"&gt;
-  &lt;div&gt;…&lt;/div&gt;
-  ...
-&lt;/div&gt;</code></pre>
-        
+        <h3>Text only</h3>
+        <div class="story-preview"><div style="height: 180px; border: 1px dashed var(--border-strong); border-radius: 10px;"><div class="empty-state"><span class="empty-state__text">Choose a Thread</span></div></div></div>
+        <pre class="code"><code>&lt;div class="empty-state"&gt;&lt;span class="empty-state__text"&gt;Choose a Thread&lt;/span&gt;&lt;/div&gt;</code></pre>
+        <p class="story-note">The dashed frame is demo chrome — the component itself is invisible except for the pill; it just fills whatever box it's given and centers the hint.</p>
       </div>
 
       <div class="story">
-        <h3>3 columns</h3>
-        <div class="story-preview"><div class="grid grid--cols-3 grid--gap-xs demo-grid"><div class="grid-cell">1</div><div class="grid-cell">2</div><div class="grid-cell">3</div><div class="grid-cell">4</div><div class="grid-cell">5</div><div class="grid-cell">6</div></div></div>
-        <pre class="code"><code>&lt;div class="grid grid--cols-3 grid--gap-xs"&gt;
-  &lt;div&gt;…&lt;/div&gt;
-  ...
-&lt;/div&gt;</code></pre>
-        
-      </div>
-
-      <div class="story">
-        <h3>4 columns</h3>
-        <div class="story-preview"><div class="grid grid--cols-4 grid--gap-xs demo-grid"><div class="grid-cell">1</div><div class="grid-cell">2</div><div class="grid-cell">3</div><div class="grid-cell">4</div><div class="grid-cell">5</div><div class="grid-cell">6</div><div class="grid-cell">7</div><div class="grid-cell">8</div></div></div>
-        <pre class="code"><code>&lt;div class="grid grid--cols-4 grid--gap-xs"&gt;
-  &lt;div&gt;…&lt;/div&gt;
-  ...
-&lt;/div&gt;</code></pre>
-        
+        <h3>Longer hint</h3>
+        <div class="story-preview"><div style="height: 180px; border: 1px dashed var(--border-strong); border-radius: 10px;"><div class="empty-state"><span class="empty-state__text">No threads found — try a different search</span></div></div></div>
+        <pre class="code"><code>&lt;div class="empty-state"&gt;&lt;span class="empty-state__text"&gt;No threads found — try a different search&lt;/span&gt;&lt;/div&gt;</code></pre>
+        <p class="story-note">One line, body-base — an empty state hint is a nudge, not a paragraph. If it needs to wrap, it's probably trying to say too much.</p>
       </div>
     </div>
-
-    <h2 class="big-section">Gap scale</h2>
-    <p class="section-desc">3 columns, all five gap steps.</p>
-    <div class="story-grid">
-      
-      <div class="story">
-        <h3>gap.none — 0px</h3>
-        <div class="story-preview"><div class="grid grid--cols-3 grid--gap-none demo-grid"><div class="grid-cell">1</div><div class="grid-cell">2</div><div class="grid-cell">3</div><div class="grid-cell">4</div><div class="grid-cell">5</div><div class="grid-cell">6</div></div></div>
-        <pre class="code"><code>&lt;div class="grid grid--cols-3 grid--gap-none"&gt;…&lt;/div&gt;</code></pre>
-        
-      </div>
-
-      <div class="story">
-        <h3>gap.xs — 8px</h3>
-        <div class="story-preview"><div class="grid grid--cols-3 grid--gap-xs demo-grid"><div class="grid-cell">1</div><div class="grid-cell">2</div><div class="grid-cell">3</div><div class="grid-cell">4</div><div class="grid-cell">5</div><div class="grid-cell">6</div></div></div>
-        <pre class="code"><code>&lt;div class="grid grid--cols-3 grid--gap-xs"&gt;…&lt;/div&gt;</code></pre>
-        
-      </div>
-
-      <div class="story">
-        <h3>gap.sm — 12px</h3>
-        <div class="story-preview"><div class="grid grid--cols-3 grid--gap-sm demo-grid"><div class="grid-cell">1</div><div class="grid-cell">2</div><div class="grid-cell">3</div><div class="grid-cell">4</div><div class="grid-cell">5</div><div class="grid-cell">6</div></div></div>
-        <pre class="code"><code>&lt;div class="grid grid--cols-3 grid--gap-sm"&gt;…&lt;/div&gt;</code></pre>
-        
-      </div>
-
-      <div class="story">
-        <h3>gap.md — 16px</h3>
-        <div class="story-preview"><div class="grid grid--cols-3 grid--gap-md demo-grid"><div class="grid-cell">1</div><div class="grid-cell">2</div><div class="grid-cell">3</div><div class="grid-cell">4</div><div class="grid-cell">5</div><div class="grid-cell">6</div></div></div>
-        <pre class="code"><code>&lt;div class="grid grid--cols-3 grid--gap-md"&gt;…&lt;/div&gt;</code></pre>
-        
-      </div>
-
-      <div class="story">
-        <h3>gap.lg — 24px</h3>
-        <div class="story-preview"><div class="grid grid--cols-3 grid--gap-lg demo-grid"><div class="grid-cell">1</div><div class="grid-cell">2</div><div class="grid-cell">3</div><div class="grid-cell">4</div><div class="grid-cell">5</div><div class="grid-cell">6</div></div></div>
-        <pre class="code"><code>&lt;div class="grid grid--cols-3 grid--gap-lg"&gt;…&lt;/div&gt;</code></pre>
-        
-      </div>
-    </div>
-
-    <h2 class="big-section">Auto-fit (responsive)</h2>
-    <p class="section-desc">Columns count adjusts to the container width on its own — resize the window to see it reflow, no media query needed.</p>
-    <div class="story-grid">
-      
-      <div class="story">
-        <h3>auto-fit, minmax(96px, 1fr)</h3>
-        <div class="story-preview"><div class="grid grid--auto grid--gap-xs demo-grid"><div class="grid-cell">1</div><div class="grid-cell">2</div><div class="grid-cell">3</div><div class="grid-cell">4</div><div class="grid-cell">5</div><div class="grid-cell">6</div><div class="grid-cell">7</div></div></div>
-        <pre class="code"><code>&lt;div class="grid grid--auto grid--gap-xs"&gt;
-  &lt;div&gt;…&lt;/div&gt;
-  ...
-&lt;/div&gt;</code></pre>
-        
-      </div>
-    </div>
-
-    <p class="placeholder-note">Every code sample on this page is printed from the same resolved token values driving the live previews above it — copy it directly, nothing here is hand-typed.</p>
   </main>
 </div>
 </body>

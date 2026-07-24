@@ -55,14 +55,14 @@
 /* ---- component recipes, resolved from each component's own token file ---- */
 .tabs--segmented { display: flex; align-items: center; gap: 4px; background: var(--tok-surface-sunken); border-radius: 12px; padding: 4px; }
 .tab { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: none; background: transparent; cursor: pointer; white-space: nowrap; color: var(--tok-text-secondary); font-family: var(--tok-family-sans); font-weight: 400; font-size: 14px; line-height: 1.2; }
-.tab--base { height: 40px; padding: 0 12px; }
+.tab--sm { height: 32px; padding: 0 8px; }
 .tabs--segmented .tab { flex: 1; border-radius: 8px; }
 .tabs--segmented .tab:not(.tab--active):hover { background: var(--tok-fill-neutral-hover); color: var(--tok-text-default); }
 .tabs--segmented .tab--active { background: var(--tok-surface-default); color: var(--tok-text-default); font-weight: 600; }
 
 .counter { display: inline-flex; align-items: center; justify-content: center; font-variant-numeric: tabular-nums; font-family: var(--tok-family-sans); font-weight: 700; border-radius: 999px; }
 .counter[hidden] { display: none; }
-.counter--base { height: 20px; min-width: 20px; padding: 0 6px; font-size: 12px; line-height: 1; }
+.counter--sm { height: 16px; min-width: 16px; padding: 0 4px; font-size: 10px; line-height: 1; }
 .counter--onNeutral.counter--inactive { background: var(--tok-fill-neutral-active); color: var(--tok-text-default); }
 .counter--onNeutral.counter--active { background: var(--tok-fill-primary); color: var(--tok-text-on-fill); }
 
@@ -217,6 +217,9 @@
 
 .separator { border: none; border-top: 1px solid var(--tok-border-default); margin: 0; }
 
+.empty-state { box-sizing: border-box; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; padding: 24px; font-family: var(--tok-family-sans); }
+.empty-state__text { background: var(--tok-bg-neutral); color: var(--tok-text-secondary); border-radius: 999px; padding: 8px 16px; font-weight: 400; font-size: 14px; line-height: 1.4; text-align: center; }
+
 /* ---- mc-* composition layer (app shell) — mobile-first, 768px / 1024px structural breakpoints (not tokenized, same call as Grid) ---- */
 * { box-sizing: border-box; }
 html, body { height: 100%; }
@@ -245,10 +248,12 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .mc-rail__lists { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; }
 .mc-list { display: flex; flex-direction: column; }
 .mc-list[hidden] { display: none; }
+.mc-rail__count[hidden] { display: none; }
+.mc-rail__empty { flex: 1; display: flex; }
+.mc-rail__empty[hidden] { display: none; }
 
-.mc-empty { flex: 1; display: flex; align-items: center; justify-content: center; }
+.mc-empty { flex: 1; display: flex; }
 .mc-empty[hidden] { display: none; }
-.mc-empty p { margin: 0; color: var(--tok-text-muted); font-weight: 700; font-size: 24px; line-height: 1.2; }
 .mc-thread { flex: 1; display: flex; flex-direction: column; min-height: 0; }
 .mc-thread[hidden] { display: none; }
 .mc-thread__bar { flex-shrink: 0; display: flex; align-items: center; gap: 8px; padding: 12px 16px; background: var(--tok-surface-default); border-bottom: 1px solid var(--tok-border-default); }
@@ -289,11 +294,11 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   <div class="mc__body">
     <aside class="mc__rail" aria-label="Thread list">
       <div class="mc-rail__topbar">
-        <div class="tabs tabs--segmented tabs--base" role="tablist">
-          <button class="tab tab--base tab--active" role="tab" aria-selected="true" data-tab="inbox">Inbox<span class="counter counter--base counter--onNeutral counter--active" id="mc-unread-counter">2</span></button>
-          <button class="tab tab--base" role="tab" aria-selected="false" data-tab="archived">Archived</button>
+        <div class="tabs tabs--segmented tabs--sm" role="tablist">
+          <button class="tab tab--sm tab--active" role="tab" aria-selected="true" data-tab="inbox">Inbox<span class="counter counter--sm counter--onNeutral counter--active" id="mc-unread-counter">3</span></button>
+          <button class="tab tab--sm" role="tab" aria-selected="false" data-tab="archived">Archived</button>
         </div>
-        <button class="btn btn--ghost btn--base btn--icon-only mc-search-open-btn" type="button" aria-label="Search threads"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg></button>
+        <button class="btn btn--secondary btn--base btn--icon-only mc-search-open-btn" type="button" aria-label="Search threads"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg></button>
         <div class="search search--base">
           <svg class="search__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
           <input class="search__input" id="mc-search-input" placeholder="Search all threads" aria-label="Search all threads" />
@@ -310,13 +315,13 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
             <li><button class="listbox__option listbox__option--selected" role="option" aria-selected="true" data-dept="" type="button">All departments<svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li>
             <li><button class="listbox__option" role="option" aria-selected="false" data-dept="Academic Advising" type="button">Academic Advising<svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li>
             <li><button class="listbox__option" role="option" aria-selected="false" data-dept="Office of the Registrar" type="button">Office of the Registrar<svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li>
-            <li><button class="listbox__option" role="option" aria-selected="false" data-dept="English Dept" type="button">English Dept<svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li>
             <li><button class="listbox__option" role="option" aria-selected="false" data-dept="Financial Aid" type="button">Financial Aid<svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li>
+            <li><button class="listbox__option" role="option" aria-selected="false" data-dept="English Dept" type="button">English Dept<svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li>
           </ul>
         </div>
       </div>
       <div class="mc-rail__count">
-        <span class="mc-count" id="mc-count">6 THREADS</span>
+        <span class="mc-count" id="mc-count">9 THREADS</span>
         <hr class="separator" />
       </div>
       <div class="mc-rail__lists">
@@ -366,7 +371,52 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <div class="thread-item-inbox__expires thread-item-inbox__expires--scope-only"><span class="badge badge--role-neutral thread-item-inbox__scope">Inbox</span></div>
         </div>
       </div>
-        <div class="thread-item-inbox thread-item-inbox--read" role="button" tabindex="0" data-thread="waiver" data-idx="3" data-subject="Requirement Waiver Request" data-department="English Dept">
+        <div class="thread-item-inbox thread-item-inbox--read" role="button" tabindex="0" data-thread="fafsa" data-idx="3" data-subject="FAFSA Verification Documents" data-department="Financial Aid" data-expires="warning">
+        <span class="avatar avatar--amber" role="img" aria-label="Financial Aid"><span class="avatar__initials">FA</span></span>
+        <div class="thread-item-inbox__main">
+          <div class="thread-item-inbox__top">
+            <span class="thread-item-inbox__identity">Financial Aid</span>
+            <span class="thread-item-inbox__time">07/20/2026</span>
+          </div>
+          <div class="thread-item-inbox__subject">FAFSA Verification Documents</div>
+          <div class="thread-item-inbox__preview-row">
+            <span class="thread-item-inbox__preview">Please upload the requested verification documents before the deadline.</span>
+            <button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
+          </div>
+          <div class="thread-item-inbox__expires"><span class="badge badge--role-warning">Expires 08/01/2026</span><span class="badge badge--role-neutral thread-item-inbox__scope">Inbox</span></div>
+        </div>
+      </div>
+        <div class="thread-item-inbox thread-item-inbox--read" role="button" tabindex="0" data-thread="advising-appt" data-idx="4" data-subject="Advising Appointment Confirmation" data-department="Academic Advising" data-expires="danger">
+        <span class="avatar avatar--teal" role="img" aria-label="Academic Advising"><span class="avatar__initials">AA</span></span>
+        <div class="thread-item-inbox__main">
+          <div class="thread-item-inbox__top">
+            <span class="thread-item-inbox__identity">Academic Advising</span>
+            <span class="thread-item-inbox__time">07/05/2026</span>
+          </div>
+          <div class="thread-item-inbox__subject">Advising Appointment Confirmation</div>
+          <div class="thread-item-inbox__preview-row">
+            <span class="thread-item-inbox__preview">Your appointment window has passed — please rebook if still needed.</span>
+            <button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
+          </div>
+          <div class="thread-item-inbox__expires"><span class="badge badge--role-danger">Expired 07/10/2026</span><span class="badge badge--role-neutral thread-item-inbox__scope">Inbox</span></div>
+        </div>
+      </div>
+        <div class="thread-item-inbox thread-item-inbox--unread" role="button" tabindex="0" data-thread="transcript-ready" data-idx="5" data-subject="Transcript Ready for Pickup" data-department="Office of the Registrar" data-expires="neutral">
+        <span class="avatar avatar--orange" role="img" aria-label="Office of the Registrar"><span class="avatar__initials">OR</span></span>
+        <div class="thread-item-inbox__main">
+          <div class="thread-item-inbox__top">
+            <span class="thread-item-inbox__identity">Office of the Registrar</span>
+            <span class="thread-item-inbox__time">07/18/2026</span>
+          </div>
+          <div class="thread-item-inbox__subject">Transcript Ready for Pickup</div>
+          <div class="thread-item-inbox__preview-row">
+            <span class="thread-item-inbox__preview">Your official transcript is ready at the Registrar's front desk.</span>
+            <button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
+          </div>
+          <div class="thread-item-inbox__expires"><span class="badge badge--role-neutral">Expires 12/31/2027</span><span class="badge badge--role-neutral thread-item-inbox__scope">Inbox</span></div>
+        </div>
+      </div>
+        <div class="thread-item-inbox thread-item-inbox--read" role="button" tabindex="0" data-thread="waiver" data-idx="6" data-subject="Requirement Waiver Request" data-department="English Dept">
         <span class="avatar avatar--red" role="img" aria-label="English Dept"><span class="avatar__initials">ED</span></span>
         <div class="thread-item-inbox__main">
           <div class="thread-item-inbox__top">
@@ -381,7 +431,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <div class="thread-item-inbox__expires thread-item-inbox__expires--scope-only"><span class="badge badge--role-neutral thread-item-inbox__scope">Inbox</span></div>
         </div>
       </div>
-        <div class="thread-item-inbox thread-item-inbox--read" role="button" tabindex="0" data-thread="pell" data-idx="4" data-subject="Close to Pell Lifetime Limits" data-department="Financial Aid" data-expires="warning">
+        <div class="thread-item-inbox thread-item-inbox--read" role="button" tabindex="0" data-thread="pell" data-idx="7" data-subject="Close to Pell Lifetime Limits" data-department="Financial Aid" data-expires="neutral">
         <span class="avatar avatar--amber" role="img" aria-label="Financial Aid"><span class="avatar__initials">FA</span></span>
         <div class="thread-item-inbox__main">
           <div class="thread-item-inbox__top">
@@ -393,10 +443,10 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
             <span class="thread-item-inbox__preview">You are approaching the lifetime limit of Federal Pell Grant.</span>
             <button class="thread-item-inbox__flag-btn" type="button" aria-pressed="true" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
           </div>
-          <div class="thread-item-inbox__expires"><span class="badge badge--role-warning">Expires 03/01/2027</span><span class="badge badge--role-neutral thread-item-inbox__scope">Inbox</span></div>
+          <div class="thread-item-inbox__expires"><span class="badge badge--role-neutral">Expires 03/01/2027</span><span class="badge badge--role-neutral thread-item-inbox__scope">Inbox</span></div>
         </div>
       </div>
-        <div class="thread-item-inbox thread-item-inbox--read" role="button" tabindex="0" data-thread="important" data-idx="5" data-subject="Important Information" data-department="Financial Aid">
+        <div class="thread-item-inbox thread-item-inbox--read" role="button" tabindex="0" data-thread="important" data-idx="8" data-subject="Important Information" data-department="Financial Aid">
         <span class="avatar avatar--amber" role="img" aria-label="Financial Aid"><span class="avatar__initials">FA</span></span>
         <div class="thread-item-inbox__main">
           <div class="thread-item-inbox__top">
@@ -413,7 +463,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
       </div>
         </div>
         <div class="mc-list" data-list="archived" hidden>
-          <div class="thread-item-inbox thread-item-inbox--read" role="button" tabindex="0" data-thread="outreach" data-idx="6" data-subject="Advisement Outreach" data-department="Academic Advising" data-expires="danger">
+          <div class="thread-item-inbox thread-item-inbox--read" role="button" tabindex="0" data-thread="outreach" data-idx="9" data-subject="Advisement Outreach" data-department="Academic Advising" data-expires="danger">
         <span class="avatar avatar--teal" role="img" aria-label="Academic Advising"><span class="avatar__initials">AA</span></span>
         <div class="thread-item-inbox__main">
           <div class="thread-item-inbox__top">
@@ -428,7 +478,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <div class="thread-item-inbox__expires"><span class="badge badge--role-danger">Expired Jul 10</span><span class="badge badge--role-neutral thread-item-inbox__scope">Archived</span></div>
         </div>
       </div>
-        <div class="thread-item-inbox thread-item-inbox--read" role="button" tabindex="0" data-thread="study" data-idx="7" data-subject="Study Session" data-department="Academic Advising">
+        <div class="thread-item-inbox thread-item-inbox--read" role="button" tabindex="0" data-thread="study" data-idx="10" data-subject="Study Session" data-department="Academic Advising">
         <span class="avatar avatar--teal" role="img" aria-label="Academic Advising"><span class="avatar__initials">AA</span></span>
         <div class="thread-item-inbox__main">
           <div class="thread-item-inbox__top">
@@ -444,10 +494,13 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         </div>
       </div>
         </div>
+        <div class="mc-rail__empty" id="mc-rail-empty" hidden>
+          <div class="empty-state"><span class="empty-state__text" id="mc-rail-empty-text">No threads found</span></div>
+        </div>
       </div>
     </aside>
     <section class="mc__reading" aria-label="Thread">
-      <div class="mc-empty" id="mc-empty"><p>Choose a Thread</p></div>
+      <div class="mc-empty" id="mc-empty"><div class="empty-state"><span class="empty-state__text">Choose a Thread</span></div></div>
       <article class="mc-thread" data-thread="winter" hidden>
         <header class="mc-thread__bar">
           <button class="btn btn--ghost btn--base btn--icon-only mc-thread__back" type="button" aria-label="Back to thread list"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></button>
@@ -567,6 +620,112 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         </div>
         <footer class="mc-thread__composer">
           <form class="composer composer--simple mc-composer" data-thread="registrar">
+            <div class="composer__field">
+              <input class="composer__input" placeholder="Write a message..." aria-label="Write a message" />
+              <button type="button" class="composer__icon-btn" aria-label="Attach file"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/></svg></button>
+              <button type="submit" class="btn btn--primary btn--sm btn--icon-only" aria-label="Send"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg></button>
+            </div>
+          </form>
+        </footer>
+      </article>
+      <article class="mc-thread" data-thread="fafsa" hidden>
+        <header class="mc-thread__bar">
+          <button class="btn btn--ghost btn--base btn--icon-only mc-thread__back" type="button" aria-label="Back to thread list"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></button>
+          <h2 class="mc-thread__subject">FAFSA Verification Documents</h2>
+          <div class="mc-thread__actions">
+            <button class="btn btn--secondary btn--base mc-archive" type="button" data-thread="fafsa">Archive</button>
+            <button class="btn btn--secondary btn--base btn--icon-only mc-print" type="button" aria-label="Print thread"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg></button>
+          </div>
+        </header>
+        <div class="mc-thread__meta">
+          <div class="mc-thread__meta-item"><span class="mc-thread__meta-label">Regarding</span><span class="mc-thread__meta-value">Verification</span></div>
+          <div class="mc-thread__meta-item"><span class="mc-thread__meta-label">Department</span><span class="mc-thread__meta-value">Financial Aid</span></div>
+          <div class="mc-thread__meta-item"><span class="mc-thread__meta-label">Status</span><span class="mc-thread__meta-value">Open</span></div>
+          <div class="mc-thread__meta-item"><span class="mc-thread__meta-label">Institution</span><span class="mc-thread__meta-value">PeopleSoft University</span></div>
+        </div>
+        <div class="mc-thread__scroll">
+          <div class="message message--card">
+          <div class="message__sender">
+            <span class="avatar avatar--magenta avatar--sm" role="img" aria-label="Betty Locherty"><span class="avatar__initials">BL</span></span>
+            <p class="message__sender-line"><span class="message__name">Betty Locherty</span><span class="message__meta"> -- Jul 20, 10:05 AM</span></p>
+          </div>
+          <div class="message__body">
+            <p>Your FAFSA has been selected for <strong>verification</strong>. Please upload the requested documents before <strong>August 1, 2026</strong> — this thread expires soon.</p>
+          </div>
+        </div>
+        </div>
+        <footer class="mc-thread__composer">
+          <form class="composer composer--simple mc-composer" data-thread="fafsa">
+            <div class="composer__field">
+              <input class="composer__input" placeholder="Write a message..." aria-label="Write a message" />
+              <button type="button" class="composer__icon-btn" aria-label="Attach file"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/></svg></button>
+              <button type="submit" class="btn btn--primary btn--sm btn--icon-only" aria-label="Send"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg></button>
+            </div>
+          </form>
+        </footer>
+      </article>
+      <article class="mc-thread" data-thread="advising-appt" hidden>
+        <header class="mc-thread__bar">
+          <button class="btn btn--ghost btn--base btn--icon-only mc-thread__back" type="button" aria-label="Back to thread list"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></button>
+          <h2 class="mc-thread__subject">Advising Appointment Confirmation</h2>
+          <div class="mc-thread__actions">
+            <button class="btn btn--secondary btn--base mc-archive" type="button" data-thread="advising-appt">Archive</button>
+            <button class="btn btn--secondary btn--base btn--icon-only mc-print" type="button" aria-label="Print thread"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg></button>
+          </div>
+        </header>
+        <div class="mc-thread__meta">
+          <div class="mc-thread__meta-item"><span class="mc-thread__meta-label">Department</span><span class="mc-thread__meta-value">Academic Advising</span></div>
+          <div class="mc-thread__meta-item"><span class="mc-thread__meta-label">Status</span><span class="mc-thread__meta-value">Open</span></div>
+          <div class="mc-thread__meta-item"><span class="mc-thread__meta-label">Institution</span><span class="mc-thread__meta-value">PeopleSoft University</span></div>
+        </div>
+        <div class="mc-thread__scroll">
+          <div class="message message--card">
+          <div class="message__sender">
+            <span class="avatar avatar--violet avatar--sm" role="img" aria-label="Alexander Robinson"><span class="avatar__initials">AR</span></span>
+            <p class="message__sender-line"><span class="message__name">Alexander Robinson</span><span class="message__meta"> -- Jul 05, 9:30 AM</span></p>
+          </div>
+          <div class="message__body">
+            <p>This is a confirmation for your advising appointment window. The window has now <strong>passed</strong> — please start a new thread to rebook if you still need an appointment.</p>
+          </div>
+        </div>
+        </div>
+        <footer class="mc-thread__composer">
+          <form class="composer composer--simple mc-composer" data-thread="advising-appt">
+            <div class="composer__field">
+              <input class="composer__input" placeholder="Write a message..." aria-label="Write a message" />
+              <button type="button" class="composer__icon-btn" aria-label="Attach file"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/></svg></button>
+              <button type="submit" class="btn btn--primary btn--sm btn--icon-only" aria-label="Send"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg></button>
+            </div>
+          </form>
+        </footer>
+      </article>
+      <article class="mc-thread" data-thread="transcript-ready" hidden>
+        <header class="mc-thread__bar">
+          <button class="btn btn--ghost btn--base btn--icon-only mc-thread__back" type="button" aria-label="Back to thread list"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></button>
+          <h2 class="mc-thread__subject">Transcript Ready for Pickup</h2>
+          <div class="mc-thread__actions">
+            <button class="btn btn--secondary btn--base mc-archive" type="button" data-thread="transcript-ready">Archive</button>
+            <button class="btn btn--secondary btn--base btn--icon-only mc-print" type="button" aria-label="Print thread"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg></button>
+          </div>
+        </header>
+        <div class="mc-thread__meta">
+          <div class="mc-thread__meta-item"><span class="mc-thread__meta-label">Department</span><span class="mc-thread__meta-value">Office of the Registrar</span></div>
+          <div class="mc-thread__meta-item"><span class="mc-thread__meta-label">Status</span><span class="mc-thread__meta-value">Open</span></div>
+          <div class="mc-thread__meta-item"><span class="mc-thread__meta-label">Institution</span><span class="mc-thread__meta-value">PeopleSoft University</span></div>
+        </div>
+        <div class="mc-thread__scroll">
+          <div class="message message--card">
+          <div class="message__sender">
+            <span class="avatar avatar--magenta avatar--sm" role="img" aria-label="Betty Locherty"><span class="avatar__initials">BL</span></span>
+            <p class="message__sender-line"><span class="message__name">Betty Locherty</span><span class="message__meta"> -- Jul 18, 3:40 PM</span></p>
+          </div>
+          <div class="message__body">
+            <p>Your official transcript is ready for pickup at the Registrar's front desk. Bring a <strong>photo ID</strong>. This notice stays available until the end of 2027 — no rush.</p>
+          </div>
+        </div>
+        </div>
+        <footer class="mc-thread__composer">
+          <form class="composer composer--simple mc-composer" data-thread="transcript-ready">
             <div class="composer__field">
               <input class="composer__input" placeholder="Write a message..." aria-label="Write a message" />
               <button type="button" class="composer__icon-btn" aria-label="Attach file"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/></svg></button>
@@ -795,21 +954,40 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     var q = searchInput.value.trim().toLowerCase();
     if (q && r.textContent.toLowerCase().indexOf(q) === -1) return false;
     if (filters.unread && !r.classList.contains("thread-item-inbox--unread")) return false;
-    if (filters.expires && !r.hasAttribute("data-expires")) return false;
+    // "Expires soon" = soon (warning) or already expired (danger); a far-off
+    // neutral expiry deliberately doesn't count
+    if (filters.expires && r.dataset.expires !== "warning" && r.dataset.expires !== "danger") return false;
     if (filters.flagged && r.querySelector(".thread-item-inbox__flag-btn").getAttribute("aria-pressed") !== "true") return false;
     if (dept && r.dataset.department !== dept) return false;
     return true;
   }
   // While searching, the tab split is suspended: both lists show as one
   // combined result set and every row reveals its Inbox/Archived scope badge.
+  // The rail's EmptyState covers two cases: search open with no query yet
+  // (lists fully replaced by a hint) and zero matching rows.
+  var railEmpty = document.getElementById("mc-rail-empty");
+  var railEmptyText = document.getElementById("mc-rail-empty-text");
+  var countWrap = document.querySelector(".mc-rail__count");
   function applyFilter() {
+    var searchOpen = mc.classList.contains("mc--search-open");
     var searching = searchInput.value.trim() !== "";
     mc.classList.toggle("mc--searching", searching);
+    if (searchOpen && !searching) {
+      lists.inbox.hidden = true;
+      lists.archived.hidden = true;
+      countWrap.hidden = true;
+      railEmpty.hidden = false;
+      railEmptyText.textContent = "Search across Inbox and Archived";
+      return;
+    }
+    countWrap.hidden = false;
     lists.inbox.hidden = searching ? false : activeList !== "inbox";
     lists.archived.hidden = searching ? false : activeList !== "archived";
     allRows().forEach(function (r) { r.hidden = !rowMatches(r); });
     var visible = allRows().filter(function (r) { return !r.hidden && !r.closest(".mc-list").hidden; }).length;
     countEl.textContent = visible + (visible === 1 ? " THREAD" : " THREADS");
+    railEmpty.hidden = visible !== 0;
+    railEmptyText.textContent = searching ? "No threads found" : "No threads match the filters";
   }
   function updateUnreadCounter() {
     var n = rows("inbox").filter(function (r) { return r.classList.contains("thread-item-inbox--unread"); }).length;
@@ -864,9 +1042,9 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 
   // Inbox / Archived tabs — the unread Counter also swaps its onNeutral
   // active/inactive surface with the tab it sits on, same as Tabs' own docs
-  document.querySelectorAll(".mc-rail__tabs .tab").forEach(function (tab) {
+  document.querySelectorAll(".mc-rail__topbar .tab").forEach(function (tab) {
     tab.addEventListener("click", function () {
-      document.querySelectorAll(".mc-rail__tabs .tab").forEach(function (t) {
+      document.querySelectorAll(".mc-rail__topbar .tab").forEach(function (t) {
         t.classList.toggle("tab--active", t === tab);
         t.setAttribute("aria-selected", t === tab ? "true" : "false");
       });
@@ -887,6 +1065,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   }
   searchOpenBtn.addEventListener("click", function () {
     mc.classList.add("mc--search-open");
+    applyFilter();
     searchInput.focus();
   });
   searchInput.addEventListener("input", applyFilter);

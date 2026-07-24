@@ -39,6 +39,7 @@ const search = load("tokens/components/search.tokens.json").component.search;
 const listbox = load("tokens/components/listbox.tokens.json").component.listbox;
 const chip = load("tokens/components/chip.tokens.json").component.chip;
 const counter = load("tokens/components/counter.tokens.json").component.counter;
+const emptyState = load("tokens/components/empty-state.tokens.json").component.emptyState;
 const threadListItem = load("tokens/components/thread-list-item.tokens.json").component.threadListItem;
 const badge = load("tokens/components/badge.tokens.json").component.badge;
 const avatar = load("tokens/components/avatar.tokens.json").component.avatar;
@@ -149,7 +150,7 @@ const tabItemGap = px(resolve(tabs.item.gap.$value));
 const tabItemLabel = resolveToken(tabs.item.label);
 const tabActiveWeight = resolve(tabs.segmented.state.active.fontWeight.$value);
 const tabBase = { height: px(resolve(tabs.size.base.height.$value)), paddingX: px(resolve(tabs.size.base.paddingX.$value)) };
-const tabUnderlineGap = px(resolve(tabs.underline.gap.$value));
+const tabSm = { height: px(resolve(tabs.size.sm.height.$value)), paddingX: px(resolve(tabs.size.sm.paddingX.$value)) };
 const tabPillRadius = px(resolve(tabs.segmented.pillRadius.$value));
 
 // ---- Search (base) — a real <input> carrying the component's own value typography ----
@@ -168,15 +169,27 @@ const segTrackRadiusApp = px(resolve(tabs.segmented.trackRadius.$value));
 const segTrackPaddingApp = px(resolve(tabs.segmented.trackPadding.$value));
 const segPillRadiusApp = px(resolve(tabs.segmented.pillRadius.$value));
 
-// ---- Counter (base, onNeutral) — unread count on the Inbox tab, resolved
-// from counter.tokens.json exactly the way tabs' own docs page does ----
+// ---- Counter (sm, onNeutral) — unread count on the Inbox tab, resolved
+// from counter.tokens.json exactly the way tabs' own docs page does. sm to
+// match the sm tabs (2026-07-24: tab item 32px + 4px track padding = the
+// requested 40px total track height) ----
 const counterRadius = px(resolve(counter.radius.$value));
-const counterBase = {
-  height: px(resolve(counter.size.base.height.$value)),
-  minWidth: px(resolve(counter.size.base.minWidth.$value)),
-  paddingX: px(resolve(counter.size.base.paddingX.$value)),
-  label: resolveToken(counter.size.base.label),
+const counterSm = {
+  height: px(resolve(counter.size.sm.height.$value)),
+  minWidth: px(resolve(counter.size.sm.minWidth.$value)),
+  paddingX: px(resolve(counter.size.sm.paddingX.$value)),
+  label: resolveToken(counter.size.sm.label),
 };
+
+// ---- EmptyState — resolved from its own token file (built 2026-07-24 for
+// exactly this prototype's three empty surfaces) ----
+const esTextType = resolveToken(get(emptyState.text.$value));
+const esTextColor = refPath(emptyState.textColor.$value);
+const esPillBg = refPath(emptyState.pill.bg.$value);
+const esPillRadius = px(resolve(emptyState.pill.radius.$value));
+const esPillPaddingX = px(resolve(emptyState.pill.paddingX.$value));
+const esPillPaddingY = px(resolve(emptyState.pill.paddingY.$value));
+const esPadding = px(resolve(emptyState.padding.$value));
 const counterOnNeutral = {
   inactiveBg: refPath(counter.onNeutral.state.inactive.bg.$value),
   inactiveLabel: refPath(counter.onNeutral.state.inactive.label.$value),
@@ -346,7 +359,6 @@ const labelSmNode = get("{text-style.label-sm}");
 const labelSmType = resolveToken(labelSmNode);
 const labelSmExt = labelSmNode.$extensions?.["hp.design/text"] || {};
 const titleXlType = resolveToken(get("{text-style.title-xl}"));
-const title2xlType = resolveToken(get("{text-style.title-2xl}"));
 const bodySmType = resolveToken(get("{text-style.body-sm}"));
 
 // ================= app CSS =================
@@ -354,14 +366,14 @@ const bodySmType = resolveToken(get("{text-style.body-sm}"));
 const componentCss = `/* ---- component recipes, resolved from each component's own token file ---- */
 .tabs--segmented { display: flex; align-items: center; gap: ${segTrackPaddingApp}; background: ${cv("surface.sunken")}; border-radius: ${segTrackRadiusApp}; padding: ${segTrackPaddingApp}; }
 .tab { display: inline-flex; align-items: center; justify-content: center; gap: ${tabItemGap}; border: none; background: transparent; cursor: pointer; white-space: nowrap; color: ${cv("text.secondary")}; font-family: ${cv("family.sans")}; ${typoCss(tabItemLabel)} }
-.tab--base { height: ${tabBase.height}; padding: 0 ${tabBase.paddingX}; }
+.tab--sm { height: ${tabSm.height}; padding: 0 ${tabSm.paddingX}; }
 .tabs--segmented .tab { flex: 1; border-radius: ${segPillRadiusApp}; }
 .tabs--segmented .tab:not(.tab--active):hover { background: ${cv("fill.neutralHover")}; color: ${cv("text.default")}; }
 .tabs--segmented .tab--active { background: ${cv("surface.default")}; color: ${cv("text.default")}; font-weight: ${tabActiveWeight}; }
 
-.counter { display: inline-flex; align-items: center; justify-content: center; font-variant-numeric: tabular-nums; font-family: ${cv("family.sans")}; font-weight: ${counterBase.label.fontWeight}; border-radius: ${counterRadius}; }
+.counter { display: inline-flex; align-items: center; justify-content: center; font-variant-numeric: tabular-nums; font-family: ${cv("family.sans")}; font-weight: ${counterSm.label.fontWeight}; border-radius: ${counterRadius}; }
 .counter[hidden] { display: none; }
-.counter--base { height: ${counterBase.height}; min-width: ${counterBase.minWidth}; padding: 0 ${counterBase.paddingX}; font-size: ${px(counterBase.label.fontSize)}; line-height: ${counterBase.label.lineHeight}; }
+.counter--sm { height: ${counterSm.height}; min-width: ${counterSm.minWidth}; padding: 0 ${counterSm.paddingX}; font-size: ${px(counterSm.label.fontSize)}; line-height: ${counterSm.label.lineHeight}; }
 .counter--onNeutral.counter--inactive { background: ${cv(counterOnNeutral.inactiveBg)}; color: ${cv(counterOnNeutral.inactiveLabel)}; }
 .counter--onNeutral.counter--active { background: ${cv(counterOnNeutral.activeBg)}; color: ${cv(counterOnNeutral.activeLabel)}; }
 
@@ -497,7 +509,10 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
 .btn--ghost.btn--base.btn--icon-only { width: ${btnGhostHeight}; height: ${btnGhostHeight}; padding: 0; }
 .btn--ghost.btn--base.btn--icon-only .btn__icon { width: ${btnGhostIconSize}; height: ${btnGhostIconSize}; }
 
-.separator { border: none; border-top: 1px solid ${cv(separatorColor)}; margin: 0; }`;
+.separator { border: none; border-top: 1px solid ${cv(separatorColor)}; margin: 0; }
+
+.empty-state { box-sizing: border-box; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; padding: ${esPadding}; font-family: ${cv("family.sans")}; }
+.empty-state__text { background: ${cv(esPillBg)}; color: ${cv(esTextColor)}; border-radius: ${esPillRadius}; padding: ${esPillPaddingY} ${esPillPaddingX}; ${typoCss(esTextType)} text-align: center; }`;
 
 // ---- the mc-* composition layer: app shell, panes, breakpoints — mobile-first ----
 const layoutCss = `/* ---- mc-* composition layer (app shell) — mobile-first, 768px / 1024px structural breakpoints (not tokenized, same call as Grid) ---- */
@@ -528,10 +543,12 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .mc-rail__lists { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; }
 .mc-list { display: flex; flex-direction: column; }
 .mc-list[hidden] { display: none; }
+.mc-rail__count[hidden] { display: none; }
+.mc-rail__empty { flex: 1; display: flex; }
+.mc-rail__empty[hidden] { display: none; }
 
-.mc-empty { flex: 1; display: flex; align-items: center; justify-content: center; }
+.mc-empty { flex: 1; display: flex; }
 .mc-empty[hidden] { display: none; }
-.mc-empty p { margin: 0; color: ${cv("text.muted")}; ${typoCss(title2xlType)} }
 .mc-thread { flex: 1; display: flex; flex-direction: column; min-height: 0; }
 .mc-thread[hidden] { display: none; }
 .mc-thread__bar { flex-shrink: 0; display: flex; align-items: center; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))}; background: ${cv("surface.default")}; border-bottom: 1px solid ${cv("border.default")}; }
@@ -657,6 +674,36 @@ const threads = [
     ],
   },
   {
+    id: "fafsa", archived: false,
+    department: "Financial Aid", date: "07/20/2026", subject: "FAFSA Verification Documents",
+    preview: "Please upload the requested verification documents before the deadline.",
+    expires: { label: "Expires 08/01/2026", role: "warning" },
+    meta: { Regarding: "Verification", Department: "Financial Aid", Status: "Open", Institution: "PeopleSoft University" },
+    content: [
+      messageMarkup("Betty Locherty", "Jul 20, 10:05 AM", `<p>Your FAFSA has been selected for <strong>verification</strong>. Please upload the requested documents before <strong>August 1, 2026</strong> — this thread expires soon.</p>`),
+    ],
+  },
+  {
+    id: "advising-appt", archived: false,
+    department: "Academic Advising", date: "07/05/2026", subject: "Advising Appointment Confirmation",
+    preview: "Your appointment window has passed — please rebook if still needed.",
+    expires: { label: "Expired 07/10/2026", role: "danger" },
+    meta: { Department: "Academic Advising", Status: "Open", Institution: "PeopleSoft University" },
+    content: [
+      messageMarkup("Alexander Robinson", "Jul 05, 9:30 AM", `<p>This is a confirmation for your advising appointment window. The window has now <strong>passed</strong> — please start a new thread to rebook if you still need an appointment.</p>`),
+    ],
+  },
+  {
+    id: "transcript-ready", archived: false, unread: true,
+    department: "Office of the Registrar", date: "07/18/2026", subject: "Transcript Ready for Pickup",
+    preview: "Your official transcript is ready at the Registrar's front desk.",
+    expires: { label: "Expires 12/31/2027", role: "neutral" },
+    meta: { Department: "Office of the Registrar", Status: "Open", Institution: "PeopleSoft University" },
+    content: [
+      messageMarkup("Betty Locherty", "Jul 18, 3:40 PM", `<p>Your official transcript is ready for pickup at the Registrar's front desk. Bring a <strong>photo ID</strong>. This notice stays available until the end of 2027 — no rush.</p>`),
+    ],
+  },
+  {
     id: "waiver", archived: false,
     department: "English Dept", date: "03/02/2024", subject: "Requirement Waiver Request",
     preview: "Please submit your waiver request to Enrollment Services.",
@@ -670,7 +717,7 @@ const threads = [
     id: "pell", archived: false, flagged: true,
     department: "Financial Aid", date: "03/01/2024", subject: "Close to Pell Lifetime Limits",
     preview: "You are approaching the lifetime limit of Federal Pell Grant.",
-    expires: { label: "Expires 03/01/2027", role: "warning" },
+    expires: { label: "Expires 03/01/2027", role: "neutral" },
     meta: { Regarding: "Your Financial Aid", Department: "Financial Aid", Status: "Open", Institution: "PeopleSoft University" },
     content: [
       messageMarkup("Betty Locherty", "Mar 01, 2:55 PM", `<p>Our records indicate you are approaching the lifetime limit of <strong>Federal Pell Grant</strong> funding (600%).</p>
@@ -811,21 +858,40 @@ const appJs = `(function () {
     var q = searchInput.value.trim().toLowerCase();
     if (q && r.textContent.toLowerCase().indexOf(q) === -1) return false;
     if (filters.unread && !r.classList.contains("thread-item-inbox--unread")) return false;
-    if (filters.expires && !r.hasAttribute("data-expires")) return false;
+    // "Expires soon" = soon (warning) or already expired (danger); a far-off
+    // neutral expiry deliberately doesn't count
+    if (filters.expires && r.dataset.expires !== "warning" && r.dataset.expires !== "danger") return false;
     if (filters.flagged && r.querySelector(".thread-item-inbox__flag-btn").getAttribute("aria-pressed") !== "true") return false;
     if (dept && r.dataset.department !== dept) return false;
     return true;
   }
   // While searching, the tab split is suspended: both lists show as one
   // combined result set and every row reveals its Inbox/Archived scope badge.
+  // The rail's EmptyState covers two cases: search open with no query yet
+  // (lists fully replaced by a hint) and zero matching rows.
+  var railEmpty = document.getElementById("mc-rail-empty");
+  var railEmptyText = document.getElementById("mc-rail-empty-text");
+  var countWrap = document.querySelector(".mc-rail__count");
   function applyFilter() {
+    var searchOpen = mc.classList.contains("mc--search-open");
     var searching = searchInput.value.trim() !== "";
     mc.classList.toggle("mc--searching", searching);
+    if (searchOpen && !searching) {
+      lists.inbox.hidden = true;
+      lists.archived.hidden = true;
+      countWrap.hidden = true;
+      railEmpty.hidden = false;
+      railEmptyText.textContent = "Search across Inbox and Archived";
+      return;
+    }
+    countWrap.hidden = false;
     lists.inbox.hidden = searching ? false : activeList !== "inbox";
     lists.archived.hidden = searching ? false : activeList !== "archived";
     allRows().forEach(function (r) { r.hidden = !rowMatches(r); });
     var visible = allRows().filter(function (r) { return !r.hidden && !r.closest(".mc-list").hidden; }).length;
     countEl.textContent = visible + (visible === 1 ? " THREAD" : " THREADS");
+    railEmpty.hidden = visible !== 0;
+    railEmptyText.textContent = searching ? "No threads found" : "No threads match the filters";
   }
   function updateUnreadCounter() {
     var n = rows("inbox").filter(function (r) { return r.classList.contains("thread-item-inbox--unread"); }).length;
@@ -880,9 +946,9 @@ const appJs = `(function () {
 
   // Inbox / Archived tabs — the unread Counter also swaps its onNeutral
   // active/inactive surface with the tab it sits on, same as Tabs' own docs
-  document.querySelectorAll(".mc-rail__tabs .tab").forEach(function (tab) {
+  document.querySelectorAll(".mc-rail__topbar .tab").forEach(function (tab) {
     tab.addEventListener("click", function () {
-      document.querySelectorAll(".mc-rail__tabs .tab").forEach(function (t) {
+      document.querySelectorAll(".mc-rail__topbar .tab").forEach(function (t) {
         t.classList.toggle("tab--active", t === tab);
         t.setAttribute("aria-selected", t === tab ? "true" : "false");
       });
@@ -903,6 +969,7 @@ const appJs = `(function () {
   }
   searchOpenBtn.addEventListener("click", function () {
     mc.classList.add("mc--search-open");
+    applyFilter();
     searchInput.focus();
   });
   searchInput.addEventListener("input", applyFilter);
@@ -1020,11 +1087,11 @@ ${appCss}
   <div class="mc__body">
     <aside class="mc__rail" aria-label="Thread list">
       <div class="mc-rail__topbar">
-        <div class="tabs tabs--segmented tabs--base" role="tablist">
-          <button class="tab tab--base tab--active" role="tab" aria-selected="true" data-tab="inbox">Inbox<span class="counter counter--base counter--onNeutral counter--active" id="mc-unread-counter">${threads.filter((t) => !t.archived && t.unread).length}</span></button>
-          <button class="tab tab--base" role="tab" aria-selected="false" data-tab="archived">Archived</button>
+        <div class="tabs tabs--segmented tabs--sm" role="tablist">
+          <button class="tab tab--sm tab--active" role="tab" aria-selected="true" data-tab="inbox">Inbox<span class="counter counter--sm counter--onNeutral counter--active" id="mc-unread-counter">${threads.filter((t) => !t.archived && t.unread).length}</span></button>
+          <button class="tab tab--sm" role="tab" aria-selected="false" data-tab="archived">Archived</button>
         </div>
-        <button class="btn btn--ghost btn--base btn--icon-only mc-search-open-btn" type="button" aria-label="Search threads">${iconSearchBtn}</button>
+        <button class="btn btn--secondary btn--base btn--icon-only mc-search-open-btn" type="button" aria-label="Search threads">${iconSearchBtn}</button>
         <div class="search search--base">
           ${iconSearch}
           <input class="search__input" id="mc-search-input" placeholder="Search all threads" aria-label="Search all threads" />
@@ -1054,10 +1121,13 @@ ${appCss}
         <div class="mc-list" data-list="archived" hidden>
           ${archivedThreads.map((t, i) => rowMarkup(t, inboxThreads.length + i)).join("\n        ")}
         </div>
+        <div class="mc-rail__empty" id="mc-rail-empty" hidden>
+          <div class="empty-state"><span class="empty-state__text" id="mc-rail-empty-text">No threads found</span></div>
+        </div>
       </div>
     </aside>
     <section class="mc__reading" aria-label="Thread">
-      <div class="mc-empty" id="mc-empty"><p>Choose a Thread</p></div>
+      <div class="mc-empty" id="mc-empty"><div class="empty-state"><span class="empty-state__text">Choose a Thread</span></div></div>
       ${threads.map((t) => threadPane(t)).join("\n      ")}
     </section>
   </div>

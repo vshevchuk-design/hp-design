@@ -1,0 +1,21 @@
+{
+  "component": {
+    "emptyState": {
+      "$description": "Placeholder for an area whose content is currently absent — first built 2026-07-24 for the Student Message Center prototype ('Choose a Thread' in the reading pane, the type-to-search hint, and the no-results case). Text-only variant for now, deliberately: a box that fills the space its content would normally occupy and centers a single one-line hint. The hint sits on a long, weak, fully-rounded gray pill — Badge's neutral-tint recipe (bg.neutral) stretched under body-size text with radius.full — so it reads as a quiet chip anchored in the space rather than bare text floating in a void. Variants with a heading, illustration, or action button are deferred until a real surface needs them, per the no-speculative-builds rule.",
+      "text": { "$type": "typography", "$value": "{text-style.body-base}" },
+      "textColor": { "$type": "color", "$value": "{text.secondary}" },
+      "pill": {
+        "$description": "The rounded backdrop under the hint — bg.neutral (the same weak gray tint Badge role=neutral uses) + radius.full. paddingX is deliberately wider than a Badge's so the pill reads 'long' relative to its text, per the driving request.",
+        "bg": { "$type": "color", "$value": "{bg.neutral}" },
+        "radius": { "$type": "dimension", "$value": "{radius.full}" },
+        "paddingX": { "$type": "dimension", "$value": "{dim.4}" },
+        "paddingY": { "$type": "dimension", "$value": "{dim.2}" }
+      },
+      "padding": {
+        "$type": "dimension",
+        "$value": "{dim.6}",
+        "$description": "Breathing room between the pill and the edges of whatever area the empty state is filling, so the pill never touches a border even in a cramped slot."
+      }
+    }
+  }
+}
