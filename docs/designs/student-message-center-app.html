@@ -239,6 +239,11 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .mc-rail__topbar .search { flex: 1; display: none; }
 .mc--search-open .mc-rail__topbar .tabs--segmented, .mc--search-open .mc-search-open-btn { display: none; }
 .mc--search-open .mc-rail__topbar .search { display: flex; }
+/* with the chips row gone in search mode, the topbar provides the breathing
+   room below the field itself */
+.mc--search-open .mc-rail__topbar { padding-bottom: 12px; }
+.mc-search-close { display: none; flex-shrink: 0; border: none; background: none; padding: 0; cursor: pointer; color: var(--tok-text-primary); font-family: var(--tok-family-sans); font-weight: 400; font-size: 14px; line-height: 1.4; text-decoration: underline; }
+.mc--search-open .mc-search-close { display: inline-flex; }
 .mc-rail__chips { display: flex; gap: 8px; padding: 12px 16px; overflow-x: auto; }
 /* Unread / Expires soon only make sense for the Inbox; search is global, so
    the whole filter row leaves while it's open */
@@ -306,8 +311,9 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         <div class="search search--base">
           <svg class="search__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
           <input class="search__input" id="mc-search-input" placeholder="Search all threads" aria-label="Search all threads" />
-          <button class="search__clear" id="mc-search-clear" type="button" aria-label="Clear or close search"><svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
+          <button class="search__clear" id="mc-search-clear" type="button" aria-label="Clear search" hidden><svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
         </div>
+        <button class="mc-search-close" id="mc-search-close" type="button">Close</button>
       </div>
       <div class="mc-rail__chips">
         <button class="chip chip--base" type="button" aria-pressed="false" data-filter="unread">Unread</button>
@@ -331,7 +337,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
       <div class="mc-rail__lists">
         <div class="mc-list" data-list="inbox">
           <div class="thread-item-inbox thread-item-inbox--unread" role="button" tabindex="0" data-thread="winter" data-idx="0" data-subject="Winter Intersession" data-department="Academic Advising">
-        <span class="avatar avatar--teal" role="img" aria-label="Academic Advising"><span class="avatar__initials">AA</span></span>
+        <span class="avatar avatar--teal avatar--sm" role="img" aria-label="Academic Advising"><span class="avatar__initials">AA</span></span>
         <div class="thread-item-inbox__main">
           <div class="thread-item-inbox__top">
             <span class="thread-item-inbox__identity">Academic Advising</span>
@@ -346,7 +352,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         </div>
       </div>
         <div class="thread-item-inbox thread-item-inbox--unread" role="button" tabindex="0" data-thread="hello" data-idx="1" data-subject="Hello World" data-department="Academic Advising">
-        <span class="avatar avatar--teal" role="img" aria-label="Academic Advising"><span class="avatar__initials">AA</span></span>
+        <span class="avatar avatar--teal avatar--sm" role="img" aria-label="Academic Advising"><span class="avatar__initials">AA</span></span>
         <div class="thread-item-inbox__main">
           <div class="thread-item-inbox__top">
             <span class="thread-item-inbox__identity">Academic Advising</span>
@@ -361,7 +367,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         </div>
       </div>
         <div class="thread-item-inbox thread-item-inbox--read" role="button" tabindex="0" data-thread="registrar" data-idx="2" data-subject="Office of the Registrar Message" data-department="Office of the Registrar">
-        <span class="avatar avatar--orange" role="img" aria-label="Office of the Registrar"><span class="avatar__initials">OR</span></span>
+        <span class="avatar avatar--orange avatar--sm" role="img" aria-label="Office of the Registrar"><span class="avatar__initials">OR</span></span>
         <div class="thread-item-inbox__main">
           <div class="thread-item-inbox__top">
             <span class="thread-item-inbox__identity">Office of the Registrar</span>
@@ -376,7 +382,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         </div>
       </div>
         <div class="thread-item-inbox thread-item-inbox--read" role="button" tabindex="0" data-thread="fafsa" data-idx="3" data-subject="FAFSA Verification Documents" data-department="Financial Aid" data-expires="warning">
-        <span class="avatar avatar--amber" role="img" aria-label="Financial Aid"><span class="avatar__initials">FA</span></span>
+        <span class="avatar avatar--amber avatar--sm" role="img" aria-label="Financial Aid"><span class="avatar__initials">FA</span></span>
         <div class="thread-item-inbox__main">
           <div class="thread-item-inbox__top">
             <span class="thread-item-inbox__identity">Financial Aid</span>
@@ -391,7 +397,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         </div>
       </div>
         <div class="thread-item-inbox thread-item-inbox--read" role="button" tabindex="0" data-thread="advising-appt" data-idx="4" data-subject="Advising Appointment Confirmation" data-department="Academic Advising" data-expires="danger">
-        <span class="avatar avatar--teal" role="img" aria-label="Academic Advising"><span class="avatar__initials">AA</span></span>
+        <span class="avatar avatar--teal avatar--sm" role="img" aria-label="Academic Advising"><span class="avatar__initials">AA</span></span>
         <div class="thread-item-inbox__main">
           <div class="thread-item-inbox__top">
             <span class="thread-item-inbox__identity">Academic Advising</span>
@@ -406,7 +412,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         </div>
       </div>
         <div class="thread-item-inbox thread-item-inbox--unread" role="button" tabindex="0" data-thread="transcript-ready" data-idx="5" data-subject="Transcript Ready for Pickup" data-department="Office of the Registrar" data-expires="neutral">
-        <span class="avatar avatar--orange" role="img" aria-label="Office of the Registrar"><span class="avatar__initials">OR</span></span>
+        <span class="avatar avatar--orange avatar--sm" role="img" aria-label="Office of the Registrar"><span class="avatar__initials">OR</span></span>
         <div class="thread-item-inbox__main">
           <div class="thread-item-inbox__top">
             <span class="thread-item-inbox__identity">Office of the Registrar</span>
@@ -421,7 +427,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         </div>
       </div>
         <div class="thread-item-inbox thread-item-inbox--read" role="button" tabindex="0" data-thread="waiver" data-idx="6" data-subject="Requirement Waiver Request" data-department="English Dept">
-        <span class="avatar avatar--red" role="img" aria-label="English Dept"><span class="avatar__initials">ED</span></span>
+        <span class="avatar avatar--red avatar--sm" role="img" aria-label="English Dept"><span class="avatar__initials">ED</span></span>
         <div class="thread-item-inbox__main">
           <div class="thread-item-inbox__top">
             <span class="thread-item-inbox__identity">English Dept</span>
@@ -436,7 +442,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         </div>
       </div>
         <div class="thread-item-inbox thread-item-inbox--read" role="button" tabindex="0" data-thread="pell" data-idx="7" data-subject="Close to Pell Lifetime Limits" data-department="Financial Aid" data-expires="neutral">
-        <span class="avatar avatar--amber" role="img" aria-label="Financial Aid"><span class="avatar__initials">FA</span></span>
+        <span class="avatar avatar--amber avatar--sm" role="img" aria-label="Financial Aid"><span class="avatar__initials">FA</span></span>
         <div class="thread-item-inbox__main">
           <div class="thread-item-inbox__top">
             <span class="thread-item-inbox__identity">Financial Aid</span>
@@ -451,7 +457,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         </div>
       </div>
         <div class="thread-item-inbox thread-item-inbox--read" role="button" tabindex="0" data-thread="important" data-idx="8" data-subject="Important Information" data-department="Financial Aid">
-        <span class="avatar avatar--amber" role="img" aria-label="Financial Aid"><span class="avatar__initials">FA</span></span>
+        <span class="avatar avatar--amber avatar--sm" role="img" aria-label="Financial Aid"><span class="avatar__initials">FA</span></span>
         <div class="thread-item-inbox__main">
           <div class="thread-item-inbox__top">
             <span class="thread-item-inbox__identity">Financial Aid</span>
@@ -468,7 +474,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         </div>
         <div class="mc-list" data-list="archived" hidden>
           <div class="thread-item-inbox thread-item-inbox--read" role="button" tabindex="0" data-thread="outreach" data-idx="9" data-subject="Advisement Outreach" data-department="Academic Advising" data-expires="danger">
-        <span class="avatar avatar--teal" role="img" aria-label="Academic Advising"><span class="avatar__initials">AA</span></span>
+        <span class="avatar avatar--teal avatar--sm" role="img" aria-label="Academic Advising"><span class="avatar__initials">AA</span></span>
         <div class="thread-item-inbox__main">
           <div class="thread-item-inbox__top">
             <span class="thread-item-inbox__identity">Academic Advising</span>
@@ -483,7 +489,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         </div>
       </div>
         <div class="thread-item-inbox thread-item-inbox--read" role="button" tabindex="0" data-thread="study" data-idx="10" data-subject="Study Session" data-department="Academic Advising">
-        <span class="avatar avatar--teal" role="img" aria-label="Academic Advising"><span class="avatar__initials">AA</span></span>
+        <span class="avatar avatar--teal avatar--sm" role="img" aria-label="Academic Advising"><span class="avatar__initials">AA</span></span>
         <div class="thread-item-inbox__main">
           <div class="thread-item-inbox__top">
             <span class="thread-item-inbox__identity">Academic Advising</span>
@@ -1084,11 +1090,15 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 
   // search is an icon button beside the tabs; opening it swaps the tabs for
   // the expanded field and retires the whole filter row (search is global —
-  // chips don't apply). The × clears a non-empty query, closes when empty.
+  // chips don't apply). The in-field × only CLEARS and only shows once
+  // populated (Search's own convention); the blue "Close" label beside the
+  // field is the one way out. Escape closes too.
   var searchOpenBtn = document.querySelector(".mc-search-open-btn");
+  var searchCloseBtn = document.getElementById("mc-search-close");
   function closeSearch() {
     mc.classList.remove("mc--search-open");
     searchInput.value = "";
+    searchClear.hidden = true;
     applyFilter();
   }
   searchOpenBtn.addEventListener("click", function () {
@@ -1098,18 +1108,19 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     applyFilter();
     searchInput.focus();
   });
-  searchInput.addEventListener("input", applyFilter);
+  searchCloseBtn.addEventListener("click", closeSearch);
+  searchInput.addEventListener("input", function () {
+    searchClear.hidden = searchInput.value.trim() === "";
+    applyFilter();
+  });
   searchInput.addEventListener("keydown", function (e) {
     if (e.key === "Escape") closeSearch();
   });
   searchClear.addEventListener("click", function () {
-    if (searchInput.value.trim() !== "") {
-      searchInput.value = "";
-      applyFilter();
-      searchInput.focus();
-    } else {
-      closeSearch();
-    }
+    searchInput.value = "";
+    searchClear.hidden = true;
+    applyFilter();
+    searchInput.focus();
   });
 
   // filter chips — Unread / Expires soon / Flagged, freely combinable (AND)

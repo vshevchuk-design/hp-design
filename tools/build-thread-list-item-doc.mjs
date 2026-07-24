@@ -148,11 +148,12 @@ const badgeDangerTint = badgeTint("danger");
 const badgeWarningTint = badgeTint("warning");
 const badgeNeutralTint = badgeTint("neutral");
 
-// ---- Avatar, resolved from its own tokens (not retyped) — base size only ----
+// ---- Avatar, resolved from its own tokens (not retyped) — SM size (32px)
+// since 2026-07-24 feedback, matching the sender-row rebalance ----
 const avatarRadius = px(resolve(avatar.radius.$value));
-const avatarBase = avatar.size.base;
-const avatarDiameter = px(resolve(avatarBase.diameter.$value));
-const avatarInitialsType = resolveToken(avatarBase.initials);
+const avatarSm = avatar.size.sm;
+const avatarDiameter = px(resolve(avatarSm.diameter.$value));
+const avatarInitialsType = resolveToken(avatarSm.initials);
 
 // ---- Inbox row's own fields ----
 const inbox = threadListItem.inbox;

@@ -360,6 +360,11 @@ const labelSmType = resolveToken(labelSmNode);
 const labelSmExt = labelSmNode.$extensions?.["hp.design/text"] || {};
 const titleXlType = resolveToken(get("{text-style.title-xl}"));
 const bodySmType = resolveToken(get("{text-style.body-sm}"));
+// link-base for the search "Close" label — $extensions fetched directly from
+// the node, since resolveToken() drops them (documented gap)
+const linkBaseNode = get("{text-style.link-base}");
+const linkBaseType = resolveToken(linkBaseNode);
+const linkBaseExt = linkBaseNode.$extensions?.["hp.design/text"] || {};
 
 // ================= app CSS =================
 
@@ -534,6 +539,11 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .mc-rail__topbar .search { flex: 1; display: none; }
 .mc--search-open .mc-rail__topbar .tabs--segmented, .mc--search-open .mc-search-open-btn { display: none; }
 .mc--search-open .mc-rail__topbar .search { display: flex; }
+/* with the chips row gone in search mode, the topbar provides the breathing
+   room below the field itself */
+.mc--search-open .mc-rail__topbar { padding-bottom: ${px(resolve("dim.3"))}; }
+.mc-search-close { display: none; flex-shrink: 0; border: none; background: none; padding: 0; cursor: pointer; color: ${cv("text.primary")}; font-family: ${cv("family.sans")}; ${typoCss(linkBaseType)}${linkBaseExt.textDecoration ? ` text-decoration: ${linkBaseExt.textDecoration};` : ""} }
+.mc--search-open .mc-search-close { display: inline-flex; }
 .mc-rail__chips { display: flex; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))}; overflow-x: auto; }
 /* Unread / Expires soon only make sense for the Inbox; search is global, so
    the whole filter row leaves while it's open */
@@ -780,7 +790,7 @@ function rowMarkup(t, idx) {
     `<span class="badge badge--role-neutral thread-item-inbox__scope">${t.archived ? "Archived" : "Inbox"}</span>`,
   ].join("");
   return `<div class="thread-item-inbox thread-item-inbox--${t.unread ? "unread" : "read"}" role="button" tabindex="0" data-thread="${t.id}" data-idx="${idx}" data-subject="${esc(t.subject)}" data-department="${esc(t.department)}"${t.expires ? ` data-expires="${t.expires.role}"` : ""}>
-        ${avatarMarkup(t.department)}
+        ${avatarMarkup(t.department, "sm")}
         <div class="thread-item-inbox__main">
           <div class="thread-item-inbox__top">
             <span class="thread-item-inbox__identity">${t.department}</span>
@@ -988,11 +998,15 @@ const appJs = `(function () {
 
   // search is an icon button beside the tabs; opening it swaps the tabs for
   // the expanded field and retires the whole filter row (search is global —
-  // chips don't apply). The × clears a non-empty query, closes when empty.
+  // chips don't apply). The in-field × only CLEARS and only shows once
+  // populated (Search's own convention); the blue "Close" label beside the
+  // field is the one way out. Escape closes too.
   var searchOpenBtn = document.querySelector(".mc-search-open-btn");
+  var searchCloseBtn = document.getElementById("mc-search-close");
   function closeSearch() {
     mc.classList.remove("mc--search-open");
     searchInput.value = "";
+    searchClear.hidden = true;
     applyFilter();
   }
   searchOpenBtn.addEventListener("click", function () {
@@ -1002,18 +1016,19 @@ const appJs = `(function () {
     applyFilter();
     searchInput.focus();
   });
-  searchInput.addEventListener("input", applyFilter);
+  searchCloseBtn.addEventListener("click", closeSearch);
+  searchInput.addEventListener("input", function () {
+    searchClear.hidden = searchInput.value.trim() === "";
+    applyFilter();
+  });
   searchInput.addEventListener("keydown", function (e) {
     if (e.key === "Escape") closeSearch();
   });
   searchClear.addEventListener("click", function () {
-    if (searchInput.value.trim() !== "") {
-      searchInput.value = "";
-      applyFilter();
-      searchInput.focus();
-    } else {
-      closeSearch();
-    }
+    searchInput.value = "";
+    searchClear.hidden = true;
+    applyFilter();
+    searchInput.focus();
   });
 
   // filter chips — Unread / Expires soon / Flagged, freely combinable (AND)
@@ -1125,8 +1140,9 @@ ${appCss}
         <div class="search search--base">
           ${iconSearch}
           <input class="search__input" id="mc-search-input" placeholder="Search all threads" aria-label="Search all threads" />
-          <button class="search__clear" id="mc-search-clear" type="button" aria-label="Clear or close search">${iconClear.replace('<svg class="search__clear" ', '<svg ')}</button>
+          <button class="search__clear" id="mc-search-clear" type="button" aria-label="Clear search" hidden>${iconClear.replace('<svg class="search__clear" ', '<svg ')}</button>
         </div>
+        <button class="mc-search-close" id="mc-search-close" type="button">Close</button>
       </div>
       <div class="mc-rail__chips">
         <button class="chip chip--base" type="button" aria-pressed="false" data-filter="unread">Unread</button>

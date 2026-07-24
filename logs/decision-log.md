@@ -488,3 +488,9 @@ The user reported "filters don't work" and "search splits the screen in half" �
 
 - **Archived shows only Flagged + Department** — Unread and Expires soon are Inbox-only concepts (an archived thread is by definition dealt with), hidden via an `mc--archived` class per explicit request. Switching to Archived also *resets* the two hidden chips (aria-pressed + state), so a chip that's no longer visible can't keep filtering invisibly — the same trap class as the earlier "hidden rows still displayed" bug, caught at design time instead of by the user this round.
 - **Search shows no chips at all** — search is global, the whole filter row leaves while search is open (`.mc--search-open .mc-rail__chips { display:none }`), and opening search resets every chip filter including Department for the same no-invisible-filtering reason. Closing search brings the row back in its clean state.
+
+## 2026-07-24 (cont. 6) — Row avatars sm, search-mode spacing + a dedicated Close
+
+- **ThreadListItem inbox avatars base→sm (40→32px)** per explicit request — same size the sender-row rebalance already moved to, so every avatar in the Message Center rail and thread view is now the sm step. Token $description and both build scripts updated (docs page resolves avatar.size.sm now).
+- **Search mode breathing room**: with the chips row gone while search is open, the count label sat flush under the field — the topbar now carries dim.3 (12px) bottom padding in search mode only.
+- **Search close is its own control now**: a blue "Close" label (text-style.link-base + text.primary, $extensions decoration fetched directly — the documented resolveToken gap) beside the field, per explicit UX feedback that the dual-purpose × was confusing. The in-field × returns to Search's own canonical convention: visible only once populated, and it only clears. Escape still closes.
