@@ -905,7 +905,7 @@ function rowMarkup(t, idx) {
           <div class="thread-item-inbox__subject">${t.subject}</div>
           <div class="thread-item-inbox__preview-row">
             <span class="thread-item-inbox__preview">${t.preview}</span>
-            ${t.replies ? `<span class="badge badge--sm badge--role-success thread-item-inbox__reply">Replied</span>` : ""}
+            ${t.replies && !t.unread ? `<span class="badge badge--sm badge--role-success thread-item-inbox__reply">Replied</span>` : ""}
             <button class="thread-item-inbox__flag-btn" type="button" aria-pressed="${t.flagged ? "true" : "false"}" aria-label="Flag thread">${iconFlagOutlined}${iconFlagFilled}</button>
           </div>
           <div class="thread-item-inbox__expires${t.expires ? "" : " thread-item-inbox__expires--scope-only"}">${badges}</div>

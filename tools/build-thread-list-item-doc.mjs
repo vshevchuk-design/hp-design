@@ -210,7 +210,7 @@ function threadInboxItemMarkup({ department, sender, time, subject, preview, exp
         <div class="thread-item-inbox__subject">${subject}</div>
         <div class="thread-item-inbox__preview-row">
           <span class="thread-item-inbox__preview">${preview}</span>
-          ${replies ? `<span class="badge badge--role-success thread-item-inbox__reply">Replied</span>` : ""}
+          ${replies && state !== "unread" ? `<span class="badge badge--role-success thread-item-inbox__reply">Replied</span>` : ""}
           ${flagButton(flagged)}
         </div>
         ${expires ? `<div class="thread-item-inbox__expires">${expires}</div>` : ""}
