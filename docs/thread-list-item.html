@@ -111,7 +111,6 @@
 .thread-item-inbox__main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
 .thread-item-inbox__top { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
 .thread-item-inbox__identity { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; font-size: 12px; line-height: 1.2; }
-.thread-item-inbox__identity-dept { color: var(--tok-text-muted); font-weight: 400; }
 .thread-item-inbox__time { flex-shrink: 0; color: var(--tok-text-muted); font-weight: 400; font-size: 10px; line-height: 1.2; }
 .thread-item-inbox__subject { font-weight: 600; font-size: 14px; line-height: 1.4; }
 .thread-item-inbox__preview-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
@@ -257,7 +256,7 @@
       <div class="row"><b>Full-bleed list</b><span>Flat rows separated by a 1px divider — no radius, no own border, no gaps between rows; the list fills its rail edge to edge. Hover/pressed use the ghost fill.neutralHover/fill.neutralActive progression; selected is the persistent state.selected.bg fill.</span></div>
       <div class="row"><b>unread / read</b><span>Every row is in exactly one of two states: <code class="tok">unread</code> (surface.default bg, semibold text.default identity/subject, text.secondary preview) or <code class="tok">read</code> (surface.dim bg — a semantic role added for exactly this — normal-weight text.secondary identity/subject, text.muted preview). Clicking a row in the demo marks it read for real.</span></div>
       <div class="row"><b>Flag toggle</b><span>A real per-thread importance toggle: outlined <code class="tok">icon.muted</code> flag when off, filled <code class="tok">icon.warning</code> flag when on, swapped via aria-pressed. Because the row nests an interactive element, the row itself is a <code class="tok">&lt;div role="button" tabindex="0"&gt;</code> — a real &lt;button&gt; can't nest another one, the same resolution Attachment's idle shape uses.</span></div>
-      <div class="row"><b>Mixed sender</b><span>A thread's sender is a department (announcements) OR a person — "Ava Robinson · English Dept": the person leads in identity's semibold, the department follows in <code class="tok">identitySecondary</code> (normal, muted). The Avatar keys off whichever name leads. Added 2026-07-26 — department-only senders read impersonal.</span></div>
+      <div class="row"><b>Mixed sender</b><span>A thread's sender is a department (announcements) OR a person — "Ava Robinson · English Dept", one uniform identity style across the whole line (the suffix inherits the name's color and weight in every state; a v1 muted suffix read as a second font). The Avatar keys off whichever name leads. Added 2026-07-26 — department-only senders read impersonal.</span></div>
       <div class="row"><b>Reply indicator</b><span>A real Badge (sm, <code class="tok">role=success</code> tint) labeled "Replied" on the preview line marks threads that accept replies (absence = replies closed) — users want to know before opening. Inside the thread view the same fact shows as the Composer being replaced by a quiet closed-replies pill.</span></div>
       <div class="row"><b>Identity avatar</b><span>A real Avatar (sm, resolved from avatar.tokens.json), keyed off the leading sender name (person or department) — Avatar's own hash(name) % 8 identity-color logic.</span></div>
       <div class="row"><b>Expires uses Badge</b><span>A real Badge (sm, tint) on its own left-aligned row under the preview — warning (soon), danger (expired) or neutral (far-off, excluded from "expires soon" filters).</span></div>
@@ -306,7 +305,6 @@
 .thread-item-inbox__main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
 .thread-item-inbox__top { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
 .thread-item-inbox__identity { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; font-size: 12px; line-height: 1.2; }
-.thread-item-inbox__identity-dept { color: var(--tok-text-muted); font-weight: 400; }
 .thread-item-inbox__time { flex-shrink: 0; color: var(--tok-text-muted); font-weight: 400; font-size: 10px; line-height: 1.2; }
 .thread-item-inbox__subject { font-weight: 600; font-size: 14px; line-height: 1.4; }
 .thread-item-inbox__preview-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
@@ -500,7 +498,7 @@ document.querySelectorAll(".thread-item-inbox-demo .thread-item-inbox").forEach(
       <span class="avatar avatar--magenta" role="img" aria-label="Ava Robinson"><span class="avatar__initials">AR</span></span>
       <div class="thread-item-inbox__main">
         <div class="thread-item-inbox__top">
-          <span class="thread-item-inbox__identity">Ava Robinson<span class="thread-item-inbox__identity-dept"> · English Dept</span></span>
+          <span class="thread-item-inbox__identity">Ava Robinson · English Dept</span>
           <span class="thread-item-inbox__time">1:05 PM</span>
         </div>
         <div class="thread-item-inbox__subject">Requirement Waiver Request</div>
@@ -516,7 +514,7 @@ document.querySelectorAll(".thread-item-inbox-demo .thread-item-inbox").forEach(
       &lt;span class="avatar avatar--magenta" role="img" aria-label="Ava Robinson"&gt;&lt;span class="avatar__initials"&gt;AR&lt;/span&gt;&lt;/span&gt;
       &lt;div class="thread-item-inbox__main"&gt;
         &lt;div class="thread-item-inbox__top"&gt;
-          &lt;span class="thread-item-inbox__identity"&gt;Ava Robinson&lt;span class="thread-item-inbox__identity-dept"&gt; · English Dept&lt;/span&gt;&lt;/span&gt;
+          &lt;span class="thread-item-inbox__identity"&gt;Ava Robinson · English Dept&lt;/span&gt;
           &lt;span class="thread-item-inbox__time"&gt;1:05 PM&lt;/span&gt;
         &lt;/div&gt;
         &lt;div class="thread-item-inbox__subject"&gt;Requirement Waiver Request&lt;/div&gt;
@@ -528,7 +526,7 @@ document.querySelectorAll(".thread-item-inbox-demo .thread-item-inbox").forEach(
         
       &lt;/div&gt;
     &lt;/div&gt;</code></pre>
-        <p class="story-note">When the sender is a person, the name leads the identity line (identity's own semibold) and ' · Department' follows in identitySecondary (normal weight, muted) — the avatar keys off the person. Announcements keep the department alone. 2026-07-26 client feedback: department-only senders felt impersonal.</p>
+        <p class="story-note">When the sender is a person, the identity line reads 'Person · Department' in ONE uniform style — the suffix inherits the identity's color/weight in every state (a v1 muted suffix read as a second font inside the line and was removed same day). The avatar keys off the person. Announcements keep the department alone. 2026-07-26 client feedback: department-only senders felt impersonal.</p>
       </div>
 
       <div class="story">
@@ -687,7 +685,7 @@ document.querySelectorAll(".thread-item-inbox-demo .thread-item-inbox").forEach(
       <span class="avatar avatar--violet" role="img" aria-label="Alexander Robinson"><span class="avatar__initials">AR</span></span>
       <div class="thread-item-inbox__main">
         <div class="thread-item-inbox__top">
-          <span class="thread-item-inbox__identity">Alexander Robinson<span class="thread-item-inbox__identity-dept"> · Academic Advising</span></span>
+          <span class="thread-item-inbox__identity">Alexander Robinson · Academic Advising</span>
           <span class="thread-item-inbox__time">3:56 PM</span>
         </div>
         <div class="thread-item-inbox__subject">Question about fall registration</div>
@@ -719,7 +717,7 @@ document.querySelectorAll(".thread-item-inbox-demo .thread-item-inbox").forEach(
       <span class="avatar avatar--magenta" role="img" aria-label="Betty Locherty"><span class="avatar__initials">BL</span></span>
       <div class="thread-item-inbox__main">
         <div class="thread-item-inbox__top">
-          <span class="thread-item-inbox__identity">Betty Locherty<span class="thread-item-inbox__identity-dept"> · Financial Aid</span></span>
+          <span class="thread-item-inbox__identity">Betty Locherty · Financial Aid</span>
           <span class="thread-item-inbox__time">Jul 10</span>
         </div>
         <div class="thread-item-inbox__subject">Course withdrawal deadline</div>

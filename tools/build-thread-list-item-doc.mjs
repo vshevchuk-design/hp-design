@@ -156,7 +156,6 @@ const css = `${rootVars}
 .thread-item-inbox__main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: ${inboxLineGap}; }
 .thread-item-inbox__top { display: flex; align-items: baseline; justify-content: space-between; gap: ${px(resolve("dim.2"))}; }
 .thread-item-inbox__identity { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; ${typoCss(inboxIdentityType)} }
-.thread-item-inbox__identity-dept { color: ${cv(refPath(inbox.identitySecondary.color.$value))}; font-weight: ${resolve(inbox.identitySecondary.weight.$value)}; }
 .thread-item-inbox__time { flex-shrink: 0; color: ${cv(refPath(inbox.timeColor.$value))}; ${typoCss(inboxTimeType)} }
 .thread-item-inbox__subject { ${typoCss(subjectType)} }
 .thread-item-inbox__preview-row { display: flex; align-items: center; justify-content: space-between; gap: ${px(resolve("dim.2"))}; }
@@ -200,9 +199,7 @@ function expiresBadge(label, role) {
 // interactive child (the flag toggle), and a real button can't nest another
 // one; same resolution Attachment's idle shape uses.
 function threadInboxItemMarkup({ department, sender, time, subject, preview, expires, state = "read", selected = false, flagged = false, replies = false }) {
-  const identity = sender
-    ? `${sender}<span class="thread-item-inbox__identity-dept"> · ${department}</span>`
-    : department;
+  const identity = sender ? `${sender} · ${department}` : department;
   return `<div class="thread-item-inbox thread-item-inbox--${state}${selected ? " thread-item-inbox--selected" : ""}" role="button" tabindex="0">
       ${inboxAvatarMarkup(sender || department)}
       <div class="thread-item-inbox__main">
@@ -252,7 +249,7 @@ function inboxStories() {
     {
       title: "mixed sender (person · department)",
       html: threadInboxItemMarkup({ sender: "Ava Robinson", department: "English Dept", time: "1:05 PM", subject: "Requirement Waiver Request", preview: "Please submit your waiver request to Enr…", state: "unread", replies: true }),
-      note: "When the sender is a person, the name leads the identity line (identity's own semibold) and ' · Department' follows in identitySecondary (normal weight, muted) — the avatar keys off the person. Announcements keep the department alone. 2026-07-26 client feedback: department-only senders felt impersonal.",
+      note: "When the sender is a person, the identity line reads 'Person · Department' in ONE uniform style — the suffix inherits the identity's color/weight in every state (a v1 muted suffix read as a second font inside the line and was removed same day). The avatar keys off the person. Announcements keep the department alone. 2026-07-26 client feedback: department-only senders felt impersonal.",
     },
     {
       title: "replyable",
@@ -422,7 +419,7 @@ const html = `<!doctype html>
       <div class="row"><b>Full-bleed list</b><span>Flat rows separated by a 1px divider — no radius, no own border, no gaps between rows; the list fills its rail edge to edge. Hover/pressed use the ghost fill.neutralHover/fill.neutralActive progression; selected is the persistent state.selected.bg fill.</span></div>
       <div class="row"><b>unread / read</b><span>Every row is in exactly one of two states: <code class="tok">unread</code> (surface.default bg, semibold text.default identity/subject, text.secondary preview) or <code class="tok">read</code> (surface.dim bg — a semantic role added for exactly this — normal-weight text.secondary identity/subject, text.muted preview). Clicking a row in the demo marks it read for real.</span></div>
       <div class="row"><b>Flag toggle</b><span>A real per-thread importance toggle: outlined <code class="tok">icon.muted</code> flag when off, filled <code class="tok">icon.warning</code> flag when on, swapped via aria-pressed. Because the row nests an interactive element, the row itself is a <code class="tok">&lt;div role="button" tabindex="0"&gt;</code> — a real &lt;button&gt; can't nest another one, the same resolution Attachment's idle shape uses.</span></div>
-      <div class="row"><b>Mixed sender</b><span>A thread's sender is a department (announcements) OR a person — "Ava Robinson · English Dept": the person leads in identity's semibold, the department follows in <code class="tok">identitySecondary</code> (normal, muted). The Avatar keys off whichever name leads. Added 2026-07-26 — department-only senders read impersonal.</span></div>
+      <div class="row"><b>Mixed sender</b><span>A thread's sender is a department (announcements) OR a person — "Ava Robinson · English Dept", one uniform identity style across the whole line (the suffix inherits the name's color and weight in every state; a v1 muted suffix read as a second font). The Avatar keys off whichever name leads. Added 2026-07-26 — department-only senders read impersonal.</span></div>
       <div class="row"><b>Reply indicator</b><span>A real Badge (sm, <code class="tok">role=success</code> tint) labeled "Replied" on the preview line marks threads that accept replies (absence = replies closed) — users want to know before opening. Inside the thread view the same fact shows as the Composer being replaced by a quiet closed-replies pill.</span></div>
       <div class="row"><b>Identity avatar</b><span>A real Avatar (sm, resolved from avatar.tokens.json), keyed off the leading sender name (person or department) — Avatar's own hash(name) % 8 identity-color logic.</span></div>
       <div class="row"><b>Expires uses Badge</b><span>A real Badge (sm, tint) on its own left-aligned row under the preview — warning (soon), danger (expired) or neutral (far-off, excluded from "expires soon" filters).</span></div>

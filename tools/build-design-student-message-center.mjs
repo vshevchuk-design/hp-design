@@ -459,7 +459,6 @@ const componentCss = `/* ---- component recipes, resolved from each component's 
 .thread-item-inbox__main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: ${inboxLineGap}; }
 .thread-item-inbox__top { display: flex; align-items: baseline; justify-content: space-between; gap: ${px(resolve("dim.2"))}; }
 .thread-item-inbox__identity { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; ${typoCss(inboxIdentityType)} }
-.thread-item-inbox__identity-dept { color: ${cv(refPath(inbox.identitySecondary.color.$value))}; font-weight: ${resolve(inbox.identitySecondary.weight.$value)}; }
 .thread-item-inbox__time { flex-shrink: 0; color: ${cv("text.muted")}; ${typoCss(inboxTimeType)} }
 .thread-item-inbox__subject { ${typoCss(tliSubjectType)} }
 .thread-item-inbox__preview-row { display: flex; align-items: center; justify-content: space-between; gap: ${px(resolve("dim.2"))}; }
@@ -882,9 +881,7 @@ function rowMarkup(t, idx) {
     t.expires ? `<span class="badge badge--sm badge--role-${t.expires.role}">${t.expires.label}</span>` : "",
     `<span class="badge badge--sm badge--role-${t.archived ? "neutral" : "primary"} thread-item-inbox__scope">${t.archived ? "Archived" : "Inbox"}</span>`,
   ].join("");
-  const identity = t.sender
-    ? `${t.sender}<span class="thread-item-inbox__identity-dept"> · ${t.department}</span>`
-    : t.department;
+  const identity = t.sender ? `${t.sender} · ${t.department}` : t.department;
   return `<div class="thread-item-inbox thread-item-inbox--${t.unread ? "unread" : "read"}" role="button" tabindex="0" data-thread="${t.id}" data-idx="${idx}" data-subject="${esc(t.subject)}" data-department="${esc(t.department)}"${t.expires ? ` data-expires="${t.expires.role}"` : ""}>
         ${avatarMarkup(t.sender || t.department, "sm")}
         <div class="thread-item-inbox__main">
