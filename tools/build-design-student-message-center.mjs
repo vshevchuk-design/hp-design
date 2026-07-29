@@ -138,6 +138,7 @@ const iconChevronDown = iconOf("expand_more", "chip__icon");
 const iconCheckmark = iconOf("check", "listbox__checkmark");
 const iconFlagOutlined = fs.readFileSync(path.join(root, "assets/icons/material-outlined/flag.svg"), "utf8").replace("<svg ", '<svg class="thread-item-inbox__flag-outlined" ');
 const iconFlagFilled = fs.readFileSync(path.join(root, "assets/icons/material-filled/flag.svg"), "utf8").replace("<svg ", '<svg class="thread-item-inbox__flag-filled" ');
+const iconReply = fs.readFileSync(path.join(root, "assets/icons/material-filled/reply.svg"), "utf8").replace("<svg ", '<svg class="thread-item-inbox__reply" ');
 const iconBack = iconOf("arrow_back", "btn__icon");
 const iconPrint = iconOf("print", "btn__icon");
 const iconAttach = iconOf("attach_file", "composer__icon");
@@ -443,11 +444,13 @@ const componentCss = `/* ---- component recipes, resolved from each component's 
 .thread-item-inbox { box-sizing: border-box; width: 100%; text-align: left; appearance: none; cursor: pointer; display: flex; align-items: flex-start; gap: ${inboxAvatarGap}; padding: ${tliPadding}; border: none; border-bottom: 1px solid ${cv(inboxList.divider)}; font-family: ${cv("family.sans")}; }
 .thread-item-inbox__main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: ${inboxLineGap}; }
 .thread-item-inbox__top { display: flex; align-items: baseline; justify-content: space-between; gap: ${px(resolve("dim.2"))}; }
-.thread-item-inbox__identity { ${typoCss(inboxIdentityType)} }
+.thread-item-inbox__identity { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; ${typoCss(inboxIdentityType)} }
+.thread-item-inbox__identity-dept { color: ${cv(refPath(inbox.identitySecondary.color.$value))}; font-weight: ${resolve(inbox.identitySecondary.weight.$value)}; }
 .thread-item-inbox__time { flex-shrink: 0; color: ${cv("text.muted")}; ${typoCss(inboxTimeType)} }
 .thread-item-inbox__subject { ${typoCss(tliSubjectType)} }
 .thread-item-inbox__preview-row { display: flex; align-items: center; justify-content: space-between; gap: ${px(resolve("dim.2"))}; }
 .thread-item-inbox__preview { flex: 1; min-width: 0; color: ${cv("text.muted")}; ${typoCss(inboxPreviewType)} white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.thread-item-inbox__reply { flex-shrink: 0; width: ${px(resolve(inbox.reply.iconSize.$value))}; height: ${px(resolve(inbox.reply.iconSize.$value))}; color: ${cv(refPath(inbox.reply.color.$value))}; }
 .thread-item-inbox[hidden] { display: none; }
 .thread-item-inbox__flag-btn { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; border: none; background: none; padding: ${px(resolve("dim.1"))}; margin: -${px(resolve("dim.1"))} 0; border-radius: ${px(resolve("radius.xs"))}; cursor: pointer; color: ${cv(refPath(inbox.flag.color.$value))}; }
 .thread-item-inbox__flag-btn svg { width: ${px(resolve(inbox.flag.iconSize.$value))}; height: ${px(resolve(inbox.flag.iconSize.$value))}; display: block; }
@@ -633,6 +636,8 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .mc-thread__meta-line { color: ${cv("text.secondary")}; ${typoCss(bodySmType)} }
 .mc-thread__scroll { flex: 1; overflow-y: auto; padding: ${px(resolve("dim.4"))}; display: flex; flex-direction: column; gap: ${px(resolve("dim.6"))}; }
 .mc-thread__composer { flex-shrink: 0; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))} ${px(resolve("dim.4"))}; }
+/* replies closed: the Composer's slot holds EmptyState's quiet pill instead */
+.mc-thread__composer--closed { display: flex; justify-content: center; }
 
 /* search-scope badges (Inbox/Archived) — declared here, after the component
    recipes, so their display:none outranks .badge's own display in the
@@ -713,7 +718,7 @@ function bubbleRow({ role, name, meta, text, attachmentHtml = "" }) {
 // ---- thread data ----
 const threads = [
   {
-    id: "winter", archived: false, unread: true,
+    id: "winter", archived: false, unread: true, replies: true,
     department: "Academic Advising", date: "12/19/2025", subject: "Winter Intersession",
     preview: "Are you looking to stay on track or get ahead in your degree progress?",
     meta: { Department: "Academic Advising", Status: "Open", Institution: "PeopleSoft University" },
@@ -741,7 +746,7 @@ const threads = [
     ],
   },
   {
-    id: "registrar", archived: false,
+    id: "registrar", archived: false, sender: "Betty Locherty", replies: true,
     department: "Office of the Registrar", date: "12/18/2025", subject: "Office of the Registrar Message",
     preview: "Your requested transcript is attached below.",
     meta: { Department: "Office of the Registrar", Status: "Open", Institution: "PeopleSoft University" },
@@ -753,7 +758,7 @@ const threads = [
     ],
   },
   {
-    id: "fafsa", archived: false,
+    id: "fafsa", archived: false, sender: "Betty Locherty", replies: true,
     department: "Financial Aid", date: "07/20/2026", subject: "FAFSA Verification Documents",
     preview: "Please upload the requested verification documents before the deadline.",
     expires: { label: "Expires 08/01/2026", role: "warning" },
@@ -763,7 +768,7 @@ const threads = [
     ],
   },
   {
-    id: "advising-appt", archived: false,
+    id: "advising-appt", archived: false, sender: "Alexander Robinson",
     department: "Academic Advising", date: "07/05/2026", subject: "Advising Appointment Confirmation",
     preview: "Your appointment window has passed — please rebook if still needed.",
     expires: { label: "Expired 07/10/2026", role: "danger" },
@@ -783,7 +788,7 @@ const threads = [
     ],
   },
   {
-    id: "waiver", archived: false,
+    id: "waiver", archived: false, sender: "Ava Robinson", replies: true,
     department: "English Dept", date: "03/02/2024", subject: "Requirement Waiver Request",
     preview: "Please submit your waiver request to Enrollment Services.",
     meta: { Department: "English Dept", Status: "Open", Institution: "PeopleSoft University" },
@@ -834,7 +839,7 @@ const threads = [
     ],
   },
   {
-    id: "study", archived: true,
+    id: "study", archived: true, sender: "Alexander Robinson", replies: true,
     department: "Academic Advising", date: "06/30/2025", subject: "Study Session",
     preview: "That works for me — I can make that time.",
     meta: { Department: "Academic Advising", Status: "Closed", Institution: "PeopleSoft University" },
@@ -854,16 +859,20 @@ function rowMarkup(t, idx) {
     t.expires ? `<span class="badge badge--sm badge--role-${t.expires.role}">${t.expires.label}</span>` : "",
     `<span class="badge badge--sm badge--role-${t.archived ? "neutral" : "primary"} thread-item-inbox__scope">${t.archived ? "Archived" : "Inbox"}</span>`,
   ].join("");
+  const identity = t.sender
+    ? `${t.sender}<span class="thread-item-inbox__identity-dept"> · ${t.department}</span>`
+    : t.department;
   return `<div class="thread-item-inbox thread-item-inbox--${t.unread ? "unread" : "read"}" role="button" tabindex="0" data-thread="${t.id}" data-idx="${idx}" data-subject="${esc(t.subject)}" data-department="${esc(t.department)}"${t.expires ? ` data-expires="${t.expires.role}"` : ""}>
-        ${avatarMarkup(t.department, "sm")}
+        ${avatarMarkup(t.sender || t.department, "sm")}
         <div class="thread-item-inbox__main">
           <div class="thread-item-inbox__top">
-            <span class="thread-item-inbox__identity">${t.department}</span>
+            <span class="thread-item-inbox__identity">${identity}</span>
             <span class="thread-item-inbox__time">${t.date}</span>
           </div>
           <div class="thread-item-inbox__subject">${t.subject}</div>
           <div class="thread-item-inbox__preview-row">
             <span class="thread-item-inbox__preview">${t.preview}</span>
+            ${t.replies ? iconReply : ""}
             <button class="thread-item-inbox__flag-btn" type="button" aria-pressed="${t.flagged ? "true" : "false"}" aria-label="Flag thread">${iconFlagOutlined}${iconFlagFilled}</button>
           </div>
           <div class="thread-item-inbox__expires${t.expires ? "" : " thread-item-inbox__expires--scope-only"}">${badges}</div>
@@ -890,14 +899,16 @@ function threadPane(t) {
         <div class="mc-thread__scroll">
           ${t.content.join("\n          ")}
         </div>
-        <footer class="mc-thread__composer">
-          <form class="composer composer--simple mc-composer" data-thread="${t.id}">
+        <footer class="mc-thread__composer${t.replies ? "" : " mc-thread__composer--closed"}">
+          ${t.replies
+            ? `<form class="composer composer--simple mc-composer" data-thread="${t.id}">
             <div class="composer__field">
               <input class="composer__input" placeholder="Write a message..." aria-label="Write a message" />
               <button type="button" class="composer__icon-btn" aria-label="Attach file">${iconAttach}</button>
               <button type="submit" class="btn btn--primary btn--sm btn--icon-only" aria-label="Send">${iconSend}</button>
             </div>
-          </form>
+          </form>`
+            : `<span class="empty-state__text">This thread doesn't accept replies</span>`}
         </footer>
       </article>`;
 }
