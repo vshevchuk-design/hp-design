@@ -488,7 +488,8 @@ ${inboxStateCss("read")}
 .badge--role-primary { background: ${cv(badgePrimaryTint.bg)}; color: ${cv(badgePrimaryTint.text)}; }
 .badge--role-success { background: ${cv(badgeSuccessTint.bg)}; color: ${cv(badgeSuccessTint.text)}; }
 
-.avatar { box-sizing: border-box; position: relative; display: inline-flex; flex-shrink: 0; align-items: center; justify-content: center; overflow: hidden; border-radius: ${avatarRadius}; width: ${avatarDiameter}; height: ${avatarDiameter}; font-family: ${cv("family.sans")}; user-select: none; }
+.avatar { box-sizing: border-box; position: relative; display: inline-flex; flex-shrink: 0; align-items: center; justify-content: center; overflow: hidden; border-radius: ${avatarRadius}; width: ${avatarDiameter}; height: ${avatarDiameter}; border: 1px solid ${cv("border.default")}; font-family: ${cv("family.sans")}; user-select: none; }
+.avatar__img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .avatar__initials { text-transform: uppercase; ${typoCss(avatarInitialsType)} }
 .avatar--sm { width: ${avatarSmDiameter}; height: ${avatarSmDiameter}; }
 .avatar--sm .avatar__initials { ${typoCss(avatarSmInitialsType)} }
@@ -696,9 +697,21 @@ ${layoutCss}`;
 
 // ================= markup builders =================
 
+// Real photos for the three recurring people (assets/avatars/, 128px) —
+// Avatar's own photo tier (top of its photo → initials → icon fallback
+// chain); departments and everyone else stay on the initials tier.
+const AVATAR_PHOTOS = {
+  "Alexander Robinson": "../../assets/avatars/alexander-robinson.jpg",
+  "Betty Locherty": "../../assets/avatars/betty-locherty.jpg",
+  "Ava Robinson": "../../assets/avatars/ava-robinson.jpg",
+};
 function avatarMarkup(name, size = "base") {
   const hue = hueOf(name);
-  return `<span class="avatar avatar--${hue}${size === "sm" ? " avatar--sm" : ""}" role="img" aria-label="${name}"><span class="avatar__initials">${initialsOf(name)}</span></span>`;
+  const photo = AVATAR_PHOTOS[name];
+  const inner = photo
+    ? `<img class="avatar__img" src="${photo}" alt="" />`
+    : `<span class="avatar__initials">${initialsOf(name)}</span>`;
+  return `<span class="avatar avatar--${hue}${size === "sm" ? " avatar--sm" : ""}" role="img" aria-label="${name}">${inner}</span>`;
 }
 function attachmentMarkup(title, description) {
   return `<a class="attachment" href="#" download>

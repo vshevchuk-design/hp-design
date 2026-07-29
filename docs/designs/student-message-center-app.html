@@ -144,7 +144,8 @@
 .badge--role-primary { background: var(--tok-bg-primary); color: var(--tok-text-primary); }
 .badge--role-success { background: var(--tok-bg-success); color: var(--tok-text-success); }
 
-.avatar { box-sizing: border-box; position: relative; display: inline-flex; flex-shrink: 0; align-items: center; justify-content: center; overflow: hidden; border-radius: 999px; width: 40px; height: 40px; font-family: var(--tok-family-sans); user-select: none; }
+.avatar { box-sizing: border-box; position: relative; display: inline-flex; flex-shrink: 0; align-items: center; justify-content: center; overflow: hidden; border-radius: 999px; width: 40px; height: 40px; border: 1px solid var(--tok-border-default); font-family: var(--tok-family-sans); user-select: none; }
+.avatar__img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .avatar__initials { text-transform: uppercase; font-weight: 600; font-size: 14px; line-height: 1; }
 .avatar--sm { width: 32px; height: 32px; }
 .avatar--sm .avatar__initials { font-weight: 600; font-size: 12px; line-height: 1; }
@@ -438,7 +439,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         </div>
       </div>
         <div class="thread-item-inbox thread-item-inbox--read" role="button" tabindex="0" data-thread="registrar" data-idx="2" data-subject="Office of the Registrar Message" data-department="Office of the Registrar">
-        <span class="avatar avatar--magenta avatar--sm" role="img" aria-label="Betty Locherty"><span class="avatar__initials">BL</span></span>
+        <span class="avatar avatar--magenta avatar--sm" role="img" aria-label="Betty Locherty"><img class="avatar__img" src="../../assets/avatars/betty-locherty.jpg" alt="" /></span>
         <div class="thread-item-inbox__main">
           <div class="thread-item-inbox__top">
             <span class="thread-item-inbox__identity">Betty Locherty · Office of the Registrar</span>
@@ -454,7 +455,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         </div>
       </div>
         <div class="thread-item-inbox thread-item-inbox--read" role="button" tabindex="0" data-thread="fafsa" data-idx="3" data-subject="FAFSA Verification Documents" data-department="Financial Aid" data-expires="warning">
-        <span class="avatar avatar--magenta avatar--sm" role="img" aria-label="Betty Locherty"><span class="avatar__initials">BL</span></span>
+        <span class="avatar avatar--magenta avatar--sm" role="img" aria-label="Betty Locherty"><img class="avatar__img" src="../../assets/avatars/betty-locherty.jpg" alt="" /></span>
         <div class="thread-item-inbox__main">
           <div class="thread-item-inbox__top">
             <span class="thread-item-inbox__identity">Betty Locherty · Financial Aid</span>
@@ -470,7 +471,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         </div>
       </div>
         <div class="thread-item-inbox thread-item-inbox--read" role="button" tabindex="0" data-thread="advising-appt" data-idx="4" data-subject="Advising Appointment Confirmation" data-department="Academic Advising" data-expires="danger">
-        <span class="avatar avatar--violet avatar--sm" role="img" aria-label="Alexander Robinson"><span class="avatar__initials">AR</span></span>
+        <span class="avatar avatar--violet avatar--sm" role="img" aria-label="Alexander Robinson"><img class="avatar__img" src="../../assets/avatars/alexander-robinson.jpg" alt="" /></span>
         <div class="thread-item-inbox__main">
           <div class="thread-item-inbox__top">
             <span class="thread-item-inbox__identity">Alexander Robinson · Academic Advising</span>
@@ -502,7 +503,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         </div>
       </div>
         <div class="thread-item-inbox thread-item-inbox--read" role="button" tabindex="0" data-thread="waiver" data-idx="6" data-subject="Requirement Waiver Request" data-department="English Dept">
-        <span class="avatar avatar--magenta avatar--sm" role="img" aria-label="Ava Robinson"><span class="avatar__initials">AR</span></span>
+        <span class="avatar avatar--magenta avatar--sm" role="img" aria-label="Ava Robinson"><img class="avatar__img" src="../../assets/avatars/ava-robinson.jpg" alt="" /></span>
         <div class="thread-item-inbox__main">
           <div class="thread-item-inbox__top">
             <span class="thread-item-inbox__identity">Ava Robinson · English Dept</span>
@@ -568,7 +569,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         </div>
       </div>
         <div class="thread-item-inbox thread-item-inbox--read" role="button" tabindex="0" data-thread="study" data-idx="10" data-subject="Study Session" data-department="Academic Advising">
-        <span class="avatar avatar--violet avatar--sm" role="img" aria-label="Alexander Robinson"><span class="avatar__initials">AR</span></span>
+        <span class="avatar avatar--violet avatar--sm" role="img" aria-label="Alexander Robinson"><img class="avatar__img" src="../../assets/avatars/alexander-robinson.jpg" alt="" /></span>
         <div class="thread-item-inbox__main">
           <div class="thread-item-inbox__top">
             <span class="thread-item-inbox__identity">Alexander Robinson · Academic Advising</span>
@@ -608,7 +609,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         <div class="mc-thread__scroll">
           <div class="message message--card">
           <div class="message__sender">
-            <span class="avatar avatar--violet avatar--sm" role="img" aria-label="Alexander Robinson"><span class="avatar__initials">AR</span></span>
+            <span class="avatar avatar--violet avatar--sm" role="img" aria-label="Alexander Robinson"><img class="avatar__img" src="../../assets/avatars/alexander-robinson.jpg" alt="" /></span>
             <p class="message__sender-line"><span class="message__name">Alexander Robinson</span><span class="message__meta"> -- Dec 19, 2:54 PM</span></p>
           </div>
           <div class="message__body">
@@ -656,7 +657,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         <div class="mc-thread__scroll">
           <div class="message message--card">
           <div class="message__sender">
-            <span class="avatar avatar--violet avatar--sm" role="img" aria-label="Alexander Robinson"><span class="avatar__initials">AR</span></span>
+            <span class="avatar avatar--violet avatar--sm" role="img" aria-label="Alexander Robinson"><img class="avatar__img" src="../../assets/avatars/alexander-robinson.jpg" alt="" /></span>
             <p class="message__sender-line"><span class="message__name">Alexander Robinson</span><span class="message__meta"> -- Dec 18, 11:02 AM</span></p>
           </div>
           <div class="message__body">
@@ -685,7 +686,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         <div class="mc-thread__scroll">
           <div class="message message--card">
           <div class="message__sender">
-            <span class="avatar avatar--magenta avatar--sm" role="img" aria-label="Betty Locherty"><span class="avatar__initials">BL</span></span>
+            <span class="avatar avatar--magenta avatar--sm" role="img" aria-label="Betty Locherty"><img class="avatar__img" src="../../assets/avatars/betty-locherty.jpg" alt="" /></span>
             <p class="message__sender-line"><span class="message__name">Betty Locherty</span><span class="message__meta"> -- Dec 18, 9:15 AM</span></p>
           </div>
           <div class="message__body">
@@ -729,7 +730,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         <div class="mc-thread__scroll">
           <div class="message message--card">
           <div class="message__sender">
-            <span class="avatar avatar--magenta avatar--sm" role="img" aria-label="Betty Locherty"><span class="avatar__initials">BL</span></span>
+            <span class="avatar avatar--magenta avatar--sm" role="img" aria-label="Betty Locherty"><img class="avatar__img" src="../../assets/avatars/betty-locherty.jpg" alt="" /></span>
             <p class="message__sender-line"><span class="message__name">Betty Locherty</span><span class="message__meta"> -- Jul 20, 10:05 AM</span></p>
           </div>
           <div class="message__body">
@@ -764,7 +765,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         <div class="mc-thread__scroll">
           <div class="message message--card">
           <div class="message__sender">
-            <span class="avatar avatar--violet avatar--sm" role="img" aria-label="Alexander Robinson"><span class="avatar__initials">AR</span></span>
+            <span class="avatar avatar--violet avatar--sm" role="img" aria-label="Alexander Robinson"><img class="avatar__img" src="../../assets/avatars/alexander-robinson.jpg" alt="" /></span>
             <p class="message__sender-line"><span class="message__name">Alexander Robinson</span><span class="message__meta"> -- Jul 05, 9:30 AM</span></p>
           </div>
           <div class="message__body">
@@ -793,7 +794,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         <div class="mc-thread__scroll">
           <div class="message message--card">
           <div class="message__sender">
-            <span class="avatar avatar--magenta avatar--sm" role="img" aria-label="Betty Locherty"><span class="avatar__initials">BL</span></span>
+            <span class="avatar avatar--magenta avatar--sm" role="img" aria-label="Betty Locherty"><img class="avatar__img" src="../../assets/avatars/betty-locherty.jpg" alt="" /></span>
             <p class="message__sender-line"><span class="message__name">Betty Locherty</span><span class="message__meta"> -- Jul 18, 3:40 PM</span></p>
           </div>
           <div class="message__body">
@@ -821,7 +822,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         </header>
         <div class="mc-thread__scroll">
           <div class="bubble-row bubble-row--other">
-          <div class="bubble-sender"><span class="avatar avatar--magenta avatar--sm" role="img" aria-label="Ava Robinson"><span class="avatar__initials">AR</span></span><p class="bubble-sender__text"><span class="bubble-sender__name">Ava Robinson</span> <span class="bubble-sender__meta">-- Mar 02, 1:05 PM</span></p></div>
+          <div class="bubble-sender"><span class="avatar avatar--magenta avatar--sm" role="img" aria-label="Ava Robinson"><img class="avatar__img" src="../../assets/avatars/ava-robinson.jpg" alt="" /></span><p class="bubble-sender__text"><span class="bubble-sender__name">Ava Robinson</span> <span class="bubble-sender__meta">-- Mar 02, 1:05 PM</span></p></div>
           <div class="bubble bubble--other"><p>Please submit your waiver request to Enrollment Services.</p></div>
         </div>
           <div class="bubble-row bubble-row--self">
@@ -862,7 +863,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         <div class="mc-thread__scroll">
           <div class="message message--card">
           <div class="message__sender">
-            <span class="avatar avatar--magenta avatar--sm" role="img" aria-label="Betty Locherty"><span class="avatar__initials">BL</span></span>
+            <span class="avatar avatar--magenta avatar--sm" role="img" aria-label="Betty Locherty"><img class="avatar__img" src="../../assets/avatars/betty-locherty.jpg" alt="" /></span>
             <p class="message__sender-line"><span class="message__name">Betty Locherty</span><span class="message__meta"> -- Mar 01, 2:55 PM</span></p>
           </div>
           <div class="message__body">
@@ -898,7 +899,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         <div class="mc-thread__scroll">
           <div class="message message--card">
           <div class="message__sender">
-            <span class="avatar avatar--magenta avatar--sm" role="img" aria-label="Betty Locherty"><span class="avatar__initials">BL</span></span>
+            <span class="avatar avatar--magenta avatar--sm" role="img" aria-label="Betty Locherty"><img class="avatar__img" src="../../assets/avatars/betty-locherty.jpg" alt="" /></span>
             <p class="message__sender-line"><span class="message__name">Betty Locherty</span><span class="message__meta"> -- Feb 27, 8:40 AM</span></p>
           </div>
           <div class="message__body">
@@ -932,7 +933,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         <div class="mc-thread__scroll">
           <div class="message message--card">
           <div class="message__sender">
-            <span class="avatar avatar--violet avatar--sm" role="img" aria-label="Alexander Robinson"><span class="avatar__initials">AR</span></span>
+            <span class="avatar avatar--violet avatar--sm" role="img" aria-label="Alexander Robinson"><img class="avatar__img" src="../../assets/avatars/alexander-robinson.jpg" alt="" /></span>
             <p class="message__sender-line"><span class="message__name">Alexander Robinson</span><span class="message__meta"> -- Jul 08, 10:20 AM</span></p>
           </div>
           <div class="message__body">
@@ -960,7 +961,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         </header>
         <div class="mc-thread__scroll">
           <div class="bubble-row bubble-row--other">
-          <div class="bubble-sender"><span class="avatar avatar--violet avatar--sm" role="img" aria-label="Alexander Robinson"><span class="avatar__initials">AR</span></span><p class="bubble-sender__text"><span class="bubble-sender__name">Alexander Robinson</span> <span class="bubble-sender__meta">-- Jun 30, 3:12 PM</span></p></div>
+          <div class="bubble-sender"><span class="avatar avatar--violet avatar--sm" role="img" aria-label="Alexander Robinson"><img class="avatar__img" src="../../assets/avatars/alexander-robinson.jpg" alt="" /></span><p class="bubble-sender__text"><span class="bubble-sender__name">Alexander Robinson</span> <span class="bubble-sender__meta">-- Jun 30, 3:12 PM</span></p></div>
           <div class="bubble bubble--other"><p>We are hosting a study session on Thursday at 4 PM in the library, room 204.</p></div>
         </div>
           <div class="bubble-row bubble-row--self">
