@@ -583,3 +583,9 @@ External client feedback on the prototype, two of three items landed immediately
 ## 2026-07-29 (cont.) — Replied never renders on unread
 
 - The user caught a logic hole ("непрочитане не може бути replied 💀"): unread Winter Intersession wore a green Replied badge. Now a HARD RULE enforced in the markup builders of both the docs page and the prototype (`replies && !unread`), not just in data — an unread row never shows Replied, because a thread with unseen activity can't simultaneously claim to be answered. Token $description updated; verified across all 11 rows (unread → no badge; read+replied → badge).
+
+## 2026-07-29 (cont. 2) — Filters chip at every width + trailing chevron
+
+- The option-B "Filters · N" dropdown-chip was mobile-only by design; per explicit feedback it's now the ONLY filter surface at every breakpoint — the three inline toggle chips are deleted outright (markup, their click handler, the aria-pressed sync in setFilter/resetChipFilters, the mobile/desktop visibility split and the archived inline-chip hide rule all gone). One less state surface to keep in sync; the listbox checkboxes are the single source of filter truth now. The chips row is [Filters · N ▾] [Department ▾] everywhere.
+- The Filters chip also gained a trailing chevron-down (expand_more as chip__icon, mirroring the Department chip) so both read as dropdown triggers.
+- Browser tooling still down (classifier outage) — verified statically: 2 svgs in the chip (filter_list + chevron), counter present, zero inline toggle chips, zero stale `chip[data-filter]` references in the built JS.

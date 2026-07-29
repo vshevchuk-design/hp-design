@@ -615,14 +615,10 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .mc-search-close { display: none; flex-shrink: 0; border: none; background: none; padding: 0; cursor: pointer; color: ${cv("text.primary")}; font-family: ${cv("family.sans")}; ${typoCss(linkBaseType)}${linkBaseExt.textDecoration ? ` text-decoration: ${linkBaseExt.textDecoration};` : ""} }
 .mc--search-open .mc-search-close { display: inline-flex; }
 .mc-rail__chips { display: flex; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))}; }
-/* Mobile (<768): the three toggle chips collapse into one "Filters · N"
-   dropdown-chip (multi-select Listbox) so the row never scrolls — client
-   feedback 2026-07-26. ≥768 they come back inline and the Filters chip goes. */
-.mc-rail__chips .chip[data-filter] { display: none; }
-/* Unread / Expires soon only make sense for the Inbox; search is global, so
-   the whole filter row leaves while it's open. Double-class selector so
-   these outrank the >=768 visibility reversal below. */
-.mc.mc--archived .chip[data-filter="unread"], .mc.mc--archived .chip[data-filter="expires"] { display: none; }
+/* One filter surface at EVERY width (2026-07-29 — the inline toggle chips
+   are gone entirely): the "Filters · N" dropdown-chip + the Department chip.
+   Unread / Expires soon are Inbox-only, so Archived hides those OPTIONS
+   inside the listbox; search is global, so the whole row leaves while open. */
 .mc.mc--archived #mc-filters-listbox [data-filter-option="unread"], .mc.mc--archived #mc-filters-listbox [data-filter-option="expires"] { display: none; }
 .mc--search-open .mc-rail__chips { display: none; }
 .mc-rail__count { display: flex; flex-direction: column; gap: ${px(resolve("dim.2"))}; }
@@ -673,8 +669,6 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
   .mc__reading { display: flex; }
   .mc--thread-open .mc__topbar { display: block; }
   .mc-thread__back { display: none; }
-  .mc-rail__chips .chip[data-filter] { display: inline-flex; }
-  .mc-filters-chip { display: none; }
   /* subject shares the row with the actions on every split view — a long
      subject simply wraps to a second line instead of dropping below the
      buttons (an actions-only top row read as a hole on the tablet) */
@@ -1089,8 +1083,6 @@ const appJs = `(function () {
   // invisibly (used when switching to Archived and when opening search)
   function resetChipFilters(keys) {
     keys.forEach(function (key) {
-      var chipEl = document.querySelector('.mc-rail__chips .chip[data-filter="' + key + '"]');
-      if (chipEl) chipEl.setAttribute("aria-pressed", "false");
       var cb = document.querySelector('#mc-filters-listbox [data-filter-key="' + key + '"]');
       if (cb) cb.checked = false;
       filters[key] = false;
@@ -1157,18 +1149,10 @@ const appJs = `(function () {
   }
   function setFilter(key, on) {
     filters[key] = on;
-    var chipEl = document.querySelector('.mc-rail__chips .chip[data-filter="' + key + '"]');
-    if (chipEl) chipEl.setAttribute("aria-pressed", on ? "true" : "false");
     var cb = document.querySelector('#mc-filters-listbox [data-filter-key="' + key + '"]');
     if (cb) cb.checked = on;
     updateFiltersChip();
   }
-  document.querySelectorAll(".mc-rail__chips .chip[data-filter]").forEach(function (chipEl) {
-    chipEl.addEventListener("click", function () {
-      setFilter(chipEl.dataset.filter, chipEl.getAttribute("aria-pressed") !== "true");
-      applyFilter();
-    });
-  });
   filtersListbox.addEventListener("toggle", function (e) {
     if (e.newState === "open") {
       var r = filtersChip.getBoundingClientRect();
@@ -1311,7 +1295,7 @@ ${appCss}
         <button class="mc-search-close" id="mc-search-close" type="button">Close</button>
       </div>
       <div class="mc-rail__chips">
-        <button class="chip chip--base mc-filters-chip" id="mc-filters-chip" type="button" popovertarget="mc-filters-listbox" aria-haspopup="listbox">${iconFilter}<span>Filters</span><span class="counter counter--sm counter--onNeutral counter--inactive" id="mc-filters-count" hidden>0</span></button>
+        <button class="chip chip--base mc-filters-chip" id="mc-filters-chip" type="button" popovertarget="mc-filters-listbox" aria-haspopup="listbox">${iconFilter}<span>Filters</span><span class="counter counter--sm counter--onNeutral counter--inactive" id="mc-filters-count" hidden>0</span>${iconChevronDown}</button>
         <div class="listbox" id="mc-filters-listbox" popover>
           <ul class="listbox__list" aria-label="Filters">
             <li data-filter-option="unread"><label class="listbox__cb-option" for="mc-fopt-unread"><input type="checkbox" class="listbox__cb-input" id="mc-fopt-unread" data-filter-key="unread" />
@@ -1322,9 +1306,6 @@ ${appCss}
               <span class="listbox__cb-box">${iconCbCheck}</span><span class="listbox__cb-label">Flagged</span></label></li>
           </ul>
         </div>
-        <button class="chip chip--base" type="button" aria-pressed="false" data-filter="unread">Unread</button>
-        <button class="chip chip--base" type="button" aria-pressed="false" data-filter="expires">Expires soon</button>
-        <button class="chip chip--base" type="button" aria-pressed="false" data-filter="flagged">Flagged</button>
         <button class="chip chip--base" type="button" id="mc-dept-chip" popovertarget="mc-dept-listbox" aria-haspopup="listbox"><span id="mc-dept-label">Department</span>${iconChevronDown}</button>
         <div class="listbox" id="mc-dept-listbox" popover>
           <ul class="listbox__list" role="listbox" aria-label="Filter by department">
