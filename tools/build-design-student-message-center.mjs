@@ -135,7 +135,9 @@ const iconSearch = iconOf("search", "search__icon");
 const iconSearchBtn = iconOf("search", "btn__icon");
 const iconClear = iconOf("close", "search__clear");
 const iconChevronDown = iconOf("expand_more", "chip__icon");
+const iconFilter = iconOf("filter_list", "chip__icon");
 const iconCheckmark = iconOf("check", "listbox__checkmark");
+const iconCbCheck = iconOf("check", "listbox__cb-icon");
 const iconFlagOutlined = fs.readFileSync(path.join(root, "assets/icons/material-outlined/flag.svg"), "utf8").replace("<svg ", '<svg class="thread-item-inbox__flag-outlined" ');
 const iconFlagFilled = fs.readFileSync(path.join(root, "assets/icons/material-filled/flag.svg"), "utf8").replace("<svg ", '<svg class="thread-item-inbox__flag-filled" ');
 const iconReply = fs.readFileSync(path.join(root, "assets/icons/material-filled/reply.svg"), "utf8").replace("<svg ", '<svg class="thread-item-inbox__reply" ');
@@ -255,6 +257,9 @@ const lbOptionPaddingY = px(resolve(listbox.optionPaddingY.$value));
 const lbOptionGap = px(resolve(listbox.optionGap.$value));
 const lbCheckmarkSize = px(resolve(listbox.checkmarkSize.$value));
 const lbLabelType = resolveToken(listbox.label);
+const lbCbBox = px(resolve(listbox.checkbox.box.$value));
+const lbCbRadius = px(resolve(listbox.checkbox.radius.$value));
+const lbCbBorderWidth = px(resolve(listbox.checkbox.borderWidth.$value));
 const lbShadow = resolveToken(listbox.shadow);
 const lbShadowCss = `${px(lbShadow.offsetX)} ${px(lbShadow.offsetY)} ${px(lbShadow.blur)} ${px(lbShadow.spread)} ${lbShadow.color}`;
 
@@ -439,6 +444,14 @@ const componentCss = `/* ---- component recipes, resolved from each component's 
 .listbox__option:hover { background: ${cv("fill.neutralHover")}; }
 .listbox__checkmark { width: ${lbCheckmarkSize}; height: ${lbCheckmarkSize}; margin-left: auto; color: ${cv("fill.primary")}; flex-shrink: 0; display: none; }
 .listbox__option--selected .listbox__checkmark { display: block; }
+.listbox__cb-option { width: 100%; box-sizing: border-box; display: flex; align-items: center; gap: ${lbOptionGap}; padding: ${lbOptionPaddingY} ${lbOptionPaddingX}; border-radius: ${lbOptionRadius}; cursor: pointer; }
+.listbox__cb-option:hover { background: ${cv("fill.neutralHover")}; }
+.listbox__cb-input { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.listbox__cb-box { box-sizing: border-box; width: ${lbCbBox}; height: ${lbCbBox}; border-radius: ${lbCbRadius}; border: ${lbCbBorderWidth} solid ${cv("border.default")}; background: ${cv("surface.default")}; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.listbox__cb-icon { width: ${px(resolve("dim.4"))}; height: ${px(resolve("dim.4"))}; display: none; }
+.listbox__cb-input:checked ~ .listbox__cb-box { background: ${cv("fill.primary")}; border-color: ${cv("fill.primary")}; }
+.listbox__cb-input:checked ~ .listbox__cb-box .listbox__cb-icon { display: block; color: ${cv("icon.onFill")}; }
+.listbox__cb-label { color: ${cv("text.default")}; ${typoCss(lbLabelType)} }
 
 .thread-list { display: flex; flex-direction: column; }
 .thread-item-inbox { box-sizing: border-box; width: 100%; text-align: left; appearance: none; cursor: pointer; display: flex; align-items: flex-start; gap: ${inboxAvatarGap}; padding: ${tliPadding}; border: none; border-bottom: 1px solid ${cv(inboxList.divider)}; font-family: ${cv("family.sans")}; }
@@ -599,10 +612,16 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .mc--search-open .mc-rail__topbar { padding-bottom: ${px(resolve("dim.3"))}; }
 .mc-search-close { display: none; flex-shrink: 0; border: none; background: none; padding: 0; cursor: pointer; color: ${cv("text.primary")}; font-family: ${cv("family.sans")}; ${typoCss(linkBaseType)}${linkBaseExt.textDecoration ? ` text-decoration: ${linkBaseExt.textDecoration};` : ""} }
 .mc--search-open .mc-search-close { display: inline-flex; }
-.mc-rail__chips { display: flex; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))}; overflow-x: auto; }
+.mc-rail__chips { display: flex; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))}; }
+/* Mobile (<768): the three toggle chips collapse into one "Filters · N"
+   dropdown-chip (multi-select Listbox) so the row never scrolls — client
+   feedback 2026-07-26. ≥768 they come back inline and the Filters chip goes. */
+.mc-rail__chips .chip[data-filter] { display: none; }
 /* Unread / Expires soon only make sense for the Inbox; search is global, so
-   the whole filter row leaves while it's open */
-.mc--archived .chip[data-filter="unread"], .mc--archived .chip[data-filter="expires"] { display: none; }
+   the whole filter row leaves while it's open. Double-class selector so
+   these outrank the >=768 visibility reversal below. */
+.mc.mc--archived .chip[data-filter="unread"], .mc.mc--archived .chip[data-filter="expires"] { display: none; }
+.mc.mc--archived #mc-filters-listbox [data-filter-option="unread"], .mc.mc--archived #mc-filters-listbox [data-filter-option="expires"] { display: none; }
 .mc--search-open .mc-rail__chips { display: none; }
 .mc-rail__count { display: flex; flex-direction: column; gap: ${px(resolve("dim.2"))}; }
 .mc-count { padding: 0 ${px(resolve("dim.4"))}; color: ${cv("text.muted")}; ${typoCss(labelSmType)}${labelSmExt.textTransform ? ` text-transform: ${labelSmExt.textTransform};` : ""}${labelSmExt.letterSpacing ? ` letter-spacing: ${labelSmExt.letterSpacing};` : ""} }
@@ -652,6 +671,8 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
   .mc__reading { display: flex; }
   .mc--thread-open .mc__topbar { display: block; }
   .mc-thread__back { display: none; }
+  .mc-rail__chips .chip[data-filter] { display: inline-flex; }
+  .mc-filters-chip { display: none; }
   /* subject shares the row with the actions on every split view — a long
      subject simply wraps to a second line instead of dropping below the
      buttons (an actions-only top row read as a hole on the tablet) */
@@ -1058,8 +1079,11 @@ const appJs = `(function () {
     keys.forEach(function (key) {
       var chipEl = document.querySelector('.mc-rail__chips .chip[data-filter="' + key + '"]');
       if (chipEl) chipEl.setAttribute("aria-pressed", "false");
+      var cb = document.querySelector('#mc-filters-listbox [data-filter-key="' + key + '"]');
+      if (cb) cb.checked = false;
       filters[key] = false;
     });
+    if (typeof updateFiltersChip === "function") updateFiltersChip();
   }
   function resetDeptFilter() {
     dept = null;
@@ -1106,12 +1130,45 @@ const appJs = `(function () {
     searchInput.focus();
   });
 
-  // filter chips — Unread / Expires soon / Flagged, freely combinable (AND)
+  // filter chips — Unread / Expires soon / Flagged, freely combinable (AND).
+  // On mobile the three toggles live inside the "Filters · N" dropdown-chip
+  // (multi-select Listbox with real Checkbox markers); both surfaces drive
+  // the same filters object and stay in sync across viewport changes.
+  var filtersChip = document.getElementById("mc-filters-chip");
+  var filtersCount = document.getElementById("mc-filters-count");
+  var filtersListbox = document.getElementById("mc-filters-listbox");
+  function updateFiltersChip() {
+    var n = ["unread", "expires", "flagged"].filter(function (k) { return filters[k]; }).length;
+    filtersCount.textContent = n;
+    filtersCount.hidden = n === 0;
+    filtersChip.classList.toggle("chip--checked-outline", n > 0);
+  }
+  function setFilter(key, on) {
+    filters[key] = on;
+    var chipEl = document.querySelector('.mc-rail__chips .chip[data-filter="' + key + '"]');
+    if (chipEl) chipEl.setAttribute("aria-pressed", on ? "true" : "false");
+    var cb = document.querySelector('#mc-filters-listbox [data-filter-key="' + key + '"]');
+    if (cb) cb.checked = on;
+    updateFiltersChip();
+  }
   document.querySelectorAll(".mc-rail__chips .chip[data-filter]").forEach(function (chipEl) {
     chipEl.addEventListener("click", function () {
-      var pressed = chipEl.getAttribute("aria-pressed") !== "true";
-      chipEl.setAttribute("aria-pressed", pressed ? "true" : "false");
-      filters[chipEl.dataset.filter] = pressed;
+      setFilter(chipEl.dataset.filter, chipEl.getAttribute("aria-pressed") !== "true");
+      applyFilter();
+    });
+  });
+  filtersListbox.addEventListener("toggle", function (e) {
+    if (e.newState === "open") {
+      var r = filtersChip.getBoundingClientRect();
+      filtersListbox.style.position = "fixed";
+      filtersListbox.style.margin = "0";
+      filtersListbox.style.top = r.bottom + 4 + "px";
+      filtersListbox.style.left = Math.max(8, Math.min(r.left, window.innerWidth - filtersListbox.offsetWidth - 8)) + "px";
+    }
+  });
+  filtersListbox.querySelectorAll(".listbox__cb-input").forEach(function (cb) {
+    cb.addEventListener("change", function () {
+      setFilter(cb.dataset.filterKey, cb.checked);
       applyFilter();
     });
   });
@@ -1242,6 +1299,17 @@ ${appCss}
         <button class="mc-search-close" id="mc-search-close" type="button">Close</button>
       </div>
       <div class="mc-rail__chips">
+        <button class="chip chip--base mc-filters-chip" id="mc-filters-chip" type="button" popovertarget="mc-filters-listbox" aria-haspopup="listbox">${iconFilter}<span>Filters</span><span class="counter counter--sm counter--onNeutral counter--inactive" id="mc-filters-count" hidden>0</span></button>
+        <div class="listbox" id="mc-filters-listbox" popover>
+          <ul class="listbox__list" aria-label="Filters">
+            <li data-filter-option="unread"><label class="listbox__cb-option" for="mc-fopt-unread"><input type="checkbox" class="listbox__cb-input" id="mc-fopt-unread" data-filter-key="unread" />
+              <span class="listbox__cb-box">${iconCbCheck}</span><span class="listbox__cb-label">Unread</span></label></li>
+            <li data-filter-option="expires"><label class="listbox__cb-option" for="mc-fopt-expires"><input type="checkbox" class="listbox__cb-input" id="mc-fopt-expires" data-filter-key="expires" />
+              <span class="listbox__cb-box">${iconCbCheck}</span><span class="listbox__cb-label">Expires soon</span></label></li>
+            <li data-filter-option="flagged"><label class="listbox__cb-option" for="mc-fopt-flagged"><input type="checkbox" class="listbox__cb-input" id="mc-fopt-flagged" data-filter-key="flagged" />
+              <span class="listbox__cb-box">${iconCbCheck}</span><span class="listbox__cb-label">Flagged</span></label></li>
+          </ul>
+        </div>
         <button class="chip chip--base" type="button" aria-pressed="false" data-filter="unread">Unread</button>
         <button class="chip chip--base" type="button" aria-pressed="false" data-filter="expires">Expires soon</button>
         <button class="chip chip--base" type="button" aria-pressed="false" data-filter="flagged">Flagged</button>

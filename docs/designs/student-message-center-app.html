@@ -93,6 +93,14 @@
 .listbox__option:hover { background: var(--tok-fill-neutral-hover); }
 .listbox__checkmark { width: 16px; height: 16px; margin-left: auto; color: var(--tok-fill-primary); flex-shrink: 0; display: none; }
 .listbox__option--selected .listbox__checkmark { display: block; }
+.listbox__cb-option { width: 100%; box-sizing: border-box; display: flex; align-items: center; gap: 8px; padding: 8px 8px; border-radius: 4px; cursor: pointer; }
+.listbox__cb-option:hover { background: var(--tok-fill-neutral-hover); }
+.listbox__cb-input { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.listbox__cb-box { box-sizing: border-box; width: 20px; height: 20px; border-radius: 4px; border: 2px solid var(--tok-border-default); background: var(--tok-surface-default); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.listbox__cb-icon { width: 16px; height: 16px; display: none; }
+.listbox__cb-input:checked ~ .listbox__cb-box { background: var(--tok-fill-primary); border-color: var(--tok-fill-primary); }
+.listbox__cb-input:checked ~ .listbox__cb-box .listbox__cb-icon { display: block; color: var(--tok-icon-on-fill); }
+.listbox__cb-label { color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; }
 
 .thread-list { display: flex; flex-direction: column; }
 .thread-item-inbox { box-sizing: border-box; width: 100%; text-align: left; appearance: none; cursor: pointer; display: flex; align-items: flex-start; gap: 12px; padding: 16px; border: none; border-bottom: 1px solid var(--tok-border-default); font-family: var(--tok-family-sans); }
@@ -269,10 +277,16 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .mc--search-open .mc-rail__topbar { padding-bottom: 12px; }
 .mc-search-close { display: none; flex-shrink: 0; border: none; background: none; padding: 0; cursor: pointer; color: var(--tok-text-primary); font-family: var(--tok-family-sans); font-weight: 400; font-size: 14px; line-height: 1.4; text-decoration: underline; }
 .mc--search-open .mc-search-close { display: inline-flex; }
-.mc-rail__chips { display: flex; gap: 8px; padding: 12px 16px; overflow-x: auto; }
+.mc-rail__chips { display: flex; gap: 8px; padding: 12px 16px; }
+/* Mobile (<768): the three toggle chips collapse into one "Filters · N"
+   dropdown-chip (multi-select Listbox) so the row never scrolls — client
+   feedback 2026-07-26. ≥768 they come back inline and the Filters chip goes. */
+.mc-rail__chips .chip[data-filter] { display: none; }
 /* Unread / Expires soon only make sense for the Inbox; search is global, so
-   the whole filter row leaves while it's open */
-.mc--archived .chip[data-filter="unread"], .mc--archived .chip[data-filter="expires"] { display: none; }
+   the whole filter row leaves while it's open. Double-class selector so
+   these outrank the >=768 visibility reversal below. */
+.mc.mc--archived .chip[data-filter="unread"], .mc.mc--archived .chip[data-filter="expires"] { display: none; }
+.mc.mc--archived #mc-filters-listbox [data-filter-option="unread"], .mc.mc--archived #mc-filters-listbox [data-filter-option="expires"] { display: none; }
 .mc--search-open .mc-rail__chips { display: none; }
 .mc-rail__count { display: flex; flex-direction: column; gap: 8px; }
 .mc-count { padding: 0 16px; color: var(--tok-text-muted); font-weight: 700; font-size: 12px; line-height: 1.4; text-transform: uppercase; }
@@ -322,6 +336,8 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   .mc__reading { display: flex; }
   .mc--thread-open .mc__topbar { display: block; }
   .mc-thread__back { display: none; }
+  .mc-rail__chips .chip[data-filter] { display: inline-flex; }
+  .mc-filters-chip { display: none; }
   /* subject shares the row with the actions on every split view — a long
      subject simply wraps to a second line instead of dropping below the
      buttons (an actions-only top row read as a hole on the tablet) */
@@ -356,6 +372,17 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         <button class="mc-search-close" id="mc-search-close" type="button">Close</button>
       </div>
       <div class="mc-rail__chips">
+        <button class="chip chip--base mc-filters-chip" id="mc-filters-chip" type="button" popovertarget="mc-filters-listbox" aria-haspopup="listbox"><svg class="chip__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/></svg><span>Filters</span><span class="counter counter--sm counter--onNeutral counter--inactive" id="mc-filters-count" hidden>0</span></button>
+        <div class="listbox" id="mc-filters-listbox" popover>
+          <ul class="listbox__list" aria-label="Filters">
+            <li data-filter-option="unread"><label class="listbox__cb-option" for="mc-fopt-unread"><input type="checkbox" class="listbox__cb-input" id="mc-fopt-unread" data-filter-key="unread" />
+              <span class="listbox__cb-box"><svg class="listbox__cb-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="listbox__cb-label">Unread</span></label></li>
+            <li data-filter-option="expires"><label class="listbox__cb-option" for="mc-fopt-expires"><input type="checkbox" class="listbox__cb-input" id="mc-fopt-expires" data-filter-key="expires" />
+              <span class="listbox__cb-box"><svg class="listbox__cb-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="listbox__cb-label">Expires soon</span></label></li>
+            <li data-filter-option="flagged"><label class="listbox__cb-option" for="mc-fopt-flagged"><input type="checkbox" class="listbox__cb-input" id="mc-fopt-flagged" data-filter-key="flagged" />
+              <span class="listbox__cb-box"><svg class="listbox__cb-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="listbox__cb-label">Flagged</span></label></li>
+          </ul>
+        </div>
         <button class="chip chip--base" type="button" aria-pressed="false" data-filter="unread">Unread</button>
         <button class="chip chip--base" type="button" aria-pressed="false" data-filter="expires">Expires soon</button>
         <button class="chip chip--base" type="button" aria-pressed="false" data-filter="flagged">Flagged</button>
@@ -1087,8 +1114,11 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     keys.forEach(function (key) {
       var chipEl = document.querySelector('.mc-rail__chips .chip[data-filter="' + key + '"]');
       if (chipEl) chipEl.setAttribute("aria-pressed", "false");
+      var cb = document.querySelector('#mc-filters-listbox [data-filter-key="' + key + '"]');
+      if (cb) cb.checked = false;
       filters[key] = false;
     });
+    if (typeof updateFiltersChip === "function") updateFiltersChip();
   }
   function resetDeptFilter() {
     dept = null;
@@ -1135,12 +1165,45 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     searchInput.focus();
   });
 
-  // filter chips — Unread / Expires soon / Flagged, freely combinable (AND)
+  // filter chips — Unread / Expires soon / Flagged, freely combinable (AND).
+  // On mobile the three toggles live inside the "Filters · N" dropdown-chip
+  // (multi-select Listbox with real Checkbox markers); both surfaces drive
+  // the same filters object and stay in sync across viewport changes.
+  var filtersChip = document.getElementById("mc-filters-chip");
+  var filtersCount = document.getElementById("mc-filters-count");
+  var filtersListbox = document.getElementById("mc-filters-listbox");
+  function updateFiltersChip() {
+    var n = ["unread", "expires", "flagged"].filter(function (k) { return filters[k]; }).length;
+    filtersCount.textContent = n;
+    filtersCount.hidden = n === 0;
+    filtersChip.classList.toggle("chip--checked-outline", n > 0);
+  }
+  function setFilter(key, on) {
+    filters[key] = on;
+    var chipEl = document.querySelector('.mc-rail__chips .chip[data-filter="' + key + '"]');
+    if (chipEl) chipEl.setAttribute("aria-pressed", on ? "true" : "false");
+    var cb = document.querySelector('#mc-filters-listbox [data-filter-key="' + key + '"]');
+    if (cb) cb.checked = on;
+    updateFiltersChip();
+  }
   document.querySelectorAll(".mc-rail__chips .chip[data-filter]").forEach(function (chipEl) {
     chipEl.addEventListener("click", function () {
-      var pressed = chipEl.getAttribute("aria-pressed") !== "true";
-      chipEl.setAttribute("aria-pressed", pressed ? "true" : "false");
-      filters[chipEl.dataset.filter] = pressed;
+      setFilter(chipEl.dataset.filter, chipEl.getAttribute("aria-pressed") !== "true");
+      applyFilter();
+    });
+  });
+  filtersListbox.addEventListener("toggle", function (e) {
+    if (e.newState === "open") {
+      var r = filtersChip.getBoundingClientRect();
+      filtersListbox.style.position = "fixed";
+      filtersListbox.style.margin = "0";
+      filtersListbox.style.top = r.bottom + 4 + "px";
+      filtersListbox.style.left = Math.max(8, Math.min(r.left, window.innerWidth - filtersListbox.offsetWidth - 8)) + "px";
+    }
+  });
+  filtersListbox.querySelectorAll(".listbox__cb-input").forEach(function (cb) {
+    cb.addEventListener("change", function () {
+      setFilter(cb.dataset.filterKey, cb.checked);
       applyFilter();
     });
   });
