@@ -88,6 +88,8 @@
   --tok-bg-warning: #ffe2c5;
   --tok-text-warning: #935a03;
   --tok-bg-neutral: #e8e8e8;
+  --tok-bg-success: #acffc2;
+  --tok-text-success: #057e3f;
   --tok-avatar-teal-bg: #88fffe;
   --tok-avatar-teal-text: #057878;
   --tok-avatar-amber-bg: #ffe2c5;
@@ -114,7 +116,7 @@
 .thread-item-inbox__subject { font-weight: 600; font-size: 14px; line-height: 1.4; }
 .thread-item-inbox__preview-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .thread-item-inbox__preview { flex: 1; min-width: 0; font-weight: 400; font-size: 12px; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.thread-item-inbox__reply { flex-shrink: 0; width: 16px; height: 16px; color: var(--tok-icon-muted); }
+.thread-item-inbox__reply { flex-shrink: 0; }
 .thread-item-inbox__flag-btn { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; border: none; background: none; padding: 4px; margin: -4px 0; border-radius: 4px; cursor: pointer; color: var(--tok-icon-muted); }
 .thread-item-inbox__flag-btn svg { width: 20px; height: 20px; display: block; }
 .thread-item-inbox__flag-btn:hover { background: var(--tok-fill-neutral-hover); }
@@ -142,6 +144,7 @@
 .badge--role-danger { background: var(--tok-bg-danger); color: var(--tok-text-danger); }
 .badge--role-warning { background: var(--tok-bg-warning); color: var(--tok-text-warning); }
 .badge--role-neutral { background: var(--tok-bg-neutral); color: var(--tok-text-default); }
+.badge--role-success { background: var(--tok-bg-success); color: var(--tok-text-success); }
 
 .avatar { box-sizing: border-box; position: relative; display: inline-flex; flex-shrink: 0; align-items: center; justify-content: center; overflow: hidden; border-radius: 999px; width: 32px; height: 32px; font-family: var(--tok-family-sans); user-select: none; }
 .avatar__initials { text-transform: uppercase; font-weight: 600; font-size: 12px; line-height: 1; }
@@ -255,7 +258,7 @@
       <div class="row"><b>unread / read</b><span>Every row is in exactly one of two states: <code class="tok">unread</code> (surface.default bg, semibold text.default identity/subject, text.secondary preview) or <code class="tok">read</code> (surface.dim bg — a semantic role added for exactly this — normal-weight text.secondary identity/subject, text.muted preview). Clicking a row in the demo marks it read for real.</span></div>
       <div class="row"><b>Flag toggle</b><span>A real per-thread importance toggle: outlined <code class="tok">icon.muted</code> flag when off, filled <code class="tok">icon.warning</code> flag when on, swapped via aria-pressed. Because the row nests an interactive element, the row itself is a <code class="tok">&lt;div role="button" tabindex="0"&gt;</code> — a real &lt;button&gt; can't nest another one, the same resolution Attachment's idle shape uses.</span></div>
       <div class="row"><b>Mixed sender</b><span>A thread's sender is a department (announcements) OR a person — "Ava Robinson · English Dept": the person leads in identity's semibold, the department follows in <code class="tok">identitySecondary</code> (normal, muted). The Avatar keys off whichever name leads. Added 2026-07-26 — department-only senders read impersonal.</span></div>
-      <div class="row"><b>Reply indicator</b><span>A small muted reply icon on the preview line marks threads that accept replies (absence = replies closed) — users want to know before opening. Inside the thread view the same fact shows as the Composer being replaced by a quiet closed-replies pill.</span></div>
+      <div class="row"><b>Reply indicator</b><span>A real Badge (sm, <code class="tok">role=success</code> tint) labeled "Replied" on the preview line marks threads that accept replies (absence = replies closed) — users want to know before opening. Inside the thread view the same fact shows as the Composer being replaced by a quiet closed-replies pill.</span></div>
       <div class="row"><b>Identity avatar</b><span>A real Avatar (sm, resolved from avatar.tokens.json), keyed off the leading sender name (person or department) — Avatar's own hash(name) % 8 identity-color logic.</span></div>
       <div class="row"><b>Expires uses Badge</b><span>A real Badge (sm, tint) on its own left-aligned row under the preview — warning (soon), danger (expired) or neutral (far-off, excluded from "expires soon" filters).</span></div>
     </div>
@@ -280,6 +283,8 @@
   --tok-bg-warning: #ffe2c5;
   --tok-text-warning: #935a03;
   --tok-bg-neutral: #e8e8e8;
+  --tok-bg-success: #acffc2;
+  --tok-text-success: #057e3f;
   --tok-avatar-teal-bg: #88fffe;
   --tok-avatar-teal-text: #057878;
   --tok-avatar-amber-bg: #ffe2c5;
@@ -306,7 +311,7 @@
 .thread-item-inbox__subject { font-weight: 600; font-size: 14px; line-height: 1.4; }
 .thread-item-inbox__preview-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .thread-item-inbox__preview { flex: 1; min-width: 0; font-weight: 400; font-size: 12px; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.thread-item-inbox__reply { flex-shrink: 0; width: 16px; height: 16px; color: var(--tok-icon-muted); }
+.thread-item-inbox__reply { flex-shrink: 0; }
 .thread-item-inbox__flag-btn { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; border: none; background: none; padding: 4px; margin: -4px 0; border-radius: 4px; cursor: pointer; color: var(--tok-icon-muted); }
 .thread-item-inbox__flag-btn svg { width: 20px; height: 20px; display: block; }
 .thread-item-inbox__flag-btn:hover { background: var(--tok-fill-neutral-hover); }
@@ -334,6 +339,7 @@
 .badge--role-danger { background: var(--tok-bg-danger); color: var(--tok-text-danger); }
 .badge--role-warning { background: var(--tok-bg-warning); color: var(--tok-text-warning); }
 .badge--role-neutral { background: var(--tok-bg-neutral); color: var(--tok-text-default); }
+.badge--role-success { background: var(--tok-bg-success); color: var(--tok-text-success); }
 
 .avatar { box-sizing: border-box; position: relative; display: inline-flex; flex-shrink: 0; align-items: center; justify-content: center; overflow: hidden; border-radius: 999px; width: 32px; height: 32px; font-family: var(--tok-family-sans); user-select: none; }
 .avatar__initials { text-transform: uppercase; font-weight: 600; font-size: 12px; line-height: 1; }
@@ -500,7 +506,7 @@ document.querySelectorAll(".thread-item-inbox-demo .thread-item-inbox").forEach(
         <div class="thread-item-inbox__subject">Requirement Waiver Request</div>
         <div class="thread-item-inbox__preview-row">
           <span class="thread-item-inbox__preview">Please submit your waiver request to Enr…</span>
-          <svg class="thread-item-inbox__reply" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 9V5l-7 7 7 7v-4.1c5 0 8.5 1.6 11 5.1-1-5-4-10-11-11z"/></svg>
+          <span class="badge badge--role-success thread-item-inbox__reply">Replied</span>
           <button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
         </div>
         
@@ -516,7 +522,7 @@ document.querySelectorAll(".thread-item-inbox-demo .thread-item-inbox").forEach(
         &lt;div class="thread-item-inbox__subject"&gt;Requirement Waiver Request&lt;/div&gt;
         &lt;div class="thread-item-inbox__preview-row"&gt;
           &lt;span class="thread-item-inbox__preview"&gt;Please submit your waiver request to Enr…&lt;/span&gt;
-          &lt;svg class="thread-item-inbox__reply" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"&gt;&lt;path d="M0 0h24v24H0z" fill="none"/&gt;&lt;path d="M10 9V5l-7 7 7 7v-4.1c5 0 8.5 1.6 11 5.1-1-5-4-10-11-11z"/&gt;&lt;/svg&gt;
+          &lt;span class="badge badge--role-success thread-item-inbox__reply"&gt;Replied&lt;/span&gt;
           &lt;button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"&gt;&lt;svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"&gt;&lt;path d="M0 0h24v24H0V0z" fill="none"/&gt;&lt;path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/&gt;&lt;/svg&gt;&lt;svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"&gt;&lt;path d="M0 0h24v24H0z" fill="none"/&gt;&lt;path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/&gt;&lt;/svg&gt;&lt;/button&gt;
         &lt;/div&gt;
         
@@ -537,7 +543,7 @@ document.querySelectorAll(".thread-item-inbox-demo .thread-item-inbox").forEach(
         <div class="thread-item-inbox__subject">Office of the Registrar Message</div>
         <div class="thread-item-inbox__preview-row">
           <span class="thread-item-inbox__preview">Your requested transcript is attached bel…</span>
-          <svg class="thread-item-inbox__reply" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 9V5l-7 7 7 7v-4.1c5 0 8.5 1.6 11 5.1-1-5-4-10-11-11z"/></svg>
+          <span class="badge badge--role-success thread-item-inbox__reply">Replied</span>
           <button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
         </div>
         
@@ -553,13 +559,13 @@ document.querySelectorAll(".thread-item-inbox-demo .thread-item-inbox").forEach(
         &lt;div class="thread-item-inbox__subject"&gt;Office of the Registrar Message&lt;/div&gt;
         &lt;div class="thread-item-inbox__preview-row"&gt;
           &lt;span class="thread-item-inbox__preview"&gt;Your requested transcript is attached bel…&lt;/span&gt;
-          &lt;svg class="thread-item-inbox__reply" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"&gt;&lt;path d="M0 0h24v24H0z" fill="none"/&gt;&lt;path d="M10 9V5l-7 7 7 7v-4.1c5 0 8.5 1.6 11 5.1-1-5-4-10-11-11z"/&gt;&lt;/svg&gt;
+          &lt;span class="badge badge--role-success thread-item-inbox__reply"&gt;Replied&lt;/span&gt;
           &lt;button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"&gt;&lt;svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"&gt;&lt;path d="M0 0h24v24H0V0z" fill="none"/&gt;&lt;path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/&gt;&lt;/svg&gt;&lt;svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"&gt;&lt;path d="M0 0h24v24H0z" fill="none"/&gt;&lt;path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/&gt;&lt;/svg&gt;&lt;/button&gt;
         &lt;/div&gt;
         
       &lt;/div&gt;
     &lt;/div&gt;</code></pre>
-        <p class="story-note">The small reply icon on the preview line = this thread accepts replies; absence = announcement / replies closed. Affirmative one-way indicator, per 2026-07-26 client feedback — users want to know before opening. The preview simply crops a little earlier to make room.</p>
+        <p class="story-note">A real Badge (sm, success tint — pale green bg, active green text) labeled "Replied" on the preview line = this thread accepts replies; absence = announcement / replies closed. v2: replaced the muted reply icon, which read gray and unclear. The preview simply crops a little earlier to make room.</p>
       </div>
 
       <div class="story">
@@ -687,7 +693,7 @@ document.querySelectorAll(".thread-item-inbox-demo .thread-item-inbox").forEach(
         <div class="thread-item-inbox__subject">Question about fall registration</div>
         <div class="thread-item-inbox__preview-row">
           <span class="thread-item-inbox__preview">Hi, I wanted to check whether there is …</span>
-          <svg class="thread-item-inbox__reply" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 9V5l-7 7 7 7v-4.1c5 0 8.5 1.6 11 5.1-1-5-4-10-11-11z"/></svg>
+          <span class="badge badge--role-success thread-item-inbox__reply">Replied</span>
           <button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
         </div>
         
@@ -719,7 +725,7 @@ document.querySelectorAll(".thread-item-inbox-demo .thread-item-inbox").forEach(
         <div class="thread-item-inbox__subject">Course withdrawal deadline</div>
         <div class="thread-item-inbox__preview-row">
           <span class="thread-item-inbox__preview">Hey Alex, I did alright on my quiz b…</span>
-          <svg class="thread-item-inbox__reply" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 9V5l-7 7 7 7v-4.1c5 0 8.5 1.6 11 5.1-1-5-4-10-11-11z"/></svg>
+          <span class="badge badge--role-success thread-item-inbox__reply">Replied</span>
           <button class="thread-item-inbox__flag-btn" type="button" aria-pressed="true" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
         </div>
         <div class="thread-item-inbox__expires"><span class="badge badge--role-warning">Expires Jul 20</span></div>

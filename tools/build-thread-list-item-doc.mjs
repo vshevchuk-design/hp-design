@@ -87,7 +87,7 @@ const usedHues = [...new Set(inboxIdentities.map(hueOf))];
 const colorPaths = [
   "surface.default", "surface.dim", "border.default", "text.default", "text.secondary", "icon.muted", "text.muted",
   "fill.primary", "fill.neutralHover", "fill.neutralActive", "bg.primary", "border.focus", "icon.warning",
-  "bg.danger", "text.danger", "bg.warning", "text.warning", "bg.neutral",
+  "bg.danger", "text.danger", "bg.warning", "text.warning", "bg.neutral", "bg.success", "text.success",
   ...usedHues.flatMap((h) => [`avatar.${h}.bg`, `avatar.${h}.text`]),
 ];
 const colorValue = Object.fromEntries(colorPaths.map((p) => [p, resolve(p)]));
@@ -125,7 +125,6 @@ function typoCss(t) {
 
 // Flag is a real toggle: both glyphs always in the DOM, shown/hidden via CSS
 // off the button's aria-pressed — the Checkbox render-all-glyphs rule.
-const iconReply = fs.readFileSync(path.join(root, "assets/icons/material-filled/reply.svg"), "utf8").replace("<svg ", '<svg class="thread-item-inbox__reply" ');
 const iconFlagOutlined = fs.readFileSync(path.join(root, "assets/icons/material-outlined/flag.svg"), "utf8").replace("<svg ", '<svg class="thread-item-inbox__flag-outlined" ');
 const iconFlagFilled = fs.readFileSync(path.join(root, "assets/icons/material-filled/flag.svg"), "utf8").replace("<svg ", '<svg class="thread-item-inbox__flag-filled" ');
 const flagButton = (flagged) => `<button class="thread-item-inbox__flag-btn" type="button" aria-pressed="${flagged}" aria-label="Flag thread">${iconFlagOutlined}${iconFlagFilled}</button>`;
@@ -138,6 +137,7 @@ const badgePaddingX = px(resolve(badgeSm.paddingX.$value));
 const badgeLabelType = resolveToken(badgeSm.label);
 const badgeTint = (role) => ({ bg: refPath(badge.role[role].tint.bg.$value), text: refPath(badge.role[role].tint.text.$value) });
 const badgeDangerTint = badgeTint("danger");
+const badgeSuccessTint = badgeTint("success");
 const badgeWarningTint = badgeTint("warning");
 const badgeNeutralTint = badgeTint("neutral");
 
@@ -161,7 +161,7 @@ const css = `${rootVars}
 .thread-item-inbox__subject { ${typoCss(subjectType)} }
 .thread-item-inbox__preview-row { display: flex; align-items: center; justify-content: space-between; gap: ${px(resolve("dim.2"))}; }
 .thread-item-inbox__preview { flex: 1; min-width: 0; ${typoCss(inboxPreviewType)} white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.thread-item-inbox__reply { flex-shrink: 0; width: ${px(resolve(inbox.reply.iconSize.$value))}; height: ${px(resolve(inbox.reply.iconSize.$value))}; color: ${cv(refPath(inbox.reply.color.$value))}; }
+.thread-item-inbox__reply { flex-shrink: 0; }
 .thread-item-inbox__flag-btn { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; border: none; background: none; padding: ${px(resolve("dim.1"))}; margin: -${px(resolve("dim.1"))} 0; border-radius: ${px(resolve("radius.xs"))}; cursor: pointer; color: ${cv(refPath(inbox.flag.color.$value))}; }
 .thread-item-inbox__flag-btn svg { width: ${inboxFlagSize}; height: ${inboxFlagSize}; display: block; }
 .thread-item-inbox__flag-btn:hover { background: ${cv("fill.neutralHover")}; }
@@ -183,6 +183,7 @@ ${inboxStateCss("read")}
 .badge--role-danger { background: ${cv(badgeDangerTint.bg)}; color: ${cv(badgeDangerTint.text)}; }
 .badge--role-warning { background: ${cv(badgeWarningTint.bg)}; color: ${cv(badgeWarningTint.text)}; }
 .badge--role-neutral { background: ${cv(badgeNeutralTint.bg)}; color: ${cv(badgeNeutralTint.text)}; }
+.badge--role-success { background: ${cv(badgeSuccessTint.bg)}; color: ${cv(badgeSuccessTint.text)}; }
 
 .avatar { box-sizing: border-box; position: relative; display: inline-flex; flex-shrink: 0; align-items: center; justify-content: center; overflow: hidden; border-radius: ${avatarRadius}; width: ${avatarDiameter}; height: ${avatarDiameter}; font-family: ${cv("family.sans")}; user-select: none; }
 .avatar__initials { text-transform: uppercase; ${typoCss(avatarInitialsType)} }
@@ -212,7 +213,7 @@ function threadInboxItemMarkup({ department, sender, time, subject, preview, exp
         <div class="thread-item-inbox__subject">${subject}</div>
         <div class="thread-item-inbox__preview-row">
           <span class="thread-item-inbox__preview">${preview}</span>
-          ${replies ? iconReply : ""}
+          ${replies ? `<span class="badge badge--role-success thread-item-inbox__reply">Replied</span>` : ""}
           ${flagButton(flagged)}
         </div>
         ${expires ? `<div class="thread-item-inbox__expires">${expires}</div>` : ""}
@@ -256,7 +257,7 @@ function inboxStories() {
     {
       title: "replyable",
       html: threadInboxItemMarkup({ department: "Office of the Registrar", time: "9:15 AM", subject: "Office of the Registrar Message", preview: "Your requested transcript is attached bel…", state: "read", replies: true }),
-      note: "The small reply icon on the preview line = this thread accepts replies; absence = announcement / replies closed. Affirmative one-way indicator, per 2026-07-26 client feedback — users want to know before opening. The preview simply crops a little earlier to make room.",
+      note: "A real Badge (sm, success tint — pale green bg, active green text) labeled \"Replied\" on the preview line = this thread accepts replies; absence = announcement / replies closed. v2: replaced the muted reply icon, which read gray and unclear. The preview simply crops a little earlier to make room.",
     },
     {
       title: "flagged",
@@ -422,7 +423,7 @@ const html = `<!doctype html>
       <div class="row"><b>unread / read</b><span>Every row is in exactly one of two states: <code class="tok">unread</code> (surface.default bg, semibold text.default identity/subject, text.secondary preview) or <code class="tok">read</code> (surface.dim bg — a semantic role added for exactly this — normal-weight text.secondary identity/subject, text.muted preview). Clicking a row in the demo marks it read for real.</span></div>
       <div class="row"><b>Flag toggle</b><span>A real per-thread importance toggle: outlined <code class="tok">icon.muted</code> flag when off, filled <code class="tok">icon.warning</code> flag when on, swapped via aria-pressed. Because the row nests an interactive element, the row itself is a <code class="tok">&lt;div role="button" tabindex="0"&gt;</code> — a real &lt;button&gt; can't nest another one, the same resolution Attachment's idle shape uses.</span></div>
       <div class="row"><b>Mixed sender</b><span>A thread's sender is a department (announcements) OR a person — "Ava Robinson · English Dept": the person leads in identity's semibold, the department follows in <code class="tok">identitySecondary</code> (normal, muted). The Avatar keys off whichever name leads. Added 2026-07-26 — department-only senders read impersonal.</span></div>
-      <div class="row"><b>Reply indicator</b><span>A small muted reply icon on the preview line marks threads that accept replies (absence = replies closed) — users want to know before opening. Inside the thread view the same fact shows as the Composer being replaced by a quiet closed-replies pill.</span></div>
+      <div class="row"><b>Reply indicator</b><span>A real Badge (sm, <code class="tok">role=success</code> tint) labeled "Replied" on the preview line marks threads that accept replies (absence = replies closed) — users want to know before opening. Inside the thread view the same fact shows as the Composer being replaced by a quiet closed-replies pill.</span></div>
       <div class="row"><b>Identity avatar</b><span>A real Avatar (sm, resolved from avatar.tokens.json), keyed off the leading sender name (person or department) — Avatar's own hash(name) % 8 identity-color logic.</span></div>
       <div class="row"><b>Expires uses Badge</b><span>A real Badge (sm, tint) on its own left-aligned row under the preview — warning (soon), danger (expired) or neutral (far-off, excluded from "expires soon" filters).</span></div>
     </div>

@@ -122,7 +122,7 @@ const colorPaths = [
   "icon.default", "icon.secondary", "icon.muted", "icon.onFill", "icon.primary", "icon.warning",
   "fill.primary", "fill.primaryHover", "fill.primaryActive",
   "fill.neutral", "fill.neutralHover", "fill.neutralActive",
-  "bg.primary", "bg.neutral", "bg.warning", "text.warning", "bg.danger", "text.danger", "status.success",
+  "bg.primary", "bg.neutral", "bg.warning", "text.warning", "bg.danger", "text.danger", "bg.success", "text.success", "status.success",
   ...usedHues.flatMap((h) => [`avatar.${h}.bg`, `avatar.${h}.text`]),
 ];
 const colorValue = Object.fromEntries(colorPaths.map((p) => [p, resolve(p)]));
@@ -140,7 +140,7 @@ const iconCheckmark = iconOf("check", "listbox__checkmark");
 const iconCbCheck = iconOf("check", "listbox__cb-icon");
 const iconFlagOutlined = fs.readFileSync(path.join(root, "assets/icons/material-outlined/flag.svg"), "utf8").replace("<svg ", '<svg class="thread-item-inbox__flag-outlined" ');
 const iconFlagFilled = fs.readFileSync(path.join(root, "assets/icons/material-filled/flag.svg"), "utf8").replace("<svg ", '<svg class="thread-item-inbox__flag-filled" ');
-const iconReply = fs.readFileSync(path.join(root, "assets/icons/material-filled/reply.svg"), "utf8").replace("<svg ", '<svg class="thread-item-inbox__reply" ');
+
 const iconBack = iconOf("arrow_back", "btn__icon");
 const iconPrint = iconOf("print", "btn__icon");
 const iconAttach = iconOf("attach_file", "composer__icon");
@@ -299,6 +299,7 @@ const badgeWarningTint = badgeTint("warning");
 const badgeDangerTint = badgeTint("danger");
 const badgeNeutralTint = badgeTint("neutral");
 const badgePrimaryTint = badgeTint("primary");
+const badgeSuccessTint = badgeTint("success");
 
 // ---- Avatar (base for list rows, sm for sender rows — the 2026-07-24
 // sender-row rebalance: 40px next to one small text line read top-heavy) ----
@@ -463,7 +464,7 @@ const componentCss = `/* ---- component recipes, resolved from each component's 
 .thread-item-inbox__subject { ${typoCss(tliSubjectType)} }
 .thread-item-inbox__preview-row { display: flex; align-items: center; justify-content: space-between; gap: ${px(resolve("dim.2"))}; }
 .thread-item-inbox__preview { flex: 1; min-width: 0; color: ${cv("text.muted")}; ${typoCss(inboxPreviewType)} white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.thread-item-inbox__reply { flex-shrink: 0; width: ${px(resolve(inbox.reply.iconSize.$value))}; height: ${px(resolve(inbox.reply.iconSize.$value))}; color: ${cv(refPath(inbox.reply.color.$value))}; }
+.thread-item-inbox__reply { flex-shrink: 0; }
 .thread-item-inbox[hidden] { display: none; }
 .thread-item-inbox__flag-btn { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; border: none; background: none; padding: ${px(resolve("dim.1"))}; margin: -${px(resolve("dim.1"))} 0; border-radius: ${px(resolve("radius.xs"))}; cursor: pointer; color: ${cv(refPath(inbox.flag.color.$value))}; }
 .thread-item-inbox__flag-btn svg { width: ${px(resolve(inbox.flag.iconSize.$value))}; height: ${px(resolve(inbox.flag.iconSize.$value))}; display: block; }
@@ -486,6 +487,7 @@ ${inboxStateCss("read")}
 .badge--role-danger { background: ${cv(badgeDangerTint.bg)}; color: ${cv(badgeDangerTint.text)}; }
 .badge--role-neutral { background: ${cv(badgeNeutralTint.bg)}; color: ${cv(badgeNeutralTint.text)}; }
 .badge--role-primary { background: ${cv(badgePrimaryTint.bg)}; color: ${cv(badgePrimaryTint.text)}; }
+.badge--role-success { background: ${cv(badgeSuccessTint.bg)}; color: ${cv(badgeSuccessTint.text)}; }
 
 .avatar { box-sizing: border-box; position: relative; display: inline-flex; flex-shrink: 0; align-items: center; justify-content: center; overflow: hidden; border-radius: ${avatarRadius}; width: ${avatarDiameter}; height: ${avatarDiameter}; font-family: ${cv("family.sans")}; user-select: none; }
 .avatar__initials { text-transform: uppercase; ${typoCss(avatarInitialsType)} }
@@ -893,7 +895,7 @@ function rowMarkup(t, idx) {
           <div class="thread-item-inbox__subject">${t.subject}</div>
           <div class="thread-item-inbox__preview-row">
             <span class="thread-item-inbox__preview">${t.preview}</span>
-            ${t.replies ? iconReply : ""}
+            ${t.replies ? `<span class="badge badge--sm badge--role-success thread-item-inbox__reply">Replied</span>` : ""}
             <button class="thread-item-inbox__flag-btn" type="button" aria-pressed="${t.flagged ? "true" : "false"}" aria-label="Flag thread">${iconFlagOutlined}${iconFlagFilled}</button>
           </div>
           <div class="thread-item-inbox__expires${t.expires ? "" : " thread-item-inbox__expires--scope-only"}">${badges}</div>
