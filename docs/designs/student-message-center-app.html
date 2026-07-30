@@ -40,6 +40,7 @@
   --tok-bg-success: #acffc2;
   --tok-text-success: #057e3f;
   --tok-status-success: #0a994e;
+  --tok-surface-overlay: rgba(21, 25, 30, 0.5);
   --tok-avatar-teal-bg: #88fffe;
   --tok-avatar-teal-text: #057878;
   --tok-avatar-orange-bg: #ffe1d5;
@@ -245,6 +246,41 @@
 
 .separator { border: none; border-top: 1px solid var(--tok-border-default); margin: 0; }
 
+.btn--primary.btn--base { height: 40px; padding: 0 12px; gap: 8px; font-weight: 600; font-size: 14px; line-height: 1.4; }
+.btn--primary.btn--base .btn__icon { width: 20px; height: 20px; }
+.btn--primary.btn--lg { height: 48px; padding: 0 16px; gap: 8px; font-weight: 600; font-size: 16px; line-height: 1.4; }
+.btn--primary.btn--lg .btn__icon { width: 24px; height: 24px; }
+.btn--ghost.btn--sm.btn--icon-only { width: 32px; padding: 0; }
+
+.select { display: inline-flex; align-items: center; box-sizing: border-box; background: var(--tok-surface-sunken); border: 1px solid var(--tok-border-default); border-radius: 8px; font-family: var(--tok-family-sans); cursor: pointer; text-align: left; }
+.select--base { height: 40px; padding: 0 12px; gap: 8px; }
+.select--base .select__chevron { width: 20px; height: 20px; }
+.select__chevron { flex-shrink: 0; margin-left: auto; color: var(--tok-icon-default); }
+.select__stack { display: flex; flex-direction: column; justify-content: center; flex: 1; min-width: 0; gap: 0px; }
+.select__label { color: var(--tok-text-muted); font-weight: 400; font-size: 12px; line-height: 1.2; }
+.select__value { color: var(--tok-text-default); font-weight: 400; font-size: 16px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.select:hover { border-color: var(--tok-border-strong); }
+.select:focus-visible { outline: none; border-color: var(--tok-border-focus); }
+
+/* compose dialog — Modal's own recipe (native <dialog> + showModal), fields
+   carry Input's recipe; the textarea min-height is a layout literal */
+.mc-compose { width: 384px; max-width: calc(100vw - 32px); border: none; padding: 0; border-radius: 24px; background: var(--tok-surface-default); box-shadow: 0px 8px 24px -2px rgba(21, 25, 30, 0.16); font-family: var(--tok-family-sans); }
+.mc-compose::backdrop { background: var(--tok-surface-overlay); }
+.mc-compose__header { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 16px 24px; border-bottom: 1px solid var(--tok-border-default); }
+.mc-compose__title { margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 14px; line-height: 1.4; }
+.mc-compose__body { display: flex; flex-direction: column; gap: 12px; padding: 24px; }
+.mc-compose__body .select { display: flex; width: 100%; }
+.mc-compose__input { box-sizing: border-box; width: 100%; height: 40px; padding: 0 12px; border: 1px solid var(--tok-border-default); border-radius: 8px; background: var(--tok-surface-sunken); color: var(--tok-text-default); font-weight: 400; font-size: 16px; line-height: 1.2; font-family: var(--tok-family-sans); outline: none; }
+.mc-compose__textarea { box-sizing: border-box; width: 100%; min-height: 96px; padding: 8px 12px; border: 1px solid var(--tok-border-default); border-radius: 8px; background: var(--tok-surface-sunken); color: var(--tok-text-default); font-weight: 400; font-size: 16px; line-height: 1.2; font-family: var(--tok-family-sans); outline: none; resize: vertical; }
+.mc-compose__input::placeholder, .mc-compose__textarea::placeholder { color: var(--tok-text-muted); }
+.mc-compose__input:hover, .mc-compose__textarea:hover { border-color: var(--tok-border-strong); }
+.mc-compose__input:focus, .mc-compose__textarea:focus { border-color: var(--tok-border-focus); }
+.mc-compose__footer { display: flex; justify-content: flex-end; gap: 8px; padding: 16px 24px; border-top: 1px solid var(--tok-border-default); }
+.mc-compose[open] { opacity: 1; transform: translateY(0); transition: opacity 0.18s ease, transform 0.18s ease; }
+@starting-style {
+  .mc-compose[open] { opacity: 0; transform: translateY(8px); }
+}
+
 .empty-state { box-sizing: border-box; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; padding: 24px; font-family: var(--tok-family-sans); }
 .empty-state__text { background: var(--tok-bg-neutral); color: var(--tok-text-secondary); border-radius: 999px; padding: 8px 16px; font-weight: 400; font-size: 14px; line-height: 1.4; text-align: center; }
 
@@ -262,14 +298,18 @@
 html, body { height: 100%; }
 body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-family-sans); color: var(--tok-text-default); }
 .mc { height: 100dvh; display: flex; flex-direction: column; }
-.mc__topbar { flex-shrink: 0; padding: 12px 16px; background: var(--tok-surface-default); border-bottom: 1px solid var(--tok-border-default); }
+.mc__topbar { flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; background: var(--tok-surface-default); border-bottom: 1px solid var(--tok-border-default); }
+/* New message entry point: floating pill over the list on mobile, a regular
+   topbar button on every split view (>=768) */
+.mc-topbar-new { display: none; }
+.mc-fab { position: absolute; right: 16px; bottom: 16px; border-radius: 999px; box-shadow: 0px 4px 16px 0px rgba(21, 25, 30, 0.12); }
 /* on mobile an open thread takes the whole screen — the app's own
    "Message Center" topbar leaves, the thread bar (Back …) is the header */
 .mc--thread-open .mc__topbar { display: none; }
 .mc__topbar h1 { margin: 0; color: var(--tok-text-default); font-weight: 700; font-size: 20px; line-height: 1.2; }
 .mc__body { flex: 1; display: flex; min-height: 0; }
 
-.mc__rail { flex: 1; min-width: 0; display: flex; flex-direction: column; min-height: 0; }
+.mc__rail { position: relative; flex: 1; min-width: 0; display: flex; flex-direction: column; min-height: 0; }
 .mc__reading { display: none; flex: 1; min-width: 0; flex-direction: column; min-height: 0; }
 .mc--thread-open .mc__rail { display: none; }
 .mc--thread-open .mc__reading { display: flex; }
@@ -297,6 +337,8 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
    stacked as a single combined result set, not two half-height panes each
    with its own scrollbar */
 .mc-rail__lists { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; }
+/* mobile: room to scroll the last row clear of the floating New message pill */
+.mc-rail__lists { padding-bottom: 72px; }
 .mc-list { display: flex; flex-direction: column; }
 .mc-list[hidden] { display: none; }
 .mc-rail__count[hidden] { display: none; }
@@ -337,7 +379,10 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 @media (min-width: 768px) {
   .mc__rail, .mc--thread-open .mc__rail { display: flex; flex: none; width: 320px; border-right: 1px solid var(--tok-border-default); }
   .mc__reading { display: flex; }
-  .mc--thread-open .mc__topbar { display: block; }
+  .mc--thread-open .mc__topbar { display: flex; }
+  .mc-topbar-new { display: inline-flex; }
+  .mc-fab { display: none; }
+  .mc-rail__lists { padding-bottom: 0; }
   .mc-thread__back { display: none; }
   /* subject shares the row with the actions on every split view — a long
      subject simply wraps to a second line instead of dropping below the
@@ -356,7 +401,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 </head>
 <body>
 <div class="mc">
-  <header class="mc__topbar"><h1>Message Center</h1></header>
+  <header class="mc__topbar"><h1>Message Center</h1><button class="btn btn--primary btn--base mc-topbar-new" id="mc-new-desktop" type="button"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>New message</button></header>
   <div class="mc__body">
     <aside class="mc__rail" aria-label="Thread list">
       <div class="mc-rail__topbar">
@@ -584,6 +629,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <div class="empty-state"><span class="empty-state__text" id="mc-rail-empty-text">No threads found</span></div>
         </div>
       </div>
+      <button class="btn btn--primary btn--lg mc-fab" id="mc-new-fab" type="button"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>New message</button>
     </aside>
     <section class="mc__reading" aria-label="Thread">
       <div class="mc-empty" id="mc-empty"><div class="empty-state"><span class="empty-state__text">Choose a Thread</span></div></div>
@@ -977,6 +1023,32 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     </section>
   </div>
 </div>
+<dialog class="mc-compose" id="mc-compose">
+  <header class="mc-compose__header">
+    <h2 class="mc-compose__title">New message</h2>
+    <form method="dialog"><button class="btn btn--ghost btn--sm btn--icon-only" aria-label="Close"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button></form>
+  </header>
+  <div class="mc-compose__body">
+    <button class="select select--base" id="mc-compose-dept" type="button" popovertarget="mc-compose-dept-lb">
+      <span class="select__stack"><span class="select__label">Department</span><span class="select__value" id="mc-compose-dept-value">Choose a department</span></span>
+      <svg class="select__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>
+    </button>
+    <div class="listbox" id="mc-compose-dept-lb" popover>
+      <ul class="listbox__list" role="listbox" aria-label="Department">
+        <li><button class="listbox__option" role="option" aria-selected="false" data-dept="Academic Advising" type="button">Academic Advising<svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li>
+        <li><button class="listbox__option" role="option" aria-selected="false" data-dept="Office of the Registrar" type="button">Office of the Registrar<svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li>
+        <li><button class="listbox__option" role="option" aria-selected="false" data-dept="Financial Aid" type="button">Financial Aid<svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li>
+        <li><button class="listbox__option" role="option" aria-selected="false" data-dept="English Dept" type="button">English Dept<svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li>
+      </ul>
+    </div>
+    <input class="mc-compose__input" id="mc-compose-subject" placeholder="Subject" aria-label="Subject" />
+    <textarea class="mc-compose__textarea" id="mc-compose-message" placeholder="Write your message..." aria-label="Message"></textarea>
+  </div>
+  <footer class="mc-compose__footer">
+    <form method="dialog"><button class="btn btn--secondary btn--base" type="submit">Cancel</button></form>
+    <button class="btn btn--primary btn--base" id="mc-compose-send" type="button">Send</button>
+  </footer>
+</dialog>
 <script>
 (function () {
   var mc = document.querySelector(".mc");
@@ -1286,6 +1358,53 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   // Print
   document.querySelectorAll(".mc-print").forEach(function (btn) {
     btn.addEventListener("click", function () { window.print(); });
+  });
+
+  // New message — FAB (mobile) / topbar button (split views) → Modal compose.
+  // Department reuses the Select-trigger + Listbox composition; Send closes
+  // with a success toast (creating a real thread is out of prototype scope).
+  var composeDlg = document.getElementById("mc-compose");
+  var composeDept = null;
+  var composeDeptValue = document.getElementById("mc-compose-dept-value");
+  var composeDeptTrigger = document.getElementById("mc-compose-dept");
+  var composeDeptLb = document.getElementById("mc-compose-dept-lb");
+  ["mc-new-fab", "mc-new-desktop"].forEach(function (id) {
+    document.getElementById(id).addEventListener("click", function () { composeDlg.showModal(); });
+  });
+  composeDlg.addEventListener("click", function (e) {
+    if (e.target === composeDlg) composeDlg.close();
+  });
+  composeDeptLb.addEventListener("toggle", function (e) {
+    if (e.newState === "open") {
+      var r = composeDeptTrigger.getBoundingClientRect();
+      composeDeptLb.style.position = "fixed";
+      composeDeptLb.style.margin = "0";
+      composeDeptLb.style.top = r.bottom + 4 + "px";
+      composeDeptLb.style.left = r.left + "px";
+      composeDeptLb.style.minWidth = r.width + "px";
+    }
+  });
+  composeDeptLb.querySelectorAll(".listbox__option").forEach(function (opt) {
+    opt.addEventListener("click", function () {
+      composeDeptLb.querySelectorAll(".listbox__option").forEach(function (o) {
+        o.classList.toggle("listbox__option--selected", o === opt);
+        o.setAttribute("aria-selected", o === opt ? "true" : "false");
+      });
+      composeDept = opt.dataset.dept;
+      composeDeptValue.textContent = composeDept;
+      composeDeptLb.hidePopover();
+    });
+  });
+  document.getElementById("mc-compose-send").addEventListener("click", function () {
+    var subject = document.getElementById("mc-compose-subject").value.trim();
+    var message = document.getElementById("mc-compose-message").value.trim();
+    if (!composeDept) { showToast("warning", "Choose a department first"); return; }
+    if (!subject) { showToast("warning", "Add a subject"); return; }
+    if (!message) { showToast("warning", "Write a message"); return; }
+    composeDlg.close();
+    showToast("success", 'Message sent to ' + composeDept);
+    document.getElementById("mc-compose-subject").value = "";
+    document.getElementById("mc-compose-message").value = "";
   });
 
   applyFilter();

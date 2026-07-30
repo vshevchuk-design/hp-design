@@ -41,6 +41,9 @@ const chip = load("tokens/components/chip.tokens.json").component.chip;
 const counter = load("tokens/components/counter.tokens.json").component.counter;
 const emptyState = load("tokens/components/empty-state.tokens.json").component.emptyState;
 const toast = load("tokens/components/toast.tokens.json").component.toast;
+const select = load("tokens/components/select.tokens.json").component.select;
+const input = load("tokens/components/input.tokens.json").component.input;
+const modal = load("tokens/components/modal.tokens.json").component.modal;
 const threadListItem = load("tokens/components/thread-list-item.tokens.json").component.threadListItem;
 const badge = load("tokens/components/badge.tokens.json").component.badge;
 const avatar = load("tokens/components/avatar.tokens.json").component.avatar;
@@ -122,7 +125,7 @@ const colorPaths = [
   "icon.default", "icon.secondary", "icon.muted", "icon.onFill", "icon.primary", "icon.warning",
   "fill.primary", "fill.primaryHover", "fill.primaryActive",
   "fill.neutral", "fill.neutralHover", "fill.neutralActive",
-  "bg.primary", "bg.neutral", "bg.warning", "text.warning", "bg.danger", "text.danger", "bg.success", "text.success", "status.success",
+  "bg.primary", "bg.neutral", "bg.warning", "text.warning", "bg.danger", "text.danger", "bg.success", "text.success", "status.success", "surface.overlay",
   ...usedHues.flatMap((h) => [`avatar.${h}.bg`, `avatar.${h}.text`]),
 ];
 const colorValue = Object.fromEntries(colorPaths.map((p) => [p, resolve(p)]));
@@ -136,6 +139,9 @@ const iconSearchBtn = iconOf("search", "btn__icon");
 const iconClear = iconOf("close", "search__clear");
 const iconChevronDown = iconOf("expand_more", "chip__icon");
 const iconFilter = iconOf("filter_list", "chip__icon");
+const iconEdit = iconOf("edit", "btn__icon");
+const iconChevronSelect = iconOf("expand_more", "select__chevron");
+const iconCloseBtn = iconOf("close", "btn__icon");
 const iconCheckmark = iconOf("check", "listbox__checkmark");
 const iconCbCheck = iconOf("check", "listbox__cb-icon");
 const iconReplied = fs.readFileSync(path.join(root, "assets/icons/material-filled/reply.svg"), "utf8").replace("<svg ", '<svg class="thread-item-inbox__replied" ');
@@ -200,6 +206,57 @@ const toastShadow = resolveToken(toast.shadow);
 const toastShadowCss = `${px(toastShadow.offsetX)} ${px(toastShadow.offsetY)} ${px(toastShadow.blur)} ${px(toastShadow.spread)} ${toastShadow.color}`;
 const toastSuccessIconPath = refPath(toast.role.success.icon.$value);
 const iconToastSuccess = fs.readFileSync(path.join(root, "assets/icons/material-filled/check_circle.svg"), "utf8").replace("<svg ", '<svg class="toast__icon" ');
+
+// ---- Select (base) — the compose dialog's Department trigger; the same
+// closed-trigger + Listbox composition Sort By pioneered ----
+const selectRadius = px(resolve(select.radius.$value));
+const selBase = select.size.base;
+const selectBase = {
+  height: px(resolve(selBase.height.$value)),
+  paddingX: px(resolve(selBase.paddingX.$value)),
+  gap: px(resolve(selBase.gap.$value)),
+  iconSize: px(resolve(selBase.iconSize.$value)),
+  value: resolveToken(selBase.value),
+  label: resolveToken(selBase.label),
+  labelGap: px(resolve(selBase.labelGap.$value)),
+};
+
+// ---- Input (base) — compose subject + message fields (the message field is
+// a textarea carrying the same recipe; its min-height is a layout literal) ----
+const inputRadius = px(resolve(input.radius.$value));
+const inputBase = input.size.base;
+const inputHeight = px(resolve(inputBase.height.$value));
+const inputPaddingX = px(resolve(inputBase.paddingX.$value));
+const inputValueType = resolveToken(inputBase.value);
+
+// ---- Modal — the compose dialog shell, resolved from modal.tokens.json ----
+const mdWidth = px(resolve(modal.width.$value));
+const mdRadius = px(resolve(modal.radius.$value));
+const mdPadding = px(resolve(modal.padding.$value));
+const mdGap = px(resolve(modal.gap.$value));
+const mdBg = refPath(modal.bg.$value);
+const mdOverlay = refPath(modal.overlay.$value);
+const mdDivider = refPath(modal.divider.$value);
+const mdTitleType = resolveToken(get(modal.title.$value));
+const mdTitleColor = refPath(modal.titleColor.$value);
+const mdShadow = resolveToken(modal.shadow);
+const mdShadowCss = `${px(mdShadow.offsetX)} ${px(mdShadow.offsetY)} ${px(mdShadow.blur)} ${px(mdShadow.spread)} ${mdShadow.color}`;
+
+// ---- Button primary base (topbar New message) + lg (mobile FAB) ----
+const btnPrimBase = button.primary.size.base;
+const btnPrimBaseHeight = px(resolve(btnPrimBase.height.$value));
+const btnPrimBasePaddingX = px(resolve(btnPrimBase.paddingX.$value));
+const btnPrimBaseGap = px(resolve(btnPrimBase.gap.$value));
+const btnPrimBaseIconSize = px(resolve(btnPrimBase.iconSize.$value));
+const btnPrimBaseLabelType = resolveToken(get(btnPrimBase.label.$value));
+const btnPrimLg = button.primary.size.lg;
+const btnPrimLgHeight = px(resolve(btnPrimLg.height.$value));
+const btnPrimLgPaddingX = px(resolve(btnPrimLg.paddingX.$value));
+const btnPrimLgGap = px(resolve(btnPrimLg.gap.$value));
+const btnPrimLgIconSize = px(resolve(btnPrimLg.iconSize.$value));
+const btnPrimLgLabelType = resolveToken(get(btnPrimLg.label.$value));
+const fabShadow = resolve("shadow.md");
+const fabShadowCss = `${px(fabShadow.offsetX)} ${px(fabShadow.offsetY)} ${px(fabShadow.blur)} ${px(fabShadow.spread)} ${fabShadow.color}`;
 
 // ---- EmptyState — resolved from its own token file (built 2026-07-24 for
 // exactly this prototype's three empty surfaces) ----
@@ -579,6 +636,41 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
 
 .separator { border: none; border-top: 1px solid ${cv(separatorColor)}; margin: 0; }
 
+.btn--primary.btn--base { height: ${btnPrimBaseHeight}; padding: 0 ${btnPrimBasePaddingX}; gap: ${btnPrimBaseGap}; ${typoCss(btnPrimBaseLabelType)} }
+.btn--primary.btn--base .btn__icon { width: ${btnPrimBaseIconSize}; height: ${btnPrimBaseIconSize}; }
+.btn--primary.btn--lg { height: ${btnPrimLgHeight}; padding: 0 ${btnPrimLgPaddingX}; gap: ${btnPrimLgGap}; ${typoCss(btnPrimLgLabelType)} }
+.btn--primary.btn--lg .btn__icon { width: ${btnPrimLgIconSize}; height: ${btnPrimLgIconSize}; }
+.btn--ghost.btn--sm.btn--icon-only { width: ${btnGhostSmHeight}; padding: 0; }
+
+.select { display: inline-flex; align-items: center; box-sizing: border-box; background: ${cv("surface.sunken")}; border: 1px solid ${cv("border.default")}; border-radius: ${selectRadius}; font-family: ${cv("family.sans")}; cursor: pointer; text-align: left; }
+.select--base { height: ${selectBase.height}; padding: 0 ${selectBase.paddingX}; gap: ${selectBase.gap}; }
+.select--base .select__chevron { width: ${selectBase.iconSize}; height: ${selectBase.iconSize}; }
+.select__chevron { flex-shrink: 0; margin-left: auto; color: ${cv("icon.default")}; }
+.select__stack { display: flex; flex-direction: column; justify-content: center; flex: 1; min-width: 0; gap: ${selectBase.labelGap}; }
+.select__label { color: ${cv("text.muted")}; ${typoCss(selectBase.label)} }
+.select__value { color: ${cv("text.default")}; ${typoCss(selectBase.value)} white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.select:hover { border-color: ${cv("border.strong")}; }
+.select:focus-visible { outline: none; border-color: ${cv("border.focus")}; }
+
+/* compose dialog — Modal's own recipe (native <dialog> + showModal), fields
+   carry Input's recipe; the textarea min-height is a layout literal */
+.mc-compose { width: ${mdWidth}; max-width: calc(100vw - ${px(resolve("dim.8"))}); border: none; padding: 0; border-radius: ${mdRadius}; background: ${cv(mdBg)}; box-shadow: ${mdShadowCss}; font-family: ${cv("family.sans")}; }
+.mc-compose::backdrop { background: ${cv(mdOverlay)}; }
+.mc-compose__header { display: flex; align-items: center; justify-content: space-between; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.4"))} ${mdPadding}; border-bottom: 1px solid ${cv(mdDivider)}; }
+.mc-compose__title { margin: 0; color: ${cv(mdTitleColor)}; ${typoCss(mdTitleType)} }
+.mc-compose__body { display: flex; flex-direction: column; gap: ${mdGap}; padding: ${mdPadding}; }
+.mc-compose__body .select { display: flex; width: 100%; }
+.mc-compose__input { box-sizing: border-box; width: 100%; height: ${inputHeight}; padding: 0 ${inputPaddingX}; border: 1px solid ${cv("border.default")}; border-radius: ${inputRadius}; background: ${cv("surface.sunken")}; color: ${cv("text.default")}; ${typoCss(inputValueType)} font-family: ${cv("family.sans")}; outline: none; }
+.mc-compose__textarea { box-sizing: border-box; width: 100%; min-height: 96px; padding: ${px(resolve("dim.2"))} ${inputPaddingX}; border: 1px solid ${cv("border.default")}; border-radius: ${inputRadius}; background: ${cv("surface.sunken")}; color: ${cv("text.default")}; ${typoCss(inputValueType)} font-family: ${cv("family.sans")}; outline: none; resize: vertical; }
+.mc-compose__input::placeholder, .mc-compose__textarea::placeholder { color: ${cv("text.muted")}; }
+.mc-compose__input:hover, .mc-compose__textarea:hover { border-color: ${cv("border.strong")}; }
+.mc-compose__input:focus, .mc-compose__textarea:focus { border-color: ${cv("border.focus")}; }
+.mc-compose__footer { display: flex; justify-content: flex-end; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.4"))} ${mdPadding}; border-top: 1px solid ${cv(mdDivider)}; }
+.mc-compose[open] { opacity: 1; transform: translateY(0); transition: opacity 0.18s ease, transform 0.18s ease; }
+@starting-style {
+  .mc-compose[open] { opacity: 0; transform: translateY(8px); }
+}
+
 .empty-state { box-sizing: border-box; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; padding: ${esPadding}; font-family: ${cv("family.sans")}; }
 .empty-state__text { background: ${cv(esPillBg)}; color: ${cv(esTextColor)}; border-radius: ${esPillRadius}; padding: ${esPillPaddingY} ${esPillPaddingX}; ${typoCss(esTextType)} text-align: center; }
 
@@ -597,14 +689,18 @@ const layoutCss = `/* ---- mc-* composition layer (app shell) — mobile-first, 
 html, body { height: 100%; }
 body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.sans")}; color: ${cv("text.default")}; }
 .mc { height: 100dvh; display: flex; flex-direction: column; }
-.mc__topbar { flex-shrink: 0; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))}; background: ${cv("surface.default")}; border-bottom: 1px solid ${cv("border.default")}; }
+.mc__topbar { flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: ${px(resolve("dim.3"))}; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))}; background: ${cv("surface.default")}; border-bottom: 1px solid ${cv("border.default")}; }
+/* New message entry point: floating pill over the list on mobile, a regular
+   topbar button on every split view (>=768) */
+.mc-topbar-new { display: none; }
+.mc-fab { position: absolute; right: ${px(resolve("dim.4"))}; bottom: ${px(resolve("dim.4"))}; border-radius: ${px(resolve("radius.full"))}; box-shadow: ${fabShadowCss}; }
 /* on mobile an open thread takes the whole screen — the app's own
    "Message Center" topbar leaves, the thread bar (Back …) is the header */
 .mc--thread-open .mc__topbar { display: none; }
 .mc__topbar h1 { margin: 0; color: ${cv("text.default")}; ${typoCss(titleXlType)} }
 .mc__body { flex: 1; display: flex; min-height: 0; }
 
-.mc__rail { flex: 1; min-width: 0; display: flex; flex-direction: column; min-height: 0; }
+.mc__rail { position: relative; flex: 1; min-width: 0; display: flex; flex-direction: column; min-height: 0; }
 .mc__reading { display: none; flex: 1; min-width: 0; flex-direction: column; min-height: 0; }
 .mc--thread-open .mc__rail { display: none; }
 .mc--thread-open .mc__reading { display: flex; }
@@ -632,6 +728,8 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
    stacked as a single combined result set, not two half-height panes each
    with its own scrollbar */
 .mc-rail__lists { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; }
+/* mobile: room to scroll the last row clear of the floating New message pill */
+.mc-rail__lists { padding-bottom: 72px; }
 .mc-list { display: flex; flex-direction: column; }
 .mc-list[hidden] { display: none; }
 .mc-rail__count[hidden] { display: none; }
@@ -672,7 +770,10 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 @media (min-width: 768px) {
   .mc__rail, .mc--thread-open .mc__rail { display: flex; flex: none; width: 320px; border-right: 1px solid ${cv("border.default")}; }
   .mc__reading { display: flex; }
-  .mc--thread-open .mc__topbar { display: block; }
+  .mc--thread-open .mc__topbar { display: flex; }
+  .mc-topbar-new { display: inline-flex; }
+  .mc-fab { display: none; }
+  .mc-rail__lists { padding-bottom: 0; }
   .mc-thread__back { display: none; }
   /* subject shares the row with the actions on every split view — a long
      subject simply wraps to a second line instead of dropping below the
@@ -1267,6 +1368,53 @@ const appJs = `(function () {
     btn.addEventListener("click", function () { window.print(); });
   });
 
+  // New message — FAB (mobile) / topbar button (split views) → Modal compose.
+  // Department reuses the Select-trigger + Listbox composition; Send closes
+  // with a success toast (creating a real thread is out of prototype scope).
+  var composeDlg = document.getElementById("mc-compose");
+  var composeDept = null;
+  var composeDeptValue = document.getElementById("mc-compose-dept-value");
+  var composeDeptTrigger = document.getElementById("mc-compose-dept");
+  var composeDeptLb = document.getElementById("mc-compose-dept-lb");
+  ["mc-new-fab", "mc-new-desktop"].forEach(function (id) {
+    document.getElementById(id).addEventListener("click", function () { composeDlg.showModal(); });
+  });
+  composeDlg.addEventListener("click", function (e) {
+    if (e.target === composeDlg) composeDlg.close();
+  });
+  composeDeptLb.addEventListener("toggle", function (e) {
+    if (e.newState === "open") {
+      var r = composeDeptTrigger.getBoundingClientRect();
+      composeDeptLb.style.position = "fixed";
+      composeDeptLb.style.margin = "0";
+      composeDeptLb.style.top = r.bottom + 4 + "px";
+      composeDeptLb.style.left = r.left + "px";
+      composeDeptLb.style.minWidth = r.width + "px";
+    }
+  });
+  composeDeptLb.querySelectorAll(".listbox__option").forEach(function (opt) {
+    opt.addEventListener("click", function () {
+      composeDeptLb.querySelectorAll(".listbox__option").forEach(function (o) {
+        o.classList.toggle("listbox__option--selected", o === opt);
+        o.setAttribute("aria-selected", o === opt ? "true" : "false");
+      });
+      composeDept = opt.dataset.dept;
+      composeDeptValue.textContent = composeDept;
+      composeDeptLb.hidePopover();
+    });
+  });
+  document.getElementById("mc-compose-send").addEventListener("click", function () {
+    var subject = document.getElementById("mc-compose-subject").value.trim();
+    var message = document.getElementById("mc-compose-message").value.trim();
+    if (!composeDept) { showToast("warning", "Choose a department first"); return; }
+    if (!subject) { showToast("warning", "Add a subject"); return; }
+    if (!message) { showToast("warning", "Write a message"); return; }
+    composeDlg.close();
+    showToast("success", 'Message sent to ' + composeDept);
+    document.getElementById("mc-compose-subject").value = "";
+    document.getElementById("mc-compose-message").value = "";
+  });
+
   applyFilter();
   updateUnreadCounter();
 })();`;
@@ -1284,7 +1432,7 @@ ${appCss}
 </head>
 <body>
 <div class="mc">
-  <header class="mc__topbar"><h1>Message Center</h1></header>
+  <header class="mc__topbar"><h1>Message Center</h1><button class="btn btn--primary btn--base mc-topbar-new" id="mc-new-desktop" type="button">${iconEdit}New message</button></header>
   <div class="mc__body">
     <aside class="mc__rail" aria-label="Thread list">
       <div class="mc-rail__topbar">
@@ -1335,6 +1483,7 @@ ${appCss}
           <div class="empty-state"><span class="empty-state__text" id="mc-rail-empty-text">No threads found</span></div>
         </div>
       </div>
+      <button class="btn btn--primary btn--lg mc-fab" id="mc-new-fab" type="button">${iconEdit}New message</button>
     </aside>
     <section class="mc__reading" aria-label="Thread">
       <div class="mc-empty" id="mc-empty"><div class="empty-state"><span class="empty-state__text">Choose a Thread</span></div></div>
@@ -1342,6 +1491,29 @@ ${appCss}
     </section>
   </div>
 </div>
+<dialog class="mc-compose" id="mc-compose">
+  <header class="mc-compose__header">
+    <h2 class="mc-compose__title">New message</h2>
+    <form method="dialog"><button class="btn btn--ghost btn--sm btn--icon-only" aria-label="Close">${iconCloseBtn}</button></form>
+  </header>
+  <div class="mc-compose__body">
+    <button class="select select--base" id="mc-compose-dept" type="button" popovertarget="mc-compose-dept-lb">
+      <span class="select__stack"><span class="select__label">Department</span><span class="select__value" id="mc-compose-dept-value">Choose a department</span></span>
+      ${iconChevronSelect}
+    </button>
+    <div class="listbox" id="mc-compose-dept-lb" popover>
+      <ul class="listbox__list" role="listbox" aria-label="Department">
+        ${departments.map((d) => `<li><button class="listbox__option" role="option" aria-selected="false" data-dept="${esc(d)}" type="button">${d}${iconCheckmark}</button></li>`).join("\n        ")}
+      </ul>
+    </div>
+    <input class="mc-compose__input" id="mc-compose-subject" placeholder="Subject" aria-label="Subject" />
+    <textarea class="mc-compose__textarea" id="mc-compose-message" placeholder="Write your message..." aria-label="Message"></textarea>
+  </div>
+  <footer class="mc-compose__footer">
+    <form method="dialog"><button class="btn btn--secondary btn--base" type="submit">Cancel</button></form>
+    <button class="btn btn--primary btn--base" id="mc-compose-send" type="button">Send</button>
+  </footer>
+</dialog>
 <script>
 ${appJs}
 </script>
