@@ -138,6 +138,7 @@ const iconChevronDown = iconOf("expand_more", "chip__icon");
 const iconFilter = iconOf("filter_list", "chip__icon");
 const iconCheckmark = iconOf("check", "listbox__checkmark");
 const iconCbCheck = iconOf("check", "listbox__cb-icon");
+const iconReplied = fs.readFileSync(path.join(root, "assets/icons/material-filled/reply.svg"), "utf8").replace("<svg ", '<svg class="thread-item-inbox__replied" ');
 const iconFlagOutlined = fs.readFileSync(path.join(root, "assets/icons/material-outlined/flag.svg"), "utf8").replace("<svg ", '<svg class="thread-item-inbox__flag-outlined" ');
 const iconFlagFilled = fs.readFileSync(path.join(root, "assets/icons/material-filled/flag.svg"), "utf8").replace("<svg ", '<svg class="thread-item-inbox__flag-filled" ');
 
@@ -463,7 +464,7 @@ const componentCss = `/* ---- component recipes, resolved from each component's 
 .thread-item-inbox__subject { ${typoCss(tliSubjectType)} }
 .thread-item-inbox__preview-row { display: flex; align-items: center; justify-content: space-between; gap: ${px(resolve("dim.2"))}; }
 .thread-item-inbox__preview { flex: 1; min-width: 0; color: ${cv("text.muted")}; ${typoCss(inboxPreviewType)} white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.thread-item-inbox__reply { flex-shrink: 0; }
+.thread-item-inbox__replied { flex-shrink: 0; width: ${px(resolve(inbox.replied.iconSize.$value))}; height: ${px(resolve(inbox.replied.iconSize.$value))}; color: ${cv(refPath(inbox.replied.color.$value))}; }
 .thread-item-inbox[hidden] { display: none; }
 .thread-item-inbox__flag-btn { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; border: none; background: none; padding: ${px(resolve("dim.1"))}; margin: -${px(resolve("dim.1"))} 0; border-radius: ${px(resolve("radius.xs"))}; cursor: pointer; color: ${cv(refPath(inbox.flag.color.$value))}; }
 .thread-item-inbox__flag-btn svg { width: ${px(resolve(inbox.flag.iconSize.$value))}; height: ${px(resolve(inbox.flag.iconSize.$value))}; display: block; }
@@ -747,7 +748,7 @@ function bubbleRow({ role, name, meta, text, attachmentHtml = "" }) {
 // ---- thread data ----
 const threads = [
   {
-    id: "winter", archived: false, unread: true, replies: true,
+    id: "winter", archived: false, unread: true, replies: true, replied: true,
     department: "Academic Advising", date: "12/19/2025", subject: "Winter Intersession",
     preview: "Are you looking to stay on track or get ahead in your degree progress?",
     meta: { Department: "Academic Advising", Status: "Open", Institution: "PeopleSoft University" },
@@ -817,7 +818,7 @@ const threads = [
     ],
   },
   {
-    id: "waiver", archived: false, sender: "Ava Robinson", replies: true,
+    id: "waiver", archived: false, sender: "Ava Robinson", replies: true, replied: true,
     department: "English Dept", date: "03/02/2024", subject: "Requirement Waiver Request",
     preview: "Please submit your waiver request to Enrollment Services.",
     meta: { Department: "English Dept", Status: "Open", Institution: "PeopleSoft University" },
@@ -868,7 +869,7 @@ const threads = [
     ],
   },
   {
-    id: "study", archived: true, sender: "Alexander Robinson", replies: true,
+    id: "study", archived: true, sender: "Alexander Robinson", replies: true, replied: true,
     department: "Academic Advising", date: "06/30/2025", subject: "Study Session",
     preview: "That works for me — I can make that time.",
     meta: { Department: "Academic Advising", Status: "Closed", Institution: "PeopleSoft University" },
@@ -885,6 +886,7 @@ const threads = [
 // while searching, when both lists render as one combined result set.
 function rowMarkup(t, idx) {
   const badges = [
+    t.replies ? `<span class="badge badge--sm badge--role-success">Replies open</span>` : "",
     t.expires ? `<span class="badge badge--sm badge--role-${t.expires.role}">${t.expires.label}</span>` : "",
     `<span class="badge badge--sm badge--role-${t.archived ? "neutral" : "primary"} thread-item-inbox__scope">${t.archived ? "Archived" : "Inbox"}</span>`,
   ].join("");
@@ -899,10 +901,10 @@ function rowMarkup(t, idx) {
           <div class="thread-item-inbox__subject">${t.subject}</div>
           <div class="thread-item-inbox__preview-row">
             <span class="thread-item-inbox__preview">${t.preview}</span>
-            ${t.replies && !t.unread ? `<span class="badge badge--sm badge--role-success thread-item-inbox__reply">Replied</span>` : ""}
+            ${t.replied && !t.unread ? iconReplied : ""}
             <button class="thread-item-inbox__flag-btn" type="button" aria-pressed="${t.flagged ? "true" : "false"}" aria-label="Flag thread">${iconFlagOutlined}${iconFlagFilled}</button>
           </div>
-          <div class="thread-item-inbox__expires${t.expires ? "" : " thread-item-inbox__expires--scope-only"}">${badges}</div>
+          <div class="thread-item-inbox__expires${t.expires || t.replies ? "" : " thread-item-inbox__expires--scope-only"}">${badges}</div>
         </div>
       </div>`;
 }

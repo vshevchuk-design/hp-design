@@ -125,6 +125,7 @@ function typoCss(t) {
 
 // Flag is a real toggle: both glyphs always in the DOM, shown/hidden via CSS
 // off the button's aria-pressed — the Checkbox render-all-glyphs rule.
+const iconReplied = fs.readFileSync(path.join(root, "assets/icons/material-filled/reply.svg"), "utf8").replace("<svg ", '<svg class="thread-item-inbox__replied" ');
 const iconFlagOutlined = fs.readFileSync(path.join(root, "assets/icons/material-outlined/flag.svg"), "utf8").replace("<svg ", '<svg class="thread-item-inbox__flag-outlined" ');
 const iconFlagFilled = fs.readFileSync(path.join(root, "assets/icons/material-filled/flag.svg"), "utf8").replace("<svg ", '<svg class="thread-item-inbox__flag-filled" ');
 const flagButton = (flagged) => `<button class="thread-item-inbox__flag-btn" type="button" aria-pressed="${flagged}" aria-label="Flag thread">${iconFlagOutlined}${iconFlagFilled}</button>`;
@@ -160,7 +161,7 @@ const css = `${rootVars}
 .thread-item-inbox__subject { ${typoCss(subjectType)} }
 .thread-item-inbox__preview-row { display: flex; align-items: center; justify-content: space-between; gap: ${px(resolve("dim.2"))}; }
 .thread-item-inbox__preview { flex: 1; min-width: 0; ${typoCss(inboxPreviewType)} white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.thread-item-inbox__reply { flex-shrink: 0; }
+.thread-item-inbox__replied { flex-shrink: 0; width: ${px(resolve(inbox.replied.iconSize.$value))}; height: ${px(resolve(inbox.replied.iconSize.$value))}; color: ${cv(refPath(inbox.replied.color.$value))}; }
 .thread-item-inbox__flag-btn { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; border: none; background: none; padding: ${px(resolve("dim.1"))}; margin: -${px(resolve("dim.1"))} 0; border-radius: ${px(resolve("radius.xs"))}; cursor: pointer; color: ${cv(refPath(inbox.flag.color.$value))}; }
 .thread-item-inbox__flag-btn svg { width: ${inboxFlagSize}; height: ${inboxFlagSize}; display: block; }
 .thread-item-inbox__flag-btn:hover { background: ${cv("fill.neutralHover")}; }
@@ -198,7 +199,7 @@ function expiresBadge(label, role) {
 // The row is a <div role="button"> (not a <button>) — it contains a genuinely
 // interactive child (the flag toggle), and a real button can't nest another
 // one; same resolution Attachment's idle shape uses.
-function threadInboxItemMarkup({ department, sender, time, subject, preview, expires, state = "read", selected = false, flagged = false, replies = false }) {
+function threadInboxItemMarkup({ department, sender, time, subject, preview, expires, state = "read", selected = false, flagged = false, replies = false, replied = false }) {
   const identity = sender ? `${sender} · ${department}` : department;
   return `<div class="thread-item-inbox thread-item-inbox--${state}${selected ? " thread-item-inbox--selected" : ""}" role="button" tabindex="0">
       ${inboxAvatarMarkup(sender || department)}
@@ -210,10 +211,10 @@ function threadInboxItemMarkup({ department, sender, time, subject, preview, exp
         <div class="thread-item-inbox__subject">${subject}</div>
         <div class="thread-item-inbox__preview-row">
           <span class="thread-item-inbox__preview">${preview}</span>
-          ${replies && state !== "unread" ? `<span class="badge badge--role-success thread-item-inbox__reply">Replied</span>` : ""}
+          ${replied && state !== "unread" ? iconReplied : ""}
           ${flagButton(flagged)}
         </div>
-        ${expires ? `<div class="thread-item-inbox__expires">${expires}</div>` : ""}
+        ${expires || replies ? `<div class="thread-item-inbox__expires">${replies ? `<span class="badge badge--role-success">Replies open</span>` : ""}${expires || ""}</div>` : ""}
       </div>
     </div>`;
 }
