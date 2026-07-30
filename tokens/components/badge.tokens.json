@@ -2,12 +2,21 @@
   "component": {
     "badge": {
       "$description": "Non-interactive display pill — status/expiry indicators (Message Center) and generic tags/labels (any other product surface). Two independent axes on top of size: 'role' (5 meaningful states — neutral/primary/success/warning/danger, reuses the same bg.*/fill.*/text.* semantic roles Button/Card/Menu already use) and 'color' (10 decorative hues for generic tagging, unrelated to status meaning — see tokens/semantic/color.tokens.json's new 'tag' group). A consumer picks role OR color, never both. Both axes support 'tint' (pale bg + colored text, the original look) and 'solid' (saturated bg + text.onFill) fill styles. Split deliberately from Chip (not yet built, the interactive filter-toggle sibling) — status/tag pill vs. checkbox-like toggle are different ARIA roles, same reasoning as the Menu/Listbox split.",
-      "radius": { "$type": "dimension", "$value": "{radius.full}" },
+      "radius": {
+        "$type": "dimension",
+        "$value": "{radius.full}"
+      },
       "size": {
-        "$description": "Height/paddingX/label ladder deliberately mirrors Counter's own sm/base/lg (dim.4/5/6 height, size.xs/sm/base label) — resolved from Counter's real values, not re-guessed — so the two small-pill components sit at identical heights when they appear side by side (e.g. a Badge next to a Counter in a list row).",
+        "$description": "Height/paddingX/label ladder deliberately mirrors Counter's own sm/base/lg (dim.4/5/6 height, size.xs/sm/base label) — resolved from Counter's real values, not re-guessed — so the two small-pill components sit at identical heights when they appear side by side (e.g. a Badge next to a Counter in a list row). 2026-07-30: paddingX bumped to a flat dim.2 (8px) at every size per explicit feedback (4px read cramped on the Message Center badges) — this deliberately diverges from Counter's tighter ladder: Counter hugs a number inside a button, Badge carries words on open surfaces and needs the breathing room.",
         "sm": {
-          "height": { "$type": "dimension", "$value": "{dim.4}" },
-          "paddingX": { "$type": "dimension", "$value": "{dim.1}" },
+          "height": {
+            "$type": "dimension",
+            "$value": "{dim.4}"
+          },
+          "paddingX": {
+            "$type": "dimension",
+            "$value": "{dim.2}"
+          },
           "label": {
             "$type": "typography",
             "$value": {
@@ -20,8 +29,14 @@
           }
         },
         "base": {
-          "height": { "$type": "dimension", "$value": "{dim.5}" },
-          "paddingX": { "$type": "dimension", "$value": "{dim.1_5}" },
+          "height": {
+            "$type": "dimension",
+            "$value": "{dim.5}"
+          },
+          "paddingX": {
+            "$type": "dimension",
+            "$value": "{dim.2}"
+          },
           "label": {
             "$type": "typography",
             "$value": {
@@ -34,8 +49,14 @@
           }
         },
         "lg": {
-          "height": { "$type": "dimension", "$value": "{dim.6}" },
-          "paddingX": { "$type": "dimension", "$value": "{dim.1_5}" },
+          "height": {
+            "$type": "dimension",
+            "$value": "{dim.6}"
+          },
+          "paddingX": {
+            "$type": "dimension",
+            "$value": "{dim.2}"
+          },
           "label": {
             "$type": "typography",
             "$value": {
@@ -51,67 +72,337 @@
       "role": {
         "$description": "5 meaningful states. 'neutral' pairs bg.neutral/fill.neutral with text.default rather than a same-role text color (no 'text.neutral' exists — matches the precedent Button secondary already set with fill.neutral+text.default; fill.neutral is too pale for white text to read on).",
         "neutral": {
-          "tint": { "bg": { "$type": "color", "$value": "{bg.neutral}" }, "text": { "$type": "color", "$value": "{text.default}" } },
-          "solid": { "bg": { "$type": "color", "$value": "{fill.neutral}" }, "text": { "$type": "color", "$value": "{text.default}" } }
+          "tint": {
+            "bg": {
+              "$type": "color",
+              "$value": "{bg.neutral}"
+            },
+            "text": {
+              "$type": "color",
+              "$value": "{text.default}"
+            }
+          },
+          "solid": {
+            "bg": {
+              "$type": "color",
+              "$value": "{fill.neutral}"
+            },
+            "text": {
+              "$type": "color",
+              "$value": "{text.default}"
+            }
+          }
         },
         "primary": {
-          "tint": { "bg": { "$type": "color", "$value": "{bg.primary}" }, "text": { "$type": "color", "$value": "{text.primary}" } },
-          "solid": { "bg": { "$type": "color", "$value": "{fill.primary}" }, "text": { "$type": "color", "$value": "{text.onFill}" } }
+          "tint": {
+            "bg": {
+              "$type": "color",
+              "$value": "{bg.primary}"
+            },
+            "text": {
+              "$type": "color",
+              "$value": "{text.primary}"
+            }
+          },
+          "solid": {
+            "bg": {
+              "$type": "color",
+              "$value": "{fill.primary}"
+            },
+            "text": {
+              "$type": "color",
+              "$value": "{text.onFill}"
+            }
+          }
         },
         "success": {
-          "tint": { "bg": { "$type": "color", "$value": "{bg.success}" }, "text": { "$type": "color", "$value": "{text.success}" } },
-          "solid": { "bg": { "$type": "color", "$value": "{fill.success}" }, "text": { "$type": "color", "$value": "{text.onFill}" } }
+          "tint": {
+            "bg": {
+              "$type": "color",
+              "$value": "{bg.success}"
+            },
+            "text": {
+              "$type": "color",
+              "$value": "{text.success}"
+            }
+          },
+          "solid": {
+            "bg": {
+              "$type": "color",
+              "$value": "{fill.success}"
+            },
+            "text": {
+              "$type": "color",
+              "$value": "{text.onFill}"
+            }
+          }
         },
         "warning": {
-          "tint": { "bg": { "$type": "color", "$value": "{bg.warning}" }, "text": { "$type": "color", "$value": "{text.warning}" } },
-          "solid": { "bg": { "$type": "color", "$value": "{fill.warning}" }, "text": { "$type": "color", "$value": "{text.onFill}" } }
+          "tint": {
+            "bg": {
+              "$type": "color",
+              "$value": "{bg.warning}"
+            },
+            "text": {
+              "$type": "color",
+              "$value": "{text.warning}"
+            }
+          },
+          "solid": {
+            "bg": {
+              "$type": "color",
+              "$value": "{fill.warning}"
+            },
+            "text": {
+              "$type": "color",
+              "$value": "{text.onFill}"
+            }
+          }
         },
         "danger": {
-          "tint": { "bg": { "$type": "color", "$value": "{bg.danger}" }, "text": { "$type": "color", "$value": "{text.danger}" } },
-          "solid": { "bg": { "$type": "color", "$value": "{fill.danger}" }, "text": { "$type": "color", "$value": "{text.onFill}" } }
+          "tint": {
+            "bg": {
+              "$type": "color",
+              "$value": "{bg.danger}"
+            },
+            "text": {
+              "$type": "color",
+              "$value": "{text.danger}"
+            }
+          },
+          "solid": {
+            "bg": {
+              "$type": "color",
+              "$value": "{fill.danger}"
+            },
+            "text": {
+              "$type": "color",
+              "$value": "{text.onFill}"
+            }
+          }
         }
       },
       "color": {
         "$description": "10 decorative hues for generic tagging — deliberately a separate axis from 'role' above, never mixed (a consumer sets one or the other). Aliases tokens/semantic/color.tokens.json's new 'tag' group, which itself aliases 4 of these 10 (blue/red/green/amber) straight from the role tokens above — 'color=blue' and 'role=primary' render identically on purpose. gray aliases role=neutral for tint only; its solid is a real filled gray (color.gray.500 + white), not fill.neutral repeated — see tag.gray's own $description. Only orange/violet/magenta/teal/brown are genuinely new leaf colors.",
         "gray": {
-          "tint": { "bg": { "$type": "color", "$value": "{tag.gray.tint.bg}" }, "text": { "$type": "color", "$value": "{tag.gray.tint.text}" } },
-          "solid": { "bg": { "$type": "color", "$value": "{tag.gray.solid.bg}" }, "text": { "$type": "color", "$value": "{tag.gray.solid.text}" } }
+          "tint": {
+            "bg": {
+              "$type": "color",
+              "$value": "{tag.gray.tint.bg}"
+            },
+            "text": {
+              "$type": "color",
+              "$value": "{tag.gray.tint.text}"
+            }
+          },
+          "solid": {
+            "bg": {
+              "$type": "color",
+              "$value": "{tag.gray.solid.bg}"
+            },
+            "text": {
+              "$type": "color",
+              "$value": "{tag.gray.solid.text}"
+            }
+          }
         },
         "blue": {
-          "tint": { "bg": { "$type": "color", "$value": "{tag.blue.tint.bg}" }, "text": { "$type": "color", "$value": "{tag.blue.tint.text}" } },
-          "solid": { "bg": { "$type": "color", "$value": "{tag.blue.solid.bg}" }, "text": { "$type": "color", "$value": "{tag.blue.solid.text}" } }
+          "tint": {
+            "bg": {
+              "$type": "color",
+              "$value": "{tag.blue.tint.bg}"
+            },
+            "text": {
+              "$type": "color",
+              "$value": "{tag.blue.tint.text}"
+            }
+          },
+          "solid": {
+            "bg": {
+              "$type": "color",
+              "$value": "{tag.blue.solid.bg}"
+            },
+            "text": {
+              "$type": "color",
+              "$value": "{tag.blue.solid.text}"
+            }
+          }
         },
         "red": {
-          "tint": { "bg": { "$type": "color", "$value": "{tag.red.tint.bg}" }, "text": { "$type": "color", "$value": "{tag.red.tint.text}" } },
-          "solid": { "bg": { "$type": "color", "$value": "{tag.red.solid.bg}" }, "text": { "$type": "color", "$value": "{tag.red.solid.text}" } }
+          "tint": {
+            "bg": {
+              "$type": "color",
+              "$value": "{tag.red.tint.bg}"
+            },
+            "text": {
+              "$type": "color",
+              "$value": "{tag.red.tint.text}"
+            }
+          },
+          "solid": {
+            "bg": {
+              "$type": "color",
+              "$value": "{tag.red.solid.bg}"
+            },
+            "text": {
+              "$type": "color",
+              "$value": "{tag.red.solid.text}"
+            }
+          }
         },
         "green": {
-          "tint": { "bg": { "$type": "color", "$value": "{tag.green.tint.bg}" }, "text": { "$type": "color", "$value": "{tag.green.tint.text}" } },
-          "solid": { "bg": { "$type": "color", "$value": "{tag.green.solid.bg}" }, "text": { "$type": "color", "$value": "{tag.green.solid.text}" } }
+          "tint": {
+            "bg": {
+              "$type": "color",
+              "$value": "{tag.green.tint.bg}"
+            },
+            "text": {
+              "$type": "color",
+              "$value": "{tag.green.tint.text}"
+            }
+          },
+          "solid": {
+            "bg": {
+              "$type": "color",
+              "$value": "{tag.green.solid.bg}"
+            },
+            "text": {
+              "$type": "color",
+              "$value": "{tag.green.solid.text}"
+            }
+          }
         },
         "amber": {
-          "tint": { "bg": { "$type": "color", "$value": "{tag.amber.tint.bg}" }, "text": { "$type": "color", "$value": "{tag.amber.tint.text}" } },
-          "solid": { "bg": { "$type": "color", "$value": "{tag.amber.solid.bg}" }, "text": { "$type": "color", "$value": "{tag.amber.solid.text}" } }
+          "tint": {
+            "bg": {
+              "$type": "color",
+              "$value": "{tag.amber.tint.bg}"
+            },
+            "text": {
+              "$type": "color",
+              "$value": "{tag.amber.tint.text}"
+            }
+          },
+          "solid": {
+            "bg": {
+              "$type": "color",
+              "$value": "{tag.amber.solid.bg}"
+            },
+            "text": {
+              "$type": "color",
+              "$value": "{tag.amber.solid.text}"
+            }
+          }
         },
         "orange": {
-          "tint": { "bg": { "$type": "color", "$value": "{tag.orange.tint.bg}" }, "text": { "$type": "color", "$value": "{tag.orange.tint.text}" } },
-          "solid": { "bg": { "$type": "color", "$value": "{tag.orange.solid.bg}" }, "text": { "$type": "color", "$value": "{tag.orange.solid.text}" } }
+          "tint": {
+            "bg": {
+              "$type": "color",
+              "$value": "{tag.orange.tint.bg}"
+            },
+            "text": {
+              "$type": "color",
+              "$value": "{tag.orange.tint.text}"
+            }
+          },
+          "solid": {
+            "bg": {
+              "$type": "color",
+              "$value": "{tag.orange.solid.bg}"
+            },
+            "text": {
+              "$type": "color",
+              "$value": "{tag.orange.solid.text}"
+            }
+          }
         },
         "violet": {
-          "tint": { "bg": { "$type": "color", "$value": "{tag.violet.tint.bg}" }, "text": { "$type": "color", "$value": "{tag.violet.tint.text}" } },
-          "solid": { "bg": { "$type": "color", "$value": "{tag.violet.solid.bg}" }, "text": { "$type": "color", "$value": "{tag.violet.solid.text}" } }
+          "tint": {
+            "bg": {
+              "$type": "color",
+              "$value": "{tag.violet.tint.bg}"
+            },
+            "text": {
+              "$type": "color",
+              "$value": "{tag.violet.tint.text}"
+            }
+          },
+          "solid": {
+            "bg": {
+              "$type": "color",
+              "$value": "{tag.violet.solid.bg}"
+            },
+            "text": {
+              "$type": "color",
+              "$value": "{tag.violet.solid.text}"
+            }
+          }
         },
         "magenta": {
-          "tint": { "bg": { "$type": "color", "$value": "{tag.magenta.tint.bg}" }, "text": { "$type": "color", "$value": "{tag.magenta.tint.text}" } },
-          "solid": { "bg": { "$type": "color", "$value": "{tag.magenta.solid.bg}" }, "text": { "$type": "color", "$value": "{tag.magenta.solid.text}" } }
+          "tint": {
+            "bg": {
+              "$type": "color",
+              "$value": "{tag.magenta.tint.bg}"
+            },
+            "text": {
+              "$type": "color",
+              "$value": "{tag.magenta.tint.text}"
+            }
+          },
+          "solid": {
+            "bg": {
+              "$type": "color",
+              "$value": "{tag.magenta.solid.bg}"
+            },
+            "text": {
+              "$type": "color",
+              "$value": "{tag.magenta.solid.text}"
+            }
+          }
         },
         "teal": {
-          "tint": { "bg": { "$type": "color", "$value": "{tag.teal.tint.bg}" }, "text": { "$type": "color", "$value": "{tag.teal.tint.text}" } },
-          "solid": { "bg": { "$type": "color", "$value": "{tag.teal.solid.bg}" }, "text": { "$type": "color", "$value": "{tag.teal.solid.text}" } }
+          "tint": {
+            "bg": {
+              "$type": "color",
+              "$value": "{tag.teal.tint.bg}"
+            },
+            "text": {
+              "$type": "color",
+              "$value": "{tag.teal.tint.text}"
+            }
+          },
+          "solid": {
+            "bg": {
+              "$type": "color",
+              "$value": "{tag.teal.solid.bg}"
+            },
+            "text": {
+              "$type": "color",
+              "$value": "{tag.teal.solid.text}"
+            }
+          }
         },
         "brown": {
-          "tint": { "bg": { "$type": "color", "$value": "{tag.brown.tint.bg}" }, "text": { "$type": "color", "$value": "{tag.brown.tint.text}" } },
-          "solid": { "bg": { "$type": "color", "$value": "{tag.brown.solid.bg}" }, "text": { "$type": "color", "$value": "{tag.brown.solid.text}" } }
+          "tint": {
+            "bg": {
+              "$type": "color",
+              "$value": "{tag.brown.tint.bg}"
+            },
+            "text": {
+              "$type": "color",
+              "$value": "{tag.brown.tint.text}"
+            }
+          },
+          "solid": {
+            "bg": {
+              "$type": "color",
+              "$value": "{tag.brown.solid.bg}"
+            },
+            "text": {
+              "$type": "color",
+              "$value": "{tag.brown.solid.text}"
+            }
+          }
         }
       }
     }

@@ -428,6 +428,10 @@ const componentCss = `/* ---- component recipes, resolved from each component's 
 .chip--checked-outline { background: ${cv(chipToggle.coBg)}; border-color: ${cv(chipToggle.coBorder)}; color: ${cv(chipToggle.coText)}; }
 .chip--checked-outline .chip__icon { color: ${cv(chipToggle.coIcon)}; }
 .chip:focus-visible { outline: ${chipRingWidth} solid ${cv("border.focus")}; outline-offset: ${chipRingOffset}; }
+/* dropdown-chip with a picked value can outgrow the rail — it shrinks
+   instead, and the value truncates with an ellipsis (the chevron stays) */
+.chip--dropdown { flex-shrink: 1; min-width: 0; max-width: 100%; }
+.chip--dropdown .chip__label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 .search { display: inline-flex; align-items: center; box-sizing: border-box; background: ${cv("surface.sunken")}; border: 1px solid ${cv("border.default")}; border-radius: ${searchRadius}; font-family: ${cv("family.sans")}; cursor: text; }
 .search--base { height: ${searchBase.height}; padding: 0 ${searchBase.paddingX}; gap: ${searchBase.gap}; }
@@ -1308,7 +1312,7 @@ ${appCss}
               <span class="listbox__cb-box">${iconCbCheck}</span><span class="listbox__cb-label">Flagged</span></label></li>
           </ul>
         </div>
-        <button class="chip chip--base" type="button" id="mc-dept-chip" popovertarget="mc-dept-listbox" aria-haspopup="listbox"><span id="mc-dept-label">Department</span>${iconChevronDown}</button>
+        <button class="chip chip--base chip--dropdown" type="button" id="mc-dept-chip" popovertarget="mc-dept-listbox" aria-haspopup="listbox"><span class="chip__label" id="mc-dept-label">Department</span>${iconChevronDown}</button>
         <div class="listbox" id="mc-dept-listbox" popover>
           <ul class="listbox__list" role="listbox" aria-label="Filter by department">
             <li><button class="listbox__option listbox__option--selected" role="option" aria-selected="true" data-dept="" type="button">All departments${iconCheckmark}</button></li>

@@ -77,6 +77,10 @@
 .chip--checked-outline { background: var(--tok-bg-primary); border-color: var(--tok-fill-primary); color: var(--tok-text-primary); }
 .chip--checked-outline .chip__icon { color: var(--tok-icon-primary); }
 .chip:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
+/* dropdown-chip with a picked value can outgrow the rail — it shrinks
+   instead, and the value truncates with an ellipsis (the chevron stays) */
+.chip--dropdown { flex-shrink: 1; min-width: 0; max-width: 100%; }
+.chip--dropdown .chip__label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 .search { display: inline-flex; align-items: center; box-sizing: border-box; background: var(--tok-surface-sunken); border: 1px solid var(--tok-border-default); border-radius: 8px; font-family: var(--tok-family-sans); cursor: text; }
 .search--base { height: 40px; padding: 0 12px; gap: 8px; }
@@ -137,7 +141,7 @@
 .thread-item-inbox--selected { background: var(--tok-bg-primary); }
 
 .badge { box-sizing: border-box; display: inline-flex; align-items: center; border-radius: 999px; white-space: nowrap; }
-.badge--sm { height: 16px; padding: 0 4px; font-weight: 600; font-size: 10px; line-height: 1; }
+.badge--sm { height: 16px; padding: 0 8px; font-weight: 600; font-size: 10px; line-height: 1; }
 .badge--role-warning { background: var(--tok-bg-warning); color: var(--tok-text-warning); }
 .badge--role-danger { background: var(--tok-bg-danger); color: var(--tok-text-danger); }
 .badge--role-neutral { background: var(--tok-bg-neutral); color: var(--tok-text-default); }
@@ -380,7 +384,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
               <span class="listbox__cb-box"><svg class="listbox__cb-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="listbox__cb-label">Flagged</span></label></li>
           </ul>
         </div>
-        <button class="chip chip--base" type="button" id="mc-dept-chip" popovertarget="mc-dept-listbox" aria-haspopup="listbox"><span id="mc-dept-label">Department</span><svg class="chip__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+        <button class="chip chip--base chip--dropdown" type="button" id="mc-dept-chip" popovertarget="mc-dept-listbox" aria-haspopup="listbox"><span class="chip__label" id="mc-dept-label">Department</span><svg class="chip__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
         <div class="listbox" id="mc-dept-listbox" popover>
           <ul class="listbox__list" role="listbox" aria-label="Filter by department">
             <li><button class="listbox__option listbox__option--selected" role="option" aria-selected="true" data-dept="" type="button">All departments<svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li>
