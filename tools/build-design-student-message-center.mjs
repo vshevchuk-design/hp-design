@@ -729,6 +729,12 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
    the department itself first (department-only / "both"), then members —
    real Avatar + name/role rows, away members disabled with a neutral away
    Badge. Same trigger + popover composition as the Department select. */
+/* EXPERIMENT (compose only, user call 2026-08-03): lighter field surfaces —
+   surface.dim (gray.50, the lightest grey role) instead of the DS-wide
+   surface.sunken (gray.100) field fill, one step quieter against the white
+   modal. If this wins, the real change belongs in input/select/search
+   state.default.bg at the token level, not here. */
+.mc-compose .select:not(:disabled), .mc-compose .mc-field { background: ${cv("surface.dim")}; }
 /* Select resting state — Input's own float model: before a value exists the
    trigger shows ONLY the placeholder (the field's name) at value size; the
    12px label appears only once populated. The permanent label+placeholder
@@ -1254,15 +1260,14 @@ function toGroupMarkup(deptName) {
         </ul>`;
 }
 const composeToGroups = departments.map(toGroupMarkup).join("\n        ");
-// per-department hint under the To select (shown with its group)
+// per-department hint under the To select — ONLY the all-away dead end gets
+// one (it explains why Send can't enable); an away member needs no prose,
+// its disabled row + away Badge already say it (explicit user call)
 const composeToHints = departments.map((deptName) => {
   const cfg = composePolicies[deptName] || {};
   const members = cfg.members || [];
   if (cfg.policy === "members" && members.every((m) => m.away)) {
     return `<span class="mc-compose__hint" data-to-dept="${esc(deptName)}" hidden>No one at ${deptName} is available right now — please try again later.</span>`;
-  }
-  if (cfg.policy === "both" && members.some((m) => m.away)) {
-    return `<span class="mc-compose__hint" data-to-dept="${esc(deptName)}" hidden>Staff who are away can't receive messages — the department option always can.</span>`;
   }
   return "";
 }).filter(Boolean).join("\n    ");
