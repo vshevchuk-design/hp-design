@@ -84,13 +84,12 @@ const descType = resolveToken(attachment.description);
 const ringWidth = px(resolve(attachment.state.done.ringWidth.$value));
 const ringOffset = px(resolve(attachment.state.done.ringOffset.$value));
 // compact — the pre-send chip density (idle/uploading only)
-const cHeight = px(resolve(attachment.compact.height.$value));
+const cPaddingY = px(resolve(attachment.compact.paddingY.$value));
 const cPaddingX = px(resolve(attachment.compact.paddingX.$value));
 const cGap = px(resolve(attachment.compact.gap.$value));
 const cIconSize = px(resolve(attachment.compact.iconSize.$value));
 const cMaxWidth = px(resolve(attachment.compact.maxWidth.$value));
 const cRowGap = px(resolve(attachment.compact.rowGap.$value));
-const cLabelType = resolveToken(get(attachment.compact.label.$value));
 
 function typoCss(t) {
   return `font-weight: ${t.fontWeight}; font-size: ${px(t.fontSize)}; line-height: ${t.lineHeight};`;
@@ -130,15 +129,13 @@ const css = `${rootVars}
 .attachment--done:focus-visible { outline: ${ringWidth} solid ${cv("border.focus")}; outline-offset: ${ringOffset}; }
 .attachment--done .attachment__action-glyph { color: ${cv("icon.secondary")}; }
 
-/* compact — pre-send chip density (idle/uploading only): 32px, inline icon
-   instead of the media box, one text line, hugs content up to maxWidth;
-   chips sit in a nowrap row with horizontal overflow (a composition
-   container, not a component — the AttachmentGroup precedent) */
-.attachment--compact { height: ${cHeight}; padding: 0 ${cPaddingX}; gap: ${cGap}; max-width: ${cMaxWidth}; flex-shrink: 0; }
+/* compact — pre-send chip density (idle/uploading only): taller-but-narrow,
+   the component's own two-line title/size stack at a 160px max-width, inline
+   16px icon instead of the media box; chips sit in a nowrap row with
+   horizontal overflow (a composition container, not a component — the
+   AttachmentGroup precedent) */
+.attachment--compact { padding: ${cPaddingY} ${cPaddingX}; gap: ${cGap}; max-width: ${cMaxWidth}; flex-shrink: 0; }
 .attachment--compact .attachment__icon { width: ${cIconSize}; height: ${cIconSize}; flex-shrink: 0; }
-.attachment--compact .attachment__content { flex-direction: row; align-items: center; gap: ${cGap}; }
-.attachment--compact .attachment__title { ${typoCss(cLabelType)} }
-.attachment--compact .attachment__description { ${typoCss(cLabelType)} flex-shrink: 0; }
 .attachment--compact .attachment__action { width: 24px; height: 24px; }`;
 
 function storyCard(title, liveHtml, codeHtml, note = "") {
@@ -330,7 +327,7 @@ const html = `<!doctype html>
     <p class="section-desc">base (display) vs. compact (pre-send chip). Compact chips hug content and sit in one nowrap row with horizontal overflow — the row container is a composition, not a component (the AttachmentGroup precedent).</p>
     <div class="story-grid">
       ${storyCard("base", idleUploadingMarkup({ state: "idle" }), idleUploadingMarkup({ state: "idle" }), "The display density — informative, full media box.")}
-      ${storyCard("compact", compactMarkup({}), compactMarkup({}), "32px pre-send chip: inline icon, one text line, title ellipsizes at max-width.")}
+      ${storyCard("compact", compactMarkup({}), compactMarkup({}), "Pre-send chip: inline icon, the same two-line title/size stack, both ellipsizing at the 160px max-width.")}
     </div>
     <div class="usage-preview" style="margin-top:1.5rem;"><div style="display:flex; gap:${cRowGap}; overflow-x:auto;">
       ${compactMarkup({ title: "IMG_2043.jpg", description: "1.8 MB" })}

@@ -247,6 +247,7 @@ const inputValueType = resolveToken(inputBase.value);
 // resting, floated in at 12px on focus or once populated)
 const inputLabelType = resolveToken(inputBase.label);
 const inputLabelGap = px(resolve(inputBase.labelGap.$value));
+const inputLgHeight = px(resolve(input.size.lg.height.$value));
 const inputFocusLabelColor = refPath(input.state.focus.label.$value);
 const inputPopulatedLabelColor = refPath(input.state.populated.label.$value);
 
@@ -280,6 +281,10 @@ const btnPrimLgIconSize = px(resolve(btnPrimLg.iconSize.$value));
 const btnPrimLgLabelType = resolveToken(get(btnPrimLg.label.$value));
 const fabShadow = resolve("shadow.md");
 const fabShadowCss = `${px(fabShadow.offsetX)} ${px(fabShadow.offsetY)} ${px(fabShadow.blur)} ${px(fabShadow.spread)} ${fabShadow.color}`;
+// shadow.sm flipped upward — the thread composer sits over the scrolling
+// messages; a small top shadow makes it read as the layer they slide under
+const composerShadow = resolve("shadow.sm");
+const composerShadowCss = `0 -${px(composerShadow.offsetY)} ${px(composerShadow.blur)} ${px(composerShadow.spread)} ${composerShadow.color}`;
 
 // ---- EmptyState — resolved from its own token file (built 2026-07-24 for
 // exactly this prototype's three empty surfaces) ----
@@ -427,13 +432,12 @@ const attIconSize = px(resolve(attachment.media.iconSize.$value));
 const attTitleType = resolveToken(attachment.title);
 const attDescType = resolveToken(attachment.description);
 // compact — the pre-send chip density both composers use
-const attCompactHeight = px(resolve(attachment.compact.height.$value));
+const attCompactPaddingY = px(resolve(attachment.compact.paddingY.$value));
 const attCompactPaddingX = px(resolve(attachment.compact.paddingX.$value));
 const attCompactGap = px(resolve(attachment.compact.gap.$value));
 const attCompactIconSize = px(resolve(attachment.compact.iconSize.$value));
 const attCompactMaxWidth = px(resolve(attachment.compact.maxWidth.$value));
 const attCompactRowGap = px(resolve(attachment.compact.rowGap.$value));
-const attCompactLabelType = resolveToken(get(attachment.compact.label.$value));
 
 // ---- Bubble ----
 const bubRadius = px(resolve(bubble.radius.$value));
@@ -633,8 +637,12 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
 .bubble-sender__text { margin: 0; }
 .bubble-sender__name { color: ${cv(msgNameColor)}; ${typoCss(msgNameType)} }
 .bubble-sender__meta { color: ${cv("text.muted")}; ${typoCss(msgMetaType)} }
-.bubble { box-sizing: border-box; display: flex; flex-direction: column; gap: ${bubGap}; padding: ${bubPaddingY} ${bubPaddingX}; border-radius: ${bubRadius}; }
-.bubble p { margin: 0; ${typoCss(bubTextType)} white-space: pre-wrap; } /* the composer's Shift+Enter produces real newlines */
+.bubble { box-sizing: border-box; display: flex; flex-direction: column; gap: ${bubGap}; padding: ${bubPaddingY} ${bubPaddingX}; border-radius: ${bubRadius}; min-width: 0; max-width: 100%; }
+.bubble p { margin: 0; ${typoCss(bubTextType)} white-space: pre-wrap; overflow-wrap: anywhere; } /* Shift+Enter produces real newlines; anywhere keeps unbroken runs inside the bubble */
+/* attachments inside a bubble cap at the bubble's own width — the base
+   attachment's 320px max otherwise pokes out of the 75%-capped row */
+.bubble .message__attachments { max-width: 100%; min-width: 0; }
+.bubble .attachment { max-width: 100%; }
 .bubble--self.bubble--tint { background: ${cv("bg.primary")}; color: ${cv("text.default")}; }
 .bubble--other { background: ${cv("surface.default")}; border: 1px solid ${cv("border.default")}; color: ${cv("text.default")}; }
 
@@ -726,7 +734,9 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
 .mc-compose__body { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.4"))}; }
 .mc-compose__body .select { display: flex; width: 100%; flex-shrink: 0; }
 /* Subject / Message — Input's anatomy on real editable controls */
-.mc-field { box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; gap: ${inputLabelGap}; min-height: ${inputHeight}; padding: ${px(resolve("dim.1_5"))} ${inputPaddingX}; border: 1px solid ${cv("border.default")}; border-radius: ${inputRadius}; background: ${cv("surface.dim")}; cursor: text; flex-shrink: 0; }
+/* lg (48px) fixed height, NOT base 40 — the floating label + value stack
+   must fit INSIDE the resting height, or the field visibly grows on focus */
+.mc-field { box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; gap: ${inputLabelGap}; min-height: ${inputLgHeight}; padding: ${px(resolve("dim.1_5"))} ${inputPaddingX}; border: 1px solid ${cv("border.default")}; border-radius: ${inputRadius}; background: ${cv("surface.dim")}; cursor: text; flex-shrink: 0; }
 .mc-field:hover { border-color: ${cv("border.strong")}; }
 .mc-field:focus-within { border-color: ${cv("border.focus")}; }
 .mc-field__label { display: none; color: ${cv(inputPopulatedLabelColor)}; ${typoCss(inputLabelType)} }
@@ -774,11 +784,8 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
 .attachment__action:hover { background: ${cv("fill.neutralHover")}; }
 .attachment__action:active { background: ${cv("fill.neutralActive")}; }
 .attachment__action-glyph { width: 16px; height: 16px; display: block; }
-.attachment--compact { height: ${attCompactHeight}; padding: 0 ${attCompactPaddingX}; gap: ${attCompactGap}; max-width: ${attCompactMaxWidth}; flex-shrink: 0; }
+.attachment--compact { padding: ${attCompactPaddingY} ${attCompactPaddingX}; gap: ${attCompactGap}; max-width: ${attCompactMaxWidth}; flex-shrink: 0; }
 .attachment--compact .attachment__icon { width: ${attCompactIconSize}; height: ${attCompactIconSize}; color: ${cv("icon.secondary")}; flex-shrink: 0; }
-.attachment--compact .attachment__content { flex-direction: row; align-items: center; gap: ${attCompactGap}; }
-.attachment--compact .attachment__title { ${typoCss(attCompactLabelType)} }
-.attachment--compact .attachment__description { ${typoCss(attCompactLabelType)} flex-shrink: 0; }
 .mc-compose__attach-btn { align-self: flex-start; flex-shrink: 0; }
 .mc-compose__footer { flex-shrink: 0; display: flex; justify-content: flex-end; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.4"))} ${mdPadding}; border-top: 1px solid ${cv(mdDivider)}; }
 /* fake keyboard — docs-only scaffolding, NOT a DS component (a device mock,
@@ -917,7 +924,7 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .mc-thread__tags { order: 4; width: 100%; display: flex; align-items: center; flex-wrap: wrap; gap: ${px(resolve("dim.1_5"))} ${px(resolve("dim.2"))}; }
 .mc-thread__meta-line { color: ${cv("text.secondary")}; ${typoCss(bodySmType)} }
 .mc-thread__scroll { flex: 1; overflow-y: auto; padding: ${px(resolve("dim.4"))}; display: flex; flex-direction: column; gap: ${px(resolve("dim.6"))}; }
-.mc-thread__composer { flex-shrink: 0; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))} ${px(resolve("dim.4"))}; }
+.mc-thread__composer { flex-shrink: 0; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))} ${px(resolve("dim.4"))}; background: ${cv("surface.default")}; box-shadow: ${composerShadowCss}; position: relative; }
 /* in-thread composer upgrades: pre-send attachments sit above the field as
    Attachment COMPACT chips (recipe + row container declared with the compose
    dialog's, in the component section); the field itself is a 1-row textarea

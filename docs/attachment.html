@@ -102,15 +102,13 @@
 .attachment--done:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
 .attachment--done .attachment__action-glyph { color: var(--tok-icon-secondary); }
 
-/* compact — pre-send chip density (idle/uploading only): 32px, inline icon
-   instead of the media box, one text line, hugs content up to maxWidth;
-   chips sit in a nowrap row with horizontal overflow (a composition
-   container, not a component — the AttachmentGroup precedent) */
-.attachment--compact { height: 32px; padding: 0 8px; gap: 6px; max-width: 224px; flex-shrink: 0; }
+/* compact — pre-send chip density (idle/uploading only): taller-but-narrow,
+   the component's own two-line title/size stack at a 160px max-width, inline
+   16px icon instead of the media box; chips sit in a nowrap row with
+   horizontal overflow (a composition container, not a component — the
+   AttachmentGroup precedent) */
+.attachment--compact { padding: 4px 8px; gap: 6px; max-width: 160px; flex-shrink: 0; }
 .attachment--compact .attachment__icon { width: 16px; height: 16px; flex-shrink: 0; }
-.attachment--compact .attachment__content { flex-direction: row; align-items: center; gap: 6px; }
-.attachment--compact .attachment__title { font-weight: 400; font-size: 12px; line-height: 1.4; }
-.attachment--compact .attachment__description { font-weight: 400; font-size: 12px; line-height: 1.4; flex-shrink: 0; }
 .attachment--compact .attachment__action { width: 24px; height: 24px; }
 </style>
 </head>
@@ -246,15 +244,13 @@
 .attachment--done:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
 .attachment--done .attachment__action-glyph { color: var(--tok-icon-secondary); }
 
-/* compact — pre-send chip density (idle/uploading only): 32px, inline icon
-   instead of the media box, one text line, hugs content up to maxWidth;
-   chips sit in a nowrap row with horizontal overflow (a composition
-   container, not a component — the AttachmentGroup precedent) */
-.attachment--compact { height: 32px; padding: 0 8px; gap: 6px; max-width: 224px; flex-shrink: 0; }
+/* compact — pre-send chip density (idle/uploading only): taller-but-narrow,
+   the component's own two-line title/size stack at a 160px max-width, inline
+   16px icon instead of the media box; chips sit in a nowrap row with
+   horizontal overflow (a composition container, not a component — the
+   AttachmentGroup precedent) */
+.attachment--compact { padding: 4px 8px; gap: 6px; max-width: 160px; flex-shrink: 0; }
 .attachment--compact .attachment__icon { width: 16px; height: 16px; flex-shrink: 0; }
-.attachment--compact .attachment__content { flex-direction: row; align-items: center; gap: 6px; }
-.attachment--compact .attachment__title { font-weight: 400; font-size: 12px; line-height: 1.4; }
-.attachment--compact .attachment__description { font-weight: 400; font-size: 12px; line-height: 1.4; flex-shrink: 0; }
 .attachment--compact .attachment__action { width: 24px; height: 24px; }</code></pre>
 
     <h2 class="big-section">States</h2>
@@ -415,7 +411,7 @@
       &lt;/span&gt;
       &lt;button class="attachment__action" aria-label="Remove Syllabus.pdf"&gt;&lt;svg class="attachment__action-glyph" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"&gt;&lt;path d="M0 0h24v24H0z" fill="none"/&gt;&lt;path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/&gt;&lt;/svg&gt;&lt;/button&gt;
     &lt;/div&gt;</code></pre>
-        <p class="story-note">32px pre-send chip: inline icon, one text line, title ellipsizes at max-width.</p>
+        <p class="story-note">Pre-send chip: inline icon, the same two-line title/size stack, both ellipsizing at the 160px max-width.</p>
       </div>
     </div>
     <div class="usage-preview" style="margin-top:1.5rem;"><div style="display:flex; gap:6px; overflow-x:auto;">

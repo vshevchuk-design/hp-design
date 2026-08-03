@@ -8,14 +8,13 @@
       "bg": { "$type": "color", "$value": "{surface.dim}" },
       "border": { "$type": "color", "$value": "{border.default}" },
       "compact": {
-        "$description": "Pre-send chip density for the idle/uploading shapes — the composer context (compose dialog + in-thread reply), added 2026-08-03. 32px control height (the sm control scale), inline 16px icon instead of the 40px media box, one text line (title ellipsizes at maxWidth, size stays inline). Chips hug content and sit in ONE nowrap row with horizontal overflow (rowGap) — pre-send files are transient dismissible input, per the Gmail-attachment-chip / messenger-thumbnail-row convention — unlike the informative full-width row a SENT message displays: the done shape deliberately has no compact variant.",
-        "height": { "$type": "dimension", "$value": "{dim.8}" },
+        "$description": "Pre-send chip density for the idle/uploading shapes — the composer context (compose dialog + in-thread reply), added 2026-08-03; reshaped same day per user review from a 32px single-line chip to taller-but-NARROWER: the component's own two-line text stack (12px semibold title over the 10px size line) at a 160px maxWidth, inline 16px icon instead of the 40px media box, 4px vertical padding (~36px tall). Chips hug content and sit in ONE nowrap row with horizontal overflow (rowGap) — pre-send files are transient dismissible input, per the Gmail-attachment-chip / messenger-thumbnail-row convention — unlike the informative full-width row a SENT message displays: the done shape deliberately has no compact variant.",
+        "paddingY": { "$type": "dimension", "$value": "{dim.1}" },
         "paddingX": { "$type": "dimension", "$value": "{dim.2}" },
         "gap": { "$type": "dimension", "$value": "{dim.1_5}" },
         "iconSize": { "$type": "dimension", "$value": "{dim.4}" },
-        "maxWidth": { "$type": "dimension", "$value": "{dim.56}" },
-        "rowGap": { "$type": "dimension", "$value": "{dim.1_5}" },
-        "label": { "$type": "typography", "$value": "{text-style.body-sm}" }
+        "maxWidth": { "$type": "dimension", "$value": "{dim.40}" },
+        "rowGap": { "$type": "dimension", "$value": "{dim.1_5}" }
       },
       "media": {
         "size": { "$type": "dimension", "$value": "{dim.10}" },
