@@ -5,7 +5,7 @@
       "radius": { "$type": "dimension", "$value": "{radius.default}" },
       "field": {
         "$description": "Resolves the exact same semantic values Input/Select/Search already use for their own recessed field, not a new recipe.",
-        "bg": { "$type": "color", "$value": "{surface.sunken}" },
+        "bg": { "$type": "color", "$value": "{surface.dim}" },
         "border": { "$type": "color", "$value": "{border.default}" },
         "borderHover": { "$type": "color", "$value": "{border.strong}" },
         "borderFocus": { "$type": "color", "$value": "{border.focus}" },

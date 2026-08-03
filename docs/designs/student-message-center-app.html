@@ -89,7 +89,7 @@
 .chip--dropdown { flex-shrink: 1; min-width: 0; max-width: 100%; }
 .chip--dropdown .chip__label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-.search { display: inline-flex; align-items: center; box-sizing: border-box; background: var(--tok-surface-sunken); border: 1px solid var(--tok-border-default); border-radius: 8px; font-family: var(--tok-family-sans); cursor: text; }
+.search { display: inline-flex; align-items: center; box-sizing: border-box; background: var(--tok-surface-dim); border: 1px solid var(--tok-border-default); border-radius: 8px; font-family: var(--tok-family-sans); cursor: text; }
 .search--base { height: 40px; padding: 0 12px; gap: 8px; }
 .search--base .search__icon, .search--base .search__clear { width: 20px; height: 20px; }
 .search__icon { flex-shrink: 0; color: var(--tok-icon-default); }
@@ -192,7 +192,7 @@
 .message__attachments { display: flex; flex-direction: column; gap: 6px; }
 .message__cta { margin-top: 4px; align-self: flex-start; }
 
-.attachment { box-sizing: border-box; display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: 8px; background: var(--tok-surface-sunken); border: 1px solid var(--tok-border-default); max-width: 320px; text-decoration: none; }
+.attachment { box-sizing: border-box; display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: 8px; background: var(--tok-surface-dim); border: 1px solid var(--tok-border-default); max-width: 320px; text-decoration: none; }
 .attachment__media { flex-shrink: 0; width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; background: var(--tok-surface-default); }
 .attachment__icon { width: 20px; height: 20px; color: var(--tok-icon-secondary); }
 .attachment__content { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
@@ -212,7 +212,7 @@
 .bubble--other { background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); color: var(--tok-text-default); }
 
 .composer { display: flex; flex-direction: column; gap: 8px; font-family: var(--tok-family-sans); }
-.composer__field { display: flex; align-items: center; gap: 8px; padding: 12px; border-radius: 8px; background: var(--tok-surface-sunken); border: 1px solid var(--tok-border-default); }
+.composer__field { display: flex; align-items: center; gap: 8px; padding: 12px; border-radius: 8px; background: var(--tok-surface-dim); border: 1px solid var(--tok-border-default); }
 .composer__field:hover { border-color: var(--tok-border-strong); }
 .composer__field:focus-within { border-color: var(--tok-border-focus); }
 .composer__input { flex: 1; min-width: 0; border: none; outline: none; background: transparent; color: var(--tok-text-default); font-weight: 400; font-size: 16px; line-height: 1.4; font-family: var(--tok-family-sans); }
@@ -245,6 +245,7 @@
 .btn--ghost .btn__icon { color: var(--tok-icon-secondary); }
 .btn--ghost:hover { background: var(--tok-fill-neutral-hover); }
 .btn--ghost:active { background: var(--tok-fill-neutral-active); }
+.btn--ghost.btn--base { height: 40px; padding: 0 12px; gap: 8px; font-weight: 600; font-size: 14px; line-height: 1.4; }
 .btn--ghost.btn--base.btn--icon-only { width: 40px; height: 40px; padding: 0; }
 .btn--ghost.btn--base.btn--icon-only .btn__icon { width: 20px; height: 20px; }
 .btn--ghost.btn--sm { height: 32px; padding: 0 8px; gap: 8px; font-weight: 600; font-size: 12px; line-height: 1.4; }
@@ -267,7 +268,7 @@
 .btn--primary.btn--lg .btn__icon { width: 24px; height: 24px; }
 .btn--ghost.btn--sm.btn--icon-only { width: 32px; padding: 0; }
 
-.select { display: inline-flex; align-items: center; box-sizing: border-box; background: var(--tok-surface-sunken); border: 1px solid var(--tok-border-default); border-radius: 8px; font-family: var(--tok-family-sans); cursor: pointer; text-align: left; }
+.select { display: inline-flex; align-items: center; box-sizing: border-box; background: var(--tok-surface-dim); border: 1px solid var(--tok-border-default); border-radius: 8px; font-family: var(--tok-family-sans); cursor: pointer; text-align: left; }
 .select--base { height: 40px; padding: 0 12px; gap: 8px; }
 .select--base .select__chevron { width: 20px; height: 20px; }
 .select__chevron { flex-shrink: 0; margin-left: auto; color: var(--tok-icon-default); }
@@ -298,7 +299,7 @@
 .mc-compose__body { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding: 16px; }
 .mc-compose__body .select { display: flex; width: 100%; flex-shrink: 0; }
 /* Subject / Message — Input's anatomy on real editable controls */
-.mc-field { box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; gap: 0px; min-height: 40px; padding: 6px 12px; border: 1px solid var(--tok-border-default); border-radius: 8px; background: var(--tok-surface-sunken); cursor: text; flex-shrink: 0; }
+.mc-field { box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; gap: 0px; min-height: 40px; padding: 6px 12px; border: 1px solid var(--tok-border-default); border-radius: 8px; background: var(--tok-surface-dim); cursor: text; flex-shrink: 0; }
 .mc-field:hover { border-color: var(--tok-border-strong); }
 .mc-field:focus-within { border-color: var(--tok-border-focus); }
 .mc-field__label { display: none; color: var(--tok-text-muted); font-weight: 400; font-size: 12px; line-height: 1.2; }
@@ -306,20 +307,14 @@
 .mc-field:focus-within .mc-field__label { color: var(--tok-text-primary); }
 .mc-field__control { border: none; outline: none; background: transparent; padding: 0; width: 100%; color: var(--tok-text-default); font-weight: 400; font-size: 16px; line-height: 1.2; font-family: var(--tok-family-sans); }
 .mc-field__control::placeholder { color: var(--tok-text-muted); }
-.mc-field--area { min-height: 96px; justify-content: flex-start; }
-.mc-field--area .mc-field__control { resize: none; flex: 1; min-height: 56px; }
+.mc-field--area { min-height: 140px; justify-content: flex-start; }
+.mc-field--area .mc-field__control { resize: none; flex: 1; min-height: 104px; }
 /* To — a second Select, always present, disabled until a department is
    chosen (Select's own disabled state tokens, resolved). Its Listbox
    popover holds the chosen department's allowed recipients per its policy:
    the department itself first (department-only / "both"), then members —
    real Avatar + name/role rows, away members disabled with a neutral away
    Badge. Same trigger + popover composition as the Department select. */
-/* EXPERIMENT (compose only, user call 2026-08-03): lighter field surfaces —
-   surface.dim (gray.50, the lightest grey role) instead of the DS-wide
-   surface.sunken (gray.100) field fill, one step quieter against the white
-   modal. If this wins, the real change belongs in input/select/search
-   state.default.bg at the token level, not here. */
-.mc-compose .select:not(:disabled), .mc-compose .mc-field { background: var(--tok-surface-dim); }
 /* Select resting state — Input's own float model: before a value exists the
    trigger shows ONLY the placeholder (the field's name) at value size; the
    12px label appears only once populated. The permanent label+placeholder
@@ -1148,9 +1143,9 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 </div>
 <dialog class="mc-compose" id="mc-compose" aria-labelledby="mc-compose-title">
   <header class="mc-compose__header">
-    <button class="btn btn--ghost btn--sm mc-compose__cancel-m" id="mc-compose-cancel-m" type="button">Cancel</button>
+    <button class="btn btn--ghost btn--base mc-compose__cancel-m" id="mc-compose-cancel-m" type="button">Cancel</button>
     <h2 class="mc-compose__title" id="mc-compose-title">New message</h2>
-    <button class="btn btn--primary btn--sm mc-compose__send-m" id="mc-compose-send-m" type="button" disabled>Send</button>
+    <button class="btn btn--primary btn--base mc-compose__send-m" id="mc-compose-send-m" type="button" disabled>Send</button>
     <button class="btn btn--ghost btn--sm btn--icon-only mc-compose__close" id="mc-compose-close" type="button" aria-label="Close"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
   </header>
   <div class="mc-compose__body">

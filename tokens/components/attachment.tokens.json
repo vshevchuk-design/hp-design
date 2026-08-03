@@ -5,7 +5,7 @@
       "radius": { "$type": "dimension", "$value": "{radius.default}" },
       "padding": { "$type": "dimension", "$value": "{dim.2}" },
       "gap": { "$type": "dimension", "$value": "{dim.2}" },
-      "bg": { "$type": "color", "$value": "{surface.sunken}" },
+      "bg": { "$type": "color", "$value": "{surface.dim}" },
       "border": { "$type": "color", "$value": "{border.default}" },
       "media": {
         "size": { "$type": "dimension", "$value": "{dim.10}" },

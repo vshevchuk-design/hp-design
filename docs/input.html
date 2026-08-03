@@ -72,6 +72,7 @@
 
   :root {
   --tok-surface-sunken: #e8e8e8;
+  --tok-surface-dim: #f5f5f5;
   --tok-surface-disabled: #e8e8e8;
   --tok-border-default: #d1d1d1;
   --tok-border-strong: #b4b4b4;
@@ -90,7 +91,7 @@
   display: inline-flex;
   align-items: center;
   box-sizing: border-box;
-  background: var(--tok-surface-sunken);
+  background: var(--tok-surface-dim);
   border: 1px solid var(--tok-border-default);
   border-radius: 8px;
   font-family: var(--tok-family-sans);
@@ -228,6 +229,7 @@
     <p class="section-desc">One <code class="tok">:root</code> block of color custom properties, then a base <code class="tok">.input</code> class + <code class="tok">--sm/--base/--lg</code> size modifiers, then state modifiers as plain classes (also wired to real <code class="tok">:hover</code> for bonus interactivity where it doesn't conflict with a specific demonstrated state).</p>
     <pre class="code"><code>:root {
   --tok-surface-sunken: #e8e8e8;
+  --tok-surface-dim: #f5f5f5;
   --tok-surface-disabled: #e8e8e8;
   --tok-border-default: #d1d1d1;
   --tok-border-strong: #b4b4b4;
@@ -246,7 +248,7 @@
   display: inline-flex;
   align-items: center;
   box-sizing: border-box;
-  background: var(--tok-surface-sunken);
+  background: var(--tok-surface-dim);
   border: 1px solid var(--tok-border-default);
   border-radius: 8px;
   font-family: var(--tok-family-sans);

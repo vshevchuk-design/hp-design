@@ -469,6 +469,9 @@ const btnSecSmLabelType = resolveToken(get(btnSecSm.label.$value));
 const btnGhostBase = button.ghost.size.base;
 const btnGhostHeight = px(resolve(btnGhostBase.height.$value));
 const btnGhostIconSize = px(resolve(btnGhostBase.iconSize.$value));
+const btnGhostBasePaddingX = px(resolve(btnGhostBase.paddingX.$value));
+const btnGhostBaseGap = px(resolve(btnGhostBase.gap.$value));
+const btnGhostBaseLabelType = resolveToken(get(btnGhostBase.label.$value));
 const btnGhostSm = button.ghost.size.sm;
 const btnGhostSmHeight = px(resolve(btnGhostSm.height.$value));
 const btnGhostSmPaddingX = px(resolve(btnGhostSm.paddingX.$value));
@@ -521,7 +524,7 @@ const componentCss = `/* ---- component recipes, resolved from each component's 
 .chip--dropdown { flex-shrink: 1; min-width: 0; max-width: 100%; }
 .chip--dropdown .chip__label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-.search { display: inline-flex; align-items: center; box-sizing: border-box; background: ${cv("surface.sunken")}; border: 1px solid ${cv("border.default")}; border-radius: ${searchRadius}; font-family: ${cv("family.sans")}; cursor: text; }
+.search { display: inline-flex; align-items: center; box-sizing: border-box; background: ${cv("surface.dim")}; border: 1px solid ${cv("border.default")}; border-radius: ${searchRadius}; font-family: ${cv("family.sans")}; cursor: text; }
 .search--base { height: ${searchBase.height}; padding: 0 ${searchBase.paddingX}; gap: ${searchBase.gap}; }
 .search--base .search__icon, .search--base .search__clear { width: ${searchBase.iconSize}; height: ${searchBase.iconSize}; }
 .search__icon { flex-shrink: 0; color: ${cv("icon.default")}; }
@@ -607,7 +610,7 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
 .message__attachments { display: flex; flex-direction: column; gap: ${msgAttachmentsGap}; }
 .message__cta { margin-top: ${msgCtaMarginTop}; align-self: flex-start; }
 
-.attachment { box-sizing: border-box; display: flex; align-items: center; gap: ${attGap}; padding: ${attPadding}; border-radius: ${attRadius}; background: ${cv("surface.sunken")}; border: 1px solid ${cv("border.default")}; max-width: 320px; text-decoration: none; }
+.attachment { box-sizing: border-box; display: flex; align-items: center; gap: ${attGap}; padding: ${attPadding}; border-radius: ${attRadius}; background: ${cv("surface.dim")}; border: 1px solid ${cv("border.default")}; max-width: 320px; text-decoration: none; }
 .attachment__media { flex-shrink: 0; width: ${attMediaSize}; height: ${attMediaSize}; border-radius: ${attMediaRadius}; display: flex; align-items: center; justify-content: center; background: ${cv("surface.default")}; }
 .attachment__icon { width: ${attIconSize}; height: ${attIconSize}; color: ${cv("icon.secondary")}; }
 .attachment__content { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
@@ -627,7 +630,7 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
 .bubble--other { background: ${cv("surface.default")}; border: 1px solid ${cv("border.default")}; color: ${cv("text.default")}; }
 
 .composer { display: flex; flex-direction: column; gap: ${compFieldGap}; font-family: ${cv("family.sans")}; }
-.composer__field { display: flex; align-items: center; gap: ${compFieldGap}; padding: ${compFieldPadding}; border-radius: ${compRadius}; background: ${cv("surface.sunken")}; border: 1px solid ${cv("border.default")}; }
+.composer__field { display: flex; align-items: center; gap: ${compFieldGap}; padding: ${compFieldPadding}; border-radius: ${compRadius}; background: ${cv("surface.dim")}; border: 1px solid ${cv("border.default")}; }
 .composer__field:hover { border-color: ${cv("border.strong")}; }
 .composer__field:focus-within { border-color: ${cv("border.focus")}; }
 .composer__input { flex: 1; min-width: 0; border: none; outline: none; background: transparent; color: ${cv("text.default")}; ${typoCss(compInputType)} font-family: ${cv("family.sans")}; }
@@ -660,6 +663,7 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
 .btn--ghost .btn__icon { color: ${cv("icon.secondary")}; }
 .btn--ghost:hover { background: ${cv("fill.neutralHover")}; }
 .btn--ghost:active { background: ${cv("fill.neutralActive")}; }
+.btn--ghost.btn--base { height: ${btnGhostHeight}; padding: 0 ${btnGhostBasePaddingX}; gap: ${btnGhostBaseGap}; ${typoCss(btnGhostBaseLabelType)} }
 .btn--ghost.btn--base.btn--icon-only { width: ${btnGhostHeight}; height: ${btnGhostHeight}; padding: 0; }
 .btn--ghost.btn--base.btn--icon-only .btn__icon { width: ${btnGhostIconSize}; height: ${btnGhostIconSize}; }
 .btn--ghost.btn--sm { height: ${btnGhostSmHeight}; padding: 0 ${btnGhostSmPaddingX}; gap: ${btnGhostSmGap}; ${typoCss(btnGhostSmLabelType)} }
@@ -682,7 +686,7 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
 .btn--primary.btn--lg .btn__icon { width: ${btnPrimLgIconSize}; height: ${btnPrimLgIconSize}; }
 .btn--ghost.btn--sm.btn--icon-only { width: ${btnGhostSmHeight}; padding: 0; }
 
-.select { display: inline-flex; align-items: center; box-sizing: border-box; background: ${cv("surface.sunken")}; border: 1px solid ${cv("border.default")}; border-radius: ${selectRadius}; font-family: ${cv("family.sans")}; cursor: pointer; text-align: left; }
+.select { display: inline-flex; align-items: center; box-sizing: border-box; background: ${cv("surface.dim")}; border: 1px solid ${cv("border.default")}; border-radius: ${selectRadius}; font-family: ${cv("family.sans")}; cursor: pointer; text-align: left; }
 .select--base { height: ${selectBase.height}; padding: 0 ${selectBase.paddingX}; gap: ${selectBase.gap}; }
 .select--base .select__chevron { width: ${selectBase.iconSize}; height: ${selectBase.iconSize}; }
 .select__chevron { flex-shrink: 0; margin-left: auto; color: ${cv("icon.default")}; }
@@ -713,7 +717,7 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
 .mc-compose__body { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.4"))}; }
 .mc-compose__body .select { display: flex; width: 100%; flex-shrink: 0; }
 /* Subject / Message — Input's anatomy on real editable controls */
-.mc-field { box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; gap: ${inputLabelGap}; min-height: ${inputHeight}; padding: ${px(resolve("dim.1_5"))} ${inputPaddingX}; border: 1px solid ${cv("border.default")}; border-radius: ${inputRadius}; background: ${cv("surface.sunken")}; cursor: text; flex-shrink: 0; }
+.mc-field { box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; gap: ${inputLabelGap}; min-height: ${inputHeight}; padding: ${px(resolve("dim.1_5"))} ${inputPaddingX}; border: 1px solid ${cv("border.default")}; border-radius: ${inputRadius}; background: ${cv("surface.dim")}; cursor: text; flex-shrink: 0; }
 .mc-field:hover { border-color: ${cv("border.strong")}; }
 .mc-field:focus-within { border-color: ${cv("border.focus")}; }
 .mc-field__label { display: none; color: ${cv(inputPopulatedLabelColor)}; ${typoCss(inputLabelType)} }
@@ -721,20 +725,14 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
 .mc-field:focus-within .mc-field__label { color: ${cv(inputFocusLabelColor)}; }
 .mc-field__control { border: none; outline: none; background: transparent; padding: 0; width: 100%; color: ${cv("text.default")}; ${typoCss(inputValueType)} font-family: ${cv("family.sans")}; }
 .mc-field__control::placeholder { color: ${cv("text.muted")}; }
-.mc-field--area { min-height: 96px; justify-content: flex-start; }
-.mc-field--area .mc-field__control { resize: none; flex: 1; min-height: 56px; }
+.mc-field--area { min-height: 140px; justify-content: flex-start; }
+.mc-field--area .mc-field__control { resize: none; flex: 1; min-height: 104px; }
 /* To — a second Select, always present, disabled until a department is
    chosen (Select's own disabled state tokens, resolved). Its Listbox
    popover holds the chosen department's allowed recipients per its policy:
    the department itself first (department-only / "both"), then members —
    real Avatar + name/role rows, away members disabled with a neutral away
    Badge. Same trigger + popover composition as the Department select. */
-/* EXPERIMENT (compose only, user call 2026-08-03): lighter field surfaces —
-   surface.dim (gray.50, the lightest grey role) instead of the DS-wide
-   surface.sunken (gray.100) field fill, one step quieter against the white
-   modal. If this wins, the real change belongs in input/select/search
-   state.default.bg at the token level, not here. */
-.mc-compose .select:not(:disabled), .mc-compose .mc-field { background: ${cv("surface.dim")}; }
 /* Select resting state — Input's own float model: before a value exists the
    trigger shows ONLY the placeholder (the field's name) at value size; the
    12px label appears only once populated. The permanent label+placeholder
@@ -1984,9 +1982,9 @@ ${appCss}
 </div>
 <dialog class="mc-compose" id="mc-compose" aria-labelledby="mc-compose-title">
   <header class="mc-compose__header">
-    <button class="btn btn--ghost btn--sm mc-compose__cancel-m" id="mc-compose-cancel-m" type="button">Cancel</button>
+    <button class="btn btn--ghost btn--base mc-compose__cancel-m" id="mc-compose-cancel-m" type="button">Cancel</button>
     <h2 class="mc-compose__title" id="mc-compose-title">New message</h2>
-    <button class="btn btn--primary btn--sm mc-compose__send-m" id="mc-compose-send-m" type="button" disabled>Send</button>
+    <button class="btn btn--primary btn--base mc-compose__send-m" id="mc-compose-send-m" type="button" disabled>Send</button>
     <button class="btn btn--ghost btn--sm btn--icon-only mc-compose__close" id="mc-compose-close" type="button" aria-label="Close">${iconCloseBtn}</button>
   </header>
   <div class="mc-compose__body">

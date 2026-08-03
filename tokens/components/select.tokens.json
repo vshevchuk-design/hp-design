@@ -48,7 +48,7 @@
       },
       "state": {
         "default": {
-          "bg": { "$type": "color", "$value": "{surface.sunken}" },
+          "bg": { "$type": "color", "$value": "{surface.dim}" },
           "border": { "$type": "color", "$value": "{border.default}" },
           "placeholder": { "$type": "color", "$value": "{text.muted}" },
           "value": { "$type": "color", "$value": "{text.default}" },

@@ -75,7 +75,7 @@ const colorPaths = [
   "surface.default", "border.default",
   "avatar.blue.bg", "avatar.blue.text",
   "fill.primary", "fill.primaryHover", "text.onFill",
-  "surface.sunken", "icon.secondary",
+  "surface.sunken", "surface.dim", "icon.secondary",
 ];
 const colorValue = Object.fromEntries(colorPaths.map((p) => [p, resolve(p)]));
 const fontSans = resolve("family.sans");
@@ -166,7 +166,7 @@ const css = `${rootVars}
 .message__attachments { display: flex; flex-direction: column; gap: ${attachmentsGap}; }
 .message__cta { margin-top: ${ctaMarginTop}; }
 
-.attachment { box-sizing: border-box; display: flex; align-items: center; gap: ${attGap}; padding: ${attPadding}; border-radius: ${attRadius}; background: ${cv("surface.sunken")}; border: 1px solid ${cv("border.default")}; max-width: 320px; }
+.attachment { box-sizing: border-box; display: flex; align-items: center; gap: ${attGap}; padding: ${attPadding}; border-radius: ${attRadius}; background: ${cv("surface.dim")}; border: 1px solid ${cv("border.default")}; max-width: 320px; }
 .attachment__media { flex-shrink: 0; width: ${attMediaSize}; height: ${attMediaSize}; border-radius: ${attMediaRadius}; display: flex; align-items: center; justify-content: center; background: ${cv("surface.default")}; }
 .attachment__icon { width: ${attIconSize}; height: ${attIconSize}; color: ${cv("icon.secondary")}; }
 .attachment__content { display: flex; flex-direction: column; gap: 2px; min-width: 0; }

@@ -65,7 +65,7 @@ const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, 
 const cv = (tokenPath) => `var(${cssVarName(tokenPath)})`;
 
 const colorPaths = [
-  "surface.sunken", "border.default", "surface.default", "icon.secondary",
+  "surface.sunken", "surface.dim", "border.default", "surface.default", "icon.secondary",
   "text.default", "text.muted", "fill.neutralHover", "fill.neutralActive",
   "fill.primary", "border.focus",
 ];
@@ -104,7 +104,7 @@ const thumb = thumbDataUri("#439afd", "#0468c4");
 
 const css = `${rootVars}
 
-.attachment { box-sizing: border-box; display: flex; align-items: center; gap: ${gap}; padding: ${padding}; border-radius: ${radius}; background: ${cv("surface.sunken")}; border: 1px solid ${cv("border.default")}; font-family: ${cv("family.sans")}; text-decoration: none; max-width: 320px; }
+.attachment { box-sizing: border-box; display: flex; align-items: center; gap: ${gap}; padding: ${padding}; border-radius: ${radius}; background: ${cv("surface.dim")}; border: 1px solid ${cv("border.default")}; font-family: ${cv("family.sans")}; text-decoration: none; max-width: 320px; }
 .attachment__media { flex-shrink: 0; width: ${mediaSize}; height: ${mediaSize}; border-radius: ${mediaRadius}; display: flex; align-items: center; justify-content: center; background: ${cv("surface.default")}; overflow: hidden; }
 .attachment__icon { width: ${mediaIconSize}; height: ${mediaIconSize}; color: ${cv("icon.secondary")}; }
 .attachment__image { width: 100%; height: 100%; object-fit: cover; display: block; }

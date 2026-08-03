@@ -66,7 +66,7 @@ const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, 
 const cv = (tokenPath) => `var(${cssVarName(tokenPath)})`;
 
 const colorPaths = [
-  "surface.default", "surface.sunken", "border.default", "border.focus", "text.default", "text.secondary", "text.disabled", "text.muted", "text.primary",
+  "surface.default", "surface.sunken", "surface.dim", "border.default", "border.focus", "text.default", "text.secondary", "text.disabled", "text.muted", "text.primary",
   "icon.default", "icon.onFill", "fill.neutral", "fill.neutralHover", "fill.neutralActive", "fill.primary",
 ];
 const colorValue = Object.fromEntries(colorPaths.map((p) => [p, resolve(p)]));
@@ -135,7 +135,7 @@ const css = `${rootVars}
 .listbox__cb-label { color: ${cv("text.default")}; font-family: inherit; ${typoCss(labelType)} }
 
 .listbox__search-wrap { padding: ${px(resolve("dim.1"))} ${px(resolve("dim.1"))} ${searchGapBelow}; margin-bottom: ${px(resolve("dim.0_5"))}; border-bottom: 1px solid ${cv("border.default")}; }
-.listbox__search { display: flex; align-items: center; box-sizing: border-box; height: ${searchHeight}; padding: 0 ${searchPaddingX}; gap: ${searchGap}; border-radius: ${px(resolve("radius.default"))}; background: ${cv("surface.sunken")}; border: 1px solid ${cv("border.default")}; }
+.listbox__search { display: flex; align-items: center; box-sizing: border-box; height: ${searchHeight}; padding: 0 ${searchPaddingX}; gap: ${searchGap}; border-radius: ${px(resolve("radius.default"))}; background: ${cv("surface.dim")}; border: 1px solid ${cv("border.default")}; }
 .listbox__search-icon { width: ${searchIconSize}; height: ${searchIconSize}; color: ${cv("icon.default")}; flex-shrink: 0; }
 .listbox__search input { border: none; background: none; outline: none; width: 100%; color: ${cv("text.default")}; font-family: inherit; ${typoCss(searchValueType)} }
 .listbox__search input::placeholder { color: ${cv("text.muted")}; }

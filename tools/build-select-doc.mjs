@@ -60,7 +60,7 @@ const px = (d) => `${d.value}${d.unit}`;
 const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
 const colorPaths = [
-  "surface.sunken", "surface.disabled", "border.default", "border.strong", "border.focus", "border.danger",
+  "surface.sunken", "surface.dim", "surface.disabled", "border.default", "border.strong", "border.focus", "border.danger",
   "text.muted", "text.default", "text.disabled", "text.primary", "icon.default", "icon.disabled",
 ];
 const colorValue = Object.fromEntries(colorPaths.map((p) => [p, resolve(p)]));
@@ -99,7 +99,7 @@ const css = `${rootVars}
   display: inline-flex;
   align-items: center;
   box-sizing: border-box;
-  background: ${cv("surface.sunken")};
+  background: ${cv("surface.dim")};
   border: 1px solid ${cv("border.default")};
   border-radius: ${fieldRadius};
   font-family: ${cv("family.sans")};
