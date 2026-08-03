@@ -625,7 +625,7 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
 .bubble-sender__name { color: ${cv(msgNameColor)}; ${typoCss(msgNameType)} }
 .bubble-sender__meta { color: ${cv("text.muted")}; ${typoCss(msgMetaType)} }
 .bubble { box-sizing: border-box; display: flex; flex-direction: column; gap: ${bubGap}; padding: ${bubPaddingY} ${bubPaddingX}; border-radius: ${bubRadius}; }
-.bubble p { margin: 0; ${typoCss(bubTextType)} }
+.bubble p { margin: 0; ${typoCss(bubTextType)} white-space: pre-wrap; } /* the composer's Shift+Enter produces real newlines */
 .bubble--self.bubble--tint { background: ${cv("bg.primary")}; color: ${cv("text.default")}; }
 .bubble--other { background: ${cv("surface.default")}; border: 1px solid ${cv("border.default")}; color: ${cv("text.default")}; }
 
@@ -777,7 +777,7 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
   .mc-compose__title { flex: 1; text-align: center; }
   .mc-compose[open] { transform: translateY(0); transition: transform 0.25s ease; }
   @starting-style { .mc-compose[open] { transform: translateY(100vh); } }
-  .mc-compose--kbd .mc-kbd { display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; padding: 8px 3px 20px; background: ${cv("surface.sunken")}; border-top: 1px solid ${cv("border.default")}; }
+  .mc-compose--kbd .mc-kbd, .mc-thread--kbd .mc-kbd { display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; padding: 8px 3px 20px; background: ${cv("surface.sunken")}; border-top: 1px solid ${cv("border.default")}; }
   .mc-kbd__row { display: flex; gap: 5px; justify-content: center; }
   .mc-kbd__key { flex: 1; max-width: 34px; height: 40px; display: inline-flex; align-items: center; justify-content: center; background: ${cv("surface.default")}; border-radius: 6px; box-shadow: 0 1px 0 ${cv("border.strong")}; color: ${cv("text.default")}; font-size: 15px; }
   .mc-kbd__key--wide { max-width: 44px; color: ${cv("text.secondary")}; font-size: 12px; }
@@ -902,6 +902,14 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .mc-thread__meta-line { color: ${cv("text.secondary")}; ${typoCss(bodySmType)} }
 .mc-thread__scroll { flex: 1; overflow-y: auto; padding: ${px(resolve("dim.4"))}; display: flex; flex-direction: column; gap: ${px(resolve("dim.6"))}; }
 .mc-thread__composer { flex-shrink: 0; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))} ${px(resolve("dim.4"))}; }
+/* in-thread composer upgrades: pre-send attachments stack above the field
+   (Attachment idle shape, same as the compose dialog); the field itself is a
+   1-row textarea auto-growing to ~5 lines (JS caps at 120px), icons pinned
+   to the bottom edge as it grows */
+.composer__atts { display: flex; flex-direction: column; gap: ${msgAttachmentsGap}; }
+.composer__atts[hidden] { display: none; }
+.mc-composer .composer__field { align-items: flex-end; }
+.mc-composer .composer__input { display: block; resize: none; max-height: 120px; overflow-y: auto; }
 /* replies closed: the Composer's slot holds EmptyState's quiet pill instead */
 .mc-thread__composer--closed { display: flex; justify-content: center; }
 
@@ -1182,14 +1190,16 @@ function threadPane(t) {
         <footer class="mc-thread__composer${t.replies ? "" : " mc-thread__composer--closed"}">
           ${t.replies
             ? `<form class="composer composer--simple mc-composer" data-thread="${t.id}">
+            <div class="composer__atts" hidden></div>
             <div class="composer__field">
-              <input class="composer__input" placeholder="Write a message..." aria-label="Write a message" />
-              <button type="button" class="composer__icon-btn" aria-label="Attach file">${iconAttach}</button>
+              <textarea class="composer__input" rows="1" placeholder="Write a message..." aria-label="Write a message"></textarea>
+              <button type="button" class="composer__icon-btn mc-composer-attach" aria-label="Attach file">${iconAttach}</button>
               <button type="submit" class="btn btn--primary btn--sm btn--icon-only" aria-label="Send">${iconSend}</button>
             </div>
           </form>`
             : `<span class="empty-state__text">This thread doesn't accept replies</span>`}
         </footer>
+        ${t.replies ? composeKbd : ""}
       </article>`;
 }
 
@@ -1551,22 +1561,70 @@ const appJs = `(function () {
     });
   });
 
-  // composer — Send appends a real self Bubble (tint, the default)
+  // composer — Send appends a real self Bubble (tint). The field is a 1-row
+  // textarea auto-growing to ~5 lines (Enter sends, Shift+Enter breaks); the
+  // attach button stacks Attachment idle rows above the field and they ride
+  // into the sent Bubble as the done shape; focusing the field docks the
+  // fake keyboard under the composer on the mobile takeover. (FAKE_FILES /
+  // ATT_* templates are shared with the compose dialog, defined below —
+  // handlers only dereference them at event time, so order is safe.)
   var SELF_SENDER = ${JSON.stringify(selfBubbleSender)};
   function bindComposer(form) {
+    var input = form.querySelector(".composer__input");
+    var attsWrap = form.querySelector(".composer__atts");
+    var atts = [];
+    function renderAtts() {
+      attsWrap.innerHTML = "";
+      atts.forEach(function (file, i) {
+        var el = attachmentNode(ATT_IDLE, file);
+        el.querySelector(".mc-att-remove").addEventListener("click", function () {
+          atts.splice(i, 1);
+          renderAtts();
+        });
+        attsWrap.appendChild(el);
+      });
+      attsWrap.hidden = atts.length === 0;
+    }
+    form.querySelector(".mc-composer-attach").addEventListener("click", function () {
+      atts.push(FAKE_FILES[atts.length % FAKE_FILES.length]);
+      renderAtts();
+    });
+    function grow() {
+      input.style.height = "auto";
+      input.style.height = Math.min(input.scrollHeight, 120) + "px";
+    }
+    input.addEventListener("input", grow);
+    input.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); form.requestSubmit(); }
+    });
+    input.addEventListener("focus", function () { form.closest(".mc-thread").classList.add("mc-thread--kbd"); });
+    input.addEventListener("blur", function () { form.closest(".mc-thread").classList.remove("mc-thread--kbd"); });
     form.addEventListener("submit", function (e) {
       e.preventDefault();
-      var input = form.querySelector(".composer__input");
       var text = input.value.trim();
-      if (!text) return;
+      if (!text && !atts.length) return;
       var scroll = form.closest(".mc-thread").querySelector(".mc-thread__scroll");
       var row = document.createElement("div");
       row.className = "bubble-row bubble-row--self";
-      row.innerHTML = SELF_SENDER + '<div class="bubble bubble--self bubble--tint"><p></p></div>';
-      row.querySelector(".bubble p").textContent = text;
+      row.innerHTML = SELF_SENDER + '<div class="bubble bubble--self bubble--tint"></div>';
+      var bubble = row.querySelector(".bubble");
+      if (text) {
+        var p = document.createElement("p");
+        p.textContent = text;
+        bubble.appendChild(p);
+      }
+      if (atts.length) {
+        var wrap = document.createElement("div");
+        wrap.className = "message__attachments";
+        atts.forEach(function (file) { wrap.appendChild(attachmentNode(ATT_DONE, file)); });
+        bubble.appendChild(wrap);
+      }
       scroll.appendChild(row);
       scroll.scrollTop = scroll.scrollHeight;
       input.value = "";
+      grow();
+      atts = [];
+      renderAtts();
       input.focus();
     });
   }
@@ -1845,7 +1903,7 @@ const appJs = `(function () {
   });
 
   var COMPOSE_ROW_SKELETON = ${JSON.stringify(`<div class="thread-item-inbox__main"><div class="thread-item-inbox__top"><span class="thread-item-inbox__identity"></span><span class="thread-item-inbox__time">Just now</span></div><div class="thread-item-inbox__subject"></div><div class="thread-item-inbox__preview-row"><span class="thread-item-inbox__preview"></span><button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread">${iconFlagOutlined}${iconFlagFilled}</button></div><div class="thread-item-inbox__expires"><span class="badge badge--sm badge--role-primary">Awaiting reply</span><span class="badge badge--sm badge--role-primary thread-item-inbox__scope">Inbox</span></div></div>`)};
-  var COMPOSE_PANE_SKELETON = ${JSON.stringify(`<header class="mc-thread__bar"><button class="btn btn--ghost btn--sm mc-thread__back" type="button">${iconBack}Back</button><div class="mc-thread__actions"><button class="btn btn--secondary btn--sm mc-archive" type="button">Archive</button><button class="btn btn--secondary btn--sm btn--icon-only mc-print" type="button" aria-label="Print thread">${iconPrint}</button></div><h2 class="mc-thread__subject"></h2><div class="mc-thread__tags"><span class="mc-thread__meta-line"></span><span class="badge badge--sm badge--role-primary">Awaiting reply</span></div></header><div class="mc-thread__scroll"></div><footer class="mc-thread__composer"><form class="composer composer--simple mc-composer"><div class="composer__field"><input class="composer__input" placeholder="Write a message..." aria-label="Write a message" /><button type="button" class="composer__icon-btn" aria-label="Attach file">${iconAttach}</button><button type="submit" class="btn btn--primary btn--sm btn--icon-only" aria-label="Send">${iconSend}</button></div></form></footer>`)};
+  var COMPOSE_PANE_SKELETON = ${JSON.stringify(`<header class="mc-thread__bar"><button class="btn btn--ghost btn--sm mc-thread__back" type="button">${iconBack}Back</button><div class="mc-thread__actions"><button class="btn btn--secondary btn--sm mc-archive" type="button">Archive</button><button class="btn btn--secondary btn--sm btn--icon-only mc-print" type="button" aria-label="Print thread">${iconPrint}</button></div><h2 class="mc-thread__subject"></h2><div class="mc-thread__tags"><span class="mc-thread__meta-line"></span><span class="badge badge--sm badge--role-primary">Awaiting reply</span></div></header><div class="mc-thread__scroll"></div><footer class="mc-thread__composer"><form class="composer composer--simple mc-composer"><div class="composer__atts" hidden></div><div class="composer__field"><textarea class="composer__input" rows="1" placeholder="Write a message..." aria-label="Write a message"></textarea><button type="button" class="composer__icon-btn mc-composer-attach" aria-label="Attach file">${iconAttach}</button><button type="submit" class="btn btn--primary btn--sm btn--icon-only" aria-label="Send">${iconSend}</button></div></form></footer>${composeKbd}`)};
 
   composeSendBtns.forEach(function (sendBtn) {
     sendBtn.addEventListener("click", function () {

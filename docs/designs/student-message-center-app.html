@@ -207,7 +207,7 @@
 .bubble-sender__name { color: var(--tok-text-secondary); font-weight: 600; font-size: 12px; line-height: 1.2; }
 .bubble-sender__meta { color: var(--tok-text-muted); font-weight: 400; font-size: 12px; line-height: 1.2; }
 .bubble { box-sizing: border-box; display: flex; flex-direction: column; gap: 6px; padding: 8px 12px; border-radius: 16px; }
-.bubble p { margin: 0; font-weight: 400; font-size: 14px; line-height: 1.4; }
+.bubble p { margin: 0; font-weight: 400; font-size: 14px; line-height: 1.4; white-space: pre-wrap; } /* the composer's Shift+Enter produces real newlines */
 .bubble--self.bubble--tint { background: var(--tok-bg-primary); color: var(--tok-text-default); }
 .bubble--other { background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); color: var(--tok-text-default); }
 
@@ -359,7 +359,7 @@
   .mc-compose__title { flex: 1; text-align: center; }
   .mc-compose[open] { transform: translateY(0); transition: transform 0.25s ease; }
   @starting-style { .mc-compose[open] { transform: translateY(100vh); } }
-  .mc-compose--kbd .mc-kbd { display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; padding: 8px 3px 20px; background: var(--tok-surface-sunken); border-top: 1px solid var(--tok-border-default); }
+  .mc-compose--kbd .mc-kbd, .mc-thread--kbd .mc-kbd { display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; padding: 8px 3px 20px; background: var(--tok-surface-sunken); border-top: 1px solid var(--tok-border-default); }
   .mc-kbd__row { display: flex; gap: 5px; justify-content: center; }
   .mc-kbd__key { flex: 1; max-width: 34px; height: 40px; display: inline-flex; align-items: center; justify-content: center; background: var(--tok-surface-default); border-radius: 6px; box-shadow: 0 1px 0 var(--tok-border-strong); color: var(--tok-text-default); font-size: 15px; }
   .mc-kbd__key--wide { max-width: 44px; color: var(--tok-text-secondary); font-size: 12px; }
@@ -483,6 +483,14 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .mc-thread__meta-line { color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
 .mc-thread__scroll { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 24px; }
 .mc-thread__composer { flex-shrink: 0; padding: 12px 16px 16px; }
+/* in-thread composer upgrades: pre-send attachments stack above the field
+   (Attachment idle shape, same as the compose dialog); the field itself is a
+   1-row textarea auto-growing to ~5 lines (JS caps at 120px), icons pinned
+   to the bottom edge as it grows */
+.composer__atts { display: flex; flex-direction: column; gap: 6px; }
+.composer__atts[hidden] { display: none; }
+.mc-composer .composer__field { align-items: flex-end; }
+.mc-composer .composer__input { display: block; resize: none; max-height: 120px; overflow-y: auto; }
 /* replies closed: the Composer's slot holds EmptyState's quiet pill instead */
 .mc-thread__composer--closed { display: flex; justify-content: center; }
 
@@ -791,13 +799,20 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         </div>
         <footer class="mc-thread__composer">
           <form class="composer composer--simple mc-composer" data-thread="winter">
+            <div class="composer__atts" hidden></div>
             <div class="composer__field">
-              <input class="composer__input" placeholder="Write a message..." aria-label="Write a message" />
-              <button type="button" class="composer__icon-btn" aria-label="Attach file"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/></svg></button>
+              <textarea class="composer__input" rows="1" placeholder="Write a message..." aria-label="Write a message"></textarea>
+              <button type="button" class="composer__icon-btn mc-composer-attach" aria-label="Attach file"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/></svg></button>
               <button type="submit" class="btn btn--primary btn--sm btn--icon-only" aria-label="Send"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg></button>
             </div>
           </form>
         </footer>
+        <div class="mc-kbd" aria-hidden="true">
+  <div class="mc-kbd__row"><span class="mc-kbd__key">Q</span><span class="mc-kbd__key">W</span><span class="mc-kbd__key">E</span><span class="mc-kbd__key">R</span><span class="mc-kbd__key">T</span><span class="mc-kbd__key">Y</span><span class="mc-kbd__key">U</span><span class="mc-kbd__key">I</span><span class="mc-kbd__key">O</span><span class="mc-kbd__key">P</span></div>
+  <div class="mc-kbd__row"><span class="mc-kbd__key">A</span><span class="mc-kbd__key">S</span><span class="mc-kbd__key">D</span><span class="mc-kbd__key">F</span><span class="mc-kbd__key">G</span><span class="mc-kbd__key">H</span><span class="mc-kbd__key">J</span><span class="mc-kbd__key">K</span><span class="mc-kbd__key">L</span></div>
+  <div class="mc-kbd__row"><span class="mc-kbd__key mc-kbd__key--wide">⇧</span><span class="mc-kbd__key">Z</span><span class="mc-kbd__key">X</span><span class="mc-kbd__key">C</span><span class="mc-kbd__key">V</span><span class="mc-kbd__key">B</span><span class="mc-kbd__key">N</span><span class="mc-kbd__key">M</span><span class="mc-kbd__key mc-kbd__key--wide">⌫</span></div>
+  <div class="mc-kbd__row"><span class="mc-kbd__key mc-kbd__key--wide">123</span><span class="mc-kbd__key mc-kbd__key--space">space</span><span class="mc-kbd__key mc-kbd__key--return">return</span></div>
+</div>
       </article>
       <article class="mc-thread" data-thread="hello" hidden>
         <header class="mc-thread__bar">
@@ -827,6 +842,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         <footer class="mc-thread__composer mc-thread__composer--closed">
           <span class="empty-state__text">This thread doesn't accept replies</span>
         </footer>
+        
       </article>
       <article class="mc-thread" data-thread="registrar" hidden>
         <header class="mc-thread__bar">
@@ -864,13 +880,20 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         </div>
         <footer class="mc-thread__composer">
           <form class="composer composer--simple mc-composer" data-thread="registrar">
+            <div class="composer__atts" hidden></div>
             <div class="composer__field">
-              <input class="composer__input" placeholder="Write a message..." aria-label="Write a message" />
-              <button type="button" class="composer__icon-btn" aria-label="Attach file"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/></svg></button>
+              <textarea class="composer__input" rows="1" placeholder="Write a message..." aria-label="Write a message"></textarea>
+              <button type="button" class="composer__icon-btn mc-composer-attach" aria-label="Attach file"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/></svg></button>
               <button type="submit" class="btn btn--primary btn--sm btn--icon-only" aria-label="Send"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg></button>
             </div>
           </form>
         </footer>
+        <div class="mc-kbd" aria-hidden="true">
+  <div class="mc-kbd__row"><span class="mc-kbd__key">Q</span><span class="mc-kbd__key">W</span><span class="mc-kbd__key">E</span><span class="mc-kbd__key">R</span><span class="mc-kbd__key">T</span><span class="mc-kbd__key">Y</span><span class="mc-kbd__key">U</span><span class="mc-kbd__key">I</span><span class="mc-kbd__key">O</span><span class="mc-kbd__key">P</span></div>
+  <div class="mc-kbd__row"><span class="mc-kbd__key">A</span><span class="mc-kbd__key">S</span><span class="mc-kbd__key">D</span><span class="mc-kbd__key">F</span><span class="mc-kbd__key">G</span><span class="mc-kbd__key">H</span><span class="mc-kbd__key">J</span><span class="mc-kbd__key">K</span><span class="mc-kbd__key">L</span></div>
+  <div class="mc-kbd__row"><span class="mc-kbd__key mc-kbd__key--wide">⇧</span><span class="mc-kbd__key">Z</span><span class="mc-kbd__key">X</span><span class="mc-kbd__key">C</span><span class="mc-kbd__key">V</span><span class="mc-kbd__key">B</span><span class="mc-kbd__key">N</span><span class="mc-kbd__key">M</span><span class="mc-kbd__key mc-kbd__key--wide">⌫</span></div>
+  <div class="mc-kbd__row"><span class="mc-kbd__key mc-kbd__key--wide">123</span><span class="mc-kbd__key mc-kbd__key--space">space</span><span class="mc-kbd__key mc-kbd__key--return">return</span></div>
+</div>
       </article>
       <article class="mc-thread" data-thread="fafsa" hidden>
         <header class="mc-thread__bar">
@@ -899,13 +922,20 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         </div>
         <footer class="mc-thread__composer">
           <form class="composer composer--simple mc-composer" data-thread="fafsa">
+            <div class="composer__atts" hidden></div>
             <div class="composer__field">
-              <input class="composer__input" placeholder="Write a message..." aria-label="Write a message" />
-              <button type="button" class="composer__icon-btn" aria-label="Attach file"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/></svg></button>
+              <textarea class="composer__input" rows="1" placeholder="Write a message..." aria-label="Write a message"></textarea>
+              <button type="button" class="composer__icon-btn mc-composer-attach" aria-label="Attach file"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/></svg></button>
               <button type="submit" class="btn btn--primary btn--sm btn--icon-only" aria-label="Send"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg></button>
             </div>
           </form>
         </footer>
+        <div class="mc-kbd" aria-hidden="true">
+  <div class="mc-kbd__row"><span class="mc-kbd__key">Q</span><span class="mc-kbd__key">W</span><span class="mc-kbd__key">E</span><span class="mc-kbd__key">R</span><span class="mc-kbd__key">T</span><span class="mc-kbd__key">Y</span><span class="mc-kbd__key">U</span><span class="mc-kbd__key">I</span><span class="mc-kbd__key">O</span><span class="mc-kbd__key">P</span></div>
+  <div class="mc-kbd__row"><span class="mc-kbd__key">A</span><span class="mc-kbd__key">S</span><span class="mc-kbd__key">D</span><span class="mc-kbd__key">F</span><span class="mc-kbd__key">G</span><span class="mc-kbd__key">H</span><span class="mc-kbd__key">J</span><span class="mc-kbd__key">K</span><span class="mc-kbd__key">L</span></div>
+  <div class="mc-kbd__row"><span class="mc-kbd__key mc-kbd__key--wide">⇧</span><span class="mc-kbd__key">Z</span><span class="mc-kbd__key">X</span><span class="mc-kbd__key">C</span><span class="mc-kbd__key">V</span><span class="mc-kbd__key">B</span><span class="mc-kbd__key">N</span><span class="mc-kbd__key">M</span><span class="mc-kbd__key mc-kbd__key--wide">⌫</span></div>
+  <div class="mc-kbd__row"><span class="mc-kbd__key mc-kbd__key--wide">123</span><span class="mc-kbd__key mc-kbd__key--space">space</span><span class="mc-kbd__key mc-kbd__key--return">return</span></div>
+</div>
       </article>
       <article class="mc-thread" data-thread="advising-appt" hidden>
         <header class="mc-thread__bar">
@@ -935,6 +965,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         <footer class="mc-thread__composer mc-thread__composer--closed">
           <span class="empty-state__text">This thread doesn't accept replies</span>
         </footer>
+        
       </article>
       <article class="mc-thread" data-thread="transcript-ready" hidden>
         <header class="mc-thread__bar">
@@ -964,6 +995,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         <footer class="mc-thread__composer mc-thread__composer--closed">
           <span class="empty-state__text">This thread doesn't accept replies</span>
         </footer>
+        
       </article>
       <article class="mc-thread" data-thread="waiver" hidden>
         <header class="mc-thread__bar">
@@ -997,13 +1029,20 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         </div>
         <footer class="mc-thread__composer">
           <form class="composer composer--simple mc-composer" data-thread="waiver">
+            <div class="composer__atts" hidden></div>
             <div class="composer__field">
-              <input class="composer__input" placeholder="Write a message..." aria-label="Write a message" />
-              <button type="button" class="composer__icon-btn" aria-label="Attach file"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/></svg></button>
+              <textarea class="composer__input" rows="1" placeholder="Write a message..." aria-label="Write a message"></textarea>
+              <button type="button" class="composer__icon-btn mc-composer-attach" aria-label="Attach file"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/></svg></button>
               <button type="submit" class="btn btn--primary btn--sm btn--icon-only" aria-label="Send"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg></button>
             </div>
           </form>
         </footer>
+        <div class="mc-kbd" aria-hidden="true">
+  <div class="mc-kbd__row"><span class="mc-kbd__key">Q</span><span class="mc-kbd__key">W</span><span class="mc-kbd__key">E</span><span class="mc-kbd__key">R</span><span class="mc-kbd__key">T</span><span class="mc-kbd__key">Y</span><span class="mc-kbd__key">U</span><span class="mc-kbd__key">I</span><span class="mc-kbd__key">O</span><span class="mc-kbd__key">P</span></div>
+  <div class="mc-kbd__row"><span class="mc-kbd__key">A</span><span class="mc-kbd__key">S</span><span class="mc-kbd__key">D</span><span class="mc-kbd__key">F</span><span class="mc-kbd__key">G</span><span class="mc-kbd__key">H</span><span class="mc-kbd__key">J</span><span class="mc-kbd__key">K</span><span class="mc-kbd__key">L</span></div>
+  <div class="mc-kbd__row"><span class="mc-kbd__key mc-kbd__key--wide">⇧</span><span class="mc-kbd__key">Z</span><span class="mc-kbd__key">X</span><span class="mc-kbd__key">C</span><span class="mc-kbd__key">V</span><span class="mc-kbd__key">B</span><span class="mc-kbd__key">N</span><span class="mc-kbd__key">M</span><span class="mc-kbd__key mc-kbd__key--wide">⌫</span></div>
+  <div class="mc-kbd__row"><span class="mc-kbd__key mc-kbd__key--wide">123</span><span class="mc-kbd__key mc-kbd__key--space">space</span><span class="mc-kbd__key mc-kbd__key--return">return</span></div>
+</div>
       </article>
       <article class="mc-thread" data-thread="pell" hidden>
         <header class="mc-thread__bar">
@@ -1040,6 +1079,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         <footer class="mc-thread__composer mc-thread__composer--closed">
           <span class="empty-state__text">This thread doesn't accept replies</span>
         </footer>
+        
       </article>
       <article class="mc-thread" data-thread="important" hidden>
         <header class="mc-thread__bar">
@@ -1074,6 +1114,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         <footer class="mc-thread__composer mc-thread__composer--closed">
           <span class="empty-state__text">This thread doesn't accept replies</span>
         </footer>
+        
       </article>
       <article class="mc-thread" data-thread="outreach" hidden>
         <header class="mc-thread__bar">
@@ -1103,6 +1144,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         <footer class="mc-thread__composer mc-thread__composer--closed">
           <span class="empty-state__text">This thread doesn't accept replies</span>
         </footer>
+        
       </article>
       <article class="mc-thread" data-thread="study" hidden>
         <header class="mc-thread__bar">
@@ -1130,13 +1172,20 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         </div>
         <footer class="mc-thread__composer">
           <form class="composer composer--simple mc-composer" data-thread="study">
+            <div class="composer__atts" hidden></div>
             <div class="composer__field">
-              <input class="composer__input" placeholder="Write a message..." aria-label="Write a message" />
-              <button type="button" class="composer__icon-btn" aria-label="Attach file"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/></svg></button>
+              <textarea class="composer__input" rows="1" placeholder="Write a message..." aria-label="Write a message"></textarea>
+              <button type="button" class="composer__icon-btn mc-composer-attach" aria-label="Attach file"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/></svg></button>
               <button type="submit" class="btn btn--primary btn--sm btn--icon-only" aria-label="Send"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg></button>
             </div>
           </form>
         </footer>
+        <div class="mc-kbd" aria-hidden="true">
+  <div class="mc-kbd__row"><span class="mc-kbd__key">Q</span><span class="mc-kbd__key">W</span><span class="mc-kbd__key">E</span><span class="mc-kbd__key">R</span><span class="mc-kbd__key">T</span><span class="mc-kbd__key">Y</span><span class="mc-kbd__key">U</span><span class="mc-kbd__key">I</span><span class="mc-kbd__key">O</span><span class="mc-kbd__key">P</span></div>
+  <div class="mc-kbd__row"><span class="mc-kbd__key">A</span><span class="mc-kbd__key">S</span><span class="mc-kbd__key">D</span><span class="mc-kbd__key">F</span><span class="mc-kbd__key">G</span><span class="mc-kbd__key">H</span><span class="mc-kbd__key">J</span><span class="mc-kbd__key">K</span><span class="mc-kbd__key">L</span></div>
+  <div class="mc-kbd__row"><span class="mc-kbd__key mc-kbd__key--wide">⇧</span><span class="mc-kbd__key">Z</span><span class="mc-kbd__key">X</span><span class="mc-kbd__key">C</span><span class="mc-kbd__key">V</span><span class="mc-kbd__key">B</span><span class="mc-kbd__key">N</span><span class="mc-kbd__key">M</span><span class="mc-kbd__key mc-kbd__key--wide">⌫</span></div>
+  <div class="mc-kbd__row"><span class="mc-kbd__key mc-kbd__key--wide">123</span><span class="mc-kbd__key mc-kbd__key--space">space</span><span class="mc-kbd__key mc-kbd__key--return">return</span></div>
+</div>
       </article>
     </section>
   </div>
@@ -1503,22 +1552,70 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     });
   });
 
-  // composer — Send appends a real self Bubble (tint, the default)
+  // composer — Send appends a real self Bubble (tint). The field is a 1-row
+  // textarea auto-growing to ~5 lines (Enter sends, Shift+Enter breaks); the
+  // attach button stacks Attachment idle rows above the field and they ride
+  // into the sent Bubble as the done shape; focusing the field docks the
+  // fake keyboard under the composer on the mobile takeover. (FAKE_FILES /
+  // ATT_* templates are shared with the compose dialog, defined below —
+  // handlers only dereference them at event time, so order is safe.)
   var SELF_SENDER = "<div class=\"bubble-sender\"><p class=\"bubble-sender__text\"><span class=\"bubble-sender__name\">George Amalor</span> <span class=\"bubble-sender__meta\">-- Just now</span></p><span class=\"avatar avatar--orange avatar--sm\" role=\"img\" aria-label=\"George Amalor\"><span class=\"avatar__initials\">GA</span></span></div>";
   function bindComposer(form) {
+    var input = form.querySelector(".composer__input");
+    var attsWrap = form.querySelector(".composer__atts");
+    var atts = [];
+    function renderAtts() {
+      attsWrap.innerHTML = "";
+      atts.forEach(function (file, i) {
+        var el = attachmentNode(ATT_IDLE, file);
+        el.querySelector(".mc-att-remove").addEventListener("click", function () {
+          atts.splice(i, 1);
+          renderAtts();
+        });
+        attsWrap.appendChild(el);
+      });
+      attsWrap.hidden = atts.length === 0;
+    }
+    form.querySelector(".mc-composer-attach").addEventListener("click", function () {
+      atts.push(FAKE_FILES[atts.length % FAKE_FILES.length]);
+      renderAtts();
+    });
+    function grow() {
+      input.style.height = "auto";
+      input.style.height = Math.min(input.scrollHeight, 120) + "px";
+    }
+    input.addEventListener("input", grow);
+    input.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); form.requestSubmit(); }
+    });
+    input.addEventListener("focus", function () { form.closest(".mc-thread").classList.add("mc-thread--kbd"); });
+    input.addEventListener("blur", function () { form.closest(".mc-thread").classList.remove("mc-thread--kbd"); });
     form.addEventListener("submit", function (e) {
       e.preventDefault();
-      var input = form.querySelector(".composer__input");
       var text = input.value.trim();
-      if (!text) return;
+      if (!text && !atts.length) return;
       var scroll = form.closest(".mc-thread").querySelector(".mc-thread__scroll");
       var row = document.createElement("div");
       row.className = "bubble-row bubble-row--self";
-      row.innerHTML = SELF_SENDER + '<div class="bubble bubble--self bubble--tint"><p></p></div>';
-      row.querySelector(".bubble p").textContent = text;
+      row.innerHTML = SELF_SENDER + '<div class="bubble bubble--self bubble--tint"></div>';
+      var bubble = row.querySelector(".bubble");
+      if (text) {
+        var p = document.createElement("p");
+        p.textContent = text;
+        bubble.appendChild(p);
+      }
+      if (atts.length) {
+        var wrap = document.createElement("div");
+        wrap.className = "message__attachments";
+        atts.forEach(function (file) { wrap.appendChild(attachmentNode(ATT_DONE, file)); });
+        bubble.appendChild(wrap);
+      }
       scroll.appendChild(row);
       scroll.scrollTop = scroll.scrollHeight;
       input.value = "";
+      grow();
+      atts = [];
+      renderAtts();
       input.focus();
     });
   }
@@ -1797,7 +1894,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   });
 
   var COMPOSE_ROW_SKELETON = "<div class=\"thread-item-inbox__main\"><div class=\"thread-item-inbox__top\"><span class=\"thread-item-inbox__identity\"></span><span class=\"thread-item-inbox__time\">Just now</span></div><div class=\"thread-item-inbox__subject\"></div><div class=\"thread-item-inbox__preview-row\"><span class=\"thread-item-inbox__preview\"></span><button class=\"thread-item-inbox__flag-btn\" type=\"button\" aria-pressed=\"false\" aria-label=\"Flag thread\"><svg class=\"thread-item-inbox__flag-outlined\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0V0z\" fill=\"none\"/><path d=\"M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z\"/></svg><svg class=\"thread-item-inbox__flag-filled\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z\"/></svg></button></div><div class=\"thread-item-inbox__expires\"><span class=\"badge badge--sm badge--role-primary\">Awaiting reply</span><span class=\"badge badge--sm badge--role-primary thread-item-inbox__scope\">Inbox</span></div></div>";
-  var COMPOSE_PANE_SKELETON = "<header class=\"mc-thread__bar\"><button class=\"btn btn--ghost btn--sm mc-thread__back\" type=\"button\"><svg class=\"btn__icon\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z\"/></svg>Back</button><div class=\"mc-thread__actions\"><button class=\"btn btn--secondary btn--sm mc-archive\" type=\"button\">Archive</button><button class=\"btn btn--secondary btn--sm btn--icon-only mc-print\" type=\"button\" aria-label=\"Print thread\"><svg class=\"btn__icon\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z\"/></svg></button></div><h2 class=\"mc-thread__subject\"></h2><div class=\"mc-thread__tags\"><span class=\"mc-thread__meta-line\"></span><span class=\"badge badge--sm badge--role-primary\">Awaiting reply</span></div></header><div class=\"mc-thread__scroll\"></div><footer class=\"mc-thread__composer\"><form class=\"composer composer--simple mc-composer\"><div class=\"composer__field\"><input class=\"composer__input\" placeholder=\"Write a message...\" aria-label=\"Write a message\" /><button type=\"button\" class=\"composer__icon-btn\" aria-label=\"Attach file\"><svg class=\"composer__icon\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z\"/></svg></button><button type=\"submit\" class=\"btn btn--primary btn--sm btn--icon-only\" aria-label=\"Send\"><svg class=\"btn__icon\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M2.01 21L23 12 2.01 3 2 10l15 2-15 2z\"/></svg></button></div></form></footer>";
+  var COMPOSE_PANE_SKELETON = "<header class=\"mc-thread__bar\"><button class=\"btn btn--ghost btn--sm mc-thread__back\" type=\"button\"><svg class=\"btn__icon\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z\"/></svg>Back</button><div class=\"mc-thread__actions\"><button class=\"btn btn--secondary btn--sm mc-archive\" type=\"button\">Archive</button><button class=\"btn btn--secondary btn--sm btn--icon-only mc-print\" type=\"button\" aria-label=\"Print thread\"><svg class=\"btn__icon\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z\"/></svg></button></div><h2 class=\"mc-thread__subject\"></h2><div class=\"mc-thread__tags\"><span class=\"mc-thread__meta-line\"></span><span class=\"badge badge--sm badge--role-primary\">Awaiting reply</span></div></header><div class=\"mc-thread__scroll\"></div><footer class=\"mc-thread__composer\"><form class=\"composer composer--simple mc-composer\"><div class=\"composer__atts\" hidden></div><div class=\"composer__field\"><textarea class=\"composer__input\" rows=\"1\" placeholder=\"Write a message...\" aria-label=\"Write a message\"></textarea><button type=\"button\" class=\"composer__icon-btn mc-composer-attach\" aria-label=\"Attach file\"><svg class=\"composer__icon\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z\"/></svg></button><button type=\"submit\" class=\"btn btn--primary btn--sm btn--icon-only\" aria-label=\"Send\"><svg class=\"btn__icon\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M2.01 21L23 12 2.01 3 2 10l15 2-15 2z\"/></svg></button></div></form></footer><div class=\"mc-kbd\" aria-hidden=\"true\">\n  <div class=\"mc-kbd__row\"><span class=\"mc-kbd__key\">Q</span><span class=\"mc-kbd__key\">W</span><span class=\"mc-kbd__key\">E</span><span class=\"mc-kbd__key\">R</span><span class=\"mc-kbd__key\">T</span><span class=\"mc-kbd__key\">Y</span><span class=\"mc-kbd__key\">U</span><span class=\"mc-kbd__key\">I</span><span class=\"mc-kbd__key\">O</span><span class=\"mc-kbd__key\">P</span></div>\n  <div class=\"mc-kbd__row\"><span class=\"mc-kbd__key\">A</span><span class=\"mc-kbd__key\">S</span><span class=\"mc-kbd__key\">D</span><span class=\"mc-kbd__key\">F</span><span class=\"mc-kbd__key\">G</span><span class=\"mc-kbd__key\">H</span><span class=\"mc-kbd__key\">J</span><span class=\"mc-kbd__key\">K</span><span class=\"mc-kbd__key\">L</span></div>\n  <div class=\"mc-kbd__row\"><span class=\"mc-kbd__key mc-kbd__key--wide\">⇧</span><span class=\"mc-kbd__key\">Z</span><span class=\"mc-kbd__key\">X</span><span class=\"mc-kbd__key\">C</span><span class=\"mc-kbd__key\">V</span><span class=\"mc-kbd__key\">B</span><span class=\"mc-kbd__key\">N</span><span class=\"mc-kbd__key\">M</span><span class=\"mc-kbd__key mc-kbd__key--wide\">⌫</span></div>\n  <div class=\"mc-kbd__row\"><span class=\"mc-kbd__key mc-kbd__key--wide\">123</span><span class=\"mc-kbd__key mc-kbd__key--space\">space</span><span class=\"mc-kbd__key mc-kbd__key--return\">return</span></div>\n</div>";
 
   composeSendBtns.forEach(function (sendBtn) {
     sendBtn.addEventListener("click", function () {
