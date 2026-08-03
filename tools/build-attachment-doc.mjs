@@ -83,6 +83,14 @@ const titleType = resolveToken(attachment.title);
 const descType = resolveToken(attachment.description);
 const ringWidth = px(resolve(attachment.state.done.ringWidth.$value));
 const ringOffset = px(resolve(attachment.state.done.ringOffset.$value));
+// compact — the pre-send chip density (idle/uploading only)
+const cHeight = px(resolve(attachment.compact.height.$value));
+const cPaddingX = px(resolve(attachment.compact.paddingX.$value));
+const cGap = px(resolve(attachment.compact.gap.$value));
+const cIconSize = px(resolve(attachment.compact.iconSize.$value));
+const cMaxWidth = px(resolve(attachment.compact.maxWidth.$value));
+const cRowGap = px(resolve(attachment.compact.rowGap.$value));
+const cLabelType = resolveToken(get(attachment.compact.label.$value));
 
 function typoCss(t) {
   return `font-weight: ${t.fontWeight}; font-size: ${px(t.fontSize)}; line-height: ${t.lineHeight};`;
@@ -120,7 +128,18 @@ const css = `${rootVars}
 .attachment--done { color: inherit; cursor: pointer; }
 .attachment--done:hover { border-color: ${cv("fill.primary")}; }
 .attachment--done:focus-visible { outline: ${ringWidth} solid ${cv("border.focus")}; outline-offset: ${ringOffset}; }
-.attachment--done .attachment__action-glyph { color: ${cv("icon.secondary")}; }`;
+.attachment--done .attachment__action-glyph { color: ${cv("icon.secondary")}; }
+
+/* compact — pre-send chip density (idle/uploading only): 32px, inline icon
+   instead of the media box, one text line, hugs content up to maxWidth;
+   chips sit in a nowrap row with horizontal overflow (a composition
+   container, not a component — the AttachmentGroup precedent) */
+.attachment--compact { height: ${cHeight}; padding: 0 ${cPaddingX}; gap: ${cGap}; max-width: ${cMaxWidth}; flex-shrink: 0; }
+.attachment--compact .attachment__icon { width: ${cIconSize}; height: ${cIconSize}; flex-shrink: 0; }
+.attachment--compact .attachment__content { flex-direction: row; align-items: center; gap: ${cGap}; }
+.attachment--compact .attachment__title { ${typoCss(cLabelType)} }
+.attachment--compact .attachment__description { ${typoCss(cLabelType)} flex-shrink: 0; }
+.attachment--compact .attachment__action { width: 24px; height: 24px; }`;
 
 function storyCard(title, liveHtml, codeHtml, note = "") {
   return `
@@ -144,6 +163,16 @@ function idleUploadingMarkup({ state, media = "icon", title = "Syllabus.pdf", de
         <span class="attachment__description">${description}</span>
       </span>
       <button class="attachment__action" aria-label="${state === "uploading" ? "Cancel upload" : "Remove"} ${title}">${iconClose}</button>
+    </div>`;
+}
+function compactMarkup({ state = "idle", title = "Syllabus.pdf", description = "248 KB" }) {
+  return `<div class="attachment attachment--${state} attachment--compact">
+      ${iconFile}
+      <span class="attachment__content">
+        <span class="attachment__title">${title}</span>
+        <span class="attachment__description">${description}</span>
+      </span>
+      <button class="attachment__action" aria-label="Remove ${title}">${iconClose}</button>
     </div>`;
 }
 function doneMarkup({ media = "icon", title = "Syllabus.pdf", description = "PDF · 1.2 MB" }) {
@@ -277,7 +306,7 @@ const html = `<!doctype html>
     <div class="legend">
       <div class="row"><b>Two contexts</b><span>Composer, pre-send (<code class="tok">idle</code>/<code class="tok">uploading</code> — a real remove/cancel <code class="tok">&lt;button&gt;</code>) and message display, post-send (<code class="tok">done</code> — the whole row becomes a real <code class="tok">&lt;a download&gt;</code>, not a div with a nested button).</span></div>
       <div class="row"><b>icon vs. image media</b><span><code class="tok">icon</code>: insert_drive_file.svg in a raised <code class="tok">surface.default</code> square inside the card's own <code class="tok">surface.sunken</code> — the "icon in a soft square" pattern noted years ago, first real use of it. <code class="tok">image</code>: a real <code class="tok">&lt;img&gt;</code> thumbnail filling the same box.</span></div>
-      <div class="row"><b>One size</b><span>An attachment row doesn't need an sm/base/lg ladder — same reasoning as Card/Menu/Popover.</span></div>
+      <div class="row"><b>base + compact</b><span>One BASE row for display; idle/uploading additionally get <code class="tok">--compact</code> — a 32px pre-send chip (inline icon, one text line, hugs content, nowrap row with horizontal overflow) for composer contexts, per the Gmail-chip / messenger-row convention. The <code class="tok">done</code> shape stays base-only: a sent file is informative content, not dismissible input.</span></div>
       <div class="row"><b>No error state</b><span>Not seen as a real need in the driving screenshots — only idle/uploading/done exist. Revisit if a real failed-upload case appears.</span></div>
       <div class="row"><b>Remove button</b><span>Resolved from Popover/Drawer/Modal's own close-button recipe, not re-invented: transparent → fill.neutralHover → fill.neutralActive.</span></div>
     </div>
@@ -296,6 +325,23 @@ const html = `<!doctype html>
     <div class="story-grid">
       ${mediaStories()}
     </div>
+
+    <h2 class="big-section">Density</h2>
+    <p class="section-desc">base (display) vs. compact (pre-send chip). Compact chips hug content and sit in one nowrap row with horizontal overflow — the row container is a composition, not a component (the AttachmentGroup precedent).</p>
+    <div class="story-grid">
+      ${storyCard("base", idleUploadingMarkup({ state: "idle" }), idleUploadingMarkup({ state: "idle" }), "The display density — informative, full media box.")}
+      ${storyCard("compact", compactMarkup({}), compactMarkup({}), "32px pre-send chip: inline icon, one text line, title ellipsizes at max-width.")}
+    </div>
+    <div class="usage-preview" style="margin-top:1.5rem;"><div style="display:flex; gap:${cRowGap}; overflow-x:auto;">
+      ${compactMarkup({ title: "IMG_2043.jpg", description: "1.8 MB" })}
+      ${compactMarkup({ title: "Transcript-request.pdf", description: "1.1 MB" })}
+      ${compactMarkup({ state: "uploading", title: "Enrollment-form.pdf", description: "Uploading · 30%" })}
+    </div></div>
+    <pre class="code"><code>${esc(`<div class="composer__attachments"> <!-- flex row, gap ${cRowGap}, overflow-x: auto -->
+  <div class="attachment attachment--idle attachment--compact">…</div>
+  <div class="attachment attachment--idle attachment--compact">…</div>
+  <div class="attachment attachment--uploading attachment--compact">…</div>
+</div>`)}</code></pre>
 
     <h2 class="big-section">In context</h2>
     <p class="section-desc">A composer with two in-progress attachments, and a sent message's single downloadable attachment.</p>

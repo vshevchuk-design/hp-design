@@ -155,6 +155,7 @@ const iconBack = iconOf("arrow_back", "btn__icon");
 const iconPrint = iconOf("print", "btn__icon");
 const iconAttach = iconOf("attach_file", "composer__icon");
 const iconAttachBtn = iconOf("attach_file", "btn__icon");
+const iconCloseAtt = iconOf("close", "attachment__action-glyph");
 const iconSend = iconOf("send", "btn__icon");
 const iconFile = iconOf("insert_drive_file", "attachment__icon");
 
@@ -425,6 +426,14 @@ const attMediaRadius = px(resolve(attachment.media.radius.$value));
 const attIconSize = px(resolve(attachment.media.iconSize.$value));
 const attTitleType = resolveToken(attachment.title);
 const attDescType = resolveToken(attachment.description);
+// compact — the pre-send chip density both composers use
+const attCompactHeight = px(resolve(attachment.compact.height.$value));
+const attCompactPaddingX = px(resolve(attachment.compact.paddingX.$value));
+const attCompactGap = px(resolve(attachment.compact.gap.$value));
+const attCompactIconSize = px(resolve(attachment.compact.iconSize.$value));
+const attCompactMaxWidth = px(resolve(attachment.compact.maxWidth.$value));
+const attCompactRowGap = px(resolve(attachment.compact.rowGap.$value));
+const attCompactLabelType = resolveToken(get(attachment.compact.label.$value));
 
 // ---- Bubble ----
 const bubRadius = px(resolve(bubble.radius.$value));
@@ -755,14 +764,21 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
 .mc-to-option .badge { flex-shrink: 0; }
 .mc-compose__hint { color: ${cv("text.muted")}; ${typoCss(msgMetaType)} }
 .mc-compose__hint[hidden] { display: none; }
-/* compose attachments — the Attachment component's idle shape (a div with a
-   real remove button), added via the ghost Attach-file button; on Send the
-   files render in the new thread as Attachment's done shape in the Bubble */
-.mc-compose__atts { display: flex; flex-direction: column; gap: ${msgAttachmentsGap}; flex-shrink: 0; }
-.mc-compose__atts[hidden] { display: none; }
-.mc-compose__att { max-width: none; }
-.mc-compose__att .attachment__content { flex: 1; min-width: 0; }
-.mc-att-remove { margin-left: auto; flex-shrink: 0; }
+/* pre-send attachments (both composers) — Attachment's COMPACT chip density
+   (32px, inline icon, one text line, hugs content), chips in ONE nowrap row
+   with horizontal overflow per the Gmail-chip / messenger-row convention;
+   sent files still render as the full base done row inside the Bubble */
+.mc-compose__atts, .composer__atts { display: flex; gap: ${attCompactRowGap}; overflow-x: auto; flex-shrink: 0; }
+.mc-compose__atts[hidden], .composer__atts[hidden] { display: none; }
+.attachment__action { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border: none; border-radius: ${px(resolve("radius.default"))}; background: transparent; padding: 0; cursor: pointer; color: ${cv("icon.secondary")}; }
+.attachment__action:hover { background: ${cv("fill.neutralHover")}; }
+.attachment__action:active { background: ${cv("fill.neutralActive")}; }
+.attachment__action-glyph { width: 16px; height: 16px; display: block; }
+.attachment--compact { height: ${attCompactHeight}; padding: 0 ${attCompactPaddingX}; gap: ${attCompactGap}; max-width: ${attCompactMaxWidth}; flex-shrink: 0; }
+.attachment--compact .attachment__icon { width: ${attCompactIconSize}; height: ${attCompactIconSize}; color: ${cv("icon.secondary")}; flex-shrink: 0; }
+.attachment--compact .attachment__content { flex-direction: row; align-items: center; gap: ${attCompactGap}; }
+.attachment--compact .attachment__title { ${typoCss(attCompactLabelType)} }
+.attachment--compact .attachment__description { ${typoCss(attCompactLabelType)} flex-shrink: 0; }
 .mc-compose__attach-btn { align-self: flex-start; flex-shrink: 0; }
 .mc-compose__footer { flex-shrink: 0; display: flex; justify-content: flex-end; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.4"))} ${mdPadding}; border-top: 1px solid ${cv(mdDivider)}; }
 /* fake keyboard — docs-only scaffolding, NOT a DS component (a device mock,
@@ -902,12 +918,11 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .mc-thread__meta-line { color: ${cv("text.secondary")}; ${typoCss(bodySmType)} }
 .mc-thread__scroll { flex: 1; overflow-y: auto; padding: ${px(resolve("dim.4"))}; display: flex; flex-direction: column; gap: ${px(resolve("dim.6"))}; }
 .mc-thread__composer { flex-shrink: 0; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))} ${px(resolve("dim.4"))}; }
-/* in-thread composer upgrades: pre-send attachments stack above the field
-   (Attachment idle shape, same as the compose dialog); the field itself is a
-   1-row textarea auto-growing to ~5 lines (JS caps at 120px), icons pinned
-   to the bottom edge as it grows */
-.composer__atts { display: flex; flex-direction: column; gap: ${msgAttachmentsGap}; }
-.composer__atts[hidden] { display: none; }
+/* in-thread composer upgrades: pre-send attachments sit above the field as
+   Attachment COMPACT chips (recipe + row container declared with the compose
+   dialog's, in the component section); the field itself is a 1-row textarea
+   auto-growing to ~5 lines (JS caps at 120px), icons pinned to the bottom
+   edge as it grows */
 .mc-composer .composer__field { align-items: flex-end; }
 .mc-composer .composer__input { display: block; resize: none; max-height: 120px; overflow-y: auto; }
 /* replies closed: the Composer's slot holds EmptyState's quiet pill instead */
@@ -1780,7 +1795,7 @@ const appJs = `(function () {
   // attachments — Attachment's idle shape rows under the Message field; the
   // ghost Attach-file button adds one (prototype fakes the file itself)
   var FAKE_FILES = [["IMG_2043.jpg", "1.8 MB"], ["Transcript-request.pdf", "PDF · 1.1 MB"], ["Enrollment-form.pdf", "PDF · 640 KB"]];
-  var ATT_IDLE = ${JSON.stringify(`<div class="attachment mc-compose__att"><span class="attachment__media">${iconFile}</span><span class="attachment__content"><span class="attachment__title"></span><span class="attachment__description"></span></span><button class="btn btn--ghost btn--sm btn--icon-only mc-att-remove" type="button" aria-label="Remove attachment">${iconCloseBtn}</button></div>`)};
+  var ATT_IDLE = ${JSON.stringify(`<div class="attachment attachment--compact">${iconFile}<span class="attachment__content"><span class="attachment__title"></span><span class="attachment__description"></span></span><button class="attachment__action mc-att-remove" type="button" aria-label="Remove attachment">${iconCloseAtt}</button></div>`)};
   var ATT_DONE = ${JSON.stringify(`<a class="attachment" href="#" download><span class="attachment__media">${iconFile}</span><span class="attachment__content"><span class="attachment__title"></span><span class="attachment__description"></span></span></a>`)};
   function attachmentNode(skeleton, file) {
     var host = document.createElement("div");

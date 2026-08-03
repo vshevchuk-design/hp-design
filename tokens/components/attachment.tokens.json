@@ -1,12 +1,22 @@
 {
   "component": {
     "attachment": {
-      "$description": "A file or image row — the third piece of the Message/Bubble/Attachment family (see the approved plan at ~/.claude/plans/distributed-sprouting-gadget.md), used both in a composer (pre-send, with a remove/cancel action) and in message display (post-send, a real link/download). One size only — an attachment row doesn't need an sm/base/lg ladder, same reasoning as Card/Menu/Popover. Two media variants: 'icon' (insert_drive_file.svg in a raised surface.default square — the 'icon in a soft square' pattern noted back in the very first Vercel-reference session and never used until now) for non-image files, 'image' (a real `<img>`, object-fit:cover, filling the media box edge to edge) for image attachments. Only 3 states, matching the real product need, not shadcn's full idle/uploading/processing/error/done set: **idle** (just attached, ready to send — remove action), **uploading** (in progress — description swaps to 'Uploading · NN%', same remove action doubles as cancel), **done** (already sent — the whole row becomes a real `<a>`, download affordance, no separate nested button to avoid an interactive-inside-interactive anti-pattern). No error state yet — not a real need seen in the driving screenshots, revisit if one appears. No AttachmentGroup (horizontally-scrollable multi-file row) — that's a composition of several Attachments plus a flex-wrap/scroll container, not a new token file, same pattern as Pagination's 'full bar'.",
+      "$description": "A file or image row — the third piece of the Message/Bubble/Attachment family (see the approved plan at ~/.claude/plans/distributed-sprouting-gadget.md), used both in a composer (pre-send, with a remove/cancel action) and in message display (post-send, a real link/download). One BASE size for display; the idle/uploading shapes additionally get a `compact` pre-send chip density (see compact.$description) — not a full sm/base/lg ladder, and the done row stays single-size per Card/Menu/Popover reasoning. Two media variants: 'icon' (insert_drive_file.svg in a raised surface.default square — the 'icon in a soft square' pattern noted back in the very first Vercel-reference session and never used until now) for non-image files, 'image' (a real `<img>`, object-fit:cover, filling the media box edge to edge) for image attachments. Only 3 states, matching the real product need, not shadcn's full idle/uploading/processing/error/done set: **idle** (just attached, ready to send — remove action), **uploading** (in progress — description swaps to 'Uploading · NN%', same remove action doubles as cancel), **done** (already sent — the whole row becomes a real `<a>`, download affordance, no separate nested button to avoid an interactive-inside-interactive anti-pattern). No error state yet — not a real need seen in the driving screenshots, revisit if one appears. No AttachmentGroup (horizontally-scrollable multi-file row) — that's a composition of several Attachments plus a flex-wrap/scroll container, not a new token file, same pattern as Pagination's 'full bar'.",
       "radius": { "$type": "dimension", "$value": "{radius.default}" },
       "padding": { "$type": "dimension", "$value": "{dim.2}" },
       "gap": { "$type": "dimension", "$value": "{dim.2}" },
       "bg": { "$type": "color", "$value": "{surface.dim}" },
       "border": { "$type": "color", "$value": "{border.default}" },
+      "compact": {
+        "$description": "Pre-send chip density for the idle/uploading shapes — the composer context (compose dialog + in-thread reply), added 2026-08-03. 32px control height (the sm control scale), inline 16px icon instead of the 40px media box, one text line (title ellipsizes at maxWidth, size stays inline). Chips hug content and sit in ONE nowrap row with horizontal overflow (rowGap) — pre-send files are transient dismissible input, per the Gmail-attachment-chip / messenger-thumbnail-row convention — unlike the informative full-width row a SENT message displays: the done shape deliberately has no compact variant.",
+        "height": { "$type": "dimension", "$value": "{dim.8}" },
+        "paddingX": { "$type": "dimension", "$value": "{dim.2}" },
+        "gap": { "$type": "dimension", "$value": "{dim.1_5}" },
+        "iconSize": { "$type": "dimension", "$value": "{dim.4}" },
+        "maxWidth": { "$type": "dimension", "$value": "{dim.56}" },
+        "rowGap": { "$type": "dimension", "$value": "{dim.1_5}" },
+        "label": { "$type": "typography", "$value": "{text-style.body-sm}" }
+      },
       "media": {
         "size": { "$type": "dimension", "$value": "{dim.10}" },
         "radius": { "$type": "dimension", "$value": "{radius.default}" },
