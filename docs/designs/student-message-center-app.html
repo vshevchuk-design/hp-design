@@ -374,7 +374,14 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 /* New message entry point: floating pill over the list on mobile, a regular
    topbar button on every split view (>=768) */
 .mc-topbar-new { display: none; }
-.mc-fab { position: absolute; right: 16px; bottom: 16px; border-radius: 999px; box-shadow: 0px 4px 16px 0px rgba(21, 25, 30, 0.12); }
+.mc-fab { position: absolute; right: 16px; bottom: 16px; border-radius: 999px; box-shadow: 0px 4px 16px 0px rgba(21, 25, 30, 0.12); transition: padding 0.2s ease, gap 0.2s ease; }
+/* extended-FAB convention: the label collapses away while the list scrolls
+   down (max-width/opacity tween + the pill's own padding/gap follow) and
+   comes back on any scroll up or near the top; collapsed geometry is
+   Button's own icon-only shape (width = height, no padding) */
+.mc-fab__label { max-width: 160px; opacity: 1; overflow: hidden; white-space: nowrap; transition: max-width 0.2s ease, opacity 0.15s ease; }
+.mc-fab.mc-fab--collapsed { width: 48px; padding: 0; gap: 0; }
+.mc-fab.mc-fab--collapsed .mc-fab__label { max-width: 0; opacity: 0; }
 /* on mobile an open thread takes the whole screen — the app's own
    "Message Center" topbar leaves, the thread bar (Back …) is the header */
 .mc--thread-open .mc__topbar { display: none; }
@@ -701,7 +708,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <div class="empty-state"><span class="empty-state__text" id="mc-rail-empty-text">No threads found</span></div>
         </div>
       </div>
-      <button class="btn btn--primary btn--lg mc-fab" id="mc-new-fab" type="button"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>New message</button>
+      <button class="btn btn--primary btn--lg mc-fab" id="mc-new-fab" type="button"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg><span class="mc-fab__label">New message</span></button>
     </aside>
     <section class="mc__reading" aria-label="Thread">
       <div class="mc-empty" id="mc-empty"><div class="empty-state"><span class="empty-state__text">Choose a Thread</span></div></div>
@@ -1286,6 +1293,19 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     flag.addEventListener("keydown", function (e) { e.stopPropagation(); });
   }
   document.querySelectorAll(".thread-item-inbox").forEach(bindRow);
+
+  // FAB — extended by default; collapses to icon-only while the thread list
+  // scrolls down, re-extends on scroll up or near the top (the list is the
+  // scroll container, not the window)
+  var fab = document.getElementById("mc-new-fab");
+  var railLists = document.querySelector(".mc-rail__lists");
+  var lastListScroll = 0;
+  railLists.addEventListener("scroll", function () {
+    var y = railLists.scrollTop;
+    if (y > lastListScroll && y > 40) fab.classList.add("mc-fab--collapsed");
+    else if (y < lastListScroll - 4 || y <= 40) fab.classList.remove("mc-fab--collapsed");
+    lastListScroll = y;
+  }, { passive: true });
 
   // back (mobile only)
   function bindBack(btn) {

@@ -781,7 +781,14 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 /* New message entry point: floating pill over the list on mobile, a regular
    topbar button on every split view (>=768) */
 .mc-topbar-new { display: none; }
-.mc-fab { position: absolute; right: ${px(resolve("dim.4"))}; bottom: ${px(resolve("dim.4"))}; border-radius: ${px(resolve("radius.full"))}; box-shadow: ${fabShadowCss}; }
+.mc-fab { position: absolute; right: ${px(resolve("dim.4"))}; bottom: ${px(resolve("dim.4"))}; border-radius: ${px(resolve("radius.full"))}; box-shadow: ${fabShadowCss}; transition: padding 0.2s ease, gap 0.2s ease; }
+/* extended-FAB convention: the label collapses away while the list scrolls
+   down (max-width/opacity tween + the pill's own padding/gap follow) and
+   comes back on any scroll up or near the top; collapsed geometry is
+   Button's own icon-only shape (width = height, no padding) */
+.mc-fab__label { max-width: 160px; opacity: 1; overflow: hidden; white-space: nowrap; transition: max-width 0.2s ease, opacity 0.15s ease; }
+.mc-fab.mc-fab--collapsed { width: ${btnPrimLgHeight}; padding: 0; gap: 0; }
+.mc-fab.mc-fab--collapsed .mc-fab__label { max-width: 0; opacity: 0; }
 /* on mobile an open thread takes the whole screen — the app's own
    "Message Center" topbar leaves, the thread bar (Back …) is the header */
 .mc--thread-open .mc__topbar { display: none; }
@@ -1330,6 +1337,19 @@ const appJs = `(function () {
   }
   document.querySelectorAll(".thread-item-inbox").forEach(bindRow);
 
+  // FAB — extended by default; collapses to icon-only while the thread list
+  // scrolls down, re-extends on scroll up or near the top (the list is the
+  // scroll container, not the window)
+  var fab = document.getElementById("mc-new-fab");
+  var railLists = document.querySelector(".mc-rail__lists");
+  var lastListScroll = 0;
+  railLists.addEventListener("scroll", function () {
+    var y = railLists.scrollTop;
+    if (y > lastListScroll && y > 40) fab.classList.add("mc-fab--collapsed");
+    else if (y < lastListScroll - 4 || y <= 40) fab.classList.remove("mc-fab--collapsed");
+    lastListScroll = y;
+  }, { passive: true });
+
   // back (mobile only)
   function bindBack(btn) {
     btn.addEventListener("click", function () { mc.classList.remove("mc--thread-open"); });
@@ -1806,7 +1826,7 @@ ${appCss}
           <div class="empty-state"><span class="empty-state__text" id="mc-rail-empty-text">No threads found</span></div>
         </div>
       </div>
-      <button class="btn btn--primary btn--lg mc-fab" id="mc-new-fab" type="button">${iconEdit}New message</button>
+      <button class="btn btn--primary btn--lg mc-fab" id="mc-new-fab" type="button">${iconEdit}<span class="mc-fab__label">New message</span></button>
     </aside>
     <section class="mc__reading" aria-label="Thread">
       <div class="mc-empty" id="mc-empty"><div class="empty-state"><span class="empty-state__text">Choose a Thread</span></div></div>
