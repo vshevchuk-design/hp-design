@@ -128,7 +128,7 @@ const colorPaths = [
   "fill.primary", "fill.primaryHover", "fill.primaryActive",
   "fill.neutral", "fill.neutralHover", "fill.neutralActive",
   "bg.primary", "bg.neutral", "bg.warning", "text.warning", "bg.danger", "text.danger", "bg.success", "text.success", "status.success", "surface.overlay",
-  "fill.danger", "fill.dangerHover", "fill.disabled", "text.disabled", "icon.disabled",
+  "fill.danger", "fill.dangerHover", "fill.disabled", "text.disabled", "icon.disabled", "surface.disabled",
   ...usedHues.flatMap((h) => [`avatar.${h}.bg`, `avatar.${h}.text`]),
 ];
 const colorValue = Object.fromEntries(colorPaths.map((p) => [p, resolve(p)]));
@@ -154,6 +154,7 @@ const iconFlagFilled = fs.readFileSync(path.join(root, "assets/icons/material-fi
 const iconBack = iconOf("arrow_back", "btn__icon");
 const iconPrint = iconOf("print", "btn__icon");
 const iconAttach = iconOf("attach_file", "composer__icon");
+const iconAttachBtn = iconOf("attach_file", "btn__icon");
 const iconSend = iconOf("send", "btn__icon");
 const iconFile = iconOf("insert_drive_file", "attachment__icon");
 
@@ -222,6 +223,15 @@ const selectBase = {
   value: resolveToken(selBase.value),
   label: resolveToken(selBase.label),
   labelGap: px(resolve(selBase.labelGap.$value)),
+};
+// Select's disabled state — the compose To trigger sits disabled until a
+// department is chosen; resolved from select.tokens.json's own state node
+const selectDisabled = {
+  bg: refPath(select.state.disabled.bg.$value),
+  border: refPath(select.state.disabled.border.$value),
+  value: refPath(select.state.disabled.value.$value),
+  label: refPath(select.state.disabled.label.$value),
+  chevron: refPath(select.state.disabled.chevron.$value),
 };
 
 // ---- Input (base) — compose subject + message fields (the message field is
@@ -697,7 +707,9 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
 .mc-compose::backdrop { background: ${cv(mdOverlay)}; }
 .mc-compose__header { flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))}; border-bottom: 1px solid ${cv(mdDivider)}; }
 .mc-compose__title { margin: 0; color: ${cv(mdTitleColor)}; ${typoCss(mdTitleType)} }
-.mc-compose__body { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: ${mdGap}; padding: ${mdPadding}; }
+/* mobile-first compact spacing (explicit user call — the takeover felt too
+   airy); split views restore Modal's own padding/gap below */
+.mc-compose__body { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.4"))}; }
 .mc-compose__body .select { display: flex; width: 100%; flex-shrink: 0; }
 /* Subject / Message — Input's anatomy on real editable controls */
 .mc-field { box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; gap: ${inputLabelGap}; min-height: ${inputHeight}; padding: ${px(resolve("dim.1_5"))} ${inputPaddingX}; border: 1px solid ${cv("border.default")}; border-radius: ${inputRadius}; background: ${cv("surface.sunken")}; cursor: text; flex-shrink: 0; }
@@ -708,17 +720,19 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
 .mc-field:focus-within .mc-field__label { color: ${cv(inputFocusLabelColor)}; }
 .mc-field__control { border: none; outline: none; background: transparent; padding: 0; width: 100%; color: ${cv("text.default")}; ${typoCss(inputValueType)} font-family: ${cv("family.sans")}; }
 .mc-field__control::placeholder { color: ${cv("text.muted")}; }
-.mc-field--area { min-height: 120px; justify-content: flex-start; }
-.mc-field--area .mc-field__control { resize: none; flex: 1; min-height: 72px; }
-/* To — the recipient block a department's policy reveals. The list is the
-   Listbox recipe used inline (no popover, no shadow): the same
-   single-select checkmark semantics as the Department filter, one row per
-   allowed recipient (real Avatar + name/role + away Badge). */
-.mc-compose__to { display: flex; flex-direction: column; gap: ${px(resolve("dim.1_5"))}; flex-shrink: 0; }
-.mc-compose__to[hidden] { display: none; }
-.mc-compose__group-label { color: ${cv("text.secondary")}; ${typoCss(bodySmType)} }
-.mc-compose__to .listbox { box-shadow: none; min-width: 0; }
-.mc-compose__to .empty-state { height: auto; padding: ${px(resolve("dim.2"))} 0; }
+.mc-field--area { min-height: 96px; justify-content: flex-start; }
+.mc-field--area .mc-field__control { resize: none; flex: 1; min-height: 56px; }
+/* To — a second Select, always present, disabled until a department is
+   chosen (Select's own disabled state tokens, resolved). Its Listbox
+   popover holds the chosen department's allowed recipients per its policy:
+   the department itself first (department-only / "both"), then members —
+   real Avatar + name/role rows, away members disabled with a neutral away
+   Badge. Same trigger + popover composition as the Department select. */
+.select:disabled { background: ${cv(selectDisabled.bg)}; border-color: ${cv(selectDisabled.border)}; cursor: default; }
+.select:disabled .select__label { color: ${cv(selectDisabled.label)}; }
+.select:disabled .select__value { color: ${cv(selectDisabled.value)}; }
+.select:disabled .select__chevron { color: ${cv(selectDisabled.chevron)}; }
+#mc-compose-to-lb .listbox__list[hidden] { display: none; }
 .mc-to-option { align-items: center; }
 .mc-to-option:disabled { cursor: default; }
 .mc-to-option:disabled:hover { background: transparent; }
@@ -729,18 +743,41 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
 .mc-to-option:disabled .avatar { filter: grayscale(1); opacity: 0.6; }
 .mc-to-option .badge { flex-shrink: 0; }
 .mc-compose__hint { color: ${cv("text.muted")}; ${typoCss(msgMetaType)} }
+.mc-compose__hint[hidden] { display: none; }
+/* compose attachments — the Attachment component's idle shape (a div with a
+   real remove button), added via the ghost Attach-file button; on Send the
+   files render in the new thread as Attachment's done shape in the Bubble */
+.mc-compose__atts { display: flex; flex-direction: column; gap: ${msgAttachmentsGap}; flex-shrink: 0; }
+.mc-compose__atts[hidden] { display: none; }
+.mc-compose__att { max-width: none; }
+.mc-compose__att .attachment__content { flex: 1; min-width: 0; }
+.mc-att-remove { margin-left: auto; flex-shrink: 0; }
+.mc-compose__attach-btn { align-self: flex-start; flex-shrink: 0; }
 .mc-compose__footer { flex-shrink: 0; display: flex; justify-content: flex-end; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.4"))} ${mdPadding}; border-top: 1px solid ${cv(mdDivider)}; }
+/* fake keyboard — docs-only scaffolding, NOT a DS component (a device mock,
+   same non-tokenized call as the viewer's phone frame): docked under the
+   body while a text field is focused on the takeover, so the layout's
+   reason (Send in the header, above the keyboard) is visible in the
+   prototype. Neutral token colours; key geometry is literal. */
+.mc-kbd { display: none; }
 @media (max-width: 767px) {
   .mc-compose { position: fixed; inset: 0; margin: 0; width: 100vw; max-width: 100vw; height: 100dvh; max-height: 100dvh; border-radius: 0; }
   .mc-compose__close, .mc-compose__footer { display: none; }
   .mc-compose__title { flex: 1; text-align: center; }
   .mc-compose[open] { transform: translateY(0); transition: transform 0.25s ease; }
   @starting-style { .mc-compose[open] { transform: translateY(100vh); } }
+  .mc-compose--kbd .mc-kbd { display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; padding: 8px 3px 20px; background: ${cv("surface.sunken")}; border-top: 1px solid ${cv("border.default")}; }
+  .mc-kbd__row { display: flex; gap: 5px; justify-content: center; }
+  .mc-kbd__key { flex: 1; max-width: 34px; height: 40px; display: inline-flex; align-items: center; justify-content: center; background: ${cv("surface.default")}; border-radius: 6px; box-shadow: 0 1px 0 ${cv("border.strong")}; color: ${cv("text.default")}; font-size: 15px; }
+  .mc-kbd__key--wide { max-width: 44px; color: ${cv("text.secondary")}; font-size: 12px; }
+  .mc-kbd__key--space { flex: 5; max-width: none; }
+  .mc-kbd__key--return { flex: 2; max-width: none; background: ${cv("fill.primary")}; color: ${cv("text.onFill")}; font-size: 13px; }
 }
 @media (min-width: 768px) {
   .mc-compose { width: min(560px, calc(100vw - ${px(resolve("dim.8"))})); max-height: calc(100dvh - ${px(resolve("dim.16"))}); border-radius: ${mdRadius}; box-shadow: ${mdShadowCss}; }
   .mc-compose__cancel-m, .mc-compose__send-m { display: none; }
   .mc-compose__header { padding: ${px(resolve("dim.4"))} ${mdPadding}; }
+  .mc-compose__body { padding: ${mdPadding}; gap: ${mdGap}; }
   .mc-compose[open] { opacity: 1; transform: translateY(0); transition: opacity 0.18s ease, transform 0.18s ease; }
   @starting-style { .mc-compose[open] { opacity: 0; transform: translateY(8px); } }
 }
@@ -1184,45 +1221,54 @@ function toOptionMarkup({ avatarName, displayName, role, away, value, selected }
   const trailing = away
     ? `<span class="badge badge--sm badge--role-neutral">${away}</span>`
     : iconCheckmark;
-  return `<button type="button" class="listbox__option mc-to-option${selected ? " listbox__option--selected" : ""}" role="radio" aria-checked="${selected ? "true" : "false"}" data-recipient="${esc(value)}"${selected ? ' data-default="true"' : ""}${away ? " disabled" : ""}>
+  return `<button type="button" class="listbox__option mc-to-option${selected ? " listbox__option--selected" : ""}" role="option" aria-selected="${selected ? "true" : "false"}" data-recipient="${esc(value)}" data-display="${esc(displayName)}"${selected ? ' data-default="true"' : ""}${away ? " disabled" : ""}>
               ${avatarMarkup(avatarName, "sm")}
               <span class="mc-to-option__stack"><span class="mc-to-option__name">${displayName}</span><span class="mc-to-option__role">${role}</span></span>
               ${trailing}
             </button>`;
 }
-function toBlockMarkup(deptName) {
-  const cfg = composePolicies[deptName];
-  if (!cfg || cfg.policy === "department") return "";
-  const available = (cfg.members || []).filter((m) => !m.away);
-  let inner;
-  if (cfg.policy === "members" && available.length === 0) {
-    inner = `<div class="empty-state"><span class="empty-state__text">No one at ${deptName} is available right now — please try again later</span></div>`;
-  } else {
-    const rows = [];
-    if (cfg.policy === "both") {
-      rows.push(toOptionMarkup({
-        avatarName: deptName, displayName: `${deptName} (department)`,
-        role: "Fastest response — routed to available staff", value: "", selected: true,
-      }));
-    }
-    cfg.members.forEach((m) => rows.push(toOptionMarkup({
-      avatarName: m.name, displayName: m.name, role: m.role, away: m.away, value: m.name, selected: false,
-    })));
-    const hint = cfg.policy === "both" && cfg.members.some((m) => m.away)
-      ? `<span class="mc-compose__hint">Staff who are away can't receive messages — the department option always can.</span>`
-      : "";
-    inner = `<div class="listbox" role="radiogroup" aria-label="Recipient">
-            <ul class="listbox__list">
-              ${rows.map((r) => `<li>${r}</li>`).join("\n              ")}
-            </ul>
-          </div>${hint}`;
+// one option group per department inside the single To listbox popover; the
+// department itself is the FIRST option (department-only / "both" policies,
+// preselected), members follow, away members disabled
+function toGroupMarkup(deptName) {
+  const cfg = composePolicies[deptName] || { policy: "department" };
+  const rows = [];
+  if (cfg.policy !== "members") {
+    rows.push(toOptionMarkup({
+      avatarName: deptName, displayName: `${deptName} (department)`,
+      role: "Fastest response — routed to available staff", value: "", selected: true,
+    }));
   }
-  return `<div class="mc-compose__to" data-to-dept="${esc(deptName)}" hidden>
-          <span class="mc-compose__group-label">To</span>
-          ${inner}
-        </div>`;
+  (cfg.members || []).forEach((m) => rows.push(toOptionMarkup({
+    avatarName: m.name, displayName: m.name, role: m.role, away: m.away, value: m.name, selected: false,
+  })));
+  return `<ul class="listbox__list" role="listbox" aria-label="Recipient" data-to-dept="${esc(deptName)}" hidden>
+          ${rows.map((r) => `<li>${r}</li>`).join("\n          ")}
+        </ul>`;
 }
-const composeToBlocks = departments.map(toBlockMarkup).filter(Boolean).join("\n        ");
+const composeToGroups = departments.map(toGroupMarkup).join("\n        ");
+// per-department hint under the To select (shown with its group)
+const composeToHints = departments.map((deptName) => {
+  const cfg = composePolicies[deptName] || {};
+  const members = cfg.members || [];
+  if (cfg.policy === "members" && members.every((m) => m.away)) {
+    return `<span class="mc-compose__hint" data-to-dept="${esc(deptName)}" hidden>No one at ${deptName} is available right now — please try again later.</span>`;
+  }
+  if (cfg.policy === "both" && members.some((m) => m.away)) {
+    return `<span class="mc-compose__hint" data-to-dept="${esc(deptName)}" hidden>Staff who are away can't receive messages — the department option always can.</span>`;
+  }
+  return "";
+}).filter(Boolean).join("\n    ");
+
+// fake keyboard — docs-only scaffolding (device mock), see the CSS note
+const kbdKey = (k, cls = "") => `<span class="mc-kbd__key${cls}">${k}</span>`;
+const kbdRow = (inner) => `<div class="mc-kbd__row">${inner}</div>`;
+const composeKbd = `<div class="mc-kbd" aria-hidden="true">
+  ${kbdRow("QWERTYUIOP".split("").map((k) => kbdKey(k)).join(""))}
+  ${kbdRow("ASDFGHJKL".split("").map((k) => kbdKey(k)).join(""))}
+  ${kbdRow(kbdKey("⇧", " mc-kbd__key--wide") + "ZXCVBNM".split("").map((k) => kbdKey(k)).join("") + kbdKey("⌫", " mc-kbd__key--wide"))}
+  ${kbdRow(kbdKey("123", " mc-kbd__key--wide") + kbdKey("space", " mc-kbd__key--space") + kbdKey("return", " mc-kbd__key--return"))}
+</div>`;
 
 // runtime avatar lookup for the thread row/pane a Send creates — build-time
 // Avatar recipe (photo → initials tier), keyed by every possible recipient
@@ -1583,25 +1629,30 @@ const appJs = `(function () {
   var composeSubject = document.getElementById("mc-compose-subject");
   var composeMessage = document.getElementById("mc-compose-message");
   var composeSendBtns = [document.getElementById("mc-compose-send"), document.getElementById("mc-compose-send-m")];
-  var composeToBlocks = Array.prototype.slice.call(document.querySelectorAll(".mc-compose__to"));
+  var composeToTrigger = document.getElementById("mc-compose-to");
+  var composeToValue = document.getElementById("mc-compose-to-value");
+  var composeToLb = document.getElementById("mc-compose-to-lb");
+  var composeToGroups = Array.prototype.slice.call(composeToLb.querySelectorAll(".listbox__list"));
+  var composeToHints = Array.prototype.slice.call(document.querySelectorAll(".mc-compose__hint"));
+  var composeAtts = [];
+  var composeAttsWrap = document.getElementById("mc-compose-atts");
   var COMPOSE_AVATARS = ${JSON.stringify(composeAvatarMap)};
 
-  function activeToBlock() {
-    return composeToBlocks.filter(function (b) { return b.dataset.toDept === composeDept; })[0] || null;
+  function activeToGroup() {
+    return composeToGroups.filter(function (g) { return g.dataset.toDept === composeDept; })[0] || null;
   }
+  // composeRecipient: null = nothing chosen; "" = the department itself;
+  // otherwise the member's name. An all-away members-only department never
+  // gets a selectable option, so it stays null and Send stays disabled.
   function composeRecipientOk() {
-    if (!composeDept) return false;
-    var block = activeToBlock();
-    if (!block) return true;                                   // department-only policy
-    if (!block.querySelector(".mc-to-option")) return false;   // everyone away
-    return composeRecipient !== null;
+    return !!composeDept && composeRecipient !== null;
   }
   function validateCompose() {
     var ok = composeRecipientOk() && composeMessage.value.trim() !== "";
     composeSendBtns.forEach(function (b) { b.disabled = !ok; });
   }
   function composeHasDraft() {
-    return !!composeDept || composeSubject.value.trim() !== "" || composeMessage.value.trim() !== "";
+    return !!composeDept || composeSubject.value.trim() !== "" || composeMessage.value.trim() !== "" || composeAtts.length > 0;
   }
 
   // floating label — Input's own state model: resting shows the placeholder
@@ -1619,36 +1670,96 @@ const appJs = `(function () {
     field.addEventListener("click", function () { field.querySelector(".mc-field__control").focus(); });
   });
 
-  composeToBlocks.forEach(function (block) {
-    block.querySelectorAll(".mc-to-option:not([disabled])").forEach(function (opt) {
+  function setRecipientFromOption(opt) {
+    composeRecipient = opt.dataset.recipient;
+    composeToValue.textContent = opt.dataset.display;
+  }
+  // To listbox popover — same trigger-anchored positioning as the Department one
+  composeToLb.addEventListener("toggle", function (e) {
+    if (e.newState === "open") {
+      var r = composeToTrigger.getBoundingClientRect();
+      composeToLb.style.position = "fixed";
+      composeToLb.style.margin = "0";
+      composeToLb.style.top = r.bottom + 4 + "px";
+      composeToLb.style.left = r.left + "px";
+      composeToLb.style.minWidth = r.width + "px";
+    }
+  });
+  composeToGroups.forEach(function (group) {
+    group.querySelectorAll(".mc-to-option:not([disabled])").forEach(function (opt) {
       opt.addEventListener("click", function () {
-        block.querySelectorAll(".mc-to-option").forEach(function (o) {
+        group.querySelectorAll(".mc-to-option").forEach(function (o) {
           o.classList.toggle("listbox__option--selected", o === opt);
-          o.setAttribute("aria-checked", o === opt ? "true" : "false");
+          o.setAttribute("aria-selected", o === opt ? "true" : "false");
         });
-        composeRecipient = opt.dataset.recipient;
+        setRecipientFromOption(opt);
+        composeToLb.hidePopover();
         validateCompose();
       });
     });
+  });
+
+  // attachments — Attachment's idle shape rows under the Message field; the
+  // ghost Attach-file button adds one (prototype fakes the file itself)
+  var FAKE_FILES = [["IMG_2043.jpg", "1.8 MB"], ["Transcript-request.pdf", "PDF · 1.1 MB"], ["Enrollment-form.pdf", "PDF · 640 KB"]];
+  var ATT_IDLE = ${JSON.stringify(`<div class="attachment mc-compose__att"><span class="attachment__media">${iconFile}</span><span class="attachment__content"><span class="attachment__title"></span><span class="attachment__description"></span></span><button class="btn btn--ghost btn--sm btn--icon-only mc-att-remove" type="button" aria-label="Remove attachment">${iconCloseBtn}</button></div>`)};
+  var ATT_DONE = ${JSON.stringify(`<a class="attachment" href="#" download><span class="attachment__media">${iconFile}</span><span class="attachment__content"><span class="attachment__title"></span><span class="attachment__description"></span></span></a>`)};
+  function attachmentNode(skeleton, file) {
+    var host = document.createElement("div");
+    host.innerHTML = skeleton;
+    var el = host.firstChild;
+    el.querySelector(".attachment__title").textContent = file[0];
+    el.querySelector(".attachment__description").textContent = file[1];
+    return el;
+  }
+  function renderComposeAtts() {
+    composeAttsWrap.innerHTML = "";
+    composeAtts.forEach(function (file, i) {
+      var el = attachmentNode(ATT_IDLE, file);
+      el.querySelector(".mc-att-remove").addEventListener("click", function () {
+        composeAtts.splice(i, 1);
+        renderComposeAtts();
+      });
+      composeAttsWrap.appendChild(el);
+    });
+    composeAttsWrap.hidden = composeAtts.length === 0;
+  }
+  document.getElementById("mc-compose-attach").addEventListener("click", function () {
+    composeAtts.push(FAKE_FILES[composeAtts.length % FAKE_FILES.length]);
+    renderComposeAtts();
+  });
+
+  // fake keyboard — shown while a text field is focused (mobile takeover only)
+  composeDlg.addEventListener("focusin", function (e) {
+    composeDlg.classList.toggle("mc-compose--kbd", !!e.target.closest(".mc-field"));
+  });
+  composeDlg.addEventListener("focusout", function () {
+    composeDlg.classList.remove("mc-compose--kbd");
   });
 
   function resetCompose() {
     composeDept = null;
     composeRecipient = null;
     composeDeptValue.textContent = "Choose a department";
+    composeToValue.textContent = "Choose a recipient";
+    composeToTrigger.disabled = true;
     composeSubject.value = "";
     composeMessage.value = "";
+    composeAtts = [];
+    renderComposeAtts();
+    composeDlg.classList.remove("mc-compose--kbd");
     document.querySelectorAll(".mc-field").forEach(function (f) { f.classList.remove("mc-field--floated"); });
     composeDeptLb.querySelectorAll(".listbox__option").forEach(function (o) {
       o.classList.remove("listbox__option--selected");
       o.setAttribute("aria-selected", "false");
     });
-    composeToBlocks.forEach(function (b) {
-      b.hidden = true;
-      b.querySelectorAll(".mc-to-option").forEach(function (o) {
+    composeToHints.forEach(function (h) { h.hidden = true; });
+    composeToGroups.forEach(function (g) {
+      g.hidden = true;
+      g.querySelectorAll(".mc-to-option").forEach(function (o) {
         var def = o.dataset.default === "true";
         o.classList.toggle("listbox__option--selected", def);
-        o.setAttribute("aria-checked", def ? "true" : "false");
+        o.setAttribute("aria-selected", def ? "true" : "false");
       });
     });
     validateCompose();
@@ -1697,12 +1808,17 @@ const appJs = `(function () {
       composeDept = opt.dataset.dept;
       composeDeptValue.textContent = composeDept;
       composeDeptLb.hidePopover();
+      // the To select wakes up scoped to this department's policy: its group
+      // shows, the department option (when the policy has one) is preselected
       composeRecipient = null;
-      composeToBlocks.forEach(function (b) { b.hidden = b.dataset.toDept !== composeDept; });
-      var block = activeToBlock();
-      if (block) {
-        var preset = block.querySelector(".listbox__option--selected");
-        if (preset) composeRecipient = preset.dataset.recipient;
+      composeToValue.textContent = "Choose a recipient";
+      composeToTrigger.disabled = false;
+      composeToGroups.forEach(function (g) { g.hidden = g.dataset.toDept !== composeDept; });
+      composeToHints.forEach(function (h) { h.hidden = h.dataset.toDept !== composeDept; });
+      var group = activeToGroup();
+      if (group) {
+        var preset = group.querySelector(".listbox__option--selected");
+        if (preset) setRecipientFromOption(preset);
       }
       validateCompose();
     });
@@ -1747,6 +1863,13 @@ const appJs = `(function () {
       bubbleRowEl.className = "bubble-row bubble-row--self";
       bubbleRowEl.innerHTML = SELF_SENDER + '<div class="bubble bubble--self bubble--tint"><p></p></div>';
       bubbleRowEl.querySelector(".bubble p").textContent = text;
+      // attached files ride along as Attachment's done shape inside the bubble
+      if (composeAtts.length) {
+        var attsWrap = document.createElement("div");
+        attsWrap.className = "message__attachments";
+        composeAtts.forEach(function (file) { attsWrap.appendChild(attachmentNode(ATT_DONE, file)); });
+        bubbleRowEl.querySelector(".bubble").appendChild(attsWrap);
+      }
       pane.querySelector(".mc-thread__scroll").appendChild(bubbleRowEl);
       bindBack(pane.querySelector(".mc-thread__back"));
       bindArchive(pane.querySelector(".mc-archive"));
@@ -1854,7 +1977,14 @@ ${appCss}
         ${departments.map((d) => `<li><button class="listbox__option" role="option" aria-selected="false" data-dept="${esc(d)}" type="button">${d}${iconCheckmark}</button></li>`).join("\n        ")}
       </ul>
     </div>
-    ${composeToBlocks}
+    <button class="select select--base" id="mc-compose-to" type="button" popovertarget="mc-compose-to-lb" disabled>
+      <span class="select__stack"><span class="select__label">To</span><span class="select__value" id="mc-compose-to-value">Choose a recipient</span></span>
+      ${iconChevronSelect}
+    </button>
+    <div class="listbox" id="mc-compose-to-lb" popover>
+        ${composeToGroups}
+    </div>
+    ${composeToHints}
     <label class="mc-field">
       <span class="mc-field__label">Subject</span>
       <input class="mc-field__control" id="mc-compose-subject" placeholder="Subject (optional)" aria-label="Subject" />
@@ -1863,11 +1993,14 @@ ${appCss}
       <span class="mc-field__label">Message</span>
       <textarea class="mc-field__control" id="mc-compose-message" placeholder="Write your message..." aria-label="Message"></textarea>
     </label>
+    <div class="mc-compose__atts" id="mc-compose-atts" hidden></div>
+    <button class="btn btn--ghost btn--sm mc-compose__attach-btn" id="mc-compose-attach" type="button">${iconAttachBtn}Attach file</button>
   </div>
   <footer class="mc-compose__footer">
     <button class="btn btn--secondary btn--base" id="mc-compose-cancel" type="button">Cancel</button>
     <button class="btn btn--primary btn--base" id="mc-compose-send" type="button" disabled>Send</button>
   </footer>
+  ${composeKbd}
 </dialog>
 <dialog class="mc-confirm" id="mc-discard" aria-labelledby="mc-discard-title">
   <div class="mc-confirm__body">
