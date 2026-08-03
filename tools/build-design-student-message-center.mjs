@@ -781,13 +781,16 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 /* New message entry point: floating pill over the list on mobile, a regular
    topbar button on every split view (>=768) */
 .mc-topbar-new { display: none; }
-.mc-fab { position: absolute; right: ${px(resolve("dim.4"))}; bottom: ${px(resolve("dim.4"))}; border-radius: ${px(resolve("radius.full"))}; box-shadow: ${fabShadowCss}; transition: padding 0.2s ease, gap 0.2s ease; }
+.mc-fab { position: absolute; right: ${px(resolve("dim.4"))}; bottom: ${px(resolve("dim.4"))}; border-radius: ${px(resolve("radius.full"))}; box-shadow: ${fabShadowCss}; transition: padding 0.25s ease, gap 0.25s ease; }
 /* extended-FAB convention: the label collapses away while the list scrolls
-   down (max-width/opacity tween + the pill's own padding/gap follow) and
-   comes back on any scroll up or near the top; collapsed geometry is
-   Button's own icon-only shape (width = height, no padding) */
-.mc-fab__label { max-width: 160px; opacity: 1; overflow: hidden; white-space: nowrap; transition: max-width 0.2s ease, opacity 0.15s ease; }
-.mc-fab.mc-fab--collapsed { width: ${btnPrimLgHeight}; padding: 0; gap: 0; }
+   down and comes back on any scroll up or near the top. NO explicit width
+   anywhere — width isn't animatable from auto, so the collapsed circle's
+   size must EMERGE from the animated properties (label max-width → 0 +
+   padding/gap tween): collapsed side padding = (height − iconSize) / 2,
+   which lands the pill at exactly Button's icon-only width-equals-height
+   circle at the end of the tween. */
+.mc-fab__label { max-width: 130px; opacity: 1; overflow: hidden; white-space: nowrap; transition: max-width 0.25s ease, opacity 0.2s ease; }
+.mc-fab.mc-fab--collapsed { padding: 0 ${(parseInt(btnPrimLgHeight) - parseInt(btnPrimLgIconSize)) / 2}px; gap: 0; }
 .mc-fab.mc-fab--collapsed .mc-fab__label { max-width: 0; opacity: 0; }
 /* on mobile an open thread takes the whole screen — the app's own
    "Message Center" topbar leaves, the thread bar (Back …) is the header */
