@@ -115,6 +115,8 @@ const SELF = { name: "George Amalor", hue: hueOf("George Amalor"), initials: ini
 const identityNames = [
   "Academic Advising", "Office of the Registrar", "English Dept", "Financial Aid",
   "Alexander Robinson", "Ava Robinson", "Betty Locherty", SELF.name,
+  // compose-only staff (recipient picker rows) — initials tier, no photos
+  "Maria Santos", "James Mori",
 ];
 const usedHues = [...new Set(identityNames.map(hueOf))];
 
@@ -126,6 +128,7 @@ const colorPaths = [
   "fill.primary", "fill.primaryHover", "fill.primaryActive",
   "fill.neutral", "fill.neutralHover", "fill.neutralActive",
   "bg.primary", "bg.neutral", "bg.warning", "text.warning", "bg.danger", "text.danger", "bg.success", "text.success", "status.success", "surface.overlay",
+  "fill.danger", "fill.dangerHover", "fill.disabled", "text.disabled", "icon.disabled",
   ...usedHues.flatMap((h) => [`avatar.${h}.bg`, `avatar.${h}.text`]),
 ];
 const colorValue = Object.fromEntries(colorPaths.map((p) => [p, resolve(p)]));
@@ -228,6 +231,13 @@ const inputBase = input.size.base;
 const inputHeight = px(resolve(inputBase.height.$value));
 const inputPaddingX = px(resolve(inputBase.paddingX.$value));
 const inputValueType = resolveToken(inputBase.value);
+// Input's floating label — the compose Subject/Message fields carry the
+// component's own resting/focus/populated state model (label hidden while
+// resting, floated in at 12px on focus or once populated)
+const inputLabelType = resolveToken(inputBase.label);
+const inputLabelGap = px(resolve(inputBase.labelGap.$value));
+const inputFocusLabelColor = refPath(input.state.focus.label.$value);
+const inputPopulatedLabelColor = refPath(input.state.populated.label.$value);
 
 // ---- Modal — the compose dialog shell, resolved from modal.tokens.json ----
 const mdWidth = px(resolve(modal.width.$value));
@@ -241,6 +251,8 @@ const mdTitleType = resolveToken(get(modal.title.$value));
 const mdTitleColor = refPath(modal.titleColor.$value);
 const mdShadow = resolveToken(modal.shadow);
 const mdShadowCss = `${px(mdShadow.offsetX)} ${px(mdShadow.offsetY)} ${px(mdShadow.blur)} ${px(mdShadow.spread)} ${mdShadow.color}`;
+const mdBodyType = resolveToken(get(modal.body.$value));
+const mdBodyColor = refPath(modal.bodyColor.$value);
 
 // ---- Button primary base (topbar New message) + lg (mobile FAB) ----
 const btnPrimBase = button.primary.size.base;
@@ -424,6 +436,15 @@ const btnRadius = px(resolve(button.primary.radius.$value));
 const btnPrimSm = button.primary.size.sm;
 const btnPrimSmHeight = px(resolve(btnPrimSm.height.$value));
 const btnPrimSmIconSize = px(resolve(btnPrimSm.iconSize.$value));
+const btnPrimSmPaddingX = px(resolve(btnPrimSm.paddingX.$value));
+const btnPrimSmLabelType = resolveToken(get(btnPrimSm.label.$value));
+// primary disabled — the compose Send button sits disabled until the form
+// is valid; resolved from Button's own state tokens
+const btnPrimDisabled = {
+  fill: refPath(button.primary.state.disabled.fill.$value),
+  label: refPath(button.primary.state.disabled.label.$value),
+  icon: refPath(button.primary.state.disabled.icon.$value),
+};
 const btnSecBase = button.secondary.size.base;
 const btnSecHeight = px(resolve(btnSecBase.height.$value));
 const btnSecPaddingX = px(resolve(btnSecBase.paddingX.$value));
@@ -638,6 +659,15 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
 
 .btn--primary.btn--base { height: ${btnPrimBaseHeight}; padding: 0 ${btnPrimBasePaddingX}; gap: ${btnPrimBaseGap}; ${typoCss(btnPrimBaseLabelType)} }
 .btn--primary.btn--base .btn__icon { width: ${btnPrimBaseIconSize}; height: ${btnPrimBaseIconSize}; }
+.btn--primary.btn--sm { height: ${btnPrimSmHeight}; padding: 0 ${btnPrimSmPaddingX}; ${typoCss(btnPrimSmLabelType)} }
+.btn--primary:disabled { background: ${cv(btnPrimDisabled.fill)}; color: ${cv(btnPrimDisabled.label)}; cursor: default; }
+.btn--primary:disabled:hover, .btn--primary:disabled:active { background: ${cv(btnPrimDisabled.fill)}; }
+.btn--primary:disabled .btn__icon { color: ${cv(btnPrimDisabled.icon)}; }
+/* danger action — the same fill.danger recipe Modal's own footer actions
+   use (button.tokens.json has no danger variant; this is Modal's recipe) */
+.btn--danger { background: ${cv("fill.danger")}; color: ${cv("text.onFill")}; }
+.btn--danger:hover { background: ${cv("fill.dangerHover")}; }
+.btn--danger.btn--base { height: ${btnPrimBaseHeight}; padding: 0 ${btnPrimBasePaddingX}; gap: ${btnPrimBaseGap}; ${typoCss(btnPrimBaseLabelType)} }
 .btn--primary.btn--lg { height: ${btnPrimLgHeight}; padding: 0 ${btnPrimLgPaddingX}; gap: ${btnPrimLgGap}; ${typoCss(btnPrimLgLabelType)} }
 .btn--primary.btn--lg .btn__icon { width: ${btnPrimLgIconSize}; height: ${btnPrimLgIconSize}; }
 .btn--ghost.btn--sm.btn--icon-only { width: ${btnGhostSmHeight}; padding: 0; }
@@ -652,23 +682,81 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
 .select:hover { border-color: ${cv("border.strong")}; }
 .select:focus-visible { outline: none; border-color: ${cv("border.focus")}; }
 
-/* compose dialog — Modal's own recipe (native <dialog> + showModal), fields
-   carry Input's recipe; the textarea min-height is a layout literal */
-.mc-compose { width: ${mdWidth}; max-width: calc(100vw - ${px(resolve("dim.8"))}); border: none; padding: 0; border-radius: ${mdRadius}; background: ${cv(mdBg)}; box-shadow: ${mdShadowCss}; font-family: ${cv("family.sans")}; }
+/* compose dialog — one native <dialog>, two responsive shells around the
+   same content. Under the 768px split breakpoint it is a full-screen
+   bottom-sheet takeover (the keyboard owns half the viewport on a phone —
+   Cancel/Send live in the header, always within reach; slide-up entry);
+   from 768px it is Modal's centered recipe. The split-view width is a
+   560px composition literal, not modal.width's 384px — the recipient
+   list rows need the room (same layout-literal call as the textarea
+   min-height). Subject/Message carry Input's recipe including its
+   floating label (resting = placeholder only; focus/populated float the
+   12px label in — Input's own state model). */
+.mc-compose { border: none; padding: 0; background: ${cv(mdBg)}; font-family: ${cv("family.sans")}; }
+.mc-compose[open] { display: flex; flex-direction: column; }
 .mc-compose::backdrop { background: ${cv(mdOverlay)}; }
-.mc-compose__header { display: flex; align-items: center; justify-content: space-between; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.4"))} ${mdPadding}; border-bottom: 1px solid ${cv(mdDivider)}; }
+.mc-compose__header { flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))}; border-bottom: 1px solid ${cv(mdDivider)}; }
 .mc-compose__title { margin: 0; color: ${cv(mdTitleColor)}; ${typoCss(mdTitleType)} }
-.mc-compose__body { display: flex; flex-direction: column; gap: ${mdGap}; padding: ${mdPadding}; }
-.mc-compose__body .select { display: flex; width: 100%; }
-.mc-compose__input { box-sizing: border-box; width: 100%; height: ${inputHeight}; padding: 0 ${inputPaddingX}; border: 1px solid ${cv("border.default")}; border-radius: ${inputRadius}; background: ${cv("surface.sunken")}; color: ${cv("text.default")}; ${typoCss(inputValueType)} font-family: ${cv("family.sans")}; outline: none; }
-.mc-compose__textarea { box-sizing: border-box; width: 100%; min-height: 96px; padding: ${px(resolve("dim.2"))} ${inputPaddingX}; border: 1px solid ${cv("border.default")}; border-radius: ${inputRadius}; background: ${cv("surface.sunken")}; color: ${cv("text.default")}; ${typoCss(inputValueType)} font-family: ${cv("family.sans")}; outline: none; resize: vertical; }
-.mc-compose__input::placeholder, .mc-compose__textarea::placeholder { color: ${cv("text.muted")}; }
-.mc-compose__input:hover, .mc-compose__textarea:hover { border-color: ${cv("border.strong")}; }
-.mc-compose__input:focus, .mc-compose__textarea:focus { border-color: ${cv("border.focus")}; }
-.mc-compose__footer { display: flex; justify-content: flex-end; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.4"))} ${mdPadding}; border-top: 1px solid ${cv(mdDivider)}; }
-.mc-compose[open] { opacity: 1; transform: translateY(0); transition: opacity 0.18s ease, transform 0.18s ease; }
+.mc-compose__body { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: ${mdGap}; padding: ${mdPadding}; }
+.mc-compose__body .select { display: flex; width: 100%; flex-shrink: 0; }
+/* Subject / Message — Input's anatomy on real editable controls */
+.mc-field { box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; gap: ${inputLabelGap}; min-height: ${inputHeight}; padding: ${px(resolve("dim.1_5"))} ${inputPaddingX}; border: 1px solid ${cv("border.default")}; border-radius: ${inputRadius}; background: ${cv("surface.sunken")}; cursor: text; flex-shrink: 0; }
+.mc-field:hover { border-color: ${cv("border.strong")}; }
+.mc-field:focus-within { border-color: ${cv("border.focus")}; }
+.mc-field__label { display: none; color: ${cv(inputPopulatedLabelColor)}; ${typoCss(inputLabelType)} }
+.mc-field--floated .mc-field__label { display: block; }
+.mc-field:focus-within .mc-field__label { color: ${cv(inputFocusLabelColor)}; }
+.mc-field__control { border: none; outline: none; background: transparent; padding: 0; width: 100%; color: ${cv("text.default")}; ${typoCss(inputValueType)} font-family: ${cv("family.sans")}; }
+.mc-field__control::placeholder { color: ${cv("text.muted")}; }
+.mc-field--area { min-height: 120px; justify-content: flex-start; }
+.mc-field--area .mc-field__control { resize: none; flex: 1; min-height: 72px; }
+/* To — the recipient block a department's policy reveals. The list is the
+   Listbox recipe used inline (no popover, no shadow): the same
+   single-select checkmark semantics as the Department filter, one row per
+   allowed recipient (real Avatar + name/role + away Badge). */
+.mc-compose__to { display: flex; flex-direction: column; gap: ${px(resolve("dim.1_5"))}; flex-shrink: 0; }
+.mc-compose__to[hidden] { display: none; }
+.mc-compose__group-label { color: ${cv("text.secondary")}; ${typoCss(bodySmType)} }
+.mc-compose__to .listbox { box-shadow: none; min-width: 0; }
+.mc-compose__to .empty-state { height: auto; padding: ${px(resolve("dim.2"))} 0; }
+.mc-to-option { align-items: center; }
+.mc-to-option:disabled { cursor: default; }
+.mc-to-option:disabled:hover { background: transparent; }
+.mc-to-option__stack { display: flex; flex-direction: column; gap: 1px; min-width: 0; flex: 1; text-align: left; }
+.mc-to-option__name { color: ${cv("text.default")}; ${typoCss(lbLabelType)} white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mc-to-option__role { color: ${cv("text.muted")}; ${typoCss(msgMetaType)} }
+.mc-to-option:disabled .mc-to-option__name, .mc-to-option:disabled .mc-to-option__role { color: ${cv("text.disabled")}; }
+.mc-to-option:disabled .avatar { filter: grayscale(1); opacity: 0.6; }
+.mc-to-option .badge { flex-shrink: 0; }
+.mc-compose__hint { color: ${cv("text.muted")}; ${typoCss(msgMetaType)} }
+.mc-compose__footer { flex-shrink: 0; display: flex; justify-content: flex-end; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.4"))} ${mdPadding}; border-top: 1px solid ${cv(mdDivider)}; }
+@media (max-width: 767px) {
+  .mc-compose { position: fixed; inset: 0; margin: 0; width: 100vw; max-width: 100vw; height: 100dvh; max-height: 100dvh; border-radius: 0; }
+  .mc-compose__close, .mc-compose__footer { display: none; }
+  .mc-compose__title { flex: 1; text-align: center; }
+  .mc-compose[open] { transform: translateY(0); transition: transform 0.25s ease; }
+  @starting-style { .mc-compose[open] { transform: translateY(100vh); } }
+}
+@media (min-width: 768px) {
+  .mc-compose { width: min(560px, calc(100vw - ${px(resolve("dim.8"))})); max-height: calc(100dvh - ${px(resolve("dim.16"))}); border-radius: ${mdRadius}; box-shadow: ${mdShadowCss}; }
+  .mc-compose__cancel-m, .mc-compose__send-m { display: none; }
+  .mc-compose__header { padding: ${px(resolve("dim.4"))} ${mdPadding}; }
+  .mc-compose[open] { opacity: 1; transform: translateY(0); transition: opacity 0.18s ease, transform 0.18s ease; }
+  @starting-style { .mc-compose[open] { opacity: 0; transform: translateY(8px); } }
+}
+
+/* discard confirmation — modal.alert's behavioral variant: identical Modal
+   surface, but no header close, Escape and outside-click disabled — the
+   footer actions are the only way out. Danger = Modal's fill.danger recipe. */
+.mc-confirm { border: none; padding: 0; width: ${mdWidth}; max-width: calc(100vw - ${px(resolve("dim.8"))}); border-radius: ${mdRadius}; background: ${cv(mdBg)}; box-shadow: ${mdShadowCss}; font-family: ${cv("family.sans")}; }
+.mc-confirm::backdrop { background: ${cv(mdOverlay)}; }
+.mc-confirm__body { display: flex; flex-direction: column; gap: ${px(resolve("dim.2"))}; padding: ${mdPadding}; }
+.mc-confirm__title { margin: 0; color: ${cv(mdTitleColor)}; ${typoCss(mdTitleType)} }
+.mc-confirm__text { margin: 0; color: ${cv(mdBodyColor)}; ${typoCss(mdBodyType)} }
+.mc-confirm__footer { display: flex; justify-content: flex-end; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.4"))} ${mdPadding}; border-top: 1px solid ${cv(mdDivider)}; }
+.mc-confirm[open] { opacity: 1; transform: translateY(0); transition: opacity 0.18s ease, transform 0.18s ease; }
 @starting-style {
-  .mc-compose[open] { opacity: 0; transform: translateY(8px); }
+  .mc-confirm[open] { opacity: 0; transform: translateY(8px); }
 }
 
 .empty-state { box-sizing: border-box; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; padding: ${esPadding}; font-family: ${cv("family.sans")}; }
@@ -1053,6 +1141,86 @@ const archivedThreads = threads.filter((t) => t.archived);
 // Department filter options — single-select: "All departments" or exactly one.
 const departments = [...new Set(threads.map((t) => t.department))];
 
+// ---- compose recipient policies — the Department Settings model: an admin
+// decides whether students may start a conversation with the department
+// only, with individual members only, or with both; members additionally
+// carry their own availability. The student never sees the policy itself —
+// only what the To block renders (nothing / a member list / department +
+// members). ----
+const composePolicies = {
+  "Office of the Registrar": { policy: "department" },
+  "Academic Advising": {
+    policy: "both",
+    members: [
+      { name: "Alexander Robinson", role: "Academic Advisor" },
+      { name: "Maria Santos", role: "Academic Advisor", away: "Away until Aug 12" },
+    ],
+  },
+  "Financial Aid": {
+    policy: "members",
+    members: [
+      { name: "Betty Locherty", role: "Financial Aid Counselor" },
+      { name: "James Mori", role: "Financial Aid Counselor" },
+    ],
+  },
+  // members-only with everyone away — the compose flow's honest dead end
+  "English Dept": {
+    policy: "members",
+    members: [{ name: "Ava Robinson", role: "Department Coordinator", away: "Away until Aug 4" }],
+  },
+};
+
+function toOptionMarkup({ avatarName, displayName, role, away, value, selected }) {
+  const trailing = away
+    ? `<span class="badge badge--sm badge--role-neutral">${away}</span>`
+    : iconCheckmark;
+  return `<button type="button" class="listbox__option mc-to-option${selected ? " listbox__option--selected" : ""}" role="radio" aria-checked="${selected ? "true" : "false"}" data-recipient="${esc(value)}"${selected ? ' data-default="true"' : ""}${away ? " disabled" : ""}>
+              ${avatarMarkup(avatarName, "sm")}
+              <span class="mc-to-option__stack"><span class="mc-to-option__name">${displayName}</span><span class="mc-to-option__role">${role}</span></span>
+              ${trailing}
+            </button>`;
+}
+function toBlockMarkup(deptName) {
+  const cfg = composePolicies[deptName];
+  if (!cfg || cfg.policy === "department") return "";
+  const available = (cfg.members || []).filter((m) => !m.away);
+  let inner;
+  if (cfg.policy === "members" && available.length === 0) {
+    inner = `<div class="empty-state"><span class="empty-state__text">No one at ${deptName} is available right now — please try again later</span></div>`;
+  } else {
+    const rows = [];
+    if (cfg.policy === "both") {
+      rows.push(toOptionMarkup({
+        avatarName: deptName, displayName: `${deptName} (department)`,
+        role: "Fastest response — routed to available staff", value: "", selected: true,
+      }));
+    }
+    cfg.members.forEach((m) => rows.push(toOptionMarkup({
+      avatarName: m.name, displayName: m.name, role: m.role, away: m.away, value: m.name, selected: false,
+    })));
+    const hint = cfg.policy === "both" && cfg.members.some((m) => m.away)
+      ? `<span class="mc-compose__hint">Staff who are away can't receive messages — the department option always can.</span>`
+      : "";
+    inner = `<div class="listbox" role="radiogroup" aria-label="Recipient">
+            <ul class="listbox__list">
+              ${rows.map((r) => `<li>${r}</li>`).join("\n              ")}
+            </ul>
+          </div>${hint}`;
+  }
+  return `<div class="mc-compose__to" data-to-dept="${esc(deptName)}" hidden>
+          <span class="mc-compose__group-label">To</span>
+          ${inner}
+        </div>`;
+}
+const composeToBlocks = departments.map(toBlockMarkup).filter(Boolean).join("\n        ");
+
+// runtime avatar lookup for the thread row/pane a Send creates — build-time
+// Avatar recipe (photo → initials tier), keyed by every possible recipient
+const composeAvatarMap = {};
+departments.forEach((d) => { composeAvatarMap[d] = avatarMarkup(d, "sm"); });
+Object.values(composePolicies).forEach((cfg) =>
+  (cfg.members || []).forEach((m) => { composeAvatarMap[m.name] = avatarMarkup(m.name, "sm"); }));
+
 // ---- the appended-on-Send self bubble template, reused by the app script.
 // Static sender markup is generated here at build time (same avatar recipe);
 // the user's text is injected via textContent, never innerHTML. ----
@@ -1061,7 +1229,8 @@ const selfBubbleSender = `<div class="bubble-sender"><p class="bubble-sender__te
 const appJs = `(function () {
   var mc = document.querySelector(".mc");
   var empty = document.getElementById("mc-empty");
-  var panes = document.querySelectorAll(".mc-thread");
+  // live query — Send creates new panes at runtime
+  function panes() { return document.querySelectorAll(".mc-thread"); }
   var lists = { inbox: document.querySelector('[data-list="inbox"]'), archived: document.querySelector('[data-list="archived"]') };
   var countEl = document.getElementById("mc-count");
   var searchInput = document.getElementById("mc-search-input");
@@ -1122,7 +1291,7 @@ const appJs = `(function () {
     unreadCounter.hidden = n === 0;
   }
   function showPane(id) {
-    panes.forEach(function (p) { p.hidden = p.dataset.thread !== id; });
+    panes().forEach(function (p) { p.hidden = p.dataset.thread !== id; });
     empty.hidden = !!id;
     if (!id) empty.hidden = false;
   }
@@ -1136,7 +1305,7 @@ const appJs = `(function () {
   // also marks it read (removes the unread state), the real product behavior.
   // Rows are role="button" divs (they nest the flag toggle), so Enter/Space
   // need wiring by hand — a real <button> would have given them for free.
-  document.querySelectorAll(".thread-item-inbox").forEach(function (row) {
+  function bindRow(row) {
     function activate() {
       allRows().forEach(function (r) { r.classList.remove("thread-item-inbox--selected"); });
       row.classList.remove("thread-item-inbox--unread");
@@ -1150,22 +1319,22 @@ const appJs = `(function () {
     row.addEventListener("keydown", function (e) {
       if (e.key === "Enter" || e.key === " ") { e.preventDefault(); activate(); }
     });
-  });
-
-  // flag toggle — marks a thread important without opening it
-  document.querySelectorAll(".thread-item-inbox__flag-btn").forEach(function (flag) {
+    // flag toggle — marks a thread important without opening it
+    var flag = row.querySelector(".thread-item-inbox__flag-btn");
     flag.addEventListener("click", function (e) {
       e.stopPropagation();
       flag.setAttribute("aria-pressed", flag.getAttribute("aria-pressed") === "true" ? "false" : "true");
       if (filters.flagged) applyFilter();
     });
     flag.addEventListener("keydown", function (e) { e.stopPropagation(); });
-  });
+  }
+  document.querySelectorAll(".thread-item-inbox").forEach(bindRow);
 
   // back (mobile only)
-  document.querySelectorAll(".mc-thread__back").forEach(function (btn) {
+  function bindBack(btn) {
     btn.addEventListener("click", function () { mc.classList.remove("mc--thread-open"); });
-  });
+  }
+  document.querySelectorAll(".mc-thread__back").forEach(bindBack);
 
   // Inbox / Archived tabs — the unread Counter also swaps its onNeutral
   // active/inactive surface with the tab it sits on, same as Tabs' own docs
@@ -1305,7 +1474,7 @@ const appJs = `(function () {
 
   // composer — Send appends a real self Bubble (tint, the default)
   var SELF_SENDER = ${JSON.stringify(selfBubbleSender)};
-  document.querySelectorAll(".mc-composer").forEach(function (form) {
+  function bindComposer(form) {
     form.addEventListener("submit", function (e) {
       e.preventDefault();
       var input = form.querySelector(".composer__input");
@@ -1321,7 +1490,8 @@ const appJs = `(function () {
       input.value = "";
       input.focus();
     });
-  });
+  }
+  document.querySelectorAll(".mc-composer").forEach(bindComposer);
 
   // Toast — popover="manual": free top-layer, no light-dismiss; a toast
   // leaves on its own timer (the real component, resolved from its tokens)
@@ -1340,7 +1510,7 @@ const appJs = `(function () {
 
   // Archive — really moves the thread's row to the Archived list (flips the
   // row's search-scope badge to match its new home) and confirms with a toast
-  document.querySelectorAll(".mc-archive").forEach(function (btn) {
+  function bindArchive(btn) {
     btn.addEventListener("click", function () {
       var id = btn.dataset.thread;
       var row = lists.inbox.querySelector('[data-thread="' + id + '"]');
@@ -1361,27 +1531,130 @@ const appJs = `(function () {
       updateUnreadCounter();
       showToast("success", '"' + subject + '" archived');
     });
-  });
+  }
+  document.querySelectorAll(".mc-archive").forEach(bindArchive);
 
   // Print
-  document.querySelectorAll(".mc-print").forEach(function (btn) {
+  function bindPrint(btn) {
     btn.addEventListener("click", function () { window.print(); });
-  });
+  }
+  document.querySelectorAll(".mc-print").forEach(bindPrint);
 
-  // New message — FAB (mobile) / topbar button (split views) → Modal compose.
-  // Department reuses the Select-trigger + Listbox composition; Send closes
-  // with a success toast (creating a real thread is out of prototype scope).
+  // New message — FAB (mobile) / topbar button (split views) opens the
+  // compose dialog: a full-screen bottom sheet under 768px (Cancel/Send in
+  // the header, within reach above the keyboard), Modal's centered recipe on
+  // split views. The department's policy decides what the To block shows
+  // (nothing / member list / department + members). Send is disabled until
+  // recipient + message are valid, and creates a REAL thread: a row on top
+  // of Inbox with a "You: …" preview and an Awaiting reply badge (a sent
+  // message starts a live conversation — it does NOT go to Archived), plus
+  // a real reading pane (self Bubble + open composer). Closing with a draft
+  // routes through the Discard confirmation (modal.alert behavior).
   var composeDlg = document.getElementById("mc-compose");
+  var discardDlg = document.getElementById("mc-discard");
   var composeDept = null;
+  var composeRecipient = null; // "" = the department itself, else the member's name
   var composeDeptValue = document.getElementById("mc-compose-dept-value");
   var composeDeptTrigger = document.getElementById("mc-compose-dept");
   var composeDeptLb = document.getElementById("mc-compose-dept-lb");
+  var composeSubject = document.getElementById("mc-compose-subject");
+  var composeMessage = document.getElementById("mc-compose-message");
+  var composeSendBtns = [document.getElementById("mc-compose-send"), document.getElementById("mc-compose-send-m")];
+  var composeToBlocks = Array.prototype.slice.call(document.querySelectorAll(".mc-compose__to"));
+  var COMPOSE_AVATARS = ${JSON.stringify(composeAvatarMap)};
+
+  function activeToBlock() {
+    return composeToBlocks.filter(function (b) { return b.dataset.toDept === composeDept; })[0] || null;
+  }
+  function composeRecipientOk() {
+    if (!composeDept) return false;
+    var block = activeToBlock();
+    if (!block) return true;                                   // department-only policy
+    if (!block.querySelector(".mc-to-option")) return false;   // everyone away
+    return composeRecipient !== null;
+  }
+  function validateCompose() {
+    var ok = composeRecipientOk() && composeMessage.value.trim() !== "";
+    composeSendBtns.forEach(function (b) { b.disabled = !ok; });
+  }
+  function composeHasDraft() {
+    return !!composeDept || composeSubject.value.trim() !== "" || composeMessage.value.trim() !== "";
+  }
+
+  // floating label — Input's own state model: resting shows the placeholder
+  // at value size, focus/populated float the 12px label in
+  [composeSubject, composeMessage].forEach(function (control) {
+    var field = control.closest(".mc-field");
+    function sync() {
+      field.classList.toggle("mc-field--floated", document.activeElement === control || control.value.trim() !== "");
+    }
+    control.addEventListener("focus", sync);
+    control.addEventListener("blur", sync);
+    control.addEventListener("input", function () { sync(); validateCompose(); });
+  });
+  document.querySelectorAll(".mc-field").forEach(function (field) {
+    field.addEventListener("click", function () { field.querySelector(".mc-field__control").focus(); });
+  });
+
+  composeToBlocks.forEach(function (block) {
+    block.querySelectorAll(".mc-to-option:not([disabled])").forEach(function (opt) {
+      opt.addEventListener("click", function () {
+        block.querySelectorAll(".mc-to-option").forEach(function (o) {
+          o.classList.toggle("listbox__option--selected", o === opt);
+          o.setAttribute("aria-checked", o === opt ? "true" : "false");
+        });
+        composeRecipient = opt.dataset.recipient;
+        validateCompose();
+      });
+    });
+  });
+
+  function resetCompose() {
+    composeDept = null;
+    composeRecipient = null;
+    composeDeptValue.textContent = "Choose a department";
+    composeSubject.value = "";
+    composeMessage.value = "";
+    document.querySelectorAll(".mc-field").forEach(function (f) { f.classList.remove("mc-field--floated"); });
+    composeDeptLb.querySelectorAll(".listbox__option").forEach(function (o) {
+      o.classList.remove("listbox__option--selected");
+      o.setAttribute("aria-selected", "false");
+    });
+    composeToBlocks.forEach(function (b) {
+      b.hidden = true;
+      b.querySelectorAll(".mc-to-option").forEach(function (o) {
+        var def = o.dataset.default === "true";
+        o.classList.toggle("listbox__option--selected", def);
+        o.setAttribute("aria-checked", def ? "true" : "false");
+      });
+    });
+    validateCompose();
+  }
+  function requestComposeClose() {
+    if (composeHasDraft()) discardDlg.showModal();
+    else composeDlg.close();
+  }
+
   ["mc-new-fab", "mc-new-desktop"].forEach(function (id) {
-    document.getElementById(id).addEventListener("click", function () { composeDlg.showModal(); });
+    document.getElementById(id).addEventListener("click", function () { resetCompose(); composeDlg.showModal(); });
+  });
+  ["mc-compose-cancel", "mc-compose-cancel-m", "mc-compose-close"].forEach(function (id) {
+    document.getElementById(id).addEventListener("click", requestComposeClose);
   });
   composeDlg.addEventListener("click", function (e) {
-    if (e.target === composeDlg) composeDlg.close();
+    if (e.target === composeDlg) requestComposeClose();
   });
+  composeDlg.addEventListener("cancel", function (e) {           // Escape
+    if (composeHasDraft()) { e.preventDefault(); discardDlg.showModal(); }
+  });
+  // modal.alert behavior: Escape disabled, footer actions are the only way out
+  discardDlg.addEventListener("cancel", function (e) { e.preventDefault(); });
+  document.getElementById("mc-discard-keep").addEventListener("click", function () { discardDlg.close(); });
+  document.getElementById("mc-discard-discard").addEventListener("click", function () {
+    discardDlg.close();
+    composeDlg.close();
+  });
+
   composeDeptLb.addEventListener("toggle", function (e) {
     if (e.newState === "open") {
       var r = composeDeptTrigger.getBoundingClientRect();
@@ -1401,19 +1674,69 @@ const appJs = `(function () {
       composeDept = opt.dataset.dept;
       composeDeptValue.textContent = composeDept;
       composeDeptLb.hidePopover();
+      composeRecipient = null;
+      composeToBlocks.forEach(function (b) { b.hidden = b.dataset.toDept !== composeDept; });
+      var block = activeToBlock();
+      if (block) {
+        var preset = block.querySelector(".listbox__option--selected");
+        if (preset) composeRecipient = preset.dataset.recipient;
+      }
+      validateCompose();
     });
   });
-  document.getElementById("mc-compose-send").addEventListener("click", function () {
-    var subject = document.getElementById("mc-compose-subject").value.trim();
-    var message = document.getElementById("mc-compose-message").value.trim();
-    if (!composeDept) { showToast("warning", "Choose a department first"); return; }
-    if (!subject) { showToast("warning", "Add a subject"); return; }
-    if (!message) { showToast("warning", "Write a message"); return; }
-    composeDlg.close();
-    showToast("success", 'Message sent to ' + composeDept);
-    document.getElementById("mc-compose-subject").value = "";
-    document.getElementById("mc-compose-message").value = "";
+
+  var COMPOSE_ROW_SKELETON = ${JSON.stringify(`<div class="thread-item-inbox__main"><div class="thread-item-inbox__top"><span class="thread-item-inbox__identity"></span><span class="thread-item-inbox__time">Just now</span></div><div class="thread-item-inbox__subject"></div><div class="thread-item-inbox__preview-row"><span class="thread-item-inbox__preview"></span><button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread">${iconFlagOutlined}${iconFlagFilled}</button></div><div class="thread-item-inbox__expires"><span class="badge badge--sm badge--role-primary">Awaiting reply</span><span class="badge badge--sm badge--role-primary thread-item-inbox__scope">Inbox</span></div></div>`)};
+  var COMPOSE_PANE_SKELETON = ${JSON.stringify(`<header class="mc-thread__bar"><button class="btn btn--ghost btn--sm mc-thread__back" type="button">${iconBack}Back</button><div class="mc-thread__actions"><button class="btn btn--secondary btn--sm mc-archive" type="button">Archive</button><button class="btn btn--secondary btn--sm btn--icon-only mc-print" type="button" aria-label="Print thread">${iconPrint}</button></div><h2 class="mc-thread__subject"></h2><div class="mc-thread__tags"><span class="mc-thread__meta-line"></span><span class="badge badge--sm badge--role-primary">Awaiting reply</span></div></header><div class="mc-thread__scroll"></div><footer class="mc-thread__composer"><form class="composer composer--simple mc-composer"><div class="composer__field"><input class="composer__input" placeholder="Write a message..." aria-label="Write a message" /><button type="button" class="composer__icon-btn" aria-label="Attach file">${iconAttach}</button><button type="submit" class="btn btn--primary btn--sm btn--icon-only" aria-label="Send">${iconSend}</button></div></form></footer>`)};
+
+  composeSendBtns.forEach(function (sendBtn) {
+    sendBtn.addEventListener("click", function () {
+      var member = composeRecipient || null;
+      var text = composeMessage.value.trim();
+      var subject = composeSubject.value.trim() || "(No subject)";
+      var identity = member ? member + " · " + composeDept : composeDept;
+      var id = "sent-" + Date.now();
+
+      // Inbox row — read (it's the student's own message), Awaiting reply
+      var row = document.createElement("div");
+      row.className = "thread-item-inbox thread-item-inbox--read";
+      row.setAttribute("role", "button");
+      row.tabIndex = 0;
+      row.dataset.thread = id;
+      row.dataset.subject = subject;
+      row.dataset.department = composeDept;
+      row.innerHTML = COMPOSE_AVATARS[member || composeDept] + COMPOSE_ROW_SKELETON;
+      row.querySelector(".thread-item-inbox__identity").textContent = identity;
+      row.querySelector(".thread-item-inbox__subject").textContent = subject;
+      row.querySelector(".thread-item-inbox__preview").textContent = "You: " + text;
+      bindRow(row);
+      lists.inbox.insertBefore(row, lists.inbox.firstChild);
+
+      // reading pane — the sent message as a self Bubble + an open composer
+      var pane = document.createElement("article");
+      pane.className = "mc-thread";
+      pane.dataset.thread = id;
+      pane.hidden = true;
+      pane.innerHTML = COMPOSE_PANE_SKELETON;
+      pane.querySelector(".mc-thread__subject").textContent = subject;
+      pane.querySelector(".mc-thread__meta-line").textContent = identity + " · PeopleSoft University";
+      pane.querySelector(".mc-archive").dataset.thread = id;
+      var bubbleRowEl = document.createElement("div");
+      bubbleRowEl.className = "bubble-row bubble-row--self";
+      bubbleRowEl.innerHTML = SELF_SENDER + '<div class="bubble bubble--self bubble--tint"><p></p></div>';
+      bubbleRowEl.querySelector(".bubble p").textContent = text;
+      pane.querySelector(".mc-thread__scroll").appendChild(bubbleRowEl);
+      bindBack(pane.querySelector(".mc-thread__back"));
+      bindArchive(pane.querySelector(".mc-archive"));
+      bindPrint(pane.querySelector(".mc-print"));
+      bindComposer(pane.querySelector(".mc-composer"));
+      document.querySelector(".mc__reading").appendChild(pane);
+
+      composeDlg.close();
+      applyFilter();
+      showToast("success", "Message sent to " + (member || composeDept));
+    });
   });
+  validateCompose();
 
   applyFilter();
   updateUnreadCounter();
@@ -1491,10 +1814,12 @@ ${appCss}
     </section>
   </div>
 </div>
-<dialog class="mc-compose" id="mc-compose">
+<dialog class="mc-compose" id="mc-compose" aria-labelledby="mc-compose-title">
   <header class="mc-compose__header">
-    <h2 class="mc-compose__title">New message</h2>
-    <form method="dialog"><button class="btn btn--ghost btn--sm btn--icon-only" aria-label="Close">${iconCloseBtn}</button></form>
+    <button class="btn btn--ghost btn--sm mc-compose__cancel-m" id="mc-compose-cancel-m" type="button">Cancel</button>
+    <h2 class="mc-compose__title" id="mc-compose-title">New message</h2>
+    <button class="btn btn--primary btn--sm mc-compose__send-m" id="mc-compose-send-m" type="button" disabled>Send</button>
+    <button class="btn btn--ghost btn--sm btn--icon-only mc-compose__close" id="mc-compose-close" type="button" aria-label="Close">${iconCloseBtn}</button>
   </header>
   <div class="mc-compose__body">
     <button class="select select--base" id="mc-compose-dept" type="button" popovertarget="mc-compose-dept-lb">
@@ -1506,12 +1831,29 @@ ${appCss}
         ${departments.map((d) => `<li><button class="listbox__option" role="option" aria-selected="false" data-dept="${esc(d)}" type="button">${d}${iconCheckmark}</button></li>`).join("\n        ")}
       </ul>
     </div>
-    <input class="mc-compose__input" id="mc-compose-subject" placeholder="Subject" aria-label="Subject" />
-    <textarea class="mc-compose__textarea" id="mc-compose-message" placeholder="Write your message..." aria-label="Message"></textarea>
+    ${composeToBlocks}
+    <label class="mc-field">
+      <span class="mc-field__label">Subject</span>
+      <input class="mc-field__control" id="mc-compose-subject" placeholder="Subject (optional)" aria-label="Subject" />
+    </label>
+    <label class="mc-field mc-field--area">
+      <span class="mc-field__label">Message</span>
+      <textarea class="mc-field__control" id="mc-compose-message" placeholder="Write your message..." aria-label="Message"></textarea>
+    </label>
   </div>
   <footer class="mc-compose__footer">
-    <form method="dialog"><button class="btn btn--secondary btn--base" type="submit">Cancel</button></form>
-    <button class="btn btn--primary btn--base" id="mc-compose-send" type="button">Send</button>
+    <button class="btn btn--secondary btn--base" id="mc-compose-cancel" type="button">Cancel</button>
+    <button class="btn btn--primary btn--base" id="mc-compose-send" type="button" disabled>Send</button>
+  </footer>
+</dialog>
+<dialog class="mc-confirm" id="mc-discard" aria-labelledby="mc-discard-title">
+  <div class="mc-confirm__body">
+    <h2 class="mc-confirm__title" id="mc-discard-title">Discard draft?</h2>
+    <p class="mc-confirm__text">Your message hasn't been sent — it will be lost if you close now.</p>
+  </div>
+  <footer class="mc-confirm__footer">
+    <button class="btn btn--secondary btn--base" id="mc-discard-keep" type="button">Keep editing</button>
+    <button class="btn btn--danger btn--base" id="mc-discard-discard" type="button">Discard</button>
   </footer>
 </dialog>
 <script>
@@ -1625,7 +1967,7 @@ const viewerHtml = `<!doctype html>
   </nav>
   <main>
     <h1>Student Message Center</h1>
-    <p class="sub">Interactive prototype, built strictly from hp-design components (every recipe resolved from its own token file) — mobile-first, responsive. Click a thread, switch Inbox/Archived, search, sort, send a reply, archive a thread — all real. Staff-side features (flags, Handled by, filters) are deliberately absent: this is the student app.</p>
+    <p class="sub">Interactive prototype, built strictly from hp-design components (every recipe resolved from its own token file) — mobile-first, responsive. Click a thread, switch Inbox/Archived, search, sort, send a reply, archive a thread — all real. New message is a full-screen bottom sheet on mobile and a centered modal on tablet/desktop; the chosen department's settings decide who the student can write to (department only / members only / both, with per-member availability), and Send starts a real Inbox thread with an Awaiting reply badge. Staff-side features (flags, Handled by, filters) are deliberately absent: this is the student app.</p>
 
     <div class="device-bar">
       <div class="tabs tabs--segmented tabs--base" role="tablist" aria-label="Preview viewport">
