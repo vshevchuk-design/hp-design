@@ -703,6 +703,7 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
    floating label (resting = placeholder only; focus/populated float the
    12px label in — Input's own state model). */
 .mc-compose { border: none; padding: 0; background: ${cv(mdBg)}; font-family: ${cv("family.sans")}; }
+.mc-compose:focus, .mc-compose:focus-visible { outline: none; } /* Chrome focuses the dialog itself on showModal() — a ring around the whole surface reads broken */
 .mc-compose[open] { display: flex; flex-direction: column; }
 .mc-compose::backdrop { background: ${cv(mdOverlay)}; }
 .mc-compose__header { flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))}; border-bottom: 1px solid ${cv(mdDivider)}; }
@@ -728,6 +729,12 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
    the department itself first (department-only / "both"), then members —
    real Avatar + name/role rows, away members disabled with a neutral away
    Badge. Same trigger + popover composition as the Department select. */
+/* Select resting state — Input's own float model: before a value exists the
+   trigger shows ONLY the placeholder (the field's name) at value size; the
+   12px label appears only once populated. The permanent label+placeholder
+   stack read as a wireframe. */
+.select--resting .select__label { display: none; }
+.select--resting .select__value { color: ${cv(refPath(select.state.default.placeholder.$value))}; }
 .select:disabled { background: ${cv(selectDisabled.bg)}; border-color: ${cv(selectDisabled.border)}; cursor: default; }
 .select:disabled .select__label { color: ${cv(selectDisabled.label)}; }
 .select:disabled .select__value { color: ${cv(selectDisabled.value)}; }
@@ -1670,9 +1677,19 @@ const appJs = `(function () {
     field.addEventListener("click", function () { field.querySelector(".mc-field__control").focus(); });
   });
 
+  // Select float model (Input's own): resting = placeholder only at value
+  // size; the 12px label floats in only once a value exists
+  function selectPopulate(trigger, valueEl, text) {
+    trigger.classList.remove("select--resting");
+    valueEl.textContent = text;
+  }
+  function selectRest(trigger, valueEl, placeholder) {
+    trigger.classList.add("select--resting");
+    valueEl.textContent = placeholder;
+  }
   function setRecipientFromOption(opt) {
     composeRecipient = opt.dataset.recipient;
-    composeToValue.textContent = opt.dataset.display;
+    selectPopulate(composeToTrigger, composeToValue, opt.dataset.display);
   }
   // To listbox popover — same trigger-anchored positioning as the Department one
   composeToLb.addEventListener("toggle", function (e) {
@@ -1740,8 +1757,8 @@ const appJs = `(function () {
   function resetCompose() {
     composeDept = null;
     composeRecipient = null;
-    composeDeptValue.textContent = "Choose a department";
-    composeToValue.textContent = "Choose a recipient";
+    selectRest(composeDeptTrigger, composeDeptValue, "Department");
+    selectRest(composeToTrigger, composeToValue, "To");
     composeToTrigger.disabled = true;
     composeSubject.value = "";
     composeMessage.value = "";
@@ -1806,12 +1823,12 @@ const appJs = `(function () {
         o.setAttribute("aria-selected", o === opt ? "true" : "false");
       });
       composeDept = opt.dataset.dept;
-      composeDeptValue.textContent = composeDept;
+      selectPopulate(composeDeptTrigger, composeDeptValue, composeDept);
       composeDeptLb.hidePopover();
       // the To select wakes up scoped to this department's policy: its group
       // shows, the department option (when the policy has one) is preselected
       composeRecipient = null;
-      composeToValue.textContent = "Choose a recipient";
+      selectRest(composeToTrigger, composeToValue, "To");
       composeToTrigger.disabled = false;
       composeToGroups.forEach(function (g) { g.hidden = g.dataset.toDept !== composeDept; });
       composeToHints.forEach(function (h) { h.hidden = h.dataset.toDept !== composeDept; });
@@ -1968,8 +1985,8 @@ ${appCss}
     <button class="btn btn--ghost btn--sm btn--icon-only mc-compose__close" id="mc-compose-close" type="button" aria-label="Close">${iconCloseBtn}</button>
   </header>
   <div class="mc-compose__body">
-    <button class="select select--base" id="mc-compose-dept" type="button" popovertarget="mc-compose-dept-lb">
-      <span class="select__stack"><span class="select__label">Department</span><span class="select__value" id="mc-compose-dept-value">Choose a department</span></span>
+    <button class="select select--base select--resting" id="mc-compose-dept" type="button" popovertarget="mc-compose-dept-lb">
+      <span class="select__stack"><span class="select__label">Department</span><span class="select__value" id="mc-compose-dept-value">Department</span></span>
       ${iconChevronSelect}
     </button>
     <div class="listbox" id="mc-compose-dept-lb" popover>
@@ -1977,8 +1994,8 @@ ${appCss}
         ${departments.map((d) => `<li><button class="listbox__option" role="option" aria-selected="false" data-dept="${esc(d)}" type="button">${d}${iconCheckmark}</button></li>`).join("\n        ")}
       </ul>
     </div>
-    <button class="select select--base" id="mc-compose-to" type="button" popovertarget="mc-compose-to-lb" disabled>
-      <span class="select__stack"><span class="select__label">To</span><span class="select__value" id="mc-compose-to-value">Choose a recipient</span></span>
+    <button class="select select--base select--resting" id="mc-compose-to" type="button" popovertarget="mc-compose-to-lb" disabled>
+      <span class="select__stack"><span class="select__label">To</span><span class="select__value" id="mc-compose-to-value">To</span></span>
       ${iconChevronSelect}
     </button>
     <div class="listbox" id="mc-compose-to-lb" popover>
