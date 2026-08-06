@@ -69,6 +69,7 @@ export const DESIGN_PRODUCTS = {
     label: "Message Center",
     items: {
       "student-message-center": { label: "Student Message Center", href: "designs/student-message-center.html" },
+      "staff-message-center": { label: "Staff Message Center", href: "designs/staff-message-center.html" },
     },
   },
 };

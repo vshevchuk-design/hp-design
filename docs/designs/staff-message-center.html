@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>hp-design — EmptyState</title>
-<link rel="stylesheet" href="../assets/fonts/sora/sora.css" />
+<title>hp-design — Staff Message Center</title>
+<link rel="stylesheet" href="../../assets/fonts/sora/sora.css" />
 <style>
   :root {
     --bg-page: #f7f7f5; --bg-card: #ffffff; --bg-card-hover: #fbfbfa;
@@ -44,37 +44,42 @@
   .navlink:hover { background: var(--bg-card-hover); }
   .navlink.active { background: var(--accent-bg); color: var(--accent); font-weight: 600; }
   .nav-category { font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin: 16px 8px 6px; }
-  main { flex: 1; padding: 4rem 4rem 6rem; max-width: 1120px; }
+  main { flex: 1; padding: 3rem 3rem 4rem; max-width: 1400px; }
 
   h1 { font-size: 36px; font-weight: 700; margin: 0 0 10px; letter-spacing: -0.02em; }
-  .sub { font-size: 14px; color: var(--text-secondary); margin: 0 0 2.5rem; }
-  h2.big-section { font-size: 24px; font-weight: 700; margin: 5.5rem 0 1.5rem; letter-spacing: -0.01em; padding-top: 2.5rem; border-top: 1px solid var(--border); }
-  h2.big-section:first-of-type { margin-top: 3rem; padding-top: 0; border-top: none; }
-  .section-desc { font-size: 13.5px; color: var(--text-secondary); margin: -0.5rem 0 1.5rem; max-width: 68ch; line-height: 1.6; }
-
-  .legend { font-size: 12.5px; color: var(--text-secondary); padding: 14px 18px; background: var(--bg-card); border: 0.5px solid var(--border); border-radius: 10px; margin-bottom: 1rem; line-height: 1.6; }
-  .legend .row { display: flex; gap: 14px; padding: 6px 0; border-bottom: 0.5px solid var(--border); }
-  .legend .row:last-child { border-bottom: none; }
-  .legend .row b { width: 150px; flex-shrink: 0; color: var(--text-primary); font-weight: 600; font-family: var(--mono); font-size: 11.5px; }
-  code.tok { font-family: var(--mono); font-size: 12px; color: var(--accent); }
-
-  pre.code { background: var(--code-bg); color: var(--code-text); border-radius: 10px; padding: 16px 18px; margin: 0; overflow-x: auto; font-family: var(--mono); font-size: 12px; line-height: 1.7; }
-  pre.code code { font-family: inherit; }
-
-  .story-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
-  .story { border: 0.5px solid var(--border); border-radius: 14px; background: var(--bg-card); padding: 22px; display: flex; flex-direction: column; gap: 12px; }
-  .story h3 { font-size: 14px; font-weight: 600; margin: 0; font-family: var(--mono); }
-  .story-preview { min-height: 56px; padding: 12px 0; }
-  .story-note { font-size: 11.5px; color: var(--text-muted); margin: 0; line-height: 1.5; }
+  .sub { font-size: 14px; color: var(--text-secondary); margin: 0 0 2rem; max-width: 78ch; line-height: 1.6; }
 
   :root {
-  --tok-bg-neutral: #e8e8e8;
+  --tok-surface-sunken: #e8e8e8;
+  --tok-surface-default: #ffffff;
+  --tok-fill-neutral-hover: #d1d1d1;
   --tok-text-secondary: #696969;
+  --tok-text-default: #181818;
+  --tok-border-default: #d1d1d1;
+  --tok-border-focus: #0468c4;
   --tok-family-sans: 'Sora', sans-serif;
 }
 
-.empty-state { box-sizing: border-box; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; padding: 24px; font-family: var(--tok-family-sans); }
-.empty-state__text { background: var(--tok-bg-neutral); color: var(--tok-text-secondary); border-radius: 999px; padding: 8px 16px; font-weight: 400; font-size: 14px; line-height: 1.4; text-align: center; }
+.tabs--segmented { display: inline-flex; align-items: center; gap: 4px; background: var(--tok-surface-sunken); border-radius: 12px; padding: 4px; }
+.tab { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: none; background: transparent; cursor: pointer; white-space: nowrap; color: var(--tok-text-secondary); font-family: var(--tok-family-sans); font-weight: 400; font-size: 14px; line-height: 1.2; }
+.tab--base { height: 40px; padding: 0 12px; }
+.tabs--segmented .tab { border-radius: 8px; }
+.tabs--segmented .tab:not(.tab--active):hover { background: var(--tok-fill-neutral-hover); color: var(--tok-text-default); }
+.tabs--segmented .tab--active { background: var(--tok-surface-default); color: var(--tok-text-default); font-weight: 600; }
+
+.device-bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 1rem; }
+.open-standalone { font-size: 13px; color: var(--accent); text-decoration: none; }
+.open-standalone:hover { text-decoration: underline; }
+.frame-wrap { border: 0.5px solid var(--border); border-radius: 14px; background: var(--bg-card); padding: 24px; display: flex; justify-content: center; overflow-x: auto; }
+.device { border: 1px solid var(--tok-border-default); background: #fff; overflow: hidden; transition: width 0.2s ease, height 0.2s ease, border-radius 0.2s ease; flex-shrink: 0; }
+.device iframe { width: 100%; height: 100%; border: none; display: block; }
+/* +2px compensates the frame's own 1px borders (border-box), so the iframe's
+   INTERNAL viewport is exactly 375/768 — without it the tablet frame's inner
+   width was 766px and the app's min-width:768 split-view media query never
+   fired, leaving the tablet stuck in the one-pane mobile layout */
+.device--mobile { width: 377px; height: 814px; max-height: 78vh; border-radius: 28px; }
+.device--tablet { width: 770px; height: 1026px; max-height: 78vh; border-radius: 20px; }
+.device--desktop { width: 100%; height: 78vh; border-radius: 12px; }
 </style>
 </head>
 <body>
@@ -103,56 +108,56 @@
 </svg>
 </div>
     <div class="nav-tabs" role="tablist">
-      <button class="nav-tab active" data-pane="ds" type="button">DS</button>
-      <button class="nav-tab" data-pane="designs" type="button">Designs</button>
+      <button class="nav-tab" data-pane="ds" type="button">DS</button>
+      <button class="nav-tab active" data-pane="designs" type="button">Designs</button>
     </div>
-    <div class="nav-pane nav-pane--ds active" data-pane="ds">
+    <div class="nav-pane nav-pane--ds" data-pane="ds">
     <p class="brand">Design System</p>
-    <a class="navlink" href="index.html">Overview</a>
+    <a class="navlink" href="../index.html">Overview</a>
     <p class="nav-category">Tokens</p>
-    <a class="navlink" href="colors.html">Colors</a>
-    <a class="navlink" href="semantic-colors.html">Semantic colors</a>
-    <a class="navlink" href="typography.html">Typography</a>
-    <a class="navlink" href="layout.html">Layout</a>
-    <a class="navlink" href="icons.html">Icons</a>
+    <a class="navlink" href="../colors.html">Colors</a>
+    <a class="navlink" href="../semantic-colors.html">Semantic colors</a>
+    <a class="navlink" href="../typography.html">Typography</a>
+    <a class="navlink" href="../layout.html">Layout</a>
+    <a class="navlink" href="../icons.html">Icons</a>
     <p class="nav-category">Components</p>
-    <a class="navlink" href="button.html">Button</a>
-    <a class="navlink" href="counter.html">Counter</a>
-    <a class="navlink" href="input.html">Input</a>
-    <a class="navlink" href="select.html">Select</a>
-    <a class="navlink" href="search.html">Search</a>
-    <a class="navlink" href="pagination.html">Pagination</a>
-    <a class="navlink" href="separator.html">Separator</a>
-    <a class="navlink" href="tabs.html">Tabs</a>
-    <a class="navlink" href="checkbox.html">Checkbox</a>
-    <a class="navlink" href="radio.html">Radio</a>
-    <a class="navlink" href="box.html">Box</a>
-    <a class="navlink" href="card.html">Card</a>
-    <a class="navlink" href="switch.html">Switch</a>
-    <a class="navlink" href="grid.html">Grid</a>
-    <a class="navlink" href="tooltip.html">Tooltip</a>
-    <a class="navlink" href="popover.html">Popover</a>
-    <a class="navlink" href="drawer.html">Drawer</a>
-    <a class="navlink" href="modal.html">Modal</a>
-    <a class="navlink" href="menu.html">Menu</a>
-    <a class="navlink" href="listbox.html">Listbox</a>
-    <a class="navlink" href="avatar.html">Avatar</a>
-    <a class="navlink" href="badge.html">Badge</a>
-    <a class="navlink" href="chip.html">Chip</a>
-    <a class="navlink" href="attachment.html">Attachment</a>
-    <a class="navlink" href="message.html">Message</a>
-    <a class="navlink" href="bubble.html">Bubble</a>
-    <a class="navlink" href="thread-list-item.html">ThreadListItem</a>
-    <a class="navlink" href="composer.html">Composer</a>
-    <a class="navlink active" href="empty-state.html">EmptyState</a>
-    <a class="navlink" href="toast.html">Toast</a>
+    <a class="navlink" href="../button.html">Button</a>
+    <a class="navlink" href="../counter.html">Counter</a>
+    <a class="navlink" href="../input.html">Input</a>
+    <a class="navlink" href="../select.html">Select</a>
+    <a class="navlink" href="../search.html">Search</a>
+    <a class="navlink" href="../pagination.html">Pagination</a>
+    <a class="navlink" href="../separator.html">Separator</a>
+    <a class="navlink" href="../tabs.html">Tabs</a>
+    <a class="navlink" href="../checkbox.html">Checkbox</a>
+    <a class="navlink" href="../radio.html">Radio</a>
+    <a class="navlink" href="../box.html">Box</a>
+    <a class="navlink" href="../card.html">Card</a>
+    <a class="navlink" href="../switch.html">Switch</a>
+    <a class="navlink" href="../grid.html">Grid</a>
+    <a class="navlink" href="../tooltip.html">Tooltip</a>
+    <a class="navlink" href="../popover.html">Popover</a>
+    <a class="navlink" href="../drawer.html">Drawer</a>
+    <a class="navlink" href="../modal.html">Modal</a>
+    <a class="navlink" href="../menu.html">Menu</a>
+    <a class="navlink" href="../listbox.html">Listbox</a>
+    <a class="navlink" href="../avatar.html">Avatar</a>
+    <a class="navlink" href="../badge.html">Badge</a>
+    <a class="navlink" href="../chip.html">Chip</a>
+    <a class="navlink" href="../attachment.html">Attachment</a>
+    <a class="navlink" href="../message.html">Message</a>
+    <a class="navlink" href="../bubble.html">Bubble</a>
+    <a class="navlink" href="../thread-list-item.html">ThreadListItem</a>
+    <a class="navlink" href="../composer.html">Composer</a>
+    <a class="navlink" href="../empty-state.html">EmptyState</a>
+    <a class="navlink" href="../toast.html">Toast</a>
     </div>
-    <div class="nav-pane nav-pane--designs" data-pane="designs">
+    <div class="nav-pane nav-pane--designs active" data-pane="designs">
     <p class="brand">Design Prototypes</p>
     <details class="nav-acc" open>
       <summary>Message Center</summary>
-      <a class="navlink" href="designs/student-message-center.html">Student Message Center</a>
-      <a class="navlink" href="designs/staff-message-center.html">Staff Message Center</a>
+      <a class="navlink" href="../designs/student-message-center.html">Student Message Center</a>
+      <a class="navlink active" href="../designs/staff-message-center.html">Staff Message Center</a>
     </details>
     </div>
     <script>
@@ -165,45 +170,35 @@
 </script>
   </nav>
   <main>
-    <h1>EmptyState</h1>
-    <p class="sub">tokens/components/empty-state.tokens.json · generated — the CSS below is generated from the same resolved tokens driving every preview on this page, nothing hand-copied. Colors are CSS custom properties, not literal hex.</p>
+    <h1>Staff Message Center</h1>
+    <p class="sub">Interactive prototype, built strictly from hp-design components (every recipe resolved from its own token file) — the OTHER side of the Student Message Center: the department inbox where staff answer incoming student threads. Rows lead with the student and carry Handled by / Unassigned / Awaiting reply / due-date states; Resolve really moves a thread to the Resolved tab; the reply composer is Composer's rich variant (B/I/U, Merge Tags, AI Assist, Allow Replies, Expiration) and Send appends a real staff Bubble. Staff-initiated announcements (New message) are deliberately deferred, not silently skipped.</p>
 
-    <div class="legend">
-      <div class="row"><b>What it is</b><span>A placeholder for an area whose content is currently absent — a reading pane before a selection, a search before typing, a filter with no matches. It fills the space the content would occupy and centers one line of hint text.</span></div>
-      <div class="row"><b>The pill</b><span>The hint sits on a long, weak, fully-rounded gray pill — <code class="tok">bg.neutral</code> (Badge's own neutral-tint fill) + <code class="tok">radius.full</code>, with wider paddingX than a Badge so it reads "long" — a quiet chip anchored in the space, not bare text floating in a void.</span></div>
-      <div class="row"><b>Text only, on purpose</b><span>No heading, no illustration, no action button — this is the minimal variant, built for the Message Center prototype's three empty surfaces. Richer variants are deferred until a real surface needs them.</span></div>
-      <div class="row"><b>Purely presentational</b><span>No states, no interactivity — same category as Separator/Box/Grid.</span></div>
-    </div>
-
-    <h2 class="big-section">CSS</h2>
-    <pre class="code"><code>:root {
-  --tok-bg-neutral: #e8e8e8;
-  --tok-text-secondary: #696969;
-  --tok-family-sans: 'Sora', sans-serif;
-}
-
-.empty-state { box-sizing: border-box; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; padding: 24px; font-family: var(--tok-family-sans); }
-.empty-state__text { background: var(--tok-bg-neutral); color: var(--tok-text-secondary); border-radius: 999px; padding: 8px 16px; font-weight: 400; font-size: 14px; line-height: 1.4; text-align: center; }</code></pre>
-
-    <h2 class="big-section">Stories</h2>
-    <p class="section-desc">The component fills whatever box it's given — the dashed frames below are demo chrome, not part of the component.</p>
-    <div class="story-grid">
-      
-      <div class="story">
-        <h3>Text only</h3>
-        <div class="story-preview"><div style="height: 180px; border: 1px dashed var(--border-strong); border-radius: 10px;"><div class="empty-state"><span class="empty-state__text">Choose a Thread</span></div></div></div>
-        <pre class="code"><code>&lt;div class="empty-state"&gt;&lt;span class="empty-state__text"&gt;Choose a Thread&lt;/span&gt;&lt;/div&gt;</code></pre>
-        <p class="story-note">The dashed frame is demo chrome — the component itself is invisible except for the pill; it just fills whatever box it's given and centers the hint.</p>
+    <div class="device-bar">
+      <div class="tabs tabs--segmented tabs--base" role="tablist" aria-label="Preview viewport">
+        <button class="tab tab--base tab--active" role="tab" aria-selected="true" data-device="mobile">Mobile</button>
+        <button class="tab tab--base" role="tab" aria-selected="false" data-device="tablet">Tablet</button>
+        <button class="tab tab--base" role="tab" aria-selected="false" data-device="desktop">Desktop</button>
       </div>
-
-      <div class="story">
-        <h3>Longer hint</h3>
-        <div class="story-preview"><div style="height: 180px; border: 1px dashed var(--border-strong); border-radius: 10px;"><div class="empty-state"><span class="empty-state__text">No threads found — try a different search</span></div></div></div>
-        <pre class="code"><code>&lt;div class="empty-state"&gt;&lt;span class="empty-state__text"&gt;No threads found — try a different search&lt;/span&gt;&lt;/div&gt;</code></pre>
-        <p class="story-note">One line, body-base — an empty state hint is a nudge, not a paragraph. If it needs to wrap, it's probably trying to say too much.</p>
+      <a class="open-standalone" href="staff-message-center-app.html" target="_blank" rel="noopener">Open standalone ↗</a>
+    </div>
+    <div class="frame-wrap">
+      <div class="device device--mobile" id="device">
+        <iframe src="staff-message-center-app.html" title="Staff Message Center prototype"></iframe>
       </div>
     </div>
   </main>
 </div>
+<script>
+document.querySelectorAll(".device-bar .tab").forEach((tab) => {
+  tab.addEventListener("click", () => {
+    document.querySelectorAll(".device-bar .tab").forEach((t) => {
+      t.classList.toggle("tab--active", t === tab);
+      t.setAttribute("aria-selected", t === tab ? "true" : "false");
+    });
+    var device = document.getElementById("device");
+    device.className = "device device--" + tab.dataset.device;
+  });
+});
+</script>
 </body>
 </html>

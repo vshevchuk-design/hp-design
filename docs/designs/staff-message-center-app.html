@@ -1,0 +1,1319 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Staff Message Center — hp-design prototype</title>
+<link rel="stylesheet" href="../../assets/fonts/sora/sora.css" />
+<style>
+:root {
+  --tok-surface-page: #ffffff;
+  --tok-surface-default: #ffffff;
+  --tok-surface-sunken: #e8e8e8;
+  --tok-surface-dim: #f5f5f5;
+  --tok-border-default: #d1d1d1;
+  --tok-border-strong: #b4b4b4;
+  --tok-border-focus: #0468c4;
+  --tok-text-default: #181818;
+  --tok-text-secondary: #696969;
+  --tok-text-muted: #808080;
+  --tok-text-primary: #0468c4;
+  --tok-text-on-fill: #ffffff;
+  --tok-icon-default: #525252;
+  --tok-icon-secondary: #808080;
+  --tok-icon-muted: #989898;
+  --tok-icon-on-fill: #ffffff;
+  --tok-icon-primary: #077fec;
+  --tok-icon-warning: #b26f07;
+  --tok-fill-primary: #077fec;
+  --tok-fill-primary-hover: #0468c4;
+  --tok-fill-primary-active: #01519c;
+  --tok-fill-neutral: #e8e8e8;
+  --tok-fill-neutral-hover: #d1d1d1;
+  --tok-fill-neutral-active: #b4b4b4;
+  --tok-bg-primary: #d9eaff;
+  --tok-bg-neutral: #e8e8e8;
+  --tok-bg-warning: #ffe2c5;
+  --tok-text-warning: #935a03;
+  --tok-bg-danger: #ffdfde;
+  --tok-text-danger: #c11435;
+  --tok-bg-success: #acffc2;
+  --tok-text-success: #057e3f;
+  --tok-status-success: #0a994e;
+  --tok-surface-overlay: rgba(21, 25, 30, 0.5);
+  --tok-fill-danger: #de394b;
+  --tok-fill-danger-hover: #c11435;
+  --tok-fill-disabled: #e8e8e8;
+  --tok-text-disabled: #b4b4b4;
+  --tok-icon-disabled: #b4b4b4;
+  --tok-surface-disabled: #e8e8e8;
+  --tok-bg-ai: #e8e4ff;
+  --tok-text-ai: #743ed8;
+  --tok-icon-ai: #8a5af4;
+  --tok-fill-ai: #8a5af4;
+  --tok-avatar-teal-bg: #88fffe;
+  --tok-avatar-teal-text: #057878;
+  --tok-avatar-orange-bg: #ffe1d5;
+  --tok-avatar-orange-text: #ae4103;
+  --tok-avatar-red-bg: #ffdfde;
+  --tok-avatar-red-text: #c11435;
+  --tok-avatar-amber-bg: #ffe2c5;
+  --tok-avatar-amber-text: #935a03;
+  --tok-avatar-violet-bg: #e8e4ff;
+  --tok-avatar-violet-text: #743ed8;
+  --tok-avatar-magenta-bg: #ffddec;
+  --tok-avatar-magenta-text: #b51c79;
+  --tok-family-sans: 'Sora', sans-serif;
+}
+
+/* ---- component recipes, resolved from each component's own token file ---- */
+.tabs--segmented { display: flex; align-items: center; gap: 4px; background: var(--tok-surface-sunken); border-radius: 12px; padding: 4px; }
+.tab { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: none; background: transparent; cursor: pointer; white-space: nowrap; color: var(--tok-text-secondary); font-family: var(--tok-family-sans); font-weight: 400; font-size: 14px; line-height: 1.2; }
+.tab--sm { height: 32px; padding: 0 8px; }
+.tabs--segmented .tab { flex: 1; border-radius: 8px; }
+.tabs--segmented .tab:not(.tab--active):hover { background: var(--tok-fill-neutral-hover); color: var(--tok-text-default); }
+.tabs--segmented .tab--active { background: var(--tok-surface-default); color: var(--tok-text-default); font-weight: 600; }
+
+.counter { display: inline-flex; align-items: center; justify-content: center; font-variant-numeric: tabular-nums; font-family: var(--tok-family-sans); font-weight: 700; border-radius: 999px; }
+.counter[hidden] { display: none; }
+.counter--sm { height: 16px; min-width: 16px; padding: 0 4px; font-size: 10px; line-height: 1; }
+.counter--onNeutral.counter--inactive { background: var(--tok-fill-neutral-active); color: var(--tok-text-default); }
+.counter--onNeutral.counter--active { background: var(--tok-fill-primary); color: var(--tok-text-on-fill); }
+
+.chip { box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 32px; padding: 0 12px; border-radius: 999px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); color: var(--tok-text-default); cursor: pointer; white-space: nowrap; flex-shrink: 0; font-family: var(--tok-family-sans); font-weight: 600; font-size: 14px; line-height: 1; }
+.chip .chip__icon { width: 16px; height: 16px; color: var(--tok-icon-default); }
+.chip:not([aria-pressed="true"]):not(.chip--checked-outline):hover { border-color: var(--tok-fill-primary); }
+.chip[aria-pressed="true"] { background: var(--tok-fill-primary); border-color: var(--tok-fill-primary); color: var(--tok-text-on-fill); }
+.chip[aria-pressed="true"]:hover { background: var(--tok-fill-primary-hover); border-color: var(--tok-fill-primary-hover); }
+.chip--checked-outline { background: var(--tok-bg-primary); border-color: var(--tok-fill-primary); color: var(--tok-text-primary); }
+.chip--checked-outline .chip__icon { color: var(--tok-icon-primary); }
+.chip:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
+/* dropdown-chip with a picked value can outgrow the rail — it shrinks
+   instead, and the value truncates with an ellipsis (the chevron stays) */
+.chip--dropdown { flex-shrink: 1; min-width: 0; max-width: 100%; }
+.chip--dropdown .chip__label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.search { display: inline-flex; align-items: center; box-sizing: border-box; background: var(--tok-surface-dim); border: 1px solid var(--tok-border-default); border-radius: 8px; font-family: var(--tok-family-sans); cursor: text; }
+.search--base { height: 40px; padding: 0 12px; gap: 8px; }
+.search--base .search__icon, .search--base .search__clear { width: 20px; height: 20px; }
+.search__icon { flex-shrink: 0; color: var(--tok-icon-default); }
+.search__clear { flex-shrink: 0; margin-left: auto; color: var(--tok-icon-default); cursor: pointer; border: none; background: none; padding: 0; }
+.search__clear[hidden] { display: none; }
+.search__input { flex: 1; min-width: 0; border: none; outline: none; background: transparent; color: var(--tok-text-default); font-family: var(--tok-family-sans); font-weight: 400; font-size: 16px; line-height: 1.2; }
+.search__input::placeholder { color: var(--tok-text-muted); }
+.search:hover { border-color: var(--tok-border-strong); }
+.search:focus-within { border-color: var(--tok-border-focus); }
+
+.listbox { margin: 0; box-sizing: border-box; padding: 4px; border-radius: 8px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); box-shadow: 0px 2px 8px 0px rgba(21, 25, 30, 0.10); font-family: var(--tok-family-sans); min-width: 200px; }
+.listbox__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.listbox__option { width: 100%; box-sizing: border-box; display: flex; align-items: center; gap: 8px; padding: 8px 8px; border: none; background: none; border-radius: 4px; cursor: pointer; text-align: left; color: var(--tok-text-default); font-family: inherit; font-weight: 400; font-size: 14px; line-height: 1.4; }
+.listbox__option:hover { background: var(--tok-fill-neutral-hover); }
+.listbox__checkmark { width: 16px; height: 16px; margin-left: auto; color: var(--tok-fill-primary); flex-shrink: 0; display: none; }
+.listbox__option--selected .listbox__checkmark { display: block; }
+.listbox__cb-option { width: 100%; box-sizing: border-box; display: flex; align-items: center; gap: 8px; padding: 8px 8px; border-radius: 4px; cursor: pointer; }
+.listbox__cb-option:hover { background: var(--tok-fill-neutral-hover); }
+.listbox__cb-input { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.listbox__cb-box { box-sizing: border-box; width: 20px; height: 20px; border-radius: 4px; border: 2px solid var(--tok-border-default); background: var(--tok-surface-default); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.listbox__cb-icon { width: 16px; height: 16px; display: none; }
+.listbox__cb-input:checked ~ .listbox__cb-box { background: var(--tok-fill-primary); border-color: var(--tok-fill-primary); }
+.listbox__cb-input:checked ~ .listbox__cb-box .listbox__cb-icon { display: block; color: var(--tok-icon-on-fill); }
+.listbox__cb-label { color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; }
+
+.thread-list { display: flex; flex-direction: column; }
+.thread-item-inbox { box-sizing: border-box; width: 100%; text-align: left; appearance: none; cursor: pointer; display: flex; align-items: flex-start; gap: 12px; padding: 16px; border: none; border-bottom: 1px solid var(--tok-border-default); font-family: var(--tok-family-sans); }
+.thread-item-inbox__main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.thread-item-inbox__top { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.thread-item-inbox__identity { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; font-size: 12px; line-height: 1.2; }
+.thread-item-inbox__time { flex-shrink: 0; color: var(--tok-text-muted); font-weight: 400; font-size: 10px; line-height: 1.2; }
+.thread-item-inbox__subject { font-weight: 600; font-size: 14px; line-height: 1.4; }
+.thread-item-inbox__preview-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.thread-item-inbox__preview { flex: 1; min-width: 0; color: var(--tok-text-muted); font-weight: 400; font-size: 12px; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.thread-item-inbox__replied { flex-shrink: 0; width: 16px; height: 16px; color: var(--tok-icon-muted); }
+.thread-item-inbox[hidden] { display: none; }
+.thread-item-inbox__flag-btn { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; border: none; background: none; padding: 4px; margin: -4px 0; border-radius: 4px; cursor: pointer; color: var(--tok-icon-muted); }
+.thread-item-inbox__flag-btn svg { width: 20px; height: 20px; display: block; }
+.thread-item-inbox__flag-btn:hover { background: var(--tok-fill-neutral-hover); }
+.thread-item-inbox__flag-btn:focus-visible { outline: 2px solid var(--tok-border-focus); outline-offset: 0; }
+.thread-item-inbox__flag-btn .thread-item-inbox__flag-filled { display: none; color: var(--tok-icon-warning); }
+.thread-item-inbox__flag-btn[aria-pressed="true"] .thread-item-inbox__flag-outlined { display: none; }
+.thread-item-inbox__flag-btn[aria-pressed="true"] .thread-item-inbox__flag-filled { display: block; }
+.thread-item-inbox__expires { margin-top: 2px; display: flex; flex-wrap: wrap; gap: 4px; }
+.thread-item-inbox--unread { background: var(--tok-surface-default); }
+.thread-item-inbox--unread .thread-item-inbox__identity { color: var(--tok-text-default); font-weight: 600; }
+.thread-item-inbox--unread .thread-item-inbox__subject { color: var(--tok-text-default); font-weight: 600; }
+.thread-item-inbox--unread .thread-item-inbox__preview { color: var(--tok-text-secondary); }
+.thread-item-inbox--read { background: var(--tok-surface-dim); }
+.thread-item-inbox--read .thread-item-inbox__identity { color: var(--tok-text-secondary); font-weight: 400; }
+.thread-item-inbox--read .thread-item-inbox__subject { color: var(--tok-text-secondary); font-weight: 400; }
+.thread-item-inbox--read .thread-item-inbox__preview { color: var(--tok-text-muted); }
+.thread-item-inbox:not(.thread-item-inbox--selected):hover { background: var(--tok-fill-neutral-hover); }
+.thread-item-inbox:not(.thread-item-inbox--selected):active { background: var(--tok-fill-neutral-active); }
+.thread-item-inbox:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: -4px; }
+.thread-item-inbox--selected { background: var(--tok-bg-primary); }
+
+.badge { box-sizing: border-box; display: inline-flex; align-items: center; border-radius: 999px; white-space: nowrap; }
+.badge--sm { height: 16px; padding: 0 8px; font-weight: 600; font-size: 10px; line-height: 1; }
+.badge--role-warning { background: var(--tok-bg-warning); color: var(--tok-text-warning); }
+.badge--role-danger { background: var(--tok-bg-danger); color: var(--tok-text-danger); }
+.badge--role-neutral { background: var(--tok-bg-neutral); color: var(--tok-text-default); }
+.badge--role-primary { background: var(--tok-bg-primary); color: var(--tok-text-primary); }
+.badge--role-success { background: var(--tok-bg-success); color: var(--tok-text-success); }
+
+.avatar { box-sizing: border-box; position: relative; display: inline-flex; flex-shrink: 0; align-items: center; justify-content: center; overflow: hidden; border-radius: 999px; width: 40px; height: 40px; border: 1px solid var(--tok-border-default); font-family: var(--tok-family-sans); user-select: none; }
+.avatar__img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.avatar__initials { text-transform: uppercase; font-weight: 600; font-size: 14px; line-height: 1; }
+.avatar--sm { width: 32px; height: 32px; }
+.avatar--sm .avatar__initials { font-weight: 600; font-size: 12px; line-height: 1; }
+.avatar--teal { background: var(--tok-avatar-teal-bg); }
+.avatar--teal .avatar__initials { color: var(--tok-avatar-teal-text); }
+.avatar--orange { background: var(--tok-avatar-orange-bg); }
+.avatar--orange .avatar__initials { color: var(--tok-avatar-orange-text); }
+.avatar--red { background: var(--tok-avatar-red-bg); }
+.avatar--red .avatar__initials { color: var(--tok-avatar-red-text); }
+.avatar--amber { background: var(--tok-avatar-amber-bg); }
+.avatar--amber .avatar__initials { color: var(--tok-avatar-amber-text); }
+.avatar--violet { background: var(--tok-avatar-violet-bg); }
+.avatar--violet .avatar__initials { color: var(--tok-avatar-violet-text); }
+.avatar--magenta { background: var(--tok-avatar-magenta-bg); }
+.avatar--magenta .avatar__initials { color: var(--tok-avatar-magenta-text); }
+
+.message { display: flex; flex-direction: column; gap: 12px; font-family: var(--tok-family-sans); max-width: 640px; }
+.message__sender { display: flex; align-items: center; gap: 8px; }
+.message__sender-line { margin: 0; }
+.message__name { color: var(--tok-text-secondary); font-weight: 600; font-size: 12px; line-height: 1.2; }
+.message__meta { color: var(--tok-text-muted); font-weight: 400; font-size: 12px; line-height: 1.2; }
+.message--card .message__body { background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); border-radius: 8px; padding: 16px; }
+.message__body { display: flex; flex-direction: column; gap: 12px; }
+.message__body p { margin: 0; color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; }
+.message__body strong { font-weight: 600; }
+.message__body ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; }
+.message__body li { padding-left: 16px; position: relative; color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; }
+.message__body li::before { content: "•"; position: absolute; left: 6px; color: var(--tok-text-muted); }
+.message__body a { color: var(--tok-text-primary); font-weight: 400; font-size: 14px; line-height: 1.4; text-decoration: underline; }
+/* an Attachment's done shape IS an <a download> — keep the body-link
+   underline/color off it, its own title/description styles apply instead */
+.message__body a.attachment { text-decoration: none; }
+.message__attachments { display: flex; flex-direction: column; gap: 6px; }
+.message__cta { margin-top: 4px; align-self: flex-start; }
+
+.attachment { box-sizing: border-box; display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: 8px; background: var(--tok-surface-dim); border: 1px solid var(--tok-border-default); max-width: 320px; text-decoration: none; }
+.attachment__media { flex-shrink: 0; width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; background: var(--tok-surface-default); }
+.attachment__icon { width: 20px; height: 20px; color: var(--tok-icon-secondary); }
+.attachment__content { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.attachment__title { margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 12px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.attachment__description { margin: 0; color: var(--tok-text-muted); font-weight: 400; font-size: 10px; line-height: 1.2; }
+
+.bubble-row { display: flex; flex-direction: column; gap: 8px; max-width: 75%; font-family: var(--tok-family-sans); }
+.bubble-row--self { align-self: flex-end; align-items: flex-end; }
+.bubble-row--other { align-self: flex-start; align-items: flex-start; }
+.bubble-sender { display: flex; align-items: center; gap: 8px; }
+.bubble-sender__text { margin: 0; }
+.bubble-sender__name { color: var(--tok-text-secondary); font-weight: 600; font-size: 12px; line-height: 1.2; }
+.bubble-sender__meta { color: var(--tok-text-muted); font-weight: 400; font-size: 12px; line-height: 1.2; }
+.bubble { box-sizing: border-box; display: flex; flex-direction: column; gap: 6px; padding: 8px 12px; border-radius: 16px; min-width: 0; max-width: 100%; }
+.bubble p { margin: 0; font-weight: 400; font-size: 14px; line-height: 1.4; white-space: pre-wrap; overflow-wrap: anywhere; } /* Shift+Enter produces real newlines; anywhere keeps unbroken runs inside the bubble */
+/* attachments inside a bubble cap at the bubble's own width — the base
+   attachment's 320px max otherwise pokes out of the 75%-capped row */
+.bubble .message__attachments { max-width: 100%; min-width: 0; }
+.bubble .attachment { max-width: 100%; }
+.bubble--self.bubble--tint { background: var(--tok-bg-primary); color: var(--tok-text-default); }
+.bubble--other { background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); color: var(--tok-text-default); }
+
+.composer { display: flex; flex-direction: column; gap: 8px; font-family: var(--tok-family-sans); }
+.composer__field { display: flex; align-items: center; gap: 8px; padding: 12px; border-radius: 8px; background: var(--tok-surface-dim); border: 1px solid var(--tok-border-default); }
+.composer__field:hover { border-color: var(--tok-border-strong); }
+.composer__field:focus-within { border-color: var(--tok-border-focus); }
+.composer__input { flex: 1; min-width: 0; border: none; outline: none; background: transparent; color: var(--tok-text-default); font-weight: 400; font-size: 16px; line-height: 1.4; font-family: var(--tok-family-sans); }
+.composer__input::placeholder { color: var(--tok-text-muted); }
+.composer__icon-btn { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border: none; border-radius: 8px; background: transparent; padding: 0; cursor: pointer; color: var(--tok-icon-secondary); }
+.composer__icon-btn .composer__icon { width: 16px; height: 16px; display: block; }
+.composer__icon-btn:hover { background: var(--tok-fill-neutral-hover); }
+.composer__icon-btn:active { background: var(--tok-fill-neutral-active); }
+/* rich variant (staff side) — toolbar + AI Assist + settings rows + labeled
+   Send, all straight from Composer's own docs recipe */
+.composer__toolbar { display: flex; align-items: center; gap: 4px; }
+.composer__ai-assist { flex-shrink: 0; display: inline-flex; align-items: center; gap: 4px; height: 32px; padding: 0 8px; border: 1px solid transparent; border-radius: 8px; background: var(--tok-bg-ai); color: var(--tok-text-ai); cursor: pointer; font-family: var(--tok-family-sans); font-weight: 600; font-size: 12px; line-height: 1.4; }
+.composer__ai-assist .composer__icon { width: 16px; height: 16px; color: var(--tok-icon-ai); }
+.composer__ai-assist:hover { border-color: var(--tok-fill-ai); }
+.composer__settings { display: flex; flex-direction: column; gap: 8px; }
+.composer__settings-row { display: flex; align-items: center; justify-content: space-between; }
+.composer__settings-label { color: var(--tok-text-default); font-size: 13px; }
+.composer__expiration-trigger { display: inline-flex; align-items: center; gap: 2px; border: none; background: transparent; padding: 0; cursor: pointer; color: var(--tok-text-secondary); font-size: 13px; font-family: var(--tok-family-sans); }
+.composer__expiration-trigger .composer__icon { width: 16px; height: 16px; }
+.composer--rich .composer__send { align-self: flex-end; }
+
+.switch { display: inline-flex; align-items: center; cursor: pointer; }
+.switch__input { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.switch__track { box-sizing: border-box; position: relative; flex-shrink: 0; width: 36px; height: 20px; border-radius: 999px; background: var(--tok-border-default); }
+.switch__thumb { position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 999px; background: #fff; transform: translateX(0); }
+.switch__input:checked ~ .switch__track { background: var(--tok-fill-primary); }
+.switch__input:checked ~ .switch__track .switch__thumb { transform: translateX(16px); }
+.switch__input:focus-visible ~ .switch__track { outline: 2px solid var(--tok-border-focus); outline-offset: 2px; }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; border: none; cursor: pointer; font-family: var(--tok-family-sans); border-radius: 8px; }
+.btn:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
+.btn__icon { flex-shrink: 0; }
+.btn--primary { background: var(--tok-fill-primary); color: var(--tok-text-on-fill); }
+.btn--primary:hover { background: var(--tok-fill-primary-hover); }
+.btn--primary:active { background: var(--tok-fill-primary-active); }
+.btn--primary .btn__icon { color: var(--tok-icon-on-fill); }
+.btn--primary.btn--sm.btn--icon-only { width: 32px; height: 32px; padding: 0; }
+.btn--primary.btn--sm.btn--icon-only .btn__icon { width: 16px; height: 16px; }
+.btn--secondary { background: var(--tok-fill-neutral); color: var(--tok-text-default); }
+.btn--secondary:hover { background: var(--tok-fill-neutral-hover); }
+.btn--secondary:active { background: var(--tok-fill-neutral-active); }
+.btn--secondary .btn__icon { color: var(--tok-icon-default); }
+.btn--secondary.btn--base { height: 40px; padding: 0 12px; gap: 8px; font-weight: 600; font-size: 14px; line-height: 1.4; }
+.btn--secondary.btn--base .btn__icon { width: 20px; height: 20px; }
+.btn--secondary.btn--base.btn--icon-only { width: 40px; padding: 0; }
+.btn--secondary.btn--sm { height: 32px; padding: 0 8px; font-weight: 600; font-size: 12px; line-height: 1.4; }
+.btn--secondary.btn--sm .btn__icon { width: 16px; height: 16px; }
+.btn--secondary.btn--sm.btn--icon-only { width: 32px; padding: 0; }
+.btn--ghost { background: transparent; color: var(--tok-text-secondary); }
+.btn--ghost .btn__icon { color: var(--tok-icon-secondary); }
+.btn--ghost:hover { background: var(--tok-fill-neutral-hover); }
+.btn--ghost:active { background: var(--tok-fill-neutral-active); }
+.btn--ghost.btn--base { height: 40px; padding: 0 12px; gap: 8px; font-weight: 600; font-size: 14px; line-height: 1.4; }
+.btn--ghost.btn--base.btn--icon-only { width: 40px; height: 40px; padding: 0; }
+.btn--ghost.btn--base.btn--icon-only .btn__icon { width: 20px; height: 20px; }
+.btn--ghost.btn--sm { height: 32px; padding: 0 8px; gap: 8px; font-weight: 600; font-size: 12px; line-height: 1.4; }
+.btn--ghost.btn--sm .btn__icon { width: 16px; height: 16px; }
+
+.separator { border: none; border-top: 1px solid var(--tok-border-default); margin: 0; }
+
+.btn--primary.btn--base { height: 40px; padding: 0 12px; gap: 8px; font-weight: 600; font-size: 14px; line-height: 1.4; }
+.btn--primary.btn--base .btn__icon { width: 20px; height: 20px; }
+.btn--primary.btn--sm { height: 32px; padding: 0 8px; font-weight: 600; font-size: 12px; line-height: 1.4; }
+.btn--primary:disabled { background: var(--tok-fill-disabled); color: var(--tok-text-disabled); cursor: default; }
+.btn--primary:disabled:hover, .btn--primary:disabled:active { background: var(--tok-fill-disabled); }
+.btn--primary:disabled .btn__icon { color: var(--tok-icon-disabled); }
+/* danger action — the same fill.danger recipe Modal's own footer actions
+   use (button.tokens.json has no danger variant; this is Modal's recipe) */
+.btn--danger { background: var(--tok-fill-danger); color: var(--tok-text-on-fill); }
+.btn--danger:hover { background: var(--tok-fill-danger-hover); }
+.btn--danger.btn--base { height: 40px; padding: 0 12px; gap: 8px; font-weight: 600; font-size: 14px; line-height: 1.4; }
+.btn--primary.btn--lg { height: 48px; padding: 0 16px; gap: 8px; font-weight: 600; font-size: 16px; line-height: 1.4; }
+.btn--primary.btn--lg .btn__icon { width: 24px; height: 24px; }
+.btn--ghost.btn--sm.btn--icon-only { width: 32px; padding: 0; }
+
+.select { display: inline-flex; align-items: center; box-sizing: border-box; background: var(--tok-surface-dim); border: 1px solid var(--tok-border-default); border-radius: 8px; font-family: var(--tok-family-sans); cursor: pointer; text-align: left; }
+.select--base { height: 40px; padding: 0 12px; gap: 8px; }
+.select--base .select__chevron { width: 20px; height: 20px; }
+.select__chevron { flex-shrink: 0; margin-left: auto; color: var(--tok-icon-default); }
+.select__stack { display: flex; flex-direction: column; justify-content: center; flex: 1; min-width: 0; gap: 0px; }
+.select__label { color: var(--tok-text-muted); font-weight: 400; font-size: 12px; line-height: 1.2; }
+.select__value { color: var(--tok-text-default); font-weight: 400; font-size: 16px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.select:hover { border-color: var(--tok-border-strong); }
+.select:focus-visible { outline: none; border-color: var(--tok-border-focus); }
+
+/* compose dialog — one native <dialog>, two responsive shells around the
+   same content. Under the 768px split breakpoint it is a full-screen
+   bottom-sheet takeover (the keyboard owns half the viewport on a phone —
+   Cancel/Send live in the header, always within reach; slide-up entry);
+   from 768px it is Modal's centered recipe. The split-view width is a
+   560px composition literal, not modal.width's 384px — the recipient
+   list rows need the room (same layout-literal call as the textarea
+   min-height). Subject/Message carry Input's recipe including its
+   floating label (resting = placeholder only; focus/populated float the
+   12px label in — Input's own state model). */
+.mc-compose { border: none; padding: 0; background: var(--tok-surface-default); font-family: var(--tok-family-sans); }
+.mc-compose:focus, .mc-compose:focus-visible { outline: none; } /* Chrome focuses the dialog itself on showModal() — a ring around the whole surface reads broken */
+.mc-compose[open] { display: flex; flex-direction: column; }
+.mc-compose::backdrop { background: var(--tok-surface-overlay); }
+.mc-compose__header { flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 12px 16px; border-bottom: 1px solid var(--tok-border-default); }
+.mc-compose__title { margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 14px; line-height: 1.4; }
+/* mobile-first compact spacing (explicit user call — the takeover felt too
+   airy); split views restore Modal's own padding/gap below */
+.mc-compose__body { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding: 16px; }
+.mc-compose__body .select { display: flex; width: 100%; flex-shrink: 0; }
+/* Subject / Message — Input's anatomy on real editable controls */
+/* lg (48px) fixed height, NOT base 40 — the floating label + value stack
+   must fit INSIDE the resting height, or the field visibly grows on focus */
+.mc-field { box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; gap: 0px; min-height: 48px; padding: 6px 12px; border: 1px solid var(--tok-border-default); border-radius: 8px; background: var(--tok-surface-dim); cursor: text; flex-shrink: 0; }
+.mc-field:hover { border-color: var(--tok-border-strong); }
+.mc-field:focus-within { border-color: var(--tok-border-focus); }
+.mc-field__label { display: none; color: var(--tok-text-muted); font-weight: 400; font-size: 12px; line-height: 1.2; }
+.mc-field--floated .mc-field__label { display: block; }
+.mc-field:focus-within .mc-field__label { color: var(--tok-text-primary); }
+.mc-field__control { border: none; outline: none; background: transparent; padding: 0; width: 100%; color: var(--tok-text-default); font-weight: 400; font-size: 16px; line-height: 1.2; font-family: var(--tok-family-sans); }
+.mc-field__control::placeholder { color: var(--tok-text-muted); }
+.mc-field--area { min-height: 140px; justify-content: flex-start; }
+.mc-field--area .mc-field__control { resize: none; flex: 1; min-height: 104px; }
+/* To — a second Select, always present, disabled until a department is
+   chosen (Select's own disabled state tokens, resolved). Its Listbox
+   popover holds the chosen department's allowed recipients per its policy:
+   the department itself first (department-only / "both"), then members —
+   real Avatar + name/role rows, away members disabled with a neutral away
+   Badge. Same trigger + popover composition as the Department select. */
+/* Select resting state — Input's own float model: before a value exists the
+   trigger shows ONLY the placeholder (the field's name) at value size; the
+   12px label appears only once populated. The permanent label+placeholder
+   stack read as a wireframe. */
+.select--resting .select__label { display: none; }
+.select--resting .select__value { color: var(--tok-text-muted); }
+.select:disabled { background: var(--tok-surface-disabled); border-color: var(--tok-border-default); cursor: default; }
+.select:disabled .select__label { color: var(--tok-text-disabled); }
+.select:disabled .select__value { color: var(--tok-text-disabled); }
+.select:disabled .select__chevron { color: var(--tok-icon-disabled); }
+#mc-compose-to-lb .listbox__list[hidden] { display: none; }
+.mc-to-option { align-items: center; }
+.mc-to-option:disabled { cursor: default; }
+.mc-to-option:disabled:hover { background: transparent; }
+.mc-to-option__stack { display: flex; flex-direction: column; gap: 1px; min-width: 0; flex: 1; text-align: left; }
+.mc-to-option__name { color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mc-to-option__role { color: var(--tok-text-muted); font-weight: 400; font-size: 12px; line-height: 1.2; }
+.mc-to-option:disabled .mc-to-option__name, .mc-to-option:disabled .mc-to-option__role { color: var(--tok-text-disabled); }
+.mc-to-option:disabled .avatar { filter: grayscale(1); opacity: 0.6; }
+.mc-to-option .badge { flex-shrink: 0; }
+.mc-compose__hint { color: var(--tok-text-muted); font-weight: 400; font-size: 12px; line-height: 1.2; }
+.mc-compose__hint[hidden] { display: none; }
+/* pre-send attachments (both composers) — Attachment's COMPACT chip density
+   (32px, inline icon, one text line, hugs content), chips in ONE nowrap row
+   with horizontal overflow per the Gmail-chip / messenger-row convention;
+   sent files still render as the full base done row inside the Bubble */
+.mc-compose__atts, .composer__atts { display: flex; gap: 6px; overflow-x: auto; flex-shrink: 0; }
+.mc-compose__atts[hidden], .composer__atts[hidden] { display: none; }
+.attachment__action { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border: none; border-radius: 8px; background: transparent; padding: 0; cursor: pointer; color: var(--tok-icon-secondary); }
+.attachment__action:hover { background: var(--tok-fill-neutral-hover); }
+.attachment__action:active { background: var(--tok-fill-neutral-active); }
+.attachment__action-glyph { width: 16px; height: 16px; display: block; }
+.attachment--compact { padding: 4px 8px; gap: 6px; max-width: 160px; flex-shrink: 0; }
+.attachment--compact .attachment__icon { width: 16px; height: 16px; color: var(--tok-icon-secondary); flex-shrink: 0; }
+.mc-compose__attach-btn { align-self: flex-start; flex-shrink: 0; }
+.mc-compose__footer { flex-shrink: 0; display: flex; justify-content: flex-end; gap: 8px; padding: 16px 24px; border-top: 1px solid var(--tok-border-default); }
+/* fake keyboard — docs-only scaffolding, NOT a DS component (a device mock,
+   same non-tokenized call as the viewer's phone frame): docked under the
+   body while a text field is focused on the takeover, so the layout's
+   reason (Send in the header, above the keyboard) is visible in the
+   prototype. Neutral token colours; key geometry is literal. */
+.mc-kbd { display: none; }
+@media (max-width: 767px) {
+  .mc-compose { position: fixed; inset: 0; margin: 0; width: 100vw; max-width: 100vw; height: 100dvh; max-height: 100dvh; border-radius: 0; }
+  .mc-compose__close, .mc-compose__footer { display: none; }
+  .mc-compose__title { flex: 1; text-align: center; }
+  .mc-compose[open] { transform: translateY(0); transition: transform 0.25s ease; }
+  @starting-style { .mc-compose[open] { transform: translateY(100vh); } }
+  .mc-compose--kbd .mc-kbd, .mc-thread--kbd .mc-kbd { display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; padding: 8px 3px 20px; background: var(--tok-surface-sunken); border-top: 1px solid var(--tok-border-default); }
+  .mc-kbd__row { display: flex; gap: 5px; justify-content: center; }
+  .mc-kbd__key { flex: 1; max-width: 34px; height: 40px; display: inline-flex; align-items: center; justify-content: center; background: var(--tok-surface-default); border-radius: 6px; box-shadow: 0 1px 0 var(--tok-border-strong); color: var(--tok-text-default); font-size: 15px; }
+  .mc-kbd__key--wide { max-width: 44px; color: var(--tok-text-secondary); font-size: 12px; }
+  .mc-kbd__key--space { flex: 5; max-width: none; }
+  .mc-kbd__key--return { flex: 2; max-width: none; background: var(--tok-fill-primary); color: var(--tok-text-on-fill); font-size: 13px; }
+}
+@media (min-width: 768px) {
+  .mc-compose { width: min(560px, calc(100vw - 32px)); max-height: calc(100dvh - 64px); border-radius: 24px; box-shadow: 0px 8px 24px -2px rgba(21, 25, 30, 0.16); }
+  .mc-compose__cancel-m, .mc-compose__send-m { display: none; }
+  .mc-compose__header { padding: 16px 24px; }
+  .mc-compose__body { padding: 24px; gap: 12px; }
+  .mc-compose[open] { opacity: 1; transform: translateY(0); transition: opacity 0.18s ease, transform 0.18s ease; }
+  @starting-style { .mc-compose[open] { opacity: 0; transform: translateY(8px); } }
+}
+
+/* discard confirmation — modal.alert's behavioral variant: identical Modal
+   surface, but no header close, Escape and outside-click disabled — the
+   footer actions are the only way out. Danger = Modal's fill.danger recipe. */
+.mc-confirm { border: none; padding: 0; width: 384px; max-width: calc(100vw - 32px); border-radius: 24px; background: var(--tok-surface-default); box-shadow: 0px 8px 24px -2px rgba(21, 25, 30, 0.16); font-family: var(--tok-family-sans); }
+.mc-confirm::backdrop { background: var(--tok-surface-overlay); }
+.mc-confirm__body { display: flex; flex-direction: column; gap: 8px; padding: 24px; }
+.mc-confirm__title { margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 14px; line-height: 1.4; }
+.mc-confirm__text { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 14px; line-height: 1.4; }
+.mc-confirm__footer { display: flex; justify-content: flex-end; gap: 8px; padding: 16px 24px; border-top: 1px solid var(--tok-border-default); }
+.mc-confirm[open] { opacity: 1; transform: translateY(0); transition: opacity 0.18s ease, transform 0.18s ease; }
+@starting-style {
+  .mc-confirm[open] { opacity: 0; transform: translateY(8px); }
+}
+
+.empty-state { box-sizing: border-box; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; padding: 24px; font-family: var(--tok-family-sans); }
+.empty-state__text { background: var(--tok-bg-neutral); color: var(--tok-text-secondary); border-radius: 999px; padding: 8px 16px; font-weight: 400; font-size: 14px; line-height: 1.4; text-align: center; }
+
+.toast { position: fixed; inset: auto; top: 24px; left: 50%; transform: translateX(-50%); margin: 0; box-sizing: border-box; display: flex; align-items: center; gap: 8px; padding: 12px 16px; border-radius: 8px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); box-shadow: 0px 2px 8px 0px rgba(21, 25, 30, 0.10); font-family: var(--tok-family-sans); }
+.toast__icon { flex-shrink: 0; width: 20px; height: 20px; }
+.toast__label { color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; white-space: nowrap; }
+.toast--success .toast__icon { color: var(--tok-status-success); }
+.toast:popover-open { opacity: 1; translate: 0 0; transition: opacity 0.18s ease, translate 0.18s ease; }
+@starting-style {
+  .toast:popover-open { opacity: 0; translate: 0 -8px; }
+}
+
+/* ---- mc-* composition layer (app shell) — mobile-first, 768px / 1024px structural breakpoints (not tokenized, same call as Grid) ---- */
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-family-sans); color: var(--tok-text-default); }
+.mc { height: 100dvh; display: flex; flex-direction: column; }
+.mc__topbar { flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; background: var(--tok-surface-default); border-bottom: 1px solid var(--tok-border-default); }
+/* New message entry point: floating pill over the list on mobile, a regular
+   topbar button on every split view (>=768) */
+.mc-topbar-new { display: none; }
+.mc-fab { position: absolute; right: 16px; bottom: 16px; border-radius: 999px; box-shadow: 0px 4px 16px 0px rgba(21, 25, 30, 0.12); transition: padding 0.25s ease, gap 0.25s ease; }
+/* extended-FAB convention: the label collapses away while the list scrolls
+   down and comes back on any scroll up or near the top. NO explicit width
+   anywhere — width isn't animatable from auto, so the collapsed circle's
+   size must EMERGE from the animated properties (label max-width → 0 +
+   padding/gap tween): collapsed side padding = (height − iconSize) / 2,
+   which lands the pill at exactly Button's icon-only width-equals-height
+   circle at the end of the tween. */
+.mc-fab__label { max-width: 130px; opacity: 1; overflow: hidden; white-space: nowrap; transition: max-width 0.25s ease, opacity 0.2s ease; }
+.mc-fab.mc-fab--collapsed { padding: 0 12px; gap: 0; }
+.mc-fab.mc-fab--collapsed .mc-fab__label { max-width: 0; opacity: 0; }
+/* on mobile an open thread takes the whole screen — the app's own
+   "Message Center" topbar leaves, the thread bar (Back …) is the header */
+.mc--thread-open .mc__topbar { display: none; }
+.mc__topbar h1 { margin: 0; color: var(--tok-text-default); font-weight: 700; font-size: 20px; line-height: 1.2; }
+.mc__body { flex: 1; display: flex; min-height: 0; }
+
+.mc__rail { position: relative; flex: 1; min-width: 0; display: flex; flex-direction: column; min-height: 0; }
+.mc__reading { display: none; flex: 1; min-width: 0; flex-direction: column; min-height: 0; }
+.mc--thread-open .mc__rail { display: none; }
+.mc--thread-open .mc__reading { display: flex; }
+
+.mc-rail__topbar { display: flex; align-items: center; gap: 8px; padding: 12px 16px 0; }
+.mc-rail__topbar .tabs--segmented { flex: 1; }
+.mc-rail__topbar .search { flex: 1; display: none; }
+.mc--search-open .mc-rail__topbar .tabs--segmented, .mc--search-open .mc-search-open-btn { display: none; }
+.mc--search-open .mc-rail__topbar .search { display: flex; }
+/* with the chips row gone in search mode, the topbar provides the breathing
+   room below the field itself */
+.mc--search-open .mc-rail__topbar { padding-bottom: 12px; }
+.mc-search-close { display: none; flex-shrink: 0; border: none; background: none; padding: 0; cursor: pointer; color: var(--tok-text-primary); font-family: var(--tok-family-sans); font-weight: 400; font-size: 14px; line-height: 1.4; text-decoration: underline; }
+.mc--search-open .mc-search-close { display: inline-flex; }
+.mc-rail__chips { display: flex; gap: 8px; padding: 12px 16px; }
+/* One filter surface at EVERY width (2026-07-29 — the inline toggle chips
+   are gone entirely): the "Filters · N" dropdown-chip + the Department chip.
+   Unread / Expires soon are Inbox-only, so Archived hides those OPTIONS
+   inside the listbox; search is global, so the whole row leaves while open. */
+.mc.mc--archived #mc-filters-listbox [data-filter-option="unread"], .mc.mc--archived #mc-filters-listbox [data-filter-option="expires"] { display: none; }
+.mc--search-open .mc-rail__chips { display: none; }
+.mc-rail__count { display: flex; flex-direction: column; gap: 8px; }
+.mc-count { padding: 0 16px; color: var(--tok-text-muted); font-weight: 700; font-size: 12px; line-height: 1.4; text-transform: uppercase; }
+/* one shared scroll container for both lists — during a search they render
+   stacked as a single combined result set, not two half-height panes each
+   with its own scrollbar */
+.mc-rail__lists { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; }
+/* mobile: room to scroll the last row clear of the floating New message pill */
+.mc-rail__lists { padding-bottom: 72px; }
+.mc-list { display: flex; flex-direction: column; }
+.mc-list[hidden] { display: none; }
+.mc-rail__count[hidden] { display: none; }
+.mc-rail__empty { flex: 1; display: flex; }
+.mc-rail__empty[hidden] { display: none; }
+
+.mc-empty { flex: 1; display: flex; }
+.mc-empty[hidden] { display: none; }
+.mc-thread { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+.mc-thread[hidden] { display: none; }
+/* mobile-first thread header: [Back … actions] row, then the subject, then
+   the Department/Institution tag pills; the bar's own bottom border is the
+   separator under the tags. Desktop reflows via order — back hides, subject
+   shares the row with the actions. */
+.mc-thread__bar { flex-shrink: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 12px 16px; background: var(--tok-surface-default); border-bottom: 1px solid var(--tok-border-default); }
+.mc-thread__back { order: 1; }
+.mc-thread__actions { order: 2; margin-left: auto; display: flex; gap: 8px; }
+.mc-thread__subject { order: 3; width: 100%; min-width: 0; margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 18px; line-height: 1.4; }
+/* department · institution as one plain 12px line (pills lasted one round —
+   too much visual weight for what is quiet context), followed by real Badges
+   (base size) for the thread's Expires and Archived states. The row wraps
+   when tight — never a horizontal scroll that would clip a badge mid-word */
+.mc-thread__tags { order: 4; width: 100%; display: flex; align-items: center; flex-wrap: wrap; gap: 6px 8px; }
+.mc-thread__meta-line { color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.mc-thread__scroll { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 24px; }
+.mc-thread__composer { flex-shrink: 0; padding: 12px 16px 16px; background: var(--tok-surface-default); box-shadow: 0 -2px 8px 0px rgba(21, 25, 30, 0.10); position: relative; }
+/* in-thread composer upgrades: pre-send attachments sit above the field as
+   Attachment COMPACT chips (recipe + row container declared with the compose
+   dialog's, in the component section); the field itself is a 1-row textarea
+   auto-growing to ~5 lines (JS caps at 120px), icons pinned to the bottom
+   edge as it grows */
+.mc-composer .composer__field { align-items: flex-end; }
+.mc-composer .composer__input { display: block; resize: none; max-height: 120px; overflow-y: auto; }
+/* replies closed: the Composer's slot holds EmptyState's quiet pill instead */
+.mc-thread__composer--closed { display: flex; justify-content: center; }
+
+/* search-scope badges (Inbox/Archived) — declared here, after the component
+   recipes, so their display:none outranks .badge's own display in the
+   cascade; visible only while a search query is active */
+.thread-item-inbox__expires .thread-item-inbox__scope { display: none; }
+.mc--searching .thread-item-inbox__expires .thread-item-inbox__scope { display: inline-flex; }
+.thread-item-inbox__expires--scope-only { display: none; }
+.mc--searching .thread-item-inbox__expires--scope-only { display: flex; }
+
+@media (min-width: 768px) {
+  .mc__rail, .mc--thread-open .mc__rail { display: flex; flex: none; width: 320px; border-right: 1px solid var(--tok-border-default); }
+  .mc__reading { display: flex; }
+  .mc--thread-open .mc__topbar { display: flex; }
+  .mc-topbar-new { display: inline-flex; }
+  .mc-fab { display: none; }
+  .mc-rail__lists { padding-bottom: 0; }
+  .mc-thread__back { display: none; }
+  /* subject shares the row with the actions on every split view — a long
+     subject simply wraps to a second line instead of dropping below the
+     buttons (an actions-only top row read as a hole on the tablet) */
+  .mc-thread__subject { order: 1; width: auto; flex: 1; }
+  .mc-thread__actions { margin-left: 0; }
+}
+@media (min-width: 1024px) {
+  .mc__rail, .mc--thread-open .mc__rail { width: 380px; }
+  .mc__topbar { padding: 16px 24px; }
+  .mc-thread__bar { padding-left: 24px; padding-right: 24px; }
+  .mc-thread__scroll { padding: 24px; }
+  .mc-thread__composer { padding: 16px 24px 24px; }
+}
+</style>
+</head>
+<body>
+<div class="mc">
+  <header class="mc__topbar"><h1>Message Center</h1></header>
+  <div class="mc__body">
+    <aside class="mc__rail" aria-label="Thread list">
+      <div class="mc-rail__topbar">
+        <div class="tabs tabs--segmented tabs--sm" role="tablist">
+          <button class="tab tab--sm tab--active" role="tab" aria-selected="true" data-tab="inbox">Inbox<span class="counter counter--sm counter--onNeutral counter--active" id="mc-unread-counter">2</span></button>
+          <button class="tab tab--sm" role="tab" aria-selected="false" data-tab="archived">Resolved</button>
+        </div>
+        <button class="btn btn--secondary btn--base btn--icon-only mc-search-open-btn" type="button" aria-label="Search threads"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg></button>
+        <div class="search search--base">
+          <svg class="search__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+          <input class="search__input" id="mc-search-input" placeholder="Search all threads" aria-label="Search all threads" />
+          <button class="search__clear" id="mc-search-clear" type="button" aria-label="Clear search" hidden><svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
+        </div>
+        <button class="mc-search-close" id="mc-search-close" type="button">Close</button>
+      </div>
+      <div class="mc-rail__chips">
+        <button class="chip chip--base mc-filters-chip" id="mc-filters-chip" type="button" popovertarget="mc-filters-listbox" aria-haspopup="listbox"><svg class="chip__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/></svg><span>Filters</span><span class="counter counter--sm counter--onNeutral counter--inactive" id="mc-filters-count" hidden>0</span><svg class="chip__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+        <div class="listbox" id="mc-filters-listbox" popover>
+          <ul class="listbox__list" aria-label="Filters">
+            <li data-filter-option="unread"><label class="listbox__cb-option" for="mc-fopt-unread"><input type="checkbox" class="listbox__cb-input" id="mc-fopt-unread" data-filter-key="unread" />
+              <span class="listbox__cb-box"><svg class="listbox__cb-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="listbox__cb-label">Unread</span></label></li>
+            <li data-filter-option="expires"><label class="listbox__cb-option" for="mc-fopt-expires"><input type="checkbox" class="listbox__cb-input" id="mc-fopt-expires" data-filter-key="expires" />
+              <span class="listbox__cb-box"><svg class="listbox__cb-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="listbox__cb-label">Due soon</span></label></li>
+            <li data-filter-option="flagged"><label class="listbox__cb-option" for="mc-fopt-flagged"><input type="checkbox" class="listbox__cb-input" id="mc-fopt-flagged" data-filter-key="flagged" />
+              <span class="listbox__cb-box"><svg class="listbox__cb-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="listbox__cb-label">Flagged</span></label></li>
+          </ul>
+        </div>
+        <button class="chip chip--base chip--dropdown" type="button" id="mc-dept-chip" popovertarget="mc-dept-listbox" aria-haspopup="listbox"><span class="chip__label" id="mc-dept-label">Department</span><svg class="chip__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+        <div class="listbox" id="mc-dept-listbox" popover>
+          <ul class="listbox__list" role="listbox" aria-label="Filter by department">
+            <li><button class="listbox__option listbox__option--selected" role="option" aria-selected="true" data-dept="" type="button">All departments<svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li>
+            <li><button class="listbox__option" role="option" aria-selected="false" data-dept="Academic Advising" type="button">Academic Advising<svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li>
+            <li><button class="listbox__option" role="option" aria-selected="false" data-dept="English Dept" type="button">English Dept<svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li>
+          </ul>
+        </div>
+      </div>
+      <div class="mc-rail__count">
+        <span class="mc-count" id="mc-count">4 THREADS</span>
+        <hr class="separator" />
+      </div>
+      <div class="mc-rail__lists">
+        <div class="mc-list" data-list="inbox">
+          <div class="thread-item-inbox thread-item-inbox--unread" role="button" tabindex="0" data-thread="cait-minor" data-idx="0" data-subject="Minor Requirements Review" data-department="Academic Advising">
+        <span class="avatar avatar--orange avatar--sm" role="img" aria-label="Cait Genatossio"><span class="avatar__initials">CG</span></span>
+        <div class="thread-item-inbox__main">
+          <div class="thread-item-inbox__top">
+            <span class="thread-item-inbox__identity">Cait Genatossio · Academic Advising</span>
+            <span class="thread-item-inbox__time">08/05/2026</span>
+          </div>
+          <div class="thread-item-inbox__subject">Minor Requirements Review</div>
+          <div class="thread-item-inbox__preview-row">
+            <span class="thread-item-inbox__preview">Could we also review the minor requirements before enrollment closes?</span>
+            
+            <button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
+          </div>
+          <div class="thread-item-inbox__expires"><span class="badge badge--sm badge--role-primary">Awaiting reply</span><span class="badge badge--sm badge--role-primary thread-item-inbox__scope">Inbox</span></div>
+        </div>
+      </div>
+        <div class="thread-item-inbox thread-item-inbox--unread" role="button" tabindex="0" data-thread="maya-hold" data-idx="1" data-subject="Registration Hold Question" data-department="Academic Advising">
+        <span class="avatar avatar--violet avatar--sm" role="img" aria-label="Maya Patel"><span class="avatar__initials">MP</span></span>
+        <div class="thread-item-inbox__main">
+          <div class="thread-item-inbox__top">
+            <span class="thread-item-inbox__identity">Maya Patel · Academic Advising</span>
+            <span class="thread-item-inbox__time">08/04/2026</span>
+          </div>
+          <div class="thread-item-inbox__subject">Registration Hold Question</div>
+          <div class="thread-item-inbox__preview-row">
+            <span class="thread-item-inbox__preview">There is a hold on my account and I can't register for the fall term.</span>
+            
+            <button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
+          </div>
+          <div class="thread-item-inbox__expires"><span class="badge badge--sm badge--role-primary">Awaiting reply</span><span class="badge badge--sm badge--role-warning">Unassigned</span><span class="badge badge--sm badge--role-primary thread-item-inbox__scope">Inbox</span></div>
+        </div>
+      </div>
+        <div class="thread-item-inbox thread-item-inbox--read" role="button" tabindex="0" data-thread="diego-transcript" data-idx="2" data-subject="Transcript for Internship Application" data-department="Academic Advising" data-expires="warning">
+        <span class="avatar avatar--orange avatar--sm" role="img" aria-label="Diego Fernandez"><span class="avatar__initials">DF</span></span>
+        <div class="thread-item-inbox__main">
+          <div class="thread-item-inbox__top">
+            <span class="thread-item-inbox__identity">Diego Fernandez · Academic Advising</span>
+            <span class="thread-item-inbox__time">08/03/2026</span>
+          </div>
+          <div class="thread-item-inbox__subject">Transcript for Internship Application</div>
+          <div class="thread-item-inbox__preview-row">
+            <span class="thread-item-inbox__preview">My internship application needs an official transcript by next Friday.</span>
+            
+            <button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
+          </div>
+          <div class="thread-item-inbox__expires"><span class="badge badge--sm badge--role-warning">Due 08/10/2026</span><span class="badge badge--sm badge--role-primary thread-item-inbox__scope">Inbox</span></div>
+        </div>
+      </div>
+        <div class="thread-item-inbox thread-item-inbox--read" role="button" tabindex="0" data-thread="george-reschedule" data-idx="3" data-subject="Reschedule Advising Appointment" data-department="Academic Advising">
+        <span class="avatar avatar--orange avatar--sm" role="img" aria-label="George Amalor"><span class="avatar__initials">GA</span></span>
+        <div class="thread-item-inbox__main">
+          <div class="thread-item-inbox__top">
+            <span class="thread-item-inbox__identity">George Amalor · Academic Advising</span>
+            <span class="thread-item-inbox__time">07/31/2026</span>
+          </div>
+          <div class="thread-item-inbox__subject">Reschedule Advising Appointment</div>
+          <div class="thread-item-inbox__preview-row">
+            <span class="thread-item-inbox__preview">Sure — I moved your appointment to Tuesday at 3 PM.</span>
+            <svg class="thread-item-inbox__replied" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 9V5l-7 7 7 7v-4.1c5 0 8.5 1.6 11 5.1-1-5-4-10-11-11z"/></svg>
+            <button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
+          </div>
+          <div class="thread-item-inbox__expires thread-item-inbox__expires--scope-only"><span class="badge badge--sm badge--role-primary thread-item-inbox__scope">Inbox</span></div>
+        </div>
+      </div>
+        </div>
+        <div class="mc-list" data-list="archived" hidden>
+          <div class="thread-item-inbox thread-item-inbox--read" role="button" tabindex="0" data-thread="lena-waiver" data-idx="4" data-subject="Prerequisite Waiver" data-department="English Dept">
+        <span class="avatar avatar--red avatar--sm" role="img" aria-label="Lena Hoffman"><span class="avatar__initials">LH</span></span>
+        <div class="thread-item-inbox__main">
+          <div class="thread-item-inbox__top">
+            <span class="thread-item-inbox__identity">Lena Hoffman · English Dept</span>
+            <span class="thread-item-inbox__time">07/18/2026</span>
+          </div>
+          <div class="thread-item-inbox__subject">Prerequisite Waiver</div>
+          <div class="thread-item-inbox__preview-row">
+            <span class="thread-item-inbox__preview">Waiver approved — you are clear to enroll in ENG 340.</span>
+            <svg class="thread-item-inbox__replied" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 9V5l-7 7 7 7v-4.1c5 0 8.5 1.6 11 5.1-1-5-4-10-11-11z"/></svg>
+            <button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
+          </div>
+          <div class="thread-item-inbox__expires thread-item-inbox__expires--scope-only"><span class="badge badge--sm badge--role-neutral thread-item-inbox__scope">Resolved</span></div>
+        </div>
+      </div>
+        <div class="thread-item-inbox thread-item-inbox--read" role="button" tabindex="0" data-thread="tomas-plan" data-idx="5" data-subject="Study Plan Check-in" data-department="Academic Advising">
+        <span class="avatar avatar--amber avatar--sm" role="img" aria-label="Tomas Novak"><span class="avatar__initials">TN</span></span>
+        <div class="thread-item-inbox__main">
+          <div class="thread-item-inbox__top">
+            <span class="thread-item-inbox__identity">Tomas Novak · Academic Advising</span>
+            <span class="thread-item-inbox__time">06/30/2026</span>
+          </div>
+          <div class="thread-item-inbox__subject">Study Plan Check-in</div>
+          <div class="thread-item-inbox__preview-row">
+            <span class="thread-item-inbox__preview">All set — see you at the fall check-in.</span>
+            <svg class="thread-item-inbox__replied" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 9V5l-7 7 7 7v-4.1c5 0 8.5 1.6 11 5.1-1-5-4-10-11-11z"/></svg>
+            <button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
+          </div>
+          <div class="thread-item-inbox__expires thread-item-inbox__expires--scope-only"><span class="badge badge--sm badge--role-neutral thread-item-inbox__scope">Resolved</span></div>
+        </div>
+      </div>
+        </div>
+        <div class="mc-rail__empty" id="mc-rail-empty" hidden>
+          <div class="empty-state"><span class="empty-state__text" id="mc-rail-empty-text">No threads found</span></div>
+        </div>
+      </div>
+    </aside>
+    <section class="mc__reading" aria-label="Thread">
+      <div class="mc-empty" id="mc-empty"><div class="empty-state"><span class="empty-state__text">Choose a Thread</span></div></div>
+      <article class="mc-thread" data-thread="cait-minor" hidden>
+        <header class="mc-thread__bar">
+          <button class="btn btn--ghost btn--sm mc-thread__back" type="button"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>Back</button>
+          <div class="mc-thread__actions">
+            <button class="btn btn--secondary btn--sm mc-archive" type="button" data-thread="cait-minor">Resolve</button>
+            <button class="btn btn--secondary btn--sm btn--icon-only mc-print" type="button" aria-label="Print thread"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg></button>
+          </div>
+          <h2 class="mc-thread__subject">Minor Requirements Review</h2>
+          <div class="mc-thread__tags">
+            <span class="mc-thread__meta-line">Cait Genatossio · Academic Advising</span>
+            <span class="mc-thread__meta-line">Handled by Alexander Robinson</span>
+            <span class="badge badge--sm badge--role-primary">Awaiting reply</span>
+            
+            
+          </div>
+        </header>
+        <div class="mc-thread__scroll">
+          <div class="bubble-row bubble-row--other">
+          <div class="bubble-sender"><span class="avatar avatar--orange avatar--sm" role="img" aria-label="Cait Genatossio"><span class="avatar__initials">CG</span></span><p class="bubble-sender__text"><span class="bubble-sender__name">Cait Genatossio</span> <span class="bubble-sender__meta">-- Aug 05, 9:12 AM</span></p></div>
+          <div class="bubble bubble--other"><p>Hi! Could we also review the minor requirements before enrollment closes? I want to be sure the art history courses count.</p></div>
+        </div>
+        </div>
+        <footer class="mc-thread__composer">
+          <form class="composer composer--rich mc-composer" data-thread="cait-minor">
+            <div class="composer__toolbar">
+              <button type="button" class="composer__icon-btn" aria-label="Bold"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.6 10.79c.97-.67 1.65-1.77 1.65-2.79 0-2.26-1.75-4-4-4H7v14h7.04c2.09 0 3.71-1.7 3.71-3.79 0-1.52-.86-2.82-2.15-3.42zM10 6.5h3c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-3v-3zm3.5 9H10v-3h3.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5z"/></svg></button>
+              <button type="button" class="composer__icon-btn" aria-label="Italic"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 4v3h2.21l-3.42 8H6v3h8v-3h-2.21l3.42-8H18V4z"/></svg></button>
+              <button type="button" class="composer__icon-btn" aria-label="Underline"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 17c3.31 0 6-2.69 6-6V3h-2.5v8c0 1.93-1.57 3.5-3.5 3.5S8.5 12.93 8.5 11V3H6v8c0 3.31 2.69 6 6 6zm-7 2v2h14v-2H5z"/></svg></button>
+              <button type="button" class="btn btn--ghost btn--sm"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="m21.41 11.58-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.55-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z"/></svg>Merge Tags</button>
+              <button type="button" class="composer__ai-assist"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
+            </div>
+            <div class="composer__field">
+              <textarea class="composer__input" rows="1" placeholder="Reply to Cait..." aria-label="Reply to Cait"></textarea>
+            </div>
+            <div class="composer__settings">
+              <div class="composer__settings-row"><span class="composer__settings-label">Allow Replies</span><label class="switch"><input type="checkbox" class="switch__input" checked /><span class="switch__track"><span class="switch__thumb"></span></span></label></div>
+              <div class="composer__settings-row"><span class="composer__settings-label">Expiration</span><button type="button" class="composer__expiration-trigger">Aug 15, 2026 <svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button></div>
+            </div>
+            <button type="submit" class="btn btn--primary btn--base composer__send"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>Send</button>
+          </form>
+        </footer>
+      </article>
+      <article class="mc-thread" data-thread="maya-hold" hidden>
+        <header class="mc-thread__bar">
+          <button class="btn btn--ghost btn--sm mc-thread__back" type="button"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>Back</button>
+          <div class="mc-thread__actions">
+            <button class="btn btn--secondary btn--sm mc-archive" type="button" data-thread="maya-hold">Resolve</button>
+            <button class="btn btn--secondary btn--sm btn--icon-only mc-print" type="button" aria-label="Print thread"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg></button>
+          </div>
+          <h2 class="mc-thread__subject">Registration Hold Question</h2>
+          <div class="mc-thread__tags">
+            <span class="mc-thread__meta-line">Maya Patel · Academic Advising</span>
+            <span class="badge badge--sm badge--role-warning">Unassigned</span>
+            <span class="badge badge--sm badge--role-primary">Awaiting reply</span>
+            
+            
+          </div>
+        </header>
+        <div class="mc-thread__scroll">
+          <div class="bubble-row bubble-row--other">
+          <div class="bubble-sender"><span class="avatar avatar--violet avatar--sm" role="img" aria-label="Maya Patel"><span class="avatar__initials">MP</span></span><p class="bubble-sender__text"><span class="bubble-sender__name">Maya Patel</span> <span class="bubble-sender__meta">-- Aug 04, 4:47 PM</span></p></div>
+          <div class="bubble bubble--other"><p>There is a hold on my account and I can't register for the fall term. Could you tell me what it is about?</p></div>
+        </div>
+        </div>
+        <footer class="mc-thread__composer">
+          <form class="composer composer--rich mc-composer" data-thread="maya-hold">
+            <div class="composer__toolbar">
+              <button type="button" class="composer__icon-btn" aria-label="Bold"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.6 10.79c.97-.67 1.65-1.77 1.65-2.79 0-2.26-1.75-4-4-4H7v14h7.04c2.09 0 3.71-1.7 3.71-3.79 0-1.52-.86-2.82-2.15-3.42zM10 6.5h3c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-3v-3zm3.5 9H10v-3h3.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5z"/></svg></button>
+              <button type="button" class="composer__icon-btn" aria-label="Italic"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 4v3h2.21l-3.42 8H6v3h8v-3h-2.21l3.42-8H18V4z"/></svg></button>
+              <button type="button" class="composer__icon-btn" aria-label="Underline"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 17c3.31 0 6-2.69 6-6V3h-2.5v8c0 1.93-1.57 3.5-3.5 3.5S8.5 12.93 8.5 11V3H6v8c0 3.31 2.69 6 6 6zm-7 2v2h14v-2H5z"/></svg></button>
+              <button type="button" class="btn btn--ghost btn--sm"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="m21.41 11.58-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.55-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z"/></svg>Merge Tags</button>
+              <button type="button" class="composer__ai-assist"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
+            </div>
+            <div class="composer__field">
+              <textarea class="composer__input" rows="1" placeholder="Reply to Maya..." aria-label="Reply to Maya"></textarea>
+            </div>
+            <div class="composer__settings">
+              <div class="composer__settings-row"><span class="composer__settings-label">Allow Replies</span><label class="switch"><input type="checkbox" class="switch__input" checked /><span class="switch__track"><span class="switch__thumb"></span></span></label></div>
+              <div class="composer__settings-row"><span class="composer__settings-label">Expiration</span><button type="button" class="composer__expiration-trigger">Aug 15, 2026 <svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button></div>
+            </div>
+            <button type="submit" class="btn btn--primary btn--base composer__send"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>Send</button>
+          </form>
+        </footer>
+      </article>
+      <article class="mc-thread" data-thread="diego-transcript" hidden>
+        <header class="mc-thread__bar">
+          <button class="btn btn--ghost btn--sm mc-thread__back" type="button"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>Back</button>
+          <div class="mc-thread__actions">
+            <button class="btn btn--secondary btn--sm mc-archive" type="button" data-thread="diego-transcript">Resolve</button>
+            <button class="btn btn--secondary btn--sm btn--icon-only mc-print" type="button" aria-label="Print thread"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg></button>
+          </div>
+          <h2 class="mc-thread__subject">Transcript for Internship Application</h2>
+          <div class="mc-thread__tags">
+            <span class="mc-thread__meta-line">Diego Fernandez · Academic Advising</span>
+            <span class="mc-thread__meta-line">Handled by Ava Robinson</span>
+            
+            <span class="badge badge--sm badge--role-warning">Due 08/10/2026</span>
+            
+          </div>
+        </header>
+        <div class="mc-thread__scroll">
+          <div class="bubble-row bubble-row--other">
+          <div class="bubble-sender"><span class="avatar avatar--orange avatar--sm" role="img" aria-label="Diego Fernandez"><span class="avatar__initials">DF</span></span><p class="bubble-sender__text"><span class="bubble-sender__name">Diego Fernandez</span> <span class="bubble-sender__meta">-- Aug 03, 11:20 AM</span></p></div>
+          <div class="bubble bubble--other"><p>My internship application needs an official transcript by next Friday. Attaching the offer letter for context.</p><a class="attachment" href="#" download>
+              <span class="attachment__media"><svg class="attachment__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M6 2c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6H6zm7 7V3.5L18.5 9H13z"/></svg></span>
+              <span class="attachment__content">
+                <span class="attachment__title">Internship-offer.pdf</span>
+                <span class="attachment__description">PDF · 420 KB</span>
+              </span>
+            </a></div>
+        </div>
+        </div>
+        <footer class="mc-thread__composer">
+          <form class="composer composer--rich mc-composer" data-thread="diego-transcript">
+            <div class="composer__toolbar">
+              <button type="button" class="composer__icon-btn" aria-label="Bold"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.6 10.79c.97-.67 1.65-1.77 1.65-2.79 0-2.26-1.75-4-4-4H7v14h7.04c2.09 0 3.71-1.7 3.71-3.79 0-1.52-.86-2.82-2.15-3.42zM10 6.5h3c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-3v-3zm3.5 9H10v-3h3.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5z"/></svg></button>
+              <button type="button" class="composer__icon-btn" aria-label="Italic"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 4v3h2.21l-3.42 8H6v3h8v-3h-2.21l3.42-8H18V4z"/></svg></button>
+              <button type="button" class="composer__icon-btn" aria-label="Underline"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 17c3.31 0 6-2.69 6-6V3h-2.5v8c0 1.93-1.57 3.5-3.5 3.5S8.5 12.93 8.5 11V3H6v8c0 3.31 2.69 6 6 6zm-7 2v2h14v-2H5z"/></svg></button>
+              <button type="button" class="btn btn--ghost btn--sm"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="m21.41 11.58-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.55-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z"/></svg>Merge Tags</button>
+              <button type="button" class="composer__ai-assist"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
+            </div>
+            <div class="composer__field">
+              <textarea class="composer__input" rows="1" placeholder="Reply to Diego..." aria-label="Reply to Diego"></textarea>
+            </div>
+            <div class="composer__settings">
+              <div class="composer__settings-row"><span class="composer__settings-label">Allow Replies</span><label class="switch"><input type="checkbox" class="switch__input" checked /><span class="switch__track"><span class="switch__thumb"></span></span></label></div>
+              <div class="composer__settings-row"><span class="composer__settings-label">Expiration</span><button type="button" class="composer__expiration-trigger">Aug 15, 2026 <svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button></div>
+            </div>
+            <button type="submit" class="btn btn--primary btn--base composer__send"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>Send</button>
+          </form>
+        </footer>
+      </article>
+      <article class="mc-thread" data-thread="george-reschedule" hidden>
+        <header class="mc-thread__bar">
+          <button class="btn btn--ghost btn--sm mc-thread__back" type="button"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>Back</button>
+          <div class="mc-thread__actions">
+            <button class="btn btn--secondary btn--sm mc-archive" type="button" data-thread="george-reschedule">Resolve</button>
+            <button class="btn btn--secondary btn--sm btn--icon-only mc-print" type="button" aria-label="Print thread"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg></button>
+          </div>
+          <h2 class="mc-thread__subject">Reschedule Advising Appointment</h2>
+          <div class="mc-thread__tags">
+            <span class="mc-thread__meta-line">George Amalor · Academic Advising</span>
+            <span class="mc-thread__meta-line">Handled by Alexander Robinson</span>
+            
+            
+            
+          </div>
+        </header>
+        <div class="mc-thread__scroll">
+          <div class="bubble-row bubble-row--other">
+          <div class="bubble-sender"><span class="avatar avatar--orange avatar--sm" role="img" aria-label="George Amalor"><span class="avatar__initials">GA</span></span><p class="bubble-sender__text"><span class="bubble-sender__name">George Amalor</span> <span class="bubble-sender__meta">-- Jul 31, 8:02 AM</span></p></div>
+          <div class="bubble bubble--other"><p>Could we reschedule my advising appointment to next week?</p></div>
+        </div>
+          <div class="bubble-row bubble-row--self">
+          <div class="bubble-sender"><p class="bubble-sender__text"><span class="bubble-sender__name">Alexander Robinson</span> <span class="bubble-sender__meta">-- Jul 31, 9:15 AM</span></p><span class="avatar avatar--violet avatar--sm" role="img" aria-label="Alexander Robinson"><img class="avatar__img" src="../../assets/avatars/alexander-robinson.jpg" alt="" /></span></div>
+          <div class="bubble bubble--self bubble--tint"><p>Sure — I moved your appointment to Tuesday at 3 PM. Let me know if that works.</p></div>
+        </div>
+        </div>
+        <footer class="mc-thread__composer">
+          <form class="composer composer--rich mc-composer" data-thread="george-reschedule">
+            <div class="composer__toolbar">
+              <button type="button" class="composer__icon-btn" aria-label="Bold"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.6 10.79c.97-.67 1.65-1.77 1.65-2.79 0-2.26-1.75-4-4-4H7v14h7.04c2.09 0 3.71-1.7 3.71-3.79 0-1.52-.86-2.82-2.15-3.42zM10 6.5h3c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-3v-3zm3.5 9H10v-3h3.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5z"/></svg></button>
+              <button type="button" class="composer__icon-btn" aria-label="Italic"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 4v3h2.21l-3.42 8H6v3h8v-3h-2.21l3.42-8H18V4z"/></svg></button>
+              <button type="button" class="composer__icon-btn" aria-label="Underline"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 17c3.31 0 6-2.69 6-6V3h-2.5v8c0 1.93-1.57 3.5-3.5 3.5S8.5 12.93 8.5 11V3H6v8c0 3.31 2.69 6 6 6zm-7 2v2h14v-2H5z"/></svg></button>
+              <button type="button" class="btn btn--ghost btn--sm"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="m21.41 11.58-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.55-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z"/></svg>Merge Tags</button>
+              <button type="button" class="composer__ai-assist"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
+            </div>
+            <div class="composer__field">
+              <textarea class="composer__input" rows="1" placeholder="Reply to George..." aria-label="Reply to George"></textarea>
+            </div>
+            <div class="composer__settings">
+              <div class="composer__settings-row"><span class="composer__settings-label">Allow Replies</span><label class="switch"><input type="checkbox" class="switch__input" checked /><span class="switch__track"><span class="switch__thumb"></span></span></label></div>
+              <div class="composer__settings-row"><span class="composer__settings-label">Expiration</span><button type="button" class="composer__expiration-trigger">Aug 15, 2026 <svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button></div>
+            </div>
+            <button type="submit" class="btn btn--primary btn--base composer__send"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>Send</button>
+          </form>
+        </footer>
+      </article>
+      <article class="mc-thread" data-thread="lena-waiver" hidden>
+        <header class="mc-thread__bar">
+          <button class="btn btn--ghost btn--sm mc-thread__back" type="button"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>Back</button>
+          <div class="mc-thread__actions">
+            
+            <button class="btn btn--secondary btn--sm btn--icon-only mc-print" type="button" aria-label="Print thread"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg></button>
+          </div>
+          <h2 class="mc-thread__subject">Prerequisite Waiver</h2>
+          <div class="mc-thread__tags">
+            <span class="mc-thread__meta-line">Lena Hoffman · English Dept</span>
+            <span class="mc-thread__meta-line">Handled by Alexander Robinson</span>
+            
+            
+            <span class="badge badge--sm badge--role-neutral">Resolved</span>
+          </div>
+        </header>
+        <div class="mc-thread__scroll">
+          <div class="bubble-row bubble-row--other">
+          <div class="bubble-sender"><span class="avatar avatar--red avatar--sm" role="img" aria-label="Lena Hoffman"><span class="avatar__initials">LH</span></span><p class="bubble-sender__text"><span class="bubble-sender__name">Lena Hoffman</span> <span class="bubble-sender__meta">-- Jul 17, 2:30 PM</span></p></div>
+          <div class="bubble bubble--other"><p>I am requesting a prerequisite waiver for ENG 340 based on my transfer credits.</p></div>
+        </div>
+          <div class="bubble-row bubble-row--self">
+          <div class="bubble-sender"><p class="bubble-sender__text"><span class="bubble-sender__name">Alexander Robinson</span> <span class="bubble-sender__meta">-- Jul 18, 10:05 AM</span></p><span class="avatar avatar--violet avatar--sm" role="img" aria-label="Alexander Robinson"><img class="avatar__img" src="../../assets/avatars/alexander-robinson.jpg" alt="" /></span></div>
+          <div class="bubble bubble--self bubble--tint"><p>Waiver approved — you are clear to enroll in ENG 340.</p></div>
+        </div>
+        </div>
+        <footer class="mc-thread__composer">
+          <form class="composer composer--rich mc-composer" data-thread="lena-waiver">
+            <div class="composer__toolbar">
+              <button type="button" class="composer__icon-btn" aria-label="Bold"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.6 10.79c.97-.67 1.65-1.77 1.65-2.79 0-2.26-1.75-4-4-4H7v14h7.04c2.09 0 3.71-1.7 3.71-3.79 0-1.52-.86-2.82-2.15-3.42zM10 6.5h3c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-3v-3zm3.5 9H10v-3h3.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5z"/></svg></button>
+              <button type="button" class="composer__icon-btn" aria-label="Italic"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 4v3h2.21l-3.42 8H6v3h8v-3h-2.21l3.42-8H18V4z"/></svg></button>
+              <button type="button" class="composer__icon-btn" aria-label="Underline"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 17c3.31 0 6-2.69 6-6V3h-2.5v8c0 1.93-1.57 3.5-3.5 3.5S8.5 12.93 8.5 11V3H6v8c0 3.31 2.69 6 6 6zm-7 2v2h14v-2H5z"/></svg></button>
+              <button type="button" class="btn btn--ghost btn--sm"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="m21.41 11.58-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.55-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z"/></svg>Merge Tags</button>
+              <button type="button" class="composer__ai-assist"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
+            </div>
+            <div class="composer__field">
+              <textarea class="composer__input" rows="1" placeholder="Reply to Lena..." aria-label="Reply to Lena"></textarea>
+            </div>
+            <div class="composer__settings">
+              <div class="composer__settings-row"><span class="composer__settings-label">Allow Replies</span><label class="switch"><input type="checkbox" class="switch__input" checked /><span class="switch__track"><span class="switch__thumb"></span></span></label></div>
+              <div class="composer__settings-row"><span class="composer__settings-label">Expiration</span><button type="button" class="composer__expiration-trigger">Aug 15, 2026 <svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button></div>
+            </div>
+            <button type="submit" class="btn btn--primary btn--base composer__send"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>Send</button>
+          </form>
+        </footer>
+      </article>
+      <article class="mc-thread" data-thread="tomas-plan" hidden>
+        <header class="mc-thread__bar">
+          <button class="btn btn--ghost btn--sm mc-thread__back" type="button"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>Back</button>
+          <div class="mc-thread__actions">
+            
+            <button class="btn btn--secondary btn--sm btn--icon-only mc-print" type="button" aria-label="Print thread"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg></button>
+          </div>
+          <h2 class="mc-thread__subject">Study Plan Check-in</h2>
+          <div class="mc-thread__tags">
+            <span class="mc-thread__meta-line">Tomas Novak · Academic Advising</span>
+            <span class="mc-thread__meta-line">Handled by Ava Robinson</span>
+            
+            
+            <span class="badge badge--sm badge--role-neutral">Resolved</span>
+          </div>
+        </header>
+        <div class="mc-thread__scroll">
+          <div class="bubble-row bubble-row--other">
+          <div class="bubble-sender"><span class="avatar avatar--amber avatar--sm" role="img" aria-label="Tomas Novak"><span class="avatar__initials">TN</span></span><p class="bubble-sender__text"><span class="bubble-sender__name">Tomas Novak</span> <span class="bubble-sender__meta">-- Jun 30, 3:12 PM</span></p></div>
+          <div class="bubble bubble--other"><p>Can we confirm my study plan is still on track after the schedule change?</p></div>
+        </div>
+          <div class="bubble-row bubble-row--self">
+          <div class="bubble-sender"><p class="bubble-sender__text"><span class="bubble-sender__name">Alexander Robinson</span> <span class="bubble-sender__meta">-- Jun 30, 3:40 PM</span></p><span class="avatar avatar--violet avatar--sm" role="img" aria-label="Alexander Robinson"><img class="avatar__img" src="../../assets/avatars/alexander-robinson.jpg" alt="" /></span></div>
+          <div class="bubble bubble--self bubble--tint"><p>All set — see you at the fall check-in.</p></div>
+        </div>
+        </div>
+        <footer class="mc-thread__composer">
+          <form class="composer composer--rich mc-composer" data-thread="tomas-plan">
+            <div class="composer__toolbar">
+              <button type="button" class="composer__icon-btn" aria-label="Bold"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.6 10.79c.97-.67 1.65-1.77 1.65-2.79 0-2.26-1.75-4-4-4H7v14h7.04c2.09 0 3.71-1.7 3.71-3.79 0-1.52-.86-2.82-2.15-3.42zM10 6.5h3c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-3v-3zm3.5 9H10v-3h3.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5z"/></svg></button>
+              <button type="button" class="composer__icon-btn" aria-label="Italic"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 4v3h2.21l-3.42 8H6v3h8v-3h-2.21l3.42-8H18V4z"/></svg></button>
+              <button type="button" class="composer__icon-btn" aria-label="Underline"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 17c3.31 0 6-2.69 6-6V3h-2.5v8c0 1.93-1.57 3.5-3.5 3.5S8.5 12.93 8.5 11V3H6v8c0 3.31 2.69 6 6 6zm-7 2v2h14v-2H5z"/></svg></button>
+              <button type="button" class="btn btn--ghost btn--sm"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="m21.41 11.58-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.55-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z"/></svg>Merge Tags</button>
+              <button type="button" class="composer__ai-assist"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
+            </div>
+            <div class="composer__field">
+              <textarea class="composer__input" rows="1" placeholder="Reply to Tomas..." aria-label="Reply to Tomas"></textarea>
+            </div>
+            <div class="composer__settings">
+              <div class="composer__settings-row"><span class="composer__settings-label">Allow Replies</span><label class="switch"><input type="checkbox" class="switch__input" checked /><span class="switch__track"><span class="switch__thumb"></span></span></label></div>
+              <div class="composer__settings-row"><span class="composer__settings-label">Expiration</span><button type="button" class="composer__expiration-trigger">Aug 15, 2026 <svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button></div>
+            </div>
+            <button type="submit" class="btn btn--primary btn--base composer__send"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>Send</button>
+          </form>
+        </footer>
+      </article>
+    </section>
+  </div>
+</div>
+
+<script>
+(function () {
+  var mc = document.querySelector(".mc");
+  var empty = document.getElementById("mc-empty");
+  // live query — Send creates new panes at runtime
+  function panes() { return document.querySelectorAll(".mc-thread"); }
+  var lists = { inbox: document.querySelector('[data-list="inbox"]'), archived: document.querySelector('[data-list="archived"]') };
+  var countEl = document.getElementById("mc-count");
+  var searchInput = document.getElementById("mc-search-input");
+  var searchClear = document.getElementById("mc-search-clear");
+  var unreadCounter = document.getElementById("mc-unread-counter");
+  var activeList = "inbox";
+  var filters = { unread: false, expires: false, flagged: false };
+  var dept = null;
+
+  function rows(listKey) {
+    return Array.prototype.slice.call(lists[listKey].querySelectorAll(".thread-item-inbox"));
+  }
+  function allRows() {
+    return rows("inbox").concat(rows("archived"));
+  }
+  function rowMatches(r) {
+    var q = searchInput.value.trim().toLowerCase();
+    if (q && r.textContent.toLowerCase().indexOf(q) === -1) return false;
+    if (filters.unread && !r.classList.contains("thread-item-inbox--unread")) return false;
+    // "Expires soon" = soon (warning) or already expired (danger); a far-off
+    // neutral expiry deliberately doesn't count
+    if (filters.expires && r.dataset.expires !== "warning" && r.dataset.expires !== "danger") return false;
+    if (filters.flagged && r.querySelector(".thread-item-inbox__flag-btn").getAttribute("aria-pressed") !== "true") return false;
+    if (dept && r.dataset.department !== dept) return false;
+    return true;
+  }
+  // While searching, the tab split is suspended: both lists show as one
+  // combined result set and every row reveals its Inbox/Archived scope badge.
+  // The rail's EmptyState covers two cases: search open with no query yet
+  // (lists fully replaced by a hint) and zero matching rows.
+  var railEmpty = document.getElementById("mc-rail-empty");
+  var railEmptyText = document.getElementById("mc-rail-empty-text");
+  var countWrap = document.querySelector(".mc-rail__count");
+  function applyFilter() {
+    var searchOpen = mc.classList.contains("mc--search-open");
+    var searching = searchInput.value.trim() !== "";
+    mc.classList.toggle("mc--searching", searching);
+    if (searchOpen && !searching) {
+      lists.inbox.hidden = true;
+      lists.archived.hidden = true;
+      countWrap.hidden = true;
+      railEmpty.hidden = false;
+      railEmptyText.textContent = "Search across Inbox and Resolved";
+      return;
+    }
+    countWrap.hidden = false;
+    lists.inbox.hidden = searching ? false : activeList !== "inbox";
+    lists.archived.hidden = searching ? false : activeList !== "archived";
+    allRows().forEach(function (r) { r.hidden = !rowMatches(r); });
+    var visible = allRows().filter(function (r) { return !r.hidden && !r.closest(".mc-list").hidden; }).length;
+    countEl.textContent = visible + (visible === 1 ? " THREAD" : " THREADS");
+    railEmpty.hidden = visible !== 0;
+    railEmptyText.textContent = searching ? "No threads found" : "No threads match the filters";
+  }
+  function updateUnreadCounter() {
+    var n = rows("inbox").filter(function (r) { return r.classList.contains("thread-item-inbox--unread"); }).length;
+    unreadCounter.textContent = n;
+    unreadCounter.hidden = n === 0;
+  }
+  function showPane(id) {
+    panes().forEach(function (p) { p.hidden = p.dataset.thread !== id; });
+    empty.hidden = !!id;
+    if (!id) empty.hidden = false;
+  }
+  function closeThread() {
+    mc.classList.remove("mc--thread-open");
+    showPane(null);
+    rows("inbox").concat(rows("archived")).forEach(function (r) { r.classList.remove("thread-item-inbox--selected"); });
+  }
+
+  // thread selection — single-select across both lists; opening a thread
+  // also marks it read (removes the unread state), the real product behavior.
+  // Rows are role="button" divs (they nest the flag toggle), so Enter/Space
+  // need wiring by hand — a real <button> would have given them for free.
+  function bindRow(row) {
+    function activate() {
+      allRows().forEach(function (r) { r.classList.remove("thread-item-inbox--selected"); });
+      row.classList.remove("thread-item-inbox--unread");
+      row.classList.add("thread-item-inbox--read", "thread-item-inbox--selected");
+      showPane(row.dataset.thread);
+      mc.classList.add("mc--thread-open");
+      updateUnreadCounter();
+      if (filters.unread) applyFilter();
+    }
+    row.addEventListener("click", activate);
+    row.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); activate(); }
+    });
+    // flag toggle — marks a thread important without opening it
+    var flag = row.querySelector(".thread-item-inbox__flag-btn");
+    flag.addEventListener("click", function (e) {
+      e.stopPropagation();
+      flag.setAttribute("aria-pressed", flag.getAttribute("aria-pressed") === "true" ? "false" : "true");
+      if (filters.flagged) applyFilter();
+    });
+    flag.addEventListener("keydown", function (e) { e.stopPropagation(); });
+  }
+  document.querySelectorAll(".thread-item-inbox").forEach(bindRow);
+
+
+  // back (mobile only)
+  function bindBack(btn) {
+    btn.addEventListener("click", function () { mc.classList.remove("mc--thread-open"); });
+  }
+  document.querySelectorAll(".mc-thread__back").forEach(bindBack);
+
+  // Inbox / Archived tabs — the unread Counter also swaps its onNeutral
+  // active/inactive surface with the tab it sits on, same as Tabs' own docs
+  document.querySelectorAll(".mc-rail__topbar .tab").forEach(function (tab) {
+    tab.addEventListener("click", function () {
+      document.querySelectorAll(".mc-rail__topbar .tab").forEach(function (t) {
+        t.classList.toggle("tab--active", t === tab);
+        t.setAttribute("aria-selected", t === tab ? "true" : "false");
+      });
+      activeList = tab.dataset.tab;
+      unreadCounter.classList.toggle("counter--active", activeList === "inbox");
+      unreadCounter.classList.toggle("counter--inactive", activeList !== "inbox");
+      // Unread/Expires soon are Inbox-only concepts — hidden on Archived,
+      // and reset so they can't keep filtering invisibly
+      mc.classList.toggle("mc--archived", activeList === "archived");
+      if (activeList === "archived") resetChipFilters(["unread", "expires"]);
+      applyFilter();
+    });
+  });
+
+  // resets some/all chip filters so a hidden chip can't keep filtering
+  // invisibly (used when switching to Archived and when opening search)
+  function resetChipFilters(keys) {
+    keys.forEach(function (key) {
+      var cb = document.querySelector('#mc-filters-listbox [data-filter-key="' + key + '"]');
+      if (cb) cb.checked = false;
+      filters[key] = false;
+    });
+    if (typeof updateFiltersChip === "function") updateFiltersChip();
+  }
+  function resetDeptFilter() {
+    dept = null;
+    document.getElementById("mc-dept-label").textContent = "Department";
+    document.getElementById("mc-dept-chip").classList.remove("chip--checked-outline");
+    document.querySelectorAll("#mc-dept-listbox .listbox__option").forEach(function (o, i) {
+      o.classList.toggle("listbox__option--selected", i === 0);
+      o.setAttribute("aria-selected", i === 0 ? "true" : "false");
+    });
+  }
+
+  // search is an icon button beside the tabs; opening it swaps the tabs for
+  // the expanded field and retires the whole filter row (search is global —
+  // chips don't apply). The in-field × only CLEARS and only shows once
+  // populated (Search's own convention); the blue "Close" label beside the
+  // field is the one way out. Escape closes too.
+  var searchOpenBtn = document.querySelector(".mc-search-open-btn");
+  var searchCloseBtn = document.getElementById("mc-search-close");
+  function closeSearch() {
+    mc.classList.remove("mc--search-open");
+    searchInput.value = "";
+    searchClear.hidden = true;
+    applyFilter();
+  }
+  searchOpenBtn.addEventListener("click", function () {
+    mc.classList.add("mc--search-open");
+    resetChipFilters(["unread", "expires", "flagged"]);
+    resetDeptFilter();
+    applyFilter();
+    searchInput.focus();
+  });
+  searchCloseBtn.addEventListener("click", closeSearch);
+  searchInput.addEventListener("input", function () {
+    searchClear.hidden = searchInput.value.trim() === "";
+    applyFilter();
+  });
+  searchInput.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") closeSearch();
+  });
+  searchClear.addEventListener("click", function () {
+    searchInput.value = "";
+    searchClear.hidden = true;
+    applyFilter();
+    searchInput.focus();
+  });
+
+  // filter chips — Unread / Expires soon / Flagged, freely combinable (AND).
+  // On mobile the three toggles live inside the "Filters · N" dropdown-chip
+  // (multi-select Listbox with real Checkbox markers); both surfaces drive
+  // the same filters object and stay in sync across viewport changes.
+  var filtersChip = document.getElementById("mc-filters-chip");
+  var filtersCount = document.getElementById("mc-filters-count");
+  var filtersListbox = document.getElementById("mc-filters-listbox");
+  function updateFiltersChip() {
+    var n = ["unread", "expires", "flagged"].filter(function (k) { return filters[k]; }).length;
+    filtersCount.textContent = n;
+    filtersCount.hidden = n === 0;
+    filtersChip.classList.toggle("chip--checked-outline", n > 0);
+  }
+  function setFilter(key, on) {
+    filters[key] = on;
+    var cb = document.querySelector('#mc-filters-listbox [data-filter-key="' + key + '"]');
+    if (cb) cb.checked = on;
+    updateFiltersChip();
+  }
+  filtersListbox.addEventListener("toggle", function (e) {
+    if (e.newState === "open") {
+      var r = filtersChip.getBoundingClientRect();
+      filtersListbox.style.position = "fixed";
+      filtersListbox.style.margin = "0";
+      filtersListbox.style.top = r.bottom + 4 + "px";
+      filtersListbox.style.left = Math.max(8, Math.min(r.left, window.innerWidth - filtersListbox.offsetWidth - 8)) + "px";
+    }
+  });
+  filtersListbox.querySelectorAll(".listbox__cb-input").forEach(function (cb) {
+    cb.addEventListener("change", function () {
+      setFilter(cb.dataset.filterKey, cb.checked);
+      applyFilter();
+    });
+  });
+
+  // Department — a dropdown chip: Chip trigger + single-select Listbox popover
+  var deptChip = document.getElementById("mc-dept-chip");
+  var deptLabel = document.getElementById("mc-dept-label");
+  var deptListbox = document.getElementById("mc-dept-listbox");
+  deptListbox.addEventListener("toggle", function (e) {
+    if (e.newState === "open") {
+      var r = deptChip.getBoundingClientRect();
+      deptListbox.style.position = "fixed";
+      deptListbox.style.margin = "0";
+      deptListbox.style.top = r.bottom + 4 + "px";
+      deptListbox.style.left = Math.max(8, Math.min(r.left, window.innerWidth - deptListbox.offsetWidth - 8)) + "px";
+    }
+  });
+  deptListbox.querySelectorAll(".listbox__option").forEach(function (opt) {
+    opt.addEventListener("click", function () {
+      deptListbox.querySelectorAll(".listbox__option").forEach(function (o) {
+        o.classList.toggle("listbox__option--selected", o === opt);
+        o.setAttribute("aria-selected", o === opt ? "true" : "false");
+      });
+      dept = opt.dataset.dept || null;
+      deptLabel.textContent = dept || "Department";
+      deptChip.classList.toggle("chip--checked-outline", !!dept);
+      deptListbox.hidePopover();
+      applyFilter();
+    });
+  });
+
+  // rich composer — Send appends a real self Bubble (tint). The field is a
+  // 1-row textarea auto-growing to ~5 lines (Enter sends, Shift+Enter
+  // breaks); toolbar/settings controls are display affordances in v1
+  var SELF_SENDER = "<div class=\"bubble-sender\"><p class=\"bubble-sender__text\"><span class=\"bubble-sender__name\">Alexander Robinson</span> <span class=\"bubble-sender__meta\">-- Just now</span></p><span class=\"avatar avatar--violet avatar--sm\" role=\"img\" aria-label=\"Alexander Robinson\"><span class=\"avatar__initials\">AR</span></span></div>";
+  function bindComposer(form) {
+    var input = form.querySelector(".composer__input");
+    function grow() {
+      input.style.height = "auto";
+      input.style.height = Math.min(input.scrollHeight, 120) + "px";
+    }
+    input.addEventListener("input", grow);
+    input.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); form.requestSubmit(); }
+    });
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var text = input.value.trim();
+      if (!text) return;
+      var scroll = form.closest(".mc-thread").querySelector(".mc-thread__scroll");
+      var row = document.createElement("div");
+      row.className = "bubble-row bubble-row--self";
+      row.innerHTML = SELF_SENDER + '<div class="bubble bubble--self bubble--tint"><p></p></div>';
+      row.querySelector(".bubble p").textContent = text;
+      scroll.appendChild(row);
+      scroll.scrollTop = scroll.scrollHeight;
+      input.value = "";
+      grow();
+      input.focus();
+    });
+  }
+  document.querySelectorAll(".mc-composer").forEach(bindComposer);
+
+  // Toast — popover="manual": free top-layer, no light-dismiss; a toast
+  // leaves on its own timer (the real component, resolved from its tokens)
+  var TOAST_SUCCESS_ICON = "<svg class=\"toast__icon\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z\"/></svg>";
+  function showToast(role, text, duration) {
+    var t = document.createElement("div");
+    t.className = "toast toast--" + role;
+    t.setAttribute("popover", "manual");
+    t.setAttribute("role", role === "danger" ? "alert" : "status");
+    t.innerHTML = TOAST_SUCCESS_ICON + '<span class="toast__label"></span>';
+    t.querySelector(".toast__label").textContent = text;
+    document.body.appendChild(t);
+    t.showPopover();
+    setTimeout(function () { t.hidePopover(); t.remove(); }, duration || 3200);
+  }
+
+  // Archive — really moves the thread's row to the Archived list (flips the
+  // row's search-scope badge to match its new home) and confirms with a toast
+  function bindArchive(btn) {
+    btn.addEventListener("click", function () {
+      var id = btn.dataset.thread;
+      var row = lists.inbox.querySelector('[data-thread="' + id + '"]');
+      var subject = "";
+      if (row) {
+        subject = row.dataset.subject;
+        row.classList.remove("thread-item-inbox--selected");
+        var scope = row.querySelector(".thread-item-inbox__scope");
+        scope.textContent = "Resolved";
+        scope.classList.remove("badge--role-primary");
+        scope.classList.add("badge--role-neutral");
+        lists.archived.insertBefore(row, lists.archived.firstChild);
+      }
+      btn.closest(".mc-thread").querySelector(".mc-thread__tags").insertAdjacentHTML("beforeend", '<span class="badge badge--sm badge--role-neutral">Resolved</span>');
+      btn.remove();
+      closeThread();
+      applyFilter();
+      updateUnreadCounter();
+      showToast("success", '"' + subject + '" resolved');
+    });
+  }
+  document.querySelectorAll(".mc-archive").forEach(bindArchive);
+
+  // Print
+  function bindPrint(btn) {
+    btn.addEventListener("click", function () { window.print(); });
+  }
+  document.querySelectorAll(".mc-print").forEach(bindPrint);
+
+
+  applyFilter();
+  updateUnreadCounter();
+})();
+</script>
+</body>
+</html>
