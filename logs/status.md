@@ -2,7 +2,7 @@
 
 Update this file whenever component inventory or conventions change. For chronological history and the reasoning behind each decision, see `decision-log.md` — this file is the fast-load summary, that one is the archive.
 
-Last updated: 2026-08-03.
+Last updated: 2026-08-06.
 
 ## Designs layer (prototype explorer) — added 2026-07-24
 
