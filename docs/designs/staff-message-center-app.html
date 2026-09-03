@@ -592,13 +592,19 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .mc-compose__checks { display: flex; flex-wrap: wrap; gap: 8px 24px; padding-top: 4px; }
 .mc-compose__footer .btn { flex: 1; }
 
-.mc-ai { display: flex; flex-direction: column; min-height: 0; height: 100%; background: var(--tok-surface-default); }
-.mc-ai__header { flex-shrink: 0; display: flex; align-items: center; gap: 8px; padding: 12px 16px; border-bottom: 1px solid var(--tok-border-default); }
-.mc-ai__title { display: inline-flex; align-items: center; gap: 6px; color: var(--tok-text-ai); font-weight: 600; font-size: 12px; line-height: 1.4; }
-.mc-ai__spark { flex-shrink: 0; width: 18px; height: 18px; color: var(--tok-icon-ai); }
-.mc-ai__collapse { margin-left: auto; }
-.mc-ai__collapse-icon { transition: transform 0.15s ease; }
+.mc-ai { position: relative; display: flex; flex-direction: column; min-height: 0; height: 100%; background: var(--tok-surface-default); }
 .mc-ai__scroll { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; padding: 16px; }
+/* the title lives INSIDE the scroll (no static header bar — vertical space is
+   tight); centered, and it scrolls away with the conversation */
+.mc-ai__title { display: flex; align-items: center; justify-content: center; gap: 6px; margin: 0; color: var(--tok-text-secondary); font-weight: 600; font-size: 12px; line-height: 1.4; }
+.mc-ai__spark { flex-shrink: 0; width: 16px; height: 16px; color: var(--tok-icon-ai); }
+/* collapse / close — a round handle straddling the panel edge (the ref's
+   handle on the divider), not a header bar */
+.mc-ai__handle { position: absolute; top: 12px; z-index: 2; width: 28px; height: 28px; border-radius: 999px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); box-shadow: 0px 2px 8px 0px rgba(21, 25, 30, 0.10); display: inline-flex; align-items: center; justify-content: center; padding: 0; cursor: pointer; color: var(--tok-icon-secondary); }
+.mc-ai__handle:hover { background: var(--tok-fill-neutral-hover); }
+.mc-ai__handle-icon { width: 18px; height: 18px; display: block; }
+.mc-ai__handle--collapse { left: -14px; }
+.mc-ai__handle--close { right: 12px; }
 /* suggestions sit at the bottom of the empty panel (ref), pushed down by an
    auto top margin until the first chat bubble appears */
 .mc-ai__suggestions { display: flex; flex-direction: column; gap: 8px; margin-top: auto; }
@@ -645,7 +651,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   .mc-compose--tab-ai .mc-compose__main { display: none; }
   .mc-compose__ai { flex: 1; min-height: 0; }
   .mc-ai { height: auto; flex: 1; }
-  .mc-ai__collapse { display: none; }
+  .mc-ai__handle--collapse { display: none; }
   .mc-compose__lead { display: none; }
   .mc-ai-standalone { position: fixed; inset: 0; margin: 0; width: 100vw; max-width: 100vw; height: 100dvh; max-height: 100dvh; border-radius: 0; }
 }
@@ -654,7 +660,6 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   .mc-compose__ai { width: 340px; flex-shrink: 0; border-left: 1px solid var(--tok-border-default); }
   .mc-compose:not(.mc-compose--ai-open) .mc-compose__ai { display: none; }
   .mc-compose.mc-compose--ai-open { width: min(920px, calc(100vw - 32px)); }
-  .mc-compose:not(.mc-compose--ai-open) .mc-ai__collapse-icon { transform: rotate(180deg); }
   .mc-ai-standalone { width: min(400px, calc(100vw - 32px)); height: 100dvh; max-height: 100dvh; margin: 0 0 0 auto; border-radius: 0; }
 }
 </style>
@@ -1143,11 +1148,9 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     </div>
     <div class="mc-compose__ai">
       <div class="mc-ai" data-ai="compose">
-      <header class="mc-ai__header">
-        <span class="mc-ai__title"><svg class="mc-ai__spark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Writing Assist</span>
-        <button type="button" class="btn btn--ghost btn--sm btn--icon-only mc-ai__collapse" data-ai-collapse aria-label="Hide AI panel"><svg class="btn__icon mc-ai__collapse-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button>
-      </header>
+      <button type="button" class="mc-ai__handle mc-ai__handle--collapse" data-ai-collapse aria-label="Hide AI panel"><svg class="mc-ai__handle-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg></button>
       <div class="mc-ai__scroll" data-ai-scroll>
+        <p class="mc-ai__title"><svg class="mc-ai__spark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Writing Assist</p>
         <div class="mc-ai__suggestions" data-ai-suggestions>
           <p class="mc-ai__suggestions-label">Suggestions</p>
           <div class="mc-ai__suggestions-list">
@@ -1197,11 +1200,9 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 </dialog>
 <dialog class="mc-ai-standalone" id="mc-ai-standalone" aria-label="AI Writing Assist">
   <div class="mc-ai" data-ai="standalone">
-      <header class="mc-ai__header">
-        <span class="mc-ai__title"><svg class="mc-ai__spark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Writing Assist</span>
-        <button type="button" class="btn btn--ghost btn--sm btn--icon-only mc-ai__collapse" data-ai-close aria-label="Close AI panel"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
-      </header>
+      <button type="button" class="mc-ai__handle mc-ai__handle--close" data-ai-close aria-label="Close AI panel"><svg class="mc-ai__handle-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
       <div class="mc-ai__scroll" data-ai-scroll>
+        <p class="mc-ai__title"><svg class="mc-ai__spark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Writing Assist</p>
         <div class="mc-ai__suggestions" data-ai-suggestions>
           <p class="mc-ai__suggestions-label">Suggestions</p>
           <div class="mc-ai__suggestions-list">
@@ -1736,9 +1737,9 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   function resetAiPanel(panel) {
     if (!panel) return;
     var scroll = panel.querySelector("[data-ai-scroll]");
-    // strip any appended chat, keep the suggestions block
+    // strip any appended chat, keep the title + the suggestions block
     Array.prototype.slice.call(scroll.children).forEach(function (c) {
-      if (!c.hasAttribute("data-ai-suggestions")) scroll.removeChild(c);
+      if (!c.hasAttribute("data-ai-suggestions") && !c.classList.contains("mc-ai__title")) scroll.removeChild(c);
     });
     panel.querySelector("[data-ai-suggestions]").hidden = false;
     var input = panel.querySelector("[data-ai-input]");

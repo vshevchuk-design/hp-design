@@ -180,7 +180,8 @@ const iconReplace = iconOf("swap_horiz", "btn__icon");
 const iconRegen = iconOf("refresh", "btn__icon");
 const iconAiSend = iconOf("arrow_upward", "btn__icon");
 const iconMiniChevron = iconOf("expand_more", "mc-ai__opt-chevron");
-const iconCollapse = iconOf("chevron_right", "btn__icon mc-ai__collapse-icon");
+const iconHandleCollapse = iconOf("chevron_left", "mc-ai__handle-icon");
+const iconHandleClose = iconOf("close", "mc-ai__handle-icon");
 
 // ================= component recipes, each resolved from its own token file =================
 
@@ -1082,13 +1083,19 @@ const composeAiCss = `.mc-compose__tabs { display: none; flex-shrink: 0; }
 .mc-compose__checks { display: flex; flex-wrap: wrap; gap: ${px(resolve("dim.2"))} ${px(resolve("dim.6"))}; padding-top: ${px(resolve("dim.1"))}; }
 .mc-compose__footer .btn { flex: 1; }
 
-.mc-ai { display: flex; flex-direction: column; min-height: 0; height: 100%; background: ${cv("surface.default")}; }
-.mc-ai__header { flex-shrink: 0; display: flex; align-items: center; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))}; border-bottom: 1px solid ${cv(mdDivider)}; }
-.mc-ai__title { display: inline-flex; align-items: center; gap: ${px(resolve("dim.1_5"))}; color: ${cv("text.ai")}; ${typoCss(headingSmType)} }
-.mc-ai__spark { flex-shrink: 0; width: 18px; height: 18px; color: ${cv("icon.ai")}; }
-.mc-ai__collapse { margin-left: auto; }
-.mc-ai__collapse-icon { transition: transform 0.15s ease; }
+.mc-ai { position: relative; display: flex; flex-direction: column; min-height: 0; height: 100%; background: ${cv("surface.default")}; }
 .mc-ai__scroll { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: ${px(resolve("dim.4"))}; padding: ${px(resolve("dim.4"))}; }
+/* the title lives INSIDE the scroll (no static header bar — vertical space is
+   tight); centered, and it scrolls away with the conversation */
+.mc-ai__title { display: flex; align-items: center; justify-content: center; gap: ${px(resolve("dim.1_5"))}; margin: 0; color: ${cv("text.secondary")}; ${typoCss(headingSmType)} }
+.mc-ai__spark { flex-shrink: 0; width: 16px; height: 16px; color: ${cv("icon.ai")}; }
+/* collapse / close — a round handle straddling the panel edge (the ref's
+   handle on the divider), not a header bar */
+.mc-ai__handle { position: absolute; top: ${px(resolve("dim.3"))}; z-index: 2; width: 28px; height: 28px; border-radius: ${px(resolve("radius.full"))}; background: ${cv("surface.default")}; border: 1px solid ${cv("border.default")}; box-shadow: ${lbShadowCss}; display: inline-flex; align-items: center; justify-content: center; padding: 0; cursor: pointer; color: ${cv("icon.secondary")}; }
+.mc-ai__handle:hover { background: ${cv("fill.neutralHover")}; }
+.mc-ai__handle-icon { width: 18px; height: 18px; display: block; }
+.mc-ai__handle--collapse { left: -14px; }
+.mc-ai__handle--close { right: ${px(resolve("dim.3"))}; }
 /* suggestions sit at the bottom of the empty panel (ref), pushed down by an
    auto top margin until the first chat bubble appears */
 .mc-ai__suggestions { display: flex; flex-direction: column; gap: ${px(resolve("dim.2"))}; margin-top: auto; }
@@ -1135,7 +1142,7 @@ const composeAiCss = `.mc-compose__tabs { display: none; flex-shrink: 0; }
   .mc-compose--tab-ai .mc-compose__main { display: none; }
   .mc-compose__ai { flex: 1; min-height: 0; }
   .mc-ai { height: auto; flex: 1; }
-  .mc-ai__collapse { display: none; }
+  .mc-ai__handle--collapse { display: none; }
   .mc-compose__lead { display: none; }
   .mc-ai-standalone { position: fixed; inset: 0; margin: 0; width: 100vw; max-width: 100vw; height: 100dvh; max-height: 100dvh; border-radius: 0; }
 }
@@ -1144,7 +1151,6 @@ const composeAiCss = `.mc-compose__tabs { display: none; flex-shrink: 0; }
   .mc-compose__ai { width: 340px; flex-shrink: 0; border-left: 1px solid ${cv(mdDivider)}; }
   .mc-compose:not(.mc-compose--ai-open) .mc-compose__ai { display: none; }
   .mc-compose.mc-compose--ai-open { width: min(920px, calc(100vw - ${px(resolve("dim.8"))})); }
-  .mc-compose:not(.mc-compose--ai-open) .mc-ai__collapse-icon { transform: rotate(180deg); }
   .mc-ai-standalone { width: min(400px, calc(100vw - ${px(resolve("dim.8"))})); height: 100dvh; max-height: 100dvh; margin: 0 0 0 auto; border-radius: 0; }
 }`;
 
@@ -1351,11 +1357,9 @@ function aiOptMarkup(prefix, kind, options) {
 }
 function aiPanelMarkup(prefix, headerAction = "") {
   return `<div class="mc-ai" data-ai="${prefix}">
-      <header class="mc-ai__header">
-        <span class="mc-ai__title">${iconAiSpark}AI Writing Assist</span>
-        ${headerAction}
-      </header>
+      ${headerAction}
       <div class="mc-ai__scroll" data-ai-scroll>
+        <p class="mc-ai__title">${iconAiSpark}AI Writing Assist</p>
         <div class="mc-ai__suggestions" data-ai-suggestions>
           <p class="mc-ai__suggestions-label">Suggestions</p>
           <div class="mc-ai__suggestions-list">
@@ -1443,8 +1447,10 @@ const selfBubbleSender = `<div class="bubble-sender"><p class="bubble-sender__te
 // The department list is a little richer than the inbox's own two, so the
 // compose picker reads like a real staff-side sender-department choice. ----
 const composeDepartments = ["Academic Advising", "Student Records", "Financial Aid", "Office of the Registrar", "English Dept"];
-const composeCloseAction = `<button type="button" class="btn btn--ghost btn--sm btn--icon-only mc-ai__collapse" data-ai-close aria-label="Close AI panel">${iconCloseBtn}</button>`;
-const composeCollapseAction = `<button type="button" class="btn btn--ghost btn--sm btn--icon-only mc-ai__collapse" data-ai-collapse aria-label="Hide AI panel">${iconCollapse}</button>`;
+// collapse / close as a round handle straddling the panel edge (per ref), not
+// a full-width header bar
+const composeCollapseAction = `<button type="button" class="mc-ai__handle mc-ai__handle--collapse" data-ai-collapse aria-label="Hide AI panel">${iconHandleCollapse}</button>`;
+const composeCloseAction = `<button type="button" class="mc-ai__handle mc-ai__handle--close" data-ai-close aria-label="Close AI panel">${iconHandleClose}</button>`;
 
 const composeMarkup = `<dialog class="mc-compose" id="mc-compose" aria-labelledby="mc-compose-title">
   <header class="mc-compose__header">
@@ -2022,9 +2028,9 @@ const appJs = `(function () {
   function resetAiPanel(panel) {
     if (!panel) return;
     var scroll = panel.querySelector("[data-ai-scroll]");
-    // strip any appended chat, keep the suggestions block
+    // strip any appended chat, keep the title + the suggestions block
     Array.prototype.slice.call(scroll.children).forEach(function (c) {
-      if (!c.hasAttribute("data-ai-suggestions")) scroll.removeChild(c);
+      if (!c.hasAttribute("data-ai-suggestions") && !c.classList.contains("mc-ai__title")) scroll.removeChild(c);
     });
     panel.querySelector("[data-ai-suggestions]").hidden = false;
     var input = panel.querySelector("[data-ai-input]");
