@@ -339,7 +339,7 @@
 .mc-compose[open] { display: flex; flex-direction: column; }
 .mc-compose::backdrop { background: var(--tok-surface-overlay); }
 .mc-compose__header { flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 12px 16px; border-bottom: 1px solid var(--tok-border-default); }
-.mc-compose__title { margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 14px; line-height: 1.4; }
+.mc-compose__title { margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 18px; line-height: 1.4; }
 /* mobile-first compact spacing (explicit user call — the takeover felt too
    airy); split views restore Modal's own padding/gap below */
 .mc-compose__body { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding: 16px; }
@@ -432,7 +432,7 @@
 .mc-confirm { border: none; padding: 0; width: 384px; max-width: calc(100vw - 32px); border-radius: 24px; background: var(--tok-surface-default); box-shadow: 0px 8px 24px -2px rgba(21, 25, 30, 0.16); font-family: var(--tok-family-sans); }
 .mc-confirm::backdrop { background: var(--tok-surface-overlay); }
 .mc-confirm__body { display: flex; flex-direction: column; gap: 8px; padding: 24px; }
-.mc-confirm__title { margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 14px; line-height: 1.4; }
+.mc-confirm__title { margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 18px; line-height: 1.4; }
 .mc-confirm__text { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 14px; line-height: 1.4; }
 .mc-confirm__footer { display: flex; justify-content: flex-end; gap: 8px; padding: 16px 24px; border-top: 1px solid var(--tok-border-default); }
 .mc-confirm[open] { opacity: 1; transform: translateY(0); transition: opacity 0.18s ease, transform 0.18s ease; }
@@ -608,8 +608,14 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 /* Bubble runs full-width in the narrow AI panel (its own 75% chat cap would
    leave it hugging one edge here) */
 .mc-ai .bubble-row { max-width: 100%; }
-.mc-ai__msg { display: flex; flex-direction: column; gap: 4px; }
-.mc-ai__msg-actions { display: flex; gap: 4px; }
+.mc-ai__msg { display: flex; flex-direction: column; gap: 6px; }
+/* sender line — who wrote it (You / the AI) + the time; the sparkle marks the
+   assistant's turn as AI-authored */
+.mc-ai__msg-head { display: flex; align-items: center; gap: 4px; color: var(--tok-text-secondary); font-size: 12px; font-weight: 600; }
+.mc-ai__msg-head--self { justify-content: flex-end; }
+.mc-ai__msg-head .mc-ai__spark { width: 14px; height: 14px; }
+.mc-ai__msg-time { color: var(--tok-text-muted); font-weight: 400; }
+.mc-ai__msg-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
 .mc-ai__composer { flex-shrink: 0; margin: 12px 16px 16px; border: 1px solid var(--tok-border-default); border-radius: 8px; background: var(--tok-surface-dim); padding: 8px; display: flex; flex-direction: column; gap: 8px; }
 .mc-ai__composer:focus-within { border-color: var(--tok-border-focus); }
 /* value text is 14px here (not the 16px Safari-zoom size the message body
@@ -1719,7 +1725,13 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   // gets inserted into. ----
   var AI_RESPONSES = {"Registration reminder":["Hi there, this is a friendly reminder that course registration for the upcoming term closes soon. Please log in to complete your enrollment, and reach out if any holds are getting in your way.","Hello, registration is still open but closing shortly. Take a few minutes to finalize your courses so your seats aren't released."],"Missed appointment":["Hi, I noticed we missed each other for today's appointment. No problem at all — let's find a new time. You can pick a slot that works for you here: [Insert link].","Hello, it looks like today's meeting didn't happen. Would you like to reschedule? Send me a couple of times that suit you and I'll confirm."],"Check-in message":["Hi, I'm checking in to see how the term is going so far. If anything has come up — academic or otherwise — I'm here to help. Let me know if you'd like to talk.","Hello, just a quick check-in from Advising. How are your courses feeling this term? Happy to review your plan whenever you're ready."],"Exam preparation":["Hi, with finals approaching I wanted to share a few resources to help you prepare. The tutoring center has extended hours, and I'm glad to review your study plan if that would help.","Hello, exams are coming up soon. If you'd like help mapping out a study schedule or connecting with tutoring, just say the word."],"Schedule meeting":["Hi, I'd like to invite you to schedule an appointment with Academic Advising to review your progress and discuss any questions. You can book a time here: [Insert link].","Hello, could we set up a short meeting to go over your progress this term? Grab whichever slot works best: [Insert link]."],"_default":["Here's a draft you can refine:\\n\\nHi there, I wanted to reach out regarding your recent request. Let me know if there's anything I can clarify — happy to help.","Happy to help — here's an alternative you can edit to match your voice and add the specific details."]};
   var AI_COPY_ICON = "<svg class=\"btn__icon\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z\"/></svg>";
+  var AI_REPLACE_ICON = "<svg class=\"btn__icon\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M6.99 11L3 15l3.99 4v-3H14v-2H6.99v-3zM21 9l-3.99-4v3H10v2h7.01v3L21 9z\"/></svg>";
   var AI_REGEN_ICON = "<svg class=\"btn__icon\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z\"/></svg>";
+  var AI_SPARK_ICON = "<svg class=\"mc-ai__spark\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z\"/></svg>";
+  function nowTime() {
+    var d = new Date();
+    return ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2);
+  }
 
   function resetAiPanel(panel) {
     if (!panel) return;
@@ -1750,20 +1762,26 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     var input = panel.querySelector("[data-ai-input]");
     function respond(youText, respKey) {
       suggestions.hidden = true;
+      var time = nowTime();
       var you = document.createElement("div");
       you.className = "bubble-row bubble-row--self";
-      you.innerHTML = '<div class="bubble bubble--self bubble--tint"><p></p></div>';
+      you.innerHTML = '<div class="mc-ai__msg-head mc-ai__msg-head--self"><span>You</span><span class="mc-ai__msg-time"></span></div><div class="bubble bubble--self bubble--tint"><p></p></div>';
+      you.querySelector(".mc-ai__msg-time").textContent = "· " + time;
       you.querySelector("p").textContent = youText;
       scroll.appendChild(you);
       var variants = AI_RESPONSES[respKey] || AI_RESPONSES._default;
       var vi = 0;
       var asst = document.createElement("div");
       asst.className = "bubble-row bubble-row--other";
-      asst.innerHTML = '<div class="mc-ai__msg"><div class="bubble bubble--other"><p></p></div>' +
+      asst.innerHTML = '<div class="mc-ai__msg">' +
+        '<div class="mc-ai__msg-head">' + AI_SPARK_ICON + '<span>Assistant</span><span class="mc-ai__msg-time"></span></div>' +
+        '<div class="bubble bubble--other"><p></p></div>' +
         '<div class="mc-ai__msg-actions">' +
-        '<button type="button" class="btn btn--ghost btn--sm btn--icon-only" data-ai-use aria-label="Use this draft">' + AI_COPY_ICON + '</button>' +
-        '<button type="button" class="btn btn--ghost btn--sm btn--icon-only" data-ai-regen aria-label="Regenerate">' + AI_REGEN_ICON + '</button>' +
+        '<button type="button" class="btn btn--secondary btn--sm" data-ai-copy>' + AI_COPY_ICON + 'Copy</button>' +
+        '<button type="button" class="btn btn--secondary btn--sm" data-ai-replace>' + AI_REPLACE_ICON + 'Replace message</button>' +
+        '<button type="button" class="btn btn--secondary btn--sm btn--icon-only" data-ai-regen aria-label="Regenerate">' + AI_REGEN_ICON + '</button>' +
         '</div></div>';
+      asst.querySelector(".mc-ai__msg-time").textContent = "· " + time;
       var p = asst.querySelector(".bubble p");
       p.textContent = variants[vi];
       scroll.appendChild(asst);
@@ -1772,10 +1790,16 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         vi = (vi + 1) % variants.length;
         p.textContent = variants[vi];
       });
-      asst.querySelector("[data-ai-use]").addEventListener("click", function () {
+      // Copy — puts the draft on the clipboard (best-effort in a sandbox)
+      asst.querySelector("[data-ai-copy]").addEventListener("click", function () {
+        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(p.textContent).catch(function () {});
+        showToast("success", "Copied to clipboard");
+      });
+      // Replace message — drops the draft straight into the message textarea
+      asst.querySelector("[data-ai-replace]").addEventListener("click", function () {
         var t = getTarget();
         if (t) { t.value = p.textContent; t.dispatchEvent(new Event("input", { bubbles: true })); }
-        showToast("success", "Draft added to message");
+        showToast("success", "Added to message");
       });
     }
     panel.querySelectorAll("[data-ai-suggestion]").forEach(function (chip) {

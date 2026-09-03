@@ -176,6 +176,7 @@ const iconChipArrow = iconOf("arrow_forward", "chip__icon");
 const iconAiSpark = iconOf("auto_awesome", "mc-ai__spark");
 const iconAiTabSpark = iconOf("auto_awesome", "tab__icon");
 const iconCopy = iconOf("content_copy", "btn__icon");
+const iconReplace = iconOf("swap_horiz", "btn__icon");
 const iconRegen = iconOf("refresh", "btn__icon");
 const iconAiSend = iconOf("arrow_upward", "btn__icon");
 const iconMiniChevron = iconOf("expand_more", "mc-ai__opt-chevron");
@@ -1097,8 +1098,14 @@ const composeAiCss = `.mc-compose__tabs { display: none; flex-shrink: 0; }
 /* Bubble runs full-width in the narrow AI panel (its own 75% chat cap would
    leave it hugging one edge here) */
 .mc-ai .bubble-row { max-width: 100%; }
-.mc-ai__msg { display: flex; flex-direction: column; gap: ${px(resolve("dim.1"))}; }
-.mc-ai__msg-actions { display: flex; gap: ${px(resolve("dim.1"))}; }
+.mc-ai__msg { display: flex; flex-direction: column; gap: ${px(resolve("dim.1_5"))}; }
+/* sender line — who wrote it (You / the AI) + the time; the sparkle marks the
+   assistant's turn as AI-authored */
+.mc-ai__msg-head { display: flex; align-items: center; gap: ${px(resolve("dim.1"))}; color: ${cv("text.secondary")}; font-size: 12px; font-weight: 600; }
+.mc-ai__msg-head--self { justify-content: flex-end; }
+.mc-ai__msg-head .mc-ai__spark { width: 14px; height: 14px; }
+.mc-ai__msg-time { color: ${cv("text.muted")}; font-weight: 400; }
+.mc-ai__msg-actions { display: flex; flex-wrap: wrap; gap: ${px(resolve("dim.1_5"))}; margin-top: ${px(resolve("dim.0_5"))}; }
 .mc-ai__composer { flex-shrink: 0; margin: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))} ${px(resolve("dim.4"))}; border: 1px solid ${cv("border.default")}; border-radius: ${px(resolve("radius.default"))}; background: ${cv("surface.dim")}; padding: ${px(resolve("dim.2"))}; display: flex; flex-direction: column; gap: ${px(resolve("dim.2"))}; }
 .mc-ai__composer:focus-within { border-color: ${cv("border.focus")}; }
 /* value text is 14px here (not the 16px Safari-zoom size the message body
@@ -2004,7 +2011,13 @@ const appJs = `(function () {
     "_default": ["Here's a draft you can refine:\\n\\nHi there, I wanted to reach out regarding your recent request. Let me know if there's anything I can clarify — happy to help.", "Happy to help — here's an alternative you can edit to match your voice and add the specific details."],
   })};
   var AI_COPY_ICON = ${JSON.stringify(iconCopy)};
+  var AI_REPLACE_ICON = ${JSON.stringify(iconReplace)};
   var AI_REGEN_ICON = ${JSON.stringify(iconRegen)};
+  var AI_SPARK_ICON = ${JSON.stringify(iconAiSpark)};
+  function nowTime() {
+    var d = new Date();
+    return ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2);
+  }
 
   function resetAiPanel(panel) {
     if (!panel) return;
@@ -2035,20 +2048,26 @@ const appJs = `(function () {
     var input = panel.querySelector("[data-ai-input]");
     function respond(youText, respKey) {
       suggestions.hidden = true;
+      var time = nowTime();
       var you = document.createElement("div");
       you.className = "bubble-row bubble-row--self";
-      you.innerHTML = '<div class="bubble bubble--self bubble--tint"><p></p></div>';
+      you.innerHTML = '<div class="mc-ai__msg-head mc-ai__msg-head--self"><span>You</span><span class="mc-ai__msg-time"></span></div><div class="bubble bubble--self bubble--tint"><p></p></div>';
+      you.querySelector(".mc-ai__msg-time").textContent = "· " + time;
       you.querySelector("p").textContent = youText;
       scroll.appendChild(you);
       var variants = AI_RESPONSES[respKey] || AI_RESPONSES._default;
       var vi = 0;
       var asst = document.createElement("div");
       asst.className = "bubble-row bubble-row--other";
-      asst.innerHTML = '<div class="mc-ai__msg"><div class="bubble bubble--other"><p></p></div>' +
+      asst.innerHTML = '<div class="mc-ai__msg">' +
+        '<div class="mc-ai__msg-head">' + AI_SPARK_ICON + '<span>Assistant</span><span class="mc-ai__msg-time"></span></div>' +
+        '<div class="bubble bubble--other"><p></p></div>' +
         '<div class="mc-ai__msg-actions">' +
-        '<button type="button" class="btn btn--ghost btn--sm btn--icon-only" data-ai-use aria-label="Use this draft">' + AI_COPY_ICON + '</button>' +
-        '<button type="button" class="btn btn--ghost btn--sm btn--icon-only" data-ai-regen aria-label="Regenerate">' + AI_REGEN_ICON + '</button>' +
+        '<button type="button" class="btn btn--secondary btn--sm" data-ai-copy>' + AI_COPY_ICON + 'Copy</button>' +
+        '<button type="button" class="btn btn--secondary btn--sm" data-ai-replace>' + AI_REPLACE_ICON + 'Replace message</button>' +
+        '<button type="button" class="btn btn--secondary btn--sm btn--icon-only" data-ai-regen aria-label="Regenerate">' + AI_REGEN_ICON + '</button>' +
         '</div></div>';
+      asst.querySelector(".mc-ai__msg-time").textContent = "· " + time;
       var p = asst.querySelector(".bubble p");
       p.textContent = variants[vi];
       scroll.appendChild(asst);
@@ -2057,10 +2076,16 @@ const appJs = `(function () {
         vi = (vi + 1) % variants.length;
         p.textContent = variants[vi];
       });
-      asst.querySelector("[data-ai-use]").addEventListener("click", function () {
+      // Copy — puts the draft on the clipboard (best-effort in a sandbox)
+      asst.querySelector("[data-ai-copy]").addEventListener("click", function () {
+        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(p.textContent).catch(function () {});
+        showToast("success", "Copied to clipboard");
+      });
+      // Replace message — drops the draft straight into the message textarea
+      asst.querySelector("[data-ai-replace]").addEventListener("click", function () {
         var t = getTarget();
         if (t) { t.value = p.textContent; t.dispatchEvent(new Event("input", { bubbles: true })); }
-        showToast("success", "Draft added to message");
+        showToast("success", "Added to message");
       });
     }
     panel.querySelectorAll("[data-ai-suggestion]").forEach(function (chip) {

@@ -11,7 +11,7 @@
       "overlay": { "$type": "color", "$value": "{surface.overlay}" },
       "shadow": { "$type": "shadow", "$value": "{shadow.lg}" },
       "divider": { "$type": "color", "$value": "{border.default}" },
-      "title": { "$type": "typography", "$value": "{text-style.heading-base}" },
+      "title": { "$type": "typography", "$value": "{text-style.heading-lg}", "$description": "18px semibold — a modal title should read as a genuine dialog heading, sitting between a page/app title (20px+) and body/label text. heading-base (14px) read too small in practice." },
       "titleColor": { "$type": "color", "$value": "{text.default}" },
       "body": { "$type": "typography", "$value": "{text-style.body-base}" },
       "bodyColor": { "$type": "color", "$value": "{text.secondary}" },
