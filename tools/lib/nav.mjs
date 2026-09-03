@@ -25,6 +25,7 @@ const LOGO_SVG = fs
 
 export const NAV_ITEMS = {
   overview: { label: "Overview", href: "index.html" },
+  logs: { label: "Logs", href: "logs.html" },
   colors: { label: "Colors", href: "colors.html" },
   "semantic-colors": { label: "Semantic colors", href: "semantic-colors.html" },
   typography: { label: "Typography", href: "typography.html" },
@@ -125,6 +126,7 @@ export function renderNav(activeKey, { basePath = "" } = {}) {
     <div class="nav-pane nav-pane--ds${designsActive ? "" : " active"}" data-pane="ds">
     <p class="brand">Design System</p>
     ${link("overview")}
+    ${link("logs")}
     <p class="nav-category">Tokens</p>
     ${link("colors")}
     ${link("semantic-colors")}
