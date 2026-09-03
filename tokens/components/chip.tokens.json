@@ -113,8 +113,26 @@
           "activeBg": { "$type": "color", "$value": "{fill.neutralActive}" }
         }
       },
+      "action": {
+        "$description": "Assist/action chip — click FIRES an action (insert a suggested draft, run a quick prompt) and returns to rest; it never enters a persistent checked state. The third ARIA-role-driven split alongside toggle/removable: toggle is checkbox-like (aria-pressed), removable is a dismissible tag, action is button-like (a real <button> that does something). A TRAILING icon — an arrow that reads 'this leads somewhere / does something', not a leading category glyph — mirrors Material's suggestion/assist chips. Shares toggle.default / removable.default's exact quiet resting look; no third resting appearance invented.",
+        "default": {
+          "bg": { "$type": "color", "$value": "{surface.default}" },
+          "border": { "$type": "color", "$value": "{border.default}" },
+          "text": { "$type": "color", "$value": "{text.default}" },
+          "icon": { "$type": "color", "$value": "{icon.default}" }
+        },
+        "hover": {
+          "border": { "$type": "color", "$value": "{border.strong}" },
+          "$description": "Plain border.strong — the same ordinary Card-style hover removable uses, deliberately NOT toggle's fill.primary. A fill.primary hover previews 'clicking turns this on/blue', which an action chip's click never means: it fires and returns to rest, nothing stays selected."
+        },
+        "disabled": {
+          "text": { "$type": "color", "$value": "{text.disabled}" },
+          "icon": { "$type": "color", "$value": "{icon.disabled}" },
+          "$description": "Keeps its background, only text/icon fade — same 'disabled keeps its background' convention as toggle/removable and every other control in this system."
+        }
+      },
       "focus": {
-        "$description": "Shared by both kinds — same system-wide ring (border.focus, dim.1 width, dim.0_5 offset) every focusable component uses.",
+        "$description": "Shared by all kinds — same system-wide ring (border.focus, dim.1 width, dim.0_5 offset) every focusable component uses.",
         "ringColor": { "$type": "color", "$value": "{border.focus}" },
         "ringWidth": { "$type": "dimension", "$value": "{dim.1}" },
         "ringOffset": { "$type": "dimension", "$value": "{dim.0_5}" }

@@ -54,6 +54,7 @@ const composer = load("tokens/components/composer.tokens.json").component.compos
 const button = load("tokens/components/button.tokens.json").component.button;
 const swtch = load("tokens/components/switch.tokens.json").component.switch;
 const separator = load("tokens/components/separator.tokens.json").component.separator;
+const checkbox = load("tokens/components/checkbox.tokens.json").component.checkbox;
 
 const registry = {
   color: colorPrim,
@@ -168,6 +169,17 @@ const iconTag = iconOf("local_offer", "btn__icon");
 const iconCloseAtt = iconOf("close", "attachment__action-glyph");
 const iconSend = iconOf("send", "btn__icon");
 const iconFile = iconOf("insert_drive_file", "attachment__icon");
+// New message entry points + compose dialog
+const iconCheckboxCheck = iconOf("check", "checkbox__icon");
+// AI Writing Assist panel
+const iconChipArrow = iconOf("arrow_forward", "chip__icon");
+const iconAiSpark = iconOf("auto_awesome", "mc-ai__spark");
+const iconAiTabSpark = iconOf("auto_awesome", "tab__icon");
+const iconCopy = iconOf("content_copy", "btn__icon");
+const iconRegen = iconOf("refresh", "btn__icon");
+const iconAiSend = iconOf("arrow_upward", "btn__icon");
+const iconMiniChevron = iconOf("expand_more", "mc-ai__opt-chevron");
+const iconCollapse = iconOf("chevron_right", "btn__icon mc-ai__collapse-icon");
 
 // ================= component recipes, each resolved from its own token file =================
 
@@ -473,6 +485,29 @@ const swThumb = resolve(swtch.size.thumb.$value);
 const swInset = resolve(swtch.size.thumbInset.$value);
 const swTravel = swTrackWidth.value - swThumb.value - 2 * swInset.value;
 
+// ---- Checkbox (the compose dialog's Allow Replies + Expire Thread controls),
+// resolved from its own token file — native <input> under a painted box, the
+// same visually-hidden approach Switch/Radio use. Compose uses checkboxes
+// (not the thread composer's Switch) per explicit request. ----
+const cbBox = px(resolve(checkbox.size.box.$value));
+const cbRadius = px(resolve(checkbox.radius.$value));
+const cbBorderWidth = px(resolve(checkbox.size.borderWidth.$value));
+const cbGap = px(resolve(checkbox.size.gap.$value));
+const cbLabelType = resolveToken(get(checkbox.label.$value));
+const cbIconSize = px(resolve("dim.4"));
+const cbRingWidth = px(resolve(checkbox.state.focused.ringWidth.$value));
+const cbRingOffset = px(resolve(checkbox.state.focused.ringOffset.$value));
+
+// ---- Chip action variant (the AI panel's suggestion chips) — resolved from
+// chip.tokens.json's own action node, the third kind added for this. ----
+const chipAction = {
+  bg: refPath(chip.action.default.bg.$value),
+  border: refPath(chip.action.default.border.$value),
+  text: refPath(chip.action.default.text.$value),
+  icon: refPath(chip.action.default.icon.$value),
+  hoverBorder: refPath(chip.action.hover.border.$value),
+};
+
 // ---- Button (primary sm icon-only · secondary base/icon-only · ghost base icon-only) ----
 const btnRadius = px(resolve(button.primary.radius.$value));
 const btnPrimSm = button.primary.size.sm;
@@ -520,6 +555,7 @@ const labelSmType = resolveToken(labelSmNode);
 const labelSmExt = labelSmNode.$extensions?.["hp.design/text"] || {};
 const titleXlType = resolveToken(get("{text-style.title-xl}"));
 const headingLgType = resolveToken(get("{text-style.heading-lg}"));
+const headingSmType = resolveToken(get("{text-style.heading-sm}"));
 const bodySmType = resolveToken(get("{text-style.body-sm}"));
 // link-base for the search "Close" label — $extensions fetched directly from
 // the node, since resolveToken() drops them (documented gap)
@@ -555,6 +591,12 @@ const componentCss = `/* ---- component recipes, resolved from each component's 
    instead, and the value truncates with an ellipsis (the chevron stays) */
 .chip--dropdown { flex-shrink: 1; min-width: 0; max-width: 100%; }
 .chip--dropdown .chip__label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* action / assist chip (chip.tokens.json's own action node) — button-like,
+   fires and returns to rest, trailing arrow; the AI panel's suggestion chips */
+.chip--action { background: ${cv(chipAction.bg)}; border-color: ${cv(chipAction.border)}; color: ${cv(chipAction.text)}; }
+.chip--action .chip__icon { color: ${cv(chipAction.icon)}; }
+.chip--action:not(:disabled):hover { border-color: ${cv(chipAction.hoverBorder)}; }
+.chip--action:focus-visible { outline: ${chipRingWidth} solid ${cv("border.focus")}; outline-offset: ${chipRingOffset}; }
 
 .search { display: inline-flex; align-items: center; box-sizing: border-box; background: ${cv("surface.dim")}; border: 1px solid ${cv("border.default")}; border-radius: ${searchRadius}; font-family: ${cv("family.sans")}; cursor: text; }
 .search--base { height: ${searchBase.height}; padding: 0 ${searchBase.paddingX}; gap: ${searchBase.gap}; }
@@ -696,6 +738,18 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
 .switch__input:checked ~ .switch__track .switch__thumb { transform: translateX(${swTravel}px); }
 .switch__input:focus-visible ~ .switch__track { outline: 2px solid ${cv("border.focus")}; outline-offset: 2px; }
 
+/* Checkbox — native <input> visually hidden, painted box repainted via
+   :checked on the real sibling input (checkbox.tokens.json's own recipe) */
+.checkbox { display: inline-flex; align-items: center; gap: ${cbGap}; cursor: pointer; font-family: ${cv("family.sans")}; }
+.checkbox__input { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.checkbox__box { box-sizing: border-box; flex-shrink: 0; width: ${cbBox}; height: ${cbBox}; border-radius: ${cbRadius}; border: ${cbBorderWidth} solid ${cv("border.default")}; background: ${cv("surface.default")}; display: inline-flex; align-items: center; justify-content: center; }
+.checkbox__icon { width: ${cbIconSize}; height: ${cbIconSize}; color: ${cv("icon.onFill")}; display: none; }
+.checkbox:hover .checkbox__box { border-color: ${cv("fill.primary")}; }
+.checkbox__input:checked ~ .checkbox__box { background: ${cv("fill.primary")}; border-color: ${cv("fill.primary")}; }
+.checkbox__input:checked ~ .checkbox__box .checkbox__icon { display: block; }
+.checkbox__input:focus-visible ~ .checkbox__box { outline: ${cbRingWidth} solid ${cv("border.focus")}; outline-offset: ${cbRingOffset}; }
+.checkbox__label { color: ${cv("text.default")}; ${typoCss(cbLabelType)} }
+
 .btn { display: inline-flex; align-items: center; justify-content: center; border: none; cursor: pointer; font-family: ${cv("family.sans")}; border-radius: ${btnRadius}; }
 .btn:focus-visible { outline: ${btnRingWidth} solid ${cv("border.focus")}; outline-offset: ${btnRingOffset}; }
 .btn__icon { flex-shrink: 0; }
@@ -835,8 +889,7 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
 .mc-kbd { display: none; }
 @media (max-width: 767px) {
   .mc-compose { position: fixed; inset: 0; margin: 0; width: 100vw; max-width: 100vw; height: 100dvh; max-height: 100dvh; border-radius: 0; }
-  .mc-compose__close, .mc-compose__footer { display: none; }
-  .mc-compose__title { flex: 1; text-align: center; }
+  .mc-compose__title { flex: 1; text-align: left; }
   .mc-compose[open] { transform: translateY(0); transition: transform 0.25s ease; }
   @starting-style { .mc-compose[open] { transform: translateY(100vh); } }
   .mc-compose--kbd .mc-kbd, .mc-thread--kbd .mc-kbd { display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; padding: 8px 3px 20px; background: ${cv("surface.sunken")}; border-top: 1px solid ${cv("border.default")}; }
@@ -1004,11 +1057,94 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
   .mc-thread__composer { padding: ${px(resolve("dim.4"))} ${px(resolve("dim.6"))} ${px(resolve("dim.6"))}; }
 }`;
 
+// ---- New Message compose (two-column form + AI panel) & AI Writing Assist
+// panel. The form reuses the Select / mc-field / rich Composer / Checkbox
+// recipes above; only the column layout, the checks row, the subject counter,
+// the mobile Edit/AI tab toggle, and the AI panel are new here. The AI panel
+// is a composition of Bubble (chat) + Chip's action variant (suggestions) +
+// Button/Select — every piece a real component, resolved from its token file. ----
+const composeAiCss = `.mc-compose__tabs { display: none; flex-shrink: 0; }
+.mc-compose__tabs .tabs--segmented { width: 100%; }
+.mc-compose__tabs .tab__icon { flex-shrink: 0; width: 15px; height: 15px; }
+.mc-compose__cols { flex: 1; min-height: 0; display: flex; }
+.mc-compose__main { flex: 1; min-width: 0; display: flex; flex-direction: column; min-height: 0; }
+/* the AI column is itself a flex column so the panel inside can fill its
+   height (scroll grows, composer pins to the bottom) at every breakpoint */
+.mc-compose__ai { display: flex; flex-direction: column; min-height: 0; }
+.mc-compose__lead { margin: 0; color: ${cv("text.secondary")}; ${typoCss(bodySmType)} }
+.mc-compose__lead[hidden] { display: none; }
+.mc-compose__editor { display: flex; flex-direction: column; gap: ${px(resolve("dim.1"))}; }
+.mc-compose__editor .composer { gap: ${px(resolve("dim.2"))}; }
+.mc-compose__editor .composer__field { align-items: flex-start; }
+.mc-compose__editor .composer__input { display: block; resize: none; min-height: 132px; max-height: 300px; overflow-y: auto; }
+.mc-compose__counter { align-self: flex-end; color: ${cv("text.muted")}; font-size: 12px; font-family: ${cv("family.sans")}; }
+.mc-compose__checks { display: flex; flex-wrap: wrap; gap: ${px(resolve("dim.2"))} ${px(resolve("dim.6"))}; padding-top: ${px(resolve("dim.1"))}; }
+.mc-compose__footer .btn { flex: 1; }
+
+.mc-ai { display: flex; flex-direction: column; min-height: 0; height: 100%; background: ${cv("surface.default")}; }
+.mc-ai__header { flex-shrink: 0; display: flex; align-items: center; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))}; border-bottom: 1px solid ${cv(mdDivider)}; }
+.mc-ai__title { display: inline-flex; align-items: center; gap: ${px(resolve("dim.1_5"))}; color: ${cv("text.ai")}; ${typoCss(headingSmType)} }
+.mc-ai__spark { flex-shrink: 0; width: 18px; height: 18px; color: ${cv("icon.ai")}; }
+.mc-ai__collapse { margin-left: auto; }
+.mc-ai__collapse-icon { transition: transform 0.15s ease; }
+.mc-ai__scroll { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: ${px(resolve("dim.4"))}; padding: ${px(resolve("dim.4"))}; }
+/* suggestions sit at the bottom of the empty panel (ref), pushed down by an
+   auto top margin until the first chat bubble appears */
+.mc-ai__suggestions { display: flex; flex-direction: column; gap: ${px(resolve("dim.2"))}; margin-top: auto; }
+.mc-ai__suggestions[hidden] { display: none; }
+.mc-ai__suggestions-label { margin: 0; color: ${cv("text.muted")}; ${typoCss(labelSmType)}${labelSmExt.textTransform ? ` text-transform: ${labelSmExt.textTransform};` : ""}${labelSmExt.letterSpacing ? ` letter-spacing: ${labelSmExt.letterSpacing};` : ""} }
+.mc-ai__suggestions-list { display: flex; flex-direction: column; align-items: flex-start; gap: ${px(resolve("dim.2"))}; }
+/* Bubble runs full-width in the narrow AI panel (its own 75% chat cap would
+   leave it hugging one edge here) */
+.mc-ai .bubble-row { max-width: 100%; }
+.mc-ai__msg { display: flex; flex-direction: column; gap: ${px(resolve("dim.1"))}; }
+.mc-ai__msg-actions { display: flex; gap: ${px(resolve("dim.1"))}; }
+.mc-ai__composer { flex-shrink: 0; margin: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))} ${px(resolve("dim.4"))}; border: 1px solid ${cv("border.default")}; border-radius: ${px(resolve("radius.default"))}; background: ${cv("surface.dim")}; padding: ${px(resolve("dim.2"))}; display: flex; flex-direction: column; gap: ${px(resolve("dim.2"))}; }
+.mc-ai__composer:focus-within { border-color: ${cv("border.focus")}; }
+.mc-ai__input { border: none; outline: none; background: transparent; resize: none; min-height: 40px; max-height: 120px; color: ${cv("text.default")}; ${typoCss(inputValueType)} font-family: ${cv("family.sans")}; }
+.mc-ai__input::placeholder { color: ${cv("text.muted")}; }
+.mc-ai__controls { display: flex; align-items: center; gap: ${px(resolve("dim.1"))}; }
+.mc-ai__opt { display: inline-flex; align-items: center; gap: 2px; border: none; background: transparent; padding: ${px(resolve("dim.1"))} ${px(resolve("dim.1_5"))}; border-radius: ${px(resolve("radius.xs"))}; cursor: pointer; color: ${cv("text.secondary")}; font-family: ${cv("family.sans")}; font-size: 13px; }
+.mc-ai__opt b { color: ${cv("text.default")}; font-weight: 600; }
+.mc-ai__opt:hover { background: ${cv("fill.neutralHover")}; }
+.mc-ai__opt-chevron { width: 16px; height: 16px; color: ${cv("icon.muted")}; }
+.mc-ai__send { margin-left: auto; flex-shrink: 0; }
+
+/* standalone AI panel (opened from the in-thread AI Assist) — Modal's own
+   surface/shadow, a right-docked sheet on desktop, full-screen on mobile */
+.mc-ai-standalone { border: none; padding: 0; background: ${cv(mdBg)}; box-shadow: ${mdShadowCss}; font-family: ${cv("family.sans")}; }
+.mc-ai-standalone:focus, .mc-ai-standalone:focus-visible { outline: none; }
+.mc-ai-standalone[open] { display: flex; flex-direction: column; }
+.mc-ai-standalone::backdrop { background: ${cv(mdOverlay)}; }
+.mc-ai-standalone .mc-ai { height: 100%; }
+
+@media (max-width: 767px) {
+  .mc-compose__tabs { display: block; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))} 0; }
+  .mc-compose__cols { flex-direction: column; }
+  .mc-compose:not(.mc-compose--tab-ai) .mc-compose__ai { display: none; }
+  .mc-compose--tab-ai .mc-compose__main { display: none; }
+  .mc-compose__ai { flex: 1; min-height: 0; }
+  .mc-ai { height: auto; flex: 1; }
+  .mc-ai__collapse { display: none; }
+  .mc-compose__lead { display: none; }
+  .mc-ai-standalone { position: fixed; inset: 0; margin: 0; width: 100vw; max-width: 100vw; height: 100dvh; max-height: 100dvh; border-radius: 0; }
+}
+@media (min-width: 768px) {
+  .mc-compose__cols { flex-direction: row; }
+  .mc-compose__ai { width: 340px; flex-shrink: 0; border-left: 1px solid ${cv(mdDivider)}; }
+  .mc-compose:not(.mc-compose--ai-open) .mc-compose__ai { display: none; }
+  .mc-compose.mc-compose--ai-open { width: min(920px, calc(100vw - ${px(resolve("dim.8"))})); }
+  .mc-compose:not(.mc-compose--ai-open) .mc-ai__collapse-icon { transform: rotate(180deg); }
+  .mc-ai-standalone { width: min(400px, calc(100vw - ${px(resolve("dim.8"))})); height: 100dvh; max-height: 100dvh; margin: 0 0 0 auto; border-radius: 0; }
+}`;
+
 const appCss = `${rootVars}
 
 ${componentCss}
 
-${layoutCss}`;
+${layoutCss}
+
+${composeAiCss}`;
 
 // ================= markup builders =================
 
@@ -1169,6 +1305,52 @@ function rowMarkup(t, idx) {
 function switchMarkup(checked) {
   return `<label class="switch"><input type="checkbox" class="switch__input"${checked ? " checked" : ""} /><span class="switch__track"><span class="switch__thumb"></span></span></label>`;
 }
+
+// Checkbox — the compose dialog's Allow Replies + Expire Thread controls
+// (real component, its own recipe; compose uses checkboxes per explicit
+// request, unlike the thread composer's Switch)
+function checkboxMarkup(label, { checked = false, id } = {}) {
+  return `<label class="checkbox"><input type="checkbox" class="checkbox__input" id="${id}"${checked ? " checked" : ""} /><span class="checkbox__box">${iconCheckboxCheck}</span><span class="checkbox__label">${label}</span></label>`;
+}
+
+// ---- AI Writing Assist panel — a composition of real components: Chip's new
+// action variant (suggestions), Bubble (chat), Button (send / copy / regen /
+// collapse), plus small Tone/Length cyclers. Rendered twice (compose column +
+// standalone overlay), so it's one template keyed by a prefix. ----
+const AI_SUGGESTIONS = ["Registration reminder", "Missed appointment", "Check-in message", "Exam preparation", "Schedule meeting"];
+const AI_TONES = ["Formal", "Friendly", "Concise"];
+const AI_LENGTHS = ["Short", "Medium", "Long"];
+function actionChipMarkup(label) {
+  return `<button type="button" class="chip chip--base chip--action" data-ai-suggestion="${esc(label)}"><span class="chip__label">${label}</span>${iconChipArrow}</button>`;
+}
+function aiOptMarkup(kind, options) {
+  const cap = kind[0].toUpperCase() + kind.slice(1);
+  return `<button type="button" class="mc-ai__opt" data-ai-opt="${kind}" data-ai-options="${JSON.stringify(options).replace(/"/g, "&quot;")}" data-ai-index="0">${cap}: <b>${options[0]}</b>${iconMiniChevron}</button>`;
+}
+function aiPanelMarkup(prefix, headerAction = "") {
+  return `<div class="mc-ai" data-ai="${prefix}">
+      <header class="mc-ai__header">
+        <span class="mc-ai__title">${iconAiSpark}AI Writing Assist</span>
+        ${headerAction}
+      </header>
+      <div class="mc-ai__scroll" data-ai-scroll>
+        <div class="mc-ai__suggestions" data-ai-suggestions>
+          <p class="mc-ai__suggestions-label">Suggestions</p>
+          <div class="mc-ai__suggestions-list">
+            ${AI_SUGGESTIONS.map(actionChipMarkup).join("\n            ")}
+          </div>
+        </div>
+      </div>
+      <div class="mc-ai__composer">
+        <textarea class="mc-ai__input" data-ai-input rows="1" placeholder="Ask AI to write or improve a message..." aria-label="Ask AI to write or improve a message"></textarea>
+        <div class="mc-ai__controls">
+          ${aiOptMarkup("tone", AI_TONES)}
+          ${aiOptMarkup("length", AI_LENGTHS)}
+          <button type="button" class="btn btn--primary btn--sm btn--icon-only mc-ai__send" data-ai-send aria-label="Ask AI">${iconAiSend}</button>
+        </div>
+      </div>
+    </div>`;
+}
 // the staff reply composer IS Composer's rich variant — its docs recipe
 // verbatim (toolbar B/I/U + Merge Tags + AI Assist, field, Allow Replies
 // Switch + Expiration row, labeled primary Send)
@@ -1234,6 +1416,85 @@ const departments = [...new Set(threads.map((t) => t.department))];
 // Static sender markup is generated here at build time (same avatar recipe);
 // the user's text is injected via textContent, never innerHTML. ----
 const selfBubbleSender = `<div class="bubble-sender"><p class="bubble-sender__text"><span class="bubble-sender__name">${SELF.name}</span> <span class="bubble-sender__meta">-- Just now</span></p><span class="avatar avatar--${SELF.hue} avatar--sm" role="img" aria-label="${SELF.name}"><span class="avatar__initials">${SELF.initials}</span></span></div>`;
+
+// ---- New Message compose dialog + Discard confirm + standalone AI panel.
+// The department list is a little richer than the inbox's own two, so the
+// compose picker reads like a real staff-side sender-department choice. ----
+const composeDepartments = ["Academic Advising", "Student Records", "Financial Aid", "Office of the Registrar", "English Dept"];
+const composeCloseAction = `<button type="button" class="btn btn--ghost btn--sm btn--icon-only mc-ai__collapse" data-ai-close aria-label="Close AI panel">${iconCloseBtn}</button>`;
+const composeCollapseAction = `<button type="button" class="btn btn--ghost btn--sm btn--icon-only mc-ai__collapse" data-ai-collapse aria-label="Hide AI panel">${iconCollapse}</button>`;
+
+const composeMarkup = `<dialog class="mc-compose mc-compose--ai-open" id="mc-compose" aria-labelledby="mc-compose-title">
+  <header class="mc-compose__header">
+    <h2 class="mc-compose__title" id="mc-compose-title">New Message</h2>
+    <button class="btn btn--ghost btn--sm btn--icon-only mc-compose__close" id="mc-compose-close" type="button" aria-label="Close">${iconCloseBtn}</button>
+  </header>
+  <div class="mc-compose__tabs">
+    <div class="tabs tabs--segmented tabs--sm" role="tablist" aria-label="Compose mode">
+      <button class="tab tab--sm tab--active" role="tab" aria-selected="true" data-ctab="edit" type="button">Edit message</button>
+      <button class="tab tab--sm" role="tab" aria-selected="false" data-ctab="ai" type="button">${iconAiTabSpark}AI writing assist</button>
+    </div>
+  </div>
+  <div class="mc-compose__cols">
+    <div class="mc-compose__main">
+      <div class="mc-compose__body">
+        <p class="mc-compose__lead">Compose and send a new message on behalf of your department.</p>
+        <button class="select select--base select--resting" id="mc-compose-dept" type="button" popovertarget="mc-compose-dept-lb">
+          <span class="select__stack"><span class="select__label">Department</span><span class="select__value" id="mc-compose-dept-value">Department</span></span>
+          ${iconChevronSelect}
+        </button>
+        <div class="listbox" id="mc-compose-dept-lb" popover>
+          <ul class="listbox__list" role="listbox" aria-label="Department">
+            ${composeDepartments.map((d) => `<li><button class="listbox__option" role="option" aria-selected="false" data-dept="${esc(d)}" type="button">${d}${iconCheckmark}</button></li>`).join("\n            ")}
+          </ul>
+        </div>
+        <label class="mc-field">
+          <span class="mc-field__label">Subject</span>
+          <input class="mc-field__control" id="mc-compose-subject" maxlength="50" placeholder="Subject" aria-label="Subject" />
+        </label>
+        <span class="mc-compose__counter" id="mc-compose-counter">0/50</span>
+        <div class="mc-compose__editor">
+          <form class="composer composer--rich" onsubmit="return false">
+            <div class="composer__toolbar">
+              <button type="button" class="composer__icon-btn" aria-label="Bold">${iconBold}</button>
+              <button type="button" class="composer__icon-btn" aria-label="Italic">${iconItalic}</button>
+              <button type="button" class="composer__icon-btn" aria-label="Underline">${iconUnderline}</button>
+              <button type="button" class="btn btn--ghost btn--sm">${iconTag}Merge Tags</button>
+              <button type="button" class="composer__ai-assist" id="mc-compose-ai-assist">${iconAi}AI Assist</button>
+            </div>
+            <div class="composer__field">
+              <textarea class="composer__input" id="mc-compose-message" rows="1" placeholder="Write your message..." aria-label="Message"></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="mc-compose__checks">
+          ${checkboxMarkup("Allow Replies", { checked: true, id: "mc-compose-allow" })}
+          ${checkboxMarkup("Expire Thread", { checked: false, id: "mc-compose-expire" })}
+        </div>
+      </div>
+      <footer class="mc-compose__footer">
+        <button class="btn btn--secondary btn--base" id="mc-compose-draft" type="button">Draft</button>
+        <button class="btn btn--primary btn--base" id="mc-compose-send" type="button" disabled>Send Message</button>
+      </footer>
+    </div>
+    <div class="mc-compose__ai">
+      ${aiPanelMarkup("compose", composeCollapseAction)}
+    </div>
+  </div>
+</dialog>
+<dialog class="mc-confirm" id="mc-discard" aria-labelledby="mc-discard-title">
+  <div class="mc-confirm__body">
+    <h2 class="mc-confirm__title" id="mc-discard-title">Discard draft?</h2>
+    <p class="mc-confirm__text">Your message hasn't been sent — it will be lost if you close now.</p>
+  </div>
+  <footer class="mc-confirm__footer">
+    <button class="btn btn--secondary btn--base" id="mc-discard-keep" type="button">Keep editing</button>
+    <button class="btn btn--danger btn--base" id="mc-discard-discard" type="button">Discard</button>
+  </footer>
+</dialog>
+<dialog class="mc-ai-standalone" id="mc-ai-standalone" aria-label="AI Writing Assist">
+  ${aiPanelMarkup("standalone", composeCloseAction)}
+</dialog>`;
 
 const appJs = `(function () {
   var mc = document.querySelector(".mc");
@@ -1562,6 +1823,318 @@ const appJs = `(function () {
   document.querySelectorAll(".mc-print").forEach(bindPrint);
 
 
+  // ===== New Message compose + AI Writing Assist =====
+
+  // FAB — extended by default, collapses to icon-only while the list scrolls
+  // down, re-extends on scroll up or near the top (mirrors the student side)
+  var fab = document.getElementById("mc-new-fab");
+  var railLists = document.querySelector(".mc-rail__lists");
+  var lastListScroll = 0;
+  railLists.addEventListener("scroll", function () {
+    var y = railLists.scrollTop;
+    if (y > lastListScroll && y > 40) fab.classList.add("mc-fab--collapsed");
+    else if (y < lastListScroll - 4 || y <= 40) fab.classList.remove("mc-fab--collapsed");
+    lastListScroll = y;
+  }, { passive: true });
+
+  var composeDlg = document.getElementById("mc-compose");
+  var discardDlg = document.getElementById("mc-discard");
+  var aiStandaloneDlg = document.getElementById("mc-ai-standalone");
+  var composeDept = null;
+  var composeDeptValue = document.getElementById("mc-compose-dept-value");
+  var composeDeptTrigger = document.getElementById("mc-compose-dept");
+  var composeDeptLb = document.getElementById("mc-compose-dept-lb");
+  var composeSubject = document.getElementById("mc-compose-subject");
+  var composeCounter = document.getElementById("mc-compose-counter");
+  var composeMessage = document.getElementById("mc-compose-message");
+  var composeSendBtn = document.getElementById("mc-compose-send");
+  var composeAllow = document.getElementById("mc-compose-allow");
+  var composeExpire = document.getElementById("mc-compose-expire");
+
+  function validateCompose() {
+    var ok = !!composeDept && composeSubject.value.trim() !== "" && composeMessage.value.trim() !== "";
+    composeSendBtn.disabled = !ok;
+  }
+  function composeHasDraft() {
+    return !!composeDept || composeSubject.value.trim() !== "" || composeMessage.value.trim() !== "";
+  }
+
+  // Subject — Input's floating label + a live char counter (composition text,
+  // not a component); Message — the rich Composer textarea, auto-growing
+  var subjectField = composeSubject.closest(".mc-field");
+  function syncSubject() {
+    subjectField.classList.toggle("mc-field--floated", document.activeElement === composeSubject || composeSubject.value.trim() !== "");
+    composeCounter.textContent = composeSubject.value.length + "/50";
+  }
+  composeSubject.addEventListener("focus", syncSubject);
+  composeSubject.addEventListener("blur", syncSubject);
+  composeSubject.addEventListener("input", function () { syncSubject(); validateCompose(); });
+  subjectField.addEventListener("click", function () { composeSubject.focus(); });
+  function growMessage() {
+    composeMessage.style.height = "auto";
+    composeMessage.style.height = Math.min(composeMessage.scrollHeight, 300) + "px";
+  }
+  composeMessage.addEventListener("input", function () { growMessage(); validateCompose(); });
+
+  // Select float model (Input's own): resting = placeholder only; the 12px
+  // label floats in once a value exists
+  function selectPopulate(trigger, valueEl, text) { trigger.classList.remove("select--resting"); valueEl.textContent = text; }
+  function selectRest(trigger, valueEl, placeholder) { trigger.classList.add("select--resting"); valueEl.textContent = placeholder; }
+  composeDeptLb.addEventListener("toggle", function (e) {
+    if (e.newState === "open") {
+      var r = composeDeptTrigger.getBoundingClientRect();
+      composeDeptLb.style.position = "fixed";
+      composeDeptLb.style.margin = "0";
+      composeDeptLb.style.top = r.bottom + 4 + "px";
+      composeDeptLb.style.left = r.left + "px";
+      composeDeptLb.style.minWidth = r.width + "px";
+    }
+  });
+  composeDeptLb.querySelectorAll(".listbox__option").forEach(function (opt) {
+    opt.addEventListener("click", function () {
+      composeDeptLb.querySelectorAll(".listbox__option").forEach(function (o) {
+        o.classList.toggle("listbox__option--selected", o === opt);
+        o.setAttribute("aria-selected", o === opt ? "true" : "false");
+      });
+      composeDept = opt.dataset.dept;
+      selectPopulate(composeDeptTrigger, composeDeptValue, composeDept);
+      composeDeptLb.hidePopover();
+      validateCompose();
+    });
+  });
+
+  // compose mobile Edit / AI tabs
+  composeDlg.querySelectorAll("[data-ctab]").forEach(function (tab) {
+    tab.addEventListener("click", function () {
+      composeDlg.querySelectorAll("[data-ctab]").forEach(function (t) {
+        t.classList.toggle("tab--active", t === tab);
+        t.setAttribute("aria-selected", t === tab ? "true" : "false");
+      });
+      composeDlg.classList.toggle("mc-compose--tab-ai", tab.dataset.ctab === "ai");
+    });
+  });
+  function composeShowAiTab() {
+    composeDlg.querySelectorAll("[data-ctab]").forEach(function (t) {
+      var isAi = t.dataset.ctab === "ai";
+      t.classList.toggle("tab--active", isAi);
+      t.setAttribute("aria-selected", isAi ? "true" : "false");
+    });
+    composeDlg.classList.add("mc-compose--tab-ai");
+  }
+  // the compose toolbar's AI Assist opens the panel: switch to it on mobile,
+  // make sure it's expanded on desktop
+  document.getElementById("mc-compose-ai-assist").addEventListener("click", function () {
+    if (window.innerWidth < 768) composeShowAiTab();
+    else composeDlg.classList.add("mc-compose--ai-open");
+    var input = composeDlg.querySelector('.mc-ai[data-ai="compose"] [data-ai-input]');
+    if (input) input.focus();
+  });
+
+  function resetCompose() {
+    composeDept = null;
+    selectRest(composeDeptTrigger, composeDeptValue, "Department");
+    composeSubject.value = "";
+    composeMessage.value = "";
+    composeMessage.style.height = "auto";
+    composeCounter.textContent = "0/50";
+    composeAllow.checked = true;
+    composeExpire.checked = false;
+    subjectField.classList.remove("mc-field--floated");
+    composeDeptLb.querySelectorAll(".listbox__option").forEach(function (o) {
+      o.classList.remove("listbox__option--selected");
+      o.setAttribute("aria-selected", "false");
+    });
+    // reset the AI panel back to its suggestions-only start
+    var cpanel = composeDlg.querySelector('.mc-ai[data-ai="compose"]');
+    resetAiPanel(cpanel);
+    composeDlg.classList.add("mc-compose--ai-open");
+    composeDlg.classList.remove("mc-compose--tab-ai");
+    composeDlg.querySelectorAll("[data-ctab]").forEach(function (t) {
+      var isEdit = t.dataset.ctab === "edit";
+      t.classList.toggle("tab--active", isEdit);
+      t.setAttribute("aria-selected", isEdit ? "true" : "false");
+    });
+    validateCompose();
+  }
+  function requestComposeClose() {
+    if (composeHasDraft()) discardDlg.showModal();
+    else composeDlg.close();
+  }
+  ["mc-new-fab", "mc-new-desktop"].forEach(function (id) {
+    document.getElementById(id).addEventListener("click", function () { resetCompose(); composeDlg.showModal(); });
+  });
+  document.getElementById("mc-compose-close").addEventListener("click", requestComposeClose);
+  composeDlg.addEventListener("click", function (e) { if (e.target === composeDlg) requestComposeClose(); });
+  composeDlg.addEventListener("cancel", function (e) {           // Escape
+    if (composeHasDraft()) { e.preventDefault(); discardDlg.showModal(); }
+  });
+  discardDlg.addEventListener("cancel", function (e) { e.preventDefault(); }); // modal.alert
+  document.getElementById("mc-discard-keep").addEventListener("click", function () { discardDlg.close(); });
+  document.getElementById("mc-discard-discard").addEventListener("click", function () { discardDlg.close(); composeDlg.close(); });
+
+  // ---- AI Writing Assist panel — bound for both instances (compose column +
+  // standalone overlay). getTarget() returns the textarea a generated draft
+  // gets inserted into. ----
+  var AI_RESPONSES = ${JSON.stringify({
+    "Registration reminder": ["Hi there, this is a friendly reminder that course registration for the upcoming term closes soon. Please log in to complete your enrollment, and reach out if any holds are getting in your way.", "Hello, registration is still open but closing shortly. Take a few minutes to finalize your courses so your seats aren't released."],
+    "Missed appointment": ["Hi, I noticed we missed each other for today's appointment. No problem at all — let's find a new time. You can pick a slot that works for you here: [Insert link].", "Hello, it looks like today's meeting didn't happen. Would you like to reschedule? Send me a couple of times that suit you and I'll confirm."],
+    "Check-in message": ["Hi, I'm checking in to see how the term is going so far. If anything has come up — academic or otherwise — I'm here to help. Let me know if you'd like to talk.", "Hello, just a quick check-in from Advising. How are your courses feeling this term? Happy to review your plan whenever you're ready."],
+    "Exam preparation": ["Hi, with finals approaching I wanted to share a few resources to help you prepare. The tutoring center has extended hours, and I'm glad to review your study plan if that would help.", "Hello, exams are coming up soon. If you'd like help mapping out a study schedule or connecting with tutoring, just say the word."],
+    "Schedule meeting": ["Hi, I'd like to invite you to schedule an appointment with Academic Advising to review your progress and discuss any questions. You can book a time here: [Insert link].", "Hello, could we set up a short meeting to go over your progress this term? Grab whichever slot works best: [Insert link]."],
+    "_default": ["Here's a draft you can refine:\\n\\nHi there, I wanted to reach out regarding your recent request. Let me know if there's anything I can clarify — happy to help.", "Happy to help — here's an alternative you can edit to match your voice and add the specific details."],
+  })};
+  var AI_COPY_ICON = ${JSON.stringify(iconCopy)};
+  var AI_REGEN_ICON = ${JSON.stringify(iconRegen)};
+
+  function resetAiPanel(panel) {
+    if (!panel) return;
+    var scroll = panel.querySelector("[data-ai-scroll]");
+    // strip any appended chat, keep the suggestions block
+    Array.prototype.slice.call(scroll.children).forEach(function (c) {
+      if (!c.hasAttribute("data-ai-suggestions")) scroll.removeChild(c);
+    });
+    panel.querySelector("[data-ai-suggestions]").hidden = false;
+    var input = panel.querySelector("[data-ai-input]");
+    input.value = "";
+    input.style.height = "auto";
+  }
+  function bindAiPanel(panel, getTarget) {
+    if (!panel) return;
+    var scroll = panel.querySelector("[data-ai-scroll]");
+    var suggestions = panel.querySelector("[data-ai-suggestions]");
+    var input = panel.querySelector("[data-ai-input]");
+    function respond(youText, respKey) {
+      suggestions.hidden = true;
+      var you = document.createElement("div");
+      you.className = "bubble-row bubble-row--self";
+      you.innerHTML = '<div class="bubble bubble--self bubble--tint"><p></p></div>';
+      you.querySelector("p").textContent = youText;
+      scroll.appendChild(you);
+      var variants = AI_RESPONSES[respKey] || AI_RESPONSES._default;
+      var vi = 0;
+      var asst = document.createElement("div");
+      asst.className = "bubble-row bubble-row--other";
+      asst.innerHTML = '<div class="mc-ai__msg"><div class="bubble bubble--other"><p></p></div>' +
+        '<div class="mc-ai__msg-actions">' +
+        '<button type="button" class="btn btn--ghost btn--sm btn--icon-only" data-ai-use aria-label="Use this draft">' + AI_COPY_ICON + '</button>' +
+        '<button type="button" class="btn btn--ghost btn--sm btn--icon-only" data-ai-regen aria-label="Regenerate">' + AI_REGEN_ICON + '</button>' +
+        '</div></div>';
+      var p = asst.querySelector(".bubble p");
+      p.textContent = variants[vi];
+      scroll.appendChild(asst);
+      scroll.scrollTop = scroll.scrollHeight;
+      asst.querySelector("[data-ai-regen]").addEventListener("click", function () {
+        vi = (vi + 1) % variants.length;
+        p.textContent = variants[vi];
+      });
+      asst.querySelector("[data-ai-use]").addEventListener("click", function () {
+        var t = getTarget();
+        if (t) { t.value = p.textContent; t.dispatchEvent(new Event("input", { bubbles: true })); }
+        showToast("success", "Draft added to message");
+      });
+    }
+    panel.querySelectorAll("[data-ai-suggestion]").forEach(function (chip) {
+      chip.addEventListener("click", function () { respond("Write a " + chip.dataset.aiSuggestion.toLowerCase(), chip.dataset.aiSuggestion); });
+    });
+    function growInput() { input.style.height = "auto"; input.style.height = Math.min(input.scrollHeight, 120) + "px"; }
+    input.addEventListener("input", growInput);
+    input.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); }
+    });
+    function send() {
+      var text = input.value.trim();
+      if (!text) return;
+      respond(text, text);
+      input.value = "";
+      growInput();
+    }
+    panel.querySelector("[data-ai-send]").addEventListener("click", send);
+    // Tone / Length — small cyclers (a real Button changing a real value; a
+    // full dropdown wasn't worth four popovers for a secondary control)
+    panel.querySelectorAll(".mc-ai__opt").forEach(function (opt) {
+      var options = JSON.parse(opt.dataset.aiOptions);
+      var b = opt.querySelector("b");
+      opt.addEventListener("click", function () {
+        var i = (parseInt(opt.dataset.aiIndex, 10) + 1) % options.length;
+        opt.dataset.aiIndex = i;
+        b.textContent = options[i];
+      });
+    });
+    // header action — collapse (compose) or close (standalone)
+    var collapse = panel.querySelector("[data-ai-collapse]");
+    if (collapse) collapse.addEventListener("click", function () { composeDlg.classList.remove("mc-compose--ai-open"); });
+    var close = panel.querySelector("[data-ai-close]");
+    if (close) close.addEventListener("click", function () { aiStandaloneDlg.close(); });
+  }
+  bindAiPanel(composeDlg.querySelector('.mc-ai[data-ai="compose"]'), function () { return composeMessage; });
+  bindAiPanel(aiStandaloneDlg.querySelector('.mc-ai[data-ai="standalone"]'), function () {
+    var pane = document.querySelector(".mc-thread:not([hidden])");
+    return pane ? pane.querySelector(".mc-composer .composer__input") : null;
+  });
+
+  // in-thread AI Assist (Composer rich variant) opens the standalone panel —
+  // wired on every existing thread and on Send-created ones
+  function bindThreadAiAssist(btn) {
+    btn.addEventListener("click", function () { aiStandaloneDlg.showModal(); });
+  }
+  document.querySelectorAll(".mc-composer .composer__ai-assist").forEach(bindThreadAiAssist);
+
+  // ---- Send Message — creates a real outbound Inbox thread (a staff-initiated
+  // message the student hasn't answered yet: Awaiting reply). Faithful to the
+  // student side's send-creates-a-thread behaviour, staff-flavoured. ----
+  var COMPOSE_PANE_SKELETON = ${JSON.stringify(`<header class="mc-thread__bar"><button class="btn btn--ghost btn--sm mc-thread__back" type="button">${iconBack}Back</button><div class="mc-thread__actions"><button class="btn btn--secondary btn--sm mc-archive" type="button">Resolve</button><button class="btn btn--secondary btn--sm btn--icon-only mc-print" type="button" aria-label="Print thread">${iconPrint}</button></div><h2 class="mc-thread__subject"></h2><div class="mc-thread__tags"><span class="mc-thread__meta-line"></span><span class="badge badge--sm badge--role-primary">Awaiting reply</span></div></header><div class="mc-thread__scroll"></div><footer class="mc-thread__composer"><form class="composer composer--rich mc-composer"><div class="composer__toolbar"><button type="button" class="composer__icon-btn" aria-label="Bold">${iconBold}</button><button type="button" class="composer__icon-btn" aria-label="Italic">${iconItalic}</button><button type="button" class="composer__icon-btn" aria-label="Underline">${iconUnderline}</button><button type="button" class="btn btn--ghost btn--sm">${iconTag}Merge Tags</button><button type="button" class="composer__ai-assist">${iconAi}AI Assist</button></div><div class="composer__field"><textarea class="composer__input" rows="1" placeholder="Reply..." aria-label="Reply"></textarea></div><div class="composer__settings"><div class="composer__settings-row"><span class="composer__settings-label">Allow Replies</span>${switchMarkup(true)}</div><div class="composer__settings-row"><span class="composer__settings-label">Expiration</span><button type="button" class="composer__expiration-trigger">Aug 15, 2026 ${iconChevronRight}</button></div></div><button type="submit" class="btn btn--primary btn--base composer__send">${iconSend}Send</button></form></footer>`)};
+  var COMPOSE_ROW_SKELETON = ${JSON.stringify(`<div class="thread-item-inbox__main"><div class="thread-item-inbox__top"><span class="thread-item-inbox__identity"></span><span class="thread-item-inbox__time">Just now</span></div><div class="thread-item-inbox__subject"></div><div class="thread-item-inbox__preview-row"><span class="thread-item-inbox__preview"></span><button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread">${iconFlagOutlined}${iconFlagFilled}</button></div><div class="thread-item-inbox__expires"><span class="badge badge--sm badge--role-primary">Awaiting reply</span><span class="badge badge--sm badge--role-primary thread-item-inbox__scope">Inbox</span></div></div>`)};
+  var DEPT_AVATARS = ${JSON.stringify(Object.fromEntries(composeDepartments.map((d) => [d, avatarMarkup(d, "sm")])))};
+
+  var sentSeq = 0;
+  composeSendBtn.addEventListener("click", function () {
+    if (composeSendBtn.disabled) return;
+    var text = composeMessage.value.trim();
+    var subject = composeSubject.value.trim();
+    var id = "sent-" + (++sentSeq);
+    var identity = composeDept;
+
+    var row = document.createElement("div");
+    row.className = "thread-item-inbox thread-item-inbox--read";
+    row.setAttribute("role", "button");
+    row.tabIndex = 0;
+    row.dataset.thread = id;
+    row.dataset.subject = subject;
+    row.dataset.department = composeDept;
+    row.innerHTML = (DEPT_AVATARS[composeDept] || "") + COMPOSE_ROW_SKELETON;
+    row.querySelector(".thread-item-inbox__identity").textContent = identity;
+    row.querySelector(".thread-item-inbox__subject").textContent = subject;
+    row.querySelector(".thread-item-inbox__preview").textContent = "You: " + text;
+    bindRow(row);
+    lists.inbox.insertBefore(row, lists.inbox.firstChild);
+
+    var pane = document.createElement("article");
+    pane.className = "mc-thread";
+    pane.dataset.thread = id;
+    pane.hidden = true;
+    pane.innerHTML = COMPOSE_PANE_SKELETON;
+    pane.querySelector(".mc-thread__subject").textContent = subject;
+    pane.querySelector(".mc-thread__meta-line").textContent = identity + " · PeopleSoft University";
+    pane.querySelector(".mc-archive").dataset.thread = id;
+    var bubbleRowEl = document.createElement("div");
+    bubbleRowEl.className = "bubble-row bubble-row--self";
+    bubbleRowEl.innerHTML = SELF_SENDER + '<div class="bubble bubble--self bubble--tint"><p></p></div>';
+    bubbleRowEl.querySelector(".bubble p").textContent = text;
+    pane.querySelector(".mc-thread__scroll").appendChild(bubbleRowEl);
+    bindBack(pane.querySelector(".mc-thread__back"));
+    bindArchive(pane.querySelector(".mc-archive"));
+    bindPrint(pane.querySelector(".mc-print"));
+    bindComposer(pane.querySelector(".mc-composer"));
+    bindThreadAiAssist(pane.querySelector(".composer__ai-assist"));
+    document.querySelector(".mc__reading").appendChild(pane);
+
+    composeDlg.close();
+    applyFilter();
+    updateUnreadCounter();
+    showToast("success", "Message sent");
+  });
+  validateCompose();
+
   applyFilter();
   updateUnreadCounter();
 })();`;
@@ -1579,7 +2152,7 @@ ${appCss}
 </head>
 <body>
 <div class="mc">
-  <header class="mc__topbar"><h1>Message Center</h1></header>
+  <header class="mc__topbar"><h1>Message Center</h1><button class="btn btn--primary btn--base mc-topbar-new" id="mc-new-desktop" type="button">${iconEdit}New message</button></header>
   <div class="mc__body">
     <aside class="mc__rail" aria-label="Thread list">
       <div class="mc-rail__topbar">
@@ -1630,6 +2203,7 @@ ${appCss}
           <div class="empty-state"><span class="empty-state__text" id="mc-rail-empty-text">No threads found</span></div>
         </div>
       </div>
+      <button class="btn btn--primary btn--lg mc-fab" id="mc-new-fab" type="button">${iconEdit}<span class="mc-fab__label">New message</span></button>
     </aside>
     <section class="mc__reading" aria-label="Thread">
       <div class="mc-empty" id="mc-empty"><div class="empty-state"><span class="empty-state__text">Choose a Thread</span></div></div>
@@ -1637,6 +2211,7 @@ ${appCss}
     </section>
   </div>
 </div>
+${composeMarkup}
 
 <script>
 ${appJs}
@@ -1749,7 +2324,7 @@ const viewerHtml = `<!doctype html>
   </nav>
   <main>
     <h1>Staff Message Center</h1>
-    <p class="sub">Interactive prototype, built strictly from hp-design components (every recipe resolved from its own token file) — the OTHER side of the Student Message Center: the department inbox where staff answer incoming student threads. Rows lead with the student and carry Handled by / Unassigned / Awaiting reply / due-date states; Resolve really moves a thread to the Resolved tab; the reply composer is Composer's rich variant (B/I/U, Merge Tags, AI Assist, Allow Replies, Expiration) and Send appends a real staff Bubble. Staff-initiated announcements (New message) are deliberately deferred, not silently skipped.</p>
+    <p class="sub">Interactive prototype, built strictly from hp-design components (every recipe resolved from its own token file) — the OTHER side of the Student Message Center: the department inbox where staff answer incoming student threads. Rows lead with the student and carry Handled by / Unassigned / Awaiting reply / due-date states; Resolve really moves a thread to the Resolved tab; the reply composer is Composer's rich variant (B/I/U, Merge Tags, AI Assist, Allow Replies, Expiration) and Send appends a real staff Bubble. New message is a floating action button on mobile / a topbar button on split views: a compose dialog (Department, Subject, rich message, Allow Replies + Expire Thread checkboxes) beside an AI Writing Assist panel — suggestion chips, a real chat, tone/length — that also opens standalone from the in-thread AI Assist.</p>
 
     <div class="device-bar">
       <div class="tabs tabs--segmented tabs--base" role="tablist" aria-label="Preview viewport">

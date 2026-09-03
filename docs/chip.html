@@ -124,6 +124,13 @@
 .chip--removable.chip--disabled { color: var(--tok-text-disabled); }
 .chip--removable.chip--disabled .chip__icon { color: var(--tok-icon-disabled); }
 
+.chip--action { background: var(--tok-surface-default); border-color: var(--tok-border-default); color: var(--tok-text-default); }
+.chip--action .chip__icon { color: var(--tok-icon-default); }
+.chip--action:not(:disabled):hover { border-color: var(--tok-border-strong); }
+.chip--action:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
+.chip--action:disabled { color: var(--tok-text-disabled); cursor: not-allowed; }
+.chip--action:disabled .chip__icon { color: var(--tok-icon-disabled); }
+
 .chip__remove { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; border: none; border-radius: 8px; background: transparent; padding: 0; cursor: pointer; color: var(--tok-icon-secondary); }
 .chip__remove:hover { background: var(--tok-fill-neutral-hover); }
 .chip__remove:active { background: var(--tok-fill-neutral-active); }
@@ -230,8 +237,8 @@
     <p class="sub">tokens/components/chip.tokens.json · generated — the CSS below is generated from the same resolved tokens driving every preview on this page, nothing hand-copied. Every toggle chip below is a real, clickable <code class="tok">&lt;button aria-pressed&gt;</code> — try one.</p>
 
     <div class="legend">
-      <div class="row"><b>toggle vs. removable</b><span>Two kinds sharing one shell. <code class="tok">toggle</code> = filter selection, checkbox-like (click flips checked/unchecked — "I'm Involved"/"Flagged"/"Expires Soon"). <code class="tok">removable</code> = a selected value with a trailing dismiss (×) — a chosen multi-select option, a recipient chip. Existence IS the selection for removable; there's no checked ladder, only present-or-removed.</span></div>
-      <div class="row"><b>Not Badge</b><span>Badge is the display-only sibling this was deliberately split from — a status/tag pill you look at, not click. Chip is the checkbox-like, interactive one. Same ARIA-role reasoning as the Menu/Listbox split.</span></div>
+      <div class="row"><b>toggle / removable / action</b><span>Three kinds sharing one shell, split by ARIA role. <code class="tok">toggle</code> = filter selection, checkbox-like (click flips checked/unchecked — "I'm Involved"/"Flagged"/"Expires Soon"). <code class="tok">removable</code> = a selected value with a trailing dismiss (×) — a chosen multi-select option, a recipient chip; existence IS the selection, no checked ladder. <code class="tok">action</code> = button-like (a real <code class="tok">&lt;button&gt;</code> that fires an action and returns to rest, no persistent state) with a trailing arrow — Material's suggestion/assist chip.</span></div>
+      <div class="row"><b>Not Badge</b><span>Badge is the display-only sibling this was deliberately split from — a status/tag pill you look at, not click. Chip is the checkbox-like/actionable, interactive one. Same ARIA-role reasoning as the Menu/Listbox split.</span></div>
       <div class="row"><b>solid vs. outline checked</b><span>Two checked treatments for <code class="tok">toggle</code>, not a ladder — pick by content. Solid (fill.primary + white text) for a real single boolean. Outline (bg.primary tint + border, reuses Badge's own tint recipe) for a chip carrying a <code class="tok">Counter</code> — a "Filters · 3" trigger summarizing several sub-selections is an aggregate, not one thing being on, so filling it fully solid would overstate it.</span></div>
       <div class="row"><b>Sizes</b><span>sm 24 / base 32 / lg 40 — Button's own height ladder (32/40/48) shifted down one dim-step at every size, since a chip is clickable like a button but reads as a small pill like Badge.</span></div>
       <div class="row"><b>Remove button</b><span>Resolved from Popover/Drawer/Modal's own close-button recipe, not re-invented: transparent → fill.neutralHover → fill.neutralActive.</span></div>
@@ -294,6 +301,13 @@
 .chip--removable:hover { border-color: var(--tok-border-strong); }
 .chip--removable.chip--disabled { color: var(--tok-text-disabled); }
 .chip--removable.chip--disabled .chip__icon { color: var(--tok-icon-disabled); }
+
+.chip--action { background: var(--tok-surface-default); border-color: var(--tok-border-default); color: var(--tok-text-default); }
+.chip--action .chip__icon { color: var(--tok-icon-default); }
+.chip--action:not(:disabled):hover { border-color: var(--tok-border-strong); }
+.chip--action:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
+.chip--action:disabled { color: var(--tok-text-disabled); cursor: not-allowed; }
+.chip--action:disabled .chip__icon { color: var(--tok-icon-disabled); }
 
 .chip__remove { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; border: none; border-radius: 8px; background: transparent; padding: 0; cursor: pointer; color: var(--tok-icon-secondary); }
 .chip__remove:hover { background: var(--tok-fill-neutral-hover); }
@@ -453,6 +467,32 @@
         <div class="story-preview"><span class="chip chip--base chip--removable chip--disabled"><span class="chip__label">Calam Xavier</span><button class="chip__remove" aria-label="Remove Calam Xavier" disabled><svg class="chip__remove-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button></span></div>
         <pre class="code"><code>&lt;span class="chip chip--base chip--removable chip--disabled"&gt;&lt;span class="chip__label"&gt;Calam Xavier&lt;/span&gt;&lt;button class="chip__remove" aria-label="Remove Calam Xavier" disabled&gt;&lt;svg class="chip__remove-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"&gt;&lt;path d="M0 0h24v24H0z" fill="none"/&gt;&lt;path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/&gt;&lt;/svg&gt;&lt;/button&gt;&lt;/span&gt;</code></pre>
         <p class="story-note">Remove button hidden (visibility:hidden, keeps layout stable) — nothing to remove when the whole chip is inert.</p>
+      </div>
+    </div>
+
+    <h2 class="big-section">Action</h2>
+    <p class="section-desc">Base size — an assist/suggestion chip. The whole chip is a real <code class="tok">&lt;button&gt;</code>: clicking fires an action (insert a suggested draft, run a quick prompt) and it returns to rest — no checked state. The trailing arrow signals "this does something", distinguishing it at a glance from a toggle's leading category glyph. Wire your own click handler in the app.</p>
+    <div class="story-grid">
+      
+      <div class="story">
+        <h3>Default</h3>
+        <div class="story-preview"><button class="chip chip--base chip--action"><span class="chip__label">Registration reminder</span><svg class="chip__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg></button></div>
+        <pre class="code"><code>&lt;button class="chip chip--base chip--action"&gt;&lt;span class="chip__label"&gt;Registration reminder&lt;/span&gt;&lt;svg class="chip__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"&gt;&lt;path d="M0 0h24v24H0z" fill="none"/&gt;&lt;path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/&gt;&lt;/svg&gt;&lt;/button&gt;</code></pre>
+        <p class="story-note">A real <button> — click fires an action and returns to rest, no persistent checked state. The trailing arrow reads 'this does something'.</p>
+      </div>
+
+      <div class="story">
+        <h3>Hover</h3>
+        <div class="story-preview"><button class="chip chip--base chip--action" style="border-color:var(--tok-border-strong)"><span class="chip__label">Missed appointment</span><svg class="chip__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg></button></div>
+        <pre class="code"><code>&lt;button class="chip chip--base chip--action" style="border-color:var(--tok-border-strong)"&gt;&lt;span class="chip__label"&gt;Missed appointment&lt;/span&gt;&lt;svg class="chip__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"&gt;&lt;path d="M0 0h24v24H0z" fill="none"/&gt;&lt;path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/&gt;&lt;/svg&gt;&lt;/button&gt;</code></pre>
+        <p class="story-note">border.strong — the ordinary Card-style hover, NOT toggle's fill.primary. Clicking an action chip never means 'turn this on', so it gets no activation cue. Forced inline here; real rule is :hover above.</p>
+      </div>
+
+      <div class="story">
+        <h3>Disabled</h3>
+        <div class="story-preview"><button class="chip chip--base chip--action" disabled><span class="chip__label">Exam preparation</span><svg class="chip__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg></button></div>
+        <pre class="code"><code>&lt;button class="chip chip--base chip--action" disabled&gt;&lt;span class="chip__label"&gt;Exam preparation&lt;/span&gt;&lt;svg class="chip__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"&gt;&lt;path d="M0 0h24v24H0z" fill="none"/&gt;&lt;path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/&gt;&lt;/svg&gt;&lt;/button&gt;</code></pre>
+        <p class="story-note">Keeps its background, only text/icon fade — same convention as every other disabled control.</p>
       </div>
     </div>
   </main>
