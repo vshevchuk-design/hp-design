@@ -1101,9 +1101,12 @@ const composeAiCss = `.mc-compose__tabs { display: none; flex-shrink: 0; }
 .mc-ai__msg-actions { display: flex; gap: ${px(resolve("dim.1"))}; }
 .mc-ai__composer { flex-shrink: 0; margin: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))} ${px(resolve("dim.4"))}; border: 1px solid ${cv("border.default")}; border-radius: ${px(resolve("radius.default"))}; background: ${cv("surface.dim")}; padding: ${px(resolve("dim.2"))}; display: flex; flex-direction: column; gap: ${px(resolve("dim.2"))}; }
 .mc-ai__composer:focus-within { border-color: ${cv("border.focus")}; }
-.mc-ai__input { border: none; outline: none; background: transparent; resize: none; min-height: 40px; max-height: 120px; color: ${cv("text.default")}; ${typoCss(inputValueType)} font-family: ${cv("family.sans")}; }
+/* value text is 14px here (not the 16px Safari-zoom size the message body
+   uses) — a secondary side-panel input, 16px read oversized */
+.mc-ai__input { border: none; outline: none; background: transparent; resize: none; min-height: 40px; max-height: 120px; color: ${cv("text.default")}; font-size: ${px(resolve("size.base"))}; line-height: ${resolve("leading.normal")}; font-family: ${cv("family.sans")}; }
 .mc-ai__input::placeholder { color: ${cv("text.muted")}; }
 .mc-ai__controls { display: flex; align-items: center; gap: ${px(resolve("dim.1"))}; }
+.mc-ai__opt-lb { min-width: 132px; }
 .mc-ai__opt { display: inline-flex; align-items: center; gap: 2px; border: none; background: transparent; padding: ${px(resolve("dim.1"))} ${px(resolve("dim.1_5"))}; border-radius: ${px(resolve("radius.xs"))}; cursor: pointer; color: ${cv("text.secondary")}; font-family: ${cv("family.sans")}; font-size: 13px; }
 .mc-ai__opt b { color: ${cv("text.default")}; font-weight: 600; }
 .mc-ai__opt:hover { background: ${cv("fill.neutralHover")}; }
@@ -1323,9 +1326,21 @@ const AI_LENGTHS = ["Short", "Medium", "Long"];
 function actionChipMarkup(label) {
   return `<button type="button" class="chip chip--base chip--action" data-ai-suggestion="${esc(label)}"><span class="chip__label">${label}</span>${iconChipArrow}</button>`;
 }
-function aiOptMarkup(kind, options) {
+// Tone / Length — real single-select dropdowns (Listbox popover), one per
+// panel instance, IDs namespaced by the panel prefix so the two panels don't
+// collide. Reuses Listbox's own recipe verbatim.
+function aiOptMarkup(prefix, kind, options) {
   const cap = kind[0].toUpperCase() + kind.slice(1);
-  return `<button type="button" class="mc-ai__opt" data-ai-opt="${kind}" data-ai-options="${JSON.stringify(options).replace(/"/g, "&quot;")}" data-ai-index="0">${cap}: <b>${options[0]}</b>${iconMiniChevron}</button>`;
+  const lbId = `${prefix}-${kind}-lb`;
+  const opts = options
+    .map((o, i) => `<li><button type="button" class="listbox__option${i === 0 ? " listbox__option--selected" : ""}" role="option" aria-selected="${i === 0 ? "true" : "false"}" data-val="${esc(o)}">${o}${iconCheckmark}</button></li>`)
+    .join("\n            ");
+  return `<button type="button" class="mc-ai__opt" data-ai-opt="${kind}" popovertarget="${lbId}" aria-haspopup="listbox">${cap}: <b>${options[0]}</b>${iconMiniChevron}</button>
+        <div class="listbox mc-ai__opt-lb" id="${lbId}" popover>
+          <ul class="listbox__list" role="listbox" aria-label="${cap}">
+            ${opts}
+          </ul>
+        </div>`;
 }
 function aiPanelMarkup(prefix, headerAction = "") {
   return `<div class="mc-ai" data-ai="${prefix}">
@@ -1344,8 +1359,8 @@ function aiPanelMarkup(prefix, headerAction = "") {
       <div class="mc-ai__composer">
         <textarea class="mc-ai__input" data-ai-input rows="1" placeholder="Ask AI to write or improve a message..." aria-label="Ask AI to write or improve a message"></textarea>
         <div class="mc-ai__controls">
-          ${aiOptMarkup("tone", AI_TONES)}
-          ${aiOptMarkup("length", AI_LENGTHS)}
+          ${aiOptMarkup(prefix, "tone", AI_TONES)}
+          ${aiOptMarkup(prefix, "length", AI_LENGTHS)}
           <button type="button" class="btn btn--primary btn--sm btn--icon-only mc-ai__send" data-ai-send aria-label="Ask AI">${iconAiSend}</button>
         </div>
       </div>
@@ -1424,7 +1439,7 @@ const composeDepartments = ["Academic Advising", "Student Records", "Financial A
 const composeCloseAction = `<button type="button" class="btn btn--ghost btn--sm btn--icon-only mc-ai__collapse" data-ai-close aria-label="Close AI panel">${iconCloseBtn}</button>`;
 const composeCollapseAction = `<button type="button" class="btn btn--ghost btn--sm btn--icon-only mc-ai__collapse" data-ai-collapse aria-label="Hide AI panel">${iconCollapse}</button>`;
 
-const composeMarkup = `<dialog class="mc-compose mc-compose--ai-open" id="mc-compose" aria-labelledby="mc-compose-title">
+const composeMarkup = `<dialog class="mc-compose" id="mc-compose" aria-labelledby="mc-compose-title">
   <header class="mc-compose__header">
     <h2 class="mc-compose__title" id="mc-compose-title">New Message</h2>
     <button class="btn btn--ghost btn--sm btn--icon-only mc-compose__close" id="mc-compose-close" type="button" aria-label="Close">${iconCloseBtn}</button>
@@ -1913,21 +1928,26 @@ const appJs = `(function () {
       composeDlg.classList.toggle("mc-compose--tab-ai", tab.dataset.ctab === "ai");
     });
   });
-  function composeShowAiTab() {
+  function composeSetTab(which) {
     composeDlg.querySelectorAll("[data-ctab]").forEach(function (t) {
-      var isAi = t.dataset.ctab === "ai";
-      t.classList.toggle("tab--active", isAi);
-      t.setAttribute("aria-selected", isAi ? "true" : "false");
+      var on = t.dataset.ctab === which;
+      t.classList.toggle("tab--active", on);
+      t.setAttribute("aria-selected", on ? "true" : "false");
     });
-    composeDlg.classList.add("mc-compose--tab-ai");
+    composeDlg.classList.toggle("mc-compose--tab-ai", which === "ai");
   }
-  // the compose toolbar's AI Assist opens the panel: switch to it on mobile,
-  // make sure it's expanded on desktop
+  // the compose toolbar's AI Assist TOGGLES the panel: on desktop expand /
+  // collapse the AI column, on mobile switch to / back from the AI tab
   document.getElementById("mc-compose-ai-assist").addEventListener("click", function () {
-    if (window.innerWidth < 768) composeShowAiTab();
-    else composeDlg.classList.add("mc-compose--ai-open");
-    var input = composeDlg.querySelector('.mc-ai[data-ai="compose"] [data-ai-input]');
-    if (input) input.focus();
+    if (window.innerWidth < 768) {
+      composeSetTab(composeDlg.classList.contains("mc-compose--tab-ai") ? "edit" : "ai");
+    } else {
+      var opened = composeDlg.classList.toggle("mc-compose--ai-open");
+      if (opened) {
+        var input = composeDlg.querySelector('.mc-ai[data-ai="compose"] [data-ai-input]');
+        if (input) input.focus();
+      }
+    }
   });
 
   function resetCompose() {
@@ -1947,7 +1967,7 @@ const appJs = `(function () {
     // reset the AI panel back to its suggestions-only start
     var cpanel = composeDlg.querySelector('.mc-ai[data-ai="compose"]');
     resetAiPanel(cpanel);
-    composeDlg.classList.add("mc-compose--ai-open");
+    composeDlg.classList.remove("mc-compose--ai-open"); // collapsed by default
     composeDlg.classList.remove("mc-compose--tab-ai");
     composeDlg.querySelectorAll("[data-ctab]").forEach(function (t) {
       var isEdit = t.dataset.ctab === "edit";
@@ -1997,6 +2017,16 @@ const appJs = `(function () {
     var input = panel.querySelector("[data-ai-input]");
     input.value = "";
     input.style.height = "auto";
+    // reset Tone / Length back to their first option
+    panel.querySelectorAll(".mc-ai__opt").forEach(function (opt) {
+      var lb = document.getElementById(opt.getAttribute("popovertarget"));
+      var first = lb.querySelector(".listbox__option");
+      lb.querySelectorAll(".listbox__option").forEach(function (x) {
+        x.classList.toggle("listbox__option--selected", x === first);
+        x.setAttribute("aria-selected", x === first ? "true" : "false");
+      });
+      opt.querySelector("b").textContent = first.dataset.val;
+    });
   }
   function bindAiPanel(panel, getTarget) {
     if (!panel) return;
@@ -2049,15 +2079,33 @@ const appJs = `(function () {
       growInput();
     }
     panel.querySelector("[data-ai-send]").addEventListener("click", send);
-    // Tone / Length — small cyclers (a real Button changing a real value; a
-    // full dropdown wasn't worth four popovers for a secondary control)
+    // Tone / Length — real single-select Listbox dropdowns, anchored under the
+    // trigger the same way the Department / filter listboxes are
     panel.querySelectorAll(".mc-ai__opt").forEach(function (opt) {
-      var options = JSON.parse(opt.dataset.aiOptions);
+      var lb = document.getElementById(opt.getAttribute("popovertarget"));
       var b = opt.querySelector("b");
-      opt.addEventListener("click", function () {
-        var i = (parseInt(opt.dataset.aiIndex, 10) + 1) % options.length;
-        opt.dataset.aiIndex = i;
-        b.textContent = options[i];
+      lb.addEventListener("toggle", function (e) {
+        if (e.newState === "open") {
+          var r = opt.getBoundingClientRect();
+          lb.style.position = "fixed";
+          lb.style.margin = "0";
+          // flip up when there isn't room below (these sit near the bottom of
+          // the panel / mobile sheet)
+          var below = r.bottom + 4;
+          var flipUp = below + lb.offsetHeight + 8 > window.innerHeight;
+          lb.style.top = (flipUp ? Math.max(8, r.top - lb.offsetHeight - 4) : below) + "px";
+          lb.style.left = Math.max(8, Math.min(r.left, window.innerWidth - lb.offsetWidth - 8)) + "px";
+        }
+      });
+      lb.querySelectorAll(".listbox__option").forEach(function (o) {
+        o.addEventListener("click", function () {
+          lb.querySelectorAll(".listbox__option").forEach(function (x) {
+            x.classList.toggle("listbox__option--selected", x === o);
+            x.setAttribute("aria-selected", x === o ? "true" : "false");
+          });
+          b.textContent = o.dataset.val;
+          lb.hidePopover();
+        });
       });
     });
     // header action — collapse (compose) or close (standalone)

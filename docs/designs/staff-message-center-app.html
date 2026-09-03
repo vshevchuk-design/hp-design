@@ -612,9 +612,12 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .mc-ai__msg-actions { display: flex; gap: 4px; }
 .mc-ai__composer { flex-shrink: 0; margin: 12px 16px 16px; border: 1px solid var(--tok-border-default); border-radius: 8px; background: var(--tok-surface-dim); padding: 8px; display: flex; flex-direction: column; gap: 8px; }
 .mc-ai__composer:focus-within { border-color: var(--tok-border-focus); }
-.mc-ai__input { border: none; outline: none; background: transparent; resize: none; min-height: 40px; max-height: 120px; color: var(--tok-text-default); font-weight: 400; font-size: 16px; line-height: 1.2; font-family: var(--tok-family-sans); }
+/* value text is 14px here (not the 16px Safari-zoom size the message body
+   uses) — a secondary side-panel input, 16px read oversized */
+.mc-ai__input { border: none; outline: none; background: transparent; resize: none; min-height: 40px; max-height: 120px; color: var(--tok-text-default); font-size: 14px; line-height: 1.4; font-family: var(--tok-family-sans); }
 .mc-ai__input::placeholder { color: var(--tok-text-muted); }
 .mc-ai__controls { display: flex; align-items: center; gap: 4px; }
+.mc-ai__opt-lb { min-width: 132px; }
 .mc-ai__opt { display: inline-flex; align-items: center; gap: 2px; border: none; background: transparent; padding: 4px 6px; border-radius: 4px; cursor: pointer; color: var(--tok-text-secondary); font-family: var(--tok-family-sans); font-size: 13px; }
 .mc-ai__opt b { color: var(--tok-text-default); font-weight: 600; }
 .mc-ai__opt:hover { background: var(--tok-fill-neutral-hover); }
@@ -1075,7 +1078,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     </section>
   </div>
 </div>
-<dialog class="mc-compose mc-compose--ai-open" id="mc-compose" aria-labelledby="mc-compose-title">
+<dialog class="mc-compose" id="mc-compose" aria-labelledby="mc-compose-title">
   <header class="mc-compose__header">
     <h2 class="mc-compose__title" id="mc-compose-title">New Message</h2>
     <button class="btn btn--ghost btn--sm btn--icon-only mc-compose__close" id="mc-compose-close" type="button" aria-label="Close"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
@@ -1153,8 +1156,22 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
       <div class="mc-ai__composer">
         <textarea class="mc-ai__input" data-ai-input rows="1" placeholder="Ask AI to write or improve a message..." aria-label="Ask AI to write or improve a message"></textarea>
         <div class="mc-ai__controls">
-          <button type="button" class="mc-ai__opt" data-ai-opt="tone" data-ai-options="[&quot;Formal&quot;,&quot;Friendly&quot;,&quot;Concise&quot;]" data-ai-index="0">Tone: <b>Formal</b><svg class="mc-ai__opt-chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
-          <button type="button" class="mc-ai__opt" data-ai-opt="length" data-ai-options="[&quot;Short&quot;,&quot;Medium&quot;,&quot;Long&quot;]" data-ai-index="0">Length: <b>Short</b><svg class="mc-ai__opt-chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+          <button type="button" class="mc-ai__opt" data-ai-opt="tone" popovertarget="compose-tone-lb" aria-haspopup="listbox">Tone: <b>Formal</b><svg class="mc-ai__opt-chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+        <div class="listbox mc-ai__opt-lb" id="compose-tone-lb" popover>
+          <ul class="listbox__list" role="listbox" aria-label="Tone">
+            <li><button type="button" class="listbox__option listbox__option--selected" role="option" aria-selected="true" data-val="Formal">Formal<svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li>
+            <li><button type="button" class="listbox__option" role="option" aria-selected="false" data-val="Friendly">Friendly<svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li>
+            <li><button type="button" class="listbox__option" role="option" aria-selected="false" data-val="Concise">Concise<svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li>
+          </ul>
+        </div>
+          <button type="button" class="mc-ai__opt" data-ai-opt="length" popovertarget="compose-length-lb" aria-haspopup="listbox">Length: <b>Short</b><svg class="mc-ai__opt-chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+        <div class="listbox mc-ai__opt-lb" id="compose-length-lb" popover>
+          <ul class="listbox__list" role="listbox" aria-label="Length">
+            <li><button type="button" class="listbox__option listbox__option--selected" role="option" aria-selected="true" data-val="Short">Short<svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li>
+            <li><button type="button" class="listbox__option" role="option" aria-selected="false" data-val="Medium">Medium<svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li>
+            <li><button type="button" class="listbox__option" role="option" aria-selected="false" data-val="Long">Long<svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li>
+          </ul>
+        </div>
           <button type="button" class="btn btn--primary btn--sm btn--icon-only mc-ai__send" data-ai-send aria-label="Ask AI"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z"/></svg></button>
         </div>
       </div>
@@ -1193,8 +1210,22 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
       <div class="mc-ai__composer">
         <textarea class="mc-ai__input" data-ai-input rows="1" placeholder="Ask AI to write or improve a message..." aria-label="Ask AI to write or improve a message"></textarea>
         <div class="mc-ai__controls">
-          <button type="button" class="mc-ai__opt" data-ai-opt="tone" data-ai-options="[&quot;Formal&quot;,&quot;Friendly&quot;,&quot;Concise&quot;]" data-ai-index="0">Tone: <b>Formal</b><svg class="mc-ai__opt-chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
-          <button type="button" class="mc-ai__opt" data-ai-opt="length" data-ai-options="[&quot;Short&quot;,&quot;Medium&quot;,&quot;Long&quot;]" data-ai-index="0">Length: <b>Short</b><svg class="mc-ai__opt-chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+          <button type="button" class="mc-ai__opt" data-ai-opt="tone" popovertarget="standalone-tone-lb" aria-haspopup="listbox">Tone: <b>Formal</b><svg class="mc-ai__opt-chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+        <div class="listbox mc-ai__opt-lb" id="standalone-tone-lb" popover>
+          <ul class="listbox__list" role="listbox" aria-label="Tone">
+            <li><button type="button" class="listbox__option listbox__option--selected" role="option" aria-selected="true" data-val="Formal">Formal<svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li>
+            <li><button type="button" class="listbox__option" role="option" aria-selected="false" data-val="Friendly">Friendly<svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li>
+            <li><button type="button" class="listbox__option" role="option" aria-selected="false" data-val="Concise">Concise<svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li>
+          </ul>
+        </div>
+          <button type="button" class="mc-ai__opt" data-ai-opt="length" popovertarget="standalone-length-lb" aria-haspopup="listbox">Length: <b>Short</b><svg class="mc-ai__opt-chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+        <div class="listbox mc-ai__opt-lb" id="standalone-length-lb" popover>
+          <ul class="listbox__list" role="listbox" aria-label="Length">
+            <li><button type="button" class="listbox__option listbox__option--selected" role="option" aria-selected="true" data-val="Short">Short<svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li>
+            <li><button type="button" class="listbox__option" role="option" aria-selected="false" data-val="Medium">Medium<svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li>
+            <li><button type="button" class="listbox__option" role="option" aria-selected="false" data-val="Long">Long<svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li>
+          </ul>
+        </div>
           <button type="button" class="btn btn--primary btn--sm btn--icon-only mc-ai__send" data-ai-send aria-label="Ask AI"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z"/></svg></button>
         </div>
       </div>
@@ -1619,21 +1650,26 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
       composeDlg.classList.toggle("mc-compose--tab-ai", tab.dataset.ctab === "ai");
     });
   });
-  function composeShowAiTab() {
+  function composeSetTab(which) {
     composeDlg.querySelectorAll("[data-ctab]").forEach(function (t) {
-      var isAi = t.dataset.ctab === "ai";
-      t.classList.toggle("tab--active", isAi);
-      t.setAttribute("aria-selected", isAi ? "true" : "false");
+      var on = t.dataset.ctab === which;
+      t.classList.toggle("tab--active", on);
+      t.setAttribute("aria-selected", on ? "true" : "false");
     });
-    composeDlg.classList.add("mc-compose--tab-ai");
+    composeDlg.classList.toggle("mc-compose--tab-ai", which === "ai");
   }
-  // the compose toolbar's AI Assist opens the panel: switch to it on mobile,
-  // make sure it's expanded on desktop
+  // the compose toolbar's AI Assist TOGGLES the panel: on desktop expand /
+  // collapse the AI column, on mobile switch to / back from the AI tab
   document.getElementById("mc-compose-ai-assist").addEventListener("click", function () {
-    if (window.innerWidth < 768) composeShowAiTab();
-    else composeDlg.classList.add("mc-compose--ai-open");
-    var input = composeDlg.querySelector('.mc-ai[data-ai="compose"] [data-ai-input]');
-    if (input) input.focus();
+    if (window.innerWidth < 768) {
+      composeSetTab(composeDlg.classList.contains("mc-compose--tab-ai") ? "edit" : "ai");
+    } else {
+      var opened = composeDlg.classList.toggle("mc-compose--ai-open");
+      if (opened) {
+        var input = composeDlg.querySelector('.mc-ai[data-ai="compose"] [data-ai-input]');
+        if (input) input.focus();
+      }
+    }
   });
 
   function resetCompose() {
@@ -1653,7 +1689,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     // reset the AI panel back to its suggestions-only start
     var cpanel = composeDlg.querySelector('.mc-ai[data-ai="compose"]');
     resetAiPanel(cpanel);
-    composeDlg.classList.add("mc-compose--ai-open");
+    composeDlg.classList.remove("mc-compose--ai-open"); // collapsed by default
     composeDlg.classList.remove("mc-compose--tab-ai");
     composeDlg.querySelectorAll("[data-ctab]").forEach(function (t) {
       var isEdit = t.dataset.ctab === "edit";
@@ -1696,6 +1732,16 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     var input = panel.querySelector("[data-ai-input]");
     input.value = "";
     input.style.height = "auto";
+    // reset Tone / Length back to their first option
+    panel.querySelectorAll(".mc-ai__opt").forEach(function (opt) {
+      var lb = document.getElementById(opt.getAttribute("popovertarget"));
+      var first = lb.querySelector(".listbox__option");
+      lb.querySelectorAll(".listbox__option").forEach(function (x) {
+        x.classList.toggle("listbox__option--selected", x === first);
+        x.setAttribute("aria-selected", x === first ? "true" : "false");
+      });
+      opt.querySelector("b").textContent = first.dataset.val;
+    });
   }
   function bindAiPanel(panel, getTarget) {
     if (!panel) return;
@@ -1748,15 +1794,33 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
       growInput();
     }
     panel.querySelector("[data-ai-send]").addEventListener("click", send);
-    // Tone / Length — small cyclers (a real Button changing a real value; a
-    // full dropdown wasn't worth four popovers for a secondary control)
+    // Tone / Length — real single-select Listbox dropdowns, anchored under the
+    // trigger the same way the Department / filter listboxes are
     panel.querySelectorAll(".mc-ai__opt").forEach(function (opt) {
-      var options = JSON.parse(opt.dataset.aiOptions);
+      var lb = document.getElementById(opt.getAttribute("popovertarget"));
       var b = opt.querySelector("b");
-      opt.addEventListener("click", function () {
-        var i = (parseInt(opt.dataset.aiIndex, 10) + 1) % options.length;
-        opt.dataset.aiIndex = i;
-        b.textContent = options[i];
+      lb.addEventListener("toggle", function (e) {
+        if (e.newState === "open") {
+          var r = opt.getBoundingClientRect();
+          lb.style.position = "fixed";
+          lb.style.margin = "0";
+          // flip up when there isn't room below (these sit near the bottom of
+          // the panel / mobile sheet)
+          var below = r.bottom + 4;
+          var flipUp = below + lb.offsetHeight + 8 > window.innerHeight;
+          lb.style.top = (flipUp ? Math.max(8, r.top - lb.offsetHeight - 4) : below) + "px";
+          lb.style.left = Math.max(8, Math.min(r.left, window.innerWidth - lb.offsetWidth - 8)) + "px";
+        }
+      });
+      lb.querySelectorAll(".listbox__option").forEach(function (o) {
+        o.addEventListener("click", function () {
+          lb.querySelectorAll(".listbox__option").forEach(function (x) {
+            x.classList.toggle("listbox__option--selected", x === o);
+            x.setAttribute("aria-selected", x === o ? "true" : "false");
+          });
+          b.textContent = o.dataset.val;
+          lb.hidePopover();
+        });
       });
     });
     // header action — collapse (compose) or close (standalone)
