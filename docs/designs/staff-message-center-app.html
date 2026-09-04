@@ -817,6 +817,39 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   .mc-gwiz { position: fixed; inset: 0; margin: 0; width: 100vw; max-width: 100vw; height: 100dvh; max-height: 100dvh; border-radius: 0; }
   .mc-gwiz__cols { grid-template-columns: 1fr; }
 }
+.mc-group__stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.mc-group__replies-head { display: flex; align-items: center; justify-content: space-between; margin-top: 16px; margin-bottom: 8px; }
+.mc-group__replies-head span { color: var(--tok-text-muted); font-weight: 700; font-size: 12px; line-height: 1.4; text-transform: uppercase; }
+.mc-group__replies { display: flex; flex-direction: column; gap: 8px; }
+.mc-group__reply { display: flex; align-items: center; gap: 12px; padding: 12px; border: 1px solid var(--tok-border-default); border-radius: 8px; background: var(--tok-surface-default); }
+.mc-group__reply-stack { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.mc-group__reply-name { color: var(--tok-text-default); font-weight: 600; font-weight: 400; font-size: 12px; line-height: 1.4; }
+.mc-group__reply-text { color: var(--tok-text-muted); font-weight: 400; font-size: 12px; line-height: 1.4; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mc-group__reply-link { color: var(--tok-text-primary); font-weight: 400; font-size: 12px; line-height: 1.4; flex-shrink: 0; }
+
+/* recipients drawer — right-docked sheet (Modal surface), like the standalone AI */
+.mc-recip { border: none; padding: 0; background: var(--tok-surface-default); box-shadow: 0px 8px 24px -2px rgba(21, 25, 30, 0.16); font-family: var(--tok-family-sans); }
+.mc-recip[open] { display: flex; flex-direction: column; }
+.mc-recip::backdrop { background: var(--tok-surface-overlay); }
+.mc-recip__header { flex-shrink: 0; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 16px 24px 12px; border-bottom: 1px solid var(--tok-border-default); }
+.mc-recip__title { margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 18px; line-height: 1.4; }
+.mc-recip__close { margin-left: auto; }
+.mc-recip__chips { display: flex; gap: 8px; padding: 12px 24px; flex-wrap: wrap; }
+.mc-recip__search { padding: 0 24px 12px; }
+.mc-recip__search .search { width: 100%; }
+.mc-recip__list { flex: 1; min-height: 0; overflow-y: auto; padding: 0 8px 16px; }
+.mc-recip__row { display: flex; align-items: center; gap: 12px; padding: 10px 8px; border-radius: 8px; }
+.mc-recip__row:hover { background: var(--tok-surface-dim); }
+.mc-recip__row[hidden] { display: none; }
+.mc-recip__stack { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.mc-recip__name { color: var(--tok-text-default); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.mc-recip__id { color: var(--tok-text-muted); font-size: 12px; }
+@media (min-width: 768px) {
+  .mc-recip { width: min(420px, calc(100vw - 32px)); height: 100dvh; max-height: 100dvh; margin: 0 0 0 auto; border-radius: 0; }
+}
+@media (max-width: 767px) {
+  .mc-recip { position: fixed; inset: 0; margin: 0; width: 100vw; max-width: 100vw; height: 100dvh; max-height: 100dvh; border-radius: 0; }
+}
 </style>
 </head>
 <body>
@@ -926,6 +959,14 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
       </div>
           </div>
           <div class="mc-list" data-list="archived" hidden>
+            <div class="thread-item-inbox mc-trow mc-console-cols mc-group-row thread-item-inbox--read" role="button" tabindex="0" data-thread="grp-seed" data-subject="Fall registration opens Monday" data-department="Academic Advising">
+        <div class="mc-td mc-cellwrap"><span class="mc-avg mc-avg--sm"><span class="mc-avg__item avatar--red avatar--sm" role="img" aria-label="Cait Adelson"><span class="avatar__initials">CA</span></span><span class="mc-avg__item avatar--orange avatar--sm" role="img" aria-label="Calam Xavier"><span class="avatar__initials">CX</span></span><span class="mc-avg__item avatar--magenta avatar--sm" role="img" aria-label="Maya Okafor"><span class="avatar__initials">MO</span></span><span class="mc-avg__item mc-avg__more">+34</span></span><span class="mc-cellstack"><span class="mc-lead">37 Students</span><span class="badge badge--sm badge--role-primary" style="width:fit-content">Group</span></span></div>
+        <div class="mc-td mc-cellstack"><span class="mc-lead">Fall registration opens Monday</span><span class="mc-td--muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Seen 24 · Replied 6</span></div>
+        <div class="mc-td mc-td--muted mc-col-responsible">You</div>
+        <div class="mc-td mc-col-expiration thread-item-inbox__expires"><span class="badge badge--sm badge--role-neutral">Expires Aug 15</span><span class="badge badge--sm badge--role-neutral thread-item-inbox__scope">Resolved</span></div>
+        <div class="mc-td mc-td--muted" style="text-align:right;white-space:nowrap">Jul 12</div>
+        <div class="mc-td"></div>
+      </div>
             <div class="thread-item-inbox mc-trow mc-console-cols thread-item-inbox--read" role="button" tabindex="0" data-thread="lena-waiver" data-idx="4" data-subject="Prerequisite Waiver" data-department="English Dept">
         <div class="mc-td mc-cellwrap"><span class="avatar avatar--red avatar--sm" role="img" aria-label="Lena Hoffman"><span class="avatar__initials">LH</span></span><span class="mc-cellstack"><span class="mc-lead">Lena Hoffman</span><span class="mc-td--muted" style="font-size:12px">English Dept</span></span></div>
         <div class="mc-td mc-cellstack"><span class="mc-lead">Prerequisite Waiver</span><span class="mc-td--muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Waiver approved — you are clear to enroll in ENG 340.</span></div>
@@ -1222,6 +1263,22 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           </form>
         </footer>
       </article>
+      <article class="mc-thread mc-group" data-thread="grp-seed" hidden>
+        <header class="mc-thread__bar">
+          <button class="btn btn--ghost btn--sm mc-thread__back" type="button"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>Back</button>
+          <div class="mc-thread__actions"><button class="btn btn--secondary btn--sm" id="mc-recip-open" type="button">See All 37 Recipients</button></div>
+          <h2 class="mc-thread__subject">Fall registration opens Monday <span class="badge badge--sm badge--role-neutral">Resolved</span></h2>
+          <div class="mc-thread__tags"><span class="mc-thread__meta-line">Group Message · 37 Students · Started by You · Jul 12</span></div>
+        </header>
+        <div class="mc-thread__scroll">
+          <div class="bubble-row bubble-row--self"><div class="bubble bubble--self bubble--tint"><p>Hi {Preferred Name}, registration for the fall term opens on Monday, July 20. Reply here if you would like to review your remaining requirements first.</p></div></div>
+          <div class="mc-group__stats"><div class="mc-stat"><span class="mc-stat__value">37</span><span class="mc-stat__label">Delivered</span></div><div class="mc-stat"><span class="mc-stat__value">24</span><span class="mc-stat__label">Seen</span></div><div class="mc-stat mc-stat--success"><span class="mc-stat__value">6</span><span class="mc-stat__label">Replied</span></div></div>
+          <div>
+            <div class="mc-group__replies-head"><span>Replies · 6</span></div>
+            <div class="mc-group__replies"><div class="mc-group__reply"><span class="avatar avatar--red avatar--sm" role="img" aria-label="Cait Adelson"><span class="avatar__initials">CA</span></span><span class="mc-group__reply-stack"><span class="mc-group__reply-name">Cait Adelson</span><span class="mc-group__reply-text">Yes — can we go over my remaining requirements before Monday?</span></span><span class="mc-group__reply-link">In Inbox ›</span></div><div class="mc-group__reply"><span class="avatar avatar--orange avatar--sm" role="img" aria-label="Calam Xavier"><span class="avatar__initials">CX</span></span><span class="mc-group__reply-stack"><span class="mc-group__reply-name">Calam Xavier</span><span class="mc-group__reply-text">Thanks! I already registered for my classes.</span></span><span class="mc-group__reply-link">In Inbox ›</span></div></div>
+          </div>
+        </div>
+      </article>
     </section>
   </div>
 </div>
@@ -1458,6 +1515,27 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     </div>
   </footer>
 </dialog>
+<dialog class="mc-recip" id="mc-recip" aria-labelledby="mc-recip-title">
+  <div class="mc-recip__header">
+    <h2 class="mc-recip__title" id="mc-recip-title">Recipients · 37</h2>
+    <button class="btn btn--ghost btn--sm btn--icon-only mc-recip__close" id="mc-recip-close" type="button" aria-label="Close"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
+  </div>
+  <div class="mc-recip__chips">
+    <button class="chip chip--base mc-recip-chip" type="button" aria-pressed="true" data-status="all">All</button>
+    <button class="chip chip--base mc-recip-chip" type="button" aria-pressed="false" data-status="replied">Replied · 2</button>
+    <button class="chip chip--base mc-recip-chip" type="button" aria-pressed="false" data-status="seen">Seen</button>
+    <button class="chip chip--base mc-recip-chip" type="button" aria-pressed="false" data-status="notseen">Not seen</button>
+  </div>
+  <div class="mc-recip__search"><div class="search search--base"><svg class="search__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg><input class="search__input" id="mc-recip-search" placeholder="Search recipients" aria-label="Search recipients" /></div></div>
+  <div class="mc-recip__list" id="mc-recip-list">
+    <div class="mc-recip__row" data-status="replied" data-name="Cait Adelson" data-id="CX0001"><span class="avatar avatar--red avatar--sm" role="img" aria-label="Cait Adelson"><span class="avatar__initials">CA</span></span><span class="mc-recip__stack"><span class="mc-recip__name">Cait Adelson</span><span class="mc-recip__id">CX0001</span></span><span class="badge badge--sm badge--role-success">Replied</span></div>
+    <div class="mc-recip__row" data-status="replied" data-name="Calam Xavier" data-id="CX0002"><span class="avatar avatar--orange avatar--sm" role="img" aria-label="Calam Xavier"><span class="avatar__initials">CX</span></span><span class="mc-recip__stack"><span class="mc-recip__name">Calam Xavier</span><span class="mc-recip__id">CX0002</span></span><span class="badge badge--sm badge--role-success">Replied</span></div>
+    <div class="mc-recip__row" data-status="seen" data-name="Maya Okafor" data-id="AA0215"><span class="avatar avatar--magenta avatar--sm" role="img" aria-label="Maya Okafor"><span class="avatar__initials">MO</span></span><span class="mc-recip__stack"><span class="mc-recip__name">Maya Okafor</span><span class="mc-recip__id">AA0215</span></span><span class="badge badge--sm badge--role-primary">Seen</span></div>
+    <div class="mc-recip__row" data-status="seen" data-name="Allison Rao" data-id="AA0367"><span class="avatar avatar--teal avatar--sm" role="img" aria-label="Allison Rao"><span class="avatar__initials">AR</span></span><span class="mc-recip__stack"><span class="mc-recip__name">Allison Rao</span><span class="mc-recip__id">AA0367</span></span><span class="badge badge--sm badge--role-primary">Seen</span></div>
+    <div class="mc-recip__row" data-status="notseen" data-name="L Arcos" data-id="AA0007"><span class="avatar avatar--teal avatar--sm" role="img" aria-label="L Arcos"><span class="avatar__initials">LA</span></span><span class="mc-recip__stack"><span class="mc-recip__name">L Arcos</span><span class="mc-recip__id">AA0007</span></span><span class="badge badge--sm badge--role-neutral">Not seen</span></div>
+    <div class="mc-recip__row" data-status="notseen" data-name="Dana Torres" data-id="AA0412"><span class="avatar avatar--amber avatar--sm" role="img" aria-label="Dana Torres"><span class="avatar__initials">DT</span></span><span class="mc-recip__stack"><span class="mc-recip__name">Dana Torres</span><span class="mc-recip__id">AA0412</span></span><span class="badge badge--sm badge--role-neutral">Not seen</span></div>
+  </div>
+</dialog>
 
 <script>
 (function () {
@@ -1553,14 +1631,17 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     row.addEventListener("keydown", function (e) {
       if (e.key === "Enter" || e.key === " ") { e.preventDefault(); activate(); }
     });
-    // flag toggle — marks a thread important without opening it
+    // flag toggle — marks a thread important without opening it (group cards
+    // have no flag; guard so bindRow doesn't throw and halt the rest of init)
     var flag = row.querySelector(".thread-item-inbox__flag-btn");
-    flag.addEventListener("click", function (e) {
-      e.stopPropagation();
-      flag.setAttribute("aria-pressed", flag.getAttribute("aria-pressed") === "true" ? "false" : "true");
-      if (filters.flagged) applyFilter();
-    });
-    flag.addEventListener("keydown", function (e) { e.stopPropagation(); });
+    if (flag) {
+      flag.addEventListener("click", function (e) {
+        e.stopPropagation();
+        flag.setAttribute("aria-pressed", flag.getAttribute("aria-pressed") === "true" ? "false" : "true");
+        if (filters.flagged) applyFilter();
+      });
+      flag.addEventListener("keydown", function (e) { e.stopPropagation(); });
+    }
   }
   document.querySelectorAll(".thread-item-inbox").forEach(bindRow);
 
@@ -2332,6 +2413,44 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     applyFilter();
     showToast("success", "Group message sent to " + n + " students");
   });
+
+  // ===== Group detail + recipients drawer =====
+  // A grouped card opens a full-page group view (if a matching pane exists);
+  // "See All Recipients" opens the right-docked recipients Drawer.
+  function bindGroupRow(row) {
+    row.addEventListener("click", function () {
+      var id = row.dataset.thread;
+      if (!document.querySelector('.mc-thread[data-thread="' + id + '"]')) return;
+      allRows().forEach(function (r) { r.classList.remove("thread-item-inbox--selected"); });
+      row.classList.add("thread-item-inbox--selected");
+      showPane(id);
+      mc.classList.add("mc--thread-open");
+    });
+  }
+  document.querySelectorAll(".mc-group-row").forEach(bindGroupRow);
+
+  var recipDlg = document.getElementById("mc-recip");
+  var recipOpen = document.getElementById("mc-recip-open");
+  if (recipOpen) recipOpen.addEventListener("click", function () { recipDlg.showModal(); });
+  document.getElementById("mc-recip-close").addEventListener("click", function () { recipDlg.close(); });
+  recipDlg.addEventListener("click", function (e) { if (e.target === recipDlg) recipDlg.close(); });
+  var recipStatus = "all";
+  function recipFilter() {
+    var q = document.getElementById("mc-recip-search").value.trim().toLowerCase();
+    recipDlg.querySelectorAll(".mc-recip__row").forEach(function (r) {
+      var okStatus = recipStatus === "all" || r.dataset.status === recipStatus;
+      var okSearch = !q || (r.dataset.name + " " + r.dataset.id).toLowerCase().indexOf(q) !== -1;
+      r.hidden = !(okStatus && okSearch);
+    });
+  }
+  recipDlg.querySelectorAll(".mc-recip-chip").forEach(function (chip) {
+    chip.addEventListener("click", function () {
+      recipDlg.querySelectorAll(".mc-recip-chip").forEach(function (c) { c.setAttribute("aria-pressed", c === chip ? "true" : "false"); });
+      recipStatus = chip.dataset.status;
+      recipFilter();
+    });
+  });
+  document.getElementById("mc-recip-search").addEventListener("input", recipFilter);
 
   applyFilter();
   updateUnreadCounter();

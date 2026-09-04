@@ -1816,6 +1816,110 @@ const gwizMarkup = `<dialog class="mc-gwiz" id="mc-gwiz" aria-labelledby="mc-gwi
   </footer>
 </dialog>`;
 
+// ---- Group detail: a broadcast's grouped card in Resolved opens a full-page
+// group view (sent bubble + delivery Stat tiles + replies list + a recipients
+// Drawer). A seeded group makes it visible without sending one. ----
+const GROUP = {
+  id: "grp-seed", n: 37, subject: "Fall registration opens Monday",
+  body: "Hi {Preferred Name}, registration for the fall term opens on Monday, July 20. Reply here if you would like to review your remaining requirements first.",
+  delivered: 37, seen: 24, replied: 6, date: "Jul 12",
+};
+const GROUP_RECIPIENTS = [
+  { id: "CX0001", name: "Cait Adelson", status: "replied", reply: "Yes — can we go over my remaining requirements before Monday?" },
+  { id: "CX0002", name: "Calam Xavier", status: "replied", reply: "Thanks! I already registered for my classes." },
+  { id: "AA0215", name: "Maya Okafor", status: "seen" },
+  { id: "AA0367", name: "Allison Rao", status: "seen" },
+  { id: "AA0007", name: "L Arcos", status: "notseen" },
+  { id: "AA0412", name: "Dana Torres", status: "notseen" },
+];
+const statusBadge = (s) => s === "replied" ? `<span class="badge badge--sm badge--role-success">Replied</span>` : s === "seen" ? `<span class="badge badge--sm badge--role-primary">Seen</span>` : `<span class="badge badge--sm badge--role-neutral">Not seen</span>`;
+
+const groupCss = `.mc-group__stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: ${px(resolve("dim.3"))}; }
+.mc-group__replies-head { display: flex; align-items: center; justify-content: space-between; margin-top: ${px(resolve("dim.4"))}; margin-bottom: ${px(resolve("dim.2"))}; }
+.mc-group__replies-head span { color: ${cv("text.muted")}; ${typoCss(labelSmType)}${labelSmExt.textTransform ? ` text-transform: ${labelSmExt.textTransform};` : ""}${labelSmExt.letterSpacing ? ` letter-spacing: ${labelSmExt.letterSpacing};` : ""} }
+.mc-group__replies { display: flex; flex-direction: column; gap: ${px(resolve("dim.2"))}; }
+.mc-group__reply { display: flex; align-items: center; gap: ${px(resolve("dim.3"))}; padding: ${px(resolve("dim.3"))}; border: 1px solid ${cv("border.default")}; border-radius: ${px(resolve("radius.default"))}; background: ${cv("surface.default")}; }
+.mc-group__reply-stack { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.mc-group__reply-name { color: ${cv("text.default")}; font-weight: 600; ${typoCss(bodySmType)} }
+.mc-group__reply-text { color: ${cv("text.muted")}; ${typoCss(bodySmType)} overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mc-group__reply-link { color: ${cv("text.primary")}; ${typoCss(bodySmType)} flex-shrink: 0; }
+
+/* recipients drawer — right-docked sheet (Modal surface), like the standalone AI */
+.mc-recip { border: none; padding: 0; background: ${cv(mdBg)}; box-shadow: ${mdShadowCss}; font-family: ${cv("family.sans")}; }
+.mc-recip[open] { display: flex; flex-direction: column; }
+.mc-recip::backdrop { background: ${cv(mdOverlay)}; }
+.mc-recip__header { flex-shrink: 0; display: flex; align-items: center; gap: ${px(resolve("dim.2"))}; flex-wrap: wrap; padding: ${px(resolve("dim.4"))} ${mdPadding} ${px(resolve("dim.3"))}; border-bottom: 1px solid ${cv(mdDivider)}; }
+.mc-recip__title { margin: 0; color: ${cv(mdTitleColor)}; ${typoCss(mdTitleType)} }
+.mc-recip__close { margin-left: auto; }
+.mc-recip__chips { display: flex; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.3"))} ${mdPadding}; flex-wrap: wrap; }
+.mc-recip__search { padding: 0 ${mdPadding} ${px(resolve("dim.3"))}; }
+.mc-recip__search .search { width: 100%; }
+.mc-recip__list { flex: 1; min-height: 0; overflow-y: auto; padding: 0 ${px(resolve("dim.2"))} ${px(resolve("dim.4"))}; }
+.mc-recip__row { display: flex; align-items: center; gap: ${px(resolve("dim.3"))}; padding: ${px(resolve("dim.2_5"))} ${px(resolve("dim.2"))}; border-radius: ${px(resolve("radius.default"))}; }
+.mc-recip__row:hover { background: ${cv("surface.dim")}; }
+.mc-recip__row[hidden] { display: none; }
+.mc-recip__stack { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.mc-recip__name { color: ${cv("text.default")}; ${typoCss(bodySmType)} }
+.mc-recip__id { color: ${cv("text.muted")}; font-size: 12px; }
+@media (min-width: 768px) {
+  .mc-recip { width: min(420px, calc(100vw - ${px(resolve("dim.8"))})); height: 100dvh; max-height: 100dvh; margin: 0 0 0 auto; border-radius: 0; }
+}
+@media (max-width: 767px) {
+  .mc-recip { position: fixed; inset: 0; margin: 0; width: 100vw; max-width: 100vw; height: 100dvh; max-height: 100dvh; border-radius: 0; }
+}`;
+
+function groupAvatarStack(n) {
+  const shown = GROUP_RECIPIENTS.slice(0, 3).map((r) => avatarMarkup(r.name, "sm").replace('class="avatar avatar--', 'class="mc-avg__item avatar--')).join("");
+  const more = n > 3 ? `<span class="mc-avg__item mc-avg__more">+${n - 3}</span>` : "";
+  return `<span class="mc-avg mc-avg--sm">${shown}${more}</span>`;
+}
+function groupCardMarkup(g) {
+  return `<div class="thread-item-inbox mc-trow mc-console-cols mc-group-row thread-item-inbox--read" role="button" tabindex="0" data-thread="${g.id}" data-subject="${esc(g.subject)}" data-department="Academic Advising">
+        <div class="mc-td mc-cellwrap">${groupAvatarStack(g.n)}<span class="mc-cellstack"><span class="mc-lead">${g.n} Students</span><span class="badge badge--sm badge--role-primary" style="width:fit-content">Group</span></span></div>
+        <div class="mc-td mc-cellstack"><span class="mc-lead">${g.subject}</span><span class="mc-td--muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Seen ${g.seen} · Replied ${g.replied}</span></div>
+        <div class="mc-td mc-td--muted mc-col-responsible">You</div>
+        <div class="mc-td mc-col-expiration thread-item-inbox__expires"><span class="badge badge--sm badge--role-neutral">Expires Aug 15</span><span class="badge badge--sm badge--role-neutral thread-item-inbox__scope">Resolved</span></div>
+        <div class="mc-td mc-td--muted" style="text-align:right;white-space:nowrap">${g.date}</div>
+        <div class="mc-td"></div>
+      </div>`;
+}
+function groupPaneMarkup(g) {
+  const stat = (v, l, role) => `<div class="mc-stat${role ? ` mc-stat--${role}` : ""}"><span class="mc-stat__value">${v}</span><span class="mc-stat__label">${l}</span></div>`;
+  const replies = GROUP_RECIPIENTS.filter((r) => r.status === "replied").map((r) => `<div class="mc-group__reply">${avatarMarkup(r.name, "sm")}<span class="mc-group__reply-stack"><span class="mc-group__reply-name">${r.name}</span><span class="mc-group__reply-text">${r.reply}</span></span><span class="mc-group__reply-link">In Inbox ›</span></div>`).join("");
+  return `<article class="mc-thread mc-group" data-thread="${g.id}" hidden>
+        <header class="mc-thread__bar">
+          <button class="btn btn--ghost btn--sm mc-thread__back" type="button">${iconBack}Back</button>
+          <div class="mc-thread__actions"><button class="btn btn--secondary btn--sm" id="mc-recip-open" type="button">See All ${g.n} Recipients</button></div>
+          <h2 class="mc-thread__subject">${g.subject} <span class="badge badge--sm badge--role-neutral">Resolved</span></h2>
+          <div class="mc-thread__tags"><span class="mc-thread__meta-line">Group Message · ${g.n} Students · Started by You · ${g.date}</span></div>
+        </header>
+        <div class="mc-thread__scroll">
+          <div class="bubble-row bubble-row--self"><div class="bubble bubble--self bubble--tint"><p>${g.body}</p></div></div>
+          <div class="mc-group__stats">${stat(g.delivered, "Delivered")}${stat(g.seen, "Seen")}${stat(g.replied, "Replied", "success")}</div>
+          <div>
+            <div class="mc-group__replies-head"><span>Replies · ${g.replied}</span></div>
+            <div class="mc-group__replies">${replies}</div>
+          </div>
+        </div>
+      </article>`;
+}
+const recipDrawerMarkup = `<dialog class="mc-recip" id="mc-recip" aria-labelledby="mc-recip-title">
+  <div class="mc-recip__header">
+    <h2 class="mc-recip__title" id="mc-recip-title">Recipients · ${GROUP.n}</h2>
+    <button class="btn btn--ghost btn--sm btn--icon-only mc-recip__close" id="mc-recip-close" type="button" aria-label="Close">${iconCloseBtn}</button>
+  </div>
+  <div class="mc-recip__chips">
+    <button class="chip chip--base mc-recip-chip" type="button" aria-pressed="true" data-status="all">All</button>
+    <button class="chip chip--base mc-recip-chip" type="button" aria-pressed="false" data-status="replied">Replied · ${GROUP_RECIPIENTS.filter((r) => r.status === "replied").length}</button>
+    <button class="chip chip--base mc-recip-chip" type="button" aria-pressed="false" data-status="seen">Seen</button>
+    <button class="chip chip--base mc-recip-chip" type="button" aria-pressed="false" data-status="notseen">Not seen</button>
+  </div>
+  <div class="mc-recip__search"><div class="search search--base">${iconSearch}<input class="search__input" id="mc-recip-search" placeholder="Search recipients" aria-label="Search recipients" /></div></div>
+  <div class="mc-recip__list" id="mc-recip-list">
+    ${GROUP_RECIPIENTS.map((r) => `<div class="mc-recip__row" data-status="${r.status}" data-name="${esc(r.name)}" data-id="${r.id}">${avatarMarkup(r.name, "sm")}<span class="mc-recip__stack"><span class="mc-recip__name">${r.name}</span><span class="mc-recip__id">${r.id}</span></span>${statusBadge(r.status)}</div>`).join("\n    ")}
+  </div>
+</dialog>`;
+
 const appJs = `(function () {
   var mc = document.querySelector(".mc");
   var empty = document.getElementById("mc-empty");
@@ -1909,14 +2013,17 @@ const appJs = `(function () {
     row.addEventListener("keydown", function (e) {
       if (e.key === "Enter" || e.key === " ") { e.preventDefault(); activate(); }
     });
-    // flag toggle — marks a thread important without opening it
+    // flag toggle — marks a thread important without opening it (group cards
+    // have no flag; guard so bindRow doesn't throw and halt the rest of init)
     var flag = row.querySelector(".thread-item-inbox__flag-btn");
-    flag.addEventListener("click", function (e) {
-      e.stopPropagation();
-      flag.setAttribute("aria-pressed", flag.getAttribute("aria-pressed") === "true" ? "false" : "true");
-      if (filters.flagged) applyFilter();
-    });
-    flag.addEventListener("keydown", function (e) { e.stopPropagation(); });
+    if (flag) {
+      flag.addEventListener("click", function (e) {
+        e.stopPropagation();
+        flag.setAttribute("aria-pressed", flag.getAttribute("aria-pressed") === "true" ? "false" : "true");
+        if (filters.flagged) applyFilter();
+      });
+      flag.addEventListener("keydown", function (e) { e.stopPropagation(); });
+    }
   }
   document.querySelectorAll(".thread-item-inbox").forEach(bindRow);
 
@@ -2696,6 +2803,44 @@ const appJs = `(function () {
     showToast("success", "Group message sent to " + n + " students");
   });
 
+  // ===== Group detail + recipients drawer =====
+  // A grouped card opens a full-page group view (if a matching pane exists);
+  // "See All Recipients" opens the right-docked recipients Drawer.
+  function bindGroupRow(row) {
+    row.addEventListener("click", function () {
+      var id = row.dataset.thread;
+      if (!document.querySelector('.mc-thread[data-thread="' + id + '"]')) return;
+      allRows().forEach(function (r) { r.classList.remove("thread-item-inbox--selected"); });
+      row.classList.add("thread-item-inbox--selected");
+      showPane(id);
+      mc.classList.add("mc--thread-open");
+    });
+  }
+  document.querySelectorAll(".mc-group-row").forEach(bindGroupRow);
+
+  var recipDlg = document.getElementById("mc-recip");
+  var recipOpen = document.getElementById("mc-recip-open");
+  if (recipOpen) recipOpen.addEventListener("click", function () { recipDlg.showModal(); });
+  document.getElementById("mc-recip-close").addEventListener("click", function () { recipDlg.close(); });
+  recipDlg.addEventListener("click", function (e) { if (e.target === recipDlg) recipDlg.close(); });
+  var recipStatus = "all";
+  function recipFilter() {
+    var q = document.getElementById("mc-recip-search").value.trim().toLowerCase();
+    recipDlg.querySelectorAll(".mc-recip__row").forEach(function (r) {
+      var okStatus = recipStatus === "all" || r.dataset.status === recipStatus;
+      var okSearch = !q || (r.dataset.name + " " + r.dataset.id).toLowerCase().indexOf(q) !== -1;
+      r.hidden = !(okStatus && okSearch);
+    });
+  }
+  recipDlg.querySelectorAll(".mc-recip-chip").forEach(function (chip) {
+    chip.addEventListener("click", function () {
+      recipDlg.querySelectorAll(".mc-recip-chip").forEach(function (c) { c.setAttribute("aria-pressed", c === chip ? "true" : "false"); });
+      recipStatus = chip.dataset.status;
+      recipFilter();
+    });
+  });
+  document.getElementById("mc-recip-search").addEventListener("input", recipFilter);
+
   applyFilter();
   updateUnreadCounter();
 })();`;
@@ -2710,6 +2855,7 @@ const appHtml = `<!doctype html>
 <style>
 ${appCss}
 ${gwizCss}
+${groupCss}
 </style>
 </head>
 <body>
@@ -2787,6 +2933,7 @@ ${gwizCss}
             ${inboxThreads.map((t, i) => rowMarkup(t, i)).join("\n          ")}
           </div>
           <div class="mc-list" data-list="archived" hidden>
+            ${groupCardMarkup(GROUP)}
             ${archivedThreads.map((t, i) => rowMarkup(t, inboxThreads.length + i)).join("\n          ")}
           </div>
         </div>
@@ -2799,11 +2946,13 @@ ${gwizCss}
     <section class="mc__reading" aria-label="Thread">
       <div class="mc-empty" id="mc-empty"><div class="empty-state"><span class="empty-state__text">Choose a Thread</span></div></div>
       ${threads.map((t) => threadPane(t)).join("\n      ")}
+      ${groupPaneMarkup(GROUP)}
     </section>
   </div>
 </div>
 ${composeMarkup}
 ${gwizMarkup}
+${recipDrawerMarkup}
 
 <script>
 ${appJs}
