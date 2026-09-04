@@ -22,8 +22,8 @@ const POSTS = [
   {
     date: "2026-09-04",
     type: "prototype",
-    title: "Staff Message Center → email-inbox console (Phase B)",
-    body: "The staff prototype's split-pane chat is reworked into an email-inbox threads console: a persistent topbar (mail + department + a SplitButton \"New Message ▾\" + user avatar), and the thread list is now a full-width Table (Student / Subject & Message / Responsible / Expiration / Date), unread rows bold. Opening a thread is a full-page detail that keeps the topbar (Gmail-style). \"Responsible\" replaces the old Handled-by/Unassigned. Built on the new Table + SplitButton components; the compose dialog + AI panel + rich composer carry over. Next: the Group Message wizard, group fan-out, mobile row reflow, read receipts, and finer role logic.",
+    title: "Staff Message Center → email-inbox console + Group Message (Phases B–C)",
+    body: "The staff prototype's split-pane chat is reworked into an email-inbox threads console: a persistent topbar (mail + department + a SplitButton \"New Message ▾\" + user avatar), and the thread list is now a full-width Table (Student / Subject & Message / Responsible / Expiration / Date), unread rows bold. Opening a thread is a full-page detail that keeps the topbar (Gmail-style). \"Responsible\" replaces the old Handled-by/Unassigned. The lost Group Message flow is back: New Group Message opens a Stepper wizard (select students by add/paste-IDs → message details with a rich editor, AI Assist, and the new DatePicker), and Send fans out to a grouped card in Resolved (AvatarGroup + Seen/Replied). Built on the new Table / SplitButton / Stepper / DatePicker / AvatarGroup components; the compose dialog + AI panel + rich composer carry over. Next: the group detail view + recipients drawer + child reply threads, mobile row reflow, read receipts, and finer role logic.",
     links: [
       { label: "Staff Message Center", href: "designs/staff-message-center.html" },
       { label: "Table", href: "table.html" },

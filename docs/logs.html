@@ -188,9 +188,9 @@
         <article class="log-post">
         <div class="log-post__head">
           <span class="log-tag log-tag--prototype">Prototype</span>
-          <h3 class="log-post__title">Staff Message Center → email-inbox console (Phase B)</h3>
+          <h3 class="log-post__title">Staff Message Center → email-inbox console + Group Message (Phases B–C)</h3>
         </div>
-        <p class="log-post__body">The staff prototype's split-pane chat is reworked into an email-inbox threads console: a persistent topbar (mail + department + a SplitButton "New Message ▾" + user avatar), and the thread list is now a full-width Table (Student / Subject &amp; Message / Responsible / Expiration / Date), unread rows bold. Opening a thread is a full-page detail that keeps the topbar (Gmail-style). "Responsible" replaces the old Handled-by/Unassigned. Built on the new Table + SplitButton components; the compose dialog + AI panel + rich composer carry over. Next: the Group Message wizard, group fan-out, mobile row reflow, read receipts, and finer role logic.</p>
+        <p class="log-post__body">The staff prototype's split-pane chat is reworked into an email-inbox threads console: a persistent topbar (mail + department + a SplitButton "New Message ▾" + user avatar), and the thread list is now a full-width Table (Student / Subject &amp; Message / Responsible / Expiration / Date), unread rows bold. Opening a thread is a full-page detail that keeps the topbar (Gmail-style). "Responsible" replaces the old Handled-by/Unassigned. The lost Group Message flow is back: New Group Message opens a Stepper wizard (select students by add/paste-IDs → message details with a rich editor, AI Assist, and the new DatePicker), and Send fans out to a grouped card in Resolved (AvatarGroup + Seen/Replied). Built on the new Table / SplitButton / Stepper / DatePicker / AvatarGroup components; the compose dialog + AI panel + rich composer carry over. Next: the group detail view + recipients drawer + child reply threads, mobile row reflow, read receipts, and finer role logic.</p>
         <div class="log-post__links"><a class="log-link" href="designs/staff-message-center.html">Staff Message Center</a><a class="log-link" href="table.html">Table</a><a class="log-link" href="split-button.html">SplitButton</a></div>
       </article>
         <article class="log-post">

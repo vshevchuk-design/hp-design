@@ -60,6 +60,9 @@ const tableTok = load("tokens/components/table.tokens.json").component.table;
 const splitBtn = load("tokens/components/split-button.tokens.json").component.splitButton;
 const skeletonTok = load("tokens/components/skeleton.tokens.json").component.skeleton;
 const avatarGroup = load("tokens/components/avatar-group.tokens.json").component.avatarGroup;
+const stepperTok = load("tokens/components/stepper.tokens.json").component.stepper;
+const datePickerTok = load("tokens/components/date-picker.tokens.json").component.datePicker;
+const statTok = load("tokens/components/stat.tokens.json").component.stat;
 
 const registry = {
   color: colorPrim,
@@ -1202,6 +1205,19 @@ const avgSmD = px(resolve(avatarGroup.size.sm.diameter.$value));
 const avgSmOv = px(resolve(avatarGroup.size.sm.overlap.$value));
 const avgRingW = px(resolve(avatarGroup.ring.width.$value));
 const avgMoreLabel = resolveToken(avatarGroup.overflow.label);
+// Stepper
+const stC = stepperTok.circle, stState = stepperTok.state;
+const stCircleSize = px(resolve(stC.size.$value)), stCircleLabel = resolveToken(stC.label), stCircleIcon = px(resolve(stC.iconSize.$value));
+const stGap = px(resolve(stepperTok.gap.$value)), stConn = px(resolve(stepperTok.connector.thickness.$value)), stTextType = resolveToken(get(stepperTok.text.$value));
+// DatePicker
+const dpT = datePickerTok.trigger, dpP = datePickerTok.panel, dpHd = datePickerTok.header, dpWd = datePickerTok.weekday, dpDay = datePickerTok.day;
+const dpTh = px(resolve(dpT.height.$value)), dpTpadX = px(resolve(dpT.paddingX.$value)), dpTgap = px(resolve(dpT.gap.$value)), dpTradius = px(resolve(dpT.radius.$value)), dpTvalue = resolveToken(get(dpT.value.$value)), dpTicon = px(resolve(dpT.iconSize.$value));
+const dpPshadow = resolveToken(dpP.shadow); const dpPshadowCss = `${px(dpPshadow.offsetX)} ${px(dpPshadow.offsetY)} ${px(dpPshadow.blur)} ${px(dpPshadow.spread)} ${dpPshadow.color}`;
+const dpPradius = px(resolve(dpP.radius.$value)), dpPpad = px(resolve(dpP.padding.$value)), dpHdLabel = resolveToken(get(dpHd.label.$value)), dpNavSize = px(resolve(dpHd.navSize.$value));
+const dpWdNode = get(dpWd.label.$value); const dpWdLabel = resolveToken(dpWdNode); const dpWdExt = dpWdNode.$extensions?.["hp.design/text"] || {};
+const dpDaySize = px(resolve(dpDay.size.$value)), dpDayRadius = px(resolve(dpDay.radius.$value)), dpDayLabel = resolveToken(get(dpDay.label.$value));
+// Stat
+const statValue = resolveToken(get(statTok.value.$value)), statLabel = resolveToken(get(statTok.label.$value));
 
 const consoleCss = `/* ---- Table (threads console) ---- */
 .mc-table { box-sizing: border-box; background: ${cv("surface.default")}; border: 1px solid ${cv("border.default")}; border-radius: ${px(resolve(tableTok.radius.$value))}; overflow: hidden; }
@@ -1251,7 +1267,51 @@ const consoleCss = `/* ---- Table (threads console) ---- */
 .mc-avg--base { --avg-ov: -${avgBaseOv}; }
 .mc-avg--base .mc-avg__item { width: ${avgBaseD}; height: ${avgBaseD}; }
 .mc-avg--sm { --avg-ov: -${avgSmOv}; }
-.mc-avg--sm .mc-avg__item { width: ${avgSmD}; height: ${avgSmD}; }`;
+.mc-avg--sm .mc-avg__item { width: ${avgSmD}; height: ${avgSmD}; }
+
+/* ---- Stepper (group wizard) ---- */
+.mc-step { display: flex; align-items: center; font-family: ${cv("family.sans")}; }
+.mc-step__item { display: inline-flex; align-items: center; gap: ${stGap}; flex-shrink: 0; }
+.mc-step__circle { box-sizing: border-box; flex-shrink: 0; width: ${stCircleSize}; height: ${stCircleSize}; border-radius: ${px(resolve("radius.full"))}; display: inline-flex; align-items: center; justify-content: center; ${typoCss(stCircleLabel)} }
+.mc-step__check { width: ${stCircleIcon}; height: ${stCircleIcon}; display: none; }
+.mc-step__label { ${typoCss(stTextType)} white-space: nowrap; }
+.mc-step__connector { flex: 1; min-width: 24px; height: ${stConn}; background: ${cv(refPath(stepperTok.connector.color.$value))}; margin: 0 ${stGap}; }
+.mc-step__connector--filled { background: ${cv(refPath(stepperTok.connector.completeColor.$value))}; }
+.mc-step__item--inactive .mc-step__circle { background: ${cv(refPath(stState.inactive.circleBg.$value))}; color: ${cv(refPath(stState.inactive.circleText.$value))}; }
+.mc-step__item--inactive .mc-step__label { color: ${cv(refPath(stState.inactive.labelColor.$value))}; }
+.mc-step__item--active .mc-step__circle { background: ${cv(refPath(stState.active.circleBg.$value))}; color: ${cv(refPath(stState.active.circleText.$value))}; }
+.mc-step__item--active .mc-step__label { color: ${cv(refPath(stState.active.labelColor.$value))}; }
+.mc-step__item--complete .mc-step__circle { background: ${cv(refPath(stState.complete.circleBg.$value))}; color: ${cv(refPath(stState.complete.circleIcon.$value))}; }
+.mc-step__item--complete .mc-step__label { color: ${cv(refPath(stState.complete.labelColor.$value))}; }
+.mc-step__item--complete .mc-step__num { display: none; }
+.mc-step__item--complete .mc-step__check { display: block; }
+
+/* ---- DatePicker (expiration) ---- */
+.mc-dp { display: inline-block; font-family: ${cv("family.sans")}; }
+.mc-dp__trigger { box-sizing: border-box; display: inline-flex; align-items: center; gap: ${dpTgap}; height: ${dpTh}; padding: 0 ${dpTpadX}; border-radius: ${dpTradius}; background: ${cv(refPath(dpT.bg.$value))}; border: 1px solid ${cv(refPath(dpT.border.$value))}; cursor: pointer; color: ${cv(refPath(dpT.valueColor.$value))}; ${typoCss(dpTvalue)} font-family: inherit; }
+.mc-dp__trigger:hover { border-color: ${cv(refPath(dpT.borderHover.$value))}; }
+.mc-dp__trigger:focus-visible { outline: none; border-color: ${cv(refPath(dpT.borderFocus.$value))}; }
+.mc-dp__cal, .mc-dp__chev { width: ${dpTicon}; height: ${dpTicon}; color: ${cv(refPath(dpT.icon.$value))}; flex-shrink: 0; }
+.mc-dp__chev { margin-left: auto; }
+.mc-dp__panel { margin: 0; box-sizing: border-box; padding: ${dpPpad}; border-radius: ${dpPradius}; background: ${cv(refPath(dpP.bg.$value))}; border: 1px solid ${cv(refPath(dpP.border.$value))}; box-shadow: ${dpPshadowCss}; font-family: ${cv("family.sans")}; }
+.mc-dp__header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.mc-dp__month { ${typoCss(dpHdLabel)} color: ${cv(refPath(dpHd.labelColor.$value))}; }
+.mc-dp__nav { width: ${dpNavSize}; height: ${dpNavSize}; display: inline-flex; align-items: center; justify-content: center; border: none; background: none; border-radius: ${px(resolve("radius.default"))}; cursor: pointer; color: ${cv(refPath(dpHd.navIcon.$value))}; }
+.mc-dp__nav:hover { background: ${cv(refPath(dpHd.navHoverBg.$value))}; }
+.mc-dp__nav svg { width: 20px; height: 20px; }
+.mc-dp__grid { display: grid; grid-template-columns: repeat(7, ${dpDaySize}); gap: 2px; }
+.mc-dp__wd { width: ${dpDaySize}; height: 28px; display: inline-flex; align-items: center; justify-content: center; color: ${cv(refPath(dpWd.color.$value))}; ${typoCss(dpWdLabel)}${dpWdExt.textTransform ? ` text-transform: ${dpWdExt.textTransform};` : ""}${dpWdExt.letterSpacing ? ` letter-spacing: ${dpWdExt.letterSpacing};` : ""} }
+.mc-dp__day { width: ${dpDaySize}; height: ${dpDaySize}; display: inline-flex; align-items: center; justify-content: center; border: 1px solid transparent; background: none; border-radius: ${dpDayRadius}; cursor: pointer; color: ${cv(refPath(dpDay.color.$value))}; ${typoCss(dpDayLabel)} font-family: inherit; }
+.mc-dp__day:hover { background: ${cv(refPath(dpDay.hoverBg.$value))}; }
+.mc-dp__day--outside { color: ${cv(refPath(dpDay.outsideColor.$value))}; }
+.mc-dp__day--today { border-color: ${cv(refPath(dpDay.todayBorder.$value))}; }
+.mc-dp__day--selected, .mc-dp__day--selected:hover { background: ${cv(refPath(dpDay.selectedBg.$value))}; color: ${cv(refPath(dpDay.selectedText.$value))}; border-color: ${cv(refPath(dpDay.selectedBg.$value))}; }
+
+/* ---- Stat (group delivery tiles) ---- */
+.mc-stat { box-sizing: border-box; display: flex; flex-direction: column; gap: ${px(resolve(statTok.gap.$value))}; padding: ${px(resolve(statTok.padding.$value))}; background: ${cv(refPath(statTok.surface.$value))}; border: 1px solid ${cv(refPath(statTok.border.$value))}; border-radius: ${px(resolve(statTok.radius.$value))}; }
+.mc-stat__value { color: ${cv(refPath(statTok.valueColor.$value))}; ${typoCss(statValue)} }
+.mc-stat__label { color: ${cv(refPath(statTok.labelColor.$value))}; ${typoCss(statLabel)} }
+.mc-stat--success .mc-stat__value { color: ${cv(refPath(statTok.role.success.$value))}; }`;
 
 const appCss = `${rootVars}
 
@@ -1615,6 +1675,145 @@ const composeMarkup = `<dialog class="mc-compose" id="mc-compose" aria-labelledb
 </dialog>
 <dialog class="mc-ai-standalone" id="mc-ai-standalone" aria-label="AI Writing Assist">
   ${aiPanelMarkup("standalone", composeCloseAction)}
+</dialog>`;
+
+// ---- New Group Message wizard (Modal + Stepper): step 1 select students,
+// step 2 message details (reuses Select/mc-field/rich Composer/Checkbox +
+// the new DatePicker + AI Assist). Send fans out to a grouped card in Resolved. ----
+const gwizStudents = [
+  { id: "CX0001", name: "Cait Genatossio" }, { id: "CX0002", name: "Calam Xavier" },
+  { id: "AA0367", name: "Allison Rao" }, { id: "AA0215", name: "Maya Okafor" },
+  { id: "AA0007", name: "L Arcos" }, { id: "AA0412", name: "Dana Torres" },
+];
+const gwizCss = `.mc-gwiz { border: none; padding: 0; background: ${cv(mdBg)}; font-family: ${cv("family.sans")}; }
+.mc-gwiz:focus, .mc-gwiz:focus-visible { outline: none; }
+.mc-gwiz[open] { display: flex; flex-direction: column; }
+.mc-gwiz::backdrop { background: ${cv(mdOverlay)}; }
+.mc-gwiz__header { flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; padding: ${px(resolve("dim.4"))} ${mdPadding} ${px(resolve("dim.3"))}; border-bottom: 1px solid ${cv(mdDivider)}; }
+.mc-gwiz__title { margin: 0; color: ${cv(mdTitleColor)}; ${typoCss(mdTitleType)} }
+.mc-gwiz__steps { flex-shrink: 0; padding: ${px(resolve("dim.4"))} ${mdPadding}; border-bottom: 1px solid ${cv(mdDivider)}; }
+.mc-gwiz__body { flex: 1; min-height: 0; overflow-y: auto; padding: ${mdPadding}; }
+.mc-gwiz__step[hidden] { display: none; }
+.mc-gwiz__cols { display: grid; grid-template-columns: 1.3fr 1fr; gap: ${px(resolve("dim.4"))}; }
+.mc-gwiz__hint { margin: 0 0 ${px(resolve("dim.2"))}; color: ${cv("text.secondary")}; ${typoCss(bodySmType)} }
+.mc-gwiz__list { border: 1px solid ${cv("border.default")}; border-radius: ${px(resolve("radius.default"))}; overflow: hidden; margin-bottom: ${px(resolve("dim.4"))}; }
+.mc-gwiz__srow { display: flex; align-items: center; gap: ${px(resolve("dim.3"))}; padding: ${px(resolve("dim.2_5"))} ${px(resolve("dim.3"))}; border-bottom: 1px solid ${cv("border.default")}; }
+.mc-gwiz__srow:last-child { border-bottom: none; }
+.mc-gwiz__sid { color: ${cv("text.default")}; font-weight: 600; ${typoCss(bodySmType)} width: 64px; flex-shrink: 0; }
+.mc-gwiz__sname { color: ${cv("text.secondary")}; ${typoCss(bodySmType)} flex: 1; min-width: 0; }
+.mc-gwiz__add { border: none; background: none; padding: 0; cursor: pointer; color: ${cv("text.primary")}; font-weight: 600; ${typoCss(bodySmType)} font-family: inherit; }
+.mc-gwiz__srow--added .mc-gwiz__add { color: ${cv("text.success")}; cursor: default; }
+.mc-gwiz__paste { display: flex; gap: ${px(resolve("dim.2"))}; }
+.mc-gwiz__paste input { flex: 1; min-width: 0; box-sizing: border-box; height: ${px(resolve("dim.10"))}; padding: 0 ${px(resolve("dim.3"))}; border: 1px solid ${cv("border.default")}; border-radius: ${px(resolve("radius.default"))}; background: ${cv("surface.dim")}; color: ${cv("text.default")}; ${typoCss(inputValueType)} font-family: ${cv("family.sans")}; }
+.mc-gwiz__selected { background: ${cv("surface.dim")}; border: 1px solid ${cv("border.default")}; border-radius: ${px(resolve("radius.default"))}; padding: ${px(resolve("dim.3"))}; align-self: start; }
+.mc-gwiz__sel-head { margin: 0 0 ${px(resolve("dim.2"))}; color: ${cv("text.default")}; font-weight: 600; ${typoCss(bodySmType)} }
+.mc-gwiz__chips { display: flex; flex-direction: column; gap: ${px(resolve("dim.2"))}; }
+.mc-gwiz__chips:empty::after { content: "No selected students"; color: ${cv("text.muted")}; ${typoCss(bodySmType)} }
+.mc-gwiz__chip { display: flex; align-items: center; gap: ${px(resolve("dim.2"))}; background: ${cv("surface.default")}; border: 1px solid ${cv("border.default")}; border-radius: ${px(resolve("radius.default"))}; padding: ${px(resolve("dim.1_5"))} ${px(resolve("dim.2"))}; }
+.mc-gwiz__chip b { color: ${cv("text.default")}; ${typoCss(bodySmType)} }
+.mc-gwiz__chip span { color: ${cv("text.secondary")}; ${typoCss(bodySmType)} flex: 1; min-width: 0; }
+.mc-gwiz__chip button { flex-shrink: 0; border: none; background: none; padding: 0; cursor: pointer; color: ${cv("icon.secondary")}; display: inline-flex; }
+.mc-gwiz__chip button svg { width: 16px; height: 16px; }
+.mc-gwiz__frow { display: flex; align-items: center; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.2_5"))} 0; border-bottom: 1px solid ${cv(mdDivider)}; }
+.mc-gwiz__flabel { color: ${cv("text.muted")}; width: 56px; flex-shrink: 0; ${typoCss(bodySmType)} }
+.mc-gwiz__fval { color: ${cv("text.default")}; ${typoCss(bodySmType)} flex: 1; }
+.mc-gwiz__edit { margin-left: auto; border: none; background: none; padding: 0; cursor: pointer; color: ${cv("text.primary")}; font-weight: 600; ${typoCss(bodySmType)} font-family: inherit; }
+.mc-gwiz__body .mc-field, .mc-gwiz__body .mc-compose__editor { margin-top: ${px(resolve("dim.3"))}; }
+.mc-gwiz__exp { display: flex; align-items: center; gap: ${px(resolve("dim.3"))}; margin-top: ${px(resolve("dim.3"))}; }
+.mc-gwiz__exp-label { color: ${cv("text.default")}; ${typoCss(bodySmType)} }
+.mc-gwiz__footer { flex-shrink: 0; display: flex; justify-content: space-between; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.4"))} ${mdPadding}; border-top: 1px solid ${cv(mdDivider)}; }
+.mc-gwiz__footer-end { display: flex; gap: ${px(resolve("dim.2"))}; margin-left: auto; }
+/* [hidden] loses to .btn's own display; re-assert it for the footer buttons */
+.mc-gwiz__footer .btn[hidden] { display: none; }
+.mc-gwiz__step[hidden] { display: none; }
+@media (min-width: 768px) {
+  .mc-gwiz { width: min(760px, calc(100vw - ${px(resolve("dim.8"))})); max-height: calc(100dvh - ${px(resolve("dim.16"))}); border-radius: ${mdRadius}; box-shadow: ${mdShadowCss}; }
+}
+@media (max-width: 767px) {
+  .mc-gwiz { position: fixed; inset: 0; margin: 0; width: 100vw; max-width: 100vw; height: 100dvh; max-height: 100dvh; border-radius: 0; }
+  .mc-gwiz__cols { grid-template-columns: 1fr; }
+}`;
+
+const gwizStepMarkup = `<div class="mc-step">
+      <div class="mc-step__item mc-step__item--active" data-step="1"><span class="mc-step__circle"><span class="mc-step__num">1</span>${iconOf("check", "mc-step__check")}</span><span class="mc-step__label">Select Students</span></div>
+      <div class="mc-step__connector" id="mc-gwiz-conn"></div>
+      <div class="mc-step__item mc-step__item--inactive" data-step="2"><span class="mc-step__circle"><span class="mc-step__num">2</span>${iconOf("check", "mc-step__check")}</span><span class="mc-step__label">Message Details</span></div>
+    </div>`;
+
+const gwizMarkup = `<dialog class="mc-gwiz" id="mc-gwiz" aria-labelledby="mc-gwiz-title">
+  <header class="mc-gwiz__header">
+    <h2 class="mc-gwiz__title" id="mc-gwiz-title">New Group Message</h2>
+    <button class="btn btn--ghost btn--sm btn--icon-only" id="mc-gwiz-close" type="button" aria-label="Close">${iconCloseBtn}</button>
+  </header>
+  <div class="mc-gwiz__steps">${gwizStepMarkup}</div>
+  <div class="mc-gwiz__body">
+    <div class="mc-gwiz__step" data-panel="1">
+      <div class="mc-gwiz__cols">
+        <div>
+          <p class="mc-gwiz__hint">Search active or leave-of-absence students by ID or name</p>
+          <div class="search search--base" style="width:100%;margin-bottom:12px">${iconSearch}<input class="search__input" id="mc-gwiz-search" placeholder="Students" aria-label="Search students" /></div>
+          <div class="mc-gwiz__list" id="mc-gwiz-list">
+            ${gwizStudents.map((s) => `<div class="mc-gwiz__srow" data-id="${s.id}" data-name="${esc(s.name)}"><span class="mc-gwiz__sid">${s.id}</span><span class="mc-gwiz__sname">${s.name}</span><button class="mc-gwiz__add" type="button">+ Add</button></div>`).join("\n            ")}
+          </div>
+          <p class="mc-gwiz__hint">Or paste Student IDs separated by commas</p>
+          <div class="mc-gwiz__paste"><input id="mc-gwiz-ids" placeholder="Ex. AA0001, AA0002" aria-label="Student IDs" /><button class="btn btn--secondary btn--sm" id="mc-gwiz-addids" type="button">Add IDs</button></div>
+        </div>
+        <div class="mc-gwiz__selected">
+          <p class="mc-gwiz__sel-head">Selected · <span id="mc-gwiz-count">0</span></p>
+          <div class="mc-gwiz__chips" id="mc-gwiz-chips"></div>
+        </div>
+      </div>
+    </div>
+    <div class="mc-gwiz__step" data-panel="2" hidden>
+      <div class="mc-gwiz__frow"><span class="mc-gwiz__flabel">To</span><span class="mc-gwiz__fval" id="mc-gwiz-to">0 students selected</span><button class="mc-gwiz__edit" id="mc-gwiz-edit" type="button">Edit</button></div>
+      <div class="mc-gwiz__frow"><span class="mc-gwiz__flabel">From</span><span class="mc-gwiz__fval">Academic Advising</span></div>
+      <label class="mc-field">
+        <span class="mc-field__label">Subject</span>
+        <input class="mc-field__control" id="mc-gwiz-subject" maxlength="50" placeholder="Subject" aria-label="Subject" />
+      </label>
+      <div class="mc-compose__editor">
+        <form class="composer composer--rich" onsubmit="return false">
+          <div class="composer__toolbar">
+            <button type="button" class="composer__icon-btn" aria-label="Bold">${iconBold}</button>
+            <button type="button" class="composer__icon-btn" aria-label="Italic">${iconItalic}</button>
+            <button type="button" class="composer__icon-btn" aria-label="Underline">${iconUnderline}</button>
+            <button type="button" class="btn btn--ghost btn--sm">${iconTag}Merge Tags</button>
+            <button type="button" class="btn btn--ghost btn--sm">Hyperlinks</button>
+            <button type="button" class="composer__ai-assist" id="mc-gwiz-ai">${iconAi}AI Assist</button>
+          </div>
+          <div class="composer__field">
+            <textarea class="composer__input" id="mc-gwiz-message" rows="1" placeholder="Write your message..." aria-label="Message"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="mc-compose__checks">
+        ${checkboxMarkup("Allow Replies", { checked: true, id: "mc-gwiz-allow" })}
+        ${checkboxMarkup("Expire Thread", { checked: true, id: "mc-gwiz-expire" })}
+      </div>
+      <div class="mc-gwiz__exp">
+        <span class="mc-gwiz__exp-label">Expiration</span>
+        <div class="mc-dp" data-date="2026-08-15" id="mc-gwiz-dp">
+          <button class="mc-dp__trigger" type="button" popovertarget="mc-gwiz-dp-panel" aria-haspopup="dialog">${iconOf("calendar_today", "mc-dp__cal")}<span class="mc-dp__value">Aug 15, 2026</span>${iconOf("expand_more", "mc-dp__chev")}</button>
+          <div class="mc-dp__panel" id="mc-gwiz-dp-panel" popover role="dialog" aria-label="Choose a date">
+            <div class="mc-dp__header">
+              <button class="mc-dp__nav mc-dp__nav--prev" type="button" aria-label="Previous month">${iconOf("chevron_left", "")}</button>
+              <span class="mc-dp__month">August 2026</span>
+              <button class="mc-dp__nav mc-dp__nav--next" type="button" aria-label="Next month">${iconOf("chevron_right", "")}</button>
+            </div>
+            <div class="mc-dp__grid"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer class="mc-gwiz__footer">
+    <button class="btn btn--secondary btn--base" id="mc-gwiz-cancel" type="button">Cancel</button>
+    <div class="mc-gwiz__footer-end">
+      <button class="btn btn--secondary btn--base" id="mc-gwiz-back" type="button" hidden>Back</button>
+      <button class="btn btn--primary btn--base" id="mc-gwiz-next" type="button" disabled>Next</button>
+      <button class="btn btn--primary btn--base" id="mc-gwiz-send" type="button" hidden>Send</button>
+    </div>
+  </footer>
 </dialog>`;
 
 const appJs = `(function () {
@@ -2089,8 +2288,8 @@ const appJs = `(function () {
   ["mc-new-fab", "mc-new-desktop"].forEach(function (id) {
     document.getElementById(id).addEventListener("click", function () { resetCompose(); composeDlg.showModal(); });
   });
-  // SplitButton "New Message v" — the chevron opens a menu (New Message / New
-  // Group Message). Group wizard is a follow-up; for now both open compose.
+  // SplitButton "New Message v" — the chevron opens a menu: New Message (single
+  // compose) / New Group Message (the wizard)
   var newMenu = document.getElementById("mc-new-menu");
   if (newMenu) {
     newMenu.addEventListener("toggle", function (e) {
@@ -2101,10 +2300,10 @@ const appJs = `(function () {
         newMenu.style.left = Math.max(8, r.right - newMenu.offsetWidth) + "px";
       }
     });
-    ["mc-new-single", "mc-new-group"].forEach(function (id) {
-      var el = document.getElementById(id);
-      if (el) el.addEventListener("click", function () { newMenu.hidePopover(); resetCompose(); composeDlg.showModal(); });
-    });
+    var elSingle = document.getElementById("mc-new-single");
+    if (elSingle) elSingle.addEventListener("click", function () { newMenu.hidePopover(); resetCompose(); composeDlg.showModal(); });
+    var elGroup = document.getElementById("mc-new-group");
+    if (elGroup) elGroup.addEventListener("click", function () { newMenu.hidePopover(); openGwiz(); });
   }
   document.getElementById("mc-compose-close").addEventListener("click", requestComposeClose);
   composeDlg.addEventListener("click", function (e) { if (e.target === composeDlg) requestComposeClose(); });
@@ -2256,7 +2455,11 @@ const appJs = `(function () {
     if (close) close.addEventListener("click", function () { aiStandaloneDlg.close(); });
   }
   bindAiPanel(composeDlg.querySelector('.mc-ai[data-ai="compose"]'), function () { return composeMessage; });
+  // the standalone AI panel writes into whichever field last opened it — an
+  // open thread's reply composer, or the group wizard's message field
+  var currentAiTarget = null;
   bindAiPanel(aiStandaloneDlg.querySelector('.mc-ai[data-ai="standalone"]'), function () {
+    if (currentAiTarget) return currentAiTarget;
     var pane = document.querySelector(".mc-thread:not([hidden])");
     return pane ? pane.querySelector(".mc-composer .composer__input") : null;
   });
@@ -2264,7 +2467,7 @@ const appJs = `(function () {
   // in-thread AI Assist (Composer rich variant) opens the standalone panel —
   // wired on every existing thread and on Send-created ones
   function bindThreadAiAssist(btn) {
-    btn.addEventListener("click", function () { aiStandaloneDlg.showModal(); });
+    btn.addEventListener("click", function () { currentAiTarget = null; aiStandaloneDlg.showModal(); });
   }
   document.querySelectorAll(".mc-composer .composer__ai-assist").forEach(bindThreadAiAssist);
 
@@ -2324,6 +2527,175 @@ const appJs = `(function () {
   });
   validateCompose();
 
+  // ===== DatePicker (reusable calendar) =====
+  var DP_MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  var DP_WD = ["Su","Mo","Tu","We","Th","Fr","Sa"];
+  function bindDatePicker(dpEl) {
+    var trigger = dpEl.querySelector(".mc-dp__trigger");
+    var panel = dpEl.querySelector(".mc-dp__panel");
+    var valEl = dpEl.querySelector(".mc-dp__value");
+    var parts = (dpEl.dataset.date || "2026-08-15").split("-").map(Number);
+    var sel = { y: parts[0], m: parts[1] - 1, d: parts[2] };
+    var view = { y: sel.y, m: sel.m };
+    var today = { y: 2026, m: 7, d: 8 };
+    function render() {
+      var first = new Date(view.y, view.m, 1).getDay();
+      var days = new Date(view.y, view.m + 1, 0).getDate();
+      var prevDays = new Date(view.y, view.m, 0).getDate();
+      var cells = [];
+      for (var i = 0; i < first; i++) cells.push({ d: prevDays - first + 1 + i, outside: true });
+      for (var d = 1; d <= days; d++) cells.push({ d: d, outside: false });
+      while (cells.length % 7 !== 0) cells.push({ d: cells.length - (first + days) + 1, outside: true });
+      var grid = DP_WD.map(function (w) { return '<span class="mc-dp__wd">' + w + '</span>'; }).join("");
+      cells.forEach(function (c) {
+        var cls = ["mc-dp__day"];
+        if (c.outside) cls.push("mc-dp__day--outside");
+        else {
+          if (view.y === today.y && view.m === today.m && c.d === today.d) cls.push("mc-dp__day--today");
+          if (view.y === sel.y && view.m === sel.m && c.d === sel.d) cls.push("mc-dp__day--selected");
+        }
+        grid += '<button type="button" class="' + cls.join(" ") + '"' + (c.outside ? " disabled tabindex=-1" : "") + ' data-day="' + c.d + '">' + c.d + '</button>';
+      });
+      panel.querySelector(".mc-dp__month").textContent = DP_MONTHS[view.m] + " " + view.y;
+      panel.querySelector(".mc-dp__grid").innerHTML = grid;
+      panel.querySelectorAll(".mc-dp__day:not(.mc-dp__day--outside)").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          sel = { y: view.y, m: view.m, d: parseInt(btn.dataset.day, 10) };
+          valEl.textContent = DP_MONTHS[sel.m].slice(0, 3) + " " + sel.d + ", " + sel.y;
+          dpEl.dataset.date = sel.y + "-" + ("0" + (sel.m + 1)).slice(-2) + "-" + ("0" + sel.d).slice(-2);
+          panel.hidePopover();
+        });
+      });
+    }
+    panel.querySelector(".mc-dp__nav--prev").addEventListener("click", function () { view.m--; if (view.m < 0) { view.m = 11; view.y--; } render(); });
+    panel.querySelector(".mc-dp__nav--next").addEventListener("click", function () { view.m++; if (view.m > 11) { view.m = 0; view.y++; } render(); });
+    panel.addEventListener("toggle", function (e) {
+      if (e.newState === "open") {
+        view = { y: sel.y, m: sel.m }; render();
+        var r = trigger.getBoundingClientRect();
+        panel.style.position = "fixed"; panel.style.margin = "0";
+        panel.style.top = (r.bottom + 4) + "px";
+        panel.style.left = Math.max(8, Math.min(r.left, window.innerWidth - panel.offsetWidth - 8)) + "px";
+      }
+    });
+    render();
+  }
+  document.querySelectorAll(".mc-dp").forEach(bindDatePicker);
+
+  // ===== New Group Message wizard =====
+  var gwizDlg = document.getElementById("mc-gwiz");
+  var gwizSel = {}; // id -> name
+  var GWIZ_NAMES = ${JSON.stringify(Object.fromEntries(gwizStudents.map((s) => [s.id, s.name])))};
+  var gwizSearch = document.getElementById("mc-gwiz-search");
+  var gwizChips = document.getElementById("mc-gwiz-chips");
+  var gwizCountEl = document.getElementById("mc-gwiz-count");
+  var gwizNext = document.getElementById("mc-gwiz-next");
+  var gwizBack = document.getElementById("mc-gwiz-back");
+  var gwizSend = document.getElementById("mc-gwiz-send");
+  var gwizMessage = document.getElementById("mc-gwiz-message");
+  var gwizSubject = document.getElementById("mc-gwiz-subject");
+  var GWIZ_CLOSE_ICON = ${JSON.stringify(iconCloseAtt)};
+  var AVG_HUES = ${JSON.stringify(usedHues)};
+
+  function gwizCount() { return Object.keys(gwizSel).length; }
+  function gwizRenderSelected() {
+    gwizChips.innerHTML = Object.keys(gwizSel).map(function (id) {
+      return '<div class="mc-gwiz__chip"><b>' + id + '</b><span>' + gwizSel[id] + '</span><button type="button" data-rm="' + id + '" aria-label="Remove">' + GWIZ_CLOSE_ICON + '</button></div>';
+    }).join("");
+    gwizChips.querySelectorAll("[data-rm]").forEach(function (b) {
+      b.addEventListener("click", function () { delete gwizSel[b.dataset.rm]; syncGwizList(); gwizRenderSelected(); gwizSync(); });
+    });
+    gwizCountEl.textContent = gwizCount();
+  }
+  function syncGwizList() {
+    document.querySelectorAll("#mc-gwiz-list .mc-gwiz__srow").forEach(function (row) {
+      var added = !!gwizSel[row.dataset.id];
+      row.classList.toggle("mc-gwiz__srow--added", added);
+      row.querySelector(".mc-gwiz__add").textContent = added ? "✓ Added" : "+ Add";
+    });
+  }
+  function gwizSync() {
+    gwizNext.disabled = gwizCount() === 0;
+    document.getElementById("mc-gwiz-to").textContent = gwizCount() + (gwizCount() === 1 ? " student selected" : " students selected");
+  }
+  document.querySelectorAll("#mc-gwiz-list .mc-gwiz__srow .mc-gwiz__add").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var row = btn.closest(".mc-gwiz__srow");
+      if (gwizSel[row.dataset.id]) return;
+      gwizSel[row.dataset.id] = row.dataset.name;
+      syncGwizList(); gwizRenderSelected(); gwizSync();
+    });
+  });
+  document.getElementById("mc-gwiz-addids").addEventListener("click", function () {
+    var input = document.getElementById("mc-gwiz-ids");
+    input.value.split(",").map(function (s) { return s.trim().toUpperCase(); }).filter(Boolean).forEach(function (id) {
+      if (!gwizSel[id]) gwizSel[id] = GWIZ_NAMES[id] || "Student " + id;
+    });
+    input.value = "";
+    syncGwizList(); gwizRenderSelected(); gwizSync();
+  });
+  gwizSearch.addEventListener("input", function () {
+    var q = gwizSearch.value.trim().toLowerCase();
+    document.querySelectorAll("#mc-gwiz-list .mc-gwiz__srow").forEach(function (row) {
+      row.style.display = (row.dataset.id + " " + row.dataset.name).toLowerCase().indexOf(q) === -1 ? "none" : "";
+    });
+  });
+  function gwizStep(n) {
+    document.querySelectorAll(".mc-gwiz__step").forEach(function (p) { p.hidden = p.dataset.panel !== String(n); });
+    document.querySelectorAll(".mc-gwiz .mc-step__item").forEach(function (it) {
+      var s = parseInt(it.dataset.step, 10);
+      it.classList.toggle("mc-step__item--complete", s < n);
+      it.classList.toggle("mc-step__item--active", s === n);
+      it.classList.toggle("mc-step__item--inactive", s > n);
+    });
+    document.getElementById("mc-gwiz-conn").classList.toggle("mc-step__connector--filled", n > 1);
+    gwizNext.hidden = n !== 1; gwizBack.hidden = n !== 2; gwizSend.hidden = n !== 2;
+  }
+  gwizNext.addEventListener("click", function () { if (gwizCount() > 0) gwizStep(2); });
+  gwizBack.addEventListener("click", function () { gwizStep(1); });
+  document.getElementById("mc-gwiz-edit").addEventListener("click", function () { gwizStep(1); });
+  gwizMessage.addEventListener("input", function () { gwizMessage.style.height = "auto"; gwizMessage.style.height = Math.min(gwizMessage.scrollHeight, 220) + "px"; });
+  document.getElementById("mc-gwiz-ai").addEventListener("click", function () { currentAiTarget = gwizMessage; aiStandaloneDlg.showModal(); });
+  function openGwiz() {
+    gwizSel = {}; gwizSearch.value = ""; gwizSubject.value = ""; gwizMessage.value = ""; gwizMessage.style.height = "auto";
+    document.querySelectorAll("#mc-gwiz-list .mc-gwiz__srow").forEach(function (r) { r.style.display = ""; });
+    syncGwizList(); gwizRenderSelected(); gwizSync(); gwizStep(1);
+    gwizDlg.showModal();
+  }
+  document.getElementById("mc-gwiz-close").addEventListener("click", function () { gwizDlg.close(); });
+  document.getElementById("mc-gwiz-cancel").addEventListener("click", function () { gwizDlg.close(); });
+  gwizDlg.addEventListener("click", function (e) { if (e.target === gwizDlg) gwizDlg.close(); });
+
+  // Send → fan-out: one grouped card in Resolved (a broadcast, not a
+  // conversation). Child reply threads landing in Inbox are a follow-up.
+  var gwizSeq = 0;
+  gwizSend.addEventListener("click", function () {
+    var ids = Object.keys(gwizSel);
+    if (!ids.length) return;
+    var subject = gwizSubject.value.trim() || "(No subject)";
+    var n = ids.length;
+    var shown = ids.slice(0, 3).map(function (id, i) {
+      return '<span class="mc-avg__item avatar--' + AVG_HUES[i % AVG_HUES.length] + '" style="background:var(--tok-avatar-' + AVG_HUES[i % AVG_HUES.length] + '-bg)"><span class="avatar__initials" style="color:var(--tok-avatar-' + AVG_HUES[i % AVG_HUES.length] + '-text);font-size:11px;text-transform:uppercase">' + gwizSel[id].split(" ").map(function (w){return w[0];}).join("").slice(0,2) + '</span></span>';
+    }).join("");
+    var more = n > 3 ? '<span class="mc-avg__item mc-avg__more">+' + (n - 3) + '</span>' : "";
+    var id = "grp-" + (++gwizSeq);
+    var row = document.createElement("div");
+    row.className = "thread-item-inbox mc-trow mc-console-cols thread-item-inbox--read";
+    row.dataset.thread = id; row.dataset.subject = subject; row.dataset.department = "Academic Advising";
+    row.innerHTML =
+      '<div class="mc-td mc-cellwrap"><span class="mc-avg mc-avg--sm">' + shown + more + '</span><span class="mc-cellstack"><span class="mc-lead">' + n + ' Students</span><span class="badge badge--sm badge--role-primary" style="width:fit-content">Group</span></span></div>' +
+      '<div class="mc-td mc-cellstack"><span class="mc-lead"></span><span class="mc-td--muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Seen 0 · Replied 0</span></div>' +
+      '<div class="mc-td mc-td--muted mc-col-responsible">You</div>' +
+      '<div class="mc-td mc-col-expiration thread-item-inbox__expires"><span class="mc-td--muted">–</span><span class="badge badge--sm badge--role-neutral thread-item-inbox__scope">Resolved</span></div>' +
+      '<div class="mc-td mc-td--muted" style="text-align:right;white-space:nowrap">Just now</div>' +
+      '<div class="mc-td"></div>';
+    row.querySelector(".mc-td.mc-cellstack .mc-lead").textContent = subject;
+    lists.archived.insertBefore(row, lists.archived.firstChild);
+    gwizDlg.close();
+    applyFilter();
+    showToast("success", "Group message sent to " + n + " students");
+  });
+
   applyFilter();
   updateUnreadCounter();
 })();`;
@@ -2337,6 +2709,7 @@ const appHtml = `<!doctype html>
 <link rel="stylesheet" href="../../assets/fonts/sora/sora.css" />
 <style>
 ${appCss}
+${gwizCss}
 </style>
 </head>
 <body>
@@ -2430,6 +2803,7 @@ ${appCss}
   </div>
 </div>
 ${composeMarkup}
+${gwizMarkup}
 
 <script>
 ${appJs}

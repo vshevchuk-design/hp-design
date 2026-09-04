@@ -656,3 +656,12 @@ Reworked the Staff Message Center from the student-style split-pane chat into an
 - Verified live: console renders with all columns + unread/read; SplitButton menu; thread opens full-page with the topbar kept, bubble + rich composer.
 
 Known follow-ups (fix-later, per user "do it all then fix"): mobile table reflow (currently a horizontal-scroll fallback), the Group Message wizard + fan-out group card + recipients drawer, inline read receipts + Reply & Resolve, per-staff read / I'm-Involved / resolve-requires-reply logic, the dept badge's neutral tint contrast, and retiring the redundant "N THREADS" count row.
+
+## 2026-09-04 (cont. 2) — MC v3 Phase C: Group Message wizard + fan-out
+
+Restored the lost Group Message flow. SplitButton "New Message ▾" → New Group Message opens a **Modal + Stepper wizard**:
+- **Step 1 (Select Students):** a student list with +Add / ✓Added, a search filter, a "paste comma-separated IDs → Add IDs" path, and a live "Selected · N" panel of removable chips. Next is disabled until ≥1 selected.
+- **Step 2 (Message Details):** To (N students · Edit → back to step 1) · From (department) · Subject + a rich Composer editor (B/I/U + Merge Tags + Hyperlinks + AI Assist) · Allow Replies + Expire Thread checkboxes · an **Expiration DatePicker** (the calendar built by a reusable `bindDatePicker`). AI Assist opens the standalone AI panel targeting the wizard's message field — done via a shared `currentAiTarget` (the in-thread AI Assist sets it null → uses the open thread; the wizard sets it to its own field).
+- **Send → fan-out:** one grouped card in Resolved ("N Students" + an AvatarGroup of the first 3 + "+N" + a Group Badge + "Seen 0 · Replied 0"), a broadcast not a conversation. Child reply threads landing in Inbox + the group detail view (Stat tiles + recipients Drawer) are the next slice.
+
+Bug fixed in verification: the wizard footer's Back/Send used the `hidden` attribute, but `.btn { display:inline-flex }` beats `[hidden]` (the documented cascade trap) — all three buttons showed on step 2. Added `.mc-gwiz__footer .btn[hidden] { display:none }`. Verified live: add/paste students, Next/Back stepper, DatePicker, Send creates the Resolved group card (2→3).
