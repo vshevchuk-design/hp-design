@@ -1031,8 +1031,13 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
    when tight — never a horizontal scroll that would clip a badge mid-word */
 .mc-thread__tags { order: 4; width: 100%; display: flex; align-items: center; flex-wrap: wrap; gap: ${px(resolve("dim.1_5"))} ${px(resolve("dim.2"))}; }
 .mc-thread__meta-line { color: ${cv("text.secondary")}; ${typoCss(bodySmType)} }
-.mc-thread__scroll { flex: 1; overflow-y: auto; padding: ${px(resolve("dim.4"))}; display: flex; flex-direction: column; gap: ${px(resolve("dim.6"))}; }
+/* Gmail-style: the message stack sizes to its content (not flex:1) so a short
+   thread keeps the composer right under the last message with the empty space
+   BELOW it — a stretched scroll area left a big void between them. It still
+   shrinks + scrolls when the thread is long (min-height:0 + overflow). */
+.mc-thread__scroll { flex: 0 1 auto; min-height: 0; overflow-y: auto; padding: ${px(resolve("dim.4"))}; display: flex; flex-direction: column; gap: ${px(resolve("dim.6"))}; }
 .mc-thread__composer { flex-shrink: 0; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))} ${px(resolve("dim.4"))}; background: ${cv("surface.default")}; box-shadow: ${composerShadowCss}; position: relative; }
+.mc-thread__actions .btn:disabled { opacity: 0.45; cursor: default; }
 /* in-thread composer upgrades: pre-send attachments sit above the field as
    Attachment COMPACT chips (recipe + row container declared with the compose
    dialog's, in the component section); the field itself is a 1-row textarea
@@ -1246,15 +1251,10 @@ const consoleCss = `/* ---- Table (threads console) ---- */
 /* console column template — desktop: Student | Subject & Message | Responsible | Expiration | Date | flag */
 .mc-console-cols { grid-template-columns: 1.6fr 2.4fr 1fr 0.9fr 0.7fr 28px; gap: ${tblRowGap}; padding: ${tblRPadY} ${tblRPadX}; }
 
-/* ---- SplitButton ("New Message v") ---- */
-.mc-split { display: inline-flex; align-items: stretch; height: ${sbH}; border-radius: ${sbRadius}; font-family: ${cv("family.sans")}; }
-.mc-split__main, .mc-split__chevron { border: none; background: ${cv("fill.primary")}; color: ${cv("text.onFill")}; cursor: pointer; display: inline-flex; align-items: center; }
-.mc-split__main { gap: ${sbGap}; padding: 0 ${sbPadX}; border-radius: ${sbRadius} 0 0 ${sbRadius}; ${typoCss(sbLabel)} white-space: nowrap; }
-.mc-split__chevron { justify-content: center; width: ${sbChevW}; padding: 0; border-radius: 0 ${sbRadius} ${sbRadius} 0; border-left: 1px solid ${cv(refPath(splitBtn.divider.$value))}; }
-.mc-split .btn__icon, .mc-split .split-icon { width: ${sbIcon}; height: ${sbIcon}; color: ${cv("icon.onFill")}; }
-.mc-split__main:hover, .mc-split__chevron:hover { background: ${cv("fill.primaryHover")}; }
-.mc-split__main:active, .mc-split__chevron:active { background: ${cv("fill.primaryActive")}; }
-.mc-split__main:focus-visible, .mc-split__chevron:focus-visible { outline: ${px(resolve(splitBtn.focus.ringWidth.$value))} solid ${cv("border.focus")}; outline-offset: ${px(resolve(splitBtn.focus.ringOffset.$value))}; }
+/* "New Message" is a plain primary Button that opens a choice Menu (single /
+   group) — same on desktop and mobile. The trailing chevron just hints at the
+   menu; it's dimmed so the edit glyph + label stay the primary affordance. */
+.mc-topbar-new .mc-topbar-new__chev { opacity: 0.75; margin-left: -2px; }
 
 /* ---- Skeleton ---- */
 .mc-skel { display: block; border-radius: ${skRadius}; background: ${cv(skBase)}; background-image: linear-gradient(90deg, ${cv(skBase)} 0, ${cv(skHi)} 40px, ${cv(skBase)} 80px); background-size: 600px 100%; background-repeat: no-repeat; animation: mc-skel-shimmer 1400ms linear infinite; }
@@ -1357,7 +1357,7 @@ function attachmentMarkup(title, description) {
 function messageSender(name, meta) {
   return `<div class="message__sender">
             ${avatarMarkup(name, "sm")}
-            <p class="message__sender-line"><span class="message__name">${name}</span><span class="message__meta"> -- ${meta}</span></p>
+            <p class="message__sender-line"><span class="message__name">${name}</span><span class="message__meta"> · ${meta}</span></p>
           </div>`;
 }
 // Institution messages render with the card chrome (white bubble) in the
@@ -1376,7 +1376,7 @@ function bubbleRow({ role, name, meta, text, attachmentHtml = "" }) {
   // opened it); the student's own messages just show the time
   const metaHtml = role === "self"
     ? `<span class="bubble-sender__meta"><span class="bubble-sender__seen">Seen</span> · ${meta}</span>`
-    : `<span class="bubble-sender__meta">-- ${meta}</span>`;
+    : `<span class="bubble-sender__meta">${meta}</span>`;
   const senderText = `<p class="bubble-sender__text"><span class="bubble-sender__name">${name}</span> ${metaHtml}</p>`;
   const av = avatarMarkup(name, "sm");
   const sender = `<div class="bubble-sender">${role === "self" ? senderText + av : av + senderText}</div>`;
@@ -1567,9 +1567,7 @@ function richComposerMarkup(t) {
 
 function threadPane(t) {
   const resolveBtn = t.archived ? "" : `<button class="btn btn--secondary btn--sm mc-archive" type="button" data-thread="${t.id}">Resolve</button>`;
-  const handled = t.handledBy
-    ? `<span class="mc-thread__meta-line">Handled by ${t.handledBy}</span>`
-    : `<span class="badge badge--sm badge--role-warning">Unassigned</span>`;
+  const handled = `<span class="mc-thread__meta-line">Responsible · ${t.handledBy || "–"}</span>`;
   return `<article class="mc-thread" data-thread="${t.id}" hidden>
         <header class="mc-thread__bar">
           <button class="btn btn--ghost btn--sm mc-thread__back" type="button">${iconBack}Back</button>
@@ -1605,7 +1603,7 @@ const departments = [...new Set(threads.map((t) => t.department))];
 // ---- the appended-on-Send self bubble template, reused by the app script.
 // Static sender markup is generated here at build time (same avatar recipe);
 // the user's text is injected via textContent, never innerHTML. ----
-const selfBubbleSender = `<div class="bubble-sender"><p class="bubble-sender__text"><span class="bubble-sender__name">${SELF.name}</span> <span class="bubble-sender__meta">-- Just now</span></p><span class="avatar avatar--${SELF.hue} avatar--sm" role="img" aria-label="${SELF.name}"><span class="avatar__initials">${SELF.initials}</span></span></div>`;
+const selfBubbleSender = `<div class="bubble-sender"><p class="bubble-sender__text"><span class="bubble-sender__name">${SELF.name}</span> <span class="bubble-sender__meta">Just now</span></p><span class="avatar avatar--${SELF.hue} avatar--sm" role="img" aria-label="${SELF.name}"><span class="avatar__initials">${SELF.initials}</span></span></div>`;
 
 // ---- New Message compose dialog + Discard confirm + standalone AI panel.
 // The department list is a little richer than the inbox's own two, so the
@@ -2227,6 +2225,7 @@ const appJs = `(function () {
       scroll.scrollTop = scroll.scrollHeight;
       input.value = "";
       grow();
+      syncResolveState(form.closest(".mc-thread"));
       return true;
     }
     form.addEventListener("submit", function (e) { e.preventDefault(); if (sendReply()) input.focus(); });
@@ -2240,6 +2239,24 @@ const appJs = `(function () {
     });
   }
   document.querySelectorAll(".mc-composer").forEach(bindComposer);
+
+  // Resolve gating — the top-bar "Resolve" (which resolves WITHOUT replying) is
+  // only available once the thread has at least one staff reply; the note under
+  // the composer states the real reason. "Reply & Resolve" is always available
+  // because it replies first. Kept truthful: a thread showing only the student's
+  // message can't be silently resolved, and the note no longer claims you have
+  // replied when you haven't.
+  function syncResolveState(pane) {
+    if (!pane) return;
+    var replied = !!pane.querySelector(".bubble--self");
+    var note = pane.querySelector(".mc-reply-note");
+    var topResolve = pane.querySelector(".mc-archive");
+    if (topResolve) topResolve.disabled = !replied;
+    if (note) note.textContent = replied
+      ? "Resolve is available because you have replied in this thread."
+      : "Reply to the student before you can resolve this thread.";
+  }
+  document.querySelectorAll(".mc-thread").forEach(syncResolveState);
 
   // Toast — popover="manual": free top-layer, no light-dismiss; a toast
   // leaves on its own timer (the real component, resolved from its tokens)
@@ -2431,20 +2448,25 @@ const appJs = `(function () {
     if (composeHasDraft()) discardDlg.showModal();
     else composeDlg.close();
   }
-  ["mc-new-fab", "mc-new-desktop"].forEach(function (id) {
-    document.getElementById(id).addEventListener("click", function () { resetCompose(); composeDlg.showModal(); });
-  });
-  // SplitButton "New Message v" — the chevron opens a menu: New Message (single
-  // compose) / New Group Message (the wizard)
+  // "New Message" (topbar button on desktop, FAB on mobile) always opens the
+  // same choice menu — New Message (single compose) / New Group Message (the
+  // wizard). No split button: one press, both options, identical on every size,
+  // so Group Message is reachable on mobile too.
   var newMenu = document.getElementById("mc-new-menu");
+  var newTriggers = ["mc-new-desktop", "mc-new-fab"].map(function (id) { return document.getElementById(id); }).filter(Boolean);
   if (newMenu) {
     newMenu.addEventListener("toggle", function (e) {
-      if (e.newState === "open") {
-        var r = document.querySelector(".mc-topbar-new").getBoundingClientRect();
-        newMenu.style.position = "fixed"; newMenu.style.margin = "0";
-        newMenu.style.top = (r.bottom + 4) + "px";
-        newMenu.style.left = Math.max(8, r.right - newMenu.offsetWidth) + "px";
-      }
+      var open = e.newState === "open";
+      newTriggers.forEach(function (b) { b.setAttribute("aria-expanded", open ? "true" : "false"); });
+      if (!open) return;
+      // anchor to whichever trigger is actually visible (topbar on desktop, FAB
+      // on mobile) — the FAB sits bottom-right, so the menu opens above it
+      var anchor = newTriggers.find(function (b) { return b.offsetParent !== null; }) || newTriggers[0];
+      var isFab = anchor.id === "mc-new-fab";
+      var r = anchor.getBoundingClientRect();
+      newMenu.style.position = "fixed"; newMenu.style.margin = "0";
+      newMenu.style.left = Math.max(8, r.right - newMenu.offsetWidth) + "px";
+      newMenu.style.top = (isFab ? r.top - newMenu.offsetHeight - 8 : r.bottom + 4) + "px";
     });
     var elSingle = document.getElementById("mc-new-single");
     if (elSingle) elSingle.addEventListener("click", function () { newMenu.hidePopover(); resetCompose(); composeDlg.showModal(); });
@@ -2907,10 +2929,7 @@ ${phaseECss}
       <span class="badge badge--sm badge--role-neutral mc__dept-badge">Academic Advising</span>
     </div>
     <div class="mc__topbar-end">
-      <div class="mc-split mc-topbar-new">
-        <button class="mc-split__main" id="mc-new-desktop" type="button">${iconOf("edit", "btn__icon")}New Message</button>
-        <button class="mc-split__chevron" type="button" popovertarget="mc-new-menu" aria-haspopup="menu" aria-label="More send options">${iconOf("expand_more", "btn__icon")}</button>
-      </div>
+      <button class="btn btn--primary btn--base mc-topbar-new" id="mc-new-desktop" type="button" popovertarget="mc-new-menu" aria-haspopup="menu" aria-expanded="false">${iconOf("edit", "btn__icon")}New Message${iconOf("expand_more", "btn__icon mc-topbar-new__chev")}</button>
       <div class="listbox" id="mc-new-menu" popover>
         <ul class="listbox__list" role="menu" aria-label="New message">
           <li><button class="listbox__option" role="menuitem" type="button" id="mc-new-single">New Message</button></li>
@@ -2981,7 +3000,7 @@ ${phaseECss}
           <div class="empty-state"><span class="empty-state__text" id="mc-rail-empty-text">No threads found</span></div>
         </div>
       </div>
-      <button class="btn btn--primary btn--lg mc-fab" id="mc-new-fab" type="button">${iconEdit}<span class="mc-fab__label">New message</span></button>
+      <button class="btn btn--primary btn--lg mc-fab" id="mc-new-fab" type="button" popovertarget="mc-new-menu" aria-haspopup="menu" aria-expanded="false">${iconEdit}<span class="mc-fab__label">New message</span></button>
     </aside>
     <section class="mc__reading" aria-label="Thread">
       <div class="mc-empty" id="mc-empty"><div class="empty-state"><span class="empty-state__text">Choose a Thread</span></div></div>

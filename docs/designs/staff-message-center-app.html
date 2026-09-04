@@ -475,15 +475,10 @@
 /* console column template — desktop: Student | Subject & Message | Responsible | Expiration | Date | flag */
 .mc-console-cols { grid-template-columns: 1.6fr 2.4fr 1fr 0.9fr 0.7fr 28px; gap: 12px; padding: 12px 16px; }
 
-/* ---- SplitButton ("New Message v") ---- */
-.mc-split { display: inline-flex; align-items: stretch; height: 40px; border-radius: 8px; font-family: var(--tok-family-sans); }
-.mc-split__main, .mc-split__chevron { border: none; background: var(--tok-fill-primary); color: var(--tok-text-on-fill); cursor: pointer; display: inline-flex; align-items: center; }
-.mc-split__main { gap: 8px; padding: 0 16px; border-radius: 8px 0 0 8px; font-weight: 600; font-size: 14px; line-height: 1.4; white-space: nowrap; }
-.mc-split__chevron { justify-content: center; width: 36px; padding: 0; border-radius: 0 8px 8px 0; border-left: 1px solid var(--tok-fill-primary-active); }
-.mc-split .btn__icon, .mc-split .split-icon { width: 20px; height: 20px; color: var(--tok-icon-on-fill); }
-.mc-split__main:hover, .mc-split__chevron:hover { background: var(--tok-fill-primary-hover); }
-.mc-split__main:active, .mc-split__chevron:active { background: var(--tok-fill-primary-active); }
-.mc-split__main:focus-visible, .mc-split__chevron:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
+/* "New Message" is a plain primary Button that opens a choice Menu (single /
+   group) — same on desktop and mobile. The trailing chevron just hints at the
+   menu; it's dimmed so the edit glyph + label stay the primary affordance. */
+.mc-topbar-new .mc-topbar-new__chev { opacity: 0.75; margin-left: -2px; }
 
 /* ---- Skeleton ---- */
 .mc-skel { display: block; border-radius: 4px; background: var(--tok-surface-sunken); background-image: linear-gradient(90deg, var(--tok-surface-sunken) 0, var(--tok-surface-default) 40px, var(--tok-surface-sunken) 80px); background-size: 600px 100%; background-repeat: no-repeat; animation: mc-skel-shimmer 1400ms linear infinite; }
@@ -632,8 +627,13 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
    when tight — never a horizontal scroll that would clip a badge mid-word */
 .mc-thread__tags { order: 4; width: 100%; display: flex; align-items: center; flex-wrap: wrap; gap: 6px 8px; }
 .mc-thread__meta-line { color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
-.mc-thread__scroll { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 24px; }
+/* Gmail-style: the message stack sizes to its content (not flex:1) so a short
+   thread keeps the composer right under the last message with the empty space
+   BELOW it — a stretched scroll area left a big void between them. It still
+   shrinks + scrolls when the thread is long (min-height:0 + overflow). */
+.mc-thread__scroll { flex: 0 1 auto; min-height: 0; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 24px; }
 .mc-thread__composer { flex-shrink: 0; padding: 12px 16px 16px; background: var(--tok-surface-default); box-shadow: 0 -2px 8px 0px rgba(21, 25, 30, 0.10); position: relative; }
+.mc-thread__actions .btn:disabled { opacity: 0.45; cursor: default; }
 /* in-thread composer upgrades: pre-send attachments sit above the field as
    Attachment COMPACT chips (recipe + row container declared with the compose
    dialog's, in the component section); the field itself is a 1-row textarea
@@ -879,10 +879,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
       <span class="badge badge--sm badge--role-neutral mc__dept-badge">Academic Advising</span>
     </div>
     <div class="mc__topbar-end">
-      <div class="mc-split mc-topbar-new">
-        <button class="mc-split__main" id="mc-new-desktop" type="button"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>New Message</button>
-        <button class="mc-split__chevron" type="button" popovertarget="mc-new-menu" aria-haspopup="menu" aria-label="More send options"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
-      </div>
+      <button class="btn btn--primary btn--base mc-topbar-new" id="mc-new-desktop" type="button" popovertarget="mc-new-menu" aria-haspopup="menu" aria-expanded="false"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>New Message<svg class="btn__icon mc-topbar-new__chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
       <div class="listbox" id="mc-new-menu" popover>
         <ul class="listbox__list" role="menu" aria-label="New message">
           <li><button class="listbox__option" role="menuitem" type="button" id="mc-new-single">New Message</button></li>
@@ -1007,7 +1004,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <div class="empty-state"><span class="empty-state__text" id="mc-rail-empty-text">No threads found</span></div>
         </div>
       </div>
-      <button class="btn btn--primary btn--lg mc-fab" id="mc-new-fab" type="button"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg><span class="mc-fab__label">New message</span></button>
+      <button class="btn btn--primary btn--lg mc-fab" id="mc-new-fab" type="button" popovertarget="mc-new-menu" aria-haspopup="menu" aria-expanded="false"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg><span class="mc-fab__label">New message</span></button>
     </aside>
     <section class="mc__reading" aria-label="Thread">
       <div class="mc-empty" id="mc-empty"><div class="empty-state"><span class="empty-state__text">Choose a Thread</span></div></div>
@@ -1021,7 +1018,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <h2 class="mc-thread__subject">Minor Requirements Review</h2>
           <div class="mc-thread__tags">
             <span class="mc-thread__meta-line">Cait Genatossio · Academic Advising</span>
-            <span class="mc-thread__meta-line">Handled by Alexander Robinson</span>
+            <span class="mc-thread__meta-line">Responsible · Alexander Robinson</span>
             <span class="badge badge--sm badge--role-primary">Awaiting reply</span>
             
             
@@ -1029,7 +1026,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         </header>
         <div class="mc-thread__scroll">
           <div class="bubble-row bubble-row--other">
-          <div class="bubble-sender"><span class="avatar avatar--orange avatar--sm" role="img" aria-label="Cait Genatossio"><span class="avatar__initials">CG</span></span><p class="bubble-sender__text"><span class="bubble-sender__name">Cait Genatossio</span> <span class="bubble-sender__meta">-- Aug 05, 9:12 AM</span></p></div>
+          <div class="bubble-sender"><span class="avatar avatar--orange avatar--sm" role="img" aria-label="Cait Genatossio"><span class="avatar__initials">CG</span></span><p class="bubble-sender__text"><span class="bubble-sender__name">Cait Genatossio</span> <span class="bubble-sender__meta">Aug 05, 9:12 AM</span></p></div>
           <div class="bubble bubble--other"><p>Hi! Could we also review the minor requirements before enrollment closes? I want to be sure the art history courses count.</p></div>
         </div>
         </div>
@@ -1065,7 +1062,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <h2 class="mc-thread__subject">Registration Hold Question</h2>
           <div class="mc-thread__tags">
             <span class="mc-thread__meta-line">Maya Patel · Academic Advising</span>
-            <span class="badge badge--sm badge--role-warning">Unassigned</span>
+            <span class="mc-thread__meta-line">Responsible · –</span>
             <span class="badge badge--sm badge--role-primary">Awaiting reply</span>
             
             
@@ -1073,7 +1070,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         </header>
         <div class="mc-thread__scroll">
           <div class="bubble-row bubble-row--other">
-          <div class="bubble-sender"><span class="avatar avatar--violet avatar--sm" role="img" aria-label="Maya Patel"><span class="avatar__initials">MP</span></span><p class="bubble-sender__text"><span class="bubble-sender__name">Maya Patel</span> <span class="bubble-sender__meta">-- Aug 04, 4:47 PM</span></p></div>
+          <div class="bubble-sender"><span class="avatar avatar--violet avatar--sm" role="img" aria-label="Maya Patel"><span class="avatar__initials">MP</span></span><p class="bubble-sender__text"><span class="bubble-sender__name">Maya Patel</span> <span class="bubble-sender__meta">Aug 04, 4:47 PM</span></p></div>
           <div class="bubble bubble--other"><p>There is a hold on my account and I can't register for the fall term. Could you tell me what it is about?</p></div>
         </div>
         </div>
@@ -1109,7 +1106,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <h2 class="mc-thread__subject">Transcript for Internship Application</h2>
           <div class="mc-thread__tags">
             <span class="mc-thread__meta-line">Diego Fernandez · Academic Advising</span>
-            <span class="mc-thread__meta-line">Handled by Ava Robinson</span>
+            <span class="mc-thread__meta-line">Responsible · Ava Robinson</span>
             
             <span class="badge badge--sm badge--role-warning">Due 08/10/2026</span>
             
@@ -1117,7 +1114,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         </header>
         <div class="mc-thread__scroll">
           <div class="bubble-row bubble-row--other">
-          <div class="bubble-sender"><span class="avatar avatar--orange avatar--sm" role="img" aria-label="Diego Fernandez"><span class="avatar__initials">DF</span></span><p class="bubble-sender__text"><span class="bubble-sender__name">Diego Fernandez</span> <span class="bubble-sender__meta">-- Aug 03, 11:20 AM</span></p></div>
+          <div class="bubble-sender"><span class="avatar avatar--orange avatar--sm" role="img" aria-label="Diego Fernandez"><span class="avatar__initials">DF</span></span><p class="bubble-sender__text"><span class="bubble-sender__name">Diego Fernandez</span> <span class="bubble-sender__meta">Aug 03, 11:20 AM</span></p></div>
           <div class="bubble bubble--other"><p>My internship application needs an official transcript by next Friday. Attaching the offer letter for context.</p><a class="attachment" href="#" download>
               <span class="attachment__media"><svg class="attachment__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M6 2c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6H6zm7 7V3.5L18.5 9H13z"/></svg></span>
               <span class="attachment__content">
@@ -1159,7 +1156,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <h2 class="mc-thread__subject">Reschedule Advising Appointment</h2>
           <div class="mc-thread__tags">
             <span class="mc-thread__meta-line">George Amalor · Academic Advising</span>
-            <span class="mc-thread__meta-line">Handled by Alexander Robinson</span>
+            <span class="mc-thread__meta-line">Responsible · Alexander Robinson</span>
             
             
             
@@ -1167,7 +1164,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         </header>
         <div class="mc-thread__scroll">
           <div class="bubble-row bubble-row--other">
-          <div class="bubble-sender"><span class="avatar avatar--orange avatar--sm" role="img" aria-label="George Amalor"><span class="avatar__initials">GA</span></span><p class="bubble-sender__text"><span class="bubble-sender__name">George Amalor</span> <span class="bubble-sender__meta">-- Jul 31, 8:02 AM</span></p></div>
+          <div class="bubble-sender"><span class="avatar avatar--orange avatar--sm" role="img" aria-label="George Amalor"><span class="avatar__initials">GA</span></span><p class="bubble-sender__text"><span class="bubble-sender__name">George Amalor</span> <span class="bubble-sender__meta">Jul 31, 8:02 AM</span></p></div>
           <div class="bubble bubble--other"><p>Could we reschedule my advising appointment to next week?</p></div>
         </div>
           <div class="bubble-row bubble-row--self">
@@ -1207,7 +1204,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <h2 class="mc-thread__subject">Prerequisite Waiver</h2>
           <div class="mc-thread__tags">
             <span class="mc-thread__meta-line">Lena Hoffman · English Dept</span>
-            <span class="mc-thread__meta-line">Handled by Alexander Robinson</span>
+            <span class="mc-thread__meta-line">Responsible · Alexander Robinson</span>
             
             
             <span class="badge badge--sm badge--role-neutral">Resolved</span>
@@ -1215,7 +1212,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         </header>
         <div class="mc-thread__scroll">
           <div class="bubble-row bubble-row--other">
-          <div class="bubble-sender"><span class="avatar avatar--red avatar--sm" role="img" aria-label="Lena Hoffman"><span class="avatar__initials">LH</span></span><p class="bubble-sender__text"><span class="bubble-sender__name">Lena Hoffman</span> <span class="bubble-sender__meta">-- Jul 17, 2:30 PM</span></p></div>
+          <div class="bubble-sender"><span class="avatar avatar--red avatar--sm" role="img" aria-label="Lena Hoffman"><span class="avatar__initials">LH</span></span><p class="bubble-sender__text"><span class="bubble-sender__name">Lena Hoffman</span> <span class="bubble-sender__meta">Jul 17, 2:30 PM</span></p></div>
           <div class="bubble bubble--other"><p>I am requesting a prerequisite waiver for ENG 340 based on my transfer credits.</p></div>
         </div>
           <div class="bubble-row bubble-row--self">
@@ -1255,7 +1252,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <h2 class="mc-thread__subject">Study Plan Check-in</h2>
           <div class="mc-thread__tags">
             <span class="mc-thread__meta-line">Tomas Novak · Academic Advising</span>
-            <span class="mc-thread__meta-line">Handled by Ava Robinson</span>
+            <span class="mc-thread__meta-line">Responsible · Ava Robinson</span>
             
             
             <span class="badge badge--sm badge--role-neutral">Resolved</span>
@@ -1263,7 +1260,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         </header>
         <div class="mc-thread__scroll">
           <div class="bubble-row bubble-row--other">
-          <div class="bubble-sender"><span class="avatar avatar--amber avatar--sm" role="img" aria-label="Tomas Novak"><span class="avatar__initials">TN</span></span><p class="bubble-sender__text"><span class="bubble-sender__name">Tomas Novak</span> <span class="bubble-sender__meta">-- Jun 30, 3:12 PM</span></p></div>
+          <div class="bubble-sender"><span class="avatar avatar--amber avatar--sm" role="img" aria-label="Tomas Novak"><span class="avatar__initials">TN</span></span><p class="bubble-sender__text"><span class="bubble-sender__name">Tomas Novak</span> <span class="bubble-sender__meta">Jun 30, 3:12 PM</span></p></div>
           <div class="bubble bubble--other"><p>Can we confirm my study plan is still on track after the schedule change?</p></div>
         </div>
           <div class="bubble-row bubble-row--self">
@@ -1824,7 +1821,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   // rich composer — Send appends a real self Bubble (tint). The field is a
   // 1-row textarea auto-growing to ~5 lines (Enter sends, Shift+Enter
   // breaks); toolbar/settings controls are display affordances in v1
-  var SELF_SENDER = "<div class=\"bubble-sender\"><p class=\"bubble-sender__text\"><span class=\"bubble-sender__name\">Alexander Robinson</span> <span class=\"bubble-sender__meta\">-- Just now</span></p><span class=\"avatar avatar--violet avatar--sm\" role=\"img\" aria-label=\"Alexander Robinson\"><span class=\"avatar__initials\">AR</span></span></div>";
+  var SELF_SENDER = "<div class=\"bubble-sender\"><p class=\"bubble-sender__text\"><span class=\"bubble-sender__name\">Alexander Robinson</span> <span class=\"bubble-sender__meta\">Just now</span></p><span class=\"avatar avatar--violet avatar--sm\" role=\"img\" aria-label=\"Alexander Robinson\"><span class=\"avatar__initials\">AR</span></span></div>";
   function bindComposer(form) {
     var input = form.querySelector(".composer__input");
     function grow() {
@@ -1847,6 +1844,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
       scroll.scrollTop = scroll.scrollHeight;
       input.value = "";
       grow();
+      syncResolveState(form.closest(".mc-thread"));
       return true;
     }
     form.addEventListener("submit", function (e) { e.preventDefault(); if (sendReply()) input.focus(); });
@@ -1860,6 +1858,24 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     });
   }
   document.querySelectorAll(".mc-composer").forEach(bindComposer);
+
+  // Resolve gating — the top-bar "Resolve" (which resolves WITHOUT replying) is
+  // only available once the thread has at least one staff reply; the note under
+  // the composer states the real reason. "Reply & Resolve" is always available
+  // because it replies first. Kept truthful: a thread showing only the student's
+  // message can't be silently resolved, and the note no longer claims you have
+  // replied when you haven't.
+  function syncResolveState(pane) {
+    if (!pane) return;
+    var replied = !!pane.querySelector(".bubble--self");
+    var note = pane.querySelector(".mc-reply-note");
+    var topResolve = pane.querySelector(".mc-archive");
+    if (topResolve) topResolve.disabled = !replied;
+    if (note) note.textContent = replied
+      ? "Resolve is available because you have replied in this thread."
+      : "Reply to the student before you can resolve this thread.";
+  }
+  document.querySelectorAll(".mc-thread").forEach(syncResolveState);
 
   // Toast — popover="manual": free top-layer, no light-dismiss; a toast
   // leaves on its own timer (the real component, resolved from its tokens)
@@ -2051,20 +2067,25 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     if (composeHasDraft()) discardDlg.showModal();
     else composeDlg.close();
   }
-  ["mc-new-fab", "mc-new-desktop"].forEach(function (id) {
-    document.getElementById(id).addEventListener("click", function () { resetCompose(); composeDlg.showModal(); });
-  });
-  // SplitButton "New Message v" — the chevron opens a menu: New Message (single
-  // compose) / New Group Message (the wizard)
+  // "New Message" (topbar button on desktop, FAB on mobile) always opens the
+  // same choice menu — New Message (single compose) / New Group Message (the
+  // wizard). No split button: one press, both options, identical on every size,
+  // so Group Message is reachable on mobile too.
   var newMenu = document.getElementById("mc-new-menu");
+  var newTriggers = ["mc-new-desktop", "mc-new-fab"].map(function (id) { return document.getElementById(id); }).filter(Boolean);
   if (newMenu) {
     newMenu.addEventListener("toggle", function (e) {
-      if (e.newState === "open") {
-        var r = document.querySelector(".mc-topbar-new").getBoundingClientRect();
-        newMenu.style.position = "fixed"; newMenu.style.margin = "0";
-        newMenu.style.top = (r.bottom + 4) + "px";
-        newMenu.style.left = Math.max(8, r.right - newMenu.offsetWidth) + "px";
-      }
+      var open = e.newState === "open";
+      newTriggers.forEach(function (b) { b.setAttribute("aria-expanded", open ? "true" : "false"); });
+      if (!open) return;
+      // anchor to whichever trigger is actually visible (topbar on desktop, FAB
+      // on mobile) — the FAB sits bottom-right, so the menu opens above it
+      var anchor = newTriggers.find(function (b) { return b.offsetParent !== null; }) || newTriggers[0];
+      var isFab = anchor.id === "mc-new-fab";
+      var r = anchor.getBoundingClientRect();
+      newMenu.style.position = "fixed"; newMenu.style.margin = "0";
+      newMenu.style.left = Math.max(8, r.right - newMenu.offsetWidth) + "px";
+      newMenu.style.top = (isFab ? r.top - newMenu.offsetHeight - 8 : r.bottom + 4) + "px";
     });
     var elSingle = document.getElementById("mc-new-single");
     if (elSingle) elSingle.addEventListener("click", function () { newMenu.hidePopover(); resetCompose(); composeDlg.showModal(); });
