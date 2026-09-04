@@ -1368,7 +1368,12 @@ function messageMarkup(sender, meta, bodyHtml) {
         </div>`;
 }
 function bubbleRow({ role, name, meta, text, attachmentHtml = "" }) {
-  const senderText = `<p class="bubble-sender__text"><span class="bubble-sender__name">${name}</span> <span class="bubble-sender__meta">-- ${meta}</span></p>`;
+  // read receipt — staff self-replies show "· Seen · time" (the student has
+  // opened it); the student's own messages just show the time
+  const metaHtml = role === "self"
+    ? `<span class="bubble-sender__meta"><span class="bubble-sender__seen">Seen</span> · ${meta}</span>`
+    : `<span class="bubble-sender__meta">-- ${meta}</span>`;
+  const senderText = `<p class="bubble-sender__text"><span class="bubble-sender__name">${name}</span> ${metaHtml}</p>`;
   const av = avatarMarkup(name, "sm");
   const sender = `<div class="bubble-sender">${role === "self" ? senderText + av : av + senderText}</div>`;
   const fillClass = role === "self" ? " bubble--tint" : "";
@@ -1546,11 +1551,13 @@ function richComposerMarkup(t) {
             <div class="composer__field">
               <textarea class="composer__input" rows="1" placeholder="Reply to ${first}..." aria-label="Reply to ${first}"></textarea>
             </div>
-            <div class="composer__settings">
-              <div class="composer__settings-row"><span class="composer__settings-label">Allow Replies</span>${switchMarkup(true)}</div>
-              <div class="composer__settings-row"><span class="composer__settings-label">Expiration</span><button type="button" class="composer__expiration-trigger">Aug 15, 2026 ${iconChevronRight}</button></div>
+            <div class="mc-reply-actions">
+              <span class="mc-reply-note">Resolve is available because you have replied in this thread.</span>
+              <div class="mc-reply-btns">
+                <button type="submit" class="btn btn--secondary btn--base composer__send">Reply</button>
+                <button type="button" class="btn btn--primary btn--base mc-reply-resolve">${iconOf("check", "btn__icon")}Reply &amp; Resolve</button>
+              </div>
             </div>
-            <button type="submit" class="btn btn--primary btn--base composer__send">${iconSend}Send</button>
           </form>`;
 }
 
@@ -1920,6 +1927,23 @@ const recipDrawerMarkup = `<dialog class="mc-recip" id="mc-recip" aria-labelledb
   </div>
 </dialog>`;
 
+// ---- Phase E: read receipts / Reply & Resolve actions / mobile table reflow /
+// retire the redundant count row ----
+const phaseECss = `.mc-reply-actions { display: flex; align-items: center; gap: ${px(resolve("dim.3"))}; flex-wrap: wrap; }
+.mc-reply-note { color: ${cv("text.muted")}; ${typoCss(bodySmType)} }
+.mc-reply-btns { display: flex; gap: ${px(resolve("dim.2"))}; margin-left: auto; }
+.bubble-sender__seen { color: ${cv("text.success")}; font-weight: 600; }
+.mc-rail__count { display: none; } /* the tab counter already shows the count */
+@media (max-width: 767px) {
+  .mc-thead { display: none; }
+  .mc-table { min-width: 0; }
+  .mc-trow.mc-console-cols { grid-template-columns: 1fr auto; gap: 2px ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))}; align-items: center; }
+  .mc-trow.mc-console-cols > *:nth-child(1) { grid-column: 1; grid-row: 1; }
+  .mc-trow.mc-console-cols > *:nth-child(5) { grid-column: 2; grid-row: 1; text-align: right; }
+  .mc-trow.mc-console-cols > *:nth-child(2) { grid-column: 1 / -1; grid-row: 2; }
+  .mc-trow.mc-console-cols > *:nth-child(3), .mc-trow.mc-console-cols > *:nth-child(4), .mc-trow.mc-console-cols > *:nth-child(6) { display: none; }
+}`;
+
 const appJs = `(function () {
   var mc = document.querySelector(".mc");
   var empty = document.getElementById("mc-empty");
@@ -2184,10 +2208,9 @@ const appJs = `(function () {
     input.addEventListener("keydown", function (e) {
       if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); form.requestSubmit(); }
     });
-    form.addEventListener("submit", function (e) {
-      e.preventDefault();
+    function sendReply() {
       var text = input.value.trim();
-      if (!text) return;
+      if (!text) return false;
       var scroll = form.closest(".mc-thread").querySelector(".mc-thread__scroll");
       var row = document.createElement("div");
       row.className = "bubble-row bubble-row--self";
@@ -2197,7 +2220,16 @@ const appJs = `(function () {
       scroll.scrollTop = scroll.scrollHeight;
       input.value = "";
       grow();
-      input.focus();
+      return true;
+    }
+    form.addEventListener("submit", function (e) { e.preventDefault(); if (sendReply()) input.focus(); });
+    // Reply & Resolve — send then resolve (moves the thread to Resolved); the
+    // soft rule is real (Resolve requires having replied — sendReply does that)
+    var resolveBtn = form.querySelector(".mc-reply-resolve");
+    if (resolveBtn) resolveBtn.addEventListener("click", function () {
+      if (!sendReply()) return;
+      var archiveBtn = form.closest(".mc-thread").querySelector(".mc-archive");
+      if (archiveBtn) setTimeout(function () { archiveBtn.click(); }, 150);
     });
   }
   document.querySelectorAll(".mc-composer").forEach(bindComposer);
@@ -2856,6 +2888,7 @@ const appHtml = `<!doctype html>
 ${appCss}
 ${gwizCss}
 ${groupCss}
+${phaseECss}
 </style>
 </head>
 <body>
@@ -2864,7 +2897,7 @@ ${groupCss}
     <div class="mc__brand">
       <span class="mc__brand-mark">${iconOf("mail", "")}</span>
       <h1>Message Center</h1>
-      <span class="badge badge--base badge--role-neutral mc__dept-badge">Academic Advising</span>
+      <span class="badge badge--sm badge--role-neutral mc__dept-badge">Academic Advising</span>
     </div>
     <div class="mc__topbar-end">
       <div class="mc-split mc-topbar-new">

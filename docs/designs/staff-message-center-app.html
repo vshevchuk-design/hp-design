@@ -850,6 +850,20 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 @media (max-width: 767px) {
   .mc-recip { position: fixed; inset: 0; margin: 0; width: 100vw; max-width: 100vw; height: 100dvh; max-height: 100dvh; border-radius: 0; }
 }
+.mc-reply-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.mc-reply-note { color: var(--tok-text-muted); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.mc-reply-btns { display: flex; gap: 8px; margin-left: auto; }
+.bubble-sender__seen { color: var(--tok-text-success); font-weight: 600; }
+.mc-rail__count { display: none; } /* the tab counter already shows the count */
+@media (max-width: 767px) {
+  .mc-thead { display: none; }
+  .mc-table { min-width: 0; }
+  .mc-trow.mc-console-cols { grid-template-columns: 1fr auto; gap: 2px 8px; padding: 12px 16px; align-items: center; }
+  .mc-trow.mc-console-cols > *:nth-child(1) { grid-column: 1; grid-row: 1; }
+  .mc-trow.mc-console-cols > *:nth-child(5) { grid-column: 2; grid-row: 1; text-align: right; }
+  .mc-trow.mc-console-cols > *:nth-child(2) { grid-column: 1 / -1; grid-row: 2; }
+  .mc-trow.mc-console-cols > *:nth-child(3), .mc-trow.mc-console-cols > *:nth-child(4), .mc-trow.mc-console-cols > *:nth-child(6) { display: none; }
+}
 </style>
 </head>
 <body>
@@ -858,7 +872,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     <div class="mc__brand">
       <span class="mc__brand-mark"><svg class="" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></span>
       <h1>Message Center</h1>
-      <span class="badge badge--base badge--role-neutral mc__dept-badge">Academic Advising</span>
+      <span class="badge badge--sm badge--role-neutral mc__dept-badge">Academic Advising</span>
     </div>
     <div class="mc__topbar-end">
       <div class="mc-split mc-topbar-new">
@@ -1027,11 +1041,13 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
             <div class="composer__field">
               <textarea class="composer__input" rows="1" placeholder="Reply to Cait..." aria-label="Reply to Cait"></textarea>
             </div>
-            <div class="composer__settings">
-              <div class="composer__settings-row"><span class="composer__settings-label">Allow Replies</span><label class="switch"><input type="checkbox" class="switch__input" checked /><span class="switch__track"><span class="switch__thumb"></span></span></label></div>
-              <div class="composer__settings-row"><span class="composer__settings-label">Expiration</span><button type="button" class="composer__expiration-trigger">Aug 15, 2026 <svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button></div>
+            <div class="mc-reply-actions">
+              <span class="mc-reply-note">Resolve is available because you have replied in this thread.</span>
+              <div class="mc-reply-btns">
+                <button type="submit" class="btn btn--secondary btn--base composer__send">Reply</button>
+                <button type="button" class="btn btn--primary btn--base mc-reply-resolve"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>Reply &amp; Resolve</button>
+              </div>
             </div>
-            <button type="submit" class="btn btn--primary btn--base composer__send"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>Send</button>
           </form>
         </footer>
       </article>
@@ -1069,11 +1085,13 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
             <div class="composer__field">
               <textarea class="composer__input" rows="1" placeholder="Reply to Maya..." aria-label="Reply to Maya"></textarea>
             </div>
-            <div class="composer__settings">
-              <div class="composer__settings-row"><span class="composer__settings-label">Allow Replies</span><label class="switch"><input type="checkbox" class="switch__input" checked /><span class="switch__track"><span class="switch__thumb"></span></span></label></div>
-              <div class="composer__settings-row"><span class="composer__settings-label">Expiration</span><button type="button" class="composer__expiration-trigger">Aug 15, 2026 <svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button></div>
+            <div class="mc-reply-actions">
+              <span class="mc-reply-note">Resolve is available because you have replied in this thread.</span>
+              <div class="mc-reply-btns">
+                <button type="submit" class="btn btn--secondary btn--base composer__send">Reply</button>
+                <button type="button" class="btn btn--primary btn--base mc-reply-resolve"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>Reply &amp; Resolve</button>
+              </div>
             </div>
-            <button type="submit" class="btn btn--primary btn--base composer__send"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>Send</button>
           </form>
         </footer>
       </article>
@@ -1117,11 +1135,13 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
             <div class="composer__field">
               <textarea class="composer__input" rows="1" placeholder="Reply to Diego..." aria-label="Reply to Diego"></textarea>
             </div>
-            <div class="composer__settings">
-              <div class="composer__settings-row"><span class="composer__settings-label">Allow Replies</span><label class="switch"><input type="checkbox" class="switch__input" checked /><span class="switch__track"><span class="switch__thumb"></span></span></label></div>
-              <div class="composer__settings-row"><span class="composer__settings-label">Expiration</span><button type="button" class="composer__expiration-trigger">Aug 15, 2026 <svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button></div>
+            <div class="mc-reply-actions">
+              <span class="mc-reply-note">Resolve is available because you have replied in this thread.</span>
+              <div class="mc-reply-btns">
+                <button type="submit" class="btn btn--secondary btn--base composer__send">Reply</button>
+                <button type="button" class="btn btn--primary btn--base mc-reply-resolve"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>Reply &amp; Resolve</button>
+              </div>
             </div>
-            <button type="submit" class="btn btn--primary btn--base composer__send"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>Send</button>
           </form>
         </footer>
       </article>
@@ -1147,7 +1167,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <div class="bubble bubble--other"><p>Could we reschedule my advising appointment to next week?</p></div>
         </div>
           <div class="bubble-row bubble-row--self">
-          <div class="bubble-sender"><p class="bubble-sender__text"><span class="bubble-sender__name">Alexander Robinson</span> <span class="bubble-sender__meta">-- Jul 31, 9:15 AM</span></p><span class="avatar avatar--violet avatar--sm" role="img" aria-label="Alexander Robinson"><img class="avatar__img" src="../../assets/avatars/alexander-robinson.jpg" alt="" /></span></div>
+          <div class="bubble-sender"><p class="bubble-sender__text"><span class="bubble-sender__name">Alexander Robinson</span> <span class="bubble-sender__meta"><span class="bubble-sender__seen">Seen</span> · Jul 31, 9:15 AM</span></p><span class="avatar avatar--violet avatar--sm" role="img" aria-label="Alexander Robinson"><img class="avatar__img" src="../../assets/avatars/alexander-robinson.jpg" alt="" /></span></div>
           <div class="bubble bubble--self bubble--tint"><p>Sure — I moved your appointment to Tuesday at 3 PM. Let me know if that works.</p></div>
         </div>
         </div>
@@ -1163,11 +1183,13 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
             <div class="composer__field">
               <textarea class="composer__input" rows="1" placeholder="Reply to George..." aria-label="Reply to George"></textarea>
             </div>
-            <div class="composer__settings">
-              <div class="composer__settings-row"><span class="composer__settings-label">Allow Replies</span><label class="switch"><input type="checkbox" class="switch__input" checked /><span class="switch__track"><span class="switch__thumb"></span></span></label></div>
-              <div class="composer__settings-row"><span class="composer__settings-label">Expiration</span><button type="button" class="composer__expiration-trigger">Aug 15, 2026 <svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button></div>
+            <div class="mc-reply-actions">
+              <span class="mc-reply-note">Resolve is available because you have replied in this thread.</span>
+              <div class="mc-reply-btns">
+                <button type="submit" class="btn btn--secondary btn--base composer__send">Reply</button>
+                <button type="button" class="btn btn--primary btn--base mc-reply-resolve"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>Reply &amp; Resolve</button>
+              </div>
             </div>
-            <button type="submit" class="btn btn--primary btn--base composer__send"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>Send</button>
           </form>
         </footer>
       </article>
@@ -1193,7 +1215,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <div class="bubble bubble--other"><p>I am requesting a prerequisite waiver for ENG 340 based on my transfer credits.</p></div>
         </div>
           <div class="bubble-row bubble-row--self">
-          <div class="bubble-sender"><p class="bubble-sender__text"><span class="bubble-sender__name">Alexander Robinson</span> <span class="bubble-sender__meta">-- Jul 18, 10:05 AM</span></p><span class="avatar avatar--violet avatar--sm" role="img" aria-label="Alexander Robinson"><img class="avatar__img" src="../../assets/avatars/alexander-robinson.jpg" alt="" /></span></div>
+          <div class="bubble-sender"><p class="bubble-sender__text"><span class="bubble-sender__name">Alexander Robinson</span> <span class="bubble-sender__meta"><span class="bubble-sender__seen">Seen</span> · Jul 18, 10:05 AM</span></p><span class="avatar avatar--violet avatar--sm" role="img" aria-label="Alexander Robinson"><img class="avatar__img" src="../../assets/avatars/alexander-robinson.jpg" alt="" /></span></div>
           <div class="bubble bubble--self bubble--tint"><p>Waiver approved — you are clear to enroll in ENG 340.</p></div>
         </div>
         </div>
@@ -1209,11 +1231,13 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
             <div class="composer__field">
               <textarea class="composer__input" rows="1" placeholder="Reply to Lena..." aria-label="Reply to Lena"></textarea>
             </div>
-            <div class="composer__settings">
-              <div class="composer__settings-row"><span class="composer__settings-label">Allow Replies</span><label class="switch"><input type="checkbox" class="switch__input" checked /><span class="switch__track"><span class="switch__thumb"></span></span></label></div>
-              <div class="composer__settings-row"><span class="composer__settings-label">Expiration</span><button type="button" class="composer__expiration-trigger">Aug 15, 2026 <svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button></div>
+            <div class="mc-reply-actions">
+              <span class="mc-reply-note">Resolve is available because you have replied in this thread.</span>
+              <div class="mc-reply-btns">
+                <button type="submit" class="btn btn--secondary btn--base composer__send">Reply</button>
+                <button type="button" class="btn btn--primary btn--base mc-reply-resolve"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>Reply &amp; Resolve</button>
+              </div>
             </div>
-            <button type="submit" class="btn btn--primary btn--base composer__send"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>Send</button>
           </form>
         </footer>
       </article>
@@ -1239,7 +1263,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <div class="bubble bubble--other"><p>Can we confirm my study plan is still on track after the schedule change?</p></div>
         </div>
           <div class="bubble-row bubble-row--self">
-          <div class="bubble-sender"><p class="bubble-sender__text"><span class="bubble-sender__name">Alexander Robinson</span> <span class="bubble-sender__meta">-- Jun 30, 3:40 PM</span></p><span class="avatar avatar--violet avatar--sm" role="img" aria-label="Alexander Robinson"><img class="avatar__img" src="../../assets/avatars/alexander-robinson.jpg" alt="" /></span></div>
+          <div class="bubble-sender"><p class="bubble-sender__text"><span class="bubble-sender__name">Alexander Robinson</span> <span class="bubble-sender__meta"><span class="bubble-sender__seen">Seen</span> · Jun 30, 3:40 PM</span></p><span class="avatar avatar--violet avatar--sm" role="img" aria-label="Alexander Robinson"><img class="avatar__img" src="../../assets/avatars/alexander-robinson.jpg" alt="" /></span></div>
           <div class="bubble bubble--self bubble--tint"><p>All set — see you at the fall check-in.</p></div>
         </div>
         </div>
@@ -1255,11 +1279,13 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
             <div class="composer__field">
               <textarea class="composer__input" rows="1" placeholder="Reply to Tomas..." aria-label="Reply to Tomas"></textarea>
             </div>
-            <div class="composer__settings">
-              <div class="composer__settings-row"><span class="composer__settings-label">Allow Replies</span><label class="switch"><input type="checkbox" class="switch__input" checked /><span class="switch__track"><span class="switch__thumb"></span></span></label></div>
-              <div class="composer__settings-row"><span class="composer__settings-label">Expiration</span><button type="button" class="composer__expiration-trigger">Aug 15, 2026 <svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button></div>
+            <div class="mc-reply-actions">
+              <span class="mc-reply-note">Resolve is available because you have replied in this thread.</span>
+              <div class="mc-reply-btns">
+                <button type="submit" class="btn btn--secondary btn--base composer__send">Reply</button>
+                <button type="button" class="btn btn--primary btn--base mc-reply-resolve"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>Reply &amp; Resolve</button>
+              </div>
             </div>
-            <button type="submit" class="btn btn--primary btn--base composer__send"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>Send</button>
           </form>
         </footer>
       </article>
@@ -1802,10 +1828,9 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     input.addEventListener("keydown", function (e) {
       if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); form.requestSubmit(); }
     });
-    form.addEventListener("submit", function (e) {
-      e.preventDefault();
+    function sendReply() {
       var text = input.value.trim();
-      if (!text) return;
+      if (!text) return false;
       var scroll = form.closest(".mc-thread").querySelector(".mc-thread__scroll");
       var row = document.createElement("div");
       row.className = "bubble-row bubble-row--self";
@@ -1815,7 +1840,16 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
       scroll.scrollTop = scroll.scrollHeight;
       input.value = "";
       grow();
-      input.focus();
+      return true;
+    }
+    form.addEventListener("submit", function (e) { e.preventDefault(); if (sendReply()) input.focus(); });
+    // Reply & Resolve — send then resolve (moves the thread to Resolved); the
+    // soft rule is real (Resolve requires having replied — sendReply does that)
+    var resolveBtn = form.querySelector(".mc-reply-resolve");
+    if (resolveBtn) resolveBtn.addEventListener("click", function () {
+      if (!sendReply()) return;
+      var archiveBtn = form.closest(".mc-thread").querySelector(".mc-archive");
+      if (archiveBtn) setTimeout(function () { archiveBtn.click(); }, 150);
     });
   }
   document.querySelectorAll(".mc-composer").forEach(bindComposer);
