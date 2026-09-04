@@ -969,8 +969,6 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
    list and the full-page thread detail; the list and detail swap under it */
 .mc__topbar h1 { margin: 0; color: ${cv("text.default")}; ${typoCss(headingLgType)} }
 .mc__brand { display: flex; align-items: center; gap: ${px(resolve("dim.2"))}; min-width: 0; }
-.mc__brand-mark { flex-shrink: 0; width: 32px; height: 32px; border-radius: ${px(resolve("radius.default"))}; background: ${cv("fill.primary")}; display: inline-flex; align-items: center; justify-content: center; }
-.mc__brand-mark svg { width: 18px; height: 18px; color: ${cv("icon.onFill")}; }
 .mc__dept-badge { flex-shrink: 0; }
 .mc__topbar-end { display: flex; align-items: center; gap: ${px(resolve("dim.3"))}; flex-shrink: 0; }
 .mc__user { width: 32px; height: 32px; }
@@ -2924,7 +2922,6 @@ ${phaseECss}
 <div class="mc">
   <header class="mc__topbar">
     <div class="mc__brand">
-      <span class="mc__brand-mark">${iconOf("mail", "")}</span>
       <h1>Message Center</h1>
       <span class="badge badge--sm badge--role-neutral mc__dept-badge">Academic Advising</span>
     </div>
