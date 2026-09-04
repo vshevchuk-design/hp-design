@@ -681,3 +681,15 @@ Final pass on the staff email-client rework.
 - **Polish:** the department topbar Badge used `badge--base`, but this builder only emits a `.badge--sm` rule, so it rendered as bare text — switched to `badge--sm`. Retired the redundant "N THREADS" count row (the tab counter already shows it).
 
 Phases A–E of the MC v3 rework are done and pushed. Deferred (genuinely optional, revisit on need): per-staff read vs. I'm-Involved distinction, child reply threads spawned from a group send, a group pane for runtime-sent groups (the seeded one has the full detail), and the email-parity extras (priority flag, folders/saved views).
+
+## 2026-09-04 (cont. 5) — MC v3 QA pass (dev + product) + two fixes
+
+Walked every Staff MC screen/state at desktop (1280) and mobile (390) with browser + computed-style probes. Functionally solid — verified: console (4 rows, unread counter=2), Filters popover, Department filter, Search (query→match, no-match→empty state, restore), flag toggle, thread open→mark-read, **Reply & Resolve** (inbox 4→3, thread moves to Resolved), Group wizard (6 add buttons, chips, Next enables, step 2, AI panel, DatePicker, Send), group detail Stat tiles, recipients Drawer (status chips + rows). New component pages (Table/AvatarGroup/Stepper/DatePicker/Split-button/Stat/Skeleton) + Logs all render clean.
+
+**Fixed:**
+- **B1 (functional):** clicking the Inbox/Resolved tab while a thread *or* group detail was open left `.mc--thread-open` pinned — you stayed on the detail over the wrong tab. The tab handler now calls `closeThread()` first (Gmail-style: switching folders returns to the list). Verified for both thread and group.
+- **F1 (UX/layout):** on desktop the Inbox/Resolved segmented tabs stretched to ~94% of the toolbar (`flex:1`), leaving a lopsided empty "Resolved" half. Capped to `flex:0 1 auto; min-width:280px` inside the ≥768px query and pushed Search right with `margin-left:auto` — compact left-pinned tabs, email-console balance. Mobile keeps the full-width segmented control (the override is desktop-only).
+
+**Confirmed NOT a bug:** secondary text looked italic in local screenshots — it's a preview artifact. Sora 404s under the docs-rooted `python3 -m http.server` (fonts live in `repo/assets`, one level above the server root), so the browser falls back to an oblique system face; `document.fonts` is empty, computed `font-style` is `normal` everywhere, and the woff2 files are upright (italicAngle 0). Renders correctly on Vercel (served from repo root).
+
+**Open product calls (reported to user, not silently changed):** (P1) single **New Message** has no student recipient — only Department (From) + Subject; the plan's Phase D "To student" field is still unbuilt, so it's unclear who a single message targets. (P2) the list still uses the old **Filters ▾ / Department ▾** dropdowns instead of the ref's inline email chips (I'm Involved / Flagged / Expires Soon) — the filter keys already exist inside the Filters popover, so this is a surface change. (P3, minor) the Department filter partly duplicates the topbar department badge.

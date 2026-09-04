@@ -1073,6 +1073,10 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
   .mc-topbar-new { display: inline-flex; }
   .mc-fab { display: none; }
   .mc-rail__lists { padding-bottom: ${px(resolve("dim.4"))}; }
+  /* desktop: compact segmented tabs pinned left (email-console), search to the
+     far right — the full-width stretch only reads well on the narrow mobile row */
+  .mc-rail__topbar .tabs--segmented { flex: 0 1 auto; min-width: 280px; }
+  .mc-rail__topbar .mc-search-open-btn { margin-left: auto; }
 }
 @media (min-width: 1024px) {
   .mc__topbar { padding: ${px(resolve("dim.4"))} ${px(resolve("dim.6"))}; }
@@ -2062,6 +2066,9 @@ const appJs = `(function () {
   // active/inactive surface with the tab it sits on, same as Tabs' own docs
   document.querySelectorAll(".mc-rail__topbar .tab").forEach(function (tab) {
     tab.addEventListener("click", function () {
+      // switching Inbox/Resolved returns to the list — an open thread or group
+      // detail must not stay pinned over the other tab (Gmail-style)
+      closeThread();
       document.querySelectorAll(".mc-rail__topbar .tab").forEach(function (t) {
         t.classList.toggle("tab--active", t === tab);
         t.setAttribute("aria-selected", t === tab ? "true" : "false");
