@@ -55,6 +55,11 @@ const button = load("tokens/components/button.tokens.json").component.button;
 const swtch = load("tokens/components/switch.tokens.json").component.switch;
 const separator = load("tokens/components/separator.tokens.json").component.separator;
 const checkbox = load("tokens/components/checkbox.tokens.json").component.checkbox;
+// MC v3 email-console components
+const tableTok = load("tokens/components/table.tokens.json").component.table;
+const splitBtn = load("tokens/components/split-button.tokens.json").component.splitButton;
+const skeletonTok = load("tokens/components/skeleton.tokens.json").component.skeleton;
+const avatarGroup = load("tokens/components/avatar-group.tokens.json").component.avatarGroup;
 
 const registry = {
   color: colorPrim,
@@ -957,12 +962,18 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .mc-fab__label { max-width: 130px; opacity: 1; overflow: hidden; white-space: nowrap; transition: max-width 0.25s ease, opacity 0.2s ease; }
 .mc-fab.mc-fab--collapsed { padding: 0 ${(parseInt(btnPrimLgHeight) - parseInt(btnPrimLgIconSize)) / 2}px; gap: 0; }
 .mc-fab.mc-fab--collapsed .mc-fab__label { max-width: 0; opacity: 0; }
-/* on mobile an open thread takes the whole screen — the app's own
-   "Message Center" topbar leaves, the thread bar (Back …) is the header */
-.mc--thread-open .mc__topbar { display: none; }
-.mc__topbar h1 { margin: 0; color: ${cv("text.default")}; ${typoCss(titleXlType)} }
+/* v3: the topbar is PERSISTENT chrome (Gmail-style) — it stays across the
+   list and the full-page thread detail; the list and detail swap under it */
+.mc__topbar h1 { margin: 0; color: ${cv("text.default")}; ${typoCss(headingLgType)} }
+.mc__brand { display: flex; align-items: center; gap: ${px(resolve("dim.2"))}; min-width: 0; }
+.mc__brand-mark { flex-shrink: 0; width: 32px; height: 32px; border-radius: ${px(resolve("radius.default"))}; background: ${cv("fill.primary")}; display: inline-flex; align-items: center; justify-content: center; }
+.mc__brand-mark svg { width: 18px; height: 18px; color: ${cv("icon.onFill")}; }
+.mc__dept-badge { flex-shrink: 0; }
+.mc__topbar-end { display: flex; align-items: center; gap: ${px(resolve("dim.3"))}; flex-shrink: 0; }
+.mc__user { width: 32px; height: 32px; }
 .mc__body { flex: 1; display: flex; min-height: 0; }
 
+/* full-width views that swap (list <-> detail), not a split pane */
 .mc__rail { position: relative; flex: 1; min-width: 0; display: flex; flex-direction: column; min-height: 0; }
 .mc__reading { display: none; flex: 1; min-width: 0; flex-direction: column; min-height: 0; }
 .mc--thread-open .mc__rail { display: none; }
@@ -1037,26 +1048,33 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .thread-item-inbox__expires--scope-only { display: none; }
 .mc--searching .thread-item-inbox__expires--scope-only { display: flex; }
 
+/* ---- v3 console: the list is a full-width Table under the toolbar ---- */
+.mc-rail__topbar { flex-wrap: wrap; }
+.mc-rail__lists { padding: 0 ${px(resolve("dim.4"))} ${px(resolve("dim.4"))}; overflow-x: auto; }
+.mc-table { margin: 0; }
+.mc-thead { display: grid; }
+/* detail is full-page: a Back link is always visible now, subject shares the
+   action row, content is a centered reading column */
+.mc-thread__scroll { align-items: center; }
+.mc-thread__scroll > * { width: 100%; max-width: 820px; }
+.mc-thread__composer { display: flex; justify-content: center; }
+.mc-thread__composer > * { width: 100%; max-width: 820px; }
+.mc-thread__subject { order: 1; width: auto; flex: 1; }
+.mc-thread__actions { margin-left: 0; }
+
+@media (max-width: 767px) {
+  .mc-table { min-width: 620px; } /* horizontal-scroll fallback until the mobile row reflow lands */
+  .mc-thread__scroll > *, .mc-thread__composer > * { max-width: none; }
+}
 @media (min-width: 768px) {
-  .mc__rail, .mc--thread-open .mc__rail { display: flex; flex: none; width: 320px; border-right: 1px solid ${cv("border.default")}; }
-  .mc__reading { display: flex; }
-  .mc--thread-open .mc__topbar { display: flex; }
   .mc-topbar-new { display: inline-flex; }
   .mc-fab { display: none; }
-  .mc-rail__lists { padding-bottom: 0; }
-  .mc-thread__back { display: none; }
-  /* subject shares the row with the actions on every split view — a long
-     subject simply wraps to a second line instead of dropping below the
-     buttons (an actions-only top row read as a hole on the tablet) */
-  .mc-thread__subject { order: 1; width: auto; flex: 1; }
-  .mc-thread__actions { margin-left: 0; }
+  .mc-rail__lists { padding-bottom: ${px(resolve("dim.4"))}; }
 }
 @media (min-width: 1024px) {
-  .mc__rail, .mc--thread-open .mc__rail { width: 380px; }
   .mc__topbar { padding: ${px(resolve("dim.4"))} ${px(resolve("dim.6"))}; }
+  .mc-rail__lists { padding-left: ${px(resolve("dim.6"))}; padding-right: ${px(resolve("dim.6"))}; }
   .mc-thread__bar { padding-left: ${px(resolve("dim.6"))}; padding-right: ${px(resolve("dim.6"))}; }
-  .mc-thread__scroll { padding: ${px(resolve("dim.6"))}; }
-  .mc-thread__composer { padding: ${px(resolve("dim.4"))} ${px(resolve("dim.6"))} ${px(resolve("dim.6"))}; }
 }`;
 
 // ---- New Message compose (two-column form + AI panel) & AI Writing Assist
@@ -1154,9 +1172,92 @@ const composeAiCss = `.mc-compose__tabs { display: none; flex-shrink: 0; }
   .mc-ai-standalone { width: min(400px, calc(100vw - ${px(resolve("dim.8"))})); height: 100dvh; max-height: 100dvh; margin: 0 0 0 auto; border-radius: 0; }
 }`;
 
+// ---- MC v3 console component recipes (Table / SplitButton / Skeleton /
+// AvatarGroup), resolved from each new component's token file ----
+const tblHPadX = px(resolve(tableTok.header.paddingX.$value));
+const tblHPadY = px(resolve(tableTok.header.paddingY.$value));
+const tblHLabelNode = get(tableTok.header.label.$value);
+const tblHLabel = resolveToken(tblHLabelNode);
+const tblHLabelExt = tblHLabelNode.$extensions?.["hp.design/text"] || {};
+const tblRPadX = px(resolve(tableTok.row.paddingX.$value));
+const tblRPadY = px(resolve(tableTok.row.paddingY.$value));
+const tblRowGap = px(resolve(tableTok.row.gap.$value));
+const tblCellText = resolveToken(tableTok.cell.text);
+const tblUnread = { weight: resolve(tableTok.state.unread.weight.$value), color: refPath(tableTok.state.unread.color.$value) };
+const tblRead = { weight: resolve(tableTok.state.read.weight.$value), color: refPath(tableTok.state.read.color.$value) };
+const sbH = px(resolve(splitBtn.size.height.$value));
+const sbPadX = px(resolve(splitBtn.size.paddingX.$value));
+const sbGap = px(resolve(splitBtn.size.gap.$value));
+const sbIcon = px(resolve(splitBtn.size.iconSize.$value));
+const sbLabel = resolveToken(get(splitBtn.size.label.$value));
+const sbChevW = px(resolve(splitBtn.size.chevronWidth.$value));
+const sbRadius = px(resolve(splitBtn.radius.$value));
+const skBase = refPath(skeletonTok.base.$value);
+const skHi = refPath(skeletonTok.highlight.$value);
+const skRadius = px(resolve(skeletonTok.radius.$value));
+const skLineH = px(resolve(skeletonTok.line.height.$value));
+const avgBaseD = px(resolve(avatarGroup.size.base.diameter.$value));
+const avgBaseOv = px(resolve(avatarGroup.size.base.overlap.$value));
+const avgSmD = px(resolve(avatarGroup.size.sm.diameter.$value));
+const avgSmOv = px(resolve(avatarGroup.size.sm.overlap.$value));
+const avgRingW = px(resolve(avatarGroup.ring.width.$value));
+const avgMoreLabel = resolveToken(avatarGroup.overflow.label);
+
+const consoleCss = `/* ---- Table (threads console) ---- */
+.mc-table { box-sizing: border-box; background: ${cv("surface.default")}; border: 1px solid ${cv("border.default")}; border-radius: ${px(resolve(tableTok.radius.$value))}; overflow: hidden; }
+.mc-trow { display: grid; align-items: center; gap: ${tblRowGap}; padding: ${tblRPadY} ${tblRPadX}; border-bottom: 1px solid ${cv(refPath(tableTok.row.divider.$value))}; }
+.mc-trow:last-child { border-bottom: none; }
+.mc-thead { padding: ${tblHPadY} ${tblHPadX}; border-bottom: 1px solid ${cv(refPath(tableTok.header.divider.$value))}; }
+.mc-th { color: ${cv(refPath(tableTok.header.labelColor.$value))}; ${typoCss(tblHLabel)}${tblHLabelExt.textTransform ? ` text-transform: ${tblHLabelExt.textTransform};` : ""}${tblHLabelExt.letterSpacing ? ` letter-spacing: ${tblHLabelExt.letterSpacing};` : ""} white-space: nowrap; min-width: 0; }
+.mc-td { color: ${cv(refPath(tableTok.cell.textColor.$value))}; ${typoCss(tblCellText)} min-width: 0; }
+.mc-td--muted { color: ${cv(refPath(tableTok.cell.mutedColor.$value))}; }
+/* the row keeps its .thread-item-inbox JS hooks (state classes / data attrs /
+   flag button / scope badge) — .mc-trow only restyles it as a grid table row,
+   overriding the old flex list-row look */
+.mc-trow { display: grid; align-items: center; cursor: pointer; }
+.mc-trow.thread-item-inbox--read { background: ${cv("surface.default")}; } /* no gray read rows in a table */
+.mc-trow:focus-visible { outline: 2px solid ${cv("border.focus")}; outline-offset: -2px; }
+.mc-lead { display: block; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.thread-item-inbox--unread .mc-lead { font-weight: ${tblUnread.weight}; color: ${cv(tblUnread.color)}; }
+.thread-item-inbox--read .mc-lead { font-weight: ${tblRead.weight}; color: ${cv(tblRead.color)}; }
+.mc-cellwrap { display: flex; align-items: center; gap: ${px(resolve("dim.2_5"))}; min-width: 0; }
+.mc-cellstack { display: flex; flex-direction: column; min-width: 0; gap: 1px; }
+.mc-td .badge { flex-shrink: 0; }
+/* console column template — desktop: Student | Subject & Message | Responsible | Expiration | Date | flag */
+.mc-console-cols { grid-template-columns: 1.6fr 2.4fr 1fr 0.9fr 0.7fr 28px; gap: ${tblRowGap}; padding: ${tblRPadY} ${tblRPadX}; }
+
+/* ---- SplitButton ("New Message v") ---- */
+.mc-split { display: inline-flex; align-items: stretch; height: ${sbH}; border-radius: ${sbRadius}; font-family: ${cv("family.sans")}; }
+.mc-split__main, .mc-split__chevron { border: none; background: ${cv("fill.primary")}; color: ${cv("text.onFill")}; cursor: pointer; display: inline-flex; align-items: center; }
+.mc-split__main { gap: ${sbGap}; padding: 0 ${sbPadX}; border-radius: ${sbRadius} 0 0 ${sbRadius}; ${typoCss(sbLabel)} white-space: nowrap; }
+.mc-split__chevron { justify-content: center; width: ${sbChevW}; padding: 0; border-radius: 0 ${sbRadius} ${sbRadius} 0; border-left: 1px solid ${cv(refPath(splitBtn.divider.$value))}; }
+.mc-split .btn__icon, .mc-split .split-icon { width: ${sbIcon}; height: ${sbIcon}; color: ${cv("icon.onFill")}; }
+.mc-split__main:hover, .mc-split__chevron:hover { background: ${cv("fill.primaryHover")}; }
+.mc-split__main:active, .mc-split__chevron:active { background: ${cv("fill.primaryActive")}; }
+.mc-split__main:focus-visible, .mc-split__chevron:focus-visible { outline: ${px(resolve(splitBtn.focus.ringWidth.$value))} solid ${cv("border.focus")}; outline-offset: ${px(resolve(splitBtn.focus.ringOffset.$value))}; }
+
+/* ---- Skeleton ---- */
+.mc-skel { display: block; border-radius: ${skRadius}; background: ${cv(skBase)}; background-image: linear-gradient(90deg, ${cv(skBase)} 0, ${cv(skHi)} 40px, ${cv(skBase)} 80px); background-size: 600px 100%; background-repeat: no-repeat; animation: mc-skel-shimmer 1400ms linear infinite; }
+.mc-skel--line { height: ${skLineH}; }
+.mc-skel--circle { border-radius: ${px(resolve("radius.full"))}; }
+@keyframes mc-skel-shimmer { 0% { background-position: -300px 0; } 100% { background-position: 300px 0; } }
+@media (prefers-reduced-motion: reduce) { .mc-skel { animation: none; } }
+
+/* ---- AvatarGroup (group recipient stack) ---- */
+.mc-avg { display: inline-flex; align-items: center; }
+.mc-avg__item { box-sizing: border-box; position: relative; display: inline-flex; align-items: center; justify-content: center; overflow: hidden; border-radius: ${px(resolve("radius.full"))}; border: 1px solid ${cv("border.default")}; box-shadow: 0 0 0 ${avgRingW} ${cv(refPath(avatarGroup.ring.color.$value))}; font-family: ${cv("family.sans")}; }
+.mc-avg__item:not(:first-child) { margin-left: var(--avg-ov); }
+.mc-avg__more { color: ${cv(refPath(avatarGroup.overflow.text.$value))}; background: ${cv(refPath(avatarGroup.overflow.bg.$value))}; ${typoCss(avgMoreLabel)} }
+.mc-avg--base { --avg-ov: -${avgBaseOv}; }
+.mc-avg--base .mc-avg__item { width: ${avgBaseD}; height: ${avgBaseD}; }
+.mc-avg--sm { --avg-ov: -${avgSmOv}; }
+.mc-avg--sm .mc-avg__item { width: ${avgSmD}; height: ${avgSmD}; }`;
+
 const appCss = `${rootVars}
 
 ${componentCss}
+
+${consoleCss}
 
 ${layoutCss}
 
@@ -1289,32 +1390,24 @@ const threads = [
 // real button can't nest another (same resolution as Attachment's idle shape).
 // The scope badge (Inbox/Archived) is always in the DOM, shown via CSS only
 // while searching, when both lists render as one combined result set.
+// v3 table row — a grid of cells (Student / Subject & Message / Responsible /
+// Expiration / Date / flag). Keeps every .thread-item-inbox JS hook (state
+// classes, data attrs, the flag <button>, the .thread-item-inbox__scope badge
+// inside .thread-item-inbox__expires) so applyFilter / bindRow / bindArchive
+// keep working unchanged; only the inner layout became table cells.
 function rowMarkup(t, idx) {
-  // staff badge vocabulary: Awaiting reply (student is waiting on us,
-  // primary) · Unassigned (nobody handles it yet, warning) · a due-date
-  // tier · the Inbox/Resolved search-scope badge
-  const badges = [
-    t.awaiting ? `<span class="badge badge--sm badge--role-primary">Awaiting reply</span>` : "",
-    t.unassigned ? `<span class="badge badge--sm badge--role-warning">Unassigned</span>` : "",
-    t.expires ? `<span class="badge badge--sm badge--role-${t.expires.role}">${t.expires.label}</span>` : "",
-    `<span class="badge badge--sm badge--role-${t.archived ? "neutral" : "primary"} thread-item-inbox__scope">${t.archived ? "Resolved" : "Inbox"}</span>`,
-  ].join("");
-  const identity = t.sender ? `${t.sender} · ${t.department}` : t.department;
-  return `<div class="thread-item-inbox thread-item-inbox--${t.unread ? "unread" : "read"}" role="button" tabindex="0" data-thread="${t.id}" data-idx="${idx}" data-subject="${esc(t.subject)}" data-department="${esc(t.department)}"${t.expires ? ` data-expires="${t.expires.role}"` : ""}>
-        ${avatarMarkup(t.sender || t.department, "sm")}
-        <div class="thread-item-inbox__main">
-          <div class="thread-item-inbox__top">
-            <span class="thread-item-inbox__identity">${identity}</span>
-            <span class="thread-item-inbox__time">${t.date}</span>
-          </div>
-          <div class="thread-item-inbox__subject">${t.subject}</div>
-          <div class="thread-item-inbox__preview-row">
-            <span class="thread-item-inbox__preview">${t.preview}</span>
-            ${t.replied && !t.unread ? iconReplied : ""}
-            <button class="thread-item-inbox__flag-btn" type="button" aria-pressed="${t.flagged ? "true" : "false"}" aria-label="Flag thread">${iconFlagOutlined}${iconFlagFilled}</button>
-          </div>
-          <div class="thread-item-inbox__expires${t.expires || t.awaiting || t.unassigned ? "" : " thread-item-inbox__expires--scope-only"}">${badges}</div>
-        </div>
+  // Responsible = whoever replied last (advisory), "–" when none — replaces the
+  // old Handled by / Unassigned vocabulary per the real product
+  const responsible = t.handledBy || "–";
+  const exp = t.expires ? `<span class="badge badge--sm badge--role-${t.expires.role}">${t.expires.label}</span>` : `<span class="mc-td--muted">–</span>`;
+  const scope = `<span class="badge badge--sm badge--role-${t.archived ? "neutral" : "primary"} thread-item-inbox__scope">${t.archived ? "Resolved" : "Inbox"}</span>`;
+  return `<div class="thread-item-inbox mc-trow mc-console-cols thread-item-inbox--${t.unread ? "unread" : "read"}" role="button" tabindex="0" data-thread="${t.id}" data-idx="${idx}" data-subject="${esc(t.subject)}" data-department="${esc(t.department)}"${t.expires ? ` data-expires="${t.expires.role}"` : ""}>
+        <div class="mc-td mc-cellwrap">${avatarMarkup(t.sender || t.department, "sm")}<span class="mc-cellstack"><span class="mc-lead">${t.sender || t.department}</span><span class="mc-td--muted" style="font-size:12px">${t.department}</span></span></div>
+        <div class="mc-td mc-cellstack"><span class="mc-lead">${t.subject}</span><span class="mc-td--muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t.preview}</span></div>
+        <div class="mc-td mc-td--muted mc-col-responsible">${responsible}</div>
+        <div class="mc-td mc-col-expiration thread-item-inbox__expires">${exp}${scope}</div>
+        <div class="mc-td mc-td--muted" style="text-align:right;white-space:nowrap">${t.date}</div>
+        <div class="mc-td"><button class="thread-item-inbox__flag-btn" type="button" aria-pressed="${t.flagged ? "true" : "false"}" aria-label="Flag thread">${iconFlagOutlined}${iconFlagFilled}</button></div>
       </div>`;
 }
 
@@ -1996,6 +2089,23 @@ const appJs = `(function () {
   ["mc-new-fab", "mc-new-desktop"].forEach(function (id) {
     document.getElementById(id).addEventListener("click", function () { resetCompose(); composeDlg.showModal(); });
   });
+  // SplitButton "New Message v" — the chevron opens a menu (New Message / New
+  // Group Message). Group wizard is a follow-up; for now both open compose.
+  var newMenu = document.getElementById("mc-new-menu");
+  if (newMenu) {
+    newMenu.addEventListener("toggle", function (e) {
+      if (e.newState === "open") {
+        var r = document.querySelector(".mc-topbar-new").getBoundingClientRect();
+        newMenu.style.position = "fixed"; newMenu.style.margin = "0";
+        newMenu.style.top = (r.bottom + 4) + "px";
+        newMenu.style.left = Math.max(8, r.right - newMenu.offsetWidth) + "px";
+      }
+    });
+    ["mc-new-single", "mc-new-group"].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.addEventListener("click", function () { newMenu.hidePopover(); resetCompose(); composeDlg.showModal(); });
+    });
+  }
   document.getElementById("mc-compose-close").addEventListener("click", requestComposeClose);
   composeDlg.addEventListener("click", function (e) { if (e.target === composeDlg) requestComposeClose(); });
   composeDlg.addEventListener("cancel", function (e) {           // Escape
@@ -2231,7 +2341,26 @@ ${appCss}
 </head>
 <body>
 <div class="mc">
-  <header class="mc__topbar"><h1>Message Center</h1><button class="btn btn--primary btn--base mc-topbar-new" id="mc-new-desktop" type="button">${iconEdit}New message</button></header>
+  <header class="mc__topbar">
+    <div class="mc__brand">
+      <span class="mc__brand-mark">${iconOf("mail", "")}</span>
+      <h1>Message Center</h1>
+      <span class="badge badge--base badge--role-neutral mc__dept-badge">Academic Advising</span>
+    </div>
+    <div class="mc__topbar-end">
+      <div class="mc-split mc-topbar-new">
+        <button class="mc-split__main" id="mc-new-desktop" type="button">${iconOf("edit", "btn__icon")}New Message</button>
+        <button class="mc-split__chevron" type="button" popovertarget="mc-new-menu" aria-haspopup="menu" aria-label="More send options">${iconOf("expand_more", "btn__icon")}</button>
+      </div>
+      <div class="listbox" id="mc-new-menu" popover>
+        <ul class="listbox__list" role="menu" aria-label="New message">
+          <li><button class="listbox__option" role="menuitem" type="button" id="mc-new-single">New Message</button></li>
+          <li><button class="listbox__option" role="menuitem" type="button" id="mc-new-group">New Group Message</button></li>
+        </ul>
+      </div>
+      ${avatarMarkup(SELF.name, "sm").replace('class="avatar', 'class="mc__user avatar')}
+    </div>
+  </header>
   <div class="mc__body">
     <aside class="mc__rail" aria-label="Thread list">
       <div class="mc-rail__topbar">
@@ -2272,11 +2401,21 @@ ${appCss}
         <hr class="separator" />
       </div>
       <div class="mc-rail__lists">
-        <div class="mc-list" data-list="inbox">
-          ${inboxThreads.map((t, i) => rowMarkup(t, i)).join("\n        ")}
-        </div>
-        <div class="mc-list" data-list="archived" hidden>
-          ${archivedThreads.map((t, i) => rowMarkup(t, inboxThreads.length + i)).join("\n        ")}
+        <div class="mc-table">
+          <div class="mc-thead mc-console-cols">
+            <div class="mc-th">Student</div>
+            <div class="mc-th">Subject &amp; Message</div>
+            <div class="mc-th mc-col-responsible">Responsible</div>
+            <div class="mc-th mc-col-expiration">Expiration</div>
+            <div class="mc-th" style="text-align:right">Date</div>
+            <div class="mc-th"></div>
+          </div>
+          <div class="mc-list" data-list="inbox">
+            ${inboxThreads.map((t, i) => rowMarkup(t, i)).join("\n          ")}
+          </div>
+          <div class="mc-list" data-list="archived" hidden>
+            ${archivedThreads.map((t, i) => rowMarkup(t, inboxThreads.length + i)).join("\n          ")}
+          </div>
         </div>
         <div class="mc-rail__empty" id="mc-rail-empty" hidden>
           <div class="empty-state"><span class="empty-state__text" id="mc-rail-empty-text">No threads found</span></div>

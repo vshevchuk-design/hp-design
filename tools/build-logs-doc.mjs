@@ -21,6 +21,17 @@ const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const POSTS = [
   {
     date: "2026-09-04",
+    type: "prototype",
+    title: "Staff Message Center → email-inbox console (Phase B)",
+    body: "The staff prototype's split-pane chat is reworked into an email-inbox threads console: a persistent topbar (mail + department + a SplitButton \"New Message ▾\" + user avatar), and the thread list is now a full-width Table (Student / Subject & Message / Responsible / Expiration / Date), unread rows bold. Opening a thread is a full-page detail that keeps the topbar (Gmail-style). \"Responsible\" replaces the old Handled-by/Unassigned. Built on the new Table + SplitButton components; the compose dialog + AI panel + rich composer carry over. Next: the Group Message wizard, group fan-out, mobile row reflow, read receipts, and finer role logic.",
+    links: [
+      { label: "Staff Message Center", href: "designs/staff-message-center.html" },
+      { label: "Table", href: "table.html" },
+      { label: "SplitButton", href: "split-button.html" },
+    ],
+  },
+  {
+    date: "2026-09-04",
     type: "new",
     title: "Seven new components for the Message Center v3 redesign",
     body: "Foundation for the email-inbox rework: Table (the threads console — a div-grid with unread/read rows, sortable headers, selectable rows), AvatarGroup (overlapping stack + \"+N\"), Stepper (the group-message wizard 1→2), DatePicker (Select-style trigger + calendar popover, for message expiration), SplitButton (\"New Message ▾\" → opens a Menu), Stat (delivery-metric tiles), and Skeleton (loading placeholders). Built strictly on the existing tokens; the console rework consumes them next.",

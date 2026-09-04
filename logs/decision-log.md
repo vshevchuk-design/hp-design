@@ -644,3 +644,15 @@ The Message Center redesign (plan approved this session — evolve the staff bui
 - **Skeleton** — animated neutral gradient sweep (base surface.sunken → white band), `--line`/`--circle`, prefers-reduced-motion aware; duration a literal (no motion scale exists yet).
 
 All seven verified live (computed styles + interaction): Table rows/sort/select, AvatarGroup overlap/ring/+N, Stepper states, DatePicker open/nav/select, SplitButton menu, Stat/Skeleton render. Each wired into nav.mjs + the hand-maintained index.html sidebar; a Logs entry added. Next: Phase B (rework the staff console onto Table + the new components).
+
+## 2026-09-04 (cont.) — MC v3 Phase B: staff console → email inbox
+
+Reworked the Staff Message Center from the student-style split-pane chat into an email-inbox threads console, evolving the existing builder in place. Key realization that de-risked it: the JS toggles `.mc--thread-open` and finds rows via `.thread-item-inbox` (state classes / data attrs / flag button / scope badge) — the rail/reading are CSS-only. So the whole transform is mostly CSS + a new `rowMarkup` + topbar markup, with the JS contract (applyFilter / bindRow / bindArchive / search / send) kept intact.
+
+- **Persistent topbar** (Gmail-style, stays across list + detail): brand mail mark + "Message Center" + department Badge + a **SplitButton "New Message ▾"** (New Message / New Group Message via a listbox-menu popover; group wizard opens compose for now) + the user Avatar. Removed the old `.mc--thread-open .mc__topbar { display:none }`.
+- **List = full-width Table**: `rowMarkup` now emits a `.mc-trow.mc-console-cols` grid keeping all `.thread-item-inbox` hooks; columns Student (avatar+name+dept) / Subject & Message / **Responsible** (t.handledBy || "–" — replaces Handled-by/Unassigned) / Expiration (Badge, wraps the scope badge for the search-reveal CSS) / Date / flag. Header `.mc-thead`. Read rows no longer gray (overrode the old `--read` surface.dim bg); unread stays semibold.
+- **Full-page detail**: dropped the 768px split-pane; list ↔ detail swap at all widths under the persistent topbar. Detail content centered in an 820px reading column; Back always visible.
+- New component recipes (Table / SplitButton / Skeleton / AvatarGroup) resolved into the app CSS.
+- Verified live: console renders with all columns + unread/read; SplitButton menu; thread opens full-page with the topbar kept, bubble + rich composer.
+
+Known follow-ups (fix-later, per user "do it all then fix"): mobile table reflow (currently a horizontal-scroll fallback), the Group Message wizard + fan-out group card + recipients drawer, inline read receipts + Reply & Resolve, per-staff read / I'm-Involved / resolve-requires-reply logic, the dept badge's neutral tint contrast, and retiring the redundant "N THREADS" count row.
