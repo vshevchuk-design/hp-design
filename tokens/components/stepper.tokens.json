@@ -1,0 +1,53 @@
+{
+  "component": {
+    "stepper": {
+      "$description": "Horizontal step indicator for a short multi-step flow — the New Group Message wizard ('1 Select Students — 2 Message Details') is its driving use case. Numbered circles joined by connector lines, each step inactive / active / complete. A complete step's circle fills and swaps its number for a check; the connector leading INTO a reached step fills too, so progress reads left-to-right. Deliberately minimal (no vertical variant, no descriptions) — built for 2–3 step wizards, not a page-length onboarding.",
+      "circle": {
+        "size": { "$type": "dimension", "$value": "{dim.7}", "$description": "28px." },
+        "label": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{family.sans}",
+            "fontWeight": "{weight.semibold}",
+            "fontSize": "{size.sm}",
+            "lineHeight": "{leading.none}",
+            "letterSpacing": "{tracking.normal}"
+          },
+          "$description": "The number inside the circle."
+        },
+        "iconSize": { "$type": "dimension", "$value": "{dim.4}", "$description": "The check glyph on a complete step (check.svg, the shared Material icon)." }
+      },
+      "gap": { "$type": "dimension", "$value": "{dim.2}", "$description": "Circle ↔ its label." },
+      "connector": {
+        "thickness": { "$type": "dimension", "$value": "{dim.0_5}", "$description": "2px line between steps." },
+        "color": { "$type": "color", "$value": "{border.default}" },
+        "completeColor": { "$type": "color", "$value": "{fill.primary}", "$description": "The connector into a reached step fills brand blue." }
+      },
+      "text": {
+        "$type": "typography",
+        "$value": "{text-style.heading-sm}",
+        "$description": "The step label beside the circle (14px semibold)."
+      },
+      "state": {
+        "inactive": {
+          "$description": "Not yet reached — a hollow-reading gray disc + muted ink.",
+          "circleBg": { "$type": "color", "$value": "{surface.sunken}" },
+          "circleText": { "$type": "color", "$value": "{text.muted}" },
+          "labelColor": { "$type": "color", "$value": "{text.muted}" }
+        },
+        "active": {
+          "$description": "The current step — solid brand fill, on-fill number, default-ink label.",
+          "circleBg": { "$type": "color", "$value": "{fill.primary}" },
+          "circleText": { "$type": "color", "$value": "{text.onFill}" },
+          "labelColor": { "$type": "color", "$value": "{text.default}" }
+        },
+        "complete": {
+          "$description": "A finished step — solid brand fill with a check glyph, default-ink label. Same fill as active (it stays 'done and reachable'); the check vs. number is the only difference.",
+          "circleBg": { "$type": "color", "$value": "{fill.primary}" },
+          "circleIcon": { "$type": "color", "$value": "{icon.onFill}" },
+          "labelColor": { "$type": "color", "$value": "{text.default}" }
+        }
+      }
+    }
+  }
+}

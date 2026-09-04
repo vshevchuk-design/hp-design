@@ -1,0 +1,31 @@
+{
+  "component": {
+    "stat": {
+      "$description": "A single metric tile — one big number over a quiet label, in a bordered surface. The group-message delivery summary ('37 Delivered / 24 Seen / 6 Replied') is its driving use case; the analytics suite (MC v2 Part 4) will reuse it. Built on Card's own surface + hairline-border + radius recipe (no shadow), so a row of stats reads as a set of small cards. The value can carry a role color (e.g. Replied in success green) via the role axis; the label stays muted regardless.",
+      "surface": { "$type": "color", "$value": "{surface.default}" },
+      "border": { "$type": "color", "$value": "{border.default}" },
+      "radius": { "$type": "dimension", "$value": "{radius.default}" },
+      "padding": { "$type": "dimension", "$value": "{dim.4}" },
+      "gap": { "$type": "dimension", "$value": "{dim.1}", "$description": "Value ↔ label." },
+      "value": {
+        "$type": "typography",
+        "$value": "{text-style.title-2xl}",
+        "$description": "24px bold — a prominent number, the tile's whole point."
+      },
+      "valueColor": { "$type": "color", "$value": "{text.default}" },
+      "label": {
+        "$type": "typography",
+        "$value": "{text-style.body-sm}",
+        "$description": "13px — the metric's name under the number."
+      },
+      "labelColor": { "$type": "color", "$value": "{text.muted}" },
+      "role": {
+        "$description": "Optional value tint — the number only, label stays muted. Reuses the semantic text.* role inks (600-step, AA-safe), so a stat means the same thing a Badge of that role would.",
+        "success": { "$type": "color", "$value": "{text.success}" },
+        "primary": { "$type": "color", "$value": "{text.primary}" },
+        "warning": { "$type": "color", "$value": "{text.warning}" },
+        "danger": { "$type": "color", "$value": "{text.danger}" }
+      }
+    }
+  }
+}

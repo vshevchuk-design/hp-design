@@ -1,0 +1,389 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>hp-design — Table</title>
+<link rel="stylesheet" href="../assets/fonts/sora/sora.css" />
+<style>
+  :root {
+    --bg-page: #f7f7f5; --bg-card: #ffffff; --bg-card-hover: #fbfbfa;
+    --border: #e4e3df; --border-strong: #d2d1cb;
+    --text-primary: #0e0e10; --text-secondary: #63625c; --text-muted: #918f87;
+    --accent: #0468c4; --accent-bg: #eff6ff;
+    --code-bg: #1e1e22; --code-text: #e4e3df;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --sans: -apple-system, "Segoe UI", system-ui, sans-serif;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327;
+      --border: #313035; --border-strong: #403f45;
+      --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68;
+      --accent: #5aa4ec; --accent-bg: #16283b;
+      --code-bg: #0d0d0f; --code-text: #d7d6d2;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327;
+    --border: #313035; --border-strong: #403f45;
+    --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68;
+    --accent: #5aa4ec; --accent-bg: #16283b;
+    --code-bg: #0d0d0f; --code-text: #d7d6d2;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg-page); color: var(--text-primary); font-family: var(--sans); }
+  .shell { display: flex; min-height: 100vh; }
+  nav.side { width: 220px; flex-shrink: 0; border-right: 0.5px solid var(--border); padding: 1.5rem 1rem; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+  .navlink { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 8px; border-radius: 7px; font-size: 13px; text-decoration: none; color: var(--text-primary); margin-bottom: 1px; }
+  .navlink:hover { background: var(--bg-card-hover); }
+  .navlink.active { background: var(--accent-bg); color: var(--accent); font-weight: 600; }
+  .nav-category { font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin: 16px 8px 6px; }
+  main { flex: 1; padding: 4rem 4rem 6rem; max-width: 1120px; }
+
+  h1 { font-size: 36px; font-weight: 700; margin: 0 0 10px; letter-spacing: -0.02em; }
+  .sub { font-size: 14px; color: var(--text-secondary); margin: 0 0 2.5rem; }
+  h2.big-section { font-size: 24px; font-weight: 700; margin: 5.5rem 0 1.5rem; letter-spacing: -0.01em; padding-top: 2.5rem; border-top: 1px solid var(--border); }
+  h2.big-section:first-of-type { margin-top: 3rem; padding-top: 0; border-top: none; }
+  .section-desc { font-size: 13.5px; color: var(--text-secondary); margin: -0.5rem 0 1.5rem; max-width: 68ch; line-height: 1.6; }
+
+  .legend { font-size: 12.5px; color: var(--text-secondary); padding: 14px 18px; background: var(--bg-card); border: 0.5px solid var(--border); border-radius: 10px; margin-bottom: 1rem; line-height: 1.6; }
+  .legend .row { display: flex; gap: 14px; padding: 6px 0; border-bottom: 0.5px solid var(--border); }
+  .legend .row:last-child { border-bottom: none; }
+  .legend .row b { width: 140px; flex-shrink: 0; color: var(--text-primary); font-weight: 600; font-family: var(--mono); font-size: 11.5px; }
+  code.tok { font-family: var(--mono); font-size: 12px; color: var(--accent); }
+
+  pre.code { background: var(--code-bg); color: var(--code-text); border-radius: 10px; padding: 16px 18px; margin: 0; overflow-x: auto; font-family: var(--mono); font-size: 12px; line-height: 1.7; }
+  pre.code code { font-family: inherit; }
+
+  .story-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px; }
+  .story { border: 0.5px solid var(--border); border-radius: 14px; background: var(--bg-card); padding: 22px; display: flex; flex-direction: column; gap: 12px; }
+  .story--full { grid-column: 1 / -1; }
+  .story h3 { font-size: 14px; font-weight: 600; margin: 0; font-family: var(--mono); }
+  .story-preview { padding: 4px 0; overflow-x: auto; }
+  .story-note { font-size: 11.5px; color: var(--text-muted); margin: 0; line-height: 1.5; }
+
+  :root {
+  --tok-surface-default: #ffffff;
+  --tok-surface-dim: #f5f5f5;
+  --tok-border-default: #d1d1d1;
+  --tok-border-focus: #0468c4;
+  --tok-text-default: #181818;
+  --tok-text-secondary: #696969;
+  --tok-text-muted: #808080;
+  --tok-icon-muted: #989898;
+  --tok-icon-default: #525252;
+  --tok-bg-primary: #d9eaff;
+  --tok-fill-neutral-active: #b4b4b4;
+  --tok-avatar-blue-bg: #d9eaff;
+  --tok-avatar-blue-text: #0468c4;
+  --tok-avatar-teal-bg: #88fffe;
+  --tok-avatar-teal-text: #057878;
+  --tok-avatar-amber-bg: #ffe2c5;
+  --tok-avatar-amber-text: #935a03;
+  --tok-bg-warning: #ffe2c5;
+  --tok-text-warning: #935a03;
+  --tok-bg-danger: #ffdfde;
+  --tok-text-danger: #c11435;
+  --tok-text-primary: #0468c4;
+  --tok-family-sans: 'Sora', sans-serif;
+}
+
+.table { box-sizing: border-box; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); border-radius: 8px; overflow: hidden; font-family: var(--tok-family-sans); }
+.table__row { display: grid; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--tok-border-default); }
+.table__row:last-child { border-bottom: none; }
+.table__row--head { padding: 12px 16px; border-bottom: 1px solid var(--tok-border-default); background: var(--tok-surface-default); }
+.table__th { color: var(--tok-text-muted); font-weight: 700; font-size: 12px; line-height: 1.4; text-transform: uppercase; white-space: nowrap; min-width: 0; }
+.table__td { color: var(--tok-text-default); font-weight: 400; font-size: 12px; line-height: 1.4; min-width: 0; }
+.table__td--muted { color: var(--tok-text-muted); }
+/* interactive body rows */
+.table__row:not(.table__row--head) { cursor: pointer; }
+.table__row:not(.table__row--head):hover { background: var(--tok-surface-dim); }
+.table__row:not(.table__row--head):active { background: var(--tok-fill-neutral-active); }
+.table__row--selected, .table__row--selected:hover { background: var(--tok-bg-primary); }
+.table__row:focus-visible { outline: 2px solid var(--tok-border-focus); outline-offset: -2px; }
+/* sortable header cell */
+.table__sort { display: inline-flex; align-items: center; gap: 2px; border: none; background: none; padding: 0; cursor: pointer; color: inherit; font: inherit; text-transform: inherit; letter-spacing: inherit; }
+.table__sort-icon { width: 16px; height: 16px; color: var(--tok-icon-muted); }
+.table__sort--active .table__sort-icon { color: var(--tok-icon-default); }
+.table__sort--asc .table__sort-icon { transform: rotate(180deg); }
+/* inbox-style unread/read lead-text emphasis (reused from ThreadListItem) */
+.table__lead { display: block; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.table__row--unread .table__lead { font-weight: 600; color: var(--tok-text-default); }
+.table__row--read .table__lead { font-weight: 400; color: var(--tok-text-secondary); }
+  
+.tbl-demo { grid-template-columns: 1.4fr 2fr 1fr 0.7fr 28px; }
+.tbl-cell { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.tbl-avatar { flex-shrink: 0; width: 32px; height: 32px; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; }
+.tbl-av-blue { background: var(--tok-avatar-blue-bg); color: var(--tok-avatar-blue-text); }
+.tbl-av-teal { background: var(--tok-avatar-teal-bg); color: var(--tok-avatar-teal-text); }
+.tbl-av-amber { background: var(--tok-avatar-amber-bg); color: var(--tok-avatar-amber-text); }
+.tbl-id { color: var(--tok-text-muted); font-size: 12px; }
+.tbl-stack { min-width: 0; display: flex; flex-direction: column; }
+.tbl-badge { display: inline-flex; align-items: center; height: 20px; padding: 0 8px; border-radius: 999px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+.tbl-badge--warn { background: var(--tok-bg-warning); color: var(--tok-text-warning); }
+.tbl-badge--danger { background: var(--tok-bg-danger); color: var(--tok-text-danger); }
+.tbl-date { color: var(--tok-text-muted); font-size: 13px; }
+.tbl-date--unread { color: var(--tok-text-primary); font-weight: 600; }
+.table__demo-flag { width: 18px; height: 18px; color: var(--tok-icon-muted); }
+</style>
+</head>
+<body>
+<div class="shell">
+  <nav class="side">
+    <style>
+  .nav-logo { color: var(--text-primary); margin: 2px 0 16px 8px; }
+  .nav-logo svg { display: block; }
+  .nav-pane .brand { margin: 12px 0 10px 8px; }
+  .nav-tabs { display: flex; gap: 3px; margin: 0 0 4px; padding: 3px; background: var(--bg-card); border: 0.5px solid var(--border); border-radius: 9px; }
+  .nav-tab { flex: 1; border: none; background: transparent; padding: 6px 0; border-radius: 6px; font-size: 12px; font-weight: 600; color: var(--text-secondary); cursor: pointer; font-family: inherit; }
+  .nav-tab:hover { background: var(--bg-card-hover); color: var(--text-primary); }
+  .nav-tab.active { background: var(--accent-bg); color: var(--accent); }
+  .nav-pane { display: none; }
+  .nav-pane.active { display: block; }
+  .nav-acc { margin: 0; }
+  .nav-acc summary { list-style: none; display: flex; align-items: center; justify-content: space-between; cursor: pointer; font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin: 16px 8px 6px; user-select: none; }
+  .nav-acc summary::-webkit-details-marker { display: none; }
+  .nav-acc summary::after { content: ""; width: 5px; height: 5px; border-right: 1.5px solid var(--text-muted); border-bottom: 1.5px solid var(--text-muted); transform: rotate(-45deg); transition: transform 0.12s; }
+  .nav-acc[open] summary::after { transform: rotate(45deg); }
+</style>
+    <div class="nav-logo"><svg width="122" height="24" viewBox="0 0 122 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="24" height="24" fill="#0468C4"/>
+<path d="M13.0382 6C12.9042 6.50092 12.7966 7.01224 12.7179 7.53231C12.6432 8.02529 12.5943 8.52624 12.572 9.03381C12.9967 8.76717 13.4363 8.52023 13.8889 8.2943C14.3268 8.07568 14.7772 7.87687 15.2387 7.69887C15.1632 8.14962 15.114 8.60887 15.0911 9.07462C15.0816 9.26913 15.0764 9.46495 15.0764 9.66173C15.0764 9.91396 15.0842 10.1644 15.0998 10.4129C15.5005 10.215 15.9138 10.0371 16.3377 9.87991C16.7472 9.72808 17.1668 9.59574 17.5955 9.48434C17.5944 9.5433 17.5946 9.60252 17.5946 9.66173C17.5946 10.0205 17.6147 10.3747 17.6536 10.7235C17.8768 12.7214 18.7219 14.5409 20 16H18.4141C17.3833 14.5875 16.6873 12.9334 16.4375 11.1441C16.0303 11.3102 15.6351 11.498 15.2535 11.7062C15.5243 13.2549 16.0969 14.7056 16.9123 16H15.4653C14.8473 14.8895 14.3859 13.6867 14.1111 12.4182C13.7318 12.6864 13.3697 12.9763 13.0278 13.286C13.2777 14.2305 13.6235 15.1385 14.0538 16H12.6693C12.4221 15.4553 12.2059 14.8946 12.0226 14.3203C11.5762 14.8424 11.1789 15.4046 10.8368 16H9.41927C9.99395 14.8591 10.7478 13.8163 11.645 12.9054C11.5409 12.424 11.4595 11.9343 11.4019 11.438C9.97223 12.7077 8.81812 14.2592 8.03559 16H6.67448C7.6474 13.6062 9.25665 11.5172 11.3021 9.92405C11.3006 9.83678 11.2995 9.74934 11.2995 9.66173C11.2995 9.227 11.3176 8.796 11.3533 8.37009C8.6069 10.2438 6.48141 12.9003 5.33073 16H4C5.31971 12.1395 8.03339 8.88461 11.5703 6.78281C12.0451 6.50067 12.5351 6.23926 13.0382 6ZM13.8177 9.71336C13.3912 9.9547 12.9785 10.2168 12.5825 10.4987C12.6106 10.9783 12.6629 11.4523 12.7378 11.9186C13.1065 11.6225 13.4928 11.3453 13.895 11.0899C13.8453 10.6374 13.8195 10.1781 13.8177 9.71336Z" fill="white"/>
+<path d="M57.2855 6.6813C59.048 6.68139 60.3655 7.51419 61.0148 9.04954V6.9958H63.0558V15.857C63.0558 19.5199 61.2184 21 57.1364 21C56.1532 21 55.1145 20.9258 54.2611 20.7964V18.6506C55.1331 18.7616 56.2278 18.8543 57.1183 18.8543C59.6045 18.8543 60.6253 17.9842 60.6253 16.0048V15.0991C59.9573 16.4124 58.7135 17.1151 57.1364 17.1151C54.3534 17.1149 52.5348 14.8951 52.5348 12.0649V11.6765C52.5348 8.82757 54.4652 6.6813 57.2855 6.6813ZM92.5843 6.64434C95.9983 6.64437 98.0762 9.08678 98.0762 11.8432V12.2316C98.0761 14.8954 96.1095 17.3926 92.5843 17.3926C89.0405 17.3926 87.0736 14.8954 87.0734 12.2316V11.8432C87.0734 9.08677 89.1517 6.64434 92.5843 6.64434ZM118.901 6.9958H122V8.88285H118.883V13.4338C118.883 14.4142 119.439 14.9693 120.423 14.9693H122V17.1709H120.552C117.769 17.1708 116.47 16.2083 116.47 13.2671V8.88285H114.875V6.9958H116.489V4.16606H118.901V6.9958ZM36.6339 9.12345H42.8869V3.53704H45.5217V17.0411H42.8869V11.4359H36.6339V17.0411H34V3.53704H36.6339V9.12345ZM50.9732 17.0411H48.3936V8.9198H46.9836V6.9958H50.9732V17.0411ZM67.7059 8.6792C68.2441 7.38445 69.246 6.6813 70.7674 6.6813H70.8785C73.1792 6.6813 74.3855 8.3094 74.3855 11.3061V17.0411H71.8059V11.0655C71.8058 9.7893 71.0084 8.99373 69.821 8.9937C68.5408 8.9937 67.706 9.90035 67.7059 11.2322V17.0411H65.1264V3.53704H67.7059V8.6792ZM81.2957 3.44425C84.7097 3.44425 86.6582 5.183 86.6583 8.01323V8.30967C86.6583 11.1215 84.7097 12.8975 81.2957 12.8975H79.2548V17.0411H76.62V3.44425H81.2957ZM102.654 17.0411H100.075V8.9198H98.6651V6.9958H102.654V17.0411ZM110.487 6.6813C112.881 6.6813 114.143 8.23567 114.143 11.288V17.0411H111.564V11.0655C111.564 9.82627 110.803 8.9937 109.578 8.9937C108.317 8.99388 107.463 9.84542 107.463 11.1402V17.0411H104.884V6.9958H106.925V9.47491C107.352 7.62506 108.502 6.68134 110.376 6.6813H110.487ZM92.5843 8.84589C90.7474 8.84589 89.6522 10.1965 89.6522 12.0279C89.6522 13.8408 90.6918 15.1911 92.5843 15.1911C94.4582 15.191 95.4974 13.8408 95.4975 12.0279C95.4975 10.1965 94.4026 8.84593 92.5843 8.84589ZM57.8793 8.80894C56.2465 8.80894 55.1144 10.0117 55.1144 11.8801C55.1145 13.7484 56.2651 14.9135 57.8793 14.9135C59.3635 14.9133 60.5882 13.8776 60.5882 12.1018V11.4547C60.5882 9.75297 59.3078 8.80911 57.8793 8.80894ZM79.2548 10.6221H81.5181C83.0951 10.6221 83.9864 9.60461 83.9865 8.16186C83.9865 6.70042 83.0952 5.71971 81.5181 5.71971H79.2548V10.6221ZM49.34 3C50.3419 3 50.806 3.57381 50.806 4.38777C50.806 5.20168 50.3419 5.79361 49.34 5.79361C48.3197 5.79353 47.8559 5.20162 47.8558 4.38777C47.8558 3.57386 48.3196 3.00008 49.34 3ZM101.021 3C102.023 3.00011 102.487 3.57388 102.487 4.38777C102.487 5.2016 102.023 5.7935 101.021 5.79361C100.001 5.79361 99.5366 5.20168 99.5365 4.38777C99.5365 3.57381 100.001 3 101.021 3Z" fill="currentColor"/>
+</svg>
+</div>
+    <div class="nav-tabs" role="tablist">
+      <button class="nav-tab active" data-pane="ds" type="button">DS</button>
+      <button class="nav-tab" data-pane="designs" type="button">Designs</button>
+    </div>
+    <div class="nav-pane nav-pane--ds active" data-pane="ds">
+    <p class="brand">Design System</p>
+    <a class="navlink" href="index.html">Overview</a>
+    <a class="navlink" href="logs.html">Logs</a>
+    <p class="nav-category">Tokens</p>
+    <a class="navlink" href="colors.html">Colors</a>
+    <a class="navlink" href="semantic-colors.html">Semantic colors</a>
+    <a class="navlink" href="typography.html">Typography</a>
+    <a class="navlink" href="layout.html">Layout</a>
+    <a class="navlink" href="icons.html">Icons</a>
+    <p class="nav-category">Components</p>
+    <a class="navlink" href="button.html">Button</a>
+    <a class="navlink" href="counter.html">Counter</a>
+    <a class="navlink" href="input.html">Input</a>
+    <a class="navlink" href="select.html">Select</a>
+    <a class="navlink" href="date-picker.html">DatePicker</a>
+    <a class="navlink" href="search.html">Search</a>
+    <a class="navlink" href="pagination.html">Pagination</a>
+    <a class="navlink" href="separator.html">Separator</a>
+    <a class="navlink" href="tabs.html">Tabs</a>
+    <a class="navlink" href="checkbox.html">Checkbox</a>
+    <a class="navlink" href="radio.html">Radio</a>
+    <a class="navlink" href="box.html">Box</a>
+    <a class="navlink" href="card.html">Card</a>
+    <a class="navlink" href="stat.html">Stat</a>
+    <a class="navlink" href="switch.html">Switch</a>
+    <a class="navlink" href="grid.html">Grid</a>
+    <a class="navlink active" href="table.html">Table</a>
+    <a class="navlink" href="stepper.html">Stepper</a>
+    <a class="navlink" href="tooltip.html">Tooltip</a>
+    <a class="navlink" href="popover.html">Popover</a>
+    <a class="navlink" href="drawer.html">Drawer</a>
+    <a class="navlink" href="modal.html">Modal</a>
+    <a class="navlink" href="menu.html">Menu</a>
+    <a class="navlink" href="split-button.html">SplitButton</a>
+    <a class="navlink" href="listbox.html">Listbox</a>
+    <a class="navlink" href="avatar.html">Avatar</a>
+    <a class="navlink" href="avatar-group.html">AvatarGroup</a>
+    <a class="navlink" href="badge.html">Badge</a>
+    <a class="navlink" href="chip.html">Chip</a>
+    <a class="navlink" href="attachment.html">Attachment</a>
+    <a class="navlink" href="message.html">Message</a>
+    <a class="navlink" href="bubble.html">Bubble</a>
+    <a class="navlink" href="thread-list-item.html">ThreadListItem</a>
+    <a class="navlink" href="composer.html">Composer</a>
+    <a class="navlink" href="empty-state.html">EmptyState</a>
+    <a class="navlink" href="toast.html">Toast</a>
+    <a class="navlink" href="skeleton.html">Skeleton</a>
+    </div>
+    <div class="nav-pane nav-pane--designs" data-pane="designs">
+    <p class="brand">Design Prototypes</p>
+    <details class="nav-acc" open>
+      <summary>Message Center</summary>
+      <a class="navlink" href="designs/student-message-center.html">Student Message Center</a>
+      <a class="navlink" href="designs/staff-message-center.html">Staff Message Center</a>
+    </details>
+    </div>
+    <script>
+  document.querySelectorAll(".nav-tab").forEach((tab) => {
+    tab.addEventListener("click", () => {
+      document.querySelectorAll(".nav-tab").forEach((t) => t.classList.toggle("active", t === tab));
+      document.querySelectorAll(".nav-pane").forEach((p) => p.classList.toggle("active", p.dataset.pane === tab.dataset.pane));
+    });
+  });
+</script>
+  </nav>
+  <main>
+    <h1>Table</h1>
+    <p class="sub">tokens/components/table.tokens.json · generated — the CSS below is generated from the same resolved tokens driving the preview. A div-based grid table so columns, rounded corners, sticky headers and whole-row click all behave; every body row below is a real, clickable element.</p>
+
+    <div class="legend">
+      <div class="row"><b>Container</b><span>surface.default + a 1px <code class="tok">border.default</code> hairline + <code class="tok">radius.default</code>, overflow hidden — the same "separate with a border, not a shadow" convention as Card. No fixed column model; the consumer sets <code class="tok">grid-template-columns</code> per use (structural, like Grid).</span></div>
+      <div class="row"><b>Header</b><span>Column labels use <code class="tok">text-style.label-sm</code> (uppercase, wide-tracked small caps) in <code class="tok">text.muted</code>, with a bottom divider. A sortable header is a real button with a chevron that rotates for asc/desc.</span></div>
+      <div class="row"><b>Row states</b><span>Interactive rows: hover = <code class="tok">surface.dim</code> (soft, full-width-friendly, not the ghost fill), selected = <code class="tok">bg.primary</code> tint, focus = inset ring. Rows divide with a hairline; the last drops it.</span></div>
+      <div class="row"><b>Unread / read</b><span>The inbox emphasis pair reused verbatim from ThreadListItem: <code class="tok">--unread</code> lead text is semibold default ink, <code class="tok">--read</code> relaxes to normal-weight secondary. A weight/color swap only — background is owned by hover/selected.</span></div>
+    </div>
+
+    <h2 class="big-section">CSS</h2>
+    <pre class="code"><code>:root {
+  --tok-surface-default: #ffffff;
+  --tok-surface-dim: #f5f5f5;
+  --tok-border-default: #d1d1d1;
+  --tok-border-focus: #0468c4;
+  --tok-text-default: #181818;
+  --tok-text-secondary: #696969;
+  --tok-text-muted: #808080;
+  --tok-icon-muted: #989898;
+  --tok-icon-default: #525252;
+  --tok-bg-primary: #d9eaff;
+  --tok-fill-neutral-active: #b4b4b4;
+  --tok-avatar-blue-bg: #d9eaff;
+  --tok-avatar-blue-text: #0468c4;
+  --tok-avatar-teal-bg: #88fffe;
+  --tok-avatar-teal-text: #057878;
+  --tok-avatar-amber-bg: #ffe2c5;
+  --tok-avatar-amber-text: #935a03;
+  --tok-bg-warning: #ffe2c5;
+  --tok-text-warning: #935a03;
+  --tok-bg-danger: #ffdfde;
+  --tok-text-danger: #c11435;
+  --tok-text-primary: #0468c4;
+  --tok-family-sans: 'Sora', sans-serif;
+}
+
+.table { box-sizing: border-box; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); border-radius: 8px; overflow: hidden; font-family: var(--tok-family-sans); }
+.table__row { display: grid; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--tok-border-default); }
+.table__row:last-child { border-bottom: none; }
+.table__row--head { padding: 12px 16px; border-bottom: 1px solid var(--tok-border-default); background: var(--tok-surface-default); }
+.table__th { color: var(--tok-text-muted); font-weight: 700; font-size: 12px; line-height: 1.4; text-transform: uppercase; white-space: nowrap; min-width: 0; }
+.table__td { color: var(--tok-text-default); font-weight: 400; font-size: 12px; line-height: 1.4; min-width: 0; }
+.table__td--muted { color: var(--tok-text-muted); }
+/* interactive body rows */
+.table__row:not(.table__row--head) { cursor: pointer; }
+.table__row:not(.table__row--head):hover { background: var(--tok-surface-dim); }
+.table__row:not(.table__row--head):active { background: var(--tok-fill-neutral-active); }
+.table__row--selected, .table__row--selected:hover { background: var(--tok-bg-primary); }
+.table__row:focus-visible { outline: 2px solid var(--tok-border-focus); outline-offset: -2px; }
+/* sortable header cell */
+.table__sort { display: inline-flex; align-items: center; gap: 2px; border: none; background: none; padding: 0; cursor: pointer; color: inherit; font: inherit; text-transform: inherit; letter-spacing: inherit; }
+.table__sort-icon { width: 16px; height: 16px; color: var(--tok-icon-muted); }
+.table__sort--active .table__sort-icon { color: var(--tok-icon-default); }
+.table__sort--asc .table__sort-icon { transform: rotate(180deg); }
+/* inbox-style unread/read lead-text emphasis (reused from ThreadListItem) */
+.table__lead { display: block; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.table__row--unread .table__lead { font-weight: 600; color: var(--tok-text-default); }
+.table__row--read .table__lead { font-weight: 400; color: var(--tok-text-secondary); }</code></pre>
+
+    <h2 class="big-section">Threads console</h2>
+    <p class="section-desc">A realistic composition — the Staff Message Center list. Click a row (selects + marks read); click a sortable header (Student / Date) to toggle the sort chevron. Avatars/badges here are lightweight demo stand-ins; the real console composes the actual Avatar and Badge components.</p>
+    <div class="story-grid">
+      
+      <div class="story story--full">
+        <h3>Interactive table</h3>
+        <div class="story-preview"><div class="table" role="table">
+      <div class="table__row table__row--head tbl-demo" role="row">
+        <div class="table__th" role="columnheader"><button type="button" class="table__sort">Student<svg class="table__sort-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button></div>
+        <div class="table__th" role="columnheader">Subject &amp; Message</div>
+        <div class="table__th" role="columnheader">Responsible</div>
+        <div class="table__th" role="columnheader">Expiration</div>
+        <div class="table__th" role="columnheader"><button type="button" class="table__sort table__sort--active">Date<svg class="table__sort-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button></div>
+        <div class="table__th" role="columnheader"></div>
+      </div>
+      <div class="table__row tbl-demo table__row--unread" role="row" tabindex="0">
+        <div class="table__td tbl-cell" role="cell"><span class="tbl-avatar tbl-av-blue">CA</span><span class="tbl-stack"><span class="table__lead">Cait Adelson</span><span class="tbl-id">CX0001</span></span></div>
+        <div class="table__td tbl-cell" role="cell"><span class="tbl-stack"><span class="table__lead">Question about fall registration</span><span class="table__td--muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Hi, I wanted to check whether there is a hold…</span></span></div>
+        <div class="table__td table__td--muted" role="cell">–</div>
+        <div class="table__td" role="cell"><span class="table__td--muted">–</span></div>
+        <div class="table__td tbl-date--unread" role="cell" style="text-align:right">3:56 PM</div>
+        <div class="table__td" role="cell"><svg class="table__demo-flag" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></div>
+      </div>
+      <div class="table__row tbl-demo table__row--unread" role="row" tabindex="0">
+        <div class="table__td tbl-cell" role="cell"><span class="tbl-avatar tbl-av-teal">AR</span><span class="tbl-stack"><span class="table__lead">Allison Rao</span><span class="tbl-id">AA0367</span></span></div>
+        <div class="table__td tbl-cell" role="cell"><span class="tbl-stack"><span class="table__lead">Satisfactory Academic Progress Plan</span><span class="table__td--muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Okay I will contact my advisor soon. Thank you.</span></span></div>
+        <div class="table__td table__td--muted" role="cell">Sarah Nguyen</div>
+        <div class="table__td" role="cell"><span class="table__td--muted">–</span></div>
+        <div class="table__td tbl-date--unread" role="cell" style="text-align:right">11:20 AM</div>
+        <div class="table__td" role="cell"><svg class="table__demo-flag" style="color:var(--tok-icon-default)" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></div>
+      </div>
+      <div class="table__row tbl-demo table__row--read" role="row" tabindex="0">
+        <div class="table__td tbl-cell" role="cell"><span class="tbl-avatar tbl-av-amber">CX</span><span class="tbl-stack"><span class="table__lead">Calam Xavier</span><span class="tbl-id">CX0002</span></span></div>
+        <div class="table__td tbl-cell" role="cell"><span class="tbl-stack"><span class="table__lead">Course withdrawal deadline</span><span class="table__td--muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Hey Alex, I did alright on my quiz but I would…</span></span></div>
+        <div class="table__td table__td--muted" role="cell">You, Sarah +2</div>
+        <div class="table__td" role="cell"><span class="tbl-badge tbl-badge--warn">Expires Jul 20</span></div>
+        <div class="table__td tbl-date" role="cell" style="text-align:right">Jul 10</div>
+        <div class="table__td" role="cell"><svg class="table__demo-flag" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></div>
+      </div>
+      <div class="table__row tbl-demo table__row--read table__row--selected" role="row" tabindex="0">
+        <div class="table__td tbl-cell" role="cell"><span class="tbl-avatar tbl-av-blue">LA</span><span class="tbl-stack"><span class="table__lead">L Arcos</span><span class="tbl-id">AA0007</span></span></div>
+        <div class="table__td tbl-cell" role="cell"><span class="tbl-stack"><span class="table__lead">Advisement Outreach</span><span class="table__td--muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Thank you for the details about the outreach…</span></span></div>
+        <div class="table__td table__td--muted" role="cell">–</div>
+        <div class="table__td" role="cell"><span class="tbl-badge tbl-badge--danger">Expired Jul 10</span></div>
+        <div class="table__td tbl-date" role="cell" style="text-align:right">Jul 8</div>
+        <div class="table__td" role="cell"><svg class="table__demo-flag" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></div>
+      </div>
+    </div></div>
+        
+        <p class="story-note">Two unread rows (semibold) + two read rows; L Arcos is pre-selected.</p>
+      </div>
+    </div>
+
+    <h2 class="big-section">Markup</h2>
+    <p class="section-desc">The shape — a <code class="tok">.table</code> container of <code class="tok">.table__row</code>s (one <code class="tok">--head</code>), each a grid of <code class="tok">.table__td</code>/<code class="tok">.table__th</code> cells. Columns are set per-use.</p>
+    <pre class="code"><code>&lt;div class="table" role="table"&gt;
+  &lt;div class="table__row table__row--head" style="grid-template-columns: …"&gt;
+    &lt;div class="table__th"&gt;&lt;button class="table__sort"&gt;Student&lt;svg class="table__sort-icon"&gt;&lt;!-- expand_more --&gt;&lt;/svg&gt;&lt;/button&gt;&lt;/div&gt;
+    &lt;div class="table__th"&gt;Subject &amp;amp; Message&lt;/div&gt; …
+  &lt;/div&gt;
+  &lt;div class="table__row table__row--unread" role="row" tabindex="0"&gt;
+    &lt;div class="table__td"&gt;&lt;span class="table__lead"&gt;Cait Adelson&lt;/span&gt;&lt;/div&gt; …
+  &lt;/div&gt;
+  &lt;div class="table__row table__row--read table__row--selected" role="row" tabindex="0"&gt; … &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+
+    <h2 class="big-section">JS</h2>
+    <p class="section-desc">Row select + mark-read and header sort-toggle — the only script the demo needs; the CSS above keys off the classes it flips.</p>
+    <pre class="code"><code>document.querySelectorAll(".table__row:not(.table__row--head)").forEach((row) =&gt; {
+  row.addEventListener("click", () =&gt; {
+    row.closest(".table").querySelectorAll(".table__row--selected").forEach((r) =&gt; r.classList.remove("table__row--selected"));
+    row.classList.add("table__row--selected");
+    row.classList.remove("table__row--unread"); row.classList.add("table__row--read");
+  });
+});
+document.querySelectorAll(".table__sort").forEach((btn) =&gt; {
+  btn.addEventListener("click", () =&gt; {
+    var wasAsc = btn.classList.contains("table__sort--asc");
+    btn.closest(".table__row--head").querySelectorAll(".table__sort").forEach((b) =&gt; b.classList.remove("table__sort--active", "table__sort--asc"));
+    btn.classList.add("table__sort--active"); if (!wasAsc) btn.classList.add("table__sort--asc");
+  });
+});</code></pre>
+  </main>
+</div>
+<script>document.querySelectorAll(".table__row:not(.table__row--head)").forEach((row) => {
+  row.addEventListener("click", () => {
+    row.closest(".table").querySelectorAll(".table__row--selected").forEach((r) => r.classList.remove("table__row--selected"));
+    row.classList.add("table__row--selected");
+    row.classList.remove("table__row--unread"); row.classList.add("table__row--read");
+  });
+});
+document.querySelectorAll(".table__sort").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    var wasAsc = btn.classList.contains("table__sort--asc");
+    btn.closest(".table__row--head").querySelectorAll(".table__sort").forEach((b) => b.classList.remove("table__sort--active", "table__sort--asc"));
+    btn.classList.add("table__sort--active"); if (!wasAsc) btn.classList.add("table__sort--asc");
+  });
+});</script>
+</body>
+</html>

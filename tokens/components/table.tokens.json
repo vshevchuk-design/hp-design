@@ -1,0 +1,52 @@
+{
+  "component": {
+    "table": {
+      "$description": "Data table for dense list/console surfaces — the Staff Message Center threads console is its driving use case. A container (surface + hairline border + radius, the same 'separate with a border, not a shadow' convention as Card) wrapping a header row and body rows; cells are laid out by the consumer (grid/flex columns), the component owns the header/row/cell recipe and the row states. Rows can be interactive (a whole-row link/button) with hover/selected states, and carry an unread/read weight pair for inbox-style lists (unread = semibold ink, read = normal secondary) — the exact pair ThreadListItem's own inbox rows already use, reused here rather than re-derived. Header labels reuse text-style.label-sm (uppercase, wide tracking) — the same small-caps column-header treatment already used across the docs legends. No fixed column model (structural, per-use, same reasoning as Grid not tokenizing columns).",
+      "radius": { "$type": "dimension", "$value": "{radius.default}" },
+      "surface": { "$type": "color", "$value": "{surface.default}" },
+      "border": { "$type": "color", "$value": "{border.default}" },
+      "header": {
+        "paddingX": { "$type": "dimension", "$value": "{dim.4}" },
+        "paddingY": { "$type": "dimension", "$value": "{dim.3}" },
+        "label": {
+          "$type": "typography",
+          "$value": "{text-style.label-sm}",
+          "$description": "Uppercase, bold, wide-tracked small caps — the column-header convention. $extensions carries textTransform:uppercase; fetch it directly (resolveToken drops $extensions), same gap handled everywhere else."
+        },
+        "labelColor": { "$type": "color", "$value": "{text.muted}" },
+        "divider": { "$type": "color", "$value": "{border.default}" },
+        "sortIcon": {
+          "size": { "$type": "dimension", "$value": "{dim.4}" },
+          "color": { "$type": "color", "$value": "{icon.muted}" },
+          "activeColor": { "$type": "color", "$value": "{icon.default}" }
+        }
+      },
+      "row": {
+        "paddingX": { "$type": "dimension", "$value": "{dim.4}" },
+        "paddingY": { "$type": "dimension", "$value": "{dim.3}" },
+        "gap": { "$type": "dimension", "$value": "{dim.3}", "$description": "Between cells in a row." },
+        "divider": { "$type": "color", "$value": "{border.default}", "$description": "Hairline between rows; the last row's is dropped so it doesn't double the container's own bottom border." },
+        "hoverBg": { "$type": "color", "$value": "{surface.dim}", "$description": "gray.50 — a quiet hover, distinct from the ghost fill.neutralHover used for pill/icon controls; a full-width table row reads better with the softer surface tint (same call ThreadListItem's own read state uses surface.dim)." },
+        "activeBg": { "$type": "color", "$value": "{fill.neutralActive}" },
+        "selectedBg": { "$type": "color", "$value": "{bg.primary}", "$description": "bg.primary (blue.100 tint) — the same persistent selected surface ThreadListItem and the app's state.selected already use." },
+        "focusRing": { "$type": "color", "$value": "{border.focus}" }
+      },
+      "cell": {
+        "text": { "$type": "typography", "$value": "{text-style.body-sm}" },
+        "textColor": { "$type": "color", "$value": "{text.default}" },
+        "mutedColor": { "$type": "color", "$value": "{text.muted}", "$description": "Secondary cells (id, meta, timestamps)." }
+      },
+      "state": {
+        "$description": "Inbox-style row emphasis pair, reused verbatim from ThreadListItem's inbox rows: an unread row leads with semibold default ink; a read row relaxes to normal-weight secondary. Purely a weight/color swap on the row's lead text, no background change (background is owned by hover/selected).",
+        "unread": {
+          "weight": { "$type": "fontWeight", "$value": "{weight.semibold}" },
+          "color": { "$type": "color", "$value": "{text.default}" }
+        },
+        "read": {
+          "weight": { "$type": "fontWeight", "$value": "{weight.normal}" },
+          "color": { "$type": "color", "$value": "{text.secondary}" }
+        }
+      }
+    }
+  }
+}

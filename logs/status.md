@@ -2,7 +2,7 @@
 
 Update this file whenever component inventory or conventions change. For chronological history and the reasoning behind each decision, see `decision-log.md` — this file is the fast-load summary, that one is the archive.
 
-Last updated: 2026-09-03.
+Last updated: 2026-09-04.
 
 ## Designs layer (prototype explorer) — added 2026-07-24
 
@@ -24,7 +24,10 @@ First entry: **Student Message Center** (`tools/build-design-student-message-cen
 - **In-thread composer pass 2026-08-03**: the reply composer's attach button WORKS — it stacks Attachment idle-shape rows (real remove ×) above the field inside the form, and on Send they ride into the self Bubble as the done shape (shared FAKE_FILES/ATT templates with the compose dialog). The field is a **1-row textarea auto-growing to ~5 lines** (JS caps at 120px; Enter sends, Shift+Enter breaks — `.bubble p` got `white-space: pre-wrap` so the breaks survive), icons pinned to the bottom edge as it grows. Focusing the field docks the **fake keyboard** under the composer on the mobile takeover (same scaffolding as the compose dialog, `mc-thread--kbd`).
 - Icons still missing from the set for this area (non-blocking, text used instead): `archive`, `inbox`, `smartphone`, `tablet`.
 
-## Components built (30, + 1 behavioral variant)
+## Components built (37, + 1 behavioral variant)
+
+**Seven added 2026-09-04 as the foundation for the Message Center v3 email-inbox rework** (own token file + `build-X-doc.mjs` + docs page + nav, strictly on existing tokens; not yet in the table below): **Table** (`table.tokens.json` — the threads console; a div-based grid table, container = Card's border-not-shadow recipe, no fixed column model, header label-sm uppercase + sortable-chevron, interactive rows with hover=surface.dim / selected=bg.primary / focus, and an unread=semibold / read=normal weight pair reused from ThreadListItem) · **AvatarGroup** (`avatar-group.tokens.json` — overlapping Avatar stack, sm/base, surface ring between, "+N" fill.neutral overflow chip; the deferred AvatarGroup, now built for the group "M +35" stack) · **Stepper** (`stepper.tokens.json` — horizontal numbered steps inactive/active/complete + a filling connector, for the group-message wizard 1→2) · **DatePicker** (`date-picker.tokens.json` — a Select-style trigger (the locked-in surface.dim field recipe) + a native-Popover month-grid calendar with today-ring / selected-fill / dimmed outside days; single date, for message Expiration; replaces the old display-only trigger) · **SplitButton** (`split-button.tokens.json` — Button-primary split into a main action + a chevron segment (1px fill.primaryActive seam) that opens the real Menu; the "New Message ▾" entry point) · **Stat** (`stat.tokens.json` — a metric tile on Card's recipe: big title-2xl number + muted label + optional role tint on the value; group delivery stats, reused by analytics later) · **Skeleton** (`skeleton.tokens.json` — a brand-neutral shimmer placeholder, `--line`/`--circle`, respects prefers-reduced-motion; the "Loading more threads…" pattern). Full detail on each component's own docs page + decision-log.
+
 
 | Component | File | Sizes | Variants | States |
 |---|---|---|---|---|

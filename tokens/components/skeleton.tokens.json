@@ -1,0 +1,14 @@
+{
+  "component": {
+    "skeleton": {
+      "$description": "Loading placeholder — a shimmering neutral block standing in for content that hasn't arrived (a table row, an avatar, a line of text). One recipe, shaped by the consumer's width/height; a `line` height token for text rows and a `--circle` modifier for avatar placeholders. The shimmer is a brand-neutral gray sweep (base gray.100 → a brighter band), matching the flat aesthetic — no spinner, no brand color. Its driving use case is the Staff Message Center's 'Loading more threads…' list tail and initial table/skeleton rows (MC v2 epic Part 1's standard loading pattern).",
+      "base": { "$type": "color", "$value": "{surface.sunken}", "$description": "gray.100 — the resting block color; visible on a white card without shouting." },
+      "highlight": { "$type": "color", "$value": "{surface.default}", "$description": "The brighter band that sweeps across (white) — base → highlight → base is the shimmer." },
+      "radius": { "$type": "dimension", "$value": "{radius.xs}", "$description": "4px for lines/blocks; the --circle modifier overrides to radius.full for avatar placeholders." },
+      "line": {
+        "height": { "$type": "dimension", "$value": "{dim.4}", "$description": "16px — a text-line placeholder's height." }
+      },
+      "duration": { "$type": "duration", "$value": "1400ms", "$description": "One shimmer sweep. A literal, not tokenized — no motion scale exists in this system yet, same call as Drawer/Modal's transition timings." }
+    }
+  }
+}

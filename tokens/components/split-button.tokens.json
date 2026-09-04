@@ -1,0 +1,28 @@
+{
+  "component": {
+    "splitButton": {
+      "$description": "A primary button with an attached dropdown-chevron segment — click the main part for the default action, the chevron for a Menu of alternatives. The 'New Message ▾' entry point (New Message / New Group Message) is its driving use case. Shares Button primary's exact fill/size recipe (matched to base) so it reads as one Button that happens to be split; a hairline divider (a darker fill.primaryActive line) separates the two segments, and each segment darkens on hover/press like Button primary. The chevron opens the real Menu component — this owns only the split trigger, not the dropdown contents.",
+      "radius": { "$type": "dimension", "$value": "{radius.default}" },
+      "size": {
+        "height": { "$type": "dimension", "$value": "{dim.10}", "$description": "40px = Button primary base height." },
+        "paddingX": { "$type": "dimension", "$value": "{dim.4}", "$description": "Main segment edge padding = Button base." },
+        "gap": { "$type": "dimension", "$value": "{dim.2}", "$description": "Icon ↔ label in the main segment." },
+        "iconSize": { "$type": "dimension", "$value": "{dim.5}", "$description": "20px, Button base's own icon size." },
+        "label": { "$type": "typography", "$value": "{text-style.heading-base}" },
+        "chevronWidth": { "$type": "dimension", "$value": "{dim.9}", "$description": "36px — the chevron segment, a touch narrower than a square so the main action stays dominant." },
+        "chevronIcon": { "$type": "dimension", "$value": "{dim.5}" }
+      },
+      "fill": { "$type": "color", "$value": "{fill.primary}" },
+      "fillHover": { "$type": "color", "$value": "{fill.primaryHover}" },
+      "fillActive": { "$type": "color", "$value": "{fill.primaryActive}" },
+      "text": { "$type": "color", "$value": "{text.onFill}" },
+      "icon": { "$type": "color", "$value": "{icon.onFill}" },
+      "divider": { "$type": "color", "$value": "{fill.primaryActive}", "$description": "The 1px seam between the two segments — fill.primaryActive (a darker blue), the only place the split shows at rest." },
+      "focus": {
+        "ringColor": { "$type": "color", "$value": "{border.focus}" },
+        "ringWidth": { "$type": "dimension", "$value": "{dim.1}" },
+        "ringOffset": { "$type": "dimension", "$value": "{dim.0_5}" }
+      }
+    }
+  }
+}

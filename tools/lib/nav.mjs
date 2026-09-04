@@ -45,6 +45,8 @@ export const NAV_ITEMS = {
   card: { label: "Card", href: "card.html" },
   switch: { label: "Switch", href: "switch.html" },
   grid: { label: "Grid", href: "grid.html" },
+  table: { label: "Table", href: "table.html" },
+  stepper: { label: "Stepper", href: "stepper.html" },
   tooltip: { label: "Tooltip", href: "tooltip.html" },
   popover: { label: "Popover", href: "popover.html" },
   drawer: { label: "Drawer", href: "drawer.html" },
@@ -52,6 +54,7 @@ export const NAV_ITEMS = {
   menu: { label: "Menu", href: "menu.html" },
   listbox: { label: "Listbox", href: "listbox.html" },
   avatar: { label: "Avatar", href: "avatar.html" },
+  "avatar-group": { label: "AvatarGroup", href: "avatar-group.html" },
   badge: { label: "Badge", href: "badge.html" },
   chip: { label: "Chip", href: "chip.html" },
   attachment: { label: "Attachment", href: "attachment.html" },
@@ -61,6 +64,10 @@ export const NAV_ITEMS = {
   composer: { label: "Composer", href: "composer.html" },
   "empty-state": { label: "EmptyState", href: "empty-state.html" },
   toast: { label: "Toast", href: "toast.html" },
+  skeleton: { label: "Skeleton", href: "skeleton.html" },
+  stat: { label: "Stat", href: "stat.html" },
+  "split-button": { label: "SplitButton", href: "split-button.html" },
+  "date-picker": { label: "DatePicker", href: "date-picker.html" },
 };
 
 // Products → prototype pages shown in the Designs pane. Keys are the
@@ -138,6 +145,7 @@ export function renderNav(activeKey, { basePath = "" } = {}) {
     ${link("counter")}
     ${link("input")}
     ${link("select")}
+    ${link("date-picker")}
     ${link("search")}
     ${link("pagination")}
     ${link("separator")}
@@ -146,15 +154,20 @@ export function renderNav(activeKey, { basePath = "" } = {}) {
     ${link("radio")}
     ${link("box")}
     ${link("card")}
+    ${link("stat")}
     ${link("switch")}
     ${link("grid")}
+    ${link("table")}
+    ${link("stepper")}
     ${link("tooltip")}
     ${link("popover")}
     ${link("drawer")}
     ${link("modal")}
     ${link("menu")}
+    ${link("split-button")}
     ${link("listbox")}
     ${link("avatar")}
+    ${link("avatar-group")}
     ${link("badge")}
     ${link("chip")}
     ${link("attachment")}
@@ -164,6 +177,7 @@ export function renderNav(activeKey, { basePath = "" } = {}) {
     ${link("composer")}
     ${link("empty-state")}
     ${link("toast")}
+    ${link("skeleton")}
     </div>
     <div class="nav-pane nav-pane--designs${designsActive ? " active" : ""}" data-pane="designs">
     <p class="brand">Design Prototypes</p>

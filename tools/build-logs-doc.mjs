@@ -20,6 +20,21 @@ const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 // ---- the changelog, newest first ----
 const POSTS = [
   {
+    date: "2026-09-04",
+    type: "new",
+    title: "Seven new components for the Message Center v3 redesign",
+    body: "Foundation for the email-inbox rework: Table (the threads console — a div-grid with unread/read rows, sortable headers, selectable rows), AvatarGroup (overlapping stack + \"+N\"), Stepper (the group-message wizard 1→2), DatePicker (Select-style trigger + calendar popover, for message expiration), SplitButton (\"New Message ▾\" → opens a Menu), Stat (delivery-metric tiles), and Skeleton (loading placeholders). Built strictly on the existing tokens; the console rework consumes them next.",
+    links: [
+      { label: "Table", href: "table.html" },
+      { label: "AvatarGroup", href: "avatar-group.html" },
+      { label: "Stepper", href: "stepper.html" },
+      { label: "DatePicker", href: "date-picker.html" },
+      { label: "SplitButton", href: "split-button.html" },
+      { label: "Stat", href: "stat.html" },
+      { label: "Skeleton", href: "skeleton.html" },
+    ],
+  },
+  {
     date: "2026-09-03",
     type: "new",
     title: "Chip gains an action variant",

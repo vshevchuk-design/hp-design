@@ -1,0 +1,51 @@
+{
+  "component": {
+    "datePicker": {
+      "$description": "A single-date picker — a Select-style trigger (calendar icon + formatted date + chevron) that opens a month-grid calendar popover. Its driving use case is the message Expiration date ('Aug 15, 2026 ▾'), replacing the display-only trigger the composers used before. The trigger reuses the locked-in form-field recipe (surface.dim fill + hairline border → strong on hover → focus blue); the panel floats on the native Popover shell (border + shadow.sm). One month at a time, prev/next nav, a today marker and a selected day; days outside the current month dim. No range, no time — single date only, which is all Expiration needs.",
+      "trigger": {
+        "height": { "$type": "dimension", "$value": "{dim.10}", "$description": "40px = the base field height." },
+        "paddingX": { "$type": "dimension", "$value": "{dim.3}" },
+        "gap": { "$type": "dimension", "$value": "{dim.2}" },
+        "radius": { "$type": "dimension", "$value": "{radius.default}" },
+        "bg": { "$type": "color", "$value": "{surface.dim}" },
+        "border": { "$type": "color", "$value": "{border.default}" },
+        "borderHover": { "$type": "color", "$value": "{border.strong}" },
+        "borderFocus": { "$type": "color", "$value": "{border.focus}" },
+        "value": { "$type": "typography", "$value": "{text-style.body-base}", "$description": "16px so iOS Safari doesn't auto-zoom, same rule as every editable field." },
+        "valueColor": { "$type": "color", "$value": "{text.default}" },
+        "icon": { "$type": "color", "$value": "{icon.default}" },
+        "iconSize": { "$type": "dimension", "$value": "{dim.5}" }
+      },
+      "panel": {
+        "bg": { "$type": "color", "$value": "{surface.default}" },
+        "border": { "$type": "color", "$value": "{border.default}" },
+        "radius": { "$type": "dimension", "$value": "{radius.default}" },
+        "padding": { "$type": "dimension", "$value": "{dim.3}" },
+        "shadow": { "$type": "shadow", "$value": "{shadow.sm}" }
+      },
+      "header": {
+        "label": { "$type": "typography", "$value": "{text-style.heading-sm}", "$description": "The month + year." },
+        "labelColor": { "$type": "color", "$value": "{text.default}" },
+        "navIcon": { "$type": "color", "$value": "{icon.default}" },
+        "navHoverBg": { "$type": "color", "$value": "{fill.neutralHover}" },
+        "navSize": { "$type": "dimension", "$value": "{dim.8}" }
+      },
+      "weekday": {
+        "label": { "$type": "typography", "$value": "{text-style.label-sm}" },
+        "color": { "$type": "color", "$value": "{text.muted}" }
+      },
+      "day": {
+        "size": { "$type": "dimension", "$value": "{dim.9}", "$description": "36px square day cell." },
+        "radius": { "$type": "dimension", "$value": "{radius.default}" },
+        "label": { "$type": "typography", "$value": "{text-style.body-sm}" },
+        "color": { "$type": "color", "$value": "{text.default}" },
+        "hoverBg": { "$type": "color", "$value": "{fill.neutralHover}" },
+        "todayBorder": { "$type": "color", "$value": "{border.strong}", "$description": "Today gets a hairline ring — a quiet 'you are here', distinct from the filled selection." },
+        "selectedBg": { "$type": "color", "$value": "{fill.primary}" },
+        "selectedText": { "$type": "color", "$value": "{text.onFill}" },
+        "outsideColor": { "$type": "color", "$value": "{text.muted}", "$description": "Days spilling in from the prev/next month." },
+        "disabledColor": { "$type": "color", "$value": "{text.disabled}" }
+      }
+    }
+  }
+}
