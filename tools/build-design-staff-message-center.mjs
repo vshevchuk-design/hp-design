@@ -1032,8 +1032,9 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 /* Gmail-style: the message stack sizes to its content (not flex:1) so a short
    thread keeps the composer right under the last message with the empty space
    BELOW it — a stretched scroll area left a big void between them. It still
-   shrinks + scrolls when the thread is long (min-height:0 + overflow). */
-.mc-thread__scroll { flex: 0 1 auto; min-height: 0; overflow-y: auto; padding: ${px(resolve("dim.4"))}; display: flex; flex-direction: column; gap: ${px(resolve("dim.6"))}; }
+   scrolls when the thread is long (min-height:0 + overflow). flex:1 makes the
+   message area fill the page so the reply zone sits pinned at the bottom. */
+.mc-thread__scroll { flex: 1; min-height: 0; overflow-y: auto; padding: ${px(resolve("dim.4"))}; display: flex; flex-direction: column; gap: ${px(resolve("dim.6"))}; }
 .mc-thread__composer { flex-shrink: 0; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))} ${px(resolve("dim.4"))}; background: ${cv("surface.default")}; box-shadow: ${composerShadowCss}; position: relative; }
 .mc-thread__actions .btn:disabled { opacity: 0.45; cursor: default; }
 /* in-thread composer upgrades: pre-send attachments sit above the field as
@@ -1059,13 +1060,12 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .mc-rail__lists { padding: 0 ${px(resolve("dim.4"))} ${px(resolve("dim.4"))}; overflow-x: auto; }
 .mc-table { margin: 0; }
 .mc-thead { display: grid; }
-/* detail is full-page, but the body is a capped reading column left-aligned
-   under the header — NOT stretched edge-to-edge (looks lost on a wide screen),
-   and messages + composer share the exact same left edge + max width so they
-   line up as one column */
-.mc-thread__scroll { align-items: flex-start; }
-.mc-thread__scroll > * { width: 100%; max-width: 820px; }
-.mc-thread__composer { display: flex; justify-content: flex-start; }
+/* detail is full-page, but the body is a capped reading column CENTERED on the
+   page — NOT stretched edge-to-edge (looks lost on a wide screen); messages and
+   the reply zone share the same max width and centre so they line up */
+.mc-thread__scroll { align-items: stretch; }
+.mc-thread__scroll > * { width: 100%; max-width: 820px; margin-left: auto; margin-right: auto; }
+.mc-thread__composer { display: flex; justify-content: center; }
 .mc-thread__composer > * { width: 100%; max-width: 820px; }
 .mc-thread__subject { order: 1; width: auto; flex: 1; }
 .mc-thread__actions { margin-left: 0; }

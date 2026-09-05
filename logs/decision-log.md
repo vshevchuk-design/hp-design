@@ -721,3 +721,7 @@ Tested as developer (inbox 4 / resolved 3 intact, search=1, unread=2, full gwiz 
 ## 2026-09-05 (cont.) — Thread detail: cap the reading column width
 
 User's actual intent when they asked for the thread page earlier was to **cap the max width**, not pull everything up. The body was effectively edge-to-edge and, worse, misaligned: the message bubble sat left (capped 820, left:16) while the composer form was *centered* (820 at left:230) — so they didn't line up. Changed `.mc-thread__scroll` to `align-items:flex-start` and `.mc-thread__composer` to `justify-content:flex-start` so both share the same left edge + 820px cap, forming one left-aligned reading column under the header (Gmail-style). Mobile still drops the cap (<768 `max-width:none`).
+
+## 2026-09-05 (cont. 2) — Thread detail: reply zone pinned to bottom, column centered
+
+Per user: drop the reply zone to the very bottom and centre everything. `.mc-thread__scroll` back to `flex:1` (message area fills the page, composer pinned at the bottom); the reading column (messages + composer) is now centred at 820px. Centring the bubble needed `margin:auto` on the scroll children — `align-items:center` alone left it at the left edge because `.bubble-row` carries its own alignment; auto margins centre a flex item regardless. Composer centres via its own `justify-content:center`. Mobile still full-width.
