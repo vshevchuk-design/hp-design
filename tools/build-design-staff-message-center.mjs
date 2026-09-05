@@ -1059,11 +1059,13 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .mc-rail__lists { padding: 0 ${px(resolve("dim.4"))} ${px(resolve("dim.4"))}; overflow-x: auto; }
 .mc-table { margin: 0; }
 .mc-thead { display: grid; }
-/* detail is full-page: a Back link is always visible now, subject shares the
-   action row, content is a centered reading column */
-.mc-thread__scroll { align-items: center; }
+/* detail is full-page, but the body is a capped reading column left-aligned
+   under the header — NOT stretched edge-to-edge (looks lost on a wide screen),
+   and messages + composer share the exact same left edge + max width so they
+   line up as one column */
+.mc-thread__scroll { align-items: flex-start; }
 .mc-thread__scroll > * { width: 100%; max-width: 820px; }
-.mc-thread__composer { display: flex; justify-content: center; }
+.mc-thread__composer { display: flex; justify-content: flex-start; }
 .mc-thread__composer > * { width: 100%; max-width: 820px; }
 .mc-thread__subject { order: 1; width: auto; flex: 1; }
 .mc-thread__actions { margin-left: 0; }
