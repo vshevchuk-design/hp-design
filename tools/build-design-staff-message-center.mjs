@@ -1084,6 +1084,10 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 }
 @media (min-width: 1024px) {
   .mc__topbar { padding: ${px(resolve("dim.4"))} ${px(resolve("dim.6"))}; }
+  /* keep the whole rail on one left edge: toolbar tabs + filter chips must line
+     up with the list/table below (all dim.6), not sit 8px inside it */
+  .mc-rail__topbar { padding-left: ${px(resolve("dim.6"))}; padding-right: ${px(resolve("dim.6"))}; }
+  .mc-rail__chips { padding-left: ${px(resolve("dim.6"))}; padding-right: ${px(resolve("dim.6"))}; }
   .mc-rail__lists { padding-left: ${px(resolve("dim.6"))}; padding-right: ${px(resolve("dim.6"))}; }
   .mc-thread__bar { padding-left: ${px(resolve("dim.6"))}; padding-right: ${px(resolve("dim.6"))}; }
 }`;

@@ -681,6 +681,10 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 }
 @media (min-width: 1024px) {
   .mc__topbar { padding: 16px 24px; }
+  /* keep the whole rail on one left edge: toolbar tabs + filter chips must line
+     up with the list/table below (all dim.6), not sit 8px inside it */
+  .mc-rail__topbar { padding-left: 24px; padding-right: 24px; }
+  .mc-rail__chips { padding-left: 24px; padding-right: 24px; }
   .mc-rail__lists { padding-left: 24px; padding-right: 24px; }
   .mc-thread__bar { padding-left: 24px; padding-right: 24px; }
 }
