@@ -1253,7 +1253,8 @@ const consoleCss = `/* ---- Table (threads console) ---- */
 /* "New Message" is a plain primary Button that opens a choice Menu (single /
    group) — same on desktop and mobile. The trailing chevron just hints at the
    menu; it's dimmed so the edit glyph + label stay the primary affordance. */
-.mc-topbar-new .mc-topbar-new__chev { opacity: 0.75; margin-left: -2px; }
+.mc-topbar-new .mc-topbar-new__chev { opacity: 0.75; margin-left: -2px; transition: transform 0.15s ease; }
+.mc-topbar-new[aria-expanded="true"] .mc-topbar-new__chev { transform: rotate(180deg); }
 
 /* ---- Skeleton ---- */
 .mc-skel { display: block; border-radius: ${skRadius}; background: ${cv(skBase)}; background-image: linear-gradient(90deg, ${cv(skBase)} 0, ${cv(skHi)} 40px, ${cv(skBase)} 80px); background-size: 600px 100%; background-repeat: no-repeat; animation: mc-skel-shimmer 1400ms linear infinite; }
@@ -3139,7 +3140,7 @@ ${phaseECss}
       <span class="badge badge--sm badge--role-neutral mc__dept-badge">Academic Advising</span>
     </div>
     <div class="mc__topbar-end">
-      <button class="btn btn--primary btn--base mc-topbar-new" id="mc-new-desktop" type="button" popovertarget="mc-new-menu" aria-haspopup="menu" aria-expanded="false">${iconOf("edit", "btn__icon")}New Message${iconOf("expand_more", "btn__icon mc-topbar-new__chev")}</button>
+      <button class="btn btn--primary btn--base mc-topbar-new" id="mc-new-desktop" type="button" popovertarget="mc-new-menu" aria-haspopup="menu" aria-expanded="false">${iconOf("edit", "btn__icon")}New${iconOf("expand_more", "btn__icon mc-topbar-new__chev")}</button>
       <div class="listbox" id="mc-new-menu" popover>
         <ul class="listbox__list" role="menu" aria-label="New message">
           <li><button class="listbox__option" role="menuitem" type="button" id="mc-new-single">New Message</button></li>
