@@ -725,3 +725,13 @@ User's actual intent when they asked for the thread page earlier was to **cap th
 ## 2026-09-05 (cont. 2) — Thread detail: reply zone pinned to bottom, column centered
 
 Per user: drop the reply zone to the very bottom and centre everything. `.mc-thread__scroll` back to `flex:1` (message area fills the page, composer pinned at the bottom); the reading column (messages + composer) is now centred at 820px. Centring the bubble needed `margin:auto` on the scroll children — `align-items:center` alone left it at the left edge because `.bubble-row` carries its own alignment; auto margins centre a flex item regardless. Composer centres via its own `justify-content:center`. Mobile still full-width.
+
+## 2026-09-05 (cont. 3) — Staff console filter toolbar: retire the student-MC leftovers
+
+The filter row was inherited from the student MC and wrong for staff: it wrapped onto a second line even with room to spare, Search was a collapsed icon on wide screens, and the filters (Unread / Due soon / Department dropdown) weren't the staff-relevant ones. Rebuilt to match the found prototype (ref) and the real product.
+- **One row** (`.mc-rail__topbar` now holds everything; `.mc-rail__chips` is gone): tabs · **Filters** · **I'm Involved** · **Flagged** · **Expires Soon** · **Search**. Mobile-first wrap; ≥768 it's a single line with a full Search field pinned right.
+- **Quick toggle chips** (Chip `aria-pressed`): **I'm Involved** (participated — new `data-involved`, true when SELF is Responsible or has replied), **Flagged**, **Expires Soon**. Expires Soon hides on Resolved.
+- **Filters popover** now holds the less-common bits: **Unread** + a **Department** sub-group (moved off the main row into the popover); the count badge reflects those. Dropped the standalone Department dropdown chip.
+- **Search**: full always-visible field ≥768 (ANDs with the chips); the icon-collapse survives only on mobile. One `setFilter(key,on)` keeps a key's quick-chip and popover surfaces in sync.
+
+Verified live (desktop + mobile): I'm Involved→2, Expires→1, Flagged→1, Unread→2, Department·English→0 (inbox), search "hold"→1, Resolved hides Expires, mobile search-open collapses the toolbar.
