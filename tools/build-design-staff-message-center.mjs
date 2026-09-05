@@ -1688,9 +1688,28 @@ const composeMarkup = `<dialog class="mc-compose" id="mc-compose" aria-labelledb
 // step 2 message details (reuses Select/mc-field/rich Composer/Checkbox +
 // the new DatePicker + AI Assist). Send fans out to a grouped card in Resolved. ----
 const gwizStudents = [
-  { id: "CX0001", name: "Cait Genatossio" }, { id: "CX0002", name: "Calam Xavier" },
-  { id: "AA0367", name: "Allison Rao" }, { id: "AA0215", name: "Maya Okafor" },
-  { id: "AA0007", name: "L Arcos" }, { id: "AA0412", name: "Dana Torres" },
+  { id: "CX0001", name: "Cait Genatossio", year: "Senior",    status: "Active",           major: "Art History",      advisor: "Alexander Robinson" },
+  { id: "CX0002", name: "Calam Xavier",    year: "Junior",    status: "Active",           major: "Economics",        advisor: "Ava Robinson" },
+  { id: "AA0367", name: "Allison Rao",     year: "Sophomore", status: "Active",           major: "Biology",          advisor: "Ava Robinson" },
+  { id: "AA0215", name: "Maya Okafor",     year: "Senior",    status: "Leave of absence", major: "Nursing",          advisor: "Alexander Robinson" },
+  { id: "AA0007", name: "Liam Arcos",      year: "Freshman",  status: "Active",           major: "Computer Science", advisor: "Alexander Robinson" },
+  { id: "AA0412", name: "Dana Torres",     year: "Junior",    status: "Active",           major: "English",          advisor: "Ava Robinson" },
+  { id: "AA0533", name: "Priya Nair",      year: "Senior",    status: "Active",           major: "Computer Science", advisor: "Ava Robinson" },
+  { id: "AA0088", name: "Marcus Bell",     year: "Sophomore", status: "Active",           major: "Economics",        advisor: "Alexander Robinson" },
+  { id: "AA0620", name: "Sofia Duarte",    year: "Freshman",  status: "Active",           major: "Biology",          advisor: "Ava Robinson" },
+  { id: "AA0311", name: "Noah Kim",        year: "Junior",    status: "Leave of absence", major: "English",          advisor: "Alexander Robinson" },
+  { id: "AA0742", name: "Ella Fontaine",   year: "Senior",    status: "Active",           major: "Art History",      advisor: "Alexander Robinson" },
+  { id: "AA0159", name: "Owen Pratt",      year: "Sophomore", status: "Active",           major: "Nursing",          advisor: "Ava Robinson" },
+  { id: "AA0466", name: "Zara Haddad",     year: "Freshman",  status: "Active",           major: "Computer Science", advisor: "Alexander Robinson" },
+  { id: "AA0203", name: "Ben Ortiz",       year: "Junior",    status: "Active",           major: "Economics",        advisor: "Ava Robinson" },
+];
+// faceted-filter config (Linear/Stripe-style "+ Add filter"): only surfaced when
+// the staff picks a field, never dumped as a wall of controls
+const gwizFacets = [
+  { key: "year",    label: "Class year",        values: ["Freshman", "Sophomore", "Junior", "Senior"] },
+  { key: "status",  label: "Enrollment status", values: ["Active", "Leave of absence"] },
+  { key: "major",   label: "Major",             values: [...new Set(gwizStudents.map((s) => s.major))].sort() },
+  { key: "advisor", label: "Advisor",           values: [...new Set(gwizStudents.map((s) => s.advisor))].sort() },
 ];
 const gwizCss = `.mc-gwiz { border: none; padding: 0; background: ${cv(mdBg)}; font-family: ${cv("family.sans")}; }
 .mc-gwiz:focus, .mc-gwiz:focus-visible { outline: none; }
@@ -1702,16 +1721,49 @@ const gwizCss = `.mc-gwiz { border: none; padding: 0; background: ${cv(mdBg)}; f
 .mc-gwiz__body { flex: 1; min-height: 0; overflow-y: auto; padding: ${mdPadding}; }
 .mc-gwiz__step[hidden] { display: none; }
 .mc-gwiz__cols { display: grid; grid-template-columns: 1.3fr 1fr; gap: ${px(resolve("dim.4"))}; }
+.mc-gwiz__cols > * { min-width: 0; }
 .mc-gwiz__hint { margin: 0 0 ${px(resolve("dim.2"))}; color: ${cv("text.secondary")}; ${typoCss(bodySmType)} }
-.mc-gwiz__list { border: 1px solid ${cv("border.default")}; border-radius: ${px(resolve("radius.default"))}; overflow: hidden; margin-bottom: ${px(resolve("dim.4"))}; }
-.mc-gwiz__srow { display: flex; align-items: center; gap: ${px(resolve("dim.3"))}; padding: ${px(resolve("dim.2_5"))} ${px(resolve("dim.3"))}; border-bottom: 1px solid ${cv("border.default")}; }
+/* Step 1 picker: segmented Tabs (Search / Paste) over a shared Selected panel */
+.mc-gwiz__tabs { margin-bottom: ${px(resolve("dim.3"))}; }
+.mc-gwiz__ptab[hidden] { display: none; }
+.mc-gwiz__searchbar { width: 100%; margin-bottom: ${px(resolve("dim.2_5"))}; }
+/* faceted-filter row: a "+ Add filter" action Chip + removable applied Chips */
+.mc-gwiz__filters { display: flex; flex-wrap: wrap; align-items: center; gap: ${px(resolve("dim.2"))}; margin-bottom: ${px(resolve("dim.2_5"))}; }
+.mc-gwiz__fchip { display: inline-flex; align-items: center; gap: ${px(resolve("dim.1_5"))}; height: 28px; padding: 0 ${px(resolve("dim.1_5"))} 0 ${px(resolve("dim.2_5"))}; border: 1px solid ${cv("border.default")}; border-radius: ${px(resolve("radius.full"))}; background: ${cv("surface.default")}; color: ${cv("text.default")}; ${typoCss(bodySmType)} cursor: pointer; font-family: inherit; }
+.mc-gwiz__fchip:hover { border-color: ${cv("border.strong")}; }
+.mc-gwiz__fchip b { font-weight: 600; }
+.mc-gwiz__fchip-x { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border: none; background: none; padding: 0; cursor: pointer; color: ${cv("icon.secondary")}; border-radius: ${px(resolve("radius.full"))}; }
+.mc-gwiz__fchip-x:hover { background: ${cv("fill.neutralHover")}; }
+.mc-gwiz__fchip-x svg { width: 14px; height: 14px; }
+.mc-gwiz__reshead { display: flex; align-items: center; justify-content: space-between; gap: ${px(resolve("dim.2"))}; padding: 0 ${px(resolve("dim.1"))} ${px(resolve("dim.2"))}; }
+.mc-gwiz__reshead .checkbox__label { color: ${cv("text.secondary")}; ${typoCss(bodySmType)} }
+.mc-gwiz__clearsel { border: none; background: none; padding: 0; cursor: pointer; color: ${cv("text.primary")}; font-weight: 600; ${typoCss(bodySmType)} font-family: inherit; }
+.mc-gwiz__list { border: 1px solid ${cv("border.default")}; border-radius: ${px(resolve("radius.default"))}; overflow-y: auto; max-height: 264px; }
+.mc-gwiz__srow { display: flex; align-items: center; gap: ${px(resolve("dim.3"))}; padding: ${px(resolve("dim.2"))} ${px(resolve("dim.3"))}; border-bottom: 1px solid ${cv("border.default")}; cursor: pointer; }
 .mc-gwiz__srow:last-child { border-bottom: none; }
+.mc-gwiz__srow:hover { background: ${cv("surface.dim")}; }
+.mc-gwiz__srow .checkbox { pointer-events: none; }
 .mc-gwiz__sid { color: ${cv("text.default")}; font-weight: 600; ${typoCss(bodySmType)} width: 64px; flex-shrink: 0; }
-.mc-gwiz__sname { color: ${cv("text.secondary")}; ${typoCss(bodySmType)} flex: 1; min-width: 0; }
-.mc-gwiz__add { border: none; background: none; padding: 0; cursor: pointer; color: ${cv("text.primary")}; font-weight: 600; ${typoCss(bodySmType)} font-family: inherit; }
-.mc-gwiz__srow--added .mc-gwiz__add { color: ${cv("text.success")}; cursor: default; }
-.mc-gwiz__paste { display: flex; gap: ${px(resolve("dim.2"))}; }
-.mc-gwiz__paste input { flex: 1; min-width: 0; box-sizing: border-box; height: ${px(resolve("dim.10"))}; padding: 0 ${px(resolve("dim.3"))}; border: 1px solid ${cv("border.default")}; border-radius: ${px(resolve("radius.default"))}; background: ${cv("surface.dim")}; color: ${cv("text.default")}; ${typoCss(inputValueType)} font-family: ${cv("family.sans")}; }
+.mc-gwiz__sname { flex: 1 1 auto; color: ${cv("text.default")}; ${typoCss(bodySmType)} min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mc-gwiz__smeta { margin-left: auto; flex-shrink: 1; max-width: 46%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: ${cv("text.muted")}; ${typoCss(bodySmType)} }
+.mc-gwiz__empty { margin: ${px(resolve("dim.4"))} 0 0; text-align: center; color: ${cv("text.muted")}; ${typoCss(bodySmType)} }
+/* the filter Popover: a field list, then a value checklist (two-level) */
+.mc-gwiz__fpop { border: 1px solid ${cv("border.default")}; border-radius: ${px(resolve("radius.default"))}; background: ${cv("surface.default")}; box-shadow: ${composerShadowCss}; padding: ${px(resolve("dim.1_5"))}; min-width: 220px; }
+.mc-gwiz__fpop-opt { display: flex; align-items: center; justify-content: space-between; width: 100%; gap: ${px(resolve("dim.3"))}; padding: ${px(resolve("dim.2"))} ${px(resolve("dim.2_5"))}; border: none; background: none; cursor: pointer; border-radius: ${px(resolve("radius.sm"))}; color: ${cv("text.default")}; ${typoCss(bodySmType)} font-family: inherit; text-align: left; }
+.mc-gwiz__fpop-opt:hover { background: ${cv("surface.dim")}; }
+.mc-gwiz__fpop-opt svg { width: 16px; height: 16px; color: ${cv("icon.secondary")}; }
+.mc-gwiz__fpop-head { display: flex; align-items: center; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.1_5"))} ${px(resolve("dim.2"))}; border-bottom: 1px solid ${cv("border.default")}; margin-bottom: ${px(resolve("dim.1_5"))}; }
+.mc-gwiz__fpop-back { display: inline-flex; align-items: center; border: none; background: none; padding: 0; cursor: pointer; color: ${cv("icon.secondary")}; }
+.mc-gwiz__fpop-back svg { width: 18px; height: 18px; }
+.mc-gwiz__fpop-title { color: ${cv("text.default")}; font-weight: 600; ${typoCss(bodySmType)} }
+.mc-gwiz__fpop-vals { display: flex; flex-direction: column; gap: ${px(resolve("dim.1"))}; padding: 0 ${px(resolve("dim.1_5"))}; max-height: 200px; overflow-y: auto; }
+.mc-gwiz__fpop-vals .checkbox { padding: ${px(resolve("dim.1_5"))} ${px(resolve("dim.1"))}; }
+.mc-gwiz__fpop-foot { display: flex; justify-content: space-between; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.2"))} ${px(resolve("dim.1_5"))} ${px(resolve("dim.1"))}; margin-top: ${px(resolve("dim.1_5"))}; border-top: 1px solid ${cv("border.default")}; }
+/* Paste tab: a roomy textarea + a properly sized Add IDs button below it */
+.mc-gwiz__paste-area { display: block; width: 100%; box-sizing: border-box; min-height: 168px; resize: vertical; padding: ${px(resolve("dim.3"))}; border: 1px solid ${cv("border.default")}; border-radius: ${px(resolve("radius.default"))}; background: ${cv("surface.dim")}; color: ${cv("text.default")}; ${typoCss(inputValueType)} font-family: ${cv("family.sans")}; line-height: 1.5; }
+.mc-gwiz__paste-area:focus { outline: 2px solid ${cv("border.focus")}; outline-offset: -1px; border-color: ${cv("border.focus")}; }
+.mc-gwiz__paste-foot { display: flex; align-items: center; justify-content: space-between; gap: ${px(resolve("dim.2"))}; margin-top: ${px(resolve("dim.2_5"))}; }
+.mc-gwiz__paste-hint { color: ${cv("text.muted")}; ${typoCss(bodySmType)} }
 .mc-gwiz__selected { background: ${cv("surface.dim")}; border: 1px solid ${cv("border.default")}; border-radius: ${px(resolve("radius.default"))}; padding: ${px(resolve("dim.3"))}; align-self: start; }
 .mc-gwiz__sel-head { margin: 0 0 ${px(resolve("dim.2"))}; color: ${cv("text.default")}; font-weight: 600; ${typoCss(bodySmType)} }
 .mc-gwiz__chips { display: flex; flex-direction: column; gap: ${px(resolve("dim.2"))}; }
@@ -1739,6 +1791,9 @@ const gwizCss = `.mc-gwiz { border: none; padding: 0; background: ${cv(mdBg)}; f
 @media (max-width: 767px) {
   .mc-gwiz { position: fixed; inset: 0; margin: 0; width: 100vw; max-width: 100vw; height: 100dvh; max-height: 100dvh; border-radius: 0; }
   .mc-gwiz__cols { grid-template-columns: 1fr; }
+  /* the row's year·major meta is a nicety on desktop; on a phone it just steals
+     name width, and the facet filters already cover that need — so drop it */
+  .mc-gwiz__smeta { display: none; }
 }`;
 
 const gwizStepMarkup = `<div class="mc-step">
@@ -1757,13 +1812,34 @@ const gwizMarkup = `<dialog class="mc-gwiz" id="mc-gwiz" aria-labelledby="mc-gwi
     <div class="mc-gwiz__step" data-panel="1">
       <div class="mc-gwiz__cols">
         <div>
-          <p class="mc-gwiz__hint">Search active or leave-of-absence students by ID or name</p>
-          <div class="search search--base" style="width:100%;margin-bottom:12px">${iconSearch}<input class="search__input" id="mc-gwiz-search" placeholder="Students" aria-label="Search students" /></div>
-          <div class="mc-gwiz__list" id="mc-gwiz-list">
-            ${gwizStudents.map((s) => `<div class="mc-gwiz__srow" data-id="${s.id}" data-name="${esc(s.name)}"><span class="mc-gwiz__sid">${s.id}</span><span class="mc-gwiz__sname">${s.name}</span><button class="mc-gwiz__add" type="button">+ Add</button></div>`).join("\n            ")}
+          <div class="tabs tabs--segmented tabs--sm mc-gwiz__tabs" role="tablist" aria-label="Add students">
+            <button class="tab tab--sm tab--active" role="tab" type="button" data-ptab="search" aria-selected="true">Search</button>
+            <button class="tab tab--sm" role="tab" type="button" data-ptab="paste" aria-selected="false">Paste IDs</button>
           </div>
-          <p class="mc-gwiz__hint">Or paste Student IDs separated by commas</p>
-          <div class="mc-gwiz__paste"><input id="mc-gwiz-ids" placeholder="Ex. AA0001, AA0002" aria-label="Student IDs" /><button class="btn btn--secondary btn--sm" id="mc-gwiz-addids" type="button">Add IDs</button></div>
+
+          <div class="mc-gwiz__ptab" data-ptab-panel="search">
+            <div class="search search--base mc-gwiz__searchbar">${iconSearch}<input class="search__input" id="mc-gwiz-search" placeholder="Search by name or ID" aria-label="Search students" /></div>
+            <div class="mc-gwiz__filters" id="mc-gwiz-filters">
+              <button class="chip chip--base chip--action mc-gwiz__addfilter" id="mc-gwiz-addfilter" type="button" aria-haspopup="menu">${iconOf("add", "chip__icon")}<span class="chip__label">Add filter</span></button>
+            </div>
+            <div class="mc-gwiz__reshead">
+              ${checkboxMarkup('<span id="mc-gwiz-rescount">All students</span>', { id: "mc-gwiz-selall" })}
+              <button class="mc-gwiz__clearsel" id="mc-gwiz-clearsel" type="button" hidden>Clear selection</button>
+            </div>
+            <div class="mc-gwiz__list" id="mc-gwiz-list">
+              ${gwizStudents.map((s) => `<div class="mc-gwiz__srow" data-id="${s.id}" data-name="${esc(s.name)}" data-year="${s.year}" data-status="${esc(s.status)}" data-major="${esc(s.major)}" data-advisor="${esc(s.advisor)}">${checkboxMarkup("", { id: "gcb-" + s.id })}<span class="mc-gwiz__sid">${s.id}</span><span class="mc-gwiz__sname">${s.name}</span><span class="mc-gwiz__smeta">${s.year} · ${s.major}</span></div>`).join("\n              ")}
+            </div>
+            <p class="mc-gwiz__empty" id="mc-gwiz-empty" hidden>No students match these filters.</p>
+          </div>
+
+          <div class="mc-gwiz__ptab" data-ptab-panel="paste" hidden>
+            <p class="mc-gwiz__hint">Paste Student IDs — separated by commas, spaces, or new lines. Great for large lists.</p>
+            <textarea class="mc-gwiz__paste-area" id="mc-gwiz-ids" rows="7" placeholder="AA0001, AA0002, AA0003&#10;AA0004 AA0005 …" aria-label="Student IDs"></textarea>
+            <div class="mc-gwiz__paste-foot">
+              <span class="mc-gwiz__paste-hint" id="mc-gwiz-paste-hint">Recognized IDs are added to your selection.</span>
+              <button class="btn btn--secondary btn--base" id="mc-gwiz-addids" type="button">Add IDs</button>
+            </div>
+          </div>
         </div>
         <div class="mc-gwiz__selected">
           <p class="mc-gwiz__sel-head">Selected · <span id="mc-gwiz-count">0</span></p>
@@ -1771,6 +1847,7 @@ const gwizMarkup = `<dialog class="mc-gwiz" id="mc-gwiz" aria-labelledby="mc-gwi
         </div>
       </div>
     </div>
+    <div class="listbox mc-gwiz__fpop" id="mc-gwiz-fpop" popover></div>
     <div class="mc-gwiz__step" data-panel="2" hidden>
       <div class="mc-gwiz__frow"><span class="mc-gwiz__flabel">To</span><span class="mc-gwiz__fval" id="mc-gwiz-to">0 students selected</span><button class="mc-gwiz__edit" id="mc-gwiz-edit" type="button">Edit</button></div>
       <div class="mc-gwiz__frow"><span class="mc-gwiz__flabel">From</span><span class="mc-gwiz__fval">Academic Advising</span></div>
@@ -2763,48 +2840,175 @@ const appJs = `(function () {
   var GWIZ_CLOSE_ICON = ${JSON.stringify(iconCloseAtt)};
   var AVG_HUES = ${JSON.stringify(usedHues)};
 
+  var GWIZ_FACETS = ${JSON.stringify(gwizFacets)};
+  var GWIZ_TOTAL = ${gwizStudents.length};
+  var FPOP_CHEVRON = ${JSON.stringify(iconOf("chevron_right", "mc-gwiz__fpop-chev"))};
+  var FPOP_BACK = ${JSON.stringify(iconOf("arrow_back", ""))};
+  var FPOP_CBICON = ${JSON.stringify(iconOf("check", "checkbox__icon"))};
+  var FCHIP_X = ${JSON.stringify(iconOf("close", ""))};
+  var filtersEl = document.getElementById("mc-gwiz-filters");
+  var addFilterBtn = document.getElementById("mc-gwiz-addfilter");
+  var selAll = document.getElementById("mc-gwiz-selall");
+  var clearSelBtn = document.getElementById("mc-gwiz-clearsel");
+  var gwizRescount = document.getElementById("mc-gwiz-rescount");
+  var fpop = document.getElementById("mc-gwiz-fpop");
+  var gwizFilters = {}; // facetKey -> [values], AND-combined
+
   function gwizCount() { return Object.keys(gwizSel).length; }
   function gwizRenderSelected() {
     gwizChips.innerHTML = Object.keys(gwizSel).map(function (id) {
       return '<div class="mc-gwiz__chip"><b>' + id + '</b><span>' + gwizSel[id] + '</span><button type="button" data-rm="' + id + '" aria-label="Remove">' + GWIZ_CLOSE_ICON + '</button></div>';
     }).join("");
     gwizChips.querySelectorAll("[data-rm]").forEach(function (b) {
-      b.addEventListener("click", function () { delete gwizSel[b.dataset.rm]; syncGwizList(); gwizRenderSelected(); gwizSync(); });
+      b.addEventListener("click", function () { setSelected(b.dataset.rm, false); });
     });
     gwizCountEl.textContent = gwizCount();
   }
+  // reflect the selection back into row checkboxes + Clear button + select-all
   function syncGwizList() {
     document.querySelectorAll("#mc-gwiz-list .mc-gwiz__srow").forEach(function (row) {
-      var added = !!gwizSel[row.dataset.id];
-      row.classList.toggle("mc-gwiz__srow--added", added);
-      row.querySelector(".mc-gwiz__add").textContent = added ? "✓ Added" : "+ Add";
+      var cb = row.querySelector(".checkbox__input");
+      if (cb) cb.checked = !!gwizSel[row.dataset.id];
     });
+    clearSelBtn.hidden = gwizCount() === 0;
+    syncSelAll();
   }
   function gwizSync() {
     gwizNext.disabled = gwizCount() === 0;
     document.getElementById("mc-gwiz-to").textContent = gwizCount() + (gwizCount() === 1 ? " student selected" : " students selected");
   }
-  document.querySelectorAll("#mc-gwiz-list .mc-gwiz__srow .mc-gwiz__add").forEach(function (btn) {
-    btn.addEventListener("click", function () {
-      var row = btn.closest(".mc-gwiz__srow");
-      if (gwizSel[row.dataset.id]) return;
-      gwizSel[row.dataset.id] = row.dataset.name;
-      syncGwizList(); gwizRenderSelected(); gwizSync();
-    });
+  // one entry point so chips, checkboxes, select-all and paste never disagree
+  function setSelected(id, on, name) {
+    if (on) { if (!gwizSel[id]) gwizSel[id] = name || GWIZ_NAMES[id] || "Student " + id; }
+    else { delete gwizSel[id]; }
+    syncGwizList(); gwizRenderSelected(); gwizSync();
+  }
+  // whole row is a click target (checkbox is display-only, pointer-events:none)
+  document.querySelectorAll("#mc-gwiz-list .mc-gwiz__srow").forEach(function (row) {
+    row.addEventListener("click", function () { setSelected(row.dataset.id, !gwizSel[row.dataset.id], row.dataset.name); });
   });
-  document.getElementById("mc-gwiz-addids").addEventListener("click", function () {
-    var input = document.getElementById("mc-gwiz-ids");
-    input.value.split(",").map(function (s) { return s.trim().toUpperCase(); }).filter(Boolean).forEach(function (id) {
-      if (!gwizSel[id]) gwizSel[id] = GWIZ_NAMES[id] || "Student " + id;
+
+  // ---- results: live search query AND every active facet filter ----
+  // NB: named gwiz* to avoid colliding with the inbox's own rowMatches — two
+  // same-named function declarations in this IIFE would hoist-clobber each other
+  function gwizRowMatches(row) {
+    var q = gwizSearch.value.trim().toLowerCase();
+    if (q && (row.dataset.id + " " + row.dataset.name).toLowerCase().indexOf(q) === -1) return false;
+    for (var k in gwizFilters) {
+      var vals = gwizFilters[k];
+      if (vals && vals.length && vals.indexOf(row.dataset[k]) === -1) return false;
+    }
+    return true;
+  }
+  function visibleRows() {
+    return [].slice.call(document.querySelectorAll("#mc-gwiz-list .mc-gwiz__srow")).filter(function (r) { return r.style.display !== "none"; });
+  }
+  function applyGwizFilters() {
+    var n = 0;
+    document.querySelectorAll("#mc-gwiz-list .mc-gwiz__srow").forEach(function (row) {
+      var show = gwizRowMatches(row);
+      row.style.display = show ? "" : "none";
+      if (show) n++;
     });
-    input.value = "";
+    document.getElementById("mc-gwiz-empty").hidden = n !== 0;
+    document.getElementById("mc-gwiz-list").style.display = n === 0 ? "none" : "";
+    gwizRescount.textContent = n === GWIZ_TOTAL ? "All students" : (n + (n === 1 ? " result" : " results"));
+    syncSelAll();
+  }
+  gwizSearch.addEventListener("input", applyGwizFilters);
+
+  // ---- select-all toggles every *visible* (filtered) row ----
+  function syncSelAll() {
+    var vis = visibleRows();
+    var sel = vis.filter(function (r) { return !!gwizSel[r.dataset.id]; }).length;
+    selAll.checked = vis.length > 0 && sel === vis.length;
+    selAll.indeterminate = sel > 0 && sel < vis.length;
+  }
+  selAll.addEventListener("change", function () {
+    var on = selAll.checked;
+    visibleRows().forEach(function (r) {
+      if (on) { if (!gwizSel[r.dataset.id]) gwizSel[r.dataset.id] = r.dataset.name; }
+      else delete gwizSel[r.dataset.id];
+    });
     syncGwizList(); gwizRenderSelected(); gwizSync();
   });
-  gwizSearch.addEventListener("input", function () {
-    var q = gwizSearch.value.trim().toLowerCase();
-    document.querySelectorAll("#mc-gwiz-list .mc-gwiz__srow").forEach(function (row) {
-      row.style.display = (row.dataset.id + " " + row.dataset.name).toLowerCase().indexOf(q) === -1 ? "none" : "";
+  clearSelBtn.addEventListener("click", function () { gwizSel = {}; syncGwizList(); gwizRenderSelected(); gwizSync(); });
+
+  // ---- Paste tab: commas / spaces / new lines, any mix ----
+  document.getElementById("mc-gwiz-addids").addEventListener("click", function () {
+    var input = document.getElementById("mc-gwiz-ids");
+    var tokens = input.value.split(/[\\s,;]+/).map(function (s) { return s.trim().toUpperCase(); }).filter(Boolean);
+    var added = 0, skipped = 0;
+    tokens.forEach(function (id) {
+      if (!/^[A-Z]{2}[0-9]{4}$/.test(id)) { skipped++; return; }   // expects the AA0001 shape
+      if (!gwizSel[id]) { gwizSel[id] = GWIZ_NAMES[id] || "Added by ID"; added++; }
     });
+    input.value = "";
+    var msg = added ? (added + (added === 1 ? " ID" : " IDs") + " added") : "No new IDs found";
+    if (skipped) msg += " · " + skipped + " skipped (use the AA0001 format)";
+    document.getElementById("mc-gwiz-paste-hint").textContent = msg + ".";
+    syncGwizList(); gwizRenderSelected(); gwizSync();
+  });
+
+  // ---- Search / Paste segmented tabs ----
+  document.querySelectorAll(".mc-gwiz__tabs .tab").forEach(function (tab) {
+    tab.addEventListener("click", function () {
+      document.querySelectorAll(".mc-gwiz__tabs .tab").forEach(function (t) {
+        t.classList.toggle("tab--active", t === tab);
+        t.setAttribute("aria-selected", t === tab ? "true" : "false");
+      });
+      document.querySelectorAll(".mc-gwiz__ptab").forEach(function (p) { p.hidden = p.dataset.ptabPanel !== tab.dataset.ptab; });
+    });
+  });
+
+  // ---- faceted "+ Add filter": field list -> value checklist -> applied Chip ----
+  function placeFpop(anchor) {
+    var r = anchor.getBoundingClientRect();
+    fpop.style.position = "fixed"; fpop.style.margin = "0";
+    fpop.style.left = Math.max(8, Math.min(r.left, window.innerWidth - fpop.offsetWidth - 8)) + "px";
+    fpop.style.top = (r.bottom + 6) + "px";
+  }
+  function facetByKey(key) { return GWIZ_FACETS.filter(function (x) { return x.key === key; })[0]; }
+  function openFacetList() {
+    fpop.innerHTML = GWIZ_FACETS.map(function (f) {
+      return '<button class="mc-gwiz__fpop-opt" type="button" data-facet="' + f.key + '">' + f.label + FPOP_CHEVRON + '</button>';
+    }).join("");
+    fpop.querySelectorAll("[data-facet]").forEach(function (b) {
+      b.addEventListener("click", function () { openValueList(b.dataset.facet); });
+    });
+  }
+  function openValueList(key) {
+    var f = facetByKey(key), cur = gwizFilters[key] || [];
+    fpop.innerHTML = '<div class="mc-gwiz__fpop-head"><button class="mc-gwiz__fpop-back" type="button" aria-label="Back to fields">' + FPOP_BACK + '</button><span class="mc-gwiz__fpop-title">' + f.label + '</span></div>'
+      + '<div class="mc-gwiz__fpop-vals">' + f.values.map(function (v) {
+          return '<label class="checkbox"><input type="checkbox" class="checkbox__input" value="' + v + '"' + (cur.indexOf(v) > -1 ? " checked" : "") + ' /><span class="checkbox__box">' + FPOP_CBICON + '</span><span class="checkbox__label">' + v + '</span></label>';
+        }).join("") + '</div>'
+      + '<div class="mc-gwiz__fpop-foot"><button class="btn btn--ghost btn--sm" type="button" data-fclear>Clear</button><button class="btn btn--primary btn--sm" type="button" data-fapply>Apply</button></div>';
+    fpop.querySelector(".mc-gwiz__fpop-back").addEventListener("click", openFacetList);
+    fpop.querySelector("[data-fclear]").addEventListener("click", function () { delete gwizFilters[key]; renderFilterChips(); applyGwizFilters(); fpop.hidePopover(); });
+    fpop.querySelector("[data-fapply]").addEventListener("click", function () {
+      var picked = [].slice.call(fpop.querySelectorAll(".mc-gwiz__fpop-vals input:checked")).map(function (c) { return c.value; });
+      if (picked.length) gwizFilters[key] = picked; else delete gwizFilters[key];
+      renderFilterChips(); applyGwizFilters(); fpop.hidePopover();
+    });
+  }
+  function renderFilterChips() {
+    filtersEl.querySelectorAll(".mc-gwiz__fchip").forEach(function (c) { c.remove(); });
+    Object.keys(gwizFilters).forEach(function (key) {
+      var f = facetByKey(key), vals = gwizFilters[key];
+      var summary = vals.length === 1 ? vals[0] : vals.length + " selected";
+      var chip = document.createElement("button");
+      chip.className = "mc-gwiz__fchip"; chip.type = "button";
+      chip.innerHTML = '<b>' + f.label + '</b> · ' + summary + '<span class="mc-gwiz__fchip-x" role="button" aria-label="Remove filter">' + FCHIP_X + '</span>';
+      chip.addEventListener("click", function (e) {
+        if (e.target.closest(".mc-gwiz__fchip-x")) { delete gwizFilters[key]; renderFilterChips(); applyGwizFilters(); return; }
+        if (!fpop.matches(":popover-open")) { openValueList(key); fpop.showPopover(); placeFpop(addFilterBtn); }
+      });
+      filtersEl.insertBefore(chip, addFilterBtn);
+    });
+  }
+  addFilterBtn.addEventListener("click", function () {
+    if (!fpop.matches(":popover-open")) { openFacetList(); fpop.showPopover(); placeFpop(addFilterBtn); }
   });
   function gwizStep(n) {
     document.querySelectorAll(".mc-gwiz__step").forEach(function (p) { p.hidden = p.dataset.panel !== String(n); });
@@ -2823,8 +3027,16 @@ const appJs = `(function () {
   gwizMessage.addEventListener("input", function () { gwizMessage.style.height = "auto"; gwizMessage.style.height = Math.min(gwizMessage.scrollHeight, 220) + "px"; });
   document.getElementById("mc-gwiz-ai").addEventListener("click", function () { currentAiTarget = gwizMessage; aiStandaloneDlg.showModal(); });
   function openGwiz() {
-    gwizSel = {}; gwizSearch.value = ""; gwizSubject.value = ""; gwizMessage.value = ""; gwizMessage.style.height = "auto";
-    document.querySelectorAll("#mc-gwiz-list .mc-gwiz__srow").forEach(function (r) { r.style.display = ""; });
+    gwizSel = {}; gwizFilters = {}; gwizSearch.value = ""; gwizSubject.value = ""; gwizMessage.value = ""; gwizMessage.style.height = "auto";
+    document.getElementById("mc-gwiz-ids").value = "";
+    document.getElementById("mc-gwiz-paste-hint").textContent = "Recognized IDs are added to your selection.";
+    // reset to the Search tab
+    document.querySelectorAll(".mc-gwiz__tabs .tab").forEach(function (t) {
+      var isSearch = t.dataset.ptab === "search";
+      t.classList.toggle("tab--active", isSearch); t.setAttribute("aria-selected", isSearch ? "true" : "false");
+    });
+    document.querySelectorAll(".mc-gwiz__ptab").forEach(function (p) { p.hidden = p.dataset.ptabPanel !== "search"; });
+    renderFilterChips(); applyGwizFilters();
     syncGwizList(); gwizRenderSelected(); gwizSync(); gwizStep(1);
     gwizDlg.showModal();
   }

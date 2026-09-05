@@ -20,6 +20,15 @@ const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 // ---- the changelog, newest first ----
 const POSTS = [
   {
+    date: "2026-09-05",
+    type: "updated",
+    title: "Group Message: a faceted student picker + one-press New Message",
+    body: "The group-message wizard's \"Select Students\" step is rebuilt into a real recipient picker. Two segmented tabs — Search (live name/ID search + a faceted \"+ Add filter\" that opens a field list → value checklist and applies as removable Chips: Class year / Enrollment status / Major / Advisor, AND-combined) and Paste IDs (a roomy textarea for large lists, validated to the AA0001 shape). Rows carry checkboxes with a select-all over the filtered set; selection persists across filter changes; the pattern follows Linear/Stripe faceted filters — nothing is shown until you add it. Separately, the SplitButton is gone from the app: \"New Message\" is now a plain Button that always opens a New / New Group menu, and the mobile FAB opens the same menu — so Group Message is reachable on the phone. The thread detail also got honest Resolve gating and \"Responsible\" copy.",
+    links: [
+      { label: "Staff Message Center", href: "designs/staff-message-center.html" },
+    ],
+  },
+  {
     date: "2026-09-04",
     type: "prototype",
     title: "Staff Message Center → email-inbox client (Phases B–E)",

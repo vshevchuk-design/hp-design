@@ -781,16 +781,49 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .mc-gwiz__body { flex: 1; min-height: 0; overflow-y: auto; padding: 24px; }
 .mc-gwiz__step[hidden] { display: none; }
 .mc-gwiz__cols { display: grid; grid-template-columns: 1.3fr 1fr; gap: 16px; }
+.mc-gwiz__cols > * { min-width: 0; }
 .mc-gwiz__hint { margin: 0 0 8px; color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
-.mc-gwiz__list { border: 1px solid var(--tok-border-default); border-radius: 8px; overflow: hidden; margin-bottom: 16px; }
-.mc-gwiz__srow { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-bottom: 1px solid var(--tok-border-default); }
+/* Step 1 picker: segmented Tabs (Search / Paste) over a shared Selected panel */
+.mc-gwiz__tabs { margin-bottom: 12px; }
+.mc-gwiz__ptab[hidden] { display: none; }
+.mc-gwiz__searchbar { width: 100%; margin-bottom: 10px; }
+/* faceted-filter row: a "+ Add filter" action Chip + removable applied Chips */
+.mc-gwiz__filters { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 10px; }
+.mc-gwiz__fchip { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 6px 0 10px; border: 1px solid var(--tok-border-default); border-radius: 999px; background: var(--tok-surface-default); color: var(--tok-text-default); font-weight: 400; font-size: 12px; line-height: 1.4; cursor: pointer; font-family: inherit; }
+.mc-gwiz__fchip:hover { border-color: var(--tok-border-strong); }
+.mc-gwiz__fchip b { font-weight: 600; }
+.mc-gwiz__fchip-x { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border: none; background: none; padding: 0; cursor: pointer; color: var(--tok-icon-secondary); border-radius: 999px; }
+.mc-gwiz__fchip-x:hover { background: var(--tok-fill-neutral-hover); }
+.mc-gwiz__fchip-x svg { width: 14px; height: 14px; }
+.mc-gwiz__reshead { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 4px 8px; }
+.mc-gwiz__reshead .checkbox__label { color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.mc-gwiz__clearsel { border: none; background: none; padding: 0; cursor: pointer; color: var(--tok-text-primary); font-weight: 600; font-weight: 400; font-size: 12px; line-height: 1.4; font-family: inherit; }
+.mc-gwiz__list { border: 1px solid var(--tok-border-default); border-radius: 8px; overflow-y: auto; max-height: 264px; }
+.mc-gwiz__srow { display: flex; align-items: center; gap: 12px; padding: 8px 12px; border-bottom: 1px solid var(--tok-border-default); cursor: pointer; }
 .mc-gwiz__srow:last-child { border-bottom: none; }
+.mc-gwiz__srow:hover { background: var(--tok-surface-dim); }
+.mc-gwiz__srow .checkbox { pointer-events: none; }
 .mc-gwiz__sid { color: var(--tok-text-default); font-weight: 600; font-weight: 400; font-size: 12px; line-height: 1.4; width: 64px; flex-shrink: 0; }
-.mc-gwiz__sname { color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; flex: 1; min-width: 0; }
-.mc-gwiz__add { border: none; background: none; padding: 0; cursor: pointer; color: var(--tok-text-primary); font-weight: 600; font-weight: 400; font-size: 12px; line-height: 1.4; font-family: inherit; }
-.mc-gwiz__srow--added .mc-gwiz__add { color: var(--tok-text-success); cursor: default; }
-.mc-gwiz__paste { display: flex; gap: 8px; }
-.mc-gwiz__paste input { flex: 1; min-width: 0; box-sizing: border-box; height: 40px; padding: 0 12px; border: 1px solid var(--tok-border-default); border-radius: 8px; background: var(--tok-surface-dim); color: var(--tok-text-default); font-weight: 400; font-size: 16px; line-height: 1.2; font-family: var(--tok-family-sans); }
+.mc-gwiz__sname { flex: 1 1 auto; color: var(--tok-text-default); font-weight: 400; font-size: 12px; line-height: 1.4; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mc-gwiz__smeta { margin-left: auto; flex-shrink: 1; max-width: 46%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--tok-text-muted); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.mc-gwiz__empty { margin: 16px 0 0; text-align: center; color: var(--tok-text-muted); font-weight: 400; font-size: 12px; line-height: 1.4; }
+/* the filter Popover: a field list, then a value checklist (two-level) */
+.mc-gwiz__fpop { border: 1px solid var(--tok-border-default); border-radius: 8px; background: var(--tok-surface-default); box-shadow: 0 -2px 8px 0px rgba(21, 25, 30, 0.10); padding: 6px; min-width: 220px; }
+.mc-gwiz__fpop-opt { display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 12px; padding: 8px 10px; border: none; background: none; cursor: pointer; border-radius: 6px; color: var(--tok-text-default); font-weight: 400; font-size: 12px; line-height: 1.4; font-family: inherit; text-align: left; }
+.mc-gwiz__fpop-opt:hover { background: var(--tok-surface-dim); }
+.mc-gwiz__fpop-opt svg { width: 16px; height: 16px; color: var(--tok-icon-secondary); }
+.mc-gwiz__fpop-head { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-bottom: 1px solid var(--tok-border-default); margin-bottom: 6px; }
+.mc-gwiz__fpop-back { display: inline-flex; align-items: center; border: none; background: none; padding: 0; cursor: pointer; color: var(--tok-icon-secondary); }
+.mc-gwiz__fpop-back svg { width: 18px; height: 18px; }
+.mc-gwiz__fpop-title { color: var(--tok-text-default); font-weight: 600; font-weight: 400; font-size: 12px; line-height: 1.4; }
+.mc-gwiz__fpop-vals { display: flex; flex-direction: column; gap: 4px; padding: 0 6px; max-height: 200px; overflow-y: auto; }
+.mc-gwiz__fpop-vals .checkbox { padding: 6px 4px; }
+.mc-gwiz__fpop-foot { display: flex; justify-content: space-between; gap: 8px; padding: 8px 6px 4px; margin-top: 6px; border-top: 1px solid var(--tok-border-default); }
+/* Paste tab: a roomy textarea + a properly sized Add IDs button below it */
+.mc-gwiz__paste-area { display: block; width: 100%; box-sizing: border-box; min-height: 168px; resize: vertical; padding: 12px; border: 1px solid var(--tok-border-default); border-radius: 8px; background: var(--tok-surface-dim); color: var(--tok-text-default); font-weight: 400; font-size: 16px; line-height: 1.2; font-family: var(--tok-family-sans); line-height: 1.5; }
+.mc-gwiz__paste-area:focus { outline: 2px solid var(--tok-border-focus); outline-offset: -1px; border-color: var(--tok-border-focus); }
+.mc-gwiz__paste-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 10px; }
+.mc-gwiz__paste-hint { color: var(--tok-text-muted); font-weight: 400; font-size: 12px; line-height: 1.4; }
 .mc-gwiz__selected { background: var(--tok-surface-dim); border: 1px solid var(--tok-border-default); border-radius: 8px; padding: 12px; align-self: start; }
 .mc-gwiz__sel-head { margin: 0 0 8px; color: var(--tok-text-default); font-weight: 600; font-weight: 400; font-size: 12px; line-height: 1.4; }
 .mc-gwiz__chips { display: flex; flex-direction: column; gap: 8px; }
@@ -818,6 +851,9 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 @media (max-width: 767px) {
   .mc-gwiz { position: fixed; inset: 0; margin: 0; width: 100vw; max-width: 100vw; height: 100dvh; max-height: 100dvh; border-radius: 0; }
   .mc-gwiz__cols { grid-template-columns: 1fr; }
+  /* the row's year·major meta is a nicety on desktop; on a phone it just steals
+     name width, and the facet filters already cover that need — so drop it */
+  .mc-gwiz__smeta { display: none; }
 }
 .mc-group__stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
 .mc-group__replies-head { display: flex; align-items: center; justify-content: space-between; margin-top: 16px; margin-bottom: 8px; }
@@ -1469,18 +1505,47 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     <div class="mc-gwiz__step" data-panel="1">
       <div class="mc-gwiz__cols">
         <div>
-          <p class="mc-gwiz__hint">Search active or leave-of-absence students by ID or name</p>
-          <div class="search search--base" style="width:100%;margin-bottom:12px"><svg class="search__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg><input class="search__input" id="mc-gwiz-search" placeholder="Students" aria-label="Search students" /></div>
-          <div class="mc-gwiz__list" id="mc-gwiz-list">
-            <div class="mc-gwiz__srow" data-id="CX0001" data-name="Cait Genatossio"><span class="mc-gwiz__sid">CX0001</span><span class="mc-gwiz__sname">Cait Genatossio</span><button class="mc-gwiz__add" type="button">+ Add</button></div>
-            <div class="mc-gwiz__srow" data-id="CX0002" data-name="Calam Xavier"><span class="mc-gwiz__sid">CX0002</span><span class="mc-gwiz__sname">Calam Xavier</span><button class="mc-gwiz__add" type="button">+ Add</button></div>
-            <div class="mc-gwiz__srow" data-id="AA0367" data-name="Allison Rao"><span class="mc-gwiz__sid">AA0367</span><span class="mc-gwiz__sname">Allison Rao</span><button class="mc-gwiz__add" type="button">+ Add</button></div>
-            <div class="mc-gwiz__srow" data-id="AA0215" data-name="Maya Okafor"><span class="mc-gwiz__sid">AA0215</span><span class="mc-gwiz__sname">Maya Okafor</span><button class="mc-gwiz__add" type="button">+ Add</button></div>
-            <div class="mc-gwiz__srow" data-id="AA0007" data-name="L Arcos"><span class="mc-gwiz__sid">AA0007</span><span class="mc-gwiz__sname">L Arcos</span><button class="mc-gwiz__add" type="button">+ Add</button></div>
-            <div class="mc-gwiz__srow" data-id="AA0412" data-name="Dana Torres"><span class="mc-gwiz__sid">AA0412</span><span class="mc-gwiz__sname">Dana Torres</span><button class="mc-gwiz__add" type="button">+ Add</button></div>
+          <div class="tabs tabs--segmented tabs--sm mc-gwiz__tabs" role="tablist" aria-label="Add students">
+            <button class="tab tab--sm tab--active" role="tab" type="button" data-ptab="search" aria-selected="true">Search</button>
+            <button class="tab tab--sm" role="tab" type="button" data-ptab="paste" aria-selected="false">Paste IDs</button>
           </div>
-          <p class="mc-gwiz__hint">Or paste Student IDs separated by commas</p>
-          <div class="mc-gwiz__paste"><input id="mc-gwiz-ids" placeholder="Ex. AA0001, AA0002" aria-label="Student IDs" /><button class="btn btn--secondary btn--sm" id="mc-gwiz-addids" type="button">Add IDs</button></div>
+
+          <div class="mc-gwiz__ptab" data-ptab-panel="search">
+            <div class="search search--base mc-gwiz__searchbar"><svg class="search__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg><input class="search__input" id="mc-gwiz-search" placeholder="Search by name or ID" aria-label="Search students" /></div>
+            <div class="mc-gwiz__filters" id="mc-gwiz-filters">
+              <button class="chip chip--base chip--action mc-gwiz__addfilter" id="mc-gwiz-addfilter" type="button" aria-haspopup="menu"><svg class="chip__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg><span class="chip__label">Add filter</span></button>
+            </div>
+            <div class="mc-gwiz__reshead">
+              <label class="checkbox"><input type="checkbox" class="checkbox__input" id="mc-gwiz-selall" /><span class="checkbox__box"><svg class="checkbox__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="checkbox__label"><span id="mc-gwiz-rescount">All students</span></span></label>
+              <button class="mc-gwiz__clearsel" id="mc-gwiz-clearsel" type="button" hidden>Clear selection</button>
+            </div>
+            <div class="mc-gwiz__list" id="mc-gwiz-list">
+              <div class="mc-gwiz__srow" data-id="CX0001" data-name="Cait Genatossio" data-year="Senior" data-status="Active" data-major="Art History" data-advisor="Alexander Robinson"><label class="checkbox"><input type="checkbox" class="checkbox__input" id="gcb-CX0001" /><span class="checkbox__box"><svg class="checkbox__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="checkbox__label"></span></label><span class="mc-gwiz__sid">CX0001</span><span class="mc-gwiz__sname">Cait Genatossio</span><span class="mc-gwiz__smeta">Senior · Art History</span></div>
+              <div class="mc-gwiz__srow" data-id="CX0002" data-name="Calam Xavier" data-year="Junior" data-status="Active" data-major="Economics" data-advisor="Ava Robinson"><label class="checkbox"><input type="checkbox" class="checkbox__input" id="gcb-CX0002" /><span class="checkbox__box"><svg class="checkbox__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="checkbox__label"></span></label><span class="mc-gwiz__sid">CX0002</span><span class="mc-gwiz__sname">Calam Xavier</span><span class="mc-gwiz__smeta">Junior · Economics</span></div>
+              <div class="mc-gwiz__srow" data-id="AA0367" data-name="Allison Rao" data-year="Sophomore" data-status="Active" data-major="Biology" data-advisor="Ava Robinson"><label class="checkbox"><input type="checkbox" class="checkbox__input" id="gcb-AA0367" /><span class="checkbox__box"><svg class="checkbox__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="checkbox__label"></span></label><span class="mc-gwiz__sid">AA0367</span><span class="mc-gwiz__sname">Allison Rao</span><span class="mc-gwiz__smeta">Sophomore · Biology</span></div>
+              <div class="mc-gwiz__srow" data-id="AA0215" data-name="Maya Okafor" data-year="Senior" data-status="Leave of absence" data-major="Nursing" data-advisor="Alexander Robinson"><label class="checkbox"><input type="checkbox" class="checkbox__input" id="gcb-AA0215" /><span class="checkbox__box"><svg class="checkbox__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="checkbox__label"></span></label><span class="mc-gwiz__sid">AA0215</span><span class="mc-gwiz__sname">Maya Okafor</span><span class="mc-gwiz__smeta">Senior · Nursing</span></div>
+              <div class="mc-gwiz__srow" data-id="AA0007" data-name="Liam Arcos" data-year="Freshman" data-status="Active" data-major="Computer Science" data-advisor="Alexander Robinson"><label class="checkbox"><input type="checkbox" class="checkbox__input" id="gcb-AA0007" /><span class="checkbox__box"><svg class="checkbox__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="checkbox__label"></span></label><span class="mc-gwiz__sid">AA0007</span><span class="mc-gwiz__sname">Liam Arcos</span><span class="mc-gwiz__smeta">Freshman · Computer Science</span></div>
+              <div class="mc-gwiz__srow" data-id="AA0412" data-name="Dana Torres" data-year="Junior" data-status="Active" data-major="English" data-advisor="Ava Robinson"><label class="checkbox"><input type="checkbox" class="checkbox__input" id="gcb-AA0412" /><span class="checkbox__box"><svg class="checkbox__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="checkbox__label"></span></label><span class="mc-gwiz__sid">AA0412</span><span class="mc-gwiz__sname">Dana Torres</span><span class="mc-gwiz__smeta">Junior · English</span></div>
+              <div class="mc-gwiz__srow" data-id="AA0533" data-name="Priya Nair" data-year="Senior" data-status="Active" data-major="Computer Science" data-advisor="Ava Robinson"><label class="checkbox"><input type="checkbox" class="checkbox__input" id="gcb-AA0533" /><span class="checkbox__box"><svg class="checkbox__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="checkbox__label"></span></label><span class="mc-gwiz__sid">AA0533</span><span class="mc-gwiz__sname">Priya Nair</span><span class="mc-gwiz__smeta">Senior · Computer Science</span></div>
+              <div class="mc-gwiz__srow" data-id="AA0088" data-name="Marcus Bell" data-year="Sophomore" data-status="Active" data-major="Economics" data-advisor="Alexander Robinson"><label class="checkbox"><input type="checkbox" class="checkbox__input" id="gcb-AA0088" /><span class="checkbox__box"><svg class="checkbox__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="checkbox__label"></span></label><span class="mc-gwiz__sid">AA0088</span><span class="mc-gwiz__sname">Marcus Bell</span><span class="mc-gwiz__smeta">Sophomore · Economics</span></div>
+              <div class="mc-gwiz__srow" data-id="AA0620" data-name="Sofia Duarte" data-year="Freshman" data-status="Active" data-major="Biology" data-advisor="Ava Robinson"><label class="checkbox"><input type="checkbox" class="checkbox__input" id="gcb-AA0620" /><span class="checkbox__box"><svg class="checkbox__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="checkbox__label"></span></label><span class="mc-gwiz__sid">AA0620</span><span class="mc-gwiz__sname">Sofia Duarte</span><span class="mc-gwiz__smeta">Freshman · Biology</span></div>
+              <div class="mc-gwiz__srow" data-id="AA0311" data-name="Noah Kim" data-year="Junior" data-status="Leave of absence" data-major="English" data-advisor="Alexander Robinson"><label class="checkbox"><input type="checkbox" class="checkbox__input" id="gcb-AA0311" /><span class="checkbox__box"><svg class="checkbox__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="checkbox__label"></span></label><span class="mc-gwiz__sid">AA0311</span><span class="mc-gwiz__sname">Noah Kim</span><span class="mc-gwiz__smeta">Junior · English</span></div>
+              <div class="mc-gwiz__srow" data-id="AA0742" data-name="Ella Fontaine" data-year="Senior" data-status="Active" data-major="Art History" data-advisor="Alexander Robinson"><label class="checkbox"><input type="checkbox" class="checkbox__input" id="gcb-AA0742" /><span class="checkbox__box"><svg class="checkbox__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="checkbox__label"></span></label><span class="mc-gwiz__sid">AA0742</span><span class="mc-gwiz__sname">Ella Fontaine</span><span class="mc-gwiz__smeta">Senior · Art History</span></div>
+              <div class="mc-gwiz__srow" data-id="AA0159" data-name="Owen Pratt" data-year="Sophomore" data-status="Active" data-major="Nursing" data-advisor="Ava Robinson"><label class="checkbox"><input type="checkbox" class="checkbox__input" id="gcb-AA0159" /><span class="checkbox__box"><svg class="checkbox__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="checkbox__label"></span></label><span class="mc-gwiz__sid">AA0159</span><span class="mc-gwiz__sname">Owen Pratt</span><span class="mc-gwiz__smeta">Sophomore · Nursing</span></div>
+              <div class="mc-gwiz__srow" data-id="AA0466" data-name="Zara Haddad" data-year="Freshman" data-status="Active" data-major="Computer Science" data-advisor="Alexander Robinson"><label class="checkbox"><input type="checkbox" class="checkbox__input" id="gcb-AA0466" /><span class="checkbox__box"><svg class="checkbox__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="checkbox__label"></span></label><span class="mc-gwiz__sid">AA0466</span><span class="mc-gwiz__sname">Zara Haddad</span><span class="mc-gwiz__smeta">Freshman · Computer Science</span></div>
+              <div class="mc-gwiz__srow" data-id="AA0203" data-name="Ben Ortiz" data-year="Junior" data-status="Active" data-major="Economics" data-advisor="Ava Robinson"><label class="checkbox"><input type="checkbox" class="checkbox__input" id="gcb-AA0203" /><span class="checkbox__box"><svg class="checkbox__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="checkbox__label"></span></label><span class="mc-gwiz__sid">AA0203</span><span class="mc-gwiz__sname">Ben Ortiz</span><span class="mc-gwiz__smeta">Junior · Economics</span></div>
+            </div>
+            <p class="mc-gwiz__empty" id="mc-gwiz-empty" hidden>No students match these filters.</p>
+          </div>
+
+          <div class="mc-gwiz__ptab" data-ptab-panel="paste" hidden>
+            <p class="mc-gwiz__hint">Paste Student IDs — separated by commas, spaces, or new lines. Great for large lists.</p>
+            <textarea class="mc-gwiz__paste-area" id="mc-gwiz-ids" rows="7" placeholder="AA0001, AA0002, AA0003&#10;AA0004 AA0005 …" aria-label="Student IDs"></textarea>
+            <div class="mc-gwiz__paste-foot">
+              <span class="mc-gwiz__paste-hint" id="mc-gwiz-paste-hint">Recognized IDs are added to your selection.</span>
+              <button class="btn btn--secondary btn--base" id="mc-gwiz-addids" type="button">Add IDs</button>
+            </div>
+          </div>
         </div>
         <div class="mc-gwiz__selected">
           <p class="mc-gwiz__sel-head">Selected · <span id="mc-gwiz-count">0</span></p>
@@ -1488,6 +1553,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         </div>
       </div>
     </div>
+    <div class="listbox mc-gwiz__fpop" id="mc-gwiz-fpop" popover></div>
     <div class="mc-gwiz__step" data-panel="2" hidden>
       <div class="mc-gwiz__frow"><span class="mc-gwiz__flabel">To</span><span class="mc-gwiz__fval" id="mc-gwiz-to">0 students selected</span><button class="mc-gwiz__edit" id="mc-gwiz-edit" type="button">Edit</button></div>
       <div class="mc-gwiz__frow"><span class="mc-gwiz__flabel">From</span><span class="mc-gwiz__fval">Academic Advising</span></div>
@@ -2362,7 +2428,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   // ===== New Group Message wizard =====
   var gwizDlg = document.getElementById("mc-gwiz");
   var gwizSel = {}; // id -> name
-  var GWIZ_NAMES = {"CX0001":"Cait Genatossio","CX0002":"Calam Xavier","AA0367":"Allison Rao","AA0215":"Maya Okafor","AA0007":"L Arcos","AA0412":"Dana Torres"};
+  var GWIZ_NAMES = {"CX0001":"Cait Genatossio","CX0002":"Calam Xavier","AA0367":"Allison Rao","AA0215":"Maya Okafor","AA0007":"Liam Arcos","AA0412":"Dana Torres","AA0533":"Priya Nair","AA0088":"Marcus Bell","AA0620":"Sofia Duarte","AA0311":"Noah Kim","AA0742":"Ella Fontaine","AA0159":"Owen Pratt","AA0466":"Zara Haddad","AA0203":"Ben Ortiz"};
   var gwizSearch = document.getElementById("mc-gwiz-search");
   var gwizChips = document.getElementById("mc-gwiz-chips");
   var gwizCountEl = document.getElementById("mc-gwiz-count");
@@ -2374,48 +2440,175 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   var GWIZ_CLOSE_ICON = "<svg class=\"attachment__action-glyph\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z\"/></svg>";
   var AVG_HUES = ["teal","orange","red","amber","violet","magenta"];
 
+  var GWIZ_FACETS = [{"key":"year","label":"Class year","values":["Freshman","Sophomore","Junior","Senior"]},{"key":"status","label":"Enrollment status","values":["Active","Leave of absence"]},{"key":"major","label":"Major","values":["Art History","Biology","Computer Science","Economics","English","Nursing"]},{"key":"advisor","label":"Advisor","values":["Alexander Robinson","Ava Robinson"]}];
+  var GWIZ_TOTAL = 14;
+  var FPOP_CHEVRON = "<svg class=\"mc-gwiz__fpop-chev\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z\"/></svg>";
+  var FPOP_BACK = "<svg class=\"\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z\"/></svg>";
+  var FPOP_CBICON = "<svg class=\"checkbox__icon\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z\"/></svg>";
+  var FCHIP_X = "<svg class=\"\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z\"/></svg>";
+  var filtersEl = document.getElementById("mc-gwiz-filters");
+  var addFilterBtn = document.getElementById("mc-gwiz-addfilter");
+  var selAll = document.getElementById("mc-gwiz-selall");
+  var clearSelBtn = document.getElementById("mc-gwiz-clearsel");
+  var gwizRescount = document.getElementById("mc-gwiz-rescount");
+  var fpop = document.getElementById("mc-gwiz-fpop");
+  var gwizFilters = {}; // facetKey -> [values], AND-combined
+
   function gwizCount() { return Object.keys(gwizSel).length; }
   function gwizRenderSelected() {
     gwizChips.innerHTML = Object.keys(gwizSel).map(function (id) {
       return '<div class="mc-gwiz__chip"><b>' + id + '</b><span>' + gwizSel[id] + '</span><button type="button" data-rm="' + id + '" aria-label="Remove">' + GWIZ_CLOSE_ICON + '</button></div>';
     }).join("");
     gwizChips.querySelectorAll("[data-rm]").forEach(function (b) {
-      b.addEventListener("click", function () { delete gwizSel[b.dataset.rm]; syncGwizList(); gwizRenderSelected(); gwizSync(); });
+      b.addEventListener("click", function () { setSelected(b.dataset.rm, false); });
     });
     gwizCountEl.textContent = gwizCount();
   }
+  // reflect the selection back into row checkboxes + Clear button + select-all
   function syncGwizList() {
     document.querySelectorAll("#mc-gwiz-list .mc-gwiz__srow").forEach(function (row) {
-      var added = !!gwizSel[row.dataset.id];
-      row.classList.toggle("mc-gwiz__srow--added", added);
-      row.querySelector(".mc-gwiz__add").textContent = added ? "✓ Added" : "+ Add";
+      var cb = row.querySelector(".checkbox__input");
+      if (cb) cb.checked = !!gwizSel[row.dataset.id];
     });
+    clearSelBtn.hidden = gwizCount() === 0;
+    syncSelAll();
   }
   function gwizSync() {
     gwizNext.disabled = gwizCount() === 0;
     document.getElementById("mc-gwiz-to").textContent = gwizCount() + (gwizCount() === 1 ? " student selected" : " students selected");
   }
-  document.querySelectorAll("#mc-gwiz-list .mc-gwiz__srow .mc-gwiz__add").forEach(function (btn) {
-    btn.addEventListener("click", function () {
-      var row = btn.closest(".mc-gwiz__srow");
-      if (gwizSel[row.dataset.id]) return;
-      gwizSel[row.dataset.id] = row.dataset.name;
-      syncGwizList(); gwizRenderSelected(); gwizSync();
-    });
+  // one entry point so chips, checkboxes, select-all and paste never disagree
+  function setSelected(id, on, name) {
+    if (on) { if (!gwizSel[id]) gwizSel[id] = name || GWIZ_NAMES[id] || "Student " + id; }
+    else { delete gwizSel[id]; }
+    syncGwizList(); gwizRenderSelected(); gwizSync();
+  }
+  // whole row is a click target (checkbox is display-only, pointer-events:none)
+  document.querySelectorAll("#mc-gwiz-list .mc-gwiz__srow").forEach(function (row) {
+    row.addEventListener("click", function () { setSelected(row.dataset.id, !gwizSel[row.dataset.id], row.dataset.name); });
   });
-  document.getElementById("mc-gwiz-addids").addEventListener("click", function () {
-    var input = document.getElementById("mc-gwiz-ids");
-    input.value.split(",").map(function (s) { return s.trim().toUpperCase(); }).filter(Boolean).forEach(function (id) {
-      if (!gwizSel[id]) gwizSel[id] = GWIZ_NAMES[id] || "Student " + id;
+
+  // ---- results: live search query AND every active facet filter ----
+  // NB: named gwiz* to avoid colliding with the inbox's own rowMatches — two
+  // same-named function declarations in this IIFE would hoist-clobber each other
+  function gwizRowMatches(row) {
+    var q = gwizSearch.value.trim().toLowerCase();
+    if (q && (row.dataset.id + " " + row.dataset.name).toLowerCase().indexOf(q) === -1) return false;
+    for (var k in gwizFilters) {
+      var vals = gwizFilters[k];
+      if (vals && vals.length && vals.indexOf(row.dataset[k]) === -1) return false;
+    }
+    return true;
+  }
+  function visibleRows() {
+    return [].slice.call(document.querySelectorAll("#mc-gwiz-list .mc-gwiz__srow")).filter(function (r) { return r.style.display !== "none"; });
+  }
+  function applyGwizFilters() {
+    var n = 0;
+    document.querySelectorAll("#mc-gwiz-list .mc-gwiz__srow").forEach(function (row) {
+      var show = gwizRowMatches(row);
+      row.style.display = show ? "" : "none";
+      if (show) n++;
     });
-    input.value = "";
+    document.getElementById("mc-gwiz-empty").hidden = n !== 0;
+    document.getElementById("mc-gwiz-list").style.display = n === 0 ? "none" : "";
+    gwizRescount.textContent = n === GWIZ_TOTAL ? "All students" : (n + (n === 1 ? " result" : " results"));
+    syncSelAll();
+  }
+  gwizSearch.addEventListener("input", applyGwizFilters);
+
+  // ---- select-all toggles every *visible* (filtered) row ----
+  function syncSelAll() {
+    var vis = visibleRows();
+    var sel = vis.filter(function (r) { return !!gwizSel[r.dataset.id]; }).length;
+    selAll.checked = vis.length > 0 && sel === vis.length;
+    selAll.indeterminate = sel > 0 && sel < vis.length;
+  }
+  selAll.addEventListener("change", function () {
+    var on = selAll.checked;
+    visibleRows().forEach(function (r) {
+      if (on) { if (!gwizSel[r.dataset.id]) gwizSel[r.dataset.id] = r.dataset.name; }
+      else delete gwizSel[r.dataset.id];
+    });
     syncGwizList(); gwizRenderSelected(); gwizSync();
   });
-  gwizSearch.addEventListener("input", function () {
-    var q = gwizSearch.value.trim().toLowerCase();
-    document.querySelectorAll("#mc-gwiz-list .mc-gwiz__srow").forEach(function (row) {
-      row.style.display = (row.dataset.id + " " + row.dataset.name).toLowerCase().indexOf(q) === -1 ? "none" : "";
+  clearSelBtn.addEventListener("click", function () { gwizSel = {}; syncGwizList(); gwizRenderSelected(); gwizSync(); });
+
+  // ---- Paste tab: commas / spaces / new lines, any mix ----
+  document.getElementById("mc-gwiz-addids").addEventListener("click", function () {
+    var input = document.getElementById("mc-gwiz-ids");
+    var tokens = input.value.split(/[\s,;]+/).map(function (s) { return s.trim().toUpperCase(); }).filter(Boolean);
+    var added = 0, skipped = 0;
+    tokens.forEach(function (id) {
+      if (!/^[A-Z]{2}[0-9]{4}$/.test(id)) { skipped++; return; }   // expects the AA0001 shape
+      if (!gwizSel[id]) { gwizSel[id] = GWIZ_NAMES[id] || "Added by ID"; added++; }
     });
+    input.value = "";
+    var msg = added ? (added + (added === 1 ? " ID" : " IDs") + " added") : "No new IDs found";
+    if (skipped) msg += " · " + skipped + " skipped (use the AA0001 format)";
+    document.getElementById("mc-gwiz-paste-hint").textContent = msg + ".";
+    syncGwizList(); gwizRenderSelected(); gwizSync();
+  });
+
+  // ---- Search / Paste segmented tabs ----
+  document.querySelectorAll(".mc-gwiz__tabs .tab").forEach(function (tab) {
+    tab.addEventListener("click", function () {
+      document.querySelectorAll(".mc-gwiz__tabs .tab").forEach(function (t) {
+        t.classList.toggle("tab--active", t === tab);
+        t.setAttribute("aria-selected", t === tab ? "true" : "false");
+      });
+      document.querySelectorAll(".mc-gwiz__ptab").forEach(function (p) { p.hidden = p.dataset.ptabPanel !== tab.dataset.ptab; });
+    });
+  });
+
+  // ---- faceted "+ Add filter": field list -> value checklist -> applied Chip ----
+  function placeFpop(anchor) {
+    var r = anchor.getBoundingClientRect();
+    fpop.style.position = "fixed"; fpop.style.margin = "0";
+    fpop.style.left = Math.max(8, Math.min(r.left, window.innerWidth - fpop.offsetWidth - 8)) + "px";
+    fpop.style.top = (r.bottom + 6) + "px";
+  }
+  function facetByKey(key) { return GWIZ_FACETS.filter(function (x) { return x.key === key; })[0]; }
+  function openFacetList() {
+    fpop.innerHTML = GWIZ_FACETS.map(function (f) {
+      return '<button class="mc-gwiz__fpop-opt" type="button" data-facet="' + f.key + '">' + f.label + FPOP_CHEVRON + '</button>';
+    }).join("");
+    fpop.querySelectorAll("[data-facet]").forEach(function (b) {
+      b.addEventListener("click", function () { openValueList(b.dataset.facet); });
+    });
+  }
+  function openValueList(key) {
+    var f = facetByKey(key), cur = gwizFilters[key] || [];
+    fpop.innerHTML = '<div class="mc-gwiz__fpop-head"><button class="mc-gwiz__fpop-back" type="button" aria-label="Back to fields">' + FPOP_BACK + '</button><span class="mc-gwiz__fpop-title">' + f.label + '</span></div>'
+      + '<div class="mc-gwiz__fpop-vals">' + f.values.map(function (v) {
+          return '<label class="checkbox"><input type="checkbox" class="checkbox__input" value="' + v + '"' + (cur.indexOf(v) > -1 ? " checked" : "") + ' /><span class="checkbox__box">' + FPOP_CBICON + '</span><span class="checkbox__label">' + v + '</span></label>';
+        }).join("") + '</div>'
+      + '<div class="mc-gwiz__fpop-foot"><button class="btn btn--ghost btn--sm" type="button" data-fclear>Clear</button><button class="btn btn--primary btn--sm" type="button" data-fapply>Apply</button></div>';
+    fpop.querySelector(".mc-gwiz__fpop-back").addEventListener("click", openFacetList);
+    fpop.querySelector("[data-fclear]").addEventListener("click", function () { delete gwizFilters[key]; renderFilterChips(); applyGwizFilters(); fpop.hidePopover(); });
+    fpop.querySelector("[data-fapply]").addEventListener("click", function () {
+      var picked = [].slice.call(fpop.querySelectorAll(".mc-gwiz__fpop-vals input:checked")).map(function (c) { return c.value; });
+      if (picked.length) gwizFilters[key] = picked; else delete gwizFilters[key];
+      renderFilterChips(); applyGwizFilters(); fpop.hidePopover();
+    });
+  }
+  function renderFilterChips() {
+    filtersEl.querySelectorAll(".mc-gwiz__fchip").forEach(function (c) { c.remove(); });
+    Object.keys(gwizFilters).forEach(function (key) {
+      var f = facetByKey(key), vals = gwizFilters[key];
+      var summary = vals.length === 1 ? vals[0] : vals.length + " selected";
+      var chip = document.createElement("button");
+      chip.className = "mc-gwiz__fchip"; chip.type = "button";
+      chip.innerHTML = '<b>' + f.label + '</b> · ' + summary + '<span class="mc-gwiz__fchip-x" role="button" aria-label="Remove filter">' + FCHIP_X + '</span>';
+      chip.addEventListener("click", function (e) {
+        if (e.target.closest(".mc-gwiz__fchip-x")) { delete gwizFilters[key]; renderFilterChips(); applyGwizFilters(); return; }
+        if (!fpop.matches(":popover-open")) { openValueList(key); fpop.showPopover(); placeFpop(addFilterBtn); }
+      });
+      filtersEl.insertBefore(chip, addFilterBtn);
+    });
+  }
+  addFilterBtn.addEventListener("click", function () {
+    if (!fpop.matches(":popover-open")) { openFacetList(); fpop.showPopover(); placeFpop(addFilterBtn); }
   });
   function gwizStep(n) {
     document.querySelectorAll(".mc-gwiz__step").forEach(function (p) { p.hidden = p.dataset.panel !== String(n); });
@@ -2434,8 +2627,16 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   gwizMessage.addEventListener("input", function () { gwizMessage.style.height = "auto"; gwizMessage.style.height = Math.min(gwizMessage.scrollHeight, 220) + "px"; });
   document.getElementById("mc-gwiz-ai").addEventListener("click", function () { currentAiTarget = gwizMessage; aiStandaloneDlg.showModal(); });
   function openGwiz() {
-    gwizSel = {}; gwizSearch.value = ""; gwizSubject.value = ""; gwizMessage.value = ""; gwizMessage.style.height = "auto";
-    document.querySelectorAll("#mc-gwiz-list .mc-gwiz__srow").forEach(function (r) { r.style.display = ""; });
+    gwizSel = {}; gwizFilters = {}; gwizSearch.value = ""; gwizSubject.value = ""; gwizMessage.value = ""; gwizMessage.style.height = "auto";
+    document.getElementById("mc-gwiz-ids").value = "";
+    document.getElementById("mc-gwiz-paste-hint").textContent = "Recognized IDs are added to your selection.";
+    // reset to the Search tab
+    document.querySelectorAll(".mc-gwiz__tabs .tab").forEach(function (t) {
+      var isSearch = t.dataset.ptab === "search";
+      t.classList.toggle("tab--active", isSearch); t.setAttribute("aria-selected", isSearch ? "true" : "false");
+    });
+    document.querySelectorAll(".mc-gwiz__ptab").forEach(function (p) { p.hidden = p.dataset.ptabPanel !== "search"; });
+    renderFilterChips(); applyGwizFilters();
     syncGwizList(); gwizRenderSelected(); gwizSync(); gwizStep(1);
     gwizDlg.showModal();
   }
