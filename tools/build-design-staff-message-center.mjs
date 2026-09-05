@@ -971,7 +971,6 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .mc__brand { display: flex; align-items: center; gap: ${px(resolve("dim.2"))}; min-width: 0; }
 .mc__dept-badge { flex-shrink: 0; }
 .mc__topbar-end { display: flex; align-items: center; gap: ${px(resolve("dim.3"))}; flex-shrink: 0; }
-.mc__user { width: 32px; height: 32px; }
 .mc__body { flex: 1; display: flex; min-height: 0; }
 
 /* full-width views that swap (list <-> detail), not a split pane */
@@ -3147,7 +3146,6 @@ ${phaseECss}
           <li><button class="listbox__option" role="menuitem" type="button" id="mc-new-group">New Group Message</button></li>
         </ul>
       </div>
-      ${avatarMarkup(SELF.name, "sm").replace('class="avatar', 'class="mc__user avatar')}
     </div>
   </header>
   <div class="mc__body">
