@@ -1001,11 +1001,12 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
    Mobile-first = collapsed: chips hidden, popover shows the collapsibles. */
 .mc-qchip { flex-shrink: 0; display: none; }
 .mc-fopt--collapsible { display: block; }
-/* Expires Soon is Inbox-only — hidden on Resolved wherever it lives, along with
-   the popover's Unread option */
+/* Unread & Expires Soon are Inbox-only — hidden on Resolved wherever they live
+   (inline chip or collapsed popover option) */
+.mc.mc--archived .mc-qchip--unread,
 .mc.mc--archived .mc-qchip--expires,
-.mc.mc--archived #mc-filters-listbox [data-filter-option="expires"],
-.mc.mc--archived #mc-filters-listbox [data-filter-option="unread"] { display: none; }
+.mc.mc--archived #mc-filters-listbox [data-filter-option="unread"],
+.mc.mc--archived #mc-filters-listbox [data-filter-option="expires"] { display: none; }
 .mc-rail__count { display: flex; flex-direction: column; gap: ${px(resolve("dim.2"))}; }
 .mc-count { padding: 0 ${px(resolve("dim.4"))}; color: ${cv("text.muted")}; ${typoCss(labelSmType)}${labelSmExt.textTransform ? ` text-transform: ${labelSmExt.textTransform};` : ""}${labelSmExt.letterSpacing ? ` letter-spacing: ${labelSmExt.letterSpacing};` : ""} }
 /* one shared scroll container for both lists — during a search they render
@@ -1094,9 +1095,10 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
   .mc-rail__search { display: flex; flex: 1 1 220px; min-width: 200px; max-width: 340px; margin-left: auto; }
 }
 @media (min-width: 960px) {
-  /* the row has room: quick chips come out, and the popover drops its copies */
+  /* the row has room: all quick chips come out and the Filters button — which is
+     purely their overflow home — disappears entirely (no empty/one-item button) */
   .mc-qchip { display: inline-flex; }
-  .mc-filters-pop .mc-fopt--collapsible { display: none; }
+  .mc-filters-chip { display: none; }
 }
 @media (min-width: 1024px) {
   .mc__topbar { padding: ${px(resolve("dim.4"))} ${px(resolve("dim.6"))}; }
@@ -2225,19 +2227,14 @@ const appJs = `(function () {
   var filtersChip = document.getElementById("mc-filters-chip");
   var filtersCount = document.getElementById("mc-filters-count");
   var filtersListbox = document.getElementById("mc-filters-listbox");
-  // the badge counts only the filters currently living INSIDE the popover:
-  // always Unread, plus the three quick filters when they've collapsed in
-  // (narrow). When the chips are inline they show their own state, so they're
-  // not double-counted on the Filters button.
-  var chipsInline = window.matchMedia("(min-width: 960px)");
+  // the Filters button only exists when the chips have collapsed into it
+  // (narrow), so its badge simply counts every active toggle filter
   function updateFiltersChip() {
-    var keys = chipsInline.matches ? ["unread"] : ["unread", "involved", "flagged", "expires"];
-    var n = keys.filter(function (k) { return filters[k]; }).length;
+    var n = ["unread", "involved", "flagged", "expires"].filter(function (k) { return filters[k]; }).length;
     filtersCount.textContent = n;
     filtersCount.hidden = n === 0;
     filtersChip.classList.toggle("chip--checked-outline", n > 0);
   }
-  chipsInline.addEventListener("change", updateFiltersChip);
   function setFilter(key, on) {
     filters[key] = on;
     var chip = document.querySelector('.mc-qchip[data-filter-key="' + key + '"]');
@@ -3153,7 +3150,7 @@ ${phaseECss}
         <button class="chip chip--base mc-filters-chip" id="mc-filters-chip" type="button" popovertarget="mc-filters-listbox" aria-haspopup="listbox">${iconFilter}<span>Filters</span><span class="counter counter--sm counter--onNeutral counter--inactive" id="mc-filters-count" hidden>0</span>${iconChevronDown}</button>
         <div class="listbox mc-filters-pop" id="mc-filters-listbox" popover>
           <ul class="listbox__list" aria-label="Filters">
-            <li data-filter-option="unread"><label class="listbox__cb-option" for="mc-fopt-unread"><input type="checkbox" class="listbox__cb-input" id="mc-fopt-unread" data-filter-key="unread" />
+            <li class="mc-fopt--collapsible" data-filter-option="unread"><label class="listbox__cb-option" for="mc-fopt-unread"><input type="checkbox" class="listbox__cb-input" id="mc-fopt-unread" data-filter-key="unread" />
               <span class="listbox__cb-box">${iconCbCheck}</span><span class="listbox__cb-label">Unread</span></label></li>
             <li class="mc-fopt--collapsible" data-filter-option="involved"><label class="listbox__cb-option" for="mc-fopt-involved"><input type="checkbox" class="listbox__cb-input" id="mc-fopt-involved" data-filter-key="involved" />
               <span class="listbox__cb-box">${iconCbCheck}</span><span class="listbox__cb-label">I'm Involved</span></label></li>
@@ -3163,6 +3160,7 @@ ${phaseECss}
               <span class="listbox__cb-box">${iconCbCheck}</span><span class="listbox__cb-label">Expires Soon</span></label></li>
           </ul>
         </div>
+        <button class="chip chip--base mc-qchip mc-qchip--unread" id="mc-chip-unread" type="button" aria-pressed="false" data-filter-key="unread">Unread</button>
         <button class="chip chip--base mc-qchip" id="mc-chip-involved" type="button" aria-pressed="false" data-filter-key="involved">I'm Involved</button>
         <button class="chip chip--base mc-qchip" id="mc-chip-flagged" type="button" aria-pressed="false" data-filter-key="flagged">Flagged</button>
         <button class="chip chip--base mc-qchip mc-qchip--expires" id="mc-chip-expires" type="button" aria-pressed="false" data-filter-key="expires">Expires Soon</button>

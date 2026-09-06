@@ -744,3 +744,13 @@ User's call on the toolbar: quick chips should sit inline when there's room and 
 - **Dropped Department** entirely (markup + `dept` var + rowMatches clause + resetDeptFilter). The compose dialog's own From-department Select is untouched.
 
 Verified live: 1280 → chips inline, popover shows only Unread, sync chip↔checkbox, I'm Involved→2; 850 → chips gone, popover shows all four, badge counts them; Resolved still hides Expires Soon wherever it lives.
+
+## 2026-09-06 (cont.) — Filters: fix the thin/empty Filters button
+
+Two fair callouts on the previous cut: Unread was pinned inside the Filters popover forever (so at wide the Filters button existed just for that one item), and on Resolved the popover could end up empty → an empty Filters button. Fixed by making the model uniform:
+- **All four toggles are adaptive chips** now (Unread joined I'm Involved / Flagged / Expires Soon). At ≥960px they're inline chips; below that they collapse into the Filters popover.
+- **The Filters button exists ONLY when the chips are collapsed** (`@media (min-width:960px) { .mc-filters-chip { display:none } }`). At wide there's no Filters button at all — no thin one-item button, no empty button.
+- **Unread & Expires Soon are Inbox-only** (chip + popover option hidden on Resolved). So on Resolved the collapsed popover holds I'm Involved + Flagged — never empty.
+- Badge simplified to count every active toggle (the button only shows when the chips are inside it anyway); dropped the width-aware matchMedia logic.
+
+Verified: 1280 Inbox → 4 chips, no Filters button; 1280 Resolved → 2 chips (Unread/Expires gone), no Filters button; 850 Inbox → Filters button with all four; 850 Resolved → Filters popover shows only Involved + Flagged.
