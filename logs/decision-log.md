@@ -735,3 +735,12 @@ The filter row was inherited from the student MC and wrong for staff: it wrapped
 - **Search**: full always-visible field ≥768 (ANDs with the chips); the icon-collapse survives only on mobile. One `setFilter(key,on)` keeps a key's quick-chip and popover surfaces in sync.
 
 Verified live (desktop + mobile): I'm Involved→2, Expires→1, Flagged→1, Unread→2, Department·English→0 (inbox), search "hold"→1, Resolved hides Expires, mobile search-open collapses the toolbar.
+
+## 2026-09-06 — Filters: adaptive chips (inline when they fit, else into the popover)
+
+User's call on the toolbar: quick chips should sit inline when there's room and collapse INTO the Filters popover when there isn't (and drop Department — an advisor is already scoped to their department). Implemented exactly that.
+- **One filter set, two surfaces, kept in sync by the existing `setFilter`:** I'm Involved / Flagged / Expires Soon render as inline toggle Chips at ≥960px and as checkboxes inside the Filters popover below that. Unread always lives in the popover. `<960` the inline chips are `display:none` and the popover's `.mc-fopt--collapsible` items show; `≥960` it flips.
+- **Filters badge is width-aware:** counts only what's currently *inside* the popover — just Unread when the chips are inline, Unread + the three when they've collapsed in — so an active filter is never double-signalled (chip fill + badge). A `matchMedia('(min-width:960px)')` change listener refreshes the badge on resize.
+- **Dropped Department** entirely (markup + `dept` var + rowMatches clause + resetDeptFilter). The compose dialog's own From-department Select is untouched.
+
+Verified live: 1280 → chips inline, popover shows only Unread, sync chip↔checkbox, I'm Involved→2; 850 → chips gone, popover shows all four, badge counts them; Resolved still hides Expires Soon wherever it lives.

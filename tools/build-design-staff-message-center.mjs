@@ -995,14 +995,16 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .mc--search-open .mc-rail__search { display: flex; }
 .mc-search-close { display: none; flex-shrink: 0; border: none; background: none; padding: 0; cursor: pointer; color: ${cv("text.primary")}; font-family: ${cv("family.sans")}; ${typoCss(linkBaseType)}${linkBaseExt.textDecoration ? ` text-decoration: ${linkBaseExt.textDecoration};` : ""} }
 .mc--search-open .mc-search-close { display: inline-flex; }
-/* quick toggle chips reuse Chip's own aria-pressed fill state */
-.mc-qchip { flex-shrink: 0; }
-/* Filters popover: the Unread checkbox + a Department sub-group */
-.mc-filters-pop__sep { margin: ${px(resolve("dim.1_5"))} 0; }
-.mc-filters-pop__label { margin: 0; padding: ${px(resolve("dim.1"))} ${px(resolve("dim.2_5"))}; color: ${cv("text.muted")}; ${typoCss(labelSmType)}${labelSmExt.textTransform ? ` text-transform: ${labelSmExt.textTransform};` : ""}${labelSmExt.letterSpacing ? ` letter-spacing: ${labelSmExt.letterSpacing};` : ""} }
-/* Expires Soon is an Inbox-only concept — hide the chip on Resolved (and the
-   Unread option inside the Filters popover) */
+/* Adaptive quick filters: I'm Involved / Flagged / Expires Soon show as inline
+   toggle Chips when the row has room (≥960px) and otherwise collapse into the
+   Filters popover as checkboxes — same filters, one setFilter keeps them synced.
+   Mobile-first = collapsed: chips hidden, popover shows the collapsibles. */
+.mc-qchip { flex-shrink: 0; display: none; }
+.mc-fopt--collapsible { display: block; }
+/* Expires Soon is Inbox-only — hidden on Resolved wherever it lives, along with
+   the popover's Unread option */
 .mc.mc--archived .mc-qchip--expires,
+.mc.mc--archived #mc-filters-listbox [data-filter-option="expires"],
 .mc.mc--archived #mc-filters-listbox [data-filter-option="unread"] { display: none; }
 .mc-rail__count { display: flex; flex-direction: column; gap: ${px(resolve("dim.2"))}; }
 .mc-count { padding: 0 ${px(resolve("dim.4"))}; color: ${cv("text.muted")}; ${typoCss(labelSmType)}${labelSmExt.textTransform ? ` text-transform: ${labelSmExt.textTransform};` : ""}${labelSmExt.letterSpacing ? ` letter-spacing: ${labelSmExt.letterSpacing};` : ""} }
@@ -1090,6 +1092,11 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
   .mc-rail__topbar .tabs--segmented { flex: 0 0 auto; min-width: 232px; }
   .mc-search-open-btn, .mc-search-close { display: none; }
   .mc-rail__search { display: flex; flex: 1 1 220px; min-width: 200px; max-width: 340px; margin-left: auto; }
+}
+@media (min-width: 960px) {
+  /* the row has room: quick chips come out, and the popover drops its copies */
+  .mc-qchip { display: inline-flex; }
+  .mc-filters-pop .mc-fopt--collapsible { display: none; }
 }
 @media (min-width: 1024px) {
   .mc__topbar { padding: ${px(resolve("dim.4"))} ${px(resolve("dim.6"))}; }
@@ -2050,7 +2057,6 @@ const appJs = `(function () {
   var unreadCounter = document.getElementById("mc-unread-counter");
   var activeList = "inbox";
   var filters = { unread: false, involved: false, expires: false, flagged: false };
-  var dept = null;
 
   function rows(listKey) {
     return Array.prototype.slice.call(lists[listKey].querySelectorAll(".thread-item-inbox"));
@@ -2067,7 +2073,6 @@ const appJs = `(function () {
     // neutral expiry deliberately doesn't count
     if (filters.expires && r.dataset.expires !== "warning" && r.dataset.expires !== "danger") return false;
     if (filters.flagged && r.querySelector(".thread-item-inbox__flag-btn") && r.querySelector(".thread-item-inbox__flag-btn").getAttribute("aria-pressed") !== "true") return false;
-    if (dept && r.dataset.department !== dept) return false;
     return true;
   }
   // While searching, the tab split is suspended: both lists show as one
@@ -2180,14 +2185,6 @@ const appJs = `(function () {
   function resetChipFilters(keys) {
     keys.forEach(function (key) { setFilter(key, false); });
   }
-  function resetDeptFilter() {
-    dept = null;
-    document.querySelectorAll("#mc-filters-listbox .listbox__option").forEach(function (o, i) {
-      o.classList.toggle("listbox__option--selected", i === 0);
-      o.setAttribute("aria-selected", i === 0 ? "true" : "false");
-    });
-    updateFiltersChip();
-  }
 
   // Search: an icon button on mobile (expands the field, retires the toolbar);
   // on desktop the field is always visible and simply ANDs with the chips. The
@@ -2203,7 +2200,6 @@ const appJs = `(function () {
   searchOpenBtn.addEventListener("click", function () {
     mc.classList.add("mc--search-open");
     resetChipFilters(["unread", "involved", "expires", "flagged"]);
-    resetDeptFilter();
     applyFilter();
     searchInput.focus();
   });
@@ -2229,12 +2225,19 @@ const appJs = `(function () {
   var filtersChip = document.getElementById("mc-filters-chip");
   var filtersCount = document.getElementById("mc-filters-count");
   var filtersListbox = document.getElementById("mc-filters-listbox");
+  // the badge counts only the filters currently living INSIDE the popover:
+  // always Unread, plus the three quick filters when they've collapsed in
+  // (narrow). When the chips are inline they show their own state, so they're
+  // not double-counted on the Filters button.
+  var chipsInline = window.matchMedia("(min-width: 960px)");
   function updateFiltersChip() {
-    var n = (filters.unread ? 1 : 0) + (dept ? 1 : 0);
+    var keys = chipsInline.matches ? ["unread"] : ["unread", "involved", "flagged", "expires"];
+    var n = keys.filter(function (k) { return filters[k]; }).length;
     filtersCount.textContent = n;
     filtersCount.hidden = n === 0;
     filtersChip.classList.toggle("chip--checked-outline", n > 0);
   }
+  chipsInline.addEventListener("change", updateFiltersChip);
   function setFilter(key, on) {
     filters[key] = on;
     var chip = document.querySelector('.mc-qchip[data-filter-key="' + key + '"]');
@@ -2258,22 +2261,11 @@ const appJs = `(function () {
       applyFilter();
     });
   });
-  // quick toggle chips (I'm Involved / Flagged / Expires Soon)
+  // quick toggle chips (I'm Involved / Flagged / Expires Soon) — the same keys
+  // as the popover's collapsibles; setFilter keeps both surfaces in sync
   document.querySelectorAll(".mc-qchip").forEach(function (chip) {
     chip.addEventListener("click", function () {
       setFilter(chip.dataset.filterKey, chip.getAttribute("aria-pressed") !== "true");
-      applyFilter();
-    });
-  });
-  // Department — single-select options nested inside the Filters popover
-  document.querySelectorAll("#mc-filters-listbox .listbox__option").forEach(function (opt) {
-    opt.addEventListener("click", function () {
-      document.querySelectorAll("#mc-filters-listbox .listbox__option").forEach(function (o) {
-        o.classList.toggle("listbox__option--selected", o === opt);
-        o.setAttribute("aria-selected", o === opt ? "true" : "false");
-      });
-      dept = opt.dataset.dept || null;
-      updateFiltersChip();
       applyFilter();
     });
   });
@@ -3163,12 +3155,12 @@ ${phaseECss}
           <ul class="listbox__list" aria-label="Filters">
             <li data-filter-option="unread"><label class="listbox__cb-option" for="mc-fopt-unread"><input type="checkbox" class="listbox__cb-input" id="mc-fopt-unread" data-filter-key="unread" />
               <span class="listbox__cb-box">${iconCbCheck}</span><span class="listbox__cb-label">Unread</span></label></li>
-          </ul>
-          <hr class="separator mc-filters-pop__sep" />
-          <p class="mc-filters-pop__label">Department</p>
-          <ul class="listbox__list" role="listbox" aria-label="Filter by department">
-            <li><button class="listbox__option listbox__option--selected" role="option" aria-selected="true" data-dept="" type="button">All departments${iconCheckmark}</button></li>
-            ${departments.map((d) => `<li><button class="listbox__option" role="option" aria-selected="false" data-dept="${esc(d)}" type="button">${d}${iconCheckmark}</button></li>`).join("\n            ")}
+            <li class="mc-fopt--collapsible" data-filter-option="involved"><label class="listbox__cb-option" for="mc-fopt-involved"><input type="checkbox" class="listbox__cb-input" id="mc-fopt-involved" data-filter-key="involved" />
+              <span class="listbox__cb-box">${iconCbCheck}</span><span class="listbox__cb-label">I'm Involved</span></label></li>
+            <li class="mc-fopt--collapsible" data-filter-option="flagged"><label class="listbox__cb-option" for="mc-fopt-flagged"><input type="checkbox" class="listbox__cb-input" id="mc-fopt-flagged" data-filter-key="flagged" />
+              <span class="listbox__cb-box">${iconCbCheck}</span><span class="listbox__cb-label">Flagged</span></label></li>
+            <li class="mc-fopt--collapsible" data-filter-option="expires"><label class="listbox__cb-option" for="mc-fopt-expires"><input type="checkbox" class="listbox__cb-input" id="mc-fopt-expires" data-filter-key="expires" />
+              <span class="listbox__cb-box">${iconCbCheck}</span><span class="listbox__cb-label">Expires Soon</span></label></li>
           </ul>
         </div>
         <button class="chip chip--base mc-qchip" id="mc-chip-involved" type="button" aria-pressed="false" data-filter-key="involved">I'm Involved</button>
