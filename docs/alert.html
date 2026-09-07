@@ -3,29 +3,13 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>hp-design — AvatarGroup</title>
+<title>hp-design — Alert</title>
 <link rel="stylesheet" href="../assets/fonts/sora/sora.css" />
 <style>
-  :root {
-    --bg-page: #f7f7f5; --bg-card: #ffffff; --bg-card-hover: #fbfbfa;
-    --border: #e4e3df; --border-strong: #d2d1cb;
-    --text-primary: #0e0e10; --text-secondary: #63625c; --text-muted: #918f87;
-    --accent: #0468c4; --accent-bg: #eff6ff;
-    --code-bg: #1e1e22; --code-text: #e4e3df;
-    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-    --sans: -apple-system, "Segoe UI", system-ui, sans-serif;
-    color-scheme: light;
-  }
-  @media (prefers-color-scheme: dark) { :root:where(:not([data-theme="light"])) {
-    --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327; --border: #313035; --border-strong: #403f45;
-    --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68; --accent: #5aa4ec; --accent-bg: #16283b;
-    --code-bg: #0d0d0f; --code-text: #d7d6d2; color-scheme: dark; } }
-  :root[data-theme="dark"] {
-    --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327; --border: #313035; --border-strong: #403f45;
-    --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68; --accent: #5aa4ec; --accent-bg: #16283b;
-    --code-bg: #0d0d0f; --code-text: #d7d6d2; color-scheme: dark; }
-  * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg-page); color: var(--text-primary); font-family: var(--sans); }
+  :root { --bg-page: #f7f7f5; --bg-card: #ffffff; --bg-card-hover: #fbfbfa; --border: #e4e3df; --border-strong: #d2d1cb; --text-primary: #0e0e10; --text-secondary: #63625c; --text-muted: #918f87; --accent: #0468c4; --accent-bg: #eff6ff; --code-bg: #1e1e22; --code-text: #e4e3df; --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace; --sans: -apple-system, "Segoe UI", system-ui, sans-serif; color-scheme: light; }
+  @media (prefers-color-scheme: dark) { :root:where(:not([data-theme="light"])) { --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327; --border: #313035; --border-strong: #403f45; --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68; --accent: #5aa4ec; --accent-bg: #16283b; --code-bg: #0d0d0f; --code-text: #d7d6d2; color-scheme: dark; } }
+  :root[data-theme="dark"] { --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327; --border: #313035; --border-strong: #403f45; --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68; --accent: #5aa4ec; --accent-bg: #16283b; --code-bg: #0d0d0f; --code-text: #d7d6d2; color-scheme: dark; }
+  * { box-sizing: border-box; } body { margin: 0; background: var(--bg-page); color: var(--text-primary); font-family: var(--sans); }
   .shell { display: flex; min-height: 100vh; }
   nav.side { width: 220px; flex-shrink: 0; border-right: 0.5px solid var(--border); padding: 1.5rem 1rem; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
   .navlink { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 8px; border-radius: 7px; font-size: 13px; text-decoration: none; color: var(--text-primary); margin-bottom: 1px; }
@@ -33,7 +17,7 @@
   .nav-category { font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin: 16px 8px 6px; }
   main { flex: 1; padding: 4rem 4rem 6rem; max-width: 1120px; }
   h1 { font-size: 36px; font-weight: 700; margin: 0 0 10px; letter-spacing: -0.02em; }
-  .sub { font-size: 14px; color: var(--text-secondary); margin: 0 0 2.5rem; }
+  .sub { font-size: 14px; color: var(--text-secondary); margin: 0 0 2.5rem; max-width: 78ch; line-height: 1.6; }
   h2.big-section { font-size: 24px; font-weight: 700; margin: 5.5rem 0 1.5rem; letter-spacing: -0.01em; padding-top: 2.5rem; border-top: 1px solid var(--border); }
   h2.big-section:first-of-type { margin-top: 3rem; padding-top: 0; border-top: none; }
   .section-desc { font-size: 13.5px; color: var(--text-secondary); margin: -0.5rem 0 1.5rem; max-width: 68ch; line-height: 1.6; }
@@ -42,55 +26,58 @@
   .legend .row b { width: 130px; flex-shrink: 0; color: var(--text-primary); font-weight: 600; font-family: var(--mono); font-size: 11.5px; }
   code.tok { font-family: var(--mono); font-size: 12px; color: var(--accent); }
   pre.code { background: var(--code-bg); color: var(--code-text); border-radius: 10px; padding: 16px 18px; margin: 0; overflow-x: auto; font-family: var(--mono); font-size: 12px; line-height: 1.7; } pre.code code { font-family: inherit; }
-  .story-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px; }
+  .story-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
   .story { border: 0.5px solid var(--border); border-radius: 14px; background: var(--bg-card); padding: 22px; display: flex; flex-direction: column; gap: 12px; }
+  .story--full { grid-column: 1 / -1; }
   .story h3 { font-size: 14px; font-weight: 600; margin: 0; font-family: var(--mono); }
-  .story-preview { min-height: 52px; display: flex; align-items: center; padding: 8px 0; }
+  .story-preview { padding: 8px 0; }
   .story-note { font-size: 11.5px; color: var(--text-muted); margin: 0; line-height: 1.5; }
   :root {
+  --tok-bg-primary: #d9eaff;
+  --tok-border-primary: #b2d4fe;
+  --tok-icon-primary: #077fec;
+  --tok-bg-success: #d4f1da;
+  --tok-border-success: #a5e2b4;
+  --tok-status-success: #0a994e;
+  --tok-bg-warning: #ffe2c5;
+  --tok-border-warning: #fec486;
+  --tok-status-warning: #b26f07;
+  --tok-bg-danger: #ffdfde;
+  --tok-border-danger: #febebd;
+  --tok-status-danger: #de394b;
+  --tok-text-default: #121921;
+  --tok-text-secondary: #5d6a7a;
+  --tok-fill-neutral-hover: #e6e8eb;
+  --tok-fill-neutral-active: #cdd1d6;
+  --tok-border-focus: #0468c4;
   --tok-surface-default: #ffffff;
   --tok-border-default: #dadde0;
-  --tok-fill-neutral: #e6e8eb;
-  --tok-text-secondary: #5d6a7a;
-  --tok-avatar-blue-bg: #d9eaff;
-  --tok-avatar-blue-text: #0468c4;
-  --tok-avatar-green-bg: #d4f1da;
-  --tok-avatar-green-text: #057e3f;
-  --tok-avatar-magenta-bg: #ffddec;
-  --tok-avatar-magenta-text: #b51c79;
-  --tok-avatar-amber-bg: #ffe2c5;
-  --tok-avatar-amber-text: #935a03;
-  --tok-avatar-teal-bg: #cfefef;
-  --tok-avatar-teal-text: #057878;
-  --tok-avatar-orange-bg: #ffe1d5;
-  --tok-avatar-orange-text: #ae4103;
-  --tok-avatar-violet-bg: #e8e4ff;
-  --tok-avatar-violet-text: #743ed8;
-  --tok-avatar-red-bg: #ffdfde;
-  --tok-avatar-red-text: #c11435;
   --tok-family-sans: 'Sora', sans-serif;
 }
 
-.avatar-group { display: inline-flex; align-items: center; }
-.avatar-group__item { box-sizing: border-box; position: relative; display: inline-flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 999px; border: 1px solid var(--tok-border-default); box-shadow: 0 0 0 2px var(--tok-surface-default); font-family: var(--tok-family-sans); user-select: none; }
-.avatar-group__item:not(:first-child) { margin-left: var(--ag-overlap); }
-.avatar-group__item img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.avatar-group__initials { text-transform: uppercase; }
-.avatar-group__more { color: var(--tok-text-secondary); background: var(--tok-fill-neutral); font-weight: 600; font-size: 12px; line-height: 1; }
-.avatar-group--sm { --ag-overlap: -10px; }
-.avatar-group--sm .avatar-group__item { width: 32px; height: 32px; }
-.avatar-group--base { --ag-overlap: -12px; }
-.avatar-group--base .avatar-group__item { width: 40px; height: 40px; }
-.avatar-group--sm .avatar-group__initials { font-weight: 600; font-size: 12px; line-height: 1; }
-.avatar-group--base .avatar-group__initials { font-weight: 600; font-size: 14px; line-height: 1; }
-.ag-blue { background: var(--tok-avatar-blue-bg); } .ag-blue .avatar-group__initials { color: var(--tok-avatar-blue-text); }
-.ag-green { background: var(--tok-avatar-green-bg); } .ag-green .avatar-group__initials { color: var(--tok-avatar-green-text); }
-.ag-magenta { background: var(--tok-avatar-magenta-bg); } .ag-magenta .avatar-group__initials { color: var(--tok-avatar-magenta-text); }
-.ag-amber { background: var(--tok-avatar-amber-bg); } .ag-amber .avatar-group__initials { color: var(--tok-avatar-amber-text); }
-.ag-teal { background: var(--tok-avatar-teal-bg); } .ag-teal .avatar-group__initials { color: var(--tok-avatar-teal-text); }
-.ag-orange { background: var(--tok-avatar-orange-bg); } .ag-orange .avatar-group__initials { color: var(--tok-avatar-orange-text); }
-.ag-violet { background: var(--tok-avatar-violet-bg); } .ag-violet .avatar-group__initials { color: var(--tok-avatar-violet-text); }
-.ag-red { background: var(--tok-avatar-red-bg); } .ag-red .avatar-group__initials { color: var(--tok-avatar-red-text); }
+.alert { display: flex; align-items: flex-start; gap: 8px; padding: 12px 16px; border-radius: 8px; border: 1px solid transparent; font-family: var(--tok-family-sans); }
+.alert__icon { flex-shrink: 0; width: 20px; height: 20px; }
+.alert__stack { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+/* The lead runs INLINE with the body — one paragraph, so short copy stays one line. */
+.alert__message { margin: 0; color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; }
+.alert__title { color: var(--tok-text-default); font-weight: 600; }
+.alert__detail { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.alert__action { margin-top: 4px; }
+.alert--info { background: var(--tok-bg-primary); border-color: var(--tok-border-primary); }
+.alert--info .alert__icon { color: var(--tok-icon-primary); }
+.alert--success { background: var(--tok-bg-success); border-color: var(--tok-border-success); }
+.alert--success .alert__icon { color: var(--tok-status-success); }
+.alert--warning { background: var(--tok-bg-warning); border-color: var(--tok-border-warning); }
+.alert--warning .alert__icon { color: var(--tok-status-warning); }
+.alert--danger { background: var(--tok-bg-danger); border-color: var(--tok-border-danger); }
+.alert--danger .alert__icon { color: var(--tok-status-danger); }
+
+/* the optional action slot is a real Button ghost sm, resolved from button.tokens.json */
+.btn { display: inline-flex; align-items: center; justify-content: center; border: none; background: transparent; cursor: pointer; font-family: inherit; border-radius: 8px; }
+.btn--ghost.btn--sm { height: 32px; padding: 0 8px; color: var(--tok-text-secondary); font-weight: 600; font-size: 12px; line-height: 1.4; }
+.btn--ghost:hover { background: var(--tok-fill-neutral-hover); }
+.btn--ghost:active { background: var(--tok-fill-neutral-active); }
+.btn--ghost:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
 </style>
 </head>
 <body>
@@ -158,7 +145,7 @@
     <a class="navlink" href="split-button.html">SplitButton</a>
     <a class="navlink" href="listbox.html">Listbox</a>
     <a class="navlink" href="avatar.html">Avatar</a>
-    <a class="navlink active" href="avatar-group.html">AvatarGroup</a>
+    <a class="navlink" href="avatar-group.html">AvatarGroup</a>
     <a class="navlink" href="badge.html">Badge</a>
     <a class="navlink" href="chip.html">Chip</a>
     <a class="navlink" href="attachment.html">Attachment</a>
@@ -168,7 +155,7 @@
     <a class="navlink" href="composer.html">Composer</a>
     <a class="navlink" href="empty-state.html">EmptyState</a>
     <a class="navlink" href="toast.html">Toast</a>
-    <a class="navlink" href="alert.html">Alert</a>
+    <a class="navlink active" href="alert.html">Alert</a>
     <a class="navlink" href="skeleton.html">Skeleton</a>
     <a class="navlink" href="spinner.html">Spinner</a>
     </div>
@@ -194,101 +181,114 @@
   });
 </script></nav>
   <main>
-    <h1>AvatarGroup</h1>
-    <p class="sub">tokens/components/avatar-group.tokens.json · generated — an overlapping stack of the real Avatar with a trailing "+N" overflow chip. The group owns only the stacking recipe; diameters and hues come straight from Avatar.</p>
+    <h1>Alert</h1>
+    <p class="sub">tokens/components/alert.tokens.json · generated — a persistent, inline status message: role icon + a lead-and-body paragraph, on the role's own pale tint. The in-flow counterpart to <a class="navlink" style="display:inline;padding:0;background:none;color:var(--accent)" href="toast.html">Toast</a>, not a variant of it.</p>
 
     <div class="legend">
-      <div class="row"><b>Composes Avatar</b><span>Diameters (sm 32 / base 40) and the initials/hue system are Avatar's own — resolved through <code class="tok">{avatar.size.*.diameter}</code>, not re-declared.</span></div>
-      <div class="row"><b>Overlap</b><span>Each avatar shifts left by <code class="tok">size.overlap</code> (sm 10 / base 12), overlapping ~a third of the previous — the standard stack density.</span></div>
-      <div class="row"><b>Ring</b><span>A <code class="tok">surface.default</code> ring (box-shadow, 2px) around each item so overlapping circles read as distinct — like a gap punched out of the layer behind. Sits over Avatar's own 1px hairline.</span></div>
-      <div class="row"><b>+N overflow</b><span>A same-diameter chip in <code class="tok">fill.neutral</code> with secondary ink — reads as "more", not another person. Cap visible avatars, the rest collapse into it.</span></div>
+      <div class="row"><b>vs Toast</b><span>Toast is transient and floats in the top layer over arbitrary content, so it must stay on a neutral surface with only its icon carrying meaning. An Alert sits in the document flow and owns a known slot, so it takes the role's pale <code class="tok">bg.*</code> tint — the use that group's own description reserves it for.</span></div>
+      <div class="row"><b>Roles</b><span>info / success / warning / danger — one more than Toast, which has no info (a transient toast for neutral news is noise). Each = pale <code class="tok">bg.*</code> + matching pale <code class="tok">border.*</code> 200-tint + a saturated icon.</span></div>
+      <div class="row"><b>Text colour</b><span>Always <code class="tok">text.default</code>, never the role colour. Coloured text on a coloured tint is two colour languages at once, and it costs readability on the longer copy these carry — the icon is what carries saturation.</span></div>
+      <div class="row"><b>Anatomy</b><span>The lead runs <b>inline</b> with the body as one paragraph (so short copy stays one line and a screen reader reads one sentence). Optional quieter <code class="tok">detail</code> line beneath, optional action slot holding a real Button.</span></div>
+      <div class="row"><b>ARIA</b><span><code class="tok">role="alert"</code> for danger (interrupts), <code class="tok">role="status"</code> for the rest (polite).</span></div>
+      <div class="row"><b>Deferred</b><span>A dismissible (×) variant and a solid high-contrast fill — nothing needs either yet.</span></div>
     </div>
 
-    <h2 class="big-section">Sizes</h2>
-    <p class="section-desc">sm / base, four visible + a "+N".</p>
+    <h2 class="big-section">Roles</h2>
     <div class="story-grid">
-      <div class="story"><h3>sm — 32px</h3><div class="story-preview"><span class="avatar-group avatar-group--sm" role="img" aria-label="39 people">
-        <span class="avatar-group__item ag-magenta"><span class="avatar-group__initials">MO</span></span>
-        <span class="avatar-group__item ag-blue"><span class="avatar-group__initials">CA</span></span>
-        <span class="avatar-group__item ag-amber"><span class="avatar-group__initials">CX</span></span>
-        <span class="avatar-group__item ag-teal"><span class="avatar-group__initials">AR</span></span>
-        <span class="avatar-group__item avatar-group__more">+35</span></span></div><pre class="code"><code>&lt;span class="avatar-group avatar-group--sm" role="img" aria-label="39 people"&gt;
-  &lt;span class="avatar-group__item ag-magenta"&gt;&lt;span class="avatar-group__initials"&gt;MO&lt;/span&gt;&lt;/span&gt;
-  &lt;span class="avatar-group__item ag-blue"&gt;&lt;span class="avatar-group__initials"&gt;CA&lt;/span&gt;&lt;/span&gt;
-  &lt;span class="avatar-group__item ag-amber"&gt;&lt;span class="avatar-group__initials"&gt;CX&lt;/span&gt;&lt;/span&gt;
-  &lt;span class="avatar-group__item ag-teal"&gt;&lt;span class="avatar-group__initials"&gt;AR&lt;/span&gt;&lt;/span&gt;
-  &lt;span class="avatar-group__item avatar-group__more"&gt;+35&lt;/span&gt;&lt;/span&gt;</code></pre></div>
-      <div class="story"><h3>base — 40px</h3><div class="story-preview"><span class="avatar-group avatar-group--base" role="img" aria-label="39 people">
-        <span class="avatar-group__item ag-magenta"><span class="avatar-group__initials">MO</span></span>
-        <span class="avatar-group__item ag-blue"><span class="avatar-group__initials">CA</span></span>
-        <span class="avatar-group__item ag-amber"><span class="avatar-group__initials">CX</span></span>
-        <span class="avatar-group__item ag-teal"><span class="avatar-group__initials">AR</span></span>
-        <span class="avatar-group__item avatar-group__more">+35</span></span></div></div>
+      <div class="story"><h3>info</h3><div class="story-preview"><div class="alert alert--info" role="status">
+  <svg class="alert__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+  <div class="alert__stack">
+    <p class="alert__message">Read as a transcript from Bainbridge Junior College.</p>
+    
+    
+  </div>
+</div></div><p class="story-note">Body only — the quietest shape.</p></div>
+      <div class="story"><h3>success</h3><div class="story-preview"><div class="alert alert--success" role="status">
+  <svg class="alert__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+  <div class="alert__stack">
+    <p class="alert__message">We found 10 classes we can import from your transcript. Review the grades and remove anything you don't want below.</p>
+    
+    
+  </div>
+</div></div></div>
+      <div class="story"><h3>warning</h3><div class="story-preview"><div class="alert alert--warning" role="status">
+  <svg class="alert__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
+  <div class="alert__stack">
+    <p class="alert__message">Four classes still need a quick review by an advisor before they count.</p>
+    
+    
+  </div>
+</div></div></div>
+      <div class="story"><h3>danger</h3><div class="story-preview"><div class="alert alert--danger" role="alert">
+  <svg class="alert__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+  <div class="alert__stack">
+    <p class="alert__message">This is a photograph of a house and pool, not a transcript — it contains no coursework, grades, or academic information. Please upload an official or unofficial transcript from your student portal.</p>
+    
+    <div class="alert__action"><button class="btn btn--ghost btn--sm" type="button">Try another file</button></div>
+  </div>
+</div></div><p class="story-note">Danger with an action slot: a real Button ghost sm.</p></div>
     </div>
 
-    <h2 class="big-section">Variations</h2>
+    <h2 class="big-section">Lead + detail</h2>
+    <p class="section-desc">The full anatomy — a bold lead clause inline with the body, then the quieter detail line for an enumeration that shouldn't compete with the message.</p>
     <div class="story-grid">
-      <div class="story"><h3>With a photo</h3><div class="story-preview"><span class="avatar-group avatar-group--base" role="img" aria-label="12 people">
-        <span class="avatar-group__item"><img src="../assets/avatars/betty-locherty.jpg" alt="" /></span>
-        <span class="avatar-group__item ag-blue"><span class="avatar-group__initials">CA</span></span>
-        <span class="avatar-group__item ag-amber"><span class="avatar-group__initials">CX</span></span>
-        <span class="avatar-group__item ag-teal"><span class="avatar-group__initials">AR</span></span>
-        <span class="avatar-group__item avatar-group__more">+8</span></span></div><p class="story-note">Avatar's photo tier works inside the stack unchanged.</p></div>
-      <div class="story"><h3>No overflow</h3><div class="story-preview"><span class="avatar-group avatar-group--base" role="img" aria-label="3 people">
-        <span class="avatar-group__item ag-magenta"><span class="avatar-group__initials">MO</span></span>
-        <span class="avatar-group__item ag-blue"><span class="avatar-group__initials">CA</span></span>
-        <span class="avatar-group__item ag-amber"><span class="avatar-group__initials">CX</span></span></span></div><p class="story-note">When everyone fits, the +N chip is simply omitted.</p></div>
-      <div class="story"><h3>Group "M +35"</h3><div class="story-preview"><span class="avatar-group avatar-group--sm" role="img" aria-label="37 people">
-        <span class="avatar-group__item ag-magenta"><span class="avatar-group__initials">MO</span></span>
-        <span class="avatar-group__item ag-blue"><span class="avatar-group__initials">CA</span></span>
-        <span class="avatar-group__item avatar-group__more">+35</span></span></div><p class="story-note">The group-message recipient stack: 2 shown + 35 more.</p></div>
+      <div class="story story--full"><h3>Lead, body and detail</h3><div class="story-preview"><div class="alert alert--success" role="status">
+  <svg class="alert__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+  <div class="alert__stack">
+    <p class="alert__message"><span class="alert__title">9 classes applied to your plan.</span> 4 more need a quick advisor review. They're checked off in your Degree Requirements.</p>
+    <p class="alert__detail">Applied to: HISTORY 120, PSYCH 120, PSYCH 210, MATH 111, ENGLCOMP 200, ENGLCOMP 100, ECON 140, BIOLOGY 100</p>
+    
+  </div>
+</div></div><p class="story-note">The results-summary alert from the Explore Degrees flow.</p></div>
     </div>
 
     <h2 class="big-section">CSS</h2>
     <pre class="code"><code>:root {
+  --tok-bg-primary: #d9eaff;
+  --tok-border-primary: #b2d4fe;
+  --tok-icon-primary: #077fec;
+  --tok-bg-success: #d4f1da;
+  --tok-border-success: #a5e2b4;
+  --tok-status-success: #0a994e;
+  --tok-bg-warning: #ffe2c5;
+  --tok-border-warning: #fec486;
+  --tok-status-warning: #b26f07;
+  --tok-bg-danger: #ffdfde;
+  --tok-border-danger: #febebd;
+  --tok-status-danger: #de394b;
+  --tok-text-default: #121921;
+  --tok-text-secondary: #5d6a7a;
+  --tok-fill-neutral-hover: #e6e8eb;
+  --tok-fill-neutral-active: #cdd1d6;
+  --tok-border-focus: #0468c4;
   --tok-surface-default: #ffffff;
   --tok-border-default: #dadde0;
-  --tok-fill-neutral: #e6e8eb;
-  --tok-text-secondary: #5d6a7a;
-  --tok-avatar-blue-bg: #d9eaff;
-  --tok-avatar-blue-text: #0468c4;
-  --tok-avatar-green-bg: #d4f1da;
-  --tok-avatar-green-text: #057e3f;
-  --tok-avatar-magenta-bg: #ffddec;
-  --tok-avatar-magenta-text: #b51c79;
-  --tok-avatar-amber-bg: #ffe2c5;
-  --tok-avatar-amber-text: #935a03;
-  --tok-avatar-teal-bg: #cfefef;
-  --tok-avatar-teal-text: #057878;
-  --tok-avatar-orange-bg: #ffe1d5;
-  --tok-avatar-orange-text: #ae4103;
-  --tok-avatar-violet-bg: #e8e4ff;
-  --tok-avatar-violet-text: #743ed8;
-  --tok-avatar-red-bg: #ffdfde;
-  --tok-avatar-red-text: #c11435;
   --tok-family-sans: 'Sora', sans-serif;
 }
 
-.avatar-group { display: inline-flex; align-items: center; }
-.avatar-group__item { box-sizing: border-box; position: relative; display: inline-flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 999px; border: 1px solid var(--tok-border-default); box-shadow: 0 0 0 2px var(--tok-surface-default); font-family: var(--tok-family-sans); user-select: none; }
-.avatar-group__item:not(:first-child) { margin-left: var(--ag-overlap); }
-.avatar-group__item img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.avatar-group__initials { text-transform: uppercase; }
-.avatar-group__more { color: var(--tok-text-secondary); background: var(--tok-fill-neutral); font-weight: 600; font-size: 12px; line-height: 1; }
-.avatar-group--sm { --ag-overlap: -10px; }
-.avatar-group--sm .avatar-group__item { width: 32px; height: 32px; }
-.avatar-group--base { --ag-overlap: -12px; }
-.avatar-group--base .avatar-group__item { width: 40px; height: 40px; }
-.avatar-group--sm .avatar-group__initials { font-weight: 600; font-size: 12px; line-height: 1; }
-.avatar-group--base .avatar-group__initials { font-weight: 600; font-size: 14px; line-height: 1; }
-.ag-blue { background: var(--tok-avatar-blue-bg); } .ag-blue .avatar-group__initials { color: var(--tok-avatar-blue-text); }
-.ag-green { background: var(--tok-avatar-green-bg); } .ag-green .avatar-group__initials { color: var(--tok-avatar-green-text); }
-.ag-magenta { background: var(--tok-avatar-magenta-bg); } .ag-magenta .avatar-group__initials { color: var(--tok-avatar-magenta-text); }
-.ag-amber { background: var(--tok-avatar-amber-bg); } .ag-amber .avatar-group__initials { color: var(--tok-avatar-amber-text); }
-.ag-teal { background: var(--tok-avatar-teal-bg); } .ag-teal .avatar-group__initials { color: var(--tok-avatar-teal-text); }
-.ag-orange { background: var(--tok-avatar-orange-bg); } .ag-orange .avatar-group__initials { color: var(--tok-avatar-orange-text); }
-.ag-violet { background: var(--tok-avatar-violet-bg); } .ag-violet .avatar-group__initials { color: var(--tok-avatar-violet-text); }
-.ag-red { background: var(--tok-avatar-red-bg); } .ag-red .avatar-group__initials { color: var(--tok-avatar-red-text); }</code></pre>
+.alert { display: flex; align-items: flex-start; gap: 8px; padding: 12px 16px; border-radius: 8px; border: 1px solid transparent; font-family: var(--tok-family-sans); }
+.alert__icon { flex-shrink: 0; width: 20px; height: 20px; }
+.alert__stack { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+/* The lead runs INLINE with the body — one paragraph, so short copy stays one line. */
+.alert__message { margin: 0; color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; }
+.alert__title { color: var(--tok-text-default); font-weight: 600; }
+.alert__detail { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.alert__action { margin-top: 4px; }
+.alert--info { background: var(--tok-bg-primary); border-color: var(--tok-border-primary); }
+.alert--info .alert__icon { color: var(--tok-icon-primary); }
+.alert--success { background: var(--tok-bg-success); border-color: var(--tok-border-success); }
+.alert--success .alert__icon { color: var(--tok-status-success); }
+.alert--warning { background: var(--tok-bg-warning); border-color: var(--tok-border-warning); }
+.alert--warning .alert__icon { color: var(--tok-status-warning); }
+.alert--danger { background: var(--tok-bg-danger); border-color: var(--tok-border-danger); }
+.alert--danger .alert__icon { color: var(--tok-status-danger); }
+
+/* the optional action slot is a real Button ghost sm, resolved from button.tokens.json */
+.btn { display: inline-flex; align-items: center; justify-content: center; border: none; background: transparent; cursor: pointer; font-family: inherit; border-radius: 8px; }
+.btn--ghost.btn--sm { height: 32px; padding: 0 8px; color: var(--tok-text-secondary); font-weight: 600; font-size: 12px; line-height: 1.4; }
+.btn--ghost:hover { background: var(--tok-fill-neutral-hover); }
+.btn--ghost:active { background: var(--tok-fill-neutral-active); }
+.btn--ghost:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }</code></pre>
   </main>
 </div>
 </body>

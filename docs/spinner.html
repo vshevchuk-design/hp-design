@@ -3,29 +3,13 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>hp-design — AvatarGroup</title>
+<title>hp-design — Spinner</title>
 <link rel="stylesheet" href="../assets/fonts/sora/sora.css" />
 <style>
-  :root {
-    --bg-page: #f7f7f5; --bg-card: #ffffff; --bg-card-hover: #fbfbfa;
-    --border: #e4e3df; --border-strong: #d2d1cb;
-    --text-primary: #0e0e10; --text-secondary: #63625c; --text-muted: #918f87;
-    --accent: #0468c4; --accent-bg: #eff6ff;
-    --code-bg: #1e1e22; --code-text: #e4e3df;
-    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-    --sans: -apple-system, "Segoe UI", system-ui, sans-serif;
-    color-scheme: light;
-  }
-  @media (prefers-color-scheme: dark) { :root:where(:not([data-theme="light"])) {
-    --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327; --border: #313035; --border-strong: #403f45;
-    --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68; --accent: #5aa4ec; --accent-bg: #16283b;
-    --code-bg: #0d0d0f; --code-text: #d7d6d2; color-scheme: dark; } }
-  :root[data-theme="dark"] {
-    --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327; --border: #313035; --border-strong: #403f45;
-    --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68; --accent: #5aa4ec; --accent-bg: #16283b;
-    --code-bg: #0d0d0f; --code-text: #d7d6d2; color-scheme: dark; }
-  * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg-page); color: var(--text-primary); font-family: var(--sans); }
+  :root { --bg-page: #f7f7f5; --bg-card: #ffffff; --bg-card-hover: #fbfbfa; --border: #e4e3df; --border-strong: #d2d1cb; --text-primary: #0e0e10; --text-secondary: #63625c; --text-muted: #918f87; --accent: #0468c4; --accent-bg: #eff6ff; --code-bg: #1e1e22; --code-text: #e4e3df; --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace; --sans: -apple-system, "Segoe UI", system-ui, sans-serif; color-scheme: light; }
+  @media (prefers-color-scheme: dark) { :root:where(:not([data-theme="light"])) { --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327; --border: #313035; --border-strong: #403f45; --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68; --accent: #5aa4ec; --accent-bg: #16283b; --code-bg: #0d0d0f; --code-text: #d7d6d2; color-scheme: dark; } }
+  :root[data-theme="dark"] { --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327; --border: #313035; --border-strong: #403f45; --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68; --accent: #5aa4ec; --accent-bg: #16283b; --code-bg: #0d0d0f; --code-text: #d7d6d2; color-scheme: dark; }
+  * { box-sizing: border-box; } body { margin: 0; background: var(--bg-page); color: var(--text-primary); font-family: var(--sans); }
   .shell { display: flex; min-height: 100vh; }
   nav.side { width: 220px; flex-shrink: 0; border-right: 0.5px solid var(--border); padding: 1.5rem 1rem; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
   .navlink { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 8px; border-radius: 7px; font-size: 13px; text-decoration: none; color: var(--text-primary); margin-bottom: 1px; }
@@ -33,7 +17,7 @@
   .nav-category { font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin: 16px 8px 6px; }
   main { flex: 1; padding: 4rem 4rem 6rem; max-width: 1120px; }
   h1 { font-size: 36px; font-weight: 700; margin: 0 0 10px; letter-spacing: -0.02em; }
-  .sub { font-size: 14px; color: var(--text-secondary); margin: 0 0 2.5rem; }
+  .sub { font-size: 14px; color: var(--text-secondary); margin: 0 0 2.5rem; max-width: 78ch; line-height: 1.6; }
   h2.big-section { font-size: 24px; font-weight: 700; margin: 5.5rem 0 1.5rem; letter-spacing: -0.01em; padding-top: 2.5rem; border-top: 1px solid var(--border); }
   h2.big-section:first-of-type { margin-top: 3rem; padding-top: 0; border-top: none; }
   .section-desc { font-size: 13.5px; color: var(--text-secondary); margin: -0.5rem 0 1.5rem; max-width: 68ch; line-height: 1.6; }
@@ -42,55 +26,43 @@
   .legend .row b { width: 130px; flex-shrink: 0; color: var(--text-primary); font-weight: 600; font-family: var(--mono); font-size: 11.5px; }
   code.tok { font-family: var(--mono); font-size: 12px; color: var(--accent); }
   pre.code { background: var(--code-bg); color: var(--code-text); border-radius: 10px; padding: 16px 18px; margin: 0; overflow-x: auto; font-family: var(--mono); font-size: 12px; line-height: 1.7; } pre.code code { font-family: inherit; }
-  .story-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px; }
+  .story-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
   .story { border: 0.5px solid var(--border); border-radius: 14px; background: var(--bg-card); padding: 22px; display: flex; flex-direction: column; gap: 12px; }
+  .story--full { grid-column: 1 / -1; }
   .story h3 { font-size: 14px; font-weight: 600; margin: 0; font-family: var(--mono); }
-  .story-preview { min-height: 52px; display: flex; align-items: center; padding: 8px 0; }
+  .story-preview { padding: 8px 0; }
   .story-note { font-size: 11.5px; color: var(--text-muted); margin: 0; line-height: 1.5; }
   :root {
-  --tok-surface-default: #ffffff;
   --tok-border-default: #dadde0;
-  --tok-fill-neutral: #e6e8eb;
+  --tok-fill-primary: #077fec;
   --tok-text-secondary: #5d6a7a;
-  --tok-avatar-blue-bg: #d9eaff;
-  --tok-avatar-blue-text: #0468c4;
-  --tok-avatar-green-bg: #d4f1da;
-  --tok-avatar-green-text: #057e3f;
-  --tok-avatar-magenta-bg: #ffddec;
-  --tok-avatar-magenta-text: #b51c79;
-  --tok-avatar-amber-bg: #ffe2c5;
-  --tok-avatar-amber-text: #935a03;
-  --tok-avatar-teal-bg: #cfefef;
-  --tok-avatar-teal-text: #057878;
-  --tok-avatar-orange-bg: #ffe1d5;
-  --tok-avatar-orange-text: #ae4103;
-  --tok-avatar-violet-bg: #e8e4ff;
-  --tok-avatar-violet-text: #743ed8;
-  --tok-avatar-red-bg: #ffdfde;
-  --tok-avatar-red-text: #c11435;
+  --tok-text-default: #121921;
+  --tok-surface-default: #ffffff;
+  --tok-surface-overlay: rgba(21, 25, 30, 0.5);
   --tok-family-sans: 'Sora', sans-serif;
 }
 
-.avatar-group { display: inline-flex; align-items: center; }
-.avatar-group__item { box-sizing: border-box; position: relative; display: inline-flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 999px; border: 1px solid var(--tok-border-default); box-shadow: 0 0 0 2px var(--tok-surface-default); font-family: var(--tok-family-sans); user-select: none; }
-.avatar-group__item:not(:first-child) { margin-left: var(--ag-overlap); }
-.avatar-group__item img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.avatar-group__initials { text-transform: uppercase; }
-.avatar-group__more { color: var(--tok-text-secondary); background: var(--tok-fill-neutral); font-weight: 600; font-size: 12px; line-height: 1; }
-.avatar-group--sm { --ag-overlap: -10px; }
-.avatar-group--sm .avatar-group__item { width: 32px; height: 32px; }
-.avatar-group--base { --ag-overlap: -12px; }
-.avatar-group--base .avatar-group__item { width: 40px; height: 40px; }
-.avatar-group--sm .avatar-group__initials { font-weight: 600; font-size: 12px; line-height: 1; }
-.avatar-group--base .avatar-group__initials { font-weight: 600; font-size: 14px; line-height: 1; }
-.ag-blue { background: var(--tok-avatar-blue-bg); } .ag-blue .avatar-group__initials { color: var(--tok-avatar-blue-text); }
-.ag-green { background: var(--tok-avatar-green-bg); } .ag-green .avatar-group__initials { color: var(--tok-avatar-green-text); }
-.ag-magenta { background: var(--tok-avatar-magenta-bg); } .ag-magenta .avatar-group__initials { color: var(--tok-avatar-magenta-text); }
-.ag-amber { background: var(--tok-avatar-amber-bg); } .ag-amber .avatar-group__initials { color: var(--tok-avatar-amber-text); }
-.ag-teal { background: var(--tok-avatar-teal-bg); } .ag-teal .avatar-group__initials { color: var(--tok-avatar-teal-text); }
-.ag-orange { background: var(--tok-avatar-orange-bg); } .ag-orange .avatar-group__initials { color: var(--tok-avatar-orange-text); }
-.ag-violet { background: var(--tok-avatar-violet-bg); } .ag-violet .avatar-group__initials { color: var(--tok-avatar-violet-text); }
-.ag-red { background: var(--tok-avatar-red-bg); } .ag-red .avatar-group__initials { color: var(--tok-avatar-red-text); }
+/* A bordered circle with one side tinted, rotated. No SVG, no asset — the
+   size and ring thickness come from tokens, not from markup. */
+.spinner { display: inline-block; flex-shrink: 0; border-style: solid; border-color: var(--tok-border-default); border-top-color: var(--tok-fill-primary); border-radius: 999px; animation: spinner-rotate 0.7s linear infinite; }
+.spinner--sm { width: 16px; height: 16px; border-width: 2px; }
+.spinner--base { width: 20px; height: 20px; border-width: 2px; }
+.spinner--lg { width: 32px; height: 32px; border-width: 4px; }
+@keyframes spinner-rotate { to { transform: rotate(360deg); } }
+/* NOTE: prefers-reduced-motion deliberately does NOT stop this, unlike
+   Skeleton's shimmer. A shimmer is decoration and a static placeholder still
+   reads correctly; a stopped spinner is indistinguishable from a broken one,
+   and here the motion IS the message. */
+  
+.sp-inline { display: inline-flex; align-items: center; gap: 8px; color: var(--tok-text-secondary); font-weight: 400; font-size: 14px; line-height: 1.4; font-family: var(--tok-family-sans); }
+.sp-row { display: flex; align-items: center; gap: 20px; }
+/* full-page overlay composition — scrim + centred spinner + copy */
+.sp-overlay { position: relative; height: 220px; border-radius: 10px; overflow: hidden; border: 1px solid var(--tok-border-default); background: var(--tok-surface-default); }
+.sp-overlay__behind { padding: 16px; opacity: 0.35; display: flex; flex-direction: column; gap: 8px; }
+.sp-overlay__behind span { display: block; height: 12px; border-radius: 4px; background: var(--tok-border-default); }
+.sp-overlay__veil { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; background: color-mix(in srgb, var(--tok-surface-default) 80%, transparent); font-family: var(--tok-family-sans); }
+.sp-overlay__title { color: var(--tok-text-default); font-weight: 600; font-size: 16px; line-height: 1.4; }
+.sp-overlay__hint { color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
 </style>
 </head>
 <body>
@@ -158,7 +130,7 @@
     <a class="navlink" href="split-button.html">SplitButton</a>
     <a class="navlink" href="listbox.html">Listbox</a>
     <a class="navlink" href="avatar.html">Avatar</a>
-    <a class="navlink active" href="avatar-group.html">AvatarGroup</a>
+    <a class="navlink" href="avatar-group.html">AvatarGroup</a>
     <a class="navlink" href="badge.html">Badge</a>
     <a class="navlink" href="chip.html">Chip</a>
     <a class="navlink" href="attachment.html">Attachment</a>
@@ -170,7 +142,7 @@
     <a class="navlink" href="toast.html">Toast</a>
     <a class="navlink" href="alert.html">Alert</a>
     <a class="navlink" href="skeleton.html">Skeleton</a>
-    <a class="navlink" href="spinner.html">Spinner</a>
+    <a class="navlink active" href="spinner.html">Spinner</a>
     </div>
     <div class="nav-pane nav-pane--designs" data-pane="designs">
     <p class="brand">Design Prototypes</p>
@@ -194,101 +166,58 @@
   });
 </script></nav>
   <main>
-    <h1>AvatarGroup</h1>
-    <p class="sub">tokens/components/avatar-group.tokens.json · generated — an overlapping stack of the real Avatar with a trailing "+N" overflow chip. The group owns only the stacking recipe; diameters and hues come straight from Avatar.</p>
+    <h1>Spinner</h1>
+    <p class="sub">tokens/components/spinner.tokens.json · generated — an indeterminate loading indicator for work of unknown duration. A pure-CSS rotating ring: neutral track, one <code class="tok">fill.primary</code> quarter, three sizes.</p>
 
     <div class="legend">
-      <div class="row"><b>Composes Avatar</b><span>Diameters (sm 32 / base 40) and the initials/hue system are Avatar's own — resolved through <code class="tok">{avatar.size.*.diameter}</code>, not re-declared.</span></div>
-      <div class="row"><b>Overlap</b><span>Each avatar shifts left by <code class="tok">size.overlap</code> (sm 10 / base 12), overlapping ~a third of the previous — the standard stack density.</span></div>
-      <div class="row"><b>Ring</b><span>A <code class="tok">surface.default</code> ring (box-shadow, 2px) around each item so overlapping circles read as distinct — like a gap punched out of the layer behind. Sits over Avatar's own 1px hairline.</span></div>
-      <div class="row"><b>+N overflow</b><span>A same-diameter chip in <code class="tok">fill.neutral</code> with secondary ink — reads as "more", not another person. Cap visible avatars, the rest collapse into it.</span></div>
+      <div class="row"><b>vs Skeleton</b><span>Skeleton stands in for content whose <b>shape</b> is known and about to arrive (rows, avatars, lines). A Spinner is for work of unknown duration where there is no shape to preview yet — a transcript being read, requirements being checked.</span></div>
+      <div class="row"><b>Sizes</b><span><code class="tok">sm</code> 16px sits inline with body text · <code class="tok">base</code> 20px standalone · <code class="tok">lg</code> 32px for a full-page overlay where the spinner is the only thing on screen.</span></div>
+      <div class="row"><b>Reduced motion</b><span>Deliberately <b>not</b> stopped by <code class="tok">prefers-reduced-motion</code>, unlike Skeleton's shimmer. A shimmer is decoration and a static placeholder still reads correctly; a stopped spinner is indistinguishable from a broken one, and here the motion is the message.</span></div>
+      <div class="row"><b>ARIA</b><span>Ships as <code class="tok">role="status"</code> with an <code class="tok">aria-label</code> — the label belongs on the spinner when no visible text accompanies it, otherwise on the text.</span></div>
+      <div class="row"><b>Deferred</b><span>A determinate arc (Progress covers determinate work as a bar) and an on-fill variant for spinners inside a primary button.</span></div>
     </div>
 
     <h2 class="big-section">Sizes</h2>
-    <p class="section-desc">sm / base, four visible + a "+N".</p>
     <div class="story-grid">
-      <div class="story"><h3>sm — 32px</h3><div class="story-preview"><span class="avatar-group avatar-group--sm" role="img" aria-label="39 people">
-        <span class="avatar-group__item ag-magenta"><span class="avatar-group__initials">MO</span></span>
-        <span class="avatar-group__item ag-blue"><span class="avatar-group__initials">CA</span></span>
-        <span class="avatar-group__item ag-amber"><span class="avatar-group__initials">CX</span></span>
-        <span class="avatar-group__item ag-teal"><span class="avatar-group__initials">AR</span></span>
-        <span class="avatar-group__item avatar-group__more">+35</span></span></div><pre class="code"><code>&lt;span class="avatar-group avatar-group--sm" role="img" aria-label="39 people"&gt;
-  &lt;span class="avatar-group__item ag-magenta"&gt;&lt;span class="avatar-group__initials"&gt;MO&lt;/span&gt;&lt;/span&gt;
-  &lt;span class="avatar-group__item ag-blue"&gt;&lt;span class="avatar-group__initials"&gt;CA&lt;/span&gt;&lt;/span&gt;
-  &lt;span class="avatar-group__item ag-amber"&gt;&lt;span class="avatar-group__initials"&gt;CX&lt;/span&gt;&lt;/span&gt;
-  &lt;span class="avatar-group__item ag-teal"&gt;&lt;span class="avatar-group__initials"&gt;AR&lt;/span&gt;&lt;/span&gt;
-  &lt;span class="avatar-group__item avatar-group__more"&gt;+35&lt;/span&gt;&lt;/span&gt;</code></pre></div>
-      <div class="story"><h3>base — 40px</h3><div class="story-preview"><span class="avatar-group avatar-group--base" role="img" aria-label="39 people">
-        <span class="avatar-group__item ag-magenta"><span class="avatar-group__initials">MO</span></span>
-        <span class="avatar-group__item ag-blue"><span class="avatar-group__initials">CA</span></span>
-        <span class="avatar-group__item ag-amber"><span class="avatar-group__initials">CX</span></span>
-        <span class="avatar-group__item ag-teal"><span class="avatar-group__initials">AR</span></span>
-        <span class="avatar-group__item avatar-group__more">+35</span></span></div></div>
+      <div class="story"><h3>All three</h3><div class="story-preview"><div class="sp-row"><span class="spinner spinner--sm" role="status" aria-label="Loading"></span><span class="spinner spinner--base" role="status" aria-label="Loading"></span><span class="spinner spinner--lg" role="status" aria-label="Loading"></span></div></div><p class="story-note">sm 16 · base 20 · lg 32.</p></div>
+      <div class="story"><h3>Inline with text</h3><div class="story-preview"><span class="sp-inline"><span class="spinner spinner--sm" role="status" aria-label="Loading"></span>Reading your transcript…</span></div><p class="story-note">sm next to body-base copy — the transcript reader's own state.</p></div>
     </div>
 
-    <h2 class="big-section">Variations</h2>
+    <h2 class="big-section">Full-page overlay</h2>
+    <p class="section-desc">A composition, not a component: a veil over the page, a <code class="tok">lg</code> spinner, and copy that sets expectations for long work. The page stays visible underneath so the user keeps their place.</p>
     <div class="story-grid">
-      <div class="story"><h3>With a photo</h3><div class="story-preview"><span class="avatar-group avatar-group--base" role="img" aria-label="12 people">
-        <span class="avatar-group__item"><img src="../assets/avatars/betty-locherty.jpg" alt="" /></span>
-        <span class="avatar-group__item ag-blue"><span class="avatar-group__initials">CA</span></span>
-        <span class="avatar-group__item ag-amber"><span class="avatar-group__initials">CX</span></span>
-        <span class="avatar-group__item ag-teal"><span class="avatar-group__initials">AR</span></span>
-        <span class="avatar-group__item avatar-group__more">+8</span></span></div><p class="story-note">Avatar's photo tier works inside the stack unchanged.</p></div>
-      <div class="story"><h3>No overflow</h3><div class="story-preview"><span class="avatar-group avatar-group--base" role="img" aria-label="3 people">
-        <span class="avatar-group__item ag-magenta"><span class="avatar-group__initials">MO</span></span>
-        <span class="avatar-group__item ag-blue"><span class="avatar-group__initials">CA</span></span>
-        <span class="avatar-group__item ag-amber"><span class="avatar-group__initials">CX</span></span></span></div><p class="story-note">When everyone fits, the +N chip is simply omitted.</p></div>
-      <div class="story"><h3>Group "M +35"</h3><div class="story-preview"><span class="avatar-group avatar-group--sm" role="img" aria-label="37 people">
-        <span class="avatar-group__item ag-magenta"><span class="avatar-group__initials">MO</span></span>
-        <span class="avatar-group__item ag-blue"><span class="avatar-group__initials">CA</span></span>
-        <span class="avatar-group__item avatar-group__more">+35</span></span></div><p class="story-note">The group-message recipient stack: 2 shown + 35 more.</p></div>
+      <div class="story story--full"><h3>Checking your classes…</h3><div class="story-preview"><div class="sp-overlay">
+        <div class="sp-overlay__behind"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+        <div class="sp-overlay__veil">
+          <span class="spinner spinner--lg" role="status" aria-label="Loading"></span>
+          <span class="sp-overlay__title">Checking your classes…</span>
+          <span class="sp-overlay__hint">This usually takes a minute or two. Please keep this page open.</span>
+        </div>
+      </div></div><p class="story-note">The Explore Degrees wizard's roadmap build, which takes a minute or two.</p></div>
     </div>
 
     <h2 class="big-section">CSS</h2>
     <pre class="code"><code>:root {
-  --tok-surface-default: #ffffff;
   --tok-border-default: #dadde0;
-  --tok-fill-neutral: #e6e8eb;
+  --tok-fill-primary: #077fec;
   --tok-text-secondary: #5d6a7a;
-  --tok-avatar-blue-bg: #d9eaff;
-  --tok-avatar-blue-text: #0468c4;
-  --tok-avatar-green-bg: #d4f1da;
-  --tok-avatar-green-text: #057e3f;
-  --tok-avatar-magenta-bg: #ffddec;
-  --tok-avatar-magenta-text: #b51c79;
-  --tok-avatar-amber-bg: #ffe2c5;
-  --tok-avatar-amber-text: #935a03;
-  --tok-avatar-teal-bg: #cfefef;
-  --tok-avatar-teal-text: #057878;
-  --tok-avatar-orange-bg: #ffe1d5;
-  --tok-avatar-orange-text: #ae4103;
-  --tok-avatar-violet-bg: #e8e4ff;
-  --tok-avatar-violet-text: #743ed8;
-  --tok-avatar-red-bg: #ffdfde;
-  --tok-avatar-red-text: #c11435;
+  --tok-text-default: #121921;
+  --tok-surface-default: #ffffff;
+  --tok-surface-overlay: rgba(21, 25, 30, 0.5);
   --tok-family-sans: 'Sora', sans-serif;
 }
 
-.avatar-group { display: inline-flex; align-items: center; }
-.avatar-group__item { box-sizing: border-box; position: relative; display: inline-flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 999px; border: 1px solid var(--tok-border-default); box-shadow: 0 0 0 2px var(--tok-surface-default); font-family: var(--tok-family-sans); user-select: none; }
-.avatar-group__item:not(:first-child) { margin-left: var(--ag-overlap); }
-.avatar-group__item img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.avatar-group__initials { text-transform: uppercase; }
-.avatar-group__more { color: var(--tok-text-secondary); background: var(--tok-fill-neutral); font-weight: 600; font-size: 12px; line-height: 1; }
-.avatar-group--sm { --ag-overlap: -10px; }
-.avatar-group--sm .avatar-group__item { width: 32px; height: 32px; }
-.avatar-group--base { --ag-overlap: -12px; }
-.avatar-group--base .avatar-group__item { width: 40px; height: 40px; }
-.avatar-group--sm .avatar-group__initials { font-weight: 600; font-size: 12px; line-height: 1; }
-.avatar-group--base .avatar-group__initials { font-weight: 600; font-size: 14px; line-height: 1; }
-.ag-blue { background: var(--tok-avatar-blue-bg); } .ag-blue .avatar-group__initials { color: var(--tok-avatar-blue-text); }
-.ag-green { background: var(--tok-avatar-green-bg); } .ag-green .avatar-group__initials { color: var(--tok-avatar-green-text); }
-.ag-magenta { background: var(--tok-avatar-magenta-bg); } .ag-magenta .avatar-group__initials { color: var(--tok-avatar-magenta-text); }
-.ag-amber { background: var(--tok-avatar-amber-bg); } .ag-amber .avatar-group__initials { color: var(--tok-avatar-amber-text); }
-.ag-teal { background: var(--tok-avatar-teal-bg); } .ag-teal .avatar-group__initials { color: var(--tok-avatar-teal-text); }
-.ag-orange { background: var(--tok-avatar-orange-bg); } .ag-orange .avatar-group__initials { color: var(--tok-avatar-orange-text); }
-.ag-violet { background: var(--tok-avatar-violet-bg); } .ag-violet .avatar-group__initials { color: var(--tok-avatar-violet-text); }
-.ag-red { background: var(--tok-avatar-red-bg); } .ag-red .avatar-group__initials { color: var(--tok-avatar-red-text); }</code></pre>
+/* A bordered circle with one side tinted, rotated. No SVG, no asset — the
+   size and ring thickness come from tokens, not from markup. */
+.spinner { display: inline-block; flex-shrink: 0; border-style: solid; border-color: var(--tok-border-default); border-top-color: var(--tok-fill-primary); border-radius: 999px; animation: spinner-rotate 0.7s linear infinite; }
+.spinner--sm { width: 16px; height: 16px; border-width: 2px; }
+.spinner--base { width: 20px; height: 20px; border-width: 2px; }
+.spinner--lg { width: 32px; height: 32px; border-width: 4px; }
+@keyframes spinner-rotate { to { transform: rotate(360deg); } }
+/* NOTE: prefers-reduced-motion deliberately does NOT stop this, unlike
+   Skeleton's shimmer. A shimmer is decoration and a static placeholder still
+   reads correctly; a stopped spinner is indistinguishable from a broken one,
+   and here the motion IS the message. */</code></pre>
   </main>
 </div>
 </body>

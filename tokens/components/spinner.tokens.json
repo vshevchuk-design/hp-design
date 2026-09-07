@@ -1,0 +1,37 @@
+{
+  "component": {
+    "spinner": {
+      "$description": "Indeterminate loading indicator — a rotating ring. Built 2026-09-07 for the Explore Degrees wizard: the transcript reader's inline 'Reading your transcript…' and the full-page 'Checking your classes…' overlay, which the reference says 'usually takes a minute or two'. Deliberately NOT Skeleton's job: Skeleton stands in for content whose SHAPE is known and about to arrive (rows, avatars, lines); a Spinner is for work of unknown duration where there is no shape to preview yet. Pure CSS — a bordered circle with one side tinted, rotated — so it needs no SVG asset and inherits size from tokens rather than markup. **prefers-reduced-motion deliberately does NOT stop it**, unlike Skeleton's shimmer: the shimmer is decoration and a static placeholder still reads correctly, whereas a stopped spinner is indistinguishable from a broken one and the motion IS the message. Deferred: a determinate arc (Progress covers determinate cases as a bar), and an onFill variant for spinners inside a primary button — no consumer needs one yet.",
+      "sizes": {
+        "$description": "sm sits inline with body text (16px = dim.4, matching the meta-row icon size the prototypes use); base is the default standalone size; lg is for a full-page overlay where the spinner is the only thing on screen.",
+        "sm": {
+          "size": { "$type": "dimension", "$value": "{dim.4}" },
+          "thickness": { "$type": "dimension", "$value": "{dim.0_5}" }
+        },
+        "base": {
+          "size": { "$type": "dimension", "$value": "{dim.5}" },
+          "thickness": { "$type": "dimension", "$value": "{dim.0_5}" }
+        },
+        "lg": {
+          "size": { "$type": "dimension", "$value": "{dim.8}" },
+          "thickness": { "$type": "dimension", "$value": "{dim.1}" }
+        }
+      },
+      "track": {
+        "$type": "color",
+        "$value": "{border.default}",
+        "$description": "The three-quarters of the ring that isn't the indicator — the same neutral hairline colour every edge in this system uses, so a spinner on a card reads as part of it."
+      },
+      "indicator": {
+        "$type": "color",
+        "$value": "{fill.primary}",
+        "$description": "The moving quarter. fill.primary (blue.500), i.e. the same brand blue that carries every other 'something is happening here' cue."
+      },
+      "duration": {
+        "$type": "duration",
+        "$value": "0.7s",
+        "$description": "One rotation. Fast enough to read as active, slow enough not to flicker; matched by eye against the reference video's own spinner."
+      }
+    }
+  }
+}

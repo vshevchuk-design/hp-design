@@ -1019,3 +1019,25 @@ RSS headlines wrap to 2–3 lines at 352px, which is expected and fine; the X fe
 **Nav: the accordion is now "Student Portal", not "Springboard".** Explore Degrees is a screen of the same app, reached from that page's own tile, so it belongs in the same group — and once a group holds two screens, naming it after one of them is wrong (the Message Center accordion already models this: one product, two screens). `docs/index.html`'s hand-maintained sidebar copy got the same edit by hand, its usual trap.
 
 All three checkers green on the new totals: 52 pages for vars and states, 4 prototype pages on the grid.
+
+## 2026-09-07 (cont. 14) — Explore Degrees: flow understood, first two components built
+
+Reference screens arrived across several messages (live app for the early steps, demo-video frames for the later ones). The app is a **no-login degree explorer / transfer-credit estimator**: pick program(s) → pick a start term → declare prior college credits → review → get an estimate of what transfers and what's left. Recorded here because the flow drives every component decision below.
+
+**Branches that must exist in the prototype** (user: "усі гілки (да, нє, робе не робе)"):
+- Focus areas appear on step 1 **only for majors that have them** (Psychology does, Accounting doesn't).
+- Program combo is optional and multi: primary + extra majors + minors, each a chip carrying its own role badge.
+- Step 3 is Yes/No. **No → Review shows "Transfer credits: None added" and the labels go singular ("Major", not "Majors & minors")**, then Build → straight to the Degree Planner in the live app.
+- Yes → a repeatable per-school block; per school, either the AI transcript scan (idle → captcha → reading → **error** or **success**) or manual class search; then an editable table (term/year/units/grade, year+grade required).
+- Two endings: full results (Transfer Credits + Degree Requirements tabs) or the "we couldn't check your credits online" fallback.
+- **Three** transfer statuses, not two: Accepted / Needs a Quick Review / **We'll Evaluate It** ("no matching class yet"). Mappings can be many→one (HIST 10 + HIST 11 → HISTORY 120) and units can differ across the mapping (4 → 3.5).
+
+**Degree Planner: always render results, planner as a button.** The user proposed it and I agree on grounds beyond taste — results are what the user just waited a minute or two for, so a hard redirect discards both the estimate and the "Print or Save as PDF" path, and makes the flow untestable. Modelled as a toggle in the prototype so both cases are demonstrable. When there are no credits at all, the Transfer Credits tab has nothing to say: it won't exist, Degree Requirements becomes the default, and the header pills drop to term + requirement count.
+
+**Correction taken from the user: the top step bar is Stepper, not a new component.** I had scoped a `Progress` with a `segmented` variant for it; Stepper already exists for exactly this ("Horizontal step indicator for a short multi-step flow", inactive/active/complete with a filling connector). So Progress stays scoped to the genuinely missing cases — the determinate coverage bar in the results header and the indeterminate bar under "Checking your classes…" — and the wizard's header uses Stepper as-is. Its numbered circles read clearer than four anonymous segments anyway.
+
+**Decisions confirmed by the user this round:** selected state is blue, not the reference's black (our whole system already says selected = `bg.primary` + `fill.primary`); program marks go pastel `avatar.*` rather than saturated 500s; the term step keeps its UX for now, with one irritation to fix cheaply — the year is stated twice (in the blue square and again in the label), so the square's hue will vary per year instead of thirteen identical blue blocks; and the real target is the later steps, which are the crowded ones.
+
+**Built this round — Alert and Spinner.** Both are genuine gaps, used on the most screens, and carry no contested design decisions, so they went first. Details in the status.md entry; the two calls worth repeating are that Alert takes the role tint (unlike Toast, for a stated reason) and that Spinner deliberately keeps animating under `prefers-reduced-motion` where Skeleton's shimmer stops.
+
+**Next batch, in dependency order:** Progress (determinate + indeterminate bar) → Accordion (native `<details>`, the whole Degree Requirements tab) → ChoiceTile (selectable card on a real radio — program/term/yes-no/focus tiles, one pattern on four screens) → Avatar `square` variant (same hash-hue + initials logic, rounded square) → Chip content variant with an inline Badge → Listbox option with description + trailing badge. Then the wizard itself, one file with real state.

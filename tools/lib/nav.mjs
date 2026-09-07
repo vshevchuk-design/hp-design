@@ -64,7 +64,9 @@ export const NAV_ITEMS = {
   composer: { label: "Composer", href: "composer.html" },
   "empty-state": { label: "EmptyState", href: "empty-state.html" },
   toast: { label: "Toast", href: "toast.html" },
+  alert: { label: "Alert", href: "alert.html" },
   skeleton: { label: "Skeleton", href: "skeleton.html" },
+  spinner: { label: "Spinner", href: "spinner.html" },
   stat: { label: "Stat", href: "stat.html" },
   "split-button": { label: "SplitButton", href: "split-button.html" },
   "date-picker": { label: "DatePicker", href: "date-picker.html" },
@@ -184,7 +186,9 @@ export function renderNav(activeKey, { basePath = "" } = {}) {
     ${link("composer")}
     ${link("empty-state")}
     ${link("toast")}
+    ${link("alert")}
     ${link("skeleton")}
+    ${link("spinner")}
     </div>
     <div class="nav-pane nav-pane--designs${designsActive ? " active" : ""}" data-pane="designs">
     <p class="brand">Design Prototypes</p>
