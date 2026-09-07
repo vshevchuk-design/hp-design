@@ -266,9 +266,12 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .sb__tiles { display: grid; gap: ${gridGapSm}; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
 @media (min-width: 768px) { .sb__tiles { grid-template-columns: repeat(3, 1fr); } }
 @media (min-width: 1024px) { .sb__tiles { gap: ${gridGapMd}; } }
-/* Feeds — single column until there's genuinely room for two. */
+/* Feeds — two columns from the tablet breakpoint, not 1024: at 768 the content
+   box is 720px, so each column is 352px, and the widest line in either card
+   (the ICS "09/08/26, 12:00 AM – 03/07/27, 12:00 AM" range at 12px) still fits
+   without clipping. Same gap as the desktop pair so the rhythm doesn't shift. */
 .sb__feeds { display: grid; gap: ${gridGapSm}; grid-template-columns: 1fr; align-items: start; }
-@media (min-width: 1024px) { .sb__feeds { gap: ${gridGapMd}; grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 768px) { .sb__feeds { gap: ${gridGapMd}; grid-template-columns: repeat(2, 1fr); } }
 
 /* The tinted icon square: Attachment's "icon in a soft square" pattern with
    a tag.* tint instead of a raised white square — decorative hue, no status

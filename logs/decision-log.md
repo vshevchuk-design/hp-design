@@ -997,3 +997,11 @@ Six notes, all applied. Two produced findings beyond the literal request.
 - **View All → Button secondary sm**, resolved from `button.tokens.json`, so it inherits the same hover/pressed/focus as the settings action instead of getting a second look-alike recipe.
 
 All three checkers green; tile 88, topbar 64, section gap 32 — all ÷4.
+
+## 2026-09-07 (cont. 12) — Feeds go two-column from the tablet breakpoint
+
+"давай на таблеті ці 2 фіда зробим теж в 2 колонки - мають поміститись" — they do. The two-column rule moved from `min-width: 1024px` to **768px**, with the gap raised to Grid's `md` step there so the rhythm doesn't change between tablet and desktop.
+
+Checked the fit rather than assuming it: at 768 the content box is 720px, so each column is 352px, and the widest single line in either card — the ICS range "09/08/26, 12:00 AM – 03/07/27, 12:00 AM" at 12px — still sits on one line. Verified with a DOM pass at 768 and 1000: `scrollWidth > clientWidth` on zero of the rows, articles, card headers and tiles, and no horizontal page overflow at either width. That check is the one that matters for this user's standing rule — no horizontal scroll that clips content, wrap instead.
+
+RSS headlines wrap to 2–3 lines at 352px, which is expected and fine; the X feed's empty card flows to the second row of the grid.
