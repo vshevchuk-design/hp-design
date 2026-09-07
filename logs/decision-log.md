@@ -1005,3 +1005,17 @@ All three checkers green; tile 88, topbar 64, section gap 32 — all ÷4.
 Checked the fit rather than assuming it: at 768 the content box is 720px, so each column is 352px, and the widest single line in either card — the ICS range "09/08/26, 12:00 AM – 03/07/27, 12:00 AM" at 12px — still sits on one line. Verified with a DOM pass at 768 and 1000: `scrollWidth > clientWidth` on zero of the rows, articles, card headers and tiles, and no horizontal page overflow at either width. That check is the one that matters for this user's standing rule — no horizontal scroll that clips content, wrap instead.
 
 RSS headlines wrap to 2–3 lines at 352px, which is expected and fine; the X feed's empty card flows to the second row of the grid.
+
+## 2026-09-07 (cont. 13) — Explore Degrees page, and the portal shell becomes a module
+
+"тепер створи нову сторінку в навігації для Explore degrees" — the screen behind the Springboard tile added earlier today.
+
+**Shipped as a scaffold, on the Springboard precedent.** No reference screens exist yet, and that page's own first cut went the same way for the same reason: inventing a degree browser would have to be thrown away. What it *does* carry is the portal's real app shell, so the page is immediately useful as proof the two screens are one product rather than two look-alikes, and an EmptyState says plainly that the layout isn't designed.
+
+**The shell moved to `tools/lib/app-shell.mjs` first — before writing the second consumer, not after.** This repo has the same mistake twice already: the two Message Center builders duplicate their shell CSS between them (accepted as a v1 drift risk and still there), and the designs *viewer* chrome was duplicated until it moved to `design-viewer.mjs`. Copying the topbar into a second portal file would have been a third instance, in the same session where I added two checkers whose whole job is catching drift. The module owns the page frame, the 64px topbar, the wordmark swap, and Button secondary's recipe (base icon-only + sm), and exports `SHELL_COLOR_PATHS` so a page can merge the vars it needs.
+
+**Migrating Springboard onto it was verified, not assumed.** Renaming classes means the output can't be byte-compared, so instead: set-compare the generated CSS rules and the full `--tok-*` map before/after. Result — only the three shell class names changed (`sb`/`sb__topbar`/`sb__logo` → `app`/`app__topbar`/`app__logo`), **all 36 variables identical in name and value, every other rule identical**, plus a visual check of the page. Worth recording as the technique for any future rename-refactor here: compare rule *sets* modulo the rename, and compare the var map exactly.
+
+**Nav: the accordion is now "Student Portal", not "Springboard".** Explore Degrees is a screen of the same app, reached from that page's own tile, so it belongs in the same group — and once a group holds two screens, naming it after one of them is wrong (the Message Center accordion already models this: one product, two screens). `docs/index.html`'s hand-maintained sidebar copy got the same edit by hand, its usual trap.
+
+All three checkers green on the new totals: 52 pages for vars and states, 4 prototype pages on the grid.

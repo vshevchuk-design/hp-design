@@ -81,9 +81,10 @@ export const DESIGN_PRODUCTS = {
     },
   },
   springboard: {
-    label: "Springboard",
+    label: "Student Portal",
     items: {
       springboard: { label: "Springboard", href: "designs/springboard.html" },
+      "explore-degrees": { label: "Explore Degrees", href: "designs/explore-degrees.html" },
     },
   },
 };

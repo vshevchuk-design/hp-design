@@ -20,6 +20,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { renderRootVars, cssVarName } from "./lib/css-vars.mjs";
 import { renderDesignViewer } from "./lib/design-viewer.mjs";
+import { SHELL_CSS, SHELL_COLOR_PATHS, shellTopbar } from "./lib/app-shell.mjs";
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const load = (p) => JSON.parse(fs.readFileSync(path.join(root, p)));
@@ -198,6 +199,7 @@ const ARTICLES = [
 ];
 
 const colorPaths = [
+  ...SHELL_COLOR_PATHS,
   "surface.page", "surface.default", "border.default", "border.focus",
   "text.default", "text.secondary", "text.primary",
   "icon.default", "icon.muted", "icon.primary",
@@ -226,6 +228,8 @@ const hueVars = [...new Set([...TILES.map((t) => t.hue), "orange", "amber", "red
 
 const appCss = `${rootVars}
 
+${SHELL_CSS}
+
 * { box-sizing: border-box; }
 html, body { height: 100%; }
 /* White page, not a gray one (explicit call): the system's locked-in habit is
@@ -253,8 +257,6 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
   /* dim.8 — the quick links and the feeds are two distinct blocks, so they
      get a bigger gap than Grid's lg step gives inside either one */
   .sb__main { gap: ${px(resolve("dim.8"))}; padding: ${px(resolve("dim.6"))}; }
-  /* match the content padding so the wordmark lines up with the tiles */
-  .sb__topbar { padding: 0 ${px(resolve("dim.6"))}; }
 }
 
 /* Quick links — the tile SHAPE changes with width, not just the track count:
@@ -363,18 +365,6 @@ ${hueVars}
 .sb-article__excerpt { color: ${cv("text.secondary")}; ${typoCss(tBodySm)} display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .sb-article .sb-link { margin-top: ${px(resolve("dim.0_5"))}; }
 
-/* Button secondary, icon-only, base — the settings action, resolved from
-   button.tokens.json (fill.neutral at rest, so it reads as a control) */
-.btn { display: inline-flex; align-items: center; justify-content: center; border: none; cursor: pointer; font-family: inherit; border-radius: ${btnRadius}; }
-.btn--secondary { background: ${cv(btnSecondary.fill)}; }
-.btn--secondary.btn--base.btn--icon-only { width: ${btnBase.height}; height: ${btnBase.height}; padding: 0; }
-/* sm text button — the feed headers' View All. Same variant as the settings
-   action, so it inherits its hover/pressed/focus without a second recipe. */
-.btn--secondary.btn--sm { height: ${btnSm.height}; padding: 0 ${btnSm.paddingX}; gap: ${btnSm.gap}; color: ${cv(btnSecondary.label)}; ${typoCss(btnSm.label)} }
-.btn--secondary .btn__icon { width: ${btnBase.iconSize}; height: ${btnBase.iconSize}; color: ${cv(btnSecondary.icon)}; }
-.btn--secondary:hover { background: ${cv(btnSecondary.hoverFill)}; }
-.btn--secondary:active { background: ${cv(btnSecondary.pressedFill)}; }
-.btn--secondary:focus-visible { outline: ${btnSecondary.ringWidth} solid ${cv(btnSecondary.ringColor)}; outline-offset: ${btnSecondary.ringOffset}; }
 
 .empty-state { box-sizing: border-box; width: 100%; display: flex; align-items: center; justify-content: center; padding: ${es.padding}; font-family: ${cv("family.sans")}; }
 .empty-state__text { background: ${cv(es.pillBg)}; color: ${cv(es.textColor)}; border-radius: ${es.pillRadius}; padding: ${es.pillPaddingY} ${es.pillPaddingX}; ${typoCss(es.textType)} text-align: center; }`;
@@ -426,11 +416,8 @@ ${appCss}
 </style>
 </head>
 <body>
-<div class="sb">
-  <header class="sb__topbar">
-    <span class="sb__logo">${logoSvg}</span>
-    <button class="btn btn--secondary btn--base btn--icon-only" type="button" aria-label="Settings">${iconOf("settings", "btn__icon")}</button>
-  </header>
+<div class="app">
+${shellTopbar()}
   <main class="sb__main">
     <nav class="sb__tiles" aria-label="Quick links">
 ${TILES.map(tileMarkup).join("\n")}

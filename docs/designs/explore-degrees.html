@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>hp-design — Springboard</title>
+<title>hp-design — Explore Degrees</title>
 <link rel="stylesheet" href="../../assets/fonts/sora/sora.css" />
 <style>
   :root {
@@ -192,8 +192,8 @@
     </details>
     <details class="nav-acc" open>
       <summary>Student Portal</summary>
-      <a class="navlink active" href="../designs/springboard.html">Springboard</a>
-      <a class="navlink" href="../designs/explore-degrees.html">Explore Degrees</a>
+      <a class="navlink" href="../designs/springboard.html">Springboard</a>
+      <a class="navlink active" href="../designs/explore-degrees.html">Explore Degrees</a>
     </details>
     </div>
     <script>
@@ -206,8 +206,8 @@
 </script>
   </nav>
   <main>
-    <h1>Springboard</h1>
-    <p class="sub">The student portal's home screen, rebuilt on hp-design — every recipe resolved from its own token file, no new components needed. Quick links are compact tiles (a tinted <code>tag.*</code> icon square + label) on Card's interactive recipe, so each one carries Card's own hover / pressed / focus states; the feeds are Cards with a real header band (icon + title + View All) over full-bleed rows — ICS events with a date chip, time and location, RSS articles with a clamped excerpt and a Read Article link, and the social feed on EmptyState. One auto-fit track list carries the tiles from one-per-row on a phone to all six across on desktop; the feeds go two-column at 1024. <strong>Explore Degrees</strong> is new (not in the live app): <code>school</code> on the magenta tag hue — violet was skipped on purpose, it reads as the <code>ai</code> role.</p>
+    <h1>Explore Degrees</h1>
+    <p class="sub">The screen behind the Springboard's Explore Degrees tile — a scaffold for now. It already carries the portal's real app shell (<code>tools/lib/app-shell.mjs</code>: the same 64px topbar, wordmark and settings action the Springboard uses), so the two screens are provably one product rather than two look-alikes; the screen's own layout is waiting on reference screens. Everything built here will follow the same discipline as the other prototypes: strictly hp-design components, every recipe resolved from its own token file, with a small <code>ed-</code> composition layer as the only bespoke CSS.</p>
 
     <div class="device-bar">
       <div class="device-bar__group">
@@ -223,17 +223,17 @@
         </button>
         <div class="listbox" id="viewer-version-lb" popover>
           <ul class="listbox__list" role="listbox" aria-label="Prototype version">
-        <li role="none"><button type="button" class="listbox__option listbox__option--selected" role="option" aria-selected="true" data-version-file="springboard-app.html" data-version-label="v1 · current">
+        <li role="none"><button type="button" class="listbox__option listbox__option--selected" role="option" aria-selected="true" data-version-file="explore-degrees-app.html" data-version-label="v1 · current">
           <span>v1 <span class="listbox__note">· current</span></span><svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
         </button></li>
           </ul>
         </div>
       </div>
-      <a class="open-standalone" id="viewer-standalone" href="springboard-app.html" target="_blank" rel="noopener">Open standalone ↗</a>
+      <a class="open-standalone" id="viewer-standalone" href="explore-degrees-app.html" target="_blank" rel="noopener">Open standalone ↗</a>
     </div>
     <div class="frame-wrap">
       <div class="device device--mobile" id="device">
-        <iframe id="device-frame" src="springboard-app.html" title="Springboard prototype"></iframe>
+        <iframe id="device-frame" src="explore-degrees-app.html" title="Explore Degrees prototype"></iframe>
       </div>
     </div>
   </main>
