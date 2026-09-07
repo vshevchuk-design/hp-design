@@ -1141,10 +1141,26 @@ const composeAiCss = `.mc-compose__tabs { display: none; flex-shrink: 0; }
 .mc-compose__ai { display: flex; flex-direction: column; min-height: 0; }
 .mc-compose__lead { margin: 0; color: ${cv("text.secondary")}; ${typoCss(bodySmType)} }
 .mc-compose__lead[hidden] { display: none; }
-.mc-compose__editor { display: flex; flex-direction: column; gap: ${px(resolve("dim.1"))}; }
+.mc-compose__editor { position: relative; display: flex; flex-direction: column; gap: ${px(resolve("dim.1"))}; }
 .mc-compose__editor .composer { gap: ${px(resolve("dim.2"))}; }
 .mc-compose__editor .composer__field { align-items: flex-start; }
 .mc-compose__editor .composer__input { display: block; resize: none; min-height: 132px; max-height: 300px; overflow-y: auto; }
+/* pending attachments — a wrap of removable chips (image thumbnail or file
+   glyph); the editor is also a drop target ("drop files to attach") */
+.mc-attachments { display: flex; flex-wrap: wrap; gap: ${px(resolve("dim.2"))}; }
+.mc-attachments:not([hidden]) { margin-top: ${px(resolve("dim.2"))}; }
+.mc-attach { display: inline-flex; align-items: center; gap: ${px(resolve("dim.2"))}; max-width: 240px; padding: ${px(resolve("dim.1"))} ${px(resolve("dim.2"))} ${px(resolve("dim.1"))} ${px(resolve("dim.1"))}; border: 1px solid ${cv("border.default")}; border-radius: ${px(resolve("radius.default"))}; background: ${cv("surface.default")}; }
+.mc-attach__thumb { flex-shrink: 0; width: 32px; height: 32px; border-radius: ${px(resolve("radius.sm"))}; background: ${cv("surface.dim")}; display: inline-flex; align-items: center; justify-content: center; overflow: hidden; }
+.mc-attach__thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.mc-attach__thumb svg { width: 18px; height: 18px; color: ${cv("icon.secondary")}; }
+.mc-attach__meta { min-width: 0; display: flex; flex-direction: column; }
+.mc-attach__name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: ${cv("text.default")}; ${typoCss(bodySmType)} }
+.mc-attach__size { color: ${cv("text.muted")}; font-size: 11px; }
+.mc-attach__x { flex-shrink: 0; margin-left: ${px(resolve("dim.1"))}; border: none; background: none; padding: 0; cursor: pointer; color: ${cv("icon.secondary")}; display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: ${px(resolve("radius.full"))}; }
+.mc-attach__x:hover { background: ${cv("fill.neutralHover")}; }
+.mc-attach__x svg { width: 14px; height: 14px; }
+.mc-attach-hint { position: absolute; inset: 0; z-index: 3; display: none; align-items: center; justify-content: center; border: 2px dashed ${cv("border.focus")}; border-radius: ${px(resolve("radius.default"))}; background: ${cv("surface.dim")}; color: ${cv("text.primary")}; font-family: ${cv("family.sans")}; ${typoCss(bodySmType)} font-weight: 600; pointer-events: none; }
+.mc-compose__editor.is-dragover .mc-attach-hint { display: flex; }
 .mc-compose__counter { align-self: flex-end; color: ${cv("text.muted")}; font-size: 12px; font-family: ${cv("family.sans")}; }
 .mc-compose__checks { display: flex; flex-wrap: wrap; gap: ${px(resolve("dim.2"))} ${px(resolve("dim.6"))}; padding-top: ${px(resolve("dim.1"))}; }
 .mc-compose__footer .btn { flex: 1; }
@@ -1691,18 +1707,22 @@ const composeMarkup = `<dialog class="mc-compose" id="mc-compose" aria-labelledb
           <input class="mc-field__control" id="mc-compose-subject" maxlength="50" placeholder="Subject" aria-label="Subject" />
         </label>
         <span class="mc-compose__counter" id="mc-compose-counter">0/50</span>
-        <div class="mc-compose__editor">
+        <div class="mc-compose__editor" id="mc-compose-editor">
           <form class="composer composer--rich" onsubmit="return false">
             <div class="composer__toolbar">
               <button type="button" class="composer__icon-btn" aria-label="Bold">${iconBold}</button>
               <button type="button" class="composer__icon-btn" aria-label="Italic">${iconItalic}</button>
               <button type="button" class="composer__icon-btn" aria-label="Underline">${iconUnderline}</button>
+              <button type="button" class="composer__icon-btn" id="mc-compose-attach-btn" aria-label="Attach files">${iconAttach}</button>
               <button type="button" class="btn btn--ghost btn--sm">${iconTag}Merge Tags</button>
               <button type="button" class="composer__ai-assist" id="mc-compose-ai-assist">${iconAi}AI Assist</button>
             </div>
             <div class="composer__field">
               <textarea class="composer__input" id="mc-compose-message" rows="1" placeholder="Write your message..." aria-label="Message"></textarea>
             </div>
+            <div class="mc-attachments" id="mc-compose-attachments" hidden></div>
+            <input type="file" id="mc-compose-file" accept="image/*,.pdf" multiple hidden />
+            <div class="mc-attach-hint" aria-hidden="true">Drop files to attach</div>
           </form>
         </div>
         <div class="mc-compose__checks">
@@ -2521,8 +2541,62 @@ const appJs = `(function () {
     }
   });
 
+  // --- compose attachments: paperclip picker + drag-drop; images get a real
+  // thumbnail (FileReader), other files a glyph; each chip is removable ---
+  var composeEditor = document.getElementById("mc-compose-editor");
+  var composeAttachBtn = document.getElementById("mc-compose-attach-btn");
+  var composeFileInput = document.getElementById("mc-compose-file");
+  var composeAttachments = document.getElementById("mc-compose-attachments");
+  var ATTACH_FILE_ICON = ${JSON.stringify(iconOf("insert_drive_file", ""))};
+  var ATTACH_X_ICON = ${JSON.stringify(iconOf("close", ""))};
+  function fmtSize(b) {
+    if (b < 1024) return b + " B";
+    if (b < 1048576) return Math.round(b / 1024) + " KB";
+    return (b / 1048576).toFixed(1) + " MB";
+  }
+  function addComposeFiles(fileList) {
+    Array.prototype.forEach.call(fileList, function (file) {
+      var chip = document.createElement("div");
+      chip.className = "mc-attach";
+      var isImg = /^image\\//.test(file.type);
+      chip.innerHTML = '<span class="mc-attach__thumb">' + (isImg ? "" : ATTACH_FILE_ICON) + '</span>'
+        + '<span class="mc-attach__meta"><span class="mc-attach__name"></span><span class="mc-attach__size"></span></span>'
+        + '<button type="button" class="mc-attach__x" aria-label="Remove attachment">' + ATTACH_X_ICON + '</button>';
+      chip.querySelector(".mc-attach__name").textContent = file.name;
+      chip.querySelector(".mc-attach__size").textContent = fmtSize(file.size);
+      if (isImg) {
+        var img = document.createElement("img");
+        chip.querySelector(".mc-attach__thumb").appendChild(img);
+        var reader = new FileReader();
+        reader.onload = function (e) { img.src = e.target.result; };
+        reader.readAsDataURL(file);
+      }
+      chip.querySelector(".mc-attach__x").addEventListener("click", function () {
+        chip.remove();
+        composeAttachments.hidden = composeAttachments.children.length === 0;
+      });
+      composeAttachments.appendChild(chip);
+    });
+    composeAttachments.hidden = composeAttachments.children.length === 0;
+  }
+  function clearComposeAttachments() { composeAttachments.innerHTML = ""; composeAttachments.hidden = true; }
+  composeAttachBtn.addEventListener("click", function () { composeFileInput.click(); });
+  composeFileInput.addEventListener("change", function () { addComposeFiles(composeFileInput.files); composeFileInput.value = ""; });
+  ["dragenter", "dragover"].forEach(function (ev) {
+    composeEditor.addEventListener(ev, function (e) { e.preventDefault(); composeEditor.classList.add("is-dragover"); });
+  });
+  composeEditor.addEventListener("dragleave", function (e) {
+    if (!composeEditor.contains(e.relatedTarget)) composeEditor.classList.remove("is-dragover");
+  });
+  composeEditor.addEventListener("drop", function (e) {
+    e.preventDefault();
+    composeEditor.classList.remove("is-dragover");
+    if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length) addComposeFiles(e.dataTransfer.files);
+  });
+
   function resetCompose() {
     composeDept = null;
+    clearComposeAttachments();
     selectRest(composeDeptTrigger, composeDeptValue, "Department");
     composeSubject.value = "";
     composeMessage.value = "";

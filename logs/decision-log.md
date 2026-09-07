@@ -1087,3 +1087,14 @@ Known follow-up (separate from filters): at ~768 the 6-column table cramps — t
 ## 2026-09-06 (cont. 3) — Table: fix the tablet cramp (Expiration ↔ Date collision)
 
 At 768–1023 the six-column console table cramped and the Expiration badge ("Due 08/10/2026") overlapped the Date column. Added a tablet tier that collapses the **Responsible** column to a 0-width track (least urgent for triage; still shown inside the thread) and gives Expiration/Date badge-width mins: `grid-template-columns: 1.6fr 2.4fr 0 minmax(120px,0.9fr) minmax(72px,0.7fr) 28px` + `.mc-col-responsible { overflow:hidden; padding:0 }`. Desktop (≥1024, all six columns) and the <768 stacked reflow are untouched. Verified at 768: badge right 589 < date left 621, no overlap.
+
+## 2026-09-06 (cont. 4) — New Message composer: attachments (paperclip + drag-drop)
+
+Added file attachments to the New Message compose dialog (the client's "drop an image in the message" ask):
+- A paperclip **Attach** button in the composer toolbar opens a file picker (`accept="image/*,.pdf" multiple`), and the whole editor is a **drop zone** — dragging files over it shows a dashed "Drop files to attach" overlay (`.is-dragover`).
+- Each file becomes a removable **`.mc-attach` chip**: images get a real thumbnail (FileReader → data URL), other files a document glyph, plus name + human size (`fmtSize`). × removes the chip; the row hides when empty.
+- `resetCompose` clears attachments on open/discard. Composition-only (no backend); a natural home for real upload later.
+
+Verified live: paperclip + input present; simulated image+PDF → 2 chips (img thumbnail vs glyph, "70 B" / "420 KB"); remove hides the row; dragover shows the overlay and dragleave clears it.
+
+Follow-up option: extend the same to the in-thread reply composer.
