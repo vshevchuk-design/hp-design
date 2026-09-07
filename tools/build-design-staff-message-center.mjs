@@ -1286,6 +1286,13 @@ const consoleCss = `/* ---- Table (threads console) ---- */
 .mc-td .badge { flex-shrink: 0; }
 /* console column template — desktop: Student | Subject & Message | Responsible | Expiration | Date | flag */
 .mc-console-cols { grid-template-columns: 1.6fr 2.4fr 1fr 0.9fr 0.7fr 28px; gap: ${tblRowGap}; padding: ${tblRPadY} ${tblRPadX}; }
+/* tablet (768–1023): six columns cramp and the Expiration badge collides with
+   the Date — collapse the Responsible column to 0 (it's the least urgent for
+   triage; still shown in the thread) and guarantee Expiration a badge-width min */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .mc-console-cols { grid-template-columns: 1.6fr 2.4fr 0 minmax(120px, 0.9fr) minmax(72px, 0.7fr) 28px; }
+  .mc-col-responsible { overflow: hidden; min-width: 0; padding-left: 0; padding-right: 0; }
+}
 
 /* "New Message" is a plain primary Button that opens a choice Menu (single /
    group) — same on desktop and mobile. The trailing chevron just hints at the

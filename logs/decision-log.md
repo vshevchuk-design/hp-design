@@ -1083,3 +1083,7 @@ Per user: put ALL filter chips on a second row (desktop included); keep row 1 fo
 Verified live across 1280 / 768 / 390 + the mobile search overlay: chips row, both search fields, Student ID exact + prefix (global across lists), AND-combine with chips, Filters popover in-viewport on mobile.
 
 Known follow-up (separate from filters): at ~768 the 6-column table cramps — the Expiration badge collides with the Date. Table-responsive fix pending.
+
+## 2026-09-06 (cont. 3) — Table: fix the tablet cramp (Expiration ↔ Date collision)
+
+At 768–1023 the six-column console table cramped and the Expiration badge ("Due 08/10/2026") overlapped the Date column. Added a tablet tier that collapses the **Responsible** column to a 0-width track (least urgent for triage; still shown inside the thread) and gives Expiration/Date badge-width mins: `grid-template-columns: 1.6fr 2.4fr 0 minmax(120px,0.9fr) minmax(72px,0.7fr) 28px` + `.mc-col-responsible { overflow:hidden; padding:0 }`. Desktop (≥1024, all six columns) and the <768 stacked reflow are untouched. Verified at 768: badge right 589 < date left 621, no overlap.
