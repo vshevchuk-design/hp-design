@@ -91,19 +91,27 @@ const cardIx = {
   ringOffset: px(resolve(card.interactive.state.focused.ringOffset.$value)),
 };
 
-// ---- Button ghost, icon-only, base (40×40) — the topbar settings action ----
-const btnRadius = px(resolve(button.ghost.radius.$value));
-const btnGhostBase = {
-  height: px(resolve(button.ghost.size.base.height.$value)),
-  iconSize: px(resolve(button.ghost.size.base.iconSize.$value)),
+// ---- Button secondary, icon-only, base (40×40) — the topbar settings action.
+// Ghost first, changed on review: with no fill at rest it read as a bare glyph
+// rather than a control. The system has no outline variant (primary filled /
+// secondary gray-filled / ghost transparent), so "border or gray background"
+// resolves to secondary — fill.neutral at rest, its own hover/pressed/focus.
+// Its icon needs an explicit colour: secondary's label (text.default) and icon
+// (icon.default) are different values, so currentColor would be wrong — the
+// token file's own $description says so. ----
+const btnRadius = px(resolve(button.secondary.radius.$value));
+const btnBase = {
+  height: px(resolve(button.secondary.size.base.height.$value)),
+  iconSize: px(resolve(button.secondary.size.base.iconSize.$value)),
 };
-const btnGhost = {
-  icon: refPath(button.ghost.state.default.icon.$value),
-  hoverFill: refPath(button.ghost.state.hover.fill.$value),
-  pressedFill: refPath(button.ghost.state.pressed.fill.$value),
-  ringColor: refPath(button.ghost.state.focused.ringColor.$value),
-  ringWidth: px(resolve(button.ghost.state.focused.ringWidth.$value)),
-  ringOffset: px(resolve(button.ghost.state.focused.ringOffset.$value)),
+const btnSecondary = {
+  fill: refPath(button.secondary.state.default.fill.$value),
+  icon: refPath(button.secondary.state.default.icon.$value),
+  hoverFill: refPath(button.secondary.state.hover.fill.$value),
+  pressedFill: refPath(button.secondary.state.pressed.fill.$value),
+  ringColor: refPath(button.secondary.state.focused.ringColor.$value),
+  ringWidth: px(resolve(button.secondary.state.focused.ringWidth.$value)),
+  ringOffset: px(resolve(button.secondary.state.focused.ringOffset.$value)),
 };
 
 // ---- EmptyState — the social feed has no posts ----
@@ -128,9 +136,8 @@ const gridGapLg = px(resolve(grid.gap.lg.$value));
 // ---- typography used by the composition layer ----
 const tHeadingBase = resolveToken(get("text-style.heading-base"));
 const tHeadingMd = resolveToken(get("text-style.heading-md"));
-const tHeadingLg = resolveToken(get("text-style.heading-lg"));
-const tBodyBase = resolveToken(get("text-style.body-base"));
 const tBodySm = resolveToken(get("text-style.body-sm"));
+const tBodyXs = resolveToken(get("text-style.body-xs"));
 const tLabelSm = resolveToken(get("text-style.label-sm"));
 const labelSmTransform = textExt("text-style.label-sm").textTransform || "none";
 const tLinkSm = resolveToken(get("text-style.link-sm"));
@@ -183,10 +190,10 @@ const ARTICLES = [
 ];
 
 const colorPaths = [
-  "surface.default", "surface.dim", "border.default", "border.focus",
+  "surface.page", "surface.default", "border.default", "border.focus",
   "text.default", "text.secondary", "text.primary",
-  "icon.secondary", "icon.muted", "icon.primary",
-  "fill.primary", "fill.neutralHover", "fill.neutralActive",
+  "icon.default", "icon.muted", "icon.primary",
+  "fill.primary", "fill.neutral", "fill.neutralHover", "fill.neutralActive",
   "bg.primary", "bg.neutral",
   ...[...new Set([...TILES.map((t) => t.hue), "orange", "amber", "red"])].flatMap((h) => [
     `tag.${h}.tint.bg`,
@@ -213,27 +220,36 @@ const appCss = `${rootVars}
 
 * { box-sizing: border-box; }
 html, body { height: 100%; }
-body { margin: 0; background: ${cv("surface.dim")}; font-family: ${cv("family.sans")}; }
+/* White page, not a gray one (explicit call): the system's locked-in habit is
+   white surfaces separated by border.default hairlines, never a second gray
+   tint for hierarchy — so the cards read against the page by their border. */
+body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.sans")}; }
 
 /* ---- sb-* composition layer: shell, topbar, the two grids, feed rows.
    Everything colour/type/radius/spacing comes from a token; only the grid
-   track lists and the one 1024px feed breakpoint are structural literals
+   track lists and the 768/1024px breakpoints are structural literals
    (Grid's own "column count isn't tokenized" rule). ---- */
 .sb { min-height: 100%; display: flex; flex-direction: column; }
 .sb__topbar { position: sticky; top: 0; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: ${gridGapSm}; padding: ${px(resolve("dim.2"))} ${px(resolve("dim.4"))}; background: ${cv("surface.default")}; border-bottom: 1px solid ${cv("border.default")}; }
 .sb__logo { display: flex; align-items: center; color: ${cv("text.default")}; }
 .sb__logo svg { display: block; height: ${px(resolve("dim.6"))}; width: auto; }
-.sb__main { flex: 1; display: flex; flex-direction: column; gap: ${gridGapMd}; padding: ${px(resolve("dim.4"))}; }
+/* max-width so the six tiles stay a readable block instead of stretching
+   across a 27" monitor; centred, the usual app-shell cap. */
+.sb__main { flex: 1; width: 100%; max-width: 1400px; margin: 0 auto; display: flex; flex-direction: column; gap: ${gridGapMd}; padding: ${px(resolve("dim.4"))}; }
 @media (min-width: 768px) { .sb__main { gap: ${gridGapLg}; padding: ${px(resolve("dim.6"))}; } }
 
-/* Quick links — one auto-fit track list carries every width: 1 tile per row
-   on a phone, 2–3 on a tablet, all six across on desktop. No media query. */
-/* 200px is the smallest track where a two-word label ("Course Catalog")
-   still fits on one line next to the icon square — at 180px they wrapped. */
-.sb__tiles { display: grid; gap: ${gridGapSm}; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+/* Quick links — the tile SHAPE changes with width, not just the track count:
+   under 768 it's the launcher shape from the live app (icon above a centred
+   label) so at least two fit per row on a phone; from 768 it's the reference's
+   horizontal row; from 1024 that row grows (see .sb-tile--lg values below),
+   since on desktop the quick links are the primary target and should outweigh
+   the feed detail. */
+.sb__tiles { display: grid; gap: ${gridGapSm}; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+@media (min-width: 768px) { .sb__tiles { grid-template-columns: repeat(3, 1fr); } }
+@media (min-width: 1024px) { .sb__tiles { gap: ${gridGapMd}; } }
 /* Feeds — single column until there's genuinely room for two. */
 .sb__feeds { display: grid; gap: ${gridGapSm}; grid-template-columns: 1fr; align-items: start; }
-@media (min-width: 1024px) { .sb__feeds { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1024px) { .sb__feeds { gap: ${gridGapMd}; grid-template-columns: repeat(2, 1fr); } }
 
 /* The tinted icon square: Attachment's "icon in a soft square" pattern with
    a tag.* tint instead of a raised white square — decorative hue, no status
@@ -242,25 +258,38 @@ body { margin: 0; background: ${cv("surface.dim")}; font-family: ${cv("family.sa
 .sb-ibox { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; border-radius: ${cardRadius}; }
 .sb-ibox--lg { width: ${px(resolve("dim.10"))}; height: ${px(resolve("dim.10"))}; }
 .sb-ibox--lg svg { width: ${px(resolve("dim.6"))}; height: ${px(resolve("dim.6"))}; }
-.sb-ibox--sm { width: ${px(resolve("dim.8"))}; height: ${px(resolve("dim.8"))}; }
-.sb-ibox--sm svg { width: ${px(resolve("dim.5"))}; height: ${px(resolve("dim.5"))}; }
+.sb-ibox--sm { width: ${px(resolve("dim.7"))}; height: ${px(resolve("dim.7"))}; }
+.sb-ibox--sm svg { width: ${px(resolve("dim.4"))}; height: ${px(resolve("dim.4"))}; }
 ${hueVars}
 
 /* A tile is Card's interactive variant on a real <button> — its own
-   hover/pressed/focus tokens, verbatim. Padding is dim.3, one step below
-   Card's own fixed dim.4: at 16px the pill stood ~72px tall against the
-   reference's compact ~64px row, and quieter/smaller has won every round. */
-.sb-tile { display: flex; align-items: center; gap: ${gridGapSm}; width: 100%; padding: ${px(resolve("dim.3"))}; background: ${cv(cardBg)}; border: 1px solid ${cv(cardBorder)}; border-radius: ${cardRadius}; cursor: pointer; text-align: left; font-family: inherit; }
+   hover/pressed/focus tokens, verbatim. Mobile-first: the vertical launcher
+   shape, centred. */
+.sb-tile { display: flex; flex-direction: column; align-items: center; text-align: center; gap: ${px(resolve("dim.2"))}; width: 100%; padding: ${cardPadding}; background: ${cv(cardBg)}; border: 1px solid ${cv(cardBorder)}; border-radius: ${cardRadius}; cursor: pointer; font-family: inherit; }
 .sb-tile:hover { border-color: ${cv(cardIx.hoverBorder)}; }
 .sb-tile:active { background: ${cv(cardIx.pressedBg)}; border-color: ${cv(cardIx.pressedBorder)}; }
 .sb-tile:focus-visible { outline: ${cardIx.ringWidth} solid ${cv(cardIx.ringColor)}; outline-offset: ${cardIx.ringOffset}; }
 .sb-tile__label { color: ${cv(cardTitleColor)}; ${typoCss(cardTitleType)} }
+/* From 768: the reference's horizontal row. */
+@media (min-width: 768px) {
+  .sb-tile { flex-direction: row; align-items: center; text-align: left; gap: ${gridGapSm}; padding: ${px(resolve("dim.3"))}; }
+}
+/* From 1024: bigger — a 48px icon square, a 16px label and Card's own dim.4
+   padding, so the quick links out-weigh the (now quieter) feed rows. */
+@media (min-width: 1024px) {
+  .sb-tile { gap: ${cardPadding}; padding: ${cardPadding} ${px(resolve("dim.5"))}; }
+  .sb-tile .sb-ibox--lg { width: ${px(resolve("dim.12"))}; height: ${px(resolve("dim.12"))}; }
+  .sb-tile .sb-ibox--lg svg { width: ${px(resolve("dim.7"))}; height: ${px(resolve("dim.7"))}; }
+  .sb-tile__label { ${typoCss(tHeadingMd)} }
+}
 
 /* Feed cards — Card with a real header band. Header/body are separate
    full-width bands with their own padding so the divider spans edge to edge
-   (the row list below it is full-bleed, an inset divider would misalign). */
+   (the row list below it is full-bleed, an inset divider would misalign).
+   Every band uses dim.3, one step under Card's dim.4: a feed is the same kind
+   of card as a tile, just carrying more detail — it shouldn't outweigh it. */
 .card { background: ${cv(cardBg)}; border: 1px solid ${cv(cardBorder)}; border-radius: ${cardRadius}; overflow: hidden; }
-.card__header { display: flex; align-items: center; gap: ${gridGapSm}; padding: ${cardPadding}; border-bottom: 1px solid ${cv(cardDivider)}; }
+.card__header { display: flex; align-items: center; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.3"))}; border-bottom: 1px solid ${cv(cardDivider)}; }
 .card__title { flex: 1; min-width: 0; margin: 0; color: ${cv(cardTitleColor)}; ${typoCss(cardTitleType)} }
 
 /* In-card action links (View All / Read Article) — link-sm's type + the
@@ -268,42 +297,45 @@ ${hueVars}
    $extensions decoration reads too heavy for a quiet card affordance. */
 .sb-link { display: inline-flex; align-items: center; gap: ${px(resolve("dim.1"))}; flex-shrink: 0; background: none; border: none; padding: 0; cursor: pointer; font-family: inherit; color: ${cv("text.primary")}; ${typoCss(tLinkSm)} text-decoration: none; border-radius: ${px(resolve("radius.xs"))}; }
 .sb-link:hover { text-decoration: ${linkSmDecoration}; }
-.sb-link:focus-visible { outline: ${btnGhost.ringWidth} solid ${cv(btnGhost.ringColor)}; outline-offset: ${btnGhost.ringOffset}; }
-.sb-link svg { width: ${px(resolve("dim.4"))}; height: ${px(resolve("dim.4"))}; color: ${cv("icon.primary")}; }
+.sb-link:focus-visible { outline: ${btnSecondary.ringWidth} solid ${cv(btnSecondary.ringColor)}; outline-offset: ${btnSecondary.ringOffset}; }
+.sb-link svg { width: ${px(resolve("dim.3_5"))}; height: ${px(resolve("dim.3_5"))}; color: ${cv("icon.primary")}; }
 
 /* Rows are the whole interactive element (a real <a>), never a link nested
    in a clickable div — Attachment's done-shape resolution, reused. */
 /* flex-start, not the default stretch: when a long time range wraps to two
    lines the date chip must keep its own height instead of growing into a tall
    gray block (caught at 375px). */
-.sb-row { display: flex; align-items: flex-start; gap: ${gridGapSm}; padding: ${cardPadding}; border-bottom: 1px solid ${cv(cardDivider)}; text-decoration: none; }
+.sb-row { display: flex; align-items: flex-start; gap: ${px(resolve("dim.2_5"))}; padding: ${px(resolve("dim.3"))}; border-bottom: 1px solid ${cv(cardDivider)}; text-decoration: none; }
 .sb-row:last-child { border-bottom: none; }
 .sb-row:hover { background: ${cv("fill.neutralHover")}; }
 .sb-row:active { background: ${cv("fill.neutralActive")}; }
-.sb-row:focus-visible { outline: ${btnGhost.ringWidth} solid ${cv(btnGhost.ringColor)}; outline-offset: calc(-1 * ${btnGhost.ringWidth}); }
-.sb-row__stack { display: flex; flex-direction: column; gap: ${px(resolve("dim.1"))}; min-width: 0; }
+.sb-row:focus-visible { outline: ${btnSecondary.ringWidth} solid ${cv(btnSecondary.ringColor)}; outline-offset: calc(-1 * ${btnSecondary.ringWidth}); }
+.sb-row__stack { display: flex; flex-direction: column; gap: ${px(resolve("dim.0_5"))}; min-width: 0; }
 
 /* Date chip — bg.neutral (Badge's neutral tint / EmptyState's own pill fill),
    not a second surface layer. */
-.sb-date { flex-shrink: 0; width: ${px(resolve("dim.12"))}; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: ${px(resolve("dim.1_5"))} 0; border-radius: ${cardRadius}; background: ${cv("bg.neutral")}; }
-.sb-date__month { color: ${cv("text.secondary")}; ${typoCss(tLabelSm)} text-transform: ${labelSmTransform}; letter-spacing: ${tLabelSm.letterSpacing}; }
-.sb-date__day { color: ${cv("text.default")}; ${typoCss(tHeadingLg)} }
+.sb-date { flex-shrink: 0; width: ${px(resolve("dim.10"))}; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: ${px(resolve("dim.1"))} 0; border-radius: ${px(resolve("radius.sm"))}; background: ${cv("bg.neutral")}; }
+.sb-date__month { color: ${cv("text.secondary")}; ${typoCss(tBodyXs)} font-weight: ${tLabelSm.fontWeight}; text-transform: ${labelSmTransform}; letter-spacing: ${tLabelSm.letterSpacing}; }
+.sb-date__day { color: ${cv("text.default")}; ${typoCss(tHeadingBase)} }
 .sb-event__title { color: ${cv("text.default")}; ${typoCss(tHeadingBase)} }
-.sb-meta { display: flex; align-items: flex-start; gap: ${px(resolve("dim.1_5"))}; color: ${cv("text.secondary")}; ${typoCss(tBodySm)} }
-.sb-meta svg { width: ${px(resolve("dim.4"))}; height: ${px(resolve("dim.4"))}; flex-shrink: 0; color: ${cv("icon.muted")}; }
+.sb-meta { display: flex; align-items: flex-start; gap: ${px(resolve("dim.1"))}; color: ${cv("text.secondary")}; ${typoCss(tBodySm)} }
+.sb-meta svg { width: ${px(resolve("dim.3_5"))}; height: ${px(resolve("dim.3_5"))}; flex-shrink: 0; color: ${cv("icon.muted")}; }
 
-.sb-article { display: flex; flex-direction: column; align-items: flex-start; gap: ${px(resolve("dim.2"))}; padding: ${cardPadding}; border-bottom: 1px solid ${cv(cardDivider)}; }
+.sb-article { display: flex; flex-direction: column; align-items: flex-start; gap: ${px(resolve("dim.1"))}; padding: ${px(resolve("dim.3"))}; border-bottom: 1px solid ${cv(cardDivider)}; }
 .sb-article:last-child { border-bottom: none; }
-.sb-article__title { margin: 0; color: ${cv("text.default")}; ${typoCss(tHeadingMd)} }
-.sb-article__excerpt { margin: 0; color: ${cv("text.secondary")}; ${typoCss(tBodyBase)} display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.sb-article__title { margin: 0; color: ${cv("text.default")}; ${typoCss(tHeadingBase)} }
+.sb-article__excerpt { margin: 0; color: ${cv("text.secondary")}; ${typoCss(tBodySm)} display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.sb-article .sb-link { margin-top: ${px(resolve("dim.0_5"))}; }
 
-/* Button ghost, icon-only, base — the settings action, resolved from button.tokens.json */
-.btn { display: inline-flex; align-items: center; justify-content: center; border: none; background: transparent; cursor: pointer; font-family: inherit; border-radius: ${btnRadius}; }
-.btn--ghost.btn--base.btn--icon-only { width: ${btnGhostBase.height}; height: ${btnGhostBase.height}; padding: 0; }
-.btn--ghost .btn__icon { width: ${btnGhostBase.iconSize}; height: ${btnGhostBase.iconSize}; color: ${cv(btnGhost.icon)}; }
-.btn--ghost:hover { background: ${cv(btnGhost.hoverFill)}; }
-.btn--ghost:active { background: ${cv(btnGhost.pressedFill)}; }
-.btn--ghost:focus-visible { outline: ${btnGhost.ringWidth} solid ${cv(btnGhost.ringColor)}; outline-offset: ${btnGhost.ringOffset}; }
+/* Button secondary, icon-only, base — the settings action, resolved from
+   button.tokens.json (fill.neutral at rest, so it reads as a control) */
+.btn { display: inline-flex; align-items: center; justify-content: center; border: none; cursor: pointer; font-family: inherit; border-radius: ${btnRadius}; }
+.btn--secondary { background: ${cv(btnSecondary.fill)}; }
+.btn--secondary.btn--base.btn--icon-only { width: ${btnBase.height}; height: ${btnBase.height}; padding: 0; }
+.btn--secondary .btn__icon { width: ${btnBase.iconSize}; height: ${btnBase.iconSize}; color: ${cv(btnSecondary.icon)}; }
+.btn--secondary:hover { background: ${cv(btnSecondary.hoverFill)}; }
+.btn--secondary:active { background: ${cv(btnSecondary.pressedFill)}; }
+.btn--secondary:focus-visible { outline: ${btnSecondary.ringWidth} solid ${cv(btnSecondary.ringColor)}; outline-offset: ${btnSecondary.ringOffset}; }
 
 .empty-state { box-sizing: border-box; width: 100%; display: flex; align-items: center; justify-content: center; padding: ${es.padding}; font-family: ${cv("family.sans")}; }
 .empty-state__text { background: ${cv(es.pillBg)}; color: ${cv(es.textColor)}; border-radius: ${es.pillRadius}; padding: ${es.pillPaddingY} ${es.pillPaddingX}; ${typoCss(es.textType)} text-align: center; }`;
@@ -353,7 +385,7 @@ ${appCss}
 <div class="sb">
   <header class="sb__topbar">
     <span class="sb__logo">${logoSvg}</span>
-    <button class="btn btn--ghost btn--base btn--icon-only" type="button" aria-label="Settings">${iconOf("settings", "btn__icon")}</button>
+    <button class="btn btn--secondary btn--base btn--icon-only" type="button" aria-label="Settings">${iconOf("settings", "btn__icon")}</button>
   </header>
   <main class="sb__main">
     <nav class="sb__tiles" aria-label="Quick links">
