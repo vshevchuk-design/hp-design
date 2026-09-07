@@ -3,12 +3,17 @@
 //     tools/lib/design-viewer.mjs: device tabs + Versions dropdown + iframe).
 //   docs/designs/springboard-app.html  — the prototype itself.
 //
-// Deliberately a SCAFFOLD for now: the page, its nav entry and its version
-// list exist, the app file is an empty shell carrying nothing but an
-// EmptyState (resolved from empty-state.tokens.json). Springboard's own
-// structure isn't defined yet — reference screens are still to come, and the
-// no-speculative-builds rule applies to prototype pages as much as to
-// components: inventing a layout here would have to be thrown away.
+// The live Springboard (the student portal's home screen: a topbar + a grid of
+// quick-link tiles + ICS/RSS/social feed cards) rebuilt on hp-design — every
+// recipe resolved from its own token file, nothing retyped. Card layout follows
+// the refreshed reference: quick links are compact horizontal tiles (tinted
+// icon square + label) instead of big centered squares, and each feed is a Card
+// with a real header (icon + title + View All) over divided content rows.
+// No new components were needed: Card (+ its interactive state tokens), Button
+// ghost icon-only, EmptyState, Grid's gap scale, and the `tag.*` decorative
+// hues for the icon squares cover all of it. The only bespoke CSS is the `sb-*`
+// composition layer (shell/topbar/grids/rows), same rule as the MC prototypes'
+// `mc-*` layer.
 // Run: node tools/build-design-springboard.mjs
 import fs from "node:fs";
 import path from "node:path";
@@ -32,7 +37,10 @@ const registry = {
   "text-style": load("tokens/primitives/text-styles.tokens.json")["text-style"],
   ...load("tokens/semantic/color.tokens.json"),
 };
+const card = load("tokens/components/card.tokens.json").component.card;
+const button = load("tokens/components/button.tokens.json").component.button;
 const emptyState = load("tokens/components/empty-state.tokens.json").component.emptyState;
+const grid = load("tokens/components/grid.tokens.json").component.grid;
 
 function get(ref) {
   const parts = ref.replace(/[{}]/g, "").split(".");
@@ -58,29 +66,277 @@ const resolve = (ref) => resolveToken(get(ref));
 const px = (d) => `${d.value}${d.unit}`;
 const cv = (tokenPath) => `var(${cssVarName(tokenPath)})`;
 const refPath = (ref) => ref.replace(/[{}]/g, "");
+const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 const typoCss = (t) => `font-weight: ${t.fontWeight}; font-size: ${px(t.fontSize)}; line-height: ${t.lineHeight};`;
+// text-style.*'s textTransform/textDecoration live in $extensions, which
+// resolveToken() silently drops (documented trap, bitten twice) — read them
+// off the referenced node directly.
+const textExt = (styleRef) => (get(styleRef).$extensions || {})["hp.design/text"] || {};
 
-// ---- EmptyState — the only component this shell needs so far ----
-const esTextType = resolveToken(emptyState.text);
-const esTextColor = refPath(emptyState.textColor.$value);
-const esPillBg = refPath(emptyState.pill.bg.$value);
-const esPillRadius = px(resolve(emptyState.pill.radius.$value));
-const esPillPaddingX = px(resolve(emptyState.pill.paddingX.$value));
-const esPillPaddingY = px(resolve(emptyState.pill.paddingY.$value));
-const esPadding = px(resolve(emptyState.padding.$value));
+// ---- Card — the feed cards AND (its interactive state tokens) the tiles ----
+const cardRadius = px(resolve(card.radius.$value));
+const cardPadding = px(resolve(card.padding.$value));
+const cardGap = px(resolve(card.gap.$value));
+const cardTitleType = resolveToken(card.title);
+const cardTitleColor = refPath(card.titleColor.$value);
+const cardBg = refPath(card.bg.$value);
+const cardBorder = refPath(card.border.$value);
+const cardDivider = refPath(card.divider.$value);
+const cardIx = {
+  hoverBorder: refPath(card.interactive.state.hover.border.$value),
+  pressedBg: refPath(card.interactive.state.pressed.bg.$value),
+  pressedBorder: refPath(card.interactive.state.pressed.border.$value),
+  ringColor: refPath(card.interactive.state.focused.ringColor.$value),
+  ringWidth: px(resolve(card.interactive.state.focused.ringWidth.$value)),
+  ringOffset: px(resolve(card.interactive.state.focused.ringOffset.$value)),
+};
 
-const colorPaths = ["surface.page", "text.secondary", "bg.neutral"];
+// ---- Button ghost, icon-only, base (40×40) — the topbar settings action ----
+const btnRadius = px(resolve(button.ghost.radius.$value));
+const btnGhostBase = {
+  height: px(resolve(button.ghost.size.base.height.$value)),
+  iconSize: px(resolve(button.ghost.size.base.iconSize.$value)),
+};
+const btnGhost = {
+  icon: refPath(button.ghost.state.default.icon.$value),
+  hoverFill: refPath(button.ghost.state.hover.fill.$value),
+  pressedFill: refPath(button.ghost.state.pressed.fill.$value),
+  ringColor: refPath(button.ghost.state.focused.ringColor.$value),
+  ringWidth: px(resolve(button.ghost.state.focused.ringWidth.$value)),
+  ringOffset: px(resolve(button.ghost.state.focused.ringOffset.$value)),
+};
+
+// ---- EmptyState — the social feed has no posts ----
+const es = {
+  textType: resolveToken(emptyState.text),
+  textColor: refPath(emptyState.textColor.$value),
+  pillBg: refPath(emptyState.pill.bg.$value),
+  pillRadius: px(resolve(emptyState.pill.radius.$value)),
+  pillPaddingX: px(resolve(emptyState.pill.paddingX.$value)),
+  pillPaddingY: px(resolve(emptyState.pill.paddingY.$value)),
+  padding: px(resolve(emptyState.padding.$value)),
+};
+
+// ---- Grid — both grids use the component's own gap scale, nothing invented.
+// Column count stays untokenized per Grid's own "structural, not tokenized"
+// rule: the tiles are one auto-fit track list (no breakpoint literal at all),
+// the feed columns need a single 1024px literal. ----
+const gridGapSm = px(resolve(grid.gap.sm.$value));
+const gridGapMd = px(resolve(grid.gap.md.$value));
+const gridGapLg = px(resolve(grid.gap.lg.$value));
+
+// ---- typography used by the composition layer ----
+const tHeadingBase = resolveToken(get("text-style.heading-base"));
+const tHeadingMd = resolveToken(get("text-style.heading-md"));
+const tHeadingLg = resolveToken(get("text-style.heading-lg"));
+const tBodyBase = resolveToken(get("text-style.body-base"));
+const tBodySm = resolveToken(get("text-style.body-sm"));
+const tLabelSm = resolveToken(get("text-style.label-sm"));
+const labelSmTransform = textExt("text-style.label-sm").textTransform || "none";
+const tLinkSm = resolveToken(get("text-style.link-sm"));
+const linkSmDecoration = textExt("text-style.link-sm").textDecoration || "none";
+
+// ---- content ----
+// Quick links — the live five plus Explore Degrees (requested). Hue is a
+// `tag.*` decorative pick, NOT a status role: these tiles mean nothing
+// stateful, which is exactly the case Badge's own role-vs-color split
+// reserved the tag palette for. Violet is skipped on purpose — it's the
+// `ai` role's hue and would read as "AI feature" here.
+const TILES = [
+  { label: "SIS Login", icon: "account_balance", hue: "blue" },
+  { label: "Course Catalog", icon: "menu_book", hue: "green" },
+  { label: "Browse Classes", icon: "explore", hue: "teal" },
+  { label: "Class Search", icon: "search", hue: "blue" },
+  { label: "Explore Degrees", icon: "school", hue: "magenta" },
+  { label: "Campus Map", icon: "map", hue: "amber" },
+];
+
+const EVENTS = [
+  {
+    month: "Sep", day: "08", title: "We the People",
+    when: "09/08/26, 12:00 AM – 03/07/27, 12:00 AM",
+    where: "Library (William E. Morgan Library)",
+  },
+  {
+    month: "Sep", day: "09", title: "Virtuoso Series Concert",
+    when: "09/09/26, 7:30 PM – 9:30 PM",
+    where: "Organ Recital Hall",
+  },
+  {
+    month: "Sep", day: "12", title: "Fall Career Fair",
+    when: "09/12/26, 10:00 AM – 2:00 PM",
+    where: "Student Center Ballroom",
+  },
+];
+
+const ARTICLES = [
+  {
+    title: "What It Takes to Show Up and What Comes Back With You",
+    excerpt:
+      "Global scholarship winners share what it takes to attend Alliance and what they bring back. Written and interviewed by Casey Hickman, HEUG Marketing.",
+  },
+  {
+    title: "They Almost Didn't Apply. Now They're Presenting, Leading, and Building Community",
+    excerpt:
+      "Five U.S. scholarship winners. Five different journeys. One reason it all mattered — the people they met along the way.",
+  },
+];
+
+const colorPaths = [
+  "surface.default", "surface.dim", "border.default", "border.focus",
+  "text.default", "text.secondary", "text.primary",
+  "icon.secondary", "icon.muted", "icon.primary",
+  "fill.primary", "fill.neutralHover", "fill.neutralActive",
+  "bg.primary", "bg.neutral",
+  ...[...new Set([...TILES.map((t) => t.hue), "orange", "amber", "red"])].flatMap((h) => [
+    `tag.${h}.tint.bg`,
+    `tag.${h}.tint.text`,
+  ]),
+];
 const fontSans = resolve("family.sans");
 const rootVars = renderRootVars([...colorPaths.map((p) => [p, resolve(p)]), ["family.sans", `'${fontSans}', sans-serif`]]);
+
+// ---- icons ----
+const iconOf = (name, cls) =>
+  fs.readFileSync(path.join(root, `assets/icons/material-filled/${name}.svg`), "utf8").replace("<svg ", `<svg class="${cls}" `);
+// The wordmark's own #090D19 text fill becomes currentColor so it follows
+// text.default — same swap nav.mjs does; the blue mark stays brand-fixed.
+const logoSvg = fs
+  .readFileSync(path.join(root, "assets/highpoint-logo.svg"), "utf8")
+  .replace(/fill="#090D19"/g, 'fill="currentColor"');
+
+const hueVars = [...new Set([...TILES.map((t) => t.hue), "orange", "amber", "red"])]
+  .map((h) => `.sb-ibox--${h} { background: ${cv(`tag.${h}.tint.bg`)}; color: ${cv(`tag.${h}.tint.text`)}; }`)
+  .join("\n");
 
 const appCss = `${rootVars}
 
 * { box-sizing: border-box; }
 html, body { height: 100%; }
-body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.sans")}; }
+body { margin: 0; background: ${cv("surface.dim")}; font-family: ${cv("family.sans")}; }
 
-.empty-state { box-sizing: border-box; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; padding: ${esPadding}; font-family: ${cv("family.sans")}; }
-.empty-state__text { background: ${cv(esPillBg)}; color: ${cv(esTextColor)}; border-radius: ${esPillRadius}; padding: ${esPillPaddingY} ${esPillPaddingX}; ${typoCss(esTextType)} text-align: center; }`;
+/* ---- sb-* composition layer: shell, topbar, the two grids, feed rows.
+   Everything colour/type/radius/spacing comes from a token; only the grid
+   track lists and the one 1024px feed breakpoint are structural literals
+   (Grid's own "column count isn't tokenized" rule). ---- */
+.sb { min-height: 100%; display: flex; flex-direction: column; }
+.sb__topbar { position: sticky; top: 0; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: ${gridGapSm}; padding: ${px(resolve("dim.2"))} ${px(resolve("dim.4"))}; background: ${cv("surface.default")}; border-bottom: 1px solid ${cv("border.default")}; }
+.sb__logo { display: flex; align-items: center; color: ${cv("text.default")}; }
+.sb__logo svg { display: block; height: ${px(resolve("dim.6"))}; width: auto; }
+.sb__main { flex: 1; display: flex; flex-direction: column; gap: ${gridGapMd}; padding: ${px(resolve("dim.4"))}; }
+@media (min-width: 768px) { .sb__main { gap: ${gridGapLg}; padding: ${px(resolve("dim.6"))}; } }
+
+/* Quick links — one auto-fit track list carries every width: 1 tile per row
+   on a phone, 2–3 on a tablet, all six across on desktop. No media query. */
+/* 200px is the smallest track where a two-word label ("Course Catalog")
+   still fits on one line next to the icon square — at 180px they wrapped. */
+.sb__tiles { display: grid; gap: ${gridGapSm}; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+/* Feeds — single column until there's genuinely room for two. */
+.sb__feeds { display: grid; gap: ${gridGapSm}; grid-template-columns: 1fr; align-items: start; }
+@media (min-width: 1024px) { .sb__feeds { grid-template-columns: repeat(2, 1fr); } }
+
+/* The tinted icon square: Attachment's "icon in a soft square" pattern with
+   a tag.* tint instead of a raised white square — decorative hue, no status
+   meaning (Badge's role-vs-color split). Colour is set explicitly per hue on
+   BOTH background and icon; never inherited through currentColor. */
+.sb-ibox { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; border-radius: ${cardRadius}; }
+.sb-ibox--lg { width: ${px(resolve("dim.10"))}; height: ${px(resolve("dim.10"))}; }
+.sb-ibox--lg svg { width: ${px(resolve("dim.6"))}; height: ${px(resolve("dim.6"))}; }
+.sb-ibox--sm { width: ${px(resolve("dim.8"))}; height: ${px(resolve("dim.8"))}; }
+.sb-ibox--sm svg { width: ${px(resolve("dim.5"))}; height: ${px(resolve("dim.5"))}; }
+${hueVars}
+
+/* A tile is Card's interactive variant on a real <button> — its own
+   hover/pressed/focus tokens, verbatim. Padding is dim.3, one step below
+   Card's own fixed dim.4: at 16px the pill stood ~72px tall against the
+   reference's compact ~64px row, and quieter/smaller has won every round. */
+.sb-tile { display: flex; align-items: center; gap: ${gridGapSm}; width: 100%; padding: ${px(resolve("dim.3"))}; background: ${cv(cardBg)}; border: 1px solid ${cv(cardBorder)}; border-radius: ${cardRadius}; cursor: pointer; text-align: left; font-family: inherit; }
+.sb-tile:hover { border-color: ${cv(cardIx.hoverBorder)}; }
+.sb-tile:active { background: ${cv(cardIx.pressedBg)}; border-color: ${cv(cardIx.pressedBorder)}; }
+.sb-tile:focus-visible { outline: ${cardIx.ringWidth} solid ${cv(cardIx.ringColor)}; outline-offset: ${cardIx.ringOffset}; }
+.sb-tile__label { color: ${cv(cardTitleColor)}; ${typoCss(cardTitleType)} }
+
+/* Feed cards — Card with a real header band. Header/body are separate
+   full-width bands with their own padding so the divider spans edge to edge
+   (the row list below it is full-bleed, an inset divider would misalign). */
+.card { background: ${cv(cardBg)}; border: 1px solid ${cv(cardBorder)}; border-radius: ${cardRadius}; overflow: hidden; }
+.card__header { display: flex; align-items: center; gap: ${gridGapSm}; padding: ${cardPadding}; border-bottom: 1px solid ${cv(cardDivider)}; }
+.card__title { flex: 1; min-width: 0; margin: 0; color: ${cv(cardTitleColor)}; ${typoCss(cardTitleType)} }
+
+/* In-card action links (View All / Read Article) — link-sm's type + the
+   text.primary role. Underline is hover-only: text-style.link-sm's own
+   $extensions decoration reads too heavy for a quiet card affordance. */
+.sb-link { display: inline-flex; align-items: center; gap: ${px(resolve("dim.1"))}; flex-shrink: 0; background: none; border: none; padding: 0; cursor: pointer; font-family: inherit; color: ${cv("text.primary")}; ${typoCss(tLinkSm)} text-decoration: none; border-radius: ${px(resolve("radius.xs"))}; }
+.sb-link:hover { text-decoration: ${linkSmDecoration}; }
+.sb-link:focus-visible { outline: ${btnGhost.ringWidth} solid ${cv(btnGhost.ringColor)}; outline-offset: ${btnGhost.ringOffset}; }
+.sb-link svg { width: ${px(resolve("dim.4"))}; height: ${px(resolve("dim.4"))}; color: ${cv("icon.primary")}; }
+
+/* Rows are the whole interactive element (a real <a>), never a link nested
+   in a clickable div — Attachment's done-shape resolution, reused. */
+/* flex-start, not the default stretch: when a long time range wraps to two
+   lines the date chip must keep its own height instead of growing into a tall
+   gray block (caught at 375px). */
+.sb-row { display: flex; align-items: flex-start; gap: ${gridGapSm}; padding: ${cardPadding}; border-bottom: 1px solid ${cv(cardDivider)}; text-decoration: none; }
+.sb-row:last-child { border-bottom: none; }
+.sb-row:hover { background: ${cv("fill.neutralHover")}; }
+.sb-row:active { background: ${cv("fill.neutralActive")}; }
+.sb-row:focus-visible { outline: ${btnGhost.ringWidth} solid ${cv(btnGhost.ringColor)}; outline-offset: calc(-1 * ${btnGhost.ringWidth}); }
+.sb-row__stack { display: flex; flex-direction: column; gap: ${px(resolve("dim.1"))}; min-width: 0; }
+
+/* Date chip — bg.neutral (Badge's neutral tint / EmptyState's own pill fill),
+   not a second surface layer. */
+.sb-date { flex-shrink: 0; width: ${px(resolve("dim.12"))}; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: ${px(resolve("dim.1_5"))} 0; border-radius: ${cardRadius}; background: ${cv("bg.neutral")}; }
+.sb-date__month { color: ${cv("text.secondary")}; ${typoCss(tLabelSm)} text-transform: ${labelSmTransform}; letter-spacing: ${tLabelSm.letterSpacing}; }
+.sb-date__day { color: ${cv("text.default")}; ${typoCss(tHeadingLg)} }
+.sb-event__title { color: ${cv("text.default")}; ${typoCss(tHeadingBase)} }
+.sb-meta { display: flex; align-items: flex-start; gap: ${px(resolve("dim.1_5"))}; color: ${cv("text.secondary")}; ${typoCss(tBodySm)} }
+.sb-meta svg { width: ${px(resolve("dim.4"))}; height: ${px(resolve("dim.4"))}; flex-shrink: 0; color: ${cv("icon.muted")}; }
+
+.sb-article { display: flex; flex-direction: column; align-items: flex-start; gap: ${px(resolve("dim.2"))}; padding: ${cardPadding}; border-bottom: 1px solid ${cv(cardDivider)}; }
+.sb-article:last-child { border-bottom: none; }
+.sb-article__title { margin: 0; color: ${cv("text.default")}; ${typoCss(tHeadingMd)} }
+.sb-article__excerpt { margin: 0; color: ${cv("text.secondary")}; ${typoCss(tBodyBase)} display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+/* Button ghost, icon-only, base — the settings action, resolved from button.tokens.json */
+.btn { display: inline-flex; align-items: center; justify-content: center; border: none; background: transparent; cursor: pointer; font-family: inherit; border-radius: ${btnRadius}; }
+.btn--ghost.btn--base.btn--icon-only { width: ${btnGhostBase.height}; height: ${btnGhostBase.height}; padding: 0; }
+.btn--ghost .btn__icon { width: ${btnGhostBase.iconSize}; height: ${btnGhostBase.iconSize}; color: ${cv(btnGhost.icon)}; }
+.btn--ghost:hover { background: ${cv(btnGhost.hoverFill)}; }
+.btn--ghost:active { background: ${cv(btnGhost.pressedFill)}; }
+.btn--ghost:focus-visible { outline: ${btnGhost.ringWidth} solid ${cv(btnGhost.ringColor)}; outline-offset: ${btnGhost.ringOffset}; }
+
+.empty-state { box-sizing: border-box; width: 100%; display: flex; align-items: center; justify-content: center; padding: ${es.padding}; font-family: ${cv("family.sans")}; }
+.empty-state__text { background: ${cv(es.pillBg)}; color: ${cv(es.textColor)}; border-radius: ${es.pillRadius}; padding: ${es.pillPaddingY} ${es.pillPaddingX}; ${typoCss(es.textType)} text-align: center; }`;
+
+const iconClock = iconOf("schedule", "");
+const iconPin = iconOf("location_on", "");
+const iconLaunch = iconOf("launch", "");
+
+const tileMarkup = (t) => `        <button class="sb-tile" type="button">
+          <span class="sb-ibox sb-ibox--lg sb-ibox--${t.hue}">${iconOf(t.icon, "")}</span>
+          <span class="sb-tile__label">${esc(t.label)}</span>
+        </button>`;
+
+const feedHeader = (icon, hue, title, viewAll) => `        <div class="card__header">
+          <span class="sb-ibox sb-ibox--sm sb-ibox--${hue}">${iconOf(icon, "")}</span>
+          <h2 class="card__title">${esc(title)}</h2>
+          ${viewAll ? `<button class="sb-link" type="button">View All</button>` : ""}
+        </div>`;
+
+const eventMarkup = (e) => `        <a class="sb-row" href="#">
+          <span class="sb-date"><span class="sb-date__month">${esc(e.month)}</span><span class="sb-date__day">${esc(e.day)}</span></span>
+          <span class="sb-row__stack">
+            <span class="sb-event__title">${esc(e.title)}</span>
+            <span class="sb-meta">${iconClock}<span>${esc(e.when)}</span></span>
+            <span class="sb-meta">${iconPin}<span>${esc(e.where)}</span></span>
+          </span>
+        </a>`;
+
+const articleMarkup = (a) => `        <article class="sb-article">
+          <h3 class="sb-article__title">${esc(a.title)}</h3>
+          <p class="sb-article__excerpt">${esc(a.excerpt)}</p>
+          <a class="sb-link" href="#">Read Article${iconLaunch}</a>
+        </article>`;
 
 const appHtml = `<!doctype html>
 <html lang="en">
@@ -94,7 +350,31 @@ ${appCss}
 </style>
 </head>
 <body>
-<div class="empty-state"><span class="empty-state__text">Springboard — layout not designed yet</span></div>
+<div class="sb">
+  <header class="sb__topbar">
+    <span class="sb__logo">${logoSvg}</span>
+    <button class="btn btn--ghost btn--base btn--icon-only" type="button" aria-label="Settings">${iconOf("settings", "btn__icon")}</button>
+  </header>
+  <main class="sb__main">
+    <nav class="sb__tiles" aria-label="Quick links">
+${TILES.map(tileMarkup).join("\n")}
+    </nav>
+    <div class="sb__feeds">
+      <section class="card" aria-label="Demo ICS Feed">
+${feedHeader("today", "orange", "Demo ICS Feed", true)}
+${EVENTS.map(eventMarkup).join("\n")}
+      </section>
+      <section class="card" aria-label="Demo RSS Feed">
+${feedHeader("rss_feed", "amber", "Demo RSS Feed", true)}
+${ARTICLES.map(articleMarkup).join("\n")}
+      </section>
+      <section class="card" aria-label="Demo Twitter Feed">
+${feedHeader("campaign", "red", "Demo Twitter Feed", false)}
+        <div class="empty-state"><span class="empty-state__text">No posts to show</span></div>
+      </section>
+    </div>
+  </main>
+</div>
 </body>
 </html>
 `;
@@ -103,7 +383,7 @@ const viewerHtml = renderDesignViewer({
   activeKey: "springboard",
   title: "Springboard",
   heading: "Springboard",
-  sub: "Scaffold only. The page, its nav entry and its version list are in place; the prototype itself is empty until the reference screens land — inventing a layout now would just be thrown away. Everything built here will follow the same discipline as the Message Center prototypes: strictly hp-design components, every recipe resolved from its own token file, with the <code>mc-</code>-style composition layer as the only bespoke CSS.",
+  sub: "The student portal's home screen, rebuilt on hp-design — every recipe resolved from its own token file, no new components needed. Quick links are compact tiles (a tinted <code>tag.*</code> icon square + label) on Card's interactive recipe, so each one carries Card's own hover / pressed / focus states; the feeds are Cards with a real header band (icon + title + View All) over full-bleed rows — ICS events with a date chip, time and location, RSS articles with a clamped excerpt and a Read Article link, and the social feed on EmptyState. One auto-fit track list carries the tiles from one-per-row on a phone to all six across on desktop; the feeds go two-column at 1024. <strong>Explore Degrees</strong> is new (not in the live app): <code>school</code> on the magenta tag hue — violet was skipped on purpose, it reads as the <code>ai</code> role.",
   versions: [{ label: "v1", note: "current", file: "springboard-app.html" }],
 });
 
