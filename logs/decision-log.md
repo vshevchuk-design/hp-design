@@ -811,3 +811,28 @@ So the bbox looked centred precisely *because* the descender padded it downward,
 **Trap worth remembering:** the fix had to be applied *twice* — `docs/index.html`'s hand-maintained sidebar block carries its own inlined copy of the logo SVG, so it doesn't pick up asset changes from `renderNav` the way every generated page does. Noted in status.md next to the existing "index.html sidebar is hand-maintained" warning.
 
 Verified after the edit by re-running the same ink scan (through the element's own transform, and with a cache-busting query — the local server happily served the stale SVG on the first check, which read as "transform: null" and nearly sent me chasing a phantom), plus eyeballing the Springboard topbar and the docs sidebar. All 46 pages rebuilt.
+
+## 2026-09-07 (cont. 4) — The gray ramp goes cool (reverses the achromatic decision)
+
+User: "мене харить сірий колір дуже (він прям сірий сірий) — все таки давай уведем його в синьоватий… треба переробити примітиви сірого кольору", with a slate-toned mockup as the target. This **reverses** a recorded decision: `gray.$description` said "Truly achromatic (chroma 0) — deliberately not tinted toward blue or any other hue, so surfaces never read as accidentally brand-colored."
+
+**What made this a safe surgical change rather than a repaint:** every step already carried its own OKLCH `l/c/h` in `$extensions` — and the recorded hue was **already 254**, the brand blue's own hue, with chroma pinned at 0. So the whole edit is "raise chroma on an arc, touch nothing else":
+
+| | 25 | 50 | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900 | 950 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| C | .004 | .006 | .010 | .016 | .024 | .032 | .038 | **.040** | .038 | .034 | .030 | .026 |
+| was | #fafafa | #f5f5f5 | #e8e8e8 | #d1d1d1 | #b4b4b4 | #989898 | #808080 | #696969 | #525252 | #3d3d3d | #2b2b2b | #181818 |
+| now | #f8fafd | #f2f5f9 | #e3e8ef | #cad2dc | #aab5c4 | #8b9aac | #718297 | #596b80 | #445467 | #313e4f | #212c3a | #101924 |
+
+- **Lightness untouched at every step**, so contrast moved by at most 0.06 on white (500: 3.95 → 3.93, 600: 5.49 → 5.47) and both documented promises hold. The generator asserts them and throws rather than writing a ramp that breaks them — adding chroma at fixed OKLCH L *does* move WCAG luminance, so this had to be checked, not assumed.
+- **The chroma arc peaks mid-ramp** (like every well-known cool-gray) rather than sitting flat: flat chroma tints the pale surfaces visibly while leaving dark text looking flat. Result lands next to the reference mockup on its own terms — ref page bg ≈ `#eff1f5` vs our `gray.50` `#f2f5f9`, ref body text ≈ `#1e293b` vs our `gray.900` `#212c3a`.
+- **Hue stays 254**, so the neutral is now literally "the brand blue at a fifth of its chroma" instead of a second, unrelated cool hue. That also answers the old rationale: at c ≤ 0.04 the tint reads as *temperature*, not as brand colour.
+
+**Two artefacts the repo was missing, now added.** `color.tokens.json` forbids hand-editing its hex ("regenerate from the OKLCH source script") but that script was never committed:
+- `tools/lib/oklch.mjs` — OKLCH→sRGB + WCAG helpers, **validated against the file it's supposed to have produced**: replaying the stored `l/c/h` reproduces 96/120 hexes exactly, and all 24 misses are high-chroma blue/red/green 500–800 off by one unit in one channel (gamut-edge rounding). Zero/low-chroma steps round-trip exactly — hence safe for neutrals, explicitly unsafe to re-run over the saturated ramps.
+- The unrecorded **"ink" reference** behind every `contrast.onInk` number was recovered by least-squares fitting one luminance across all 120 stored ratios: **0.003450** (rmse 0.0030, worst deviation 0.005 — i.e. inside the stored values' own 2-decimal rounding). Pinned as `INK_LUMINANCE` so regenerated metadata stays consistent with the untouched ramps instead of drifting to a second, slightly different ink.
+- `tools/gen-gray-ramp.mjs` — writes `JSON.stringify(…, null, 2)` with no trailing newline to match the file byte-for-byte, so the diff stays confined to gray. Verified: a structural comparison against `HEAD` shows **`gray` is the only ramp that changed**.
+
+All 46 pages rebuilt; checked Springboard, the staff MC console and `colors.html` live — no literal old grays left anywhere (`grep` for `#808080`/`#696969`/`#e8e8e8`/`#f5f5f5` in the generated output returns 0).
+
+**Left alone, flagged:** the docs *chrome* (`--bg-page: #f7f7f5`, `--border: #e4e3df`) is hand-written in each builder's head template and is a **warm** gray, so docs furniture and token content are now two neutral temperatures on one page. It's not tokenized; aligning it is a 46-file chrome edit, offered to the user rather than done silently.

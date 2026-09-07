@@ -3,185 +3,185 @@
     "gray": {
       "25": {
         "$type": "color",
-        "$value": "#fafafa",
+        "$value": "#f8fafd",
         "$extensions": {
           "hp.design/oklch": {
             "l": 0.985,
-            "c": 0,
+            "c": 0.004,
             "h": 254
           },
           "hp.design/contrast": {
-            "onWhite": 1.04,
-            "onInk": 18.82
+            "onWhite": 1.05,
+            "onInk": 18.79
           }
         }
       },
       "50": {
         "$type": "color",
-        "$value": "#f5f5f5",
+        "$value": "#f2f5f9",
         "$extensions": {
           "hp.design/oklch": {
             "l": 0.97,
-            "c": 0,
+            "c": 0.006,
             "h": 254
           },
           "hp.design/contrast": {
             "onWhite": 1.09,
-            "onInk": 18.02
+            "onInk": 17.96
           }
         }
       },
       "100": {
         "$type": "color",
-        "$value": "#e8e8e8",
+        "$value": "#e3e8ef",
         "$extensions": {
           "hp.design/oklch": {
             "l": 0.93,
-            "c": 0,
+            "c": 0.01,
             "h": 254
           },
           "hp.design/contrast": {
             "onWhite": 1.23,
-            "onInk": 16.03
+            "onInk": 15.95
           }
         }
       },
       "200": {
         "$type": "color",
-        "$value": "#d1d1d1",
+        "$value": "#cad2dc",
         "$extensions": {
           "hp.design/oklch": {
             "l": 0.86,
-            "c": 0,
+            "c": 0.016,
             "h": 254
           },
           "hp.design/contrast": {
             "onWhite": 1.53,
-            "onInk": 12.86
+            "onInk": 12.88
           }
         }
       },
       "300": {
         "$type": "color",
-        "$value": "#b4b4b4",
+        "$value": "#aab5c4",
         "$extensions": {
           "hp.design/oklch": {
             "l": 0.77,
-            "c": 0,
+            "c": 0.024,
             "h": 254
           },
           "hp.design/contrast": {
-            "onWhite": 2.07,
-            "onInk": 9.47
+            "onWhite": 2.08,
+            "onInk": 9.46
           }
         }
       },
       "400": {
         "$type": "color",
-        "$value": "#989898",
+        "$value": "#8b9aac",
         "$extensions": {
           "hp.design/oklch": {
             "l": 0.68,
-            "c": 0,
+            "c": 0.032,
             "h": 254
           },
           "hp.design/contrast": {
-            "onWhite": 2.88,
-            "onInk": 6.81
+            "onWhite": 2.87,
+            "onInk": 6.84
           }
         }
       },
       "500": {
         "$type": "color",
-        "$value": "#808080",
+        "$value": "#718297",
         "$extensions": {
           "hp.design/oklch": {
             "l": 0.6,
-            "c": 0,
+            "c": 0.038,
             "h": 254
           },
           "hp.design/contrast": {
-            "onWhite": 3.95,
-            "onInk": 4.97
+            "onWhite": 3.93,
+            "onInk": 5
           }
         }
       },
       "600": {
         "$type": "color",
-        "$value": "#696969",
+        "$value": "#596b80",
         "$extensions": {
           "hp.design/oklch": {
             "l": 0.52,
-            "c": 0,
+            "c": 0.04,
             "h": 254
           },
           "hp.design/contrast": {
-            "onWhite": 5.49,
-            "onInk": 3.58
+            "onWhite": 5.47,
+            "onInk": 3.59
           }
         }
       },
       "700": {
         "$type": "color",
-        "$value": "#525252",
+        "$value": "#445467",
         "$extensions": {
           "hp.design/oklch": {
             "l": 0.44,
-            "c": 0,
+            "c": 0.038,
             "h": 254
           },
           "hp.design/contrast": {
-            "onWhite": 7.81,
-            "onInk": 2.51
+            "onWhite": 7.75,
+            "onInk": 2.53
           }
         }
       },
       "800": {
         "$type": "color",
-        "$value": "#3d3d3d",
+        "$value": "#313e4f",
         "$extensions": {
           "hp.design/oklch": {
             "l": 0.36,
-            "c": 0,
+            "c": 0.034,
             "h": 254
           },
           "hp.design/contrast": {
-            "onWhite": 10.86,
+            "onWhite": 10.87,
             "onInk": 1.81
           }
         }
       },
       "900": {
         "$type": "color",
-        "$value": "#2b2b2b",
+        "$value": "#212c3a",
         "$extensions": {
           "hp.design/oklch": {
             "l": 0.29,
-            "c": 0,
+            "c": 0.03,
             "h": 254
           },
           "hp.design/contrast": {
-            "onWhite": 14.16,
+            "onWhite": 14.13,
             "onInk": 1.39
           }
         }
       },
       "950": {
         "$type": "color",
-        "$value": "#181818",
+        "$value": "#101924",
         "$extensions": {
           "hp.design/oklch": {
             "l": 0.21,
-            "c": 0,
+            "c": 0.026,
             "h": 254
           },
           "hp.design/contrast": {
-            "onWhite": 17.76,
+            "onWhite": 17.7,
             "onInk": 1.11
           }
         }
       },
-      "$description": "Truly achromatic (chroma 0) — deliberately not tinted toward blue or any other hue, so surfaces never read as accidentally brand-colored."
+      "$description": "Cool neutral — the brand blue's own hue (254) carried at a small fraction of its chroma, peaking at 0.040 mid-ramp and tapering at both ends. Regenerate with tools/gen-gray-ramp.mjs, never by hand. This reverses the original 'truly achromatic (chroma 0), deliberately not tinted toward blue' call, on explicit user request 2026-09-07: at c=0 the neutrals read flatly, dead gray in product surfaces. Lightness was left untouched step-for-step, so every contrast guarantee the palette documents still holds (the generator asserts 500 ≥ 3:1 and 600 ≥ 4.5:1 on white before writing)."
     },
     "blue": {
       "25": {
