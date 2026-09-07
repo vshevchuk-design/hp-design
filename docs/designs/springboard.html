@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>hp-design — Staff Message Center</title>
+<title>hp-design — Springboard</title>
 <link rel="stylesheet" href="../../assets/fonts/sora/sora.css" />
 <style>
   :root {
@@ -188,11 +188,11 @@
     <details class="nav-acc" open>
       <summary>Message Center</summary>
       <a class="navlink" href="../designs/student-message-center.html">Student Message Center</a>
-      <a class="navlink active" href="../designs/staff-message-center.html">Staff Message Center</a>
+      <a class="navlink" href="../designs/staff-message-center.html">Staff Message Center</a>
     </details>
     <details class="nav-acc" open>
       <summary>Springboard</summary>
-      <a class="navlink" href="../designs/springboard.html">Springboard</a>
+      <a class="navlink active" href="../designs/springboard.html">Springboard</a>
     </details>
     </div>
     <script>
@@ -205,8 +205,8 @@
 </script>
   </nav>
   <main>
-    <h1>Staff Message Center</h1>
-    <p class="sub">Interactive prototype, built strictly from hp-design components (every recipe resolved from its own token file) — the OTHER side of the Student Message Center: the department inbox where staff answer incoming student threads. Rows lead with the student and carry Handled by / Unassigned / Awaiting reply / due-date states; Resolve really moves a thread to the Resolved tab; the reply composer is Composer's rich variant (B/I/U, Merge Tags, AI Assist, Allow Replies, Expiration) and Send appends a real staff Bubble. New message is a floating action button on mobile / a topbar button on split views: a compose dialog (Department, Subject, rich message, Allow Replies + Expire Thread checkboxes) beside an AI Writing Assist panel — suggestion chips, a real chat, tone/length — that also opens standalone from the in-thread AI Assist.</p>
+    <h1>Springboard</h1>
+    <p class="sub">Scaffold only. The page, its nav entry and its version list are in place; the prototype itself is empty until the reference screens land — inventing a layout now would just be thrown away. Everything built here will follow the same discipline as the Message Center prototypes: strictly hp-design components, every recipe resolved from its own token file, with the <code>mc-</code>-style composition layer as the only bespoke CSS.</p>
 
     <div class="device-bar">
       <div class="device-bar__group">
@@ -222,17 +222,17 @@
         </button>
         <div class="listbox" id="viewer-version-lb" popover>
           <ul class="listbox__list" role="listbox" aria-label="Prototype version">
-        <li role="none"><button type="button" class="listbox__option listbox__option--selected" role="option" aria-selected="true" data-version-file="staff-message-center-app.html" data-version-label="v1 · current">
+        <li role="none"><button type="button" class="listbox__option listbox__option--selected" role="option" aria-selected="true" data-version-file="springboard-app.html" data-version-label="v1 · current">
           <span>v1 <span class="listbox__note">· current</span></span><svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
         </button></li>
           </ul>
         </div>
       </div>
-      <a class="open-standalone" id="viewer-standalone" href="staff-message-center-app.html" target="_blank" rel="noopener">Open standalone ↗</a>
+      <a class="open-standalone" id="viewer-standalone" href="springboard-app.html" target="_blank" rel="noopener">Open standalone ↗</a>
     </div>
     <div class="frame-wrap">
       <div class="device device--mobile" id="device">
-        <iframe id="device-frame" src="staff-message-center-app.html" title="Staff Message Center prototype"></iframe>
+        <iframe id="device-frame" src="springboard-app.html" title="Springboard prototype"></iframe>
       </div>
     </div>
   </main>

@@ -21,7 +21,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { renderNav } from "./lib/nav.mjs";
+import { renderDesignViewer } from "./lib/design-viewer.mjs";
 import { cssVarName, renderRootVars } from "./lib/css-vars.mjs";
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
@@ -3218,133 +3218,17 @@ ${appJs}
 </html>
 `;
 
-// ================= viewer page (docs chrome + device tabs + iframe) =================
-
-// Device tabs are a real DS segmented Tabs — resolved from tabs.tokens.json.
-const segTrackRadius = px(resolve(tabs.segmented.trackRadius.$value));
-const segTrackPadding = px(resolve(tabs.segmented.trackPadding.$value));
-const segPillRadius = px(resolve(tabs.segmented.pillRadius.$value));
-const viewerColorPaths = ["surface.sunken", "surface.default", "fill.neutralHover", "text.secondary", "text.default", "border.default", "border.focus"];
-const viewerRootVars = renderRootVars([...viewerColorPaths.map((p) => [p, resolve(p)]), ["family.sans", `'${fontSans}', sans-serif`]]);
-
-const viewerCss = `${viewerRootVars}
-
-.tabs--segmented { display: inline-flex; align-items: center; gap: ${segTrackPadding}; background: ${cv("surface.sunken")}; border-radius: ${segTrackRadius}; padding: ${segTrackPadding}; }
-.tab { display: inline-flex; align-items: center; justify-content: center; gap: ${tabItemGap}; border: none; background: transparent; cursor: pointer; white-space: nowrap; color: ${cv("text.secondary")}; font-family: ${cv("family.sans")}; ${typoCss(tabItemLabel)} }
-.tab--base { height: ${tabBase.height}; padding: 0 ${tabBase.paddingX}; }
-.tabs--segmented .tab { border-radius: ${segPillRadius}; }
-.tabs--segmented .tab:not(.tab--active):hover { background: ${cv("fill.neutralHover")}; color: ${cv("text.default")}; }
-.tabs--segmented .tab--active { background: ${cv("surface.default")}; color: ${cv("text.default")}; font-weight: ${tabActiveWeight}; }
-
-.device-bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 1rem; }
-.open-standalone { font-size: 13px; color: var(--accent); text-decoration: none; }
-.open-standalone:hover { text-decoration: underline; }
-.frame-wrap { border: 0.5px solid var(--border); border-radius: 14px; background: var(--bg-card); padding: 24px; display: flex; justify-content: center; overflow-x: auto; }
-.device { border: 1px solid ${cv("border.default")}; background: #fff; overflow: hidden; transition: width 0.2s ease, height 0.2s ease, border-radius 0.2s ease; flex-shrink: 0; }
-.device iframe { width: 100%; height: 100%; border: none; display: block; }
-/* +2px compensates the frame's own 1px borders (border-box), so the iframe's
-   INTERNAL viewport is exactly 375/768 — without it the tablet frame's inner
-   width was 766px and the app's min-width:768 split-view media query never
-   fired, leaving the tablet stuck in the one-pane mobile layout */
-.device--mobile { width: 377px; height: 814px; max-height: 78vh; border-radius: 28px; }
-.device--tablet { width: 770px; height: 1026px; max-height: 78vh; border-radius: 20px; }
-.device--desktop { width: 100%; height: 78vh; border-radius: 12px; }`;
-
-const viewerJs = `document.querySelectorAll(".device-bar .tab").forEach((tab) => {
-  tab.addEventListener("click", () => {
-    document.querySelectorAll(".device-bar .tab").forEach((t) => {
-      t.classList.toggle("tab--active", t === tab);
-      t.setAttribute("aria-selected", t === tab ? "true" : "false");
-    });
-    var device = document.getElementById("device");
-    device.className = "device device--" + tab.dataset.device;
-  });
-});`;
-
-const viewerHtml = `<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>hp-design — Staff Message Center</title>
-<link rel="stylesheet" href="../../assets/fonts/sora/sora.css" />
-<style>
-  :root {
-    --bg-page: #f7f7f5; --bg-card: #ffffff; --bg-card-hover: #fbfbfa;
-    --border: #e4e3df; --border-strong: #d2d1cb;
-    --text-primary: #0e0e10; --text-secondary: #63625c; --text-muted: #918f87;
-    --accent: #0468c4; --accent-bg: #eff6ff;
-    --code-bg: #1e1e22; --code-text: #e4e3df;
-    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-    --sans: -apple-system, "Segoe UI", system-ui, sans-serif;
-    color-scheme: light;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root:where(:not([data-theme="light"])) {
-      --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327;
-      --border: #313035; --border-strong: #403f45;
-      --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68;
-      --accent: #5aa4ec; --accent-bg: #16283b;
-      --code-bg: #0d0d0f; --code-text: #d7d6d2;
-      color-scheme: dark;
-    }
-  }
-  :root[data-theme="dark"] {
-    --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327;
-    --border: #313035; --border-strong: #403f45;
-    --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68;
-    --accent: #5aa4ec; --accent-bg: #16283b;
-    --code-bg: #0d0d0f; --code-text: #d7d6d2;
-    color-scheme: dark;
-  }
-  * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg-page); color: var(--text-primary); font-family: var(--sans); }
-  .shell { display: flex; min-height: 100vh; }
-  nav.side { width: 220px; flex-shrink: 0; border-right: 0.5px solid var(--border); padding: 1.5rem 1rem; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
-  .brand { font-size: 14px; font-weight: 600; margin: 0 0 2px 8px; }
-  .brand-sub { font-size: 11.5px; color: var(--text-muted); margin: 0 0 1.5rem 8px; }
-  .navlink { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 8px; border-radius: 7px; font-size: 13px; text-decoration: none; color: var(--text-primary); margin-bottom: 1px; }
-  .navlink:hover { background: var(--bg-card-hover); }
-  .navlink.active { background: var(--accent-bg); color: var(--accent); font-weight: 600; }
-  .nav-category { font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin: 16px 8px 6px; }
-  main { flex: 1; padding: 3rem 3rem 4rem; max-width: 1400px; }
-
-  h1 { font-size: 36px; font-weight: 700; margin: 0 0 10px; letter-spacing: -0.02em; }
-  .sub { font-size: 14px; color: var(--text-secondary); margin: 0 0 2rem; max-width: 78ch; line-height: 1.6; }
-
-  ${viewerCss}
-</style>
-</head>
-<body>
-<div class="shell">
-  <nav class="side">
-    ${renderNav("staff-message-center", { basePath: "../" })}
-  </nav>
-  <main>
-    <h1>Staff Message Center</h1>
-    <p class="sub">Interactive prototype, built strictly from hp-design components (every recipe resolved from its own token file) — the OTHER side of the Student Message Center: the department inbox where staff answer incoming student threads. Rows lead with the student and carry Handled by / Unassigned / Awaiting reply / due-date states; Resolve really moves a thread to the Resolved tab; the reply composer is Composer's rich variant (B/I/U, Merge Tags, AI Assist, Allow Replies, Expiration) and Send appends a real staff Bubble. New message is a floating action button on mobile / a topbar button on split views: a compose dialog (Department, Subject, rich message, Allow Replies + Expire Thread checkboxes) beside an AI Writing Assist panel — suggestion chips, a real chat, tone/length — that also opens standalone from the in-thread AI Assist.</p>
-
-    <div class="device-bar">
-      <div class="tabs tabs--segmented tabs--base" role="tablist" aria-label="Preview viewport">
-        <button class="tab tab--base tab--active" role="tab" aria-selected="true" data-device="mobile">Mobile</button>
-        <button class="tab tab--base" role="tab" aria-selected="false" data-device="tablet">Tablet</button>
-        <button class="tab tab--base" role="tab" aria-selected="false" data-device="desktop">Desktop</button>
-      </div>
-      <a class="open-standalone" href="staff-message-center-app.html" target="_blank" rel="noopener">Open standalone ↗</a>
-    </div>
-    <div class="frame-wrap">
-      <div class="device device--mobile" id="device">
-        <iframe src="staff-message-center-app.html" title="Staff Message Center prototype"></iframe>
-      </div>
-    </div>
-  </main>
-</div>
-<script>
-${viewerJs}
-</script>
-</body>
-</html>
-`;
+// ================= viewer page =================
+// Shared chrome (docs page + device tabs + Versions dropdown + iframe) lives
+// in tools/lib/design-viewer.mjs — one file for every designs page, same
+// reasoning as nav.mjs. Only this page's own copy + version list are local.
+const viewerHtml = renderDesignViewer({
+  activeKey: "staff-message-center",
+  title: "Staff Message Center",
+  heading: "Staff Message Center",
+  sub: "Interactive prototype, built strictly from hp-design components (every recipe resolved from its own token file) — the OTHER side of the Student Message Center: the department inbox where staff answer incoming student threads. Rows lead with the student and carry Handled by / Unassigned / Awaiting reply / due-date states; Resolve really moves a thread to the Resolved tab; the reply composer is Composer's rich variant (B/I/U, Merge Tags, AI Assist, Allow Replies, Expiration) and Send appends a real staff Bubble. New message is a floating action button on mobile / a topbar button on split views: a compose dialog (Department, Subject, rich message, Allow Replies + Expire Thread checkboxes) beside an AI Writing Assist panel — suggestion chips, a real chat, tone/length — that also opens standalone from the in-thread AI Assist.",
+  versions: [{ label: "v1", note: "current", file: "staff-message-center-app.html" }],
+});
 
 fs.mkdirSync(path.join(root, "docs/designs"), { recursive: true });
 fs.writeFileSync(path.join(root, "docs/designs/staff-message-center-app.html"), appHtml);

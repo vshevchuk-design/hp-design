@@ -51,11 +51,15 @@
 
   :root {
   --tok-surface-sunken: #e8e8e8;
+  --tok-surface-dim: #f5f5f5;
   --tok-surface-default: #ffffff;
   --tok-fill-neutral-hover: #d1d1d1;
+  --tok-fill-primary: #077fec;
   --tok-text-secondary: #696969;
   --tok-text-default: #181818;
+  --tok-icon-default: #525252;
   --tok-border-default: #d1d1d1;
+  --tok-border-strong: #b4b4b4;
   --tok-border-focus: #0468c4;
   --tok-family-sans: 'Sora', sans-serif;
 }
@@ -67,7 +71,26 @@
 .tabs--segmented .tab:not(.tab--active):hover { background: var(--tok-fill-neutral-hover); color: var(--tok-text-default); }
 .tabs--segmented .tab--active { background: var(--tok-surface-default); color: var(--tok-text-default); font-weight: 600; }
 
+/* Versions — Select's closed trigger + Listbox's single-select popover, the
+   same composition the prototypes use for their own dropdowns */
+.select { display: inline-flex; align-items: center; box-sizing: border-box; background: var(--tok-surface-dim); border: 1px solid var(--tok-border-default); border-radius: 8px; font-family: var(--tok-family-sans); cursor: pointer; text-align: left; }
+.select--base { height: 40px; padding: 0 12px; gap: 8px; }
+.select--base .select__chevron { width: 20px; height: 20px; }
+.select__chevron { flex-shrink: 0; margin-left: auto; color: var(--tok-icon-default); }
+.select__value { color: var(--tok-text-default); font-weight: 400; font-size: 16px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.select:hover { border-color: var(--tok-border-strong); }
+.select:focus-visible { outline: none; border-color: var(--tok-border-focus); }
+.listbox { margin: 0; box-sizing: border-box; padding: 4px; border-radius: 8px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); box-shadow: 0px 2px 8px 0px rgba(21, 25, 30, 0.10); font-family: var(--tok-family-sans); min-width: 220px; }
+.listbox__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.listbox__option { width: 100%; box-sizing: border-box; display: flex; align-items: center; gap: 8px; padding: 8px 8px; border: none; background: none; border-radius: 4px; cursor: pointer; text-align: left; color: var(--tok-text-default); font-family: inherit; font-weight: 400; font-size: 14px; line-height: 1.4; }
+.listbox__option:hover { background: var(--tok-fill-neutral-hover); }
+.listbox__note { color: var(--tok-text-secondary); }
+.listbox__checkmark { width: 16px; height: 16px; margin-left: auto; color: var(--tok-fill-primary); flex-shrink: 0; display: none; }
+.listbox__option--selected .listbox__checkmark { display: block; }
+
 .device-bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 1rem; }
+.device-bar__group { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.device-bar__label { font-size: 13px; color: var(--text-secondary); }
 .open-standalone { font-size: 13px; color: var(--accent); text-decoration: none; }
 .open-standalone:hover { text-decoration: underline; }
 .frame-wrap { border: 0.5px solid var(--border); border-radius: 14px; background: var(--bg-card); padding: 24px; display: flex; justify-content: center; overflow-x: auto; }
@@ -167,6 +190,10 @@
       <a class="navlink active" href="../designs/student-message-center.html">Student Message Center</a>
       <a class="navlink" href="../designs/staff-message-center.html">Staff Message Center</a>
     </details>
+    <details class="nav-acc" open>
+      <summary>Springboard</summary>
+      <a class="navlink" href="../designs/springboard.html">Springboard</a>
+    </details>
     </div>
     <script>
   document.querySelectorAll(".nav-tab").forEach((tab) => {
@@ -182,16 +209,30 @@
     <p class="sub">Interactive prototype, built strictly from hp-design components (every recipe resolved from its own token file) — mobile-first, responsive. Click a thread, switch Inbox/Archived, search, sort, send a reply, archive a thread — all real. New message is a full-screen bottom sheet on mobile and a centered modal on tablet/desktop; the chosen department's settings decide who the student can write to (department only / members only / both, with per-member availability), and Send starts a real Inbox thread with an Awaiting reply badge. Staff-side features (flags, Handled by, filters) are deliberately absent: this is the student app.</p>
 
     <div class="device-bar">
-      <div class="tabs tabs--segmented tabs--base" role="tablist" aria-label="Preview viewport">
-        <button class="tab tab--base tab--active" role="tab" aria-selected="true" data-device="mobile">Mobile</button>
-        <button class="tab tab--base" role="tab" aria-selected="false" data-device="tablet">Tablet</button>
-        <button class="tab tab--base" role="tab" aria-selected="false" data-device="desktop">Desktop</button>
+      <div class="device-bar__group">
+        <div class="tabs tabs--segmented tabs--base" role="tablist" aria-label="Preview viewport">
+          <button class="tab tab--base tab--active" role="tab" aria-selected="true" data-device="mobile">Mobile</button>
+          <button class="tab tab--base" role="tab" aria-selected="false" data-device="tablet">Tablet</button>
+          <button class="tab tab--base" role="tab" aria-selected="false" data-device="desktop">Desktop</button>
+        </div>
+        <span class="device-bar__label">Version</span>
+        <button class="select select--base" id="viewer-version-trigger" type="button" popovertarget="viewer-version-lb" aria-haspopup="listbox" aria-expanded="false" aria-label="Prototype version">
+          <span class="select__value" id="viewer-version-value">v1 · current</span>
+          <svg class="select__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>
+        </button>
+        <div class="listbox" id="viewer-version-lb" popover>
+          <ul class="listbox__list" role="listbox" aria-label="Prototype version">
+        <li role="none"><button type="button" class="listbox__option listbox__option--selected" role="option" aria-selected="true" data-version-file="student-message-center-app.html" data-version-label="v1 · current">
+          <span>v1 <span class="listbox__note">· current</span></span><svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+        </button></li>
+          </ul>
+        </div>
       </div>
-      <a class="open-standalone" href="student-message-center-app.html" target="_blank" rel="noopener">Open standalone ↗</a>
+      <a class="open-standalone" id="viewer-standalone" href="student-message-center-app.html" target="_blank" rel="noopener">Open standalone ↗</a>
     </div>
     <div class="frame-wrap">
       <div class="device device--mobile" id="device">
-        <iframe src="student-message-center-app.html" title="Student Message Center prototype"></iframe>
+        <iframe id="device-frame" src="student-message-center-app.html" title="Student Message Center prototype"></iframe>
       </div>
     </div>
   </main>
@@ -207,6 +248,39 @@ document.querySelectorAll(".device-bar .tab").forEach((tab) => {
     device.className = "device device--" + tab.dataset.device;
   });
 });
+
+// Versions — the Listbox popover anchors under its own trigger (the native
+// popover API gives the top layer and light dismissal, not the position),
+// and picking a version really reloads the iframe + repoints "Open standalone"
+(function () {
+  var trigger = document.getElementById("viewer-version-trigger");
+  var panel = document.getElementById("viewer-version-lb");
+  if (!trigger || !panel) return;
+  var value = document.getElementById("viewer-version-value");
+  var frame = document.getElementById("device-frame");
+  var standalone = document.getElementById("viewer-standalone");
+  panel.addEventListener("toggle", function (e) {
+    trigger.setAttribute("aria-expanded", e.newState === "open" ? "true" : "false");
+    if (e.newState !== "open") return;
+    var r = trigger.getBoundingClientRect();
+    panel.style.position = "fixed";
+    panel.style.margin = "0";
+    panel.style.top = r.bottom + 4 + "px";
+    panel.style.left = Math.max(8, Math.min(r.left, window.innerWidth - panel.offsetWidth - 8)) + "px";
+  });
+  panel.querySelectorAll(".listbox__option").forEach(function (opt) {
+    opt.addEventListener("click", function () {
+      panel.querySelectorAll(".listbox__option").forEach(function (o) {
+        o.classList.toggle("listbox__option--selected", o === opt);
+        o.setAttribute("aria-selected", o === opt ? "true" : "false");
+      });
+      value.textContent = opt.dataset.versionLabel;
+      if (frame.getAttribute("src") !== opt.dataset.versionFile) frame.setAttribute("src", opt.dataset.versionFile);
+      standalone.setAttribute("href", opt.dataset.versionFile);
+      panel.hidePopover();
+    });
+  });
+})();
 </script>
 </body>
 </html>

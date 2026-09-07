@@ -80,6 +80,12 @@ export const DESIGN_PRODUCTS = {
       "staff-message-center": { label: "Staff Message Center", href: "designs/staff-message-center.html" },
     },
   },
+  springboard: {
+    label: "Springboard",
+    items: {
+      springboard: { label: "Springboard", href: "designs/springboard.html" },
+    },
+  },
 };
 
 const NAV_CHROME = `<style>
