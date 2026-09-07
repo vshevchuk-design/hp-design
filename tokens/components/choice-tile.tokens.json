@@ -1,0 +1,55 @@
+{
+  "component": {
+    "choiceTile": {
+      "$description": "A card-sized, selectable option: marker + label + optional description, with a real selected state. Built 2026-09-07 for the Explore Degrees wizard, where the same pattern carries four different screens — the ~50 program tiles, the term grid, the Yes/No 'have you taken classes before' pair, and the optional focus areas. That repetition is the whole reason it's a component and not a per-screen composition. Built on a **visually hidden native `<input type=radio>`** with the paired visual repainted via `:checked`/`:disabled`/`:focus-visible` siblings — the exact technique Checkbox, Radio and Switch already use, so keyboard operation, arrow-key group navigation, form submission and screen readers all come free. The same recipe works for `type=checkbox` when a screen needs multi-select; nothing needs it yet. **Selected is blue, not the reference's black border** (explicit user call, and the system already says selected = bg.primary + fill.primary everywhere: ThreadListItem, Table, the Springboard tiles). The three interactive fills escalate exactly like Card's: rest (no tint) → hover bg.primaryHover (blue.50) → selected bg.primary (blue.100), with a fill.primary border from hover onward. No thicker border and no inset shadow for selected: the persistent fill is the differentiator, and border-width swapping either shifts the layout by a pixel or forces every resting tile to carry a heavier hairline, which is the opposite of what this flow needs. Deferred: a stacked layout (marker above a centred label — the Springboard's own mobile tile shape, which is a composition today), and a size axis.",
+      "radius": { "$type": "dimension", "$value": "{radius.default}" },
+      "paddingX": { "$type": "dimension", "$value": "{dim.3}" },
+      "paddingY": { "$type": "dimension", "$value": "{dim.3}" },
+      "gap": {
+        "$type": "dimension",
+        "$value": "{dim.3}",
+        "$description": "Between the marker and the text column."
+      },
+      "textGap": {
+        "$type": "dimension",
+        "$value": "{dim.0_5}",
+        "$description": "Between the label and its description — tight, so the two read as one block."
+      },
+      "marker": {
+        "size": { "$type": "dimension", "$value": "{dim.10}" },
+        "radius": { "$type": "dimension", "$value": "{radius.default}" },
+        "iconSize": { "$type": "dimension", "$value": "{dim.6}" },
+        "$description": "The 40px leading square. It holds whatever identifies the option — Avatar's square variant for a program's initials, an icon, or a short string like a year. The tile owns the box; what goes inside is the consumer's."
+      },
+      "label": { "$type": "typography", "$value": "{text-style.heading-base}" },
+      "labelColor": { "$type": "color", "$value": "{text.default}" },
+      "description": { "$type": "typography", "$value": "{text-style.body-sm}" },
+      "descriptionColor": { "$type": "color", "$value": "{text.secondary}" },
+      "state": {
+        "default": {
+          "bg": { "$type": "color", "$value": "{surface.default}" },
+          "border": { "$type": "color", "$value": "{border.default}" }
+        },
+        "hover": {
+          "bg": { "$type": "color", "$value": "{bg.primaryHover}" },
+          "border": { "$type": "color", "$value": "{fill.primary}" }
+        },
+        "selected": {
+          "bg": { "$type": "color", "$value": "{bg.primary}" },
+          "border": { "$type": "color", "$value": "{fill.primary}" }
+        },
+        "focused": {
+          "ringColor": { "$type": "color", "$value": "{border.focus}" },
+          "ringWidth": { "$type": "dimension", "$value": "{dim.1}" },
+          "ringOffset": { "$type": "dimension", "$value": "{dim.0_5}" }
+        },
+        "disabled": {
+          "bg": { "$type": "color", "$value": "{surface.disabled}" },
+          "border": { "$type": "color", "$value": "{border.default}" },
+          "label": { "$type": "color", "$value": "{text.disabled}" },
+          "description": { "$type": "color", "$value": "{text.disabled}" }
+        }
+      }
+    }
+  }
+}

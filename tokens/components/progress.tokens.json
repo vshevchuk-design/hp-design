@@ -1,0 +1,46 @@
+{
+  "component": {
+    "progress": {
+      "$description": "Linear progress bar — a filled track. Built 2026-09-07 for the Explore Degrees wizard's two genuinely-missing cases: the determinate coverage bar in the results header ('your credits already cover 6 of 20 requirement areas') and the indeterminate bar under 'Checking your classes…'. **Deliberately NOT the wizard's step indicator** — Stepper already exists for exactly that ('horizontal step indicator for a short multi-step flow', inactive/active/complete with a filling connector), and a first pass that scoped a `segmented` variant here was corrected: numbered circles read clearer than anonymous segments, and two components for one job is how drift starts. Two modes on one recipe: determinate (a width the consumer sets, plus the ARIA value) and indeterminate (a travelling sliver, no value). Two heights only — sm for a bar that sits under other content, base where the bar itself is the message. Like Spinner, the indeterminate animation is NOT stopped by prefers-reduced-motion: it is the only signal that work is still happening. Deferred: a role axis (success/danger bars), segment labels, and a circular/radial form — nothing needs them.",
+      "radius": {
+        "$type": "dimension",
+        "$value": "{radius.full}",
+        "$description": "Fully rounded at both ends, on the track and the indicator alike, so a nearly-empty bar still reads as a bar and not as a stray dot."
+      },
+      "sizes": {
+        "sm": {
+          "height": { "$type": "dimension", "$value": "{dim.1}" },
+          "$description": "4px — under a header or inside a card, where the bar is secondary to the numbers next to it."
+        },
+        "base": {
+          "height": { "$type": "dimension", "$value": "{dim.2}" },
+          "$description": "8px — the default, for when the bar is the thing being looked at."
+        }
+      },
+      "track": {
+        "$type": "color",
+        "$value": "{bg.neutral}",
+        "$description": "The unfilled remainder. bg.neutral (gray.100) — the same quiet tint EmptyState's pill and the date chips use, so an empty bar reads as a placeholder rather than as a border."
+      },
+      "indicator": {
+        "$type": "color",
+        "$value": "{fill.primary}",
+        "$description": "The filled part. Same brand blue every other 'this is happening / this is done' cue uses; deliberately not status.success, because a progress bar reports amount, not outcome."
+      },
+      "indeterminate": {
+        "sliverWidth": {
+          "$type": "dimension",
+          "$value": { "value": 40, "unit": "%" },
+          "$description": "How much of the track the travelling sliver covers. 40% reads as motion without ever looking like a real value."
+        },
+        "duration": { "$type": "duration", "$value": "1.4s" }
+      },
+      "label": {
+        "$type": "typography",
+        "$value": "{text-style.body-sm}",
+        "$description": "The optional caption above the bar (e.g. '6 of 20 requirement areas'). The bar itself never contains text."
+      },
+      "labelColor": { "$type": "color", "$value": "{text.secondary}" }
+    }
+  }
+}

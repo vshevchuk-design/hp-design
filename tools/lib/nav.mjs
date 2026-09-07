@@ -39,10 +39,12 @@ export const NAV_ITEMS = {
   pagination: { label: "Pagination", href: "pagination.html" },
   separator: { label: "Separator", href: "separator.html" },
   tabs: { label: "Tabs", href: "tabs.html" },
+  accordion: { label: "Accordion", href: "accordion.html" },
   checkbox: { label: "Checkbox", href: "checkbox.html" },
   radio: { label: "Radio", href: "radio.html" },
   box: { label: "Box", href: "box.html" },
   card: { label: "Card", href: "card.html" },
+  "choice-tile": { label: "ChoiceTile", href: "choice-tile.html" },
   switch: { label: "Switch", href: "switch.html" },
   grid: { label: "Grid", href: "grid.html" },
   table: { label: "Table", href: "table.html" },
@@ -67,6 +69,7 @@ export const NAV_ITEMS = {
   alert: { label: "Alert", href: "alert.html" },
   skeleton: { label: "Skeleton", href: "skeleton.html" },
   spinner: { label: "Spinner", href: "spinner.html" },
+  progress: { label: "Progress", href: "progress.html" },
   stat: { label: "Stat", href: "stat.html" },
   "split-button": { label: "SplitButton", href: "split-button.html" },
   "date-picker": { label: "DatePicker", href: "date-picker.html" },
@@ -159,10 +162,12 @@ export function renderNav(activeKey, { basePath = "" } = {}) {
     ${link("pagination")}
     ${link("separator")}
     ${link("tabs")}
+    ${link("accordion")}
     ${link("checkbox")}
     ${link("radio")}
     ${link("box")}
     ${link("card")}
+    ${link("choice-tile")}
     ${link("stat")}
     ${link("switch")}
     ${link("grid")}
@@ -189,6 +194,7 @@ export function renderNav(activeKey, { basePath = "" } = {}) {
     ${link("alert")}
     ${link("skeleton")}
     ${link("spinner")}
+    ${link("progress")}
     </div>
     <div class="nav-pane nav-pane--designs${designsActive ? " active" : ""}" data-pane="designs">
     <p class="brand">Design Prototypes</p>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>hp-design — Alert</title>
+<title>hp-design — Accordion</title>
 <link rel="stylesheet" href="../assets/fonts/sora/sora.css" />
 <style>
   :root { --bg-page: #f7f7f5; --bg-card: #ffffff; --bg-card-hover: #fbfbfa; --border: #e4e3df; --border-strong: #d2d1cb; --text-primary: #0e0e10; --text-secondary: #63625c; --text-muted: #918f87; --accent: #0468c4; --accent-bg: #eff6ff; --code-bg: #1e1e22; --code-text: #e4e3df; --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace; --sans: -apple-system, "Segoe UI", system-ui, sans-serif; color-scheme: light; }
@@ -26,58 +26,54 @@
   .legend .row b { width: 130px; flex-shrink: 0; color: var(--text-primary); font-weight: 600; font-family: var(--mono); font-size: 11.5px; }
   code.tok { font-family: var(--mono); font-size: 12px; color: var(--accent); }
   pre.code { background: var(--code-bg); color: var(--code-text); border-radius: 10px; padding: 16px 18px; margin: 0; overflow-x: auto; font-family: var(--mono); font-size: 12px; line-height: 1.7; } pre.code code { font-family: inherit; }
-  .story-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
+  .story-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; }
   .story { border: 0.5px solid var(--border); border-radius: 14px; background: var(--bg-card); padding: 22px; display: flex; flex-direction: column; gap: 12px; }
   .story--full { grid-column: 1 / -1; }
   .story h3 { font-size: 14px; font-weight: 600; margin: 0; font-family: var(--mono); }
   .story-preview { padding: 8px 0; }
   .story-note { font-size: 11.5px; color: var(--text-muted); margin: 0; line-height: 1.5; }
   :root {
-  --tok-bg-primary: #d9eaff;
-  --tok-border-primary: #b2d4fe;
-  --tok-icon-primary: #077fec;
-  --tok-bg-success: #d4f1da;
-  --tok-border-success: #a5e2b4;
-  --tok-status-success: #0a994e;
-  --tok-bg-warning: #ffe2c5;
-  --tok-border-warning: #fec486;
-  --tok-status-warning: #b26f07;
-  --tok-bg-danger: #ffdfde;
-  --tok-border-danger: #febebd;
-  --tok-status-danger: #de394b;
+  --tok-border-default: #dadde0;
   --tok-text-default: #121921;
   --tok-text-secondary: #5d6a7a;
+  --tok-icon-muted: #8e99a7;
   --tok-fill-neutral-hover: #e6e8eb;
-  --tok-fill-neutral-active: #cdd1d6;
   --tok-border-focus: #0468c4;
   --tok-surface-default: #ffffff;
-  --tok-border-default: #dadde0;
+  --tok-bg-neutral: #e6e8eb;
+  --tok-bg-success: #d4f1da;
+  --tok-text-success: #057e3f;
+  --tok-status-success: #0a994e;
   --tok-family-sans: 'Sora', sans-serif;
 }
 
-.alert { display: flex; align-items: flex-start; gap: 8px; padding: 12px 16px; border-radius: 8px; border: 1px solid transparent; font-family: var(--tok-family-sans); }
-.alert__icon { flex-shrink: 0; width: 20px; height: 20px; }
-.alert__stack { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-/* The lead runs INLINE with the body — one paragraph, so short copy stays one line. */
-.alert__message { margin: 0; color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; }
-.alert__title { color: var(--tok-text-default); font-weight: 600; }
-.alert__detail { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
-.alert__action { margin-top: 4px; }
-.alert--info { background: var(--tok-bg-primary); border-color: var(--tok-border-primary); }
-.alert--info .alert__icon { color: var(--tok-icon-primary); }
-.alert--success { background: var(--tok-bg-success); border-color: var(--tok-border-success); }
-.alert--success .alert__icon { color: var(--tok-status-success); }
-.alert--warning { background: var(--tok-bg-warning); border-color: var(--tok-border-warning); }
-.alert--warning .alert__icon { color: var(--tok-status-warning); }
-.alert--danger { background: var(--tok-bg-danger); border-color: var(--tok-border-danger); }
-.alert--danger .alert__icon { color: var(--tok-status-danger); }
-
-/* the optional action slot is a real Button ghost sm, resolved from button.tokens.json */
-.btn { display: inline-flex; align-items: center; justify-content: center; border: none; background: transparent; cursor: pointer; font-family: inherit; border-radius: 8px; }
-.btn--ghost.btn--sm { height: 32px; padding: 0 8px; color: var(--tok-text-secondary); font-weight: 600; font-size: 12px; line-height: 1.4; }
-.btn--ghost:hover { background: var(--tok-fill-neutral-hover); }
-.btn--ghost:active { background: var(--tok-fill-neutral-active); }
-.btn--ghost:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
+/* A real <details>/<summary>: open/close, keyboard and find-in-page all work
+   with zero JS — same native-first rule Tooltip/Popover/Modal follow. */
+.accordion { display: block; font-family: var(--tok-family-sans); }
+.accordion__item { border-bottom: 1px solid var(--tok-border-default); }
+.accordion__item:last-child { border-bottom: none; }
+.accordion__summary { list-style: none; display: flex; align-items: center; gap: 8px; padding: 12px 16px; cursor: pointer; }
+.accordion__summary::-webkit-details-marker { display: none; }
+.accordion__summary:hover { background: var(--tok-fill-neutral-hover); }
+.accordion__summary:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: calc(-1 * 4px); }
+.accordion__status { flex-shrink: 0; width: 20px; height: 20px; }
+.accordion__title { flex: 1; min-width: 0; color: var(--tok-text-default); font-weight: 600; font-size: 14px; line-height: 1.4; }
+.accordion__meta { flex-shrink: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.accordion__chevron { flex-shrink: 0; width: 20px; height: 20px; color: var(--tok-icon-muted); transition: transform 0.12s ease; }
+.accordion__item[open] > .accordion__summary .accordion__chevron { transform: rotate(180deg); }
+.accordion__body { display: flex; flex-direction: column; gap: 8px; padding: 0 16px 16px; }
+  
+.acc-card { background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); border-radius: 8px; overflow: hidden; }
+.acc-card__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px; border-bottom: 1px solid var(--tok-border-default); }
+.acc-card__title { color: var(--tok-text-default); font-weight: 600; font-size: 14px; line-height: 1.4; font-family: var(--tok-family-sans); }
+.badge { display: inline-flex; align-items: center; border-radius: 999px; height: 16px; padding: 0 8px; font-weight: 600; font-size: 10px; line-height: 1; font-family: var(--tok-family-sans); background: var(--tok-bg-neutral); color: var(--tok-text-default); }
+.badge--success { background: var(--tok-bg-success); color: var(--tok-text-success); }
+.acc-sub { color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.acc-eyebrow { color: var(--tok-text-secondary); font-weight: 700; font-size: 12px; line-height: 1.4; text-transform: uppercase; letter-spacing: [object Object]; }
+.acc-course { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; color: var(--tok-text-default); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.acc-course b { font-weight: 600; }
+.acc-status--done { color: var(--tok-status-success); }
+.acc-status--todo { color: var(--tok-icon-muted); }
 </style>
 </head>
 <body>
@@ -128,7 +124,7 @@
     <a class="navlink" href="pagination.html">Pagination</a>
     <a class="navlink" href="separator.html">Separator</a>
     <a class="navlink" href="tabs.html">Tabs</a>
-    <a class="navlink" href="accordion.html">Accordion</a>
+    <a class="navlink active" href="accordion.html">Accordion</a>
     <a class="navlink" href="checkbox.html">Checkbox</a>
     <a class="navlink" href="radio.html">Radio</a>
     <a class="navlink" href="box.html">Box</a>
@@ -157,7 +153,7 @@
     <a class="navlink" href="composer.html">Composer</a>
     <a class="navlink" href="empty-state.html">EmptyState</a>
     <a class="navlink" href="toast.html">Toast</a>
-    <a class="navlink active" href="alert.html">Alert</a>
+    <a class="navlink" href="alert.html">Alert</a>
     <a class="navlink" href="skeleton.html">Skeleton</a>
     <a class="navlink" href="spinner.html">Spinner</a>
     <a class="navlink" href="progress.html">Progress</a>
@@ -184,114 +180,149 @@
   });
 </script></nav>
   <main>
-    <h1>Alert</h1>
-    <p class="sub">tokens/components/alert.tokens.json · generated — a persistent, inline status message: role icon + a lead-and-body paragraph, on the role's own pale tint. The in-flow counterpart to <a class="navlink" style="display:inline;padding:0;background:none;color:var(--accent)" href="toast.html">Toast</a>, not a variant of it.</p>
+    <h1>Accordion</h1>
+    <p class="sub">tokens/components/accordion.tokens.json · generated — expandable disclosure rows on a real <code class="tok">&lt;details&gt;</code>/<code class="tok">&lt;summary&gt;</code>. Optional leading status icon, optional trailing state label, a chevron that flips when open. Every row here is genuinely interactive on this page — no forced states needed.</p>
 
     <div class="legend">
-      <div class="row"><b>vs Toast</b><span>Toast is transient and floats in the top layer over arbitrary content, so it must stay on a neutral surface with only its icon carrying meaning. An Alert sits in the document flow and owns a known slot, so it takes the role's pale <code class="tok">bg.*</code> tint — the use that group's own description reserves it for.</span></div>
-      <div class="row"><b>Roles</b><span>info / success / warning / danger — one more than Toast, which has no info (a transient toast for neutral news is noise). Each = pale <code class="tok">bg.*</code> + matching pale <code class="tok">border.*</code> 200-tint + a saturated icon.</span></div>
-      <div class="row"><b>Text colour</b><span>Always <code class="tok">text.default</code>, never the role colour. Coloured text on a coloured tint is two colour languages at once, and it costs readability on the longer copy these carry — the icon is what carries saturation.</span></div>
-      <div class="row"><b>Anatomy</b><span>The lead runs <b>inline</b> with the body as one paragraph (so short copy stays one line and a screen reader reads one sentence). Optional quieter <code class="tok">detail</code> line beneath, optional action slot holding a real Button.</span></div>
-      <div class="row"><b>ARIA</b><span><code class="tok">role="alert"</code> for danger (interrupts), <code class="tok">role="status"</code> for the rest (polite).</span></div>
-      <div class="row"><b>Deferred</b><span>A dismissible (×) variant and a solid high-contrast fill — nothing needs either yet.</span></div>
+      <div class="row"><b>Native</b><span>A real <code class="tok">&lt;details&gt;</code>: open/close, keyboard operation and find-in-page work with <b>zero JS</b> — the same native-first rule Tooltip (pure CSS), Popover (Popover API) and Modal/Drawer (<code class="tok">&lt;dialog&gt;</code>) already follow.</span></div>
+      <div class="row"><b>Rows, not boxes</b><span>An accordion is a <b>flush divided list</b>; the consumer wraps it in a Card if it needs an edge. Deliberate: the reference design stacks bordered boxes and it reads as a pile — the same content as divided rows reads as a list.</span></div>
+      <div class="row"><b>Optional slots</b><span>The status icon and the trailing meta label are both optional, because real data has rows with neither — sub-options inside a requirement.</span></div>
+      <div class="row"><b>Hover</b><span>The summary rests on a white surface, so it takes the wash tier <code class="tok">fill.neutralHover</code> (gray.100), not the Strong pair. See the two-tier rule in status.md.</span></div>
+      <div class="row"><b>Deferred</b><span>Single-open groups (the <code class="tok">name</code> attribute on <code class="tok">&lt;details&gt;</code> does this natively — adopt it when a consumer wants only one row open) and a nested second level.</span></div>
     </div>
 
-    <h2 class="big-section">Roles</h2>
+    <h2 class="big-section">Rows</h2>
     <div class="story-grid">
-      <div class="story"><h3>info</h3><div class="story-preview"><div class="alert alert--info" role="status">
-  <svg class="alert__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
-  <div class="alert__stack">
-    <p class="alert__message">Read as a transcript from Bainbridge Junior College.</p>
-    
-    
-  </div>
-</div></div><p class="story-note">Body only — the quietest shape.</p></div>
-      <div class="story"><h3>success</h3><div class="story-preview"><div class="alert alert--success" role="status">
-  <svg class="alert__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
-  <div class="alert__stack">
-    <p class="alert__message">We found 10 classes we can import from your transcript. Review the grades and remove anything you don't want below.</p>
-    
-    
-  </div>
-</div></div></div>
-      <div class="story"><h3>warning</h3><div class="story-preview"><div class="alert alert--warning" role="status">
-  <svg class="alert__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
-  <div class="alert__stack">
-    <p class="alert__message">Four classes still need a quick review by an advisor before they count.</p>
-    
-    
-  </div>
-</div></div></div>
-      <div class="story"><h3>danger</h3><div class="story-preview"><div class="alert alert--danger" role="alert">
-  <svg class="alert__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
-  <div class="alert__stack">
-    <p class="alert__message">This is a photograph of a house and pool, not a transcript — it contains no coursework, grades, or academic information. Please upload an official or unofficial transcript from your student portal.</p>
-    
-    <div class="alert__action"><button class="btn btn--ghost btn--sm" type="button">Try another file</button></div>
-  </div>
-</div></div><p class="story-note">Danger with an action slot: a real Button ghost sm.</p></div>
+      <div class="story"><h3>Plain</h3><div class="story-preview"><div class="accordion">
+  <details class="accordion__item">
+    <summary class="accordion__summary">
+      
+      <span class="accordion__title">Free Electives</span>
+      
+      <svg class="accordion__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>
+    </summary>
+    <div class="accordion__body"><span class="acc-sub">Anything not applied elsewhere counts here.</span></div>
+  </details>
+  <details class="accordion__item">
+    <summary class="accordion__summary">
+      
+      <span class="accordion__title">Psych 100 Level Elective</span>
+      
+      <svg class="accordion__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>
+    </summary>
+    <div class="accordion__body"><span class="acc-sub">Any 100-level psychology course.</span></div>
+  </details>
+</div></div><p class="story-note">No status, no meta — the minimal shape.</p></div>
+      <div class="story"><h3>Status and state label</h3><div class="story-preview"><div class="accordion">
+  <details class="accordion__item">
+    <summary class="accordion__summary">
+      <svg class="accordion__status acc-status--done" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+      <span class="accordion__title">Social Science Courses</span>
+      <span class="accordion__meta">Covered</span>
+      <svg class="accordion__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>
+    </summary>
+    <div class="accordion__body"><span class="acc-sub">Satisfied by your transferred credit.</span></div>
+  </details>
+  <details class="accordion__item">
+    <summary class="accordion__summary">
+      <svg class="accordion__status acc-status--todo" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/></svg>
+      <span class="accordion__title">Physical Science</span>
+      <span class="accordion__meta">Still to do</span>
+      <svg class="accordion__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>
+    </summary>
+    <div class="accordion__body"><span class="acc-sub">No class applied to this yet.</span></div>
+  </details>
+</div></div><p class="story-note">check + status.success for covered, an empty circle + icon.muted for outstanding.</p></div>
     </div>
 
-    <h2 class="big-section">Lead + detail</h2>
-    <p class="section-desc">The full anatomy — a bold lead clause inline with the body, then the quieter detail line for an enumeration that shouldn't compete with the message.</p>
+    <h2 class="big-section">In context</h2>
+    <p class="section-desc">A requirement group from the Explore Degrees results: Card header with the group name and a Badge count, then the rows. The second one is open, showing the class that covers it.</p>
     <div class="story-grid">
-      <div class="story story--full"><h3>Lead, body and detail</h3><div class="story-preview"><div class="alert alert--success" role="status">
-  <svg class="alert__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
-  <div class="alert__stack">
-    <p class="alert__message"><span class="alert__title">9 classes applied to your plan.</span> 4 more need a quick advisor review. They're checked off in your Degree Requirements.</p>
-    <p class="alert__detail">Applied to: HISTORY 120, PSYCH 120, PSYCH 210, MATH 111, ENGLCOMP 200, ENGLCOMP 100, ECON 140, BIOLOGY 100</p>
-    
-  </div>
-</div></div><p class="story-note">The results-summary alert from the Explore Degrees flow.</p></div>
+      <div class="story story--full"><h3>Requirement group</h3><div class="story-preview"><div class="acc-card">
+        <div class="acc-card__head"><span class="acc-card__title">LAU GE Distribution F25 000115</span><span class="badge">2 of 6 covered</span></div>
+        <div class="accordion">
+  <details class="accordion__item">
+    <summary class="accordion__summary">
+      <svg class="accordion__status acc-status--done" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+      <span class="accordion__title">Social Science Courses</span>
+      <span class="accordion__meta">Covered</span>
+      <svg class="accordion__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>
+    </summary>
+    <div class="accordion__body"><span class="acc-sub">Satisfied by your transferred credit.</span></div>
+  </details>
+  <details class="accordion__item" open>
+    <summary class="accordion__summary">
+      <svg class="accordion__status acc-status--done" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+      <span class="accordion__title">Life Science</span>
+      <span class="accordion__meta">Covered</span>
+      <svg class="accordion__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>
+    </summary>
+    <div class="accordion__body"><span class="acc-sub">Life Science</span>
+      <span class="acc-eyebrow">Classes that count toward this</span>
+      <span class="acc-course"><b>BIOLOGY 100</b> General Biology I · 3.5 units <span class="badge badge--success">Covered by your credit from Long Beach City College</span></span></div>
+  </details>
+  <details class="accordion__item">
+    <summary class="accordion__summary">
+      <svg class="accordion__status acc-status--todo" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/></svg>
+      <span class="accordion__title">Physical Science</span>
+      <span class="accordion__meta">Still to do</span>
+      <svg class="accordion__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>
+    </summary>
+    <div class="accordion__body"><span class="acc-sub">No class applied to this yet.</span></div>
+  </details>
+  <details class="accordion__item">
+    <summary class="accordion__summary">
+      <svg class="accordion__status acc-status--todo" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/></svg>
+      <span class="accordion__title">Lab Requirements</span>
+      <span class="accordion__meta">Still to do</span>
+      <svg class="accordion__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>
+    </summary>
+    <div class="accordion__body"><span class="acc-sub">No class applied to this yet.</span></div>
+  </details>
+  <details class="accordion__item">
+    <summary class="accordion__summary">
+      <svg class="accordion__status acc-status--done" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+      <span class="accordion__title">LAU Math Requirement</span>
+      <span class="accordion__meta">Covered</span>
+      <svg class="accordion__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>
+    </summary>
+    <div class="accordion__body"><span class="acc-sub">Satisfied by your transferred credit.</span></div>
+  </details>
+</div>
+      </div></div></div>
     </div>
 
     <h2 class="big-section">CSS</h2>
     <pre class="code"><code>:root {
-  --tok-bg-primary: #d9eaff;
-  --tok-border-primary: #b2d4fe;
-  --tok-icon-primary: #077fec;
-  --tok-bg-success: #d4f1da;
-  --tok-border-success: #a5e2b4;
-  --tok-status-success: #0a994e;
-  --tok-bg-warning: #ffe2c5;
-  --tok-border-warning: #fec486;
-  --tok-status-warning: #b26f07;
-  --tok-bg-danger: #ffdfde;
-  --tok-border-danger: #febebd;
-  --tok-status-danger: #de394b;
+  --tok-border-default: #dadde0;
   --tok-text-default: #121921;
   --tok-text-secondary: #5d6a7a;
+  --tok-icon-muted: #8e99a7;
   --tok-fill-neutral-hover: #e6e8eb;
-  --tok-fill-neutral-active: #cdd1d6;
   --tok-border-focus: #0468c4;
   --tok-surface-default: #ffffff;
-  --tok-border-default: #dadde0;
+  --tok-bg-neutral: #e6e8eb;
+  --tok-bg-success: #d4f1da;
+  --tok-text-success: #057e3f;
+  --tok-status-success: #0a994e;
   --tok-family-sans: 'Sora', sans-serif;
 }
 
-.alert { display: flex; align-items: flex-start; gap: 8px; padding: 12px 16px; border-radius: 8px; border: 1px solid transparent; font-family: var(--tok-family-sans); }
-.alert__icon { flex-shrink: 0; width: 20px; height: 20px; }
-.alert__stack { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-/* The lead runs INLINE with the body — one paragraph, so short copy stays one line. */
-.alert__message { margin: 0; color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; }
-.alert__title { color: var(--tok-text-default); font-weight: 600; }
-.alert__detail { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
-.alert__action { margin-top: 4px; }
-.alert--info { background: var(--tok-bg-primary); border-color: var(--tok-border-primary); }
-.alert--info .alert__icon { color: var(--tok-icon-primary); }
-.alert--success { background: var(--tok-bg-success); border-color: var(--tok-border-success); }
-.alert--success .alert__icon { color: var(--tok-status-success); }
-.alert--warning { background: var(--tok-bg-warning); border-color: var(--tok-border-warning); }
-.alert--warning .alert__icon { color: var(--tok-status-warning); }
-.alert--danger { background: var(--tok-bg-danger); border-color: var(--tok-border-danger); }
-.alert--danger .alert__icon { color: var(--tok-status-danger); }
-
-/* the optional action slot is a real Button ghost sm, resolved from button.tokens.json */
-.btn { display: inline-flex; align-items: center; justify-content: center; border: none; background: transparent; cursor: pointer; font-family: inherit; border-radius: 8px; }
-.btn--ghost.btn--sm { height: 32px; padding: 0 8px; color: var(--tok-text-secondary); font-weight: 600; font-size: 12px; line-height: 1.4; }
-.btn--ghost:hover { background: var(--tok-fill-neutral-hover); }
-.btn--ghost:active { background: var(--tok-fill-neutral-active); }
-.btn--ghost:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }</code></pre>
+/* A real &lt;details&gt;/&lt;summary&gt;: open/close, keyboard and find-in-page all work
+   with zero JS — same native-first rule Tooltip/Popover/Modal follow. */
+.accordion { display: block; font-family: var(--tok-family-sans); }
+.accordion__item { border-bottom: 1px solid var(--tok-border-default); }
+.accordion__item:last-child { border-bottom: none; }
+.accordion__summary { list-style: none; display: flex; align-items: center; gap: 8px; padding: 12px 16px; cursor: pointer; }
+.accordion__summary::-webkit-details-marker { display: none; }
+.accordion__summary:hover { background: var(--tok-fill-neutral-hover); }
+.accordion__summary:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: calc(-1 * 4px); }
+.accordion__status { flex-shrink: 0; width: 20px; height: 20px; }
+.accordion__title { flex: 1; min-width: 0; color: var(--tok-text-default); font-weight: 600; font-size: 14px; line-height: 1.4; }
+.accordion__meta { flex-shrink: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.accordion__chevron { flex-shrink: 0; width: 20px; height: 20px; color: var(--tok-icon-muted); transition: transform 0.12s ease; }
+.accordion__item[open] &gt; .accordion__summary .accordion__chevron { transform: rotate(180deg); }
+.accordion__body { display: flex; flex-direction: column; gap: 8px; padding: 0 16px 16px; }</code></pre>
   </main>
 </div>
 </body>

@@ -1,0 +1,51 @@
+{
+  "component": {
+    "accordion": {
+      "$description": "Expandable disclosure rows. Built 2026-09-07 for the Explore Degrees results — its entire Degree Requirements tab is these: one row per requirement, showing a status icon, a name, a 'Covered / Still to do' label and a chevron, expanding to the classes that count toward it. Native-first like every other disclosure in this system: a real `<details>`/`<summary>` pair, so open/close, keyboard operation and find-in-page all work with no JS at all — the same reasoning behind Tooltip being pure CSS and Popover/Modal using the native APIs. **Rows, not boxes:** an accordion here is a flush list divided by hairlines, and the consumer wraps it in a Card if it needs an edge. That is deliberate — the reference stacks bordered boxes and it reads as a pile; a divided list of the same content reads as a list. The status icon and the trailing meta label are both optional slots, because the reference has rows without either (sub-options inside a requirement, like 'Psych 100 Level Elective'). Deferred: single-open (accordion group) behaviour — that needs the `name` attribute on `<details>`, which is worth adopting when a consumer actually wants only one row open at a time; and a nested/second-level variant.",
+      "item": {
+        "paddingX": { "$type": "dimension", "$value": "{dim.4}" },
+        "paddingY": { "$type": "dimension", "$value": "{dim.3}" },
+        "gap": {
+          "$type": "dimension",
+          "$value": "{dim.2}",
+          "$description": "Between the status icon, the title, the meta label and the chevron."
+        },
+        "divider": {
+          "$type": "color",
+          "$value": "{border.default}",
+          "$description": "Hairline between rows; the last row's is dropped so it never doubles the wrapping Card's own edge — the same rule Table's row divider follows."
+        }
+      },
+      "title": { "$type": "typography", "$value": "{text-style.heading-base}" },
+      "titleColor": { "$type": "color", "$value": "{text.default}" },
+      "meta": {
+        "$type": "typography",
+        "$value": "{text-style.body-sm}",
+        "$description": "The trailing state label ('Covered', 'Still to do'). Quiet on purpose: the icon already carries the state, this just names it."
+      },
+      "metaColor": { "$type": "color", "$value": "{text.secondary}" },
+      "chevron": {
+        "size": { "$type": "dimension", "$value": "{dim.5}" },
+        "color": { "$type": "color", "$value": "{icon.muted}" }
+      },
+      "body": {
+        "paddingBottom": { "$type": "dimension", "$value": "{dim.4}" },
+        "gap": { "$type": "dimension", "$value": "{dim.2}" },
+        "$description": "The expanded region. It inherits the row's horizontal padding so its content lines up with the title above it, and adds bottom padding only — the summary's own padding already spaces the top."
+      },
+      "state": {
+        "hover": {
+          "bg": {
+            "$type": "color",
+            "$value": "{fill.neutralHover}",
+            "$description": "The wash tier: a summary row rests on a white/transparent surface, so it takes fill.neutralHover (gray.100), not the Strong pair."
+          }
+        },
+        "focused": {
+          "ringColor": { "$type": "color", "$value": "{border.focus}" },
+          "ringWidth": { "$type": "dimension", "$value": "{dim.1}" }
+        }
+      }
+    }
+  }
+}

@@ -3,22 +3,12 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>hp-design — Stepper</title>
+<title>hp-design — Progress</title>
 <link rel="stylesheet" href="../assets/fonts/sora/sora.css" />
 <style>
-  :root {
-    --bg-page: #f7f7f5; --bg-card: #ffffff; --bg-card-hover: #fbfbfa; --border: #e4e3df; --border-strong: #d2d1cb;
-    --text-primary: #0e0e10; --text-secondary: #63625c; --text-muted: #918f87; --accent: #0468c4; --accent-bg: #eff6ff;
-    --code-bg: #1e1e22; --code-text: #e4e3df; --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace; --sans: -apple-system, "Segoe UI", system-ui, sans-serif; color-scheme: light;
-  }
-  @media (prefers-color-scheme: dark) { :root:where(:not([data-theme="light"])) {
-    --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327; --border: #313035; --border-strong: #403f45;
-    --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68; --accent: #5aa4ec; --accent-bg: #16283b;
-    --code-bg: #0d0d0f; --code-text: #d7d6d2; color-scheme: dark; } }
-  :root[data-theme="dark"] {
-    --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327; --border: #313035; --border-strong: #403f45;
-    --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68; --accent: #5aa4ec; --accent-bg: #16283b;
-    --code-bg: #0d0d0f; --code-text: #d7d6d2; color-scheme: dark; }
+  :root { --bg-page: #f7f7f5; --bg-card: #ffffff; --bg-card-hover: #fbfbfa; --border: #e4e3df; --border-strong: #d2d1cb; --text-primary: #0e0e10; --text-secondary: #63625c; --text-muted: #918f87; --accent: #0468c4; --accent-bg: #eff6ff; --code-bg: #1e1e22; --code-text: #e4e3df; --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace; --sans: -apple-system, "Segoe UI", system-ui, sans-serif; color-scheme: light; }
+  @media (prefers-color-scheme: dark) { :root:where(:not([data-theme="light"])) { --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327; --border: #313035; --border-strong: #403f45; --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68; --accent: #5aa4ec; --accent-bg: #16283b; --code-bg: #0d0d0f; --code-text: #d7d6d2; color-scheme: dark; } }
+  :root[data-theme="dark"] { --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327; --border: #313035; --border-strong: #403f45; --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68; --accent: #5aa4ec; --accent-bg: #16283b; --code-bg: #0d0d0f; --code-text: #d7d6d2; color-scheme: dark; }
   * { box-sizing: border-box; } body { margin: 0; background: var(--bg-page); color: var(--text-primary); font-family: var(--sans); }
   .shell { display: flex; min-height: 100vh; }
   nav.side { width: 220px; flex-shrink: 0; border-right: 0.5px solid var(--border); padding: 1.5rem 1rem; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
@@ -27,51 +17,49 @@
   .nav-category { font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin: 16px 8px 6px; }
   main { flex: 1; padding: 4rem 4rem 6rem; max-width: 1120px; }
   h1 { font-size: 36px; font-weight: 700; margin: 0 0 10px; letter-spacing: -0.02em; }
-  .sub { font-size: 14px; color: var(--text-secondary); margin: 0 0 2.5rem; }
+  .sub { font-size: 14px; color: var(--text-secondary); margin: 0 0 2.5rem; max-width: 78ch; line-height: 1.6; }
   h2.big-section { font-size: 24px; font-weight: 700; margin: 5.5rem 0 1.5rem; letter-spacing: -0.01em; padding-top: 2.5rem; border-top: 1px solid var(--border); }
   h2.big-section:first-of-type { margin-top: 3rem; padding-top: 0; border-top: none; }
   .section-desc { font-size: 13.5px; color: var(--text-secondary); margin: -0.5rem 0 1.5rem; max-width: 68ch; line-height: 1.6; }
   .legend { font-size: 12.5px; color: var(--text-secondary); padding: 14px 18px; background: var(--bg-card); border: 0.5px solid var(--border); border-radius: 10px; margin-bottom: 1rem; line-height: 1.6; }
   .legend .row { display: flex; gap: 14px; padding: 6px 0; border-bottom: 0.5px solid var(--border); } .legend .row:last-child { border-bottom: none; }
-  .legend .row b { width: 120px; flex-shrink: 0; color: var(--text-primary); font-weight: 600; font-family: var(--mono); font-size: 11.5px; }
+  .legend .row b { width: 130px; flex-shrink: 0; color: var(--text-primary); font-weight: 600; font-family: var(--mono); font-size: 11.5px; }
   code.tok { font-family: var(--mono); font-size: 12px; color: var(--accent); }
   pre.code { background: var(--code-bg); color: var(--code-text); border-radius: 10px; padding: 16px 18px; margin: 0; overflow-x: auto; font-family: var(--mono); font-size: 12px; line-height: 1.7; } pre.code code { font-family: inherit; }
-  .story-grid { display: grid; grid-template-columns: 1fr; gap: 24px; }
+  .story-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
   .story { border: 0.5px solid var(--border); border-radius: 14px; background: var(--bg-card); padding: 22px; display: flex; flex-direction: column; gap: 12px; }
+  .story--full { grid-column: 1 / -1; }
   .story h3 { font-size: 14px; font-weight: 600; margin: 0; font-family: var(--mono); }
-  .story-preview { padding: 8px 0; max-width: 460px; }
+  .story-preview { padding: 8px 0; }
   .story-note { font-size: 11.5px; color: var(--text-muted); margin: 0; line-height: 1.5; }
   :root {
-  --tok-surface-sunken: #e6e8eb;
-  --tok-text-muted: #758191;
+  --tok-bg-neutral: #e6e8eb;
   --tok-fill-primary: #077fec;
-  --tok-text-on-fill: #ffffff;
-  --tok-text-default: #121921;
-  --tok-icon-on-fill: #ffffff;
+  --tok-text-secondary: #5d6a7a;
+  --tok-bg-primary: #d9eaff;
+  --tok-text-primary: #0468c4;
+  --tok-surface-default: #ffffff;
   --tok-border-default: #dadde0;
+  --tok-text-default: #121921;
   --tok-family-sans: 'Sora', sans-serif;
 }
 
-.stepper { display: flex; align-items: center; font-family: var(--tok-family-sans); }
-.stepper__step { display: inline-flex; align-items: center; gap: 8px; flex-shrink: 0; }
-.stepper__circle { box-sizing: border-box; flex-shrink: 0; width: 28px; height: 28px; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; font-weight: 600; font-size: 12px; line-height: 1; }
-.stepper__num { display: block; }
-.stepper__check { width: 16px; height: 16px; display: none; }
-.stepper__label { font-weight: 600; font-size: 12px; line-height: 1.4; white-space: nowrap; }
-.stepper__connector { flex: 1; min-width: 24px; height: 2px; background: var(--tok-border-default); margin: 0 8px; }
-/* inactive */
-.stepper__step--inactive .stepper__circle { background: var(--tok-surface-sunken); color: var(--tok-text-muted); }
-.stepper__step--inactive .stepper__label { color: var(--tok-text-muted); }
-/* active */
-.stepper__step--active .stepper__circle { background: var(--tok-fill-primary); color: var(--tok-text-on-fill); }
-.stepper__step--active .stepper__label { color: var(--tok-text-default); }
-/* complete */
-.stepper__step--complete .stepper__circle { background: var(--tok-fill-primary); color: var(--tok-icon-on-fill); }
-.stepper__step--complete .stepper__label { color: var(--tok-text-default); }
-.stepper__step--complete .stepper__num { display: none; }
-.stepper__step--complete .stepper__check { display: block; }
-/* a connector leading into a reached (active/complete) step fills brand blue */
-.stepper__connector--filled { background: var(--tok-fill-primary); }
+.progress { display: block; width: 100%; overflow: hidden; border-radius: 999px; background: var(--tok-bg-neutral); }
+.progress__bar { display: block; height: 100%; border-radius: 999px; background: var(--tok-fill-primary); }
+.progress--sm { height: 4px; }
+.progress--base { height: 8px; }
+/* Indeterminate: a sliver that crosses the track. No aria-valuenow — the whole
+   point is that the amount is unknown. Like Spinner, this keeps animating under
+   prefers-reduced-motion: it is the only signal that work is still happening. */
+.progress--indeterminate .progress__bar { width: 40%; animation: progress-slide 1.4s ease-in-out infinite; }
+@keyframes progress-slide { 0% { transform: translateX(-100%); } 100% { transform: translateX(calc(100% / 0.4 )); } }
+.progress__label { display: block; margin-bottom: 6px; color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; font-family: var(--tok-family-sans); }
+  
+.pg-stack { display: flex; flex-direction: column; gap: 18px; }
+.pg-head { border: 1px solid var(--tok-border-default); border-radius: 8px; background: var(--tok-surface-default); padding: 16px; display: flex; flex-direction: column; gap: 12px; font-family: var(--tok-family-sans); }
+.pg-head__title { color: var(--tok-text-default); font-weight: 600; font-size: 14px; line-height: 1.4; }
+.pg-pills { display: flex; flex-wrap: wrap; gap: 8px; }
+.badge { display: inline-flex; align-items: center; border-radius: 999px; height: 16px; padding: 0 8px; font-weight: 600; font-size: 10px; line-height: 1; background: var(--tok-bg-primary); color: var(--tok-text-primary); font-family: var(--tok-family-sans); }
 </style>
 </head>
 <body>
@@ -132,7 +120,7 @@
     <a class="navlink" href="switch.html">Switch</a>
     <a class="navlink" href="grid.html">Grid</a>
     <a class="navlink" href="table.html">Table</a>
-    <a class="navlink active" href="stepper.html">Stepper</a>
+    <a class="navlink" href="stepper.html">Stepper</a>
     <a class="navlink" href="tooltip.html">Tooltip</a>
     <a class="navlink" href="popover.html">Popover</a>
     <a class="navlink" href="drawer.html">Drawer</a>
@@ -154,7 +142,7 @@
     <a class="navlink" href="alert.html">Alert</a>
     <a class="navlink" href="skeleton.html">Skeleton</a>
     <a class="navlink" href="spinner.html">Spinner</a>
-    <a class="navlink" href="progress.html">Progress</a>
+    <a class="navlink active" href="progress.html">Progress</a>
     </div>
     <div class="nav-pane nav-pane--designs" data-pane="designs">
     <p class="brand">Design Prototypes</p>
@@ -178,90 +166,61 @@
   });
 </script></nav>
   <main>
-    <h1>Stepper</h1>
-    <p class="sub">tokens/components/stepper.tokens.json · generated — a horizontal step indicator for short 2–3 step wizards (the New Group Message flow). Numbered circles joined by connectors; each step inactive / active / complete.</p>
+    <h1>Progress</h1>
+    <p class="sub">tokens/components/progress.tokens.json · generated — a linear filled track, determinate or indeterminate. Two heights, fully rounded ends, <code class="tok">bg.neutral</code> track and a <code class="tok">fill.primary</code> indicator.</p>
 
     <div class="legend">
-      <div class="row"><b>States</b><span><code class="tok">inactive</code> = gray disc + muted ink · <code class="tok">active</code> = <code class="tok">fill.primary</code> disc + on-fill number · <code class="tok">complete</code> = same brand fill but the number becomes a check (check.svg). Complete stays the same fill as active — it's "done and reachable", the glyph is the only difference.</span></div>
-      <div class="row"><b>Connector</b><span>A 2px line between steps; the connector leading INTO a reached (active/complete) step fills <code class="tok">fill.primary</code>, so progress reads left-to-right.</span></div>
-      <div class="row"><b>Scope</b><span>Horizontal only, no per-step descriptions — built for 2–3 step wizards, not page-length onboarding.</span></div>
+      <div class="row"><b>Not a stepper</b><span>A wizard's step indicator is <a class="navlink" style="display:inline;padding:0;background:none;color:var(--accent)" href="stepper.html">Stepper</a>'s job — numbered circles with a filling connector. A first pass scoped a <code class="tok">segmented</code> variant here and it was correctly rejected: two components for one job is how drift starts.</span></div>
+      <div class="row"><b>Determinate</b><span>The consumer sets the indicator's width and the matching <code class="tok">aria-valuenow</code>. The bar never contains text — a caption goes above it.</span></div>
+      <div class="row"><b>Indeterminate</b><span>A 40% sliver crosses the track, and there is no <code class="tok">aria-valuenow</code> — the point is that the amount is unknown. Like Spinner, it keeps animating under <code class="tok">prefers-reduced-motion</code>: it's the only signal that work is still happening.</span></div>
+      <div class="row"><b>Colour</b><span>Indicator is <code class="tok">fill.primary</code>, never <code class="tok">status.success</code> — a progress bar reports <i>amount</i>, not outcome. A role axis is deferred until something needs a red or green bar.</span></div>
     </div>
 
-    <h2 class="big-section">Wizard progress</h2>
-    <p class="section-desc">The New Group Message wizard at each step.</p>
+    <h2 class="big-section">Determinate</h2>
     <div class="story-grid">
-      <div class="story"><h3>Step 1 of 2 — Select Students</h3><div class="story-preview"><div class="stepper" role="list">
-      <div class="stepper__step stepper__step--active">
-        <span class="stepper__circle"><span class="stepper__num">1</span><svg class="stepper__check" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
-        <span class="stepper__label">Select Students</span>
-      </div>
-      <div class="stepper__connector"></div>
-      <div class="stepper__step stepper__step--inactive">
-        <span class="stepper__circle"><span class="stepper__num">2</span><svg class="stepper__check" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
-        <span class="stepper__label">Message Details</span>
-      </div>
-    </div></div><p class="story-note">First step active, second not yet reached (gray connector).</p></div>
-      <div class="story"><h3>Step 2 of 2 — Message Details</h3><div class="story-preview"><div class="stepper" role="list">
-      <div class="stepper__step stepper__step--complete">
-        <span class="stepper__circle"><span class="stepper__num">1</span><svg class="stepper__check" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
-        <span class="stepper__label">Select Students</span>
-      </div>
-      <div class="stepper__connector stepper__connector--filled"></div>
-      <div class="stepper__step stepper__step--active">
-        <span class="stepper__circle"><span class="stepper__num">2</span><svg class="stepper__check" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
-        <span class="stepper__label">Message Details</span>
-      </div>
-    </div></div><p class="story-note">Step 1 complete (check + filled connector), step 2 active.</p></div>
-      <div class="story"><h3>Three steps, mid-flow</h3><div class="story-preview"><div class="stepper" role="list">
-      <div class="stepper__step stepper__step--complete">
-        <span class="stepper__circle"><span class="stepper__num">1</span><svg class="stepper__check" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
-        <span class="stepper__label">Audience</span>
-      </div>
-      <div class="stepper__connector stepper__connector--filled"></div>
-      <div class="stepper__step stepper__step--active">
-        <span class="stepper__circle"><span class="stepper__num">2</span><svg class="stepper__check" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
-        <span class="stepper__label">Compose</span>
-      </div>
-      <div class="stepper__connector"></div>
-      <div class="stepper__step stepper__step--inactive">
-        <span class="stepper__circle"><span class="stepper__num">3</span><svg class="stepper__check" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
-        <span class="stepper__label">Review</span>
-      </div>
-    </div></div><p class="story-note">Scales to a third step.</p></div>
+      <div class="story"><h3>Values</h3><div class="story-preview"><div class="pg-stack"><span class="progress progress--base" role="progressbar" aria-valuenow="8" aria-valuemin="0" aria-valuemax="100"><span class="progress__bar" style="width:8%"></span></span><span class="progress progress--base" role="progressbar" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100"><span class="progress__bar" style="width:30%"></span></span><span class="progress progress--base" role="progressbar" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"><span class="progress__bar" style="width:65%"></span></span><span class="progress progress--base" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><span class="progress__bar" style="width:100%"></span></span></div></div><p class="story-note">8% · 30% · 65% · 100% — the rounded ends keep a nearly-empty bar legible.</p></div>
+      <div class="story"><h3>Heights</h3><div class="story-preview"><div class="pg-stack"><span class="progress progress--sm" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100"><span class="progress__bar" style="width:45%"></span></span><span class="progress progress--base" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100"><span class="progress__bar" style="width:45%"></span></span></div></div><p class="story-note">sm 4px sits under other content · base 8px is the default.</p></div>
+      <div class="story"><h3>With a caption</h3><div class="story-preview"><span class="progress__label">6 of 20 requirement areas</span><span class="progress progress--base" role="progressbar" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100"><span class="progress__bar" style="width:30%"></span></span></div><p class="story-note">The label is a token on the component, but the text lives outside the bar.</p></div>
+    </div>
+
+    <h2 class="big-section">Indeterminate</h2>
+    <div class="story-grid">
+      <div class="story"><h3>Working</h3><div class="story-preview"><span class="progress progress--sm progress--indeterminate" role="progressbar" aria-label="Working"><span class="progress__bar"></span></span></div><p class="story-note">Under 'Checking your classes…' — work of unknown length. Pair it with a Spinner and copy that sets expectations.</p></div>
+    </div>
+
+    <h2 class="big-section">In context</h2>
+    <p class="section-desc">The Explore Degrees results header: a headline, Badge primary-tint pills for the numbers, and the bar carrying the same ratio visually.</p>
+    <div class="story-grid">
+      <div class="story story--full"><h3>Results header</h3><div class="story-preview"><div class="pg-head">
+        <span class="pg-head__title">Your credits already cover 6 of 20 requirement areas</span>
+        <div class="pg-pills"><span class="badge">Start 2027 Spring</span><span class="badge">20 requirement areas</span><span class="badge">6 already covered</span><span class="badge">9 classes applied</span></div>
+        <span class="progress progress--base" role="progressbar" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100"><span class="progress__bar" style="width:30%"></span></span>
+      </div></div></div>
     </div>
 
     <h2 class="big-section">CSS</h2>
     <pre class="code"><code>:root {
-  --tok-surface-sunken: #e6e8eb;
-  --tok-text-muted: #758191;
+  --tok-bg-neutral: #e6e8eb;
   --tok-fill-primary: #077fec;
-  --tok-text-on-fill: #ffffff;
-  --tok-text-default: #121921;
-  --tok-icon-on-fill: #ffffff;
+  --tok-text-secondary: #5d6a7a;
+  --tok-bg-primary: #d9eaff;
+  --tok-text-primary: #0468c4;
+  --tok-surface-default: #ffffff;
   --tok-border-default: #dadde0;
+  --tok-text-default: #121921;
   --tok-family-sans: 'Sora', sans-serif;
 }
 
-.stepper { display: flex; align-items: center; font-family: var(--tok-family-sans); }
-.stepper__step { display: inline-flex; align-items: center; gap: 8px; flex-shrink: 0; }
-.stepper__circle { box-sizing: border-box; flex-shrink: 0; width: 28px; height: 28px; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; font-weight: 600; font-size: 12px; line-height: 1; }
-.stepper__num { display: block; }
-.stepper__check { width: 16px; height: 16px; display: none; }
-.stepper__label { font-weight: 600; font-size: 12px; line-height: 1.4; white-space: nowrap; }
-.stepper__connector { flex: 1; min-width: 24px; height: 2px; background: var(--tok-border-default); margin: 0 8px; }
-/* inactive */
-.stepper__step--inactive .stepper__circle { background: var(--tok-surface-sunken); color: var(--tok-text-muted); }
-.stepper__step--inactive .stepper__label { color: var(--tok-text-muted); }
-/* active */
-.stepper__step--active .stepper__circle { background: var(--tok-fill-primary); color: var(--tok-text-on-fill); }
-.stepper__step--active .stepper__label { color: var(--tok-text-default); }
-/* complete */
-.stepper__step--complete .stepper__circle { background: var(--tok-fill-primary); color: var(--tok-icon-on-fill); }
-.stepper__step--complete .stepper__label { color: var(--tok-text-default); }
-.stepper__step--complete .stepper__num { display: none; }
-.stepper__step--complete .stepper__check { display: block; }
-/* a connector leading into a reached (active/complete) step fills brand blue */
-.stepper__connector--filled { background: var(--tok-fill-primary); }</code></pre>
+.progress { display: block; width: 100%; overflow: hidden; border-radius: 999px; background: var(--tok-bg-neutral); }
+.progress__bar { display: block; height: 100%; border-radius: 999px; background: var(--tok-fill-primary); }
+.progress--sm { height: 4px; }
+.progress--base { height: 8px; }
+/* Indeterminate: a sliver that crosses the track. No aria-valuenow — the whole
+   point is that the amount is unknown. Like Spinner, this keeps animating under
+   prefers-reduced-motion: it is the only signal that work is still happening. */
+.progress--indeterminate .progress__bar { width: 40%; animation: progress-slide 1.4s ease-in-out infinite; }
+@keyframes progress-slide { 0% { transform: translateX(-100%); } 100% { transform: translateX(calc(100% / 0.4 )); } }
+.progress__label { display: block; margin-bottom: 6px; color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; font-family: var(--tok-family-sans); }</code></pre>
   </main>
 </div>
 </body>
