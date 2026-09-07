@@ -73,6 +73,7 @@ const fontSans = resolve("family.sans");
 const rootVars = renderRootVars([...colorPaths.map((p) => [p, colorValue[p]]), ["family.sans", `'${fontSans}', sans-serif`]]);
 
 const radius = px(resolve(avatar.radius.$value));
+const squareRadius = px(resolve(avatar.squareRadius.$value));
 const sizeDefs = ["sm", "base", "lg"].map((key) => {
   const s = avatar.size[key];
   return {
@@ -106,6 +107,9 @@ const css = `${rootVars}
 
 .avatar { box-sizing: border-box; position: relative; display: inline-flex; flex-shrink: 0; align-items: center; justify-content: center; overflow: hidden; border-radius: ${radius}; border: 1px solid ${cv("border.default")}; font-family: ${cv("family.sans")}; user-select: none; }
 ${sizeDefs.map((s) => `.avatar--${s.key} { width: ${px(s.diameter)}; height: ${px(s.diameter)}; }`).join("\n")}
+/* Square shape — radius.default, the system's ordinary-control corner, so a
+   program mark sits in the same family as the Card and Button beside it. */
+.avatar--square { border-radius: ${squareRadius}; }
 .avatar__image { width: 100%; height: 100%; object-fit: cover; display: block; }
 .avatar__initials { text-transform: uppercase; }
 ${sizeDefs.map((s) => `.avatar--${s.key} .avatar__initials { ${typoCss(s.initials)} }`).join("\n")}
@@ -152,8 +156,8 @@ function hueOf(name) {
 function avatarImageMarkup(sizeKey, src, alt) {
   return `<span class="avatar avatar--${sizeKey}"><img class="avatar__image" src="${src}" alt="${alt}" /></span>`;
 }
-function avatarInitialsMarkup(sizeKey, name, hue = hueOf(name)) {
-  return `<span class="avatar avatar--${sizeKey} avatar--${hue}" role="img" aria-label="${name}"><span class="avatar__initials">${initialsOf(name)}</span></span>`;
+function avatarInitialsMarkup(sizeKey, name, { hue = hueOf(name), square = false } = {}) {
+  return `<span class="avatar avatar--${sizeKey} avatar--${hue}${square ? " avatar--square" : ""}" role="img" aria-label="${name}"><span class="avatar__initials">${initialsOf(name)}</span></span>`;
 }
 function avatarGenericMarkup(sizeKey) {
   return `<span class="avatar avatar--${sizeKey} avatar--neutral" role="img" aria-label="Unknown user">${iconPerson}</span>`;
@@ -307,7 +311,7 @@ const html = `<!doctype html>
     <div class="legend">
       <div class="row"><b>Fallback chain</b><span>Photo → initials → icon, the same order Radix Avatar / MUI Avatar / GitHub converge on: <code class="tok">&lt;img&gt;</code> if there's a src and it loaded; otherwise initials on a color derived from the name; otherwise a generic neutral person icon if there isn't even a name.</span></div>
       <div class="row"><b>Sizes</b><span>sm 32 / base 40 / lg 48 — deliberately the same grid as Button/Input/Select/Search (dim.8/dim.10/dim.12), not an independent scale, so an avatar sits at the same height as a button or field in the same row (a user-menu trigger, a comment composer).</span></div>
-      <div class="row"><b>Shape</b><span>Circle only (radius.full). A square/rounded variant wasn't asked for — not built speculatively.</span></div>
+      <div class="row"><b>Shape</b><span>Two: circle (<code class="tok">radius.full</code>, the default — what "Avatar" means unqualified) and rounded square (<code class="tok">avatar.squareRadius</code> = <code class="tok">radius.default</code>) via <code class="tok">--square</code>. <b>Circle for a person or an organisation, square for a thing</b> — a program, a subject, a file. Added 2026-09-07 for the Explore Degrees wizard, which identifies ~50 programs by a two-letter mark on a name-derived hue: this component's fallback logic exactly, just not applied to a person. Reverses the earlier "one shape only" call — duplicating the initials + hash-hue logic into a per-screen composition would have been worse.</span></div>
       <div class="row"><b>Initials</b><span>First letter of the first name + first letter of the last name (or the first 2 letters if it's a single word), always uppercase, max 2 characters.</span></div>
       <div class="row"><b>Initials color</b><span>Not arbitrary — deterministic: <code class="tok">hash(name) % 8</code> picks one of 8 hues (tokens/semantic/color.tokens.json → avatar.*). The same person always gets the same color; different people in a list read as visually distinct without assigning a color to each one by hand.</span></div>
       <div class="row"><b>Border</b><span>1px border.default on a photo or the generic no-name fallback — same convention as Card/Input, so a light photo or the near-white neutral fallback doesn't blend into surface.page. Identity-color fallbacks skip it (border-color: transparent) — a gray hairline on top of an already-saturated pastel read muddy rather than crisp; the color block itself already separates from the page.</span></div>
@@ -320,6 +324,23 @@ const html = `<!doctype html>
     <h2 class="big-section">JS (initials, color, onerror)</h2>
     <p class="section-desc">The logic for computing initials/color and the real onerror fallback swap — not a token, but needed for a correct port.</p>
     <pre class="code"><code>${esc(js)}</code></pre>
+
+    <h2 class="big-section">Shape</h2>
+    <p class="section-desc">Same initials, same name-derived hue, two shapes. The square is for identifying a <i>thing</i> — the tiles in the Explore Degrees program grid are exactly this mark inside a ChoiceTile.</p>
+    <div class="story-grid">
+      ${storyCard(
+        "Circle — a person",
+        `<div style="display:flex;gap:12px;align-items:center">${avatarInitialsMarkup("base", "Maya Patel")}${avatarInitialsMarkup("base", "Diego Fernandez")}${avatarInitialsMarkup("base", "Cait Genatossio")}</div>`,
+        `<span class="avatar avatar--base avatar--teal">\n  <span class="avatar__initials">MP</span>\n</span>`,
+        "The default. Unqualified 'Avatar' means this."
+      )}
+      ${storyCard(
+        "Square — a thing",
+        `<div style="display:flex;gap:12px;align-items:center">${avatarInitialsMarkup("base", "Computer Science", { square: true })}${avatarInitialsMarkup("base", "Art History", { square: true })}${avatarInitialsMarkup("base", "Baking and Pastry Arts", { square: true })}</div>`,
+        `<span class="avatar avatar--base avatar--violet avatar--square">\n  <span class="avatar__initials">CS</span>\n</span>`,
+        "CS · AH · BA — programs, not people. Same hash, same palette, radius.default."
+      )}
+    </div>
 
     <h2 class="big-section">Sizes</h2>
     <p class="section-desc">sm / base / lg — with a photo, to show just the box dimensions.</p>

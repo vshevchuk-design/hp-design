@@ -1,8 +1,16 @@
 {
   "component": {
     "avatar": {
-      "$description": "Image-first, initials-second, icon-third — same fallback chain Radix/MUI/GitHub all converge on: render the real photo when a src is given and it loads; if there's no photo (or it fails to load), fall back to the person's initials on a color assigned deterministically from their name; if there isn't even a name (e.g. a not-yet-loaded/system user), fall back further to a generic neutral person icon. One shape only — a circle (radius.full) — no square/rounded variant, not asked for. No AvatarGroup (overlapping stack) or presence/status dot either — both are genuinely separate compositions on top of a single Avatar, deferred until a real use case needs them, same discipline as Switch skipping a group variant it wasn't asked for.",
-      "radius": { "$type": "dimension", "$value": "{radius.full}" },
+      "$description": "Image-first, initials-second, icon-third — same fallback chain Radix/MUI/GitHub all converge on: render the real photo when a src is given and it loads; if there's no photo (or it fails to load), fall back to the person's initials on a color assigned deterministically from their name; if there isn't even a name (e.g. a not-yet-loaded/system user), fall back further to a generic neutral person icon. Two shapes since 2026-09-07: a circle (radius.full, still the default and what 'Avatar' means unqualified) and a rounded SQUARE (radius.default) — see squareRadius. The square exists because the Explore Degrees wizard identifies ~50 academic programs by a two-letter mark on a name-derived hue, which is this component's fallback logic exactly, only not applied to a person. Reverses the original 'one shape only, not asked for' call: the need is now real, and duplicating the initials + hash-hue logic into a per-screen composition would have been the worse answer. Rule of thumb: circle for a person or an organisation, square for a thing (a program, a subject, a file). No AvatarGroup (overlapping stack) or presence/status dot either — both are genuinely separate compositions on top of a single Avatar, deferred until a real use case needs them, same discipline as Switch skipping a group variant it wasn't asked for.",
+      "radius": {
+        "$type": "dimension",
+        "$value": "{radius.full}"
+      },
+      "squareRadius": {
+        "$type": "dimension",
+        "$value": "{radius.default}",
+        "$description": "The square shape's corner. radius.default (8px) — the system's go-to for an ordinary control, so a program mark sits in the same family as the Card, Button and field next to it, not as a second rounding language. Left as a separate token rather than a `shape` sub-tree so every existing consumer of avatar.radius keeps working untouched."
+      },
       "border": {
         "$type": "color",
         "$value": "{border.default}",
@@ -10,8 +18,14 @@
       },
       "size": {
         "sm": {
-          "diameter": { "$type": "dimension", "$value": "{dim.8}" },
-          "iconSize": { "$type": "dimension", "$value": "{dim.4}" },
+          "diameter": {
+            "$type": "dimension",
+            "$value": "{dim.8}"
+          },
+          "iconSize": {
+            "$type": "dimension",
+            "$value": "{dim.4}"
+          },
           "initials": {
             "$type": "typography",
             "$value": {
@@ -24,8 +38,14 @@
           }
         },
         "base": {
-          "diameter": { "$type": "dimension", "$value": "{dim.10}" },
-          "iconSize": { "$type": "dimension", "$value": "{dim.5}" },
+          "diameter": {
+            "$type": "dimension",
+            "$value": "{dim.10}"
+          },
+          "iconSize": {
+            "$type": "dimension",
+            "$value": "{dim.5}"
+          },
           "initials": {
             "$type": "typography",
             "$value": {
@@ -38,8 +58,14 @@
           }
         },
         "lg": {
-          "diameter": { "$type": "dimension", "$value": "{dim.12}" },
-          "iconSize": { "$type": "dimension", "$value": "{dim.6}" },
+          "diameter": {
+            "$type": "dimension",
+            "$value": "{dim.12}"
+          },
+          "iconSize": {
+            "$type": "dimension",
+            "$value": "{dim.6}"
+          },
           "initials": {
             "$type": "typography",
             "$value": {
@@ -56,23 +82,105 @@
       "fallback": {
         "$description": "Two distinct fallback tiers. 'identity' needs a name to derive both the initials and the color from — used whenever the person is known but has no photo (or it failed to load). 'generic' is for when there's no name either — a plain neutral icon, since there's nothing to color or initial by.",
         "generic": {
-          "bg": { "$type": "color", "$value": "{surface.sunken}" },
-          "icon": { "$type": "color", "$value": "{icon.muted}" }
+          "bg": {
+            "$type": "color",
+            "$value": "{surface.sunken}"
+          },
+          "icon": {
+            "$type": "color",
+            "$value": "{icon.muted}"
+          }
         },
         "identity": {
           "$description": "8 hue slots aliasing the new avatar.* semantic roles (tokens/semantic/color.tokens.json), same hue order as chart-series for a consistent categorical rhythm across the system. Slot assignment (hash the name to 0-7) is implementation logic, not a token — this just defines what each slot looks like.",
-          "blue": { "bg": { "$type": "color", "$value": "{avatar.blue.bg}" }, "text": { "$type": "color", "$value": "{avatar.blue.text}" } },
-          "green": { "bg": { "$type": "color", "$value": "{avatar.green.bg}" }, "text": { "$type": "color", "$value": "{avatar.green.text}" } },
-          "magenta": { "bg": { "$type": "color", "$value": "{avatar.magenta.bg}" }, "text": { "$type": "color", "$value": "{avatar.magenta.text}" } },
-          "amber": { "bg": { "$type": "color", "$value": "{avatar.amber.bg}" }, "text": { "$type": "color", "$value": "{avatar.amber.text}" } },
-          "teal": { "bg": { "$type": "color", "$value": "{avatar.teal.bg}" }, "text": { "$type": "color", "$value": "{avatar.teal.text}" } },
-          "orange": { "bg": { "$type": "color", "$value": "{avatar.orange.bg}" }, "text": { "$type": "color", "$value": "{avatar.orange.text}" } },
-          "violet": { "bg": { "$type": "color", "$value": "{avatar.violet.bg}" }, "text": { "$type": "color", "$value": "{avatar.violet.text}" } },
-          "red": { "bg": { "$type": "color", "$value": "{avatar.red.bg}" }, "text": { "$type": "color", "$value": "{avatar.red.text}" } }
+          "blue": {
+            "bg": {
+              "$type": "color",
+              "$value": "{avatar.blue.bg}"
+            },
+            "text": {
+              "$type": "color",
+              "$value": "{avatar.blue.text}"
+            }
+          },
+          "green": {
+            "bg": {
+              "$type": "color",
+              "$value": "{avatar.green.bg}"
+            },
+            "text": {
+              "$type": "color",
+              "$value": "{avatar.green.text}"
+            }
+          },
+          "magenta": {
+            "bg": {
+              "$type": "color",
+              "$value": "{avatar.magenta.bg}"
+            },
+            "text": {
+              "$type": "color",
+              "$value": "{avatar.magenta.text}"
+            }
+          },
+          "amber": {
+            "bg": {
+              "$type": "color",
+              "$value": "{avatar.amber.bg}"
+            },
+            "text": {
+              "$type": "color",
+              "$value": "{avatar.amber.text}"
+            }
+          },
+          "teal": {
+            "bg": {
+              "$type": "color",
+              "$value": "{avatar.teal.bg}"
+            },
+            "text": {
+              "$type": "color",
+              "$value": "{avatar.teal.text}"
+            }
+          },
+          "orange": {
+            "bg": {
+              "$type": "color",
+              "$value": "{avatar.orange.bg}"
+            },
+            "text": {
+              "$type": "color",
+              "$value": "{avatar.orange.text}"
+            }
+          },
+          "violet": {
+            "bg": {
+              "$type": "color",
+              "$value": "{avatar.violet.bg}"
+            },
+            "text": {
+              "$type": "color",
+              "$value": "{avatar.violet.text}"
+            }
+          },
+          "red": {
+            "bg": {
+              "$type": "color",
+              "$value": "{avatar.red.bg}"
+            },
+            "text": {
+              "$type": "color",
+              "$value": "{avatar.red.text}"
+            }
+          }
         }
       },
       "image": {
-        "fit": { "$type": "string", "$value": "cover", "$description": "object-fit: cover — crops to fill the circle instead of letterboxing, standard for every reference avatar implementation checked." }
+        "fit": {
+          "$type": "string",
+          "$value": "cover",
+          "$description": "object-fit: cover — crops to fill the circle instead of letterboxing, standard for every reference avatar implementation checked."
+        }
       }
     }
   }

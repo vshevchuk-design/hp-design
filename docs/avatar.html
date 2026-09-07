@@ -94,6 +94,9 @@
 .avatar--sm { width: 32px; height: 32px; }
 .avatar--base { width: 40px; height: 40px; }
 .avatar--lg { width: 48px; height: 48px; }
+/* Square shape — radius.default, the system's ordinary-control corner, so a
+   program mark sits in the same family as the Card and Button beside it. */
+.avatar--square { border-radius: 8px; }
 .avatar__image { width: 100%; height: 100%; object-fit: cover; display: block; }
 .avatar__initials { text-transform: uppercase; }
 .avatar--sm .avatar__initials { font-weight: 600; font-size: 12px; line-height: 1; }
@@ -234,7 +237,7 @@
     <div class="legend">
       <div class="row"><b>Fallback chain</b><span>Photo → initials → icon, the same order Radix Avatar / MUI Avatar / GitHub converge on: <code class="tok">&lt;img&gt;</code> if there's a src and it loaded; otherwise initials on a color derived from the name; otherwise a generic neutral person icon if there isn't even a name.</span></div>
       <div class="row"><b>Sizes</b><span>sm 32 / base 40 / lg 48 — deliberately the same grid as Button/Input/Select/Search (dim.8/dim.10/dim.12), not an independent scale, so an avatar sits at the same height as a button or field in the same row (a user-menu trigger, a comment composer).</span></div>
-      <div class="row"><b>Shape</b><span>Circle only (radius.full). A square/rounded variant wasn't asked for — not built speculatively.</span></div>
+      <div class="row"><b>Shape</b><span>Two: circle (<code class="tok">radius.full</code>, the default — what "Avatar" means unqualified) and rounded square (<code class="tok">avatar.squareRadius</code> = <code class="tok">radius.default</code>) via <code class="tok">--square</code>. <b>Circle for a person or an organisation, square for a thing</b> — a program, a subject, a file. Added 2026-09-07 for the Explore Degrees wizard, which identifies ~50 programs by a two-letter mark on a name-derived hue: this component's fallback logic exactly, just not applied to a person. Reverses the earlier "one shape only" call — duplicating the initials + hash-hue logic into a per-screen composition would have been worse.</span></div>
       <div class="row"><b>Initials</b><span>First letter of the first name + first letter of the last name (or the first 2 letters if it's a single word), always uppercase, max 2 characters.</span></div>
       <div class="row"><b>Initials color</b><span>Not arbitrary — deterministic: <code class="tok">hash(name) % 8</code> picks one of 8 hues (tokens/semantic/color.tokens.json → avatar.*). The same person always gets the same color; different people in a list read as visually distinct without assigning a color to each one by hand.</span></div>
       <div class="row"><b>Border</b><span>1px border.default on a photo or the generic no-name fallback — same convention as Card/Input, so a light photo or the near-white neutral fallback doesn't blend into surface.page. Identity-color fallbacks skip it (border-color: transparent) — a gray hairline on top of an already-saturated pastel read muddy rather than crisp; the color block itself already separates from the page.</span></div>
@@ -269,6 +272,9 @@
 .avatar--sm { width: 32px; height: 32px; }
 .avatar--base { width: 40px; height: 40px; }
 .avatar--lg { width: 48px; height: 48px; }
+/* Square shape — radius.default, the system's ordinary-control corner, so a
+   program mark sits in the same family as the Card and Button beside it. */
+.avatar--square { border-radius: 8px; }
 .avatar__image { width: 100%; height: 100%; object-fit: cover; display: block; }
 .avatar__initials { text-transform: uppercase; }
 .avatar--sm .avatar__initials { font-weight: 600; font-size: 12px; line-height: 1; }
@@ -322,6 +328,29 @@ document.querySelectorAll("[data-avatar-fallback-demo] img").forEach((img) =&gt;
     img.nextElementSibling.hidden = false;
   });
 });</code></pre>
+
+    <h2 class="big-section">Shape</h2>
+    <p class="section-desc">Same initials, same name-derived hue, two shapes. The square is for identifying a <i>thing</i> — the tiles in the Explore Degrees program grid are exactly this mark inside a ChoiceTile.</p>
+    <div class="story-grid">
+      
+      <div class="story">
+        <h3>Circle — a person</h3>
+        <div class="story-preview"><div style="display:flex;gap:12px;align-items:center"><span class="avatar avatar--base avatar--violet" role="img" aria-label="Maya Patel"><span class="avatar__initials">MP</span></span><span class="avatar avatar--base avatar--orange" role="img" aria-label="Diego Fernandez"><span class="avatar__initials">DF</span></span><span class="avatar avatar--base avatar--orange" role="img" aria-label="Cait Genatossio"><span class="avatar__initials">CG</span></span></div></div>
+        <pre class="code"><code>&lt;span class="avatar avatar--base avatar--teal"&gt;
+  &lt;span class="avatar__initials"&gt;MP&lt;/span&gt;
+&lt;/span&gt;</code></pre>
+        <p class="story-note">The default. Unqualified 'Avatar' means this.</p>
+      </div>
+      
+      <div class="story">
+        <h3>Square — a thing</h3>
+        <div class="story-preview"><div style="display:flex;gap:12px;align-items:center"><span class="avatar avatar--base avatar--green avatar--square" role="img" aria-label="Computer Science"><span class="avatar__initials">CS</span></span><span class="avatar avatar--base avatar--green avatar--square" role="img" aria-label="Art History"><span class="avatar__initials">AH</span></span><span class="avatar avatar--base avatar--teal avatar--square" role="img" aria-label="Baking and Pastry Arts"><span class="avatar__initials">BA</span></span></div></div>
+        <pre class="code"><code>&lt;span class="avatar avatar--base avatar--violet avatar--square"&gt;
+  &lt;span class="avatar__initials"&gt;CS&lt;/span&gt;
+&lt;/span&gt;</code></pre>
+        <p class="story-note">CS · AH · BA — programs, not people. Same hash, same palette, radius.default.</p>
+      </div>
+    </div>
 
     <h2 class="big-section">Sizes</h2>
     <p class="section-desc">sm / base / lg — with a photo, to show just the box dimensions.</p>

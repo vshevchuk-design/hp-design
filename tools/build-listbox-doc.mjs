@@ -66,7 +66,7 @@ const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, 
 const cv = (tokenPath) => `var(${cssVarName(tokenPath)})`;
 
 const colorPaths = [
-  "fill.neutralHoverStrong",
+  "fill.neutralHoverStrong", "bg.neutral",
   "surface.default", "surface.sunken", "surface.dim", "border.default", "border.focus", "text.default", "text.secondary", "text.disabled", "text.muted", "text.primary",
   "icon.default", "icon.onFill", "fill.neutral", "fill.neutralHover", "fill.neutralActive", "fill.primary",
 ];
@@ -84,6 +84,23 @@ const optionGap = px(resolve(listbox.optionGap.$value));
 const checkmarkSize = px(resolve(listbox.checkmarkSize.$value));
 const maxHeight = px(resolve(listbox.maxHeight.$value));
 const labelType = resolveToken(listbox.label);
+// An option can carry a second line saying what it IS, and a trailing slot
+// naming its kind. The trailing pill is a REAL Badge (neutral tint, sm),
+// resolved from badge.tokens.json — never a re-typed pill.
+const badge = load("tokens/components/badge.tokens.json").component.badge;
+const stripRef = (r) => r.replace(/[{}]/g, "");
+const descType = resolveToken(listbox.description);
+const descColor = stripRef(listbox.descriptionColor.$value);
+const stackGap = px(resolve(listbox.stackGap.$value));
+const trailingGap = px(resolve(listbox.trailingGap.$value));
+const optBadge = {
+  bg: stripRef(badge.role.neutral.tint.bg.$value),
+  text: stripRef(badge.role.neutral.tint.text.$value),
+  radius: px(resolve(badge.radius.$value)),
+  height: px(resolve(badge.size.sm.height.$value)),
+  paddingX: px(resolve(badge.size.sm.paddingX.$value)),
+  label: resolveToken(badge.size.sm.label),
+};
 const shadow = resolveToken(listbox.shadow);
 const shadowCss = `${px(shadow.offsetX)} ${px(shadow.offsetY)} ${px(shadow.blur)} ${px(shadow.spread)} ${shadow.color}`;
 
@@ -124,6 +141,12 @@ const css = `${rootVars}
 .listbox__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: ${gap}; max-height: ${maxHeight}; overflow: auto; }
 .listbox__option { width: 100%; box-sizing: border-box; display: flex; align-items: center; gap: ${optionGap}; padding: ${optionPaddingY} ${optionPaddingX}; border: none; background: none; border-radius: ${optionRadius}; cursor: pointer; text-align: left; color: ${cv("text.default")}; font-family: inherit; ${typoCss(labelType)} }
 .listbox__option:hover { background: ${cv("fill.neutralHover")}; }
+/* An option with a description + a trailing kind badge. The text stack takes
+   the remaining width so a long programme name wraps instead of pushing the
+   badge out of the panel. */
+.listbox__stack { display: flex; flex-direction: column; gap: ${stackGap}; min-width: 0; flex: 1; }
+.listbox__desc { color: ${cv(descColor)}; ${typoCss(descType)} }
+.listbox__trailing { flex-shrink: 0; margin-left: ${trailingGap}; display: inline-flex; align-items: center; height: ${optBadge.height}; padding: 0 ${optBadge.paddingX}; border-radius: ${optBadge.radius}; background: ${cv(optBadge.bg)}; color: ${cv(optBadge.text)}; ${typoCss(optBadge.label)} }
 .listbox__checkmark { width: ${checkmarkSize}; height: ${checkmarkSize}; margin-left: auto; color: ${cv("fill.primary")}; flex-shrink: 0; }
 
 .listbox__cb-option { width: 100%; box-sizing: border-box; display: flex; align-items: center; gap: ${optionGap}; padding: ${optionPaddingY} ${optionPaddingX}; border-radius: ${optionRadius}; cursor: pointer; }
@@ -185,6 +208,43 @@ function cbOption(id, label, checked) {
           <span class="listbox__cb-label">${label}</span>
         </label></li>`;
 }
+const PROGRAM_OPTIONS = [
+  { label: "A B C", desc: "Liberal Arts Undergraduate", kind: "Major" },
+  { label: "Accounting AA", desc: "Associate of Arts", kind: "Major" },
+  { label: "Accounting AB", desc: "Liberal Arts Undergraduate", kind: "Major" },
+  { label: "Art (BFA)", desc: "Fine Arts Undergraduate", kind: "Major" },
+  { label: "Art History Minor", desc: "Liberal Arts Undergraduate", kind: "Minor" },
+  { label: "Auto Technology", desc: "Associate of Science", kind: "Major" },
+];
+function programOption(id, o, checked = false) {
+  return `<li><label class="listbox__cb-option" for="${id}">
+          <input type="checkbox" class="listbox__cb-input" id="${id}"${checked ? " checked" : ""} />
+          <span class="listbox__cb-box">${iconCheckboxGlyph}</span>
+          <span class="listbox__stack">
+            <span class="listbox__cb-label">${o.label}</span>
+            <span class="listbox__desc">${o.desc}</span>
+          </span>
+          <span class="listbox__trailing">${o.kind}</span>
+        </label></li>`;
+}
+const programDemo = `<button class="ov-btn ov-btn--secondary" popovertarget="listbox-programs">Add a major or minor</button>
+    <div id="listbox-programs" class="listbox" popover>
+      <div class="listbox__search-wrap">
+        <div class="listbox__search">${iconSearch}<input type="text" placeholder="Search majors and minors…" /></div>
+      </div>
+      <ul class="listbox__list">
+        ${PROGRAM_OPTIONS.map((o, i) => programOption(`lb-prog-${i}`, o, i === 2)).join("\n        ")}
+      </ul>
+    </div>`;
+const programCode = `<li><label class="listbox__cb-option" for="opt">
+  <input type="checkbox" class="listbox__cb-input" id="opt" />
+  <span class="listbox__cb-box">…</span>
+  <span class="listbox__stack">
+    <span class="listbox__cb-label">Accounting AA</span>
+    <span class="listbox__desc">Associate of Arts</span>
+  </span>
+  <span class="listbox__trailing">Major</span>
+</label></li>`;
 const multiDemo = `<button class="ov-btn ov-btn--secondary" popovertarget="listbox-multi">Labels (2)</button>
     <div id="listbox-multi" class="listbox" popover>
       <div class="listbox__search-wrap">
@@ -339,6 +399,7 @@ const html = `<!doctype html>
     <div class="story-grid">
       ${storyCard("Single-select", singleDemo, singleCode, "Poland is selected — trailing checkmark, no other visual change.")}
       ${storyCard("Multi-select, with search + select-all", multiDemo, multiCode, "Bug and Feature request are checked. Clicking a checkbox in a real implementation wouldn't close the panel.")}
+      ${storyCard("Option with a description + kind badge", programDemo, programCode, "The Explore Degrees 'Add a major or minor' picker. The label alone is ambiguous — several programmes share a name and differ only by degree type — so the description carries what the option IS, and the trailing pill (a real Badge, neutral tint, sm) carries its kind.")}
     </div>
 
     <p class="placeholder-note">Every code sample on this page is printed from the same resolved token values driving the live previews above it — copy it directly, nothing here is hand-typed.</p>

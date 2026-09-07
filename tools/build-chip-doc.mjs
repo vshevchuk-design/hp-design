@@ -69,8 +69,24 @@ const refPath = (ref) => ref.replace(/[{}]/g, "");
 // The hover surface role is READ from the token file, not retyped — same rule
 // that caught build-button-doc.mjs painting a stale role earlier today.
 const toggleHoverBg = chip.toggle.hover.bg.$value.replace(/[{}]/g, "");
+// The meta variant embeds a REAL Badge (neutral tint, sm) — resolved from
+// badge.tokens.json, never a re-typed pill. Same rule that caught Tabs' counter.
+const badge = load("tokens/components/badge.tokens.json").component.badge;
+const metaGap = px(resolve(chip.meta.gap.$value));
+const metaActionType = resolveToken(chip.meta.action.label);
+const metaActionColor = refPath(chip.meta.action.color.$value);
+const metaActionHover = refPath(chip.meta.action.hoverColor.$value);
+const chipBadge = {
+  bg: refPath(badge.role.neutral.tint.bg.$value),
+  text: refPath(badge.role.neutral.tint.text.$value),
+  radius: px(resolve(badge.radius.$value)),
+  height: px(resolve(badge.size.sm.height.$value)),
+  paddingX: px(resolve(badge.size.sm.paddingX.$value)),
+  label: resolveToken(badge.size.sm.label),
+};
+
 const colorPaths = [
-  "bg.primaryHover",
+  "bg.primaryHover", metaActionColor, metaActionHover, chipBadge.bg, chipBadge.text,
   "surface.default", "border.default", "border.strong", "border.focus", "text.default", "icon.default",
   "fill.primary", "fill.primaryHover", "fill.disabled", "text.onFill", "icon.onFill",
   "bg.primary", "text.primary", "icon.primary",
@@ -161,6 +177,14 @@ ${sizeDefs
 .chip--action:disabled { color: ${cv("text.disabled")}; cursor: not-allowed; }
 .chip--action:disabled .chip__icon { color: ${cv("icon.disabled")}; }
 
+/* meta — label + an inline Badge naming the value's role + one nested action.
+   The chip body is NOT interactive: a static container with a single
+   interactive child, Attachment's idle-shape resolution applied again. */
+.chip--meta { background: ${cv("surface.default")}; border-color: ${cv("border.default")}; color: ${cv("text.default")}; cursor: default; gap: ${metaGap}; }
+.chip__meta-badge { flex-shrink: 0; display: inline-flex; align-items: center; height: ${chipBadge.height}; padding: 0 ${chipBadge.paddingX}; border-radius: ${chipBadge.radius}; background: ${cv(chipBadge.bg)}; color: ${cv(chipBadge.text)}; ${typoCss(chipBadge.label)} }
+.chip__meta-action { flex-shrink: 0; border: none; background: none; padding: 0; cursor: pointer; font-family: inherit; color: ${cv(metaActionColor)}; ${typoCss(metaActionType)} border-radius: ${px(resolve("radius.xs"))}; }
+.chip__meta-action:hover { color: ${cv(metaActionHover)}; }
+.chip__meta-action:focus-visible { outline: ${ringWidth} solid ${cv("border.focus")}; outline-offset: ${ringOffset}; }
 .chip__remove { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; border: none; border-radius: ${px(resolve("radius.default"))}; background: transparent; padding: 0; cursor: pointer; color: ${cv("icon.secondary")}; }
 .chip__remove:hover { background: ${cv("fill.neutralHover")}; }
 .chip__remove:active { background: ${cv("fill.neutralActive")}; }
@@ -201,6 +225,23 @@ function actionChipMarkup(sizeKey, { label = "Label", icon = iconArrow, disabled
   const classes = ["chip", `chip--${sizeKey}`, "chip--action"];
   const iconHtml = icon ? icon : "";
   return `<button class="${classes.join(" ")}"${disabled ? " disabled" : ""}><span class="chip__label">${label}</span>${iconHtml}</button>`;
+}
+
+function metaChipMarkup(sizeKey, { label = "Label", badges = [], action = null, remove = false } = {}) {
+  return `<span class="chip chip--${sizeKey} chip--meta">
+  <span class="chip__label">${esc(label)}</span>
+  ${badges.map((b) => `<span class="chip__meta-badge">${esc(b)}</span>`).join("\n  ")}
+  ${action ? `<button class="chip__meta-action" type="button">${esc(action)}</button>` : ""}
+  ${remove ? `<button class="chip__remove" type="button" aria-label="Remove ${esc(label)}">${iconClose}</button>` : ""}
+</span>`;
+}
+
+function metaStories() {
+  return [
+    { title: "Primary pick, changeable", html: metaChipMarkup("base", { label: "Accounting", badges: ["Primary · Major"], action: "Change" }), note: "The primary program can't be removed — only swapped, so its action is Change, not ×." },
+    { title: "Added program", html: metaChipMarkup("base", { label: "Accounting AB", badges: ["Major"], remove: true }), note: "An extra major: the badge names its kind, the × drops it." },
+    { title: "Added minor", html: metaChipMarkup("base", { label: "English Minor", badges: ["Minor"], remove: true }) },
+  ].map((st) => storyCard(st.title, st.html, st.html.replace(/<svg[\s\S]*?<\/svg>/g, "<!-- icon: close --></svg>"), st.note || ""));
 }
 
 function storyCard(title, liveHtml, codeHtml, note = "") {
@@ -383,6 +424,12 @@ const html = `<!doctype html>
     <p class="section-desc">Base size — a selected value with a trailing dismiss. The × is a real button; the chip body itself isn't interactive.</p>
     <div class="story-grid">
       ${removableStories()}
+    </div>
+
+    <h2 class="big-section">Meta</h2>
+    <p class="section-desc">Base size — a chosen value that has to say three things at once: which thing, what role it plays, and how to change it. The inline pill is a <b>real Badge</b> (neutral tint, sm) resolved from <code class="tok">badge.tokens.json</code>. The chip body is not interactive; the one nested action is.</p>
+    <div class="story-grid">
+      ${metaStories()}
     </div>
 
     <h2 class="big-section">Action</h2>

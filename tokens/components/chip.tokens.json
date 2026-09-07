@@ -290,6 +290,30 @@
           "$type": "dimension",
           "$value": "{dim.0_5}"
         }
+      },
+      "meta": {
+        "$description": "Content variant: a label, an inline Badge naming the value's ROLE, and one nested action — a short text button ('Change') or the removable ×. Built 2026-09-07 for the Explore Degrees program combo, where a chip has to say three things at once: which program, whether it's the primary pick, and what kind (major or minor) — 'Accounting · Primary · Major · Change'. The chip itself is NOT interactive here: it's a static container with a single interactive child, which is Attachment's idle-shape resolution to the interactive-inside-interactive problem, applied again. The inline badge is a real Badge (neutral tint, sm) resolved from badge.tokens.json — never a re-typed pill.",
+        "gap": {
+          "$type": "dimension",
+          "$value": "{dim.1_5}",
+          "$description": "Between the label, the inline badge and the action — tighter than the chip's own content gap so the three read as one value rather than three items."
+        },
+        "action": {
+          "label": {
+            "$type": "typography",
+            "$value": "{text-style.heading-sm}",
+            "$description": "12px semibold — the same size as the badge beside it, so the action reads as part of the chip and not as body copy that wandered in."
+          },
+          "color": {
+            "$type": "color",
+            "$value": "{text.default}"
+          },
+          "hoverColor": {
+            "$type": "color",
+            "$value": "{text.primary}",
+            "$description": "The action is the only live thing in the chip, so hovering it goes brand blue — a text-only affordance needs a colour change, since there is no fill to darken."
+          }
+        }
       }
     }
   }

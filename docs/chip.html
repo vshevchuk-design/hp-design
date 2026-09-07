@@ -69,6 +69,10 @@
 
   :root {
   --tok-bg-primary-hover: #eff6ff;
+  --tok-text-default: #121921;
+  --tok-text-primary: #0468c4;
+  --tok-bg-neutral: #e6e8eb;
+  --tok-text-default: #121921;
   --tok-surface-default: #ffffff;
   --tok-border-default: #dadde0;
   --tok-border-strong: #adb5be;
@@ -134,6 +138,14 @@
 .chip--action:disabled { color: var(--tok-text-disabled); cursor: not-allowed; }
 .chip--action:disabled .chip__icon { color: var(--tok-icon-disabled); }
 
+/* meta — label + an inline Badge naming the value's role + one nested action.
+   The chip body is NOT interactive: a static container with a single
+   interactive child, Attachment's idle-shape resolution applied again. */
+.chip--meta { background: var(--tok-surface-default); border-color: var(--tok-border-default); color: var(--tok-text-default); cursor: default; gap: 6px; }
+.chip__meta-badge { flex-shrink: 0; display: inline-flex; align-items: center; height: 16px; padding: 0 8px; border-radius: 999px; background: var(--tok-bg-neutral); color: var(--tok-text-default); font-weight: 600; font-size: 10px; line-height: 1; }
+.chip__meta-action { flex-shrink: 0; border: none; background: none; padding: 0; cursor: pointer; font-family: inherit; color: var(--tok-text-default); font-weight: 600; font-size: 12px; line-height: 1.4; border-radius: 4px; }
+.chip__meta-action:hover { color: var(--tok-text-primary); }
+.chip__meta-action:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
 .chip__remove { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; border: none; border-radius: 8px; background: transparent; padding: 0; cursor: pointer; color: var(--tok-icon-secondary); }
 .chip__remove:hover { background: var(--tok-fill-neutral-hover); }
 .chip__remove:active { background: var(--tok-fill-neutral-active); }
@@ -268,6 +280,10 @@
     <h2 class="big-section">CSS</h2>
     <pre class="code"><code>:root {
   --tok-bg-primary-hover: #eff6ff;
+  --tok-text-default: #121921;
+  --tok-text-primary: #0468c4;
+  --tok-bg-neutral: #e6e8eb;
+  --tok-text-default: #121921;
   --tok-surface-default: #ffffff;
   --tok-border-default: #dadde0;
   --tok-border-strong: #adb5be;
@@ -333,6 +349,14 @@
 .chip--action:disabled { color: var(--tok-text-disabled); cursor: not-allowed; }
 .chip--action:disabled .chip__icon { color: var(--tok-icon-disabled); }
 
+/* meta — label + an inline Badge naming the value's role + one nested action.
+   The chip body is NOT interactive: a static container with a single
+   interactive child, Attachment's idle-shape resolution applied again. */
+.chip--meta { background: var(--tok-surface-default); border-color: var(--tok-border-default); color: var(--tok-text-default); cursor: default; gap: 6px; }
+.chip__meta-badge { flex-shrink: 0; display: inline-flex; align-items: center; height: 16px; padding: 0 8px; border-radius: 999px; background: var(--tok-bg-neutral); color: var(--tok-text-default); font-weight: 600; font-size: 10px; line-height: 1; }
+.chip__meta-action { flex-shrink: 0; border: none; background: none; padding: 0; cursor: pointer; font-family: inherit; color: var(--tok-text-default); font-weight: 600; font-size: 12px; line-height: 1.4; border-radius: 4px; }
+.chip__meta-action:hover { color: var(--tok-text-primary); }
+.chip__meta-action:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
 .chip__remove { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; border: none; border-radius: 8px; background: transparent; padding: 0; cursor: pointer; color: var(--tok-icon-secondary); }
 .chip__remove:hover { background: var(--tok-fill-neutral-hover); }
 .chip__remove:active { background: var(--tok-fill-neutral-active); }
@@ -491,6 +515,60 @@
         <div class="story-preview"><span class="chip chip--base chip--removable chip--disabled"><span class="chip__label">Calam Xavier</span><button class="chip__remove" aria-label="Remove Calam Xavier" disabled><svg class="chip__remove-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button></span></div>
         <pre class="code"><code>&lt;span class="chip chip--base chip--removable chip--disabled"&gt;&lt;span class="chip__label"&gt;Calam Xavier&lt;/span&gt;&lt;button class="chip__remove" aria-label="Remove Calam Xavier" disabled&gt;&lt;svg class="chip__remove-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"&gt;&lt;path d="M0 0h24v24H0z" fill="none"/&gt;&lt;path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/&gt;&lt;/svg&gt;&lt;/button&gt;&lt;/span&gt;</code></pre>
         <p class="story-note">Remove button hidden (visibility:hidden, keeps layout stable) — nothing to remove when the whole chip is inert.</p>
+      </div>
+    </div>
+
+    <h2 class="big-section">Meta</h2>
+    <p class="section-desc">Base size — a chosen value that has to say three things at once: which thing, what role it plays, and how to change it. The inline pill is a <b>real Badge</b> (neutral tint, sm) resolved from <code class="tok">badge.tokens.json</code>. The chip body is not interactive; the one nested action is.</p>
+    <div class="story-grid">
+      
+      <div class="story">
+        <h3>Primary pick, changeable</h3>
+        <div class="story-preview"><span class="chip chip--base chip--meta">
+  <span class="chip__label">Accounting</span>
+  <span class="chip__meta-badge">Primary · Major</span>
+  <button class="chip__meta-action" type="button">Change</button>
+  
+</span></div>
+        <pre class="code"><code>&lt;span class="chip chip--base chip--meta"&gt;
+  &lt;span class="chip__label"&gt;Accounting&lt;/span&gt;
+  &lt;span class="chip__meta-badge"&gt;Primary · Major&lt;/span&gt;
+  &lt;button class="chip__meta-action" type="button"&gt;Change&lt;/button&gt;
+  
+&lt;/span&gt;</code></pre>
+        <p class="story-note">The primary program can't be removed — only swapped, so its action is Change, not ×.</p>
+      </div>,
+      <div class="story">
+        <h3>Added program</h3>
+        <div class="story-preview"><span class="chip chip--base chip--meta">
+  <span class="chip__label">Accounting AB</span>
+  <span class="chip__meta-badge">Major</span>
+  
+  <button class="chip__remove" type="button" aria-label="Remove Accounting AB"><svg class="chip__remove-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
+</span></div>
+        <pre class="code"><code>&lt;span class="chip chip--base chip--meta"&gt;
+  &lt;span class="chip__label"&gt;Accounting AB&lt;/span&gt;
+  &lt;span class="chip__meta-badge"&gt;Major&lt;/span&gt;
+  
+  &lt;button class="chip__remove" type="button" aria-label="Remove Accounting AB"&gt;&lt;!-- icon: close --&gt;&lt;/svg&gt;&lt;/button&gt;
+&lt;/span&gt;</code></pre>
+        <p class="story-note">An extra major: the badge names its kind, the × drops it.</p>
+      </div>,
+      <div class="story">
+        <h3>Added minor</h3>
+        <div class="story-preview"><span class="chip chip--base chip--meta">
+  <span class="chip__label">English Minor</span>
+  <span class="chip__meta-badge">Minor</span>
+  
+  <button class="chip__remove" type="button" aria-label="Remove English Minor"><svg class="chip__remove-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
+</span></div>
+        <pre class="code"><code>&lt;span class="chip chip--base chip--meta"&gt;
+  &lt;span class="chip__label"&gt;English Minor&lt;/span&gt;
+  &lt;span class="chip__meta-badge"&gt;Minor&lt;/span&gt;
+  
+  &lt;button class="chip__remove" type="button" aria-label="Remove English Minor"&gt;&lt;!-- icon: close --&gt;&lt;/svg&gt;&lt;/button&gt;
+&lt;/span&gt;</code></pre>
+        
       </div>
     </div>
 

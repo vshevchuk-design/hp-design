@@ -79,6 +79,7 @@
 
   :root {
   --tok-fill-neutral-hover-strong: #cdd1d6;
+  --tok-bg-neutral: #e6e8eb;
   --tok-surface-default: #ffffff;
   --tok-surface-sunken: #e6e8eb;
   --tok-surface-dim: #f4f5f7;
@@ -102,6 +103,12 @@
 .listbox__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; max-height: 288px; overflow: auto; }
 .listbox__option { width: 100%; box-sizing: border-box; display: flex; align-items: center; gap: 8px; padding: 8px 8px; border: none; background: none; border-radius: 4px; cursor: pointer; text-align: left; color: var(--tok-text-default); font-family: inherit; font-weight: 400; font-size: 14px; line-height: 1.4; }
 .listbox__option:hover { background: var(--tok-fill-neutral-hover); }
+/* An option with a description + a trailing kind badge. The text stack takes
+   the remaining width so a long programme name wraps instead of pushing the
+   badge out of the panel. */
+.listbox__stack { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+.listbox__desc { color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.listbox__trailing { flex-shrink: 0; margin-left: 8px; display: inline-flex; align-items: center; height: 16px; padding: 0 8px; border-radius: 999px; background: var(--tok-bg-neutral); color: var(--tok-text-default); font-weight: 600; font-size: 10px; line-height: 1; }
 .listbox__checkmark { width: 16px; height: 16px; margin-left: auto; color: var(--tok-fill-primary); flex-shrink: 0; }
 
 .listbox__cb-option { width: 100%; box-sizing: border-box; display: flex; align-items: center; gap: 8px; padding: 8px 8px; border-radius: 4px; cursor: pointer; }
@@ -245,6 +252,7 @@
     <h2 class="big-section">CSS</h2>
     <pre class="code"><code>:root {
   --tok-fill-neutral-hover-strong: #cdd1d6;
+  --tok-bg-neutral: #e6e8eb;
   --tok-surface-default: #ffffff;
   --tok-surface-sunken: #e6e8eb;
   --tok-surface-dim: #f4f5f7;
@@ -268,6 +276,12 @@
 .listbox__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; max-height: 288px; overflow: auto; }
 .listbox__option { width: 100%; box-sizing: border-box; display: flex; align-items: center; gap: 8px; padding: 8px 8px; border: none; background: none; border-radius: 4px; cursor: pointer; text-align: left; color: var(--tok-text-default); font-family: inherit; font-weight: 400; font-size: 14px; line-height: 1.4; }
 .listbox__option:hover { background: var(--tok-fill-neutral-hover); }
+/* An option with a description + a trailing kind badge. The text stack takes
+   the remaining width so a long programme name wraps instead of pushing the
+   badge out of the panel. */
+.listbox__stack { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+.listbox__desc { color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.listbox__trailing { flex-shrink: 0; margin-left: 8px; display: inline-flex; align-items: center; height: 16px; padding: 0 8px; border-radius: 999px; background: var(--tok-bg-neutral); color: var(--tok-text-default); font-weight: 600; font-size: 10px; line-height: 1; }
 .listbox__checkmark { width: 16px; height: 16px; margin-left: auto; color: var(--tok-fill-primary); flex-shrink: 0; }
 
 .listbox__cb-option { width: 100%; box-sizing: border-box; display: flex; align-items: center; gap: 8px; padding: 8px 8px; border-radius: 4px; cursor: pointer; }
@@ -380,6 +394,82 @@
   &lt;/ul&gt;
 &lt;/div&gt;</code></pre>
         <p class="story-note">Bug and Feature request are checked. Clicking a checkbox in a real implementation wouldn't close the panel.</p>
+      </div>
+      
+      <div class="story">
+        <h3>Option with a description + kind badge</h3>
+        <div class="story-preview"><button class="ov-btn ov-btn--secondary" popovertarget="listbox-programs">Add a major or minor</button>
+    <div id="listbox-programs" class="listbox" popover>
+      <div class="listbox__search-wrap">
+        <div class="listbox__search"><svg class="listbox__search-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg><input type="text" placeholder="Search majors and minors…" /></div>
+      </div>
+      <ul class="listbox__list">
+        <li><label class="listbox__cb-option" for="lb-prog-0">
+          <input type="checkbox" class="listbox__cb-input" id="lb-prog-0" />
+          <span class="listbox__cb-box"><svg class="listbox__cb-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
+          <span class="listbox__stack">
+            <span class="listbox__cb-label">A B C</span>
+            <span class="listbox__desc">Liberal Arts Undergraduate</span>
+          </span>
+          <span class="listbox__trailing">Major</span>
+        </label></li>
+        <li><label class="listbox__cb-option" for="lb-prog-1">
+          <input type="checkbox" class="listbox__cb-input" id="lb-prog-1" />
+          <span class="listbox__cb-box"><svg class="listbox__cb-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
+          <span class="listbox__stack">
+            <span class="listbox__cb-label">Accounting AA</span>
+            <span class="listbox__desc">Associate of Arts</span>
+          </span>
+          <span class="listbox__trailing">Major</span>
+        </label></li>
+        <li><label class="listbox__cb-option" for="lb-prog-2">
+          <input type="checkbox" class="listbox__cb-input" id="lb-prog-2" checked />
+          <span class="listbox__cb-box"><svg class="listbox__cb-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
+          <span class="listbox__stack">
+            <span class="listbox__cb-label">Accounting AB</span>
+            <span class="listbox__desc">Liberal Arts Undergraduate</span>
+          </span>
+          <span class="listbox__trailing">Major</span>
+        </label></li>
+        <li><label class="listbox__cb-option" for="lb-prog-3">
+          <input type="checkbox" class="listbox__cb-input" id="lb-prog-3" />
+          <span class="listbox__cb-box"><svg class="listbox__cb-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
+          <span class="listbox__stack">
+            <span class="listbox__cb-label">Art (BFA)</span>
+            <span class="listbox__desc">Fine Arts Undergraduate</span>
+          </span>
+          <span class="listbox__trailing">Major</span>
+        </label></li>
+        <li><label class="listbox__cb-option" for="lb-prog-4">
+          <input type="checkbox" class="listbox__cb-input" id="lb-prog-4" />
+          <span class="listbox__cb-box"><svg class="listbox__cb-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
+          <span class="listbox__stack">
+            <span class="listbox__cb-label">Art History Minor</span>
+            <span class="listbox__desc">Liberal Arts Undergraduate</span>
+          </span>
+          <span class="listbox__trailing">Minor</span>
+        </label></li>
+        <li><label class="listbox__cb-option" for="lb-prog-5">
+          <input type="checkbox" class="listbox__cb-input" id="lb-prog-5" />
+          <span class="listbox__cb-box"><svg class="listbox__cb-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
+          <span class="listbox__stack">
+            <span class="listbox__cb-label">Auto Technology</span>
+            <span class="listbox__desc">Associate of Science</span>
+          </span>
+          <span class="listbox__trailing">Major</span>
+        </label></li>
+      </ul>
+    </div></div>
+        <pre class="code"><code>&lt;li&gt;&lt;label class="listbox__cb-option" for="opt"&gt;
+  &lt;input type="checkbox" class="listbox__cb-input" id="opt" /&gt;
+  &lt;span class="listbox__cb-box"&gt;…&lt;/span&gt;
+  &lt;span class="listbox__stack"&gt;
+    &lt;span class="listbox__cb-label"&gt;Accounting AA&lt;/span&gt;
+    &lt;span class="listbox__desc"&gt;Associate of Arts&lt;/span&gt;
+  &lt;/span&gt;
+  &lt;span class="listbox__trailing"&gt;Major&lt;/span&gt;
+&lt;/label&gt;&lt;/li&gt;</code></pre>
+        <p class="story-note">The Explore Degrees 'Add a major or minor' picker. The label alone is ambiguous — several programmes share a name and differ only by degree type — so the description carries what the option IS, and the trailing pill (a real Badge, neutral tint, sm) carries its kind.</p>
       </div>
     </div>
 
