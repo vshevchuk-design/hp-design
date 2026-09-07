@@ -84,6 +84,7 @@ const cardBorder = refPath(card.border.$value);
 const cardDivider = refPath(card.divider.$value);
 const cardIx = {
   hoverBorder: refPath(card.interactive.state.hover.border.$value),
+  hoverBg: refPath(card.interactive.state.hover.bg.$value),
   pressedBg: refPath(card.interactive.state.pressed.bg.$value),
   pressedBorder: refPath(card.interactive.state.pressed.border.$value),
   ringColor: refPath(card.interactive.state.focused.ringColor.$value),
@@ -194,7 +195,7 @@ const colorPaths = [
   "text.default", "text.secondary", "text.primary",
   "icon.default", "icon.muted", "icon.primary",
   "fill.primary", "fill.neutral", "fill.neutralHover", "fill.neutralActive", "fill.neutralHoverStrong", "fill.neutralActiveStrong",
-  "bg.primary", "bg.neutral",
+  "bg.primary", "bg.primaryHover", "bg.neutral",
   ...[...new Set([...TILES.map((t) => t.hue), "orange", "amber", "red"])].flatMap((h) => [
     `tag.${h}.tint.bg`,
     `tag.${h}.tint.text`,
@@ -230,13 +231,21 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
    track lists and the 768/1024px breakpoints are structural literals
    (Grid's own "column count isn't tokenized" rule). ---- */
 .sb { min-height: 100%; display: flex; flex-direction: column; }
-.sb__topbar { position: sticky; top: 0; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: ${gridGapSm}; padding: ${px(resolve("dim.2"))} ${px(resolve("dim.4"))}; background: ${cv("surface.default")}; border-bottom: 1px solid ${cv("border.default")}; }
+/* dim.3 vertical → 65px tall with the 40px gear inside: measured midpoint
+   between this bar's old 57px and the Message Center's 73px, and it lands on
+   a real scale step rather than a split-the-difference number. Both app
+   shells now share that height. */
+.sb__topbar { position: sticky; top: 0; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: ${gridGapSm}; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))}; background: ${cv("surface.default")}; border-bottom: 1px solid ${cv("border.default")}; }
 .sb__logo { display: flex; align-items: center; color: ${cv("text.default")}; }
 .sb__logo svg { display: block; height: ${px(resolve("dim.6"))}; width: auto; }
 /* max-width so the six tiles stay a readable block instead of stretching
    across a 27" monitor; centred, the usual app-shell cap. */
 .sb__main { flex: 1; width: 100%; max-width: 1400px; margin: 0 auto; display: flex; flex-direction: column; gap: ${gridGapMd}; padding: ${px(resolve("dim.4"))}; }
-@media (min-width: 768px) { .sb__main { gap: ${gridGapLg}; padding: ${px(resolve("dim.6"))}; } }
+@media (min-width: 768px) {
+  .sb__main { gap: ${gridGapLg}; padding: ${px(resolve("dim.6"))}; }
+  /* match the content padding so the wordmark lines up with the tiles */
+  .sb__topbar { padding: ${px(resolve("dim.3"))} ${px(resolve("dim.6"))}; }
+}
 
 /* Quick links — the tile SHAPE changes with width, not just the track count:
    under 768 it's the launcher shape from the live app (icon above a centred
@@ -266,7 +275,7 @@ ${hueVars}
    hover/pressed/focus tokens, verbatim. Mobile-first: the vertical launcher
    shape, centred. */
 .sb-tile { display: flex; flex-direction: column; align-items: center; text-align: center; gap: ${px(resolve("dim.2"))}; width: 100%; padding: ${cardPadding}; background: ${cv(cardBg)}; border: 1px solid ${cv(cardBorder)}; border-radius: ${cardRadius}; cursor: pointer; font-family: inherit; }
-.sb-tile:hover { border-color: ${cv(cardIx.hoverBorder)}; }
+.sb-tile:hover { background: ${cv(cardIx.hoverBg)}; border-color: ${cv(cardIx.hoverBorder)}; }
 .sb-tile:active { background: ${cv(cardIx.pressedBg)}; border-color: ${cv(cardIx.pressedBorder)}; }
 .sb-tile:focus-visible { outline: ${cardIx.ringWidth} solid ${cv(cardIx.ringColor)}; outline-offset: ${cardIx.ringOffset}; }
 .sb-tile__label { color: ${cv(cardTitleColor)}; ${typoCss(cardTitleType)} }

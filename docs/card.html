@@ -82,6 +82,7 @@
   --tok-border-focus: #0468c4;
   --tok-fill-primary: #077fec;
   --tok-bg-primary: #d9eaff;
+  --tok-bg-primary-hover: #eff6ff;
   --tok-text-default: #121921;
   --tok-text-secondary: #5d6a7a;
   --tok-family-sans: 'Sora', sans-serif;
@@ -94,7 +95,7 @@
 .card__body-text { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 14px; line-height: 1.4; }
 
 .card--interactive { width: 100%; text-align: left; cursor: pointer; appearance: none; outline: none; }
-.card--interactive:hover { border-color: var(--tok-fill-primary); }
+.card--interactive:hover { background: var(--tok-bg-primary-hover); border-color: var(--tok-fill-primary); }
 .card--interactive:active { background: var(--tok-bg-primary); border-color: var(--tok-fill-primary); }
 .card--interactive:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
 </style>
@@ -217,6 +218,7 @@
   --tok-border-focus: #0468c4;
   --tok-fill-primary: #077fec;
   --tok-bg-primary: #d9eaff;
+  --tok-bg-primary-hover: #eff6ff;
   --tok-text-default: #121921;
   --tok-text-secondary: #5d6a7a;
   --tok-family-sans: 'Sora', sans-serif;
@@ -229,7 +231,7 @@
 .card__body-text { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 14px; line-height: 1.4; }
 
 .card--interactive { width: 100%; text-align: left; cursor: pointer; appearance: none; outline: none; }
-.card--interactive:hover { border-color: var(--tok-fill-primary); }
+.card--interactive:hover { background: var(--tok-bg-primary-hover); border-color: var(--tok-fill-primary); }
 .card--interactive:active { background: var(--tok-bg-primary); border-color: var(--tok-fill-primary); }
 .card--interactive:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }</code></pre>
 
@@ -306,7 +308,7 @@
 
       <div class="story">
         <h3>hover</h3>
-        <div class="story-preview"><button class="card card--interactive demo-card" style="border-color:var(--tok-fill-primary)">
+        <div class="story-preview"><button class="card card--interactive demo-card" style="background:var(--tok-bg-primary-hover); border-color:var(--tok-fill-primary)">
       <p class="card__title"><span class="ph-line ph-line--title" style="width:60%"></span></p>
       <p class="card__body-text"><span class="ph-line ph-line--body" style="width:100%"></span><span class="ph-line ph-line--body" style="width:45%"></span></p>
     </button></div>
@@ -314,7 +316,7 @@
   &lt;p class="card__title"&gt;Marketing site&lt;/p&gt;
   &lt;p class="card__body-text"&gt;Last deployed 2 hours ago&lt;/p&gt;
 &lt;/button&gt;</code></pre>
-        <p class="story-note">fill.primary (blue.500) — the same brand blue Checkbox/Radio use when checked. border.strong (gray) read as too weak a cue; border.primary (pale blue.200) paired with a gray fill on pressed read muddy — two color languages at once. border.focus moved to blue.600 system-wide so it stays the strongest, most certain state (keyboard focus needs to out-rank mouse hover).</p>
+        <p class="story-note">bg.primaryHover (blue.50) fill + fill.primary (blue.500) border. The fill was added 2026-09-07 — a border alone was too quiet a cue across a whole card. border.strong (gray) read as too weak a cue; border.primary (pale blue.200) paired with a gray fill on pressed read muddy — two color languages at once. border.focus moved to blue.600 system-wide so it stays the strongest, most certain state (keyboard focus needs to out-rank mouse hover).</p>
       </div>
 
       <div class="story">

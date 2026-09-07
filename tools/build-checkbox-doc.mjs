@@ -63,7 +63,11 @@ const px = (d) => `${d.value}${d.unit}`;
 const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 const cv = (tokenPath) => `var(${cssVarName(tokenPath)})`;
 
+// The hover surface role is READ from the token file, not retyped — same rule
+// that caught build-button-doc.mjs painting a stale role earlier today.
+const hoverBg = checkbox.state.hover.bg.$value.replace(/[{}]/g, "");
 const colorPaths = [
+  "bg.primaryHover",
   "surface.default", "surface.disabled",
   "border.default", "border.focus",
   "fill.primary", "fill.primaryHover", "fill.disabled",
@@ -105,6 +109,7 @@ const css = `${rootVars}
 .checkbox__icon { width: ${iconSize}; height: ${iconSize}; display: none; }
 .checkbox__label { color: ${cv("text.default")}; ${typoCss(labelType)} }
 
+.checkbox:hover .checkbox__input:not(:checked):not(:indeterminate):not(:disabled) ~ .checkbox__box { background: ${cv(hoverBg)}; }
 .checkbox:hover .checkbox__box { border-color: ${cv("fill.primary")}; }
 .checkbox__input:focus-visible ~ .checkbox__box { outline: ${ringWidth} solid ${cv("border.focus")}; outline-offset: ${ringOffset}; }
 .checkbox__input:checked ~ .checkbox__box, .checkbox__input:indeterminate ~ .checkbox__box {
@@ -155,7 +160,7 @@ function markup(id, { checked = false, indeterminate = false, disabled = false, 
     : hover && (checked || indeterminate)
     ? ` style="background:${cv("fill.primaryHover")}; border-color:${cv("fill.primaryHover")}"`
     : hover
-    ? ` style="border-color:${cv("fill.primary")}"`
+    ? ` style="background:${cv(hoverBg)}; border-color:${cv("fill.primary")}"`
     : "";
   return `<label class="checkbox">
     <input type="checkbox" class="checkbox__input" id="${id}"${attrs} />

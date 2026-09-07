@@ -70,6 +70,7 @@
   .placeholder-note { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-muted); border: 0.5px dashed var(--border-strong); border-radius: 6px; padding: 4px 10px; margin-top: 1.5rem; }
 
   :root {
+  --tok-bg-primary-hover: #eff6ff;
   --tok-surface-default: #ffffff;
   --tok-surface-disabled: #e6e8eb;
   --tok-border-default: #cdd1d6;
@@ -91,6 +92,7 @@
 .checkbox__icon { width: 16px; height: 16px; display: none; }
 .checkbox__label { color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; }
 
+.checkbox:hover .checkbox__input:not(:checked):not(:indeterminate):not(:disabled) ~ .checkbox__box { background: var(--tok-bg-primary-hover); }
 .checkbox:hover .checkbox__box { border-color: var(--tok-fill-primary); }
 .checkbox__input:focus-visible ~ .checkbox__box { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
 .checkbox__input:checked ~ .checkbox__box, .checkbox__input:indeterminate ~ .checkbox__box {
@@ -230,6 +232,7 @@
 
     <h2 class="big-section">CSS</h2>
     <pre class="code"><code>:root {
+  --tok-bg-primary-hover: #eff6ff;
   --tok-surface-default: #ffffff;
   --tok-surface-disabled: #e6e8eb;
   --tok-border-default: #cdd1d6;
@@ -251,6 +254,7 @@
 .checkbox__icon { width: 16px; height: 16px; display: none; }
 .checkbox__label { color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; }
 
+.checkbox:hover .checkbox__input:not(:checked):not(:indeterminate):not(:disabled) ~ .checkbox__box { background: var(--tok-bg-primary-hover); }
 .checkbox:hover .checkbox__box { border-color: var(--tok-fill-primary); }
 .checkbox__input:focus-visible ~ .checkbox__box { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
 .checkbox__input:checked ~ .checkbox__box, .checkbox__input:indeterminate ~ .checkbox__box {
@@ -298,12 +302,12 @@
         <h3>hover</h3>
         <div class="story-preview"><label class="checkbox">
     <input type="checkbox" class="checkbox__input" id="cb-state-1-live" />
-    <span class="checkbox__box" style="border-color:var(--tok-fill-primary)"><svg class="checkbox__icon checkbox__icon--check" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg><svg class="checkbox__icon checkbox__icon--remove" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13H5v-2h14v2z"/></svg></span>
+    <span class="checkbox__box" style="background:var(--tok-bg-primary-hover); border-color:var(--tok-fill-primary)"><svg class="checkbox__icon checkbox__icon--check" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg><svg class="checkbox__icon checkbox__icon--remove" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13H5v-2h14v2z"/></svg></span>
     <span class="checkbox__label">Label</span>
   </label></div>
         <pre class="code"><code>&lt;label class="checkbox"&gt;
     &lt;input type="checkbox" class="checkbox__input" id="cb-state-1" /&gt;
-    &lt;span class="checkbox__box" style="border-color:var(--tok-fill-primary)"&gt;&lt;svg class="checkbox__icon checkbox__icon--check"&gt;&lt;!-- icon: check --&gt;&lt;/svg&gt;&lt;svg class="checkbox__icon checkbox__icon--remove"&gt;&lt;!-- icon: remove --&gt;&lt;/svg&gt;&lt;/span&gt;
+    &lt;span class="checkbox__box" style="background:var(--tok-bg-primary-hover); border-color:var(--tok-fill-primary)"&gt;&lt;svg class="checkbox__icon checkbox__icon--check"&gt;&lt;!-- icon: check --&gt;&lt;/svg&gt;&lt;svg class="checkbox__icon checkbox__icon--remove"&gt;&lt;!-- icon: remove --&gt;&lt;/svg&gt;&lt;/span&gt;
     &lt;span class="checkbox__label"&gt;Label&lt;/span&gt;
   &lt;/label&gt;</code></pre>
         <p class="story-note">fill.primary (blue.500) border — border.strong (gray) read as too weak a cue in practice. Real CSS uses :hover on the label; forced here via inline style so it screenshots without a real cursor.</p>

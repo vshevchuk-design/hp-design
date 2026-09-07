@@ -63,7 +63,11 @@ const px = (d) => `${d.value}${d.unit}`;
 const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 const cv = (tokenPath) => `var(${cssVarName(tokenPath)})`;
 
+// The hover surface role is READ from the token file, not retyped — same rule
+// that caught build-button-doc.mjs painting a stale role earlier today.
+const hoverBg = radio.state.hover.bg.$value.replace(/[{}]/g, "");
 const colorPaths = [
+  "bg.primaryHover",
   "surface.default", "surface.disabled",
   "border.default", "border.focus",
   "fill.primary", "fill.primaryHover", "fill.disabled",
@@ -101,6 +105,7 @@ const css = `${rootVars}
 .radio__dot { width: ${dot}; height: ${dot}; border-radius: ${circleRadius}; background: transparent; }
 .radio__label { color: ${cv("text.default")}; ${typoCss(labelType)} }
 
+.radio:hover .radio__input:not(:checked):not(:disabled) ~ .radio__circle { background: ${cv(hoverBg)}; }
 .radio:hover .radio__circle { border-color: ${cv("fill.primary")}; }
 .radio__input:focus-visible ~ .radio__circle { outline: ${ringWidth} solid ${cv("border.focus")}; outline-offset: ${ringOffset}; }
 .radio__input:checked ~ .radio__circle { border-color: ${cv("fill.primary")}; }
@@ -128,7 +133,7 @@ function markup(id, name, { checked = false, disabled = false, hover = false, fo
     circleStyle = ` style="border-color:${cv("fill.primaryHover")}"`;
     dotStyle = ` style="background:${cv("fill.primaryHover")}"`;
   } else if (hover) {
-    circleStyle = ` style="border-color:${cv("fill.primary")}"`;
+    circleStyle = ` style="background:${cv(hoverBg)}; border-color:${cv("fill.primary")}"`;
   }
   return `<label class="radio">
     <input type="radio" class="radio__input" id="${id}" name="${name}"${attrs} />

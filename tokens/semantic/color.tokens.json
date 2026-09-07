@@ -3,8 +3,8 @@
     "$description": "Page structure — canvas, cards/panels, recessed fields, backdrops. page and default are both literal white deliberately — cards read as 'raised' via border.default, not a background shift. Use default/page for the vast majority of the UI; sunken is for genuinely recessed elements only, used sparingly.",
     "page": {
       "$type": "color",
-      "$value": "{color.white}",
-      "$description": "Page canvas — the dominant background color across the whole product."
+      "$value": "{color.gray.25}",
+      "$description": "The app shell's own backdrop — gray.25, a near-white cool neutral, NOT literal white (changed 2026-09-07 on explicit request). White cards on a white page can only be separated by their border; against gray.25 the border still does the work but the card also reads as a distinct surface. This is one tint level, not the layered-grays habit the conventions warn about: page = gray.25, every surface on it = surface.default (white)."
     },
     "default": {
       "$type": "color",
@@ -42,6 +42,11 @@
     "primary": {
       "$type": "color",
       "$value": "{color.blue.100}"
+    },
+    "primaryHover": {
+      "$type": "color",
+      "$value": "{color.blue.50}",
+      "$description": "Hover surface for an interactive element whose hover was previously a blue BORDER only (Card's interactive variant, Chip toggle unchecked, Checkbox, Radio) — added 2026-09-07 on request: an outline alone was too quiet a cue on a large surface like a card. Deliberately one step lighter than bg.primary (blue.100), which stays the PRESSED and SELECTED surface, so the three states escalate: rest (no tint) → hover (blue.50) → pressed/selected (blue.100). Same *Hover-suffix convention as fill.primaryHover."
     },
     "success": {
       "$type": "color",

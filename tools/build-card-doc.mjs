@@ -62,7 +62,7 @@ const px = (d) => `${d.value}${d.unit}`;
 const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 const cv = (tokenPath) => `var(${cssVarName(tokenPath)})`;
 
-const colorPaths = ["surface.default", "border.default", "border.focus", "fill.primary", "bg.primary", "text.default", "text.secondary"];
+const colorPaths = ["surface.default", "border.default", "border.focus", "fill.primary", "bg.primary", "bg.primaryHover", "text.default", "text.secondary"];
 const colorValue = Object.fromEntries(colorPaths.map((p) => [p, resolve(p)]));
 const fontSans = resolve("family.sans");
 const rootVars = renderRootVars([...colorPaths.map((p) => [p, colorValue[p]]), ["family.sans", `'${fontSans}', sans-serif`]]);
@@ -72,6 +72,9 @@ const padding = px(resolve(card.padding.$value));
 const gap = px(resolve(card.gap.$value));
 const titleType = resolveToken(card.title);
 const bodyType = resolveToken(card.body);
+// The hover surface role is READ from the token file, not retyped — same rule
+// that caught build-button-doc.mjs painting a stale role earlier today.
+const ixHoverBg = card.interactive.state.hover.bg.$value.replace(/[{}]/g, "");
 const ringWidth = px(resolve(card.interactive.state.focused.ringWidth.$value));
 const ringOffset = px(resolve(card.interactive.state.focused.ringOffset.$value));
 
@@ -88,7 +91,7 @@ const css = `${rootVars}
 .card__body-text { margin: 0; color: ${cv("text.secondary")}; ${typoCss(bodyType)} }
 
 .card--interactive { width: 100%; text-align: left; cursor: pointer; appearance: none; outline: none; }
-.card--interactive:hover { border-color: ${cv("fill.primary")}; }
+.card--interactive:hover { background: ${cv(ixHoverBg)}; border-color: ${cv("fill.primary")}; }
 .card--interactive:active { background: ${cv("bg.primary")}; border-color: ${cv("fill.primary")}; }
 .card--interactive:focus-visible { outline: ${ringWidth} solid ${cv("border.focus")}; outline-offset: ${ringOffset}; }`;
 
@@ -158,7 +161,7 @@ const sectionsCode = `<div class="card">
 
 const interactiveStateDefs = [
   { key: "default", label: "default", style: "" },
-  { key: "hover", label: "hover", style: `border-color:${cv("fill.primary")}`, note: "fill.primary (blue.500) — the same brand blue Checkbox/Radio use when checked. border.strong (gray) read as too weak a cue; border.primary (pale blue.200) paired with a gray fill on pressed read muddy — two color languages at once. border.focus moved to blue.600 system-wide so it stays the strongest, most certain state (keyboard focus needs to out-rank mouse hover)." },
+  { key: "hover", label: "hover", style: `background:${cv(ixHoverBg)}; border-color:${cv("fill.primary")}`, note: "bg.primaryHover (blue.50) fill + fill.primary (blue.500) border. The fill was added 2026-09-07 — a border alone was too quiet a cue across a whole card. border.strong (gray) read as too weak a cue; border.primary (pale blue.200) paired with a gray fill on pressed read muddy — two color languages at once. border.focus moved to blue.600 system-wide so it stays the strongest, most certain state (keyboard focus needs to out-rank mouse hover)." },
   { key: "pressed", label: "pressed", style: `background:${cv("bg.primary")}; border-color:${cv("fill.primary")}`, note: "Border stays fill.primary; the fill is bg.primary (blue.100, the same passive-tint role used for banners/badges) — one consistent blue family instead of mixing in gray." },
   { key: "focused", label: "focused", style: `outline:${ringWidth} solid ${cv("border.focus")}; outline-offset:${ringOffset}`, note: "Additive ring, composes on top of hover/pressed. Real CSS is :focus-visible on the button, shown in the CSS above — forced here via inline style for a static screenshot." },
 ];

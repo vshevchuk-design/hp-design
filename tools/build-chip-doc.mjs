@@ -66,7 +66,11 @@ const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, 
 const cv = (tokenPath) => `var(${cssVarName(tokenPath)})`;
 const refPath = (ref) => ref.replace(/[{}]/g, "");
 
+// The hover surface role is READ from the token file, not retyped — same rule
+// that caught build-button-doc.mjs painting a stale role earlier today.
+const toggleHoverBg = chip.toggle.hover.bg.$value.replace(/[{}]/g, "");
 const colorPaths = [
+  "bg.primaryHover",
   "surface.default", "border.default", "border.strong", "border.focus", "text.default", "icon.default",
   "fill.primary", "fill.primaryHover", "fill.disabled", "text.onFill", "icon.onFill",
   "bg.primary", "text.primary", "icon.primary",
@@ -133,7 +137,7 @@ ${sizeDefs
 
 .chip--toggle { background: ${cv("surface.default")}; border-color: ${cv("border.default")}; color: ${cv("text.default")}; }
 .chip--toggle .chip__icon { color: ${cv("icon.default")}; }
-.chip--toggle:not([aria-pressed="true"]):not(:disabled):hover { border-color: ${cv("fill.primary")}; }
+.chip--toggle:not([aria-pressed="true"]):not(:disabled):hover { background: ${cv(toggleHoverBg)}; border-color: ${cv("fill.primary")}; }
 .chip--toggle[aria-pressed="true"] { background: ${cv("fill.primary")}; border-color: ${cv("fill.primary")}; color: ${cv("text.onFill")}; }
 .chip--toggle[aria-pressed="true"] .chip__icon { color: ${cv("icon.onFill")}; }
 .chip--toggle[aria-pressed="true"]:not(:disabled):hover { background: ${cv("fill.primaryHover")}; border-color: ${cv("fill.primaryHover")}; }
@@ -219,7 +223,7 @@ function sizeStories() {
 // ---- Toggle states (real interactive, click any chip below) ----
 const toggleStateDefs = [
   { key: "default", label: "default (unchecked)", opts: {}, note: "surface.default + border.default — click it, it's real." },
-  { key: "hover", label: "hover (unchecked)", opts: { forceHoverStyle: `border-color:${cv("fill.primary")}` }, note: "fill.primary border — same 'gray reads too weak' lesson Checkbox/Radio/Card's own unchecked-hover already applied. Forced via inline style for a static screenshot; the real rule is :hover in the CSS above." },
+  { key: "hover", label: "hover (unchecked)", opts: { forceHoverStyle: `background:${cv(toggleHoverBg)}; border-color:${cv("fill.primary")}` }, note: "fill.primary border — same 'gray reads too weak' lesson Checkbox/Radio/Card's own unchecked-hover already applied. Forced via inline style for a static screenshot; the real rule is :hover in the CSS above." },
   { key: "checked", label: "checked (solid)", opts: { pressed: true }, note: "fill.primary bg + text.onFill — a real boolean toggle, no counter." },
   { key: "checked-hover", label: "checked + hover", opts: { pressed: true, forceHoverStyle: `background:${cv("fill.primaryHover")}; border-color:${cv("fill.primaryHover")}` }, note: "fill.primaryHover, the same darken-on-hover pair every other checked control in this system uses." },
   { key: "focused", label: "focused", opts: { forceHoverStyle: `outline:${ringWidth} solid ${cv("border.focus")}; outline-offset:${ringOffset}` }, note: "Additive ring. Real CSS is :focus-visible on the button." },

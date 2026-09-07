@@ -891,3 +891,31 @@ Hue alone can't do it either, and that's provable from the palette's own geometr
 So: **both**, picked by rendering four candidates against *both* neighbours — hue **58** (16° off orange, 10° off amber) with chroma at **70%** of the previous curve. Light steps become warm greige (`#f1e5dd` at 100 vs orange's peach `#ffe1d5`); 300–500 read as muted tan (`#d4ab8d` → `#9d775b`) instead of terracotta; amber stays clear by carrying ~2.5× the chroma at every light step. Net shape: warm-neutral at the light end, true brown from 300 down — what Radix's sand/bronze scales do. Contrast guarantees re-asserted per ramp by the generator (it throws rather than writes).
 
 Scope verified structurally against `HEAD` rather than trusted: **150 added to all 10 ramps; 25–200 changed in green and teal; the full ramp changed in brown; every other stored hex byte-identical.** All 50 pages rebuilt, `check-css-vars.mjs` clean, and the knock-on consumers eyeballed — `bg.success`/`border.success` (green 100/200) and the Springboard's teal/green icon squares are now soft pastels in family with their siblings instead of the two loud outliers.
+
+## 2026-09-07 (cont. 7) — Page surface, topbar height, and the blue hover reworked system-wide
+
+Three notes from a pass over the pages. All three were measured rather than eyeballed.
+
+### 1. `surface.page`: white → `gray.25`
+
+The token, not per-page CSS, so all three prototypes moved at once. Note this **reverses an instruction from earlier the same day** ("видали сірий фон - зроби білим") and that's consistent, not contradictory: back then the page sat on `surface.dim` (gray.50), which reads as a genuinely gray page; `gray.25` (`#f9fafb`) is the near-white middle ground the request was actually reaching for. Cards keep their `border.default` hairline — the page tint doesn't replace the border, it just stops white-on-white from depending on it alone. Still one tint level, so the layered-grays convention holds.
+
+**Remaining inconsistency, flagged to the user and deliberately untouched:** the docs *chrome* (`--bg-page: #f7f7f5`, `--border: #e4e3df`) is hand-written in 46 head templates and is a **warm** gray, so docs furniture and token content are now two neutral temperatures — and after this change the two page surfaces sit at nearly the same lightness with opposite temperature, which makes it more visible than before. It isn't tokenized; aligning it is a chrome edit across every builder.
+
+### 2. Topbar height: 57 / 73 → 65 everywhere
+
+Measured both shells first: Springboard's bar was **57px** (`dim.2` + 40px gear + 1px border), the Message Center's **73px** (`dim.4` at ≥768). The requested "something in between" is 65 — which is exactly `dim.3` + 40 + 1, i.e. the midpoint *and* a real step on the scale, so no off-scale number was needed. Both shells now use `dim.3` vertical at every width; Springboard's bar also picked up `dim.6` horizontal at ≥768 so the wordmark lines up with the tiles under it.
+
+### 3. The blue hover, reworked as one role
+
+Asked whether a border-only hover should gain a light fill, and whether the blue hover was worth reworking generally. Answer: yes, and once — as a new semantic role rather than four separate rules. **`bg.primaryHover` = blue.50**, deliberately one step lighter than `bg.primary` (blue.100), which stays the pressed/selected surface. The blue states now escalate in three steps instead of two:
+
+> rest (no tint) → hover `bg.primaryHover` + `fill.primary` border → pressed/selected `bg.primary`
+
+Applied from that one token to every component whose hover had been border-only: **Card interactive** (hence the Springboard tiles), **Chip toggle unchecked**, **Checkbox**, **Radio**. Each rule is scoped to the unchecked/unpressed case (`:not(:checked)`, `:not([aria-pressed="true"])`) so a checked control keeps its solid `fill.primary*` fill — otherwise a hovered checked checkbox would have lost its fill to a pale tint.
+
+Two follow-through details that are easy to miss and were both done:
+- The **forced-state snapshots** on card/chip/checkbox/radio (static cells that fake `:hover` with inline styles, since a screenshot can't hover) had to be updated too, or each page would have contradicted its own printed CSS. Verified on `card.html`: the forced cell and the printed rule now read identically.
+- Every consumer had to register `bg.primaryHover` in its `colorPaths`, and each builder reads the role **off the token file** rather than retyping it — `check-css-vars.mjs` was the safety net and came back clean on all 50 pages.
+
+Verified live: Springboard tile hover paints blue.50 + a blue border, MC topbar measures 65px, page background reads `rgb(249,250,251)`.

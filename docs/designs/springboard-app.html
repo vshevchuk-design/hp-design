@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="../../assets/fonts/sora/sora.css" />
 <style>
 :root {
-  --tok-surface-page: #ffffff;
+  --tok-surface-page: #f9fafb;
   --tok-surface-default: #ffffff;
   --tok-border-default: #cdd1d6;
   --tok-border-focus: #0468c4;
@@ -24,6 +24,7 @@
   --tok-fill-neutral-hover-strong: #cdd1d6;
   --tok-fill-neutral-active-strong: #adb5be;
   --tok-bg-primary: #d9eaff;
+  --tok-bg-primary-hover: #eff6ff;
   --tok-bg-neutral: #e6e8eb;
   --tok-tag-blue-tint-bg: #d9eaff;
   --tok-tag-blue-tint-text: #0468c4;
@@ -54,13 +55,21 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
    track lists and the 768/1024px breakpoints are structural literals
    (Grid's own "column count isn't tokenized" rule). ---- */
 .sb { min-height: 100%; display: flex; flex-direction: column; }
-.sb__topbar { position: sticky; top: 0; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 16px; background: var(--tok-surface-default); border-bottom: 1px solid var(--tok-border-default); }
+/* dim.3 vertical → 65px tall with the 40px gear inside: measured midpoint
+   between this bar's old 57px and the Message Center's 73px, and it lands on
+   a real scale step rather than a split-the-difference number. Both app
+   shells now share that height. */
+.sb__topbar { position: sticky; top: 0; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; background: var(--tok-surface-default); border-bottom: 1px solid var(--tok-border-default); }
 .sb__logo { display: flex; align-items: center; color: var(--tok-text-default); }
 .sb__logo svg { display: block; height: 24px; width: auto; }
 /* max-width so the six tiles stay a readable block instead of stretching
    across a 27" monitor; centred, the usual app-shell cap. */
 .sb__main { flex: 1; width: 100%; max-width: 1400px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; padding: 16px; }
-@media (min-width: 768px) { .sb__main { gap: 24px; padding: 24px; } }
+@media (min-width: 768px) {
+  .sb__main { gap: 24px; padding: 24px; }
+  /* match the content padding so the wordmark lines up with the tiles */
+  .sb__topbar { padding: 12px 24px; }
+}
 
 /* Quick links — the tile SHAPE changes with width, not just the track count:
    under 768 it's the launcher shape from the live app (icon above a centred
@@ -96,7 +105,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
    hover/pressed/focus tokens, verbatim. Mobile-first: the vertical launcher
    shape, centred. */
 .sb-tile { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; width: 100%; padding: 16px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); border-radius: 8px; cursor: pointer; font-family: inherit; }
-.sb-tile:hover { border-color: var(--tok-fill-primary); }
+.sb-tile:hover { background: var(--tok-bg-primary-hover); border-color: var(--tok-fill-primary); }
 .sb-tile:active { background: var(--tok-bg-primary); border-color: var(--tok-fill-primary); }
 .sb-tile:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
 .sb-tile__label { color: var(--tok-text-default); font-weight: 600; font-size: 14px; line-height: 1.4; }

@@ -70,6 +70,7 @@
   .placeholder-note { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-muted); border: 0.5px dashed var(--border-strong); border-radius: 6px; padding: 4px 10px; margin-top: 1.5rem; }
 
   :root {
+  --tok-bg-primary-hover: #eff6ff;
   --tok-surface-default: #ffffff;
   --tok-surface-disabled: #e6e8eb;
   --tok-border-default: #cdd1d6;
@@ -89,6 +90,7 @@
 .radio__dot { width: 8px; height: 8px; border-radius: 999px; background: transparent; }
 .radio__label { color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; }
 
+.radio:hover .radio__input:not(:checked):not(:disabled) ~ .radio__circle { background: var(--tok-bg-primary-hover); }
 .radio:hover .radio__circle { border-color: var(--tok-fill-primary); }
 .radio__input:focus-visible ~ .radio__circle { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
 .radio__input:checked ~ .radio__circle { border-color: var(--tok-fill-primary); }
@@ -220,6 +222,7 @@
 
     <h2 class="big-section">CSS</h2>
     <pre class="code"><code>:root {
+  --tok-bg-primary-hover: #eff6ff;
   --tok-surface-default: #ffffff;
   --tok-surface-disabled: #e6e8eb;
   --tok-border-default: #cdd1d6;
@@ -239,6 +242,7 @@
 .radio__dot { width: 8px; height: 8px; border-radius: 999px; background: transparent; }
 .radio__label { color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; }
 
+.radio:hover .radio__input:not(:checked):not(:disabled) ~ .radio__circle { background: var(--tok-bg-primary-hover); }
 .radio:hover .radio__circle { border-color: var(--tok-fill-primary); }
 .radio__input:focus-visible ~ .radio__circle { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
 .radio__input:checked ~ .radio__circle { border-color: var(--tok-fill-primary); }
@@ -279,12 +283,12 @@
         <h3>hover</h3>
         <div class="story-preview"><label class="radio">
     <input type="radio" class="radio__input" id="r-state-1" name="state-demo-1" />
-    <span class="radio__circle" style="border-color:var(--tok-fill-primary)"><span class="radio__dot"></span></span>
+    <span class="radio__circle" style="background:var(--tok-bg-primary-hover); border-color:var(--tok-fill-primary)"><span class="radio__dot"></span></span>
     <span class="radio__label">Label</span>
   </label></div>
         <pre class="code"><code>&lt;label class="radio"&gt;
     &lt;input type="radio" class="radio__input" id="r-state-1" name="state-demo-1" /&gt;
-    &lt;span class="radio__circle" style="border-color:var(--tok-fill-primary)"&gt;&lt;span class="radio__dot"&gt;&lt;/span&gt;&lt;/span&gt;
+    &lt;span class="radio__circle" style="background:var(--tok-bg-primary-hover); border-color:var(--tok-fill-primary)"&gt;&lt;span class="radio__dot"&gt;&lt;/span&gt;&lt;/span&gt;
     &lt;span class="radio__label"&gt;Label&lt;/span&gt;
   &lt;/label&gt;</code></pre>
         <p class="story-note">fill.primary (blue.500) — border.strong (gray) read as too weak a cue in practice. Real CSS uses :hover on the label; forced here via inline style so it screenshots without a real cursor.</p>

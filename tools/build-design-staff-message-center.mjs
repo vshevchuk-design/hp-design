@@ -138,7 +138,7 @@ const colorPaths = [
   "icon.default", "icon.secondary", "icon.muted", "icon.onFill", "icon.primary", "icon.warning",
   "fill.primary", "fill.primaryHover", "fill.primaryActive",
   "fill.neutral", "fill.neutralHover", "fill.neutralActive", "fill.neutralActiveStrong",
-  "bg.primary", "bg.neutral", "bg.warning", "text.warning", "bg.danger", "text.danger", "bg.success", "text.success", "status.success", "surface.overlay",
+  "bg.primary", "bg.primaryHover", "bg.neutral", "bg.warning", "text.warning", "bg.danger", "text.danger", "bg.success", "text.success", "status.success", "surface.overlay",
   "fill.danger", "fill.dangerHover", "fill.disabled", "text.disabled", "icon.disabled", "surface.disabled",
   "bg.ai", "text.ai", "icon.ai", "fill.ai",
   ...usedHues.flatMap((h) => [`avatar.${h}.bg`, `avatar.${h}.text`]),
@@ -354,6 +354,7 @@ const chipToggle = {
   text: refPath(chip.toggle.default.text.$value),
   icon: refPath(chip.toggle.default.icon.$value),
   hoverBorder: refPath(chip.toggle.hover.border.$value),
+  hoverBg: refPath(chip.toggle.hover.bg.$value),
   checkedBg: refPath(chip.toggle.checked.bg.$value),
   checkedText: refPath(chip.toggle.checked.text.$value),
   checkedHoverBg: refPath(chip.toggle.checkedHover.bg.$value),
@@ -591,7 +592,7 @@ const componentCss = `/* ---- component recipes, resolved from each component's 
 
 .chip { box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; gap: ${chipBase.gap}; height: ${chipBase.height}; padding: 0 ${chipBase.paddingX}; border-radius: ${chipRadius}; background: ${cv(chipToggle.bg)}; border: 1px solid ${cv(chipToggle.border)}; color: ${cv(chipToggle.text)}; cursor: pointer; white-space: nowrap; flex-shrink: 0; font-family: ${cv("family.sans")}; ${typoCss(chipBase.label)} }
 .chip .chip__icon { width: ${chipBase.iconSize}; height: ${chipBase.iconSize}; color: ${cv(chipToggle.icon)}; }
-.chip:not([aria-pressed="true"]):not(.chip--checked-outline):hover { border-color: ${cv(chipToggle.hoverBorder)}; }
+.chip:not([aria-pressed="true"]):not(.chip--checked-outline):hover { background: ${cv(chipToggle.hoverBg)}; border-color: ${cv(chipToggle.hoverBorder)}; }
 .chip[aria-pressed="true"] { background: ${cv(chipToggle.checkedBg)}; border-color: ${cv(chipToggle.checkedBg)}; color: ${cv(chipToggle.checkedText)}; }
 .chip[aria-pressed="true"]:hover { background: ${cv(chipToggle.checkedHoverBg)}; border-color: ${cv(chipToggle.checkedHoverBg)}; }
 .chip--checked-outline { background: ${cv(chipToggle.coBg)}; border-color: ${cv(chipToggle.coBorder)}; color: ${cv(chipToggle.coText)}; }
@@ -1101,7 +1102,9 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
   .mc-filters-chip { display: none; }
 }
 @media (min-width: 1024px) {
-  .mc__topbar { padding: ${px(resolve("dim.4"))} ${px(resolve("dim.6"))}; }
+  /* vertical stays dim.3 (65px) at every width — dim.4 made this bar 73px,
+     visibly taller than the Springboard shell's; both now match. */
+  .mc__topbar { padding: ${px(resolve("dim.3"))} ${px(resolve("dim.6"))}; }
   /* keep the whole rail on one left edge: toolbar tabs + filter chips must line
      up with the list/table below (all dim.6), not sit 8px inside it */
   .mc-rail__topbar { padding-left: ${px(resolve("dim.6"))}; padding-right: ${px(resolve("dim.6"))}; }

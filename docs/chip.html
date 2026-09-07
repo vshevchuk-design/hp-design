@@ -68,6 +68,7 @@
   .story-note { font-size: 11.5px; color: var(--text-muted); margin: 0; line-height: 1.5; }
 
   :root {
+  --tok-bg-primary-hover: #eff6ff;
   --tok-surface-default: #ffffff;
   --tok-border-default: #cdd1d6;
   --tok-border-strong: #adb5be;
@@ -109,7 +110,7 @@
 
 .chip--toggle { background: var(--tok-surface-default); border-color: var(--tok-border-default); color: var(--tok-text-default); }
 .chip--toggle .chip__icon { color: var(--tok-icon-default); }
-.chip--toggle:not([aria-pressed="true"]):not(:disabled):hover { border-color: var(--tok-fill-primary); }
+.chip--toggle:not([aria-pressed="true"]):not(:disabled):hover { background: var(--tok-bg-primary-hover); border-color: var(--tok-fill-primary); }
 .chip--toggle[aria-pressed="true"] { background: var(--tok-fill-primary); border-color: var(--tok-fill-primary); color: var(--tok-text-on-fill); }
 .chip--toggle[aria-pressed="true"] .chip__icon { color: var(--tok-icon-on-fill); }
 .chip--toggle[aria-pressed="true"]:not(:disabled):hover { background: var(--tok-fill-primary-hover); border-color: var(--tok-fill-primary-hover); }
@@ -260,6 +261,7 @@
 
     <h2 class="big-section">CSS</h2>
     <pre class="code"><code>:root {
+  --tok-bg-primary-hover: #eff6ff;
   --tok-surface-default: #ffffff;
   --tok-border-default: #cdd1d6;
   --tok-border-strong: #adb5be;
@@ -301,7 +303,7 @@
 
 .chip--toggle { background: var(--tok-surface-default); border-color: var(--tok-border-default); color: var(--tok-text-default); }
 .chip--toggle .chip__icon { color: var(--tok-icon-default); }
-.chip--toggle:not([aria-pressed="true"]):not(:disabled):hover { border-color: var(--tok-fill-primary); }
+.chip--toggle:not([aria-pressed="true"]):not(:disabled):hover { background: var(--tok-bg-primary-hover); border-color: var(--tok-fill-primary); }
 .chip--toggle[aria-pressed="true"] { background: var(--tok-fill-primary); border-color: var(--tok-fill-primary); color: var(--tok-text-on-fill); }
 .chip--toggle[aria-pressed="true"] .chip__icon { color: var(--tok-icon-on-fill); }
 .chip--toggle[aria-pressed="true"]:not(:disabled):hover { background: var(--tok-fill-primary-hover); border-color: var(--tok-fill-primary-hover); }
@@ -386,8 +388,8 @@
 
       <div class="story">
         <h3>hover (unchecked)</h3>
-        <div class="story-preview"><button class="chip chip--base chip--toggle" aria-pressed="false" style="border-color:var(--tok-fill-primary)"><span class="chip__label">Flagged</span></button></div>
-        <pre class="code"><code>&lt;button class="chip chip--base chip--toggle" aria-pressed="false" style="border-color:var(--tok-fill-primary)"&gt;&lt;span class="chip__label"&gt;Flagged&lt;/span&gt;&lt;/button&gt;</code></pre>
+        <div class="story-preview"><button class="chip chip--base chip--toggle" aria-pressed="false" style="background:var(--tok-bg-primary-hover); border-color:var(--tok-fill-primary)"><span class="chip__label">Flagged</span></button></div>
+        <pre class="code"><code>&lt;button class="chip chip--base chip--toggle" aria-pressed="false" style="background:var(--tok-bg-primary-hover); border-color:var(--tok-fill-primary)"&gt;&lt;span class="chip__label"&gt;Flagged&lt;/span&gt;&lt;/button&gt;</code></pre>
         <p class="story-note">fill.primary border — same 'gray reads too weak' lesson Checkbox/Radio/Card's own unchecked-hover already applied. Forced via inline style for a static screenshot; the real rule is :hover in the CSS above.</p>
       </div>
 

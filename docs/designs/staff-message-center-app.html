@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="../../assets/fonts/sora/sora.css" />
 <style>
 :root {
-  --tok-surface-page: #ffffff;
+  --tok-surface-page: #f9fafb;
   --tok-surface-default: #ffffff;
   --tok-surface-sunken: #e6e8eb;
   --tok-surface-dim: #f4f5f7;
@@ -33,6 +33,7 @@
   --tok-fill-neutral-active: #cdd1d6;
   --tok-fill-neutral-active-strong: #adb5be;
   --tok-bg-primary: #d9eaff;
+  --tok-bg-primary-hover: #eff6ff;
   --tok-bg-neutral: #e6e8eb;
   --tok-bg-warning: #ffe2c5;
   --tok-text-warning: #935a03;
@@ -83,7 +84,7 @@
 
 .chip { box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 32px; padding: 0 12px; border-radius: 999px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); color: var(--tok-text-default); cursor: pointer; white-space: nowrap; flex-shrink: 0; font-family: var(--tok-family-sans); font-weight: 600; font-size: 14px; line-height: 1; }
 .chip .chip__icon { width: 16px; height: 16px; color: var(--tok-icon-default); }
-.chip:not([aria-pressed="true"]):not(.chip--checked-outline):hover { border-color: var(--tok-fill-primary); }
+.chip:not([aria-pressed="true"]):not(.chip--checked-outline):hover { background: var(--tok-bg-primary-hover); border-color: var(--tok-fill-primary); }
 .chip[aria-pressed="true"] { background: var(--tok-fill-primary); border-color: var(--tok-fill-primary); color: var(--tok-text-on-fill); }
 .chip[aria-pressed="true"]:hover { background: var(--tok-fill-primary-hover); border-color: var(--tok-fill-primary-hover); }
 .chip--checked-outline { background: var(--tok-bg-primary); border-color: var(--tok-fill-primary); color: var(--tok-text-primary); }
@@ -699,7 +700,9 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   .mc-filters-chip { display: none; }
 }
 @media (min-width: 1024px) {
-  .mc__topbar { padding: 16px 24px; }
+  /* vertical stays dim.3 (65px) at every width — dim.4 made this bar 73px,
+     visibly taller than the Springboard shell's; both now match. */
+  .mc__topbar { padding: 12px 24px; }
   /* keep the whole rail on one left edge: toolbar tabs + filter chips must line
      up with the list/table below (all dim.6), not sit 8px inside it */
   .mc-rail__topbar { padding-left: 24px; padding-right: 24px; }
