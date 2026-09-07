@@ -33,7 +33,14 @@ const typoCss = (t) => `font-weight: ${t.fontWeight}; font-size: ${px(t.fontSize
 // ---- Avatar's own initials + hash-hue logic, verbatim (same 8 hues, same
 // modulo) — the program marks are Avatar's identity system in a square box.
 const AVATAR_HUES = ["blue", "green", "magenta", "amber", "teal", "orange", "violet", "red"];
-const initialsOf = (name) => { const p = name.trim().split(/\s+/); return (p.length > 1 ? p[0][0] + p[p.length - 1][0] : p[0].slice(0, 2)).toUpperCase(); };
+// Avatar's initials rule, with one addition for programme names: only words
+// that START with a letter count. Avatar was written for people, where every
+// word is a name; "Art (BFA)" took the "(" of "(BFA)" and rendered "A(".
+const initialsOf = (name) => {
+  const words = name.trim().split(/\s+/).filter((w) => /^[a-z]/i.test(w));
+  const p = words.length ? words : [name.trim()];
+  return (p.length > 1 ? p[0][0] + p[p.length - 1][0] : p[0].slice(0, 2)).toUpperCase();
+};
 const hueOf = (name) => { let s = 0; for (const c of name) s += c.charCodeAt(0); return AVATAR_HUES[s % AVATAR_HUES.length]; };
 
 const st = ct.state;

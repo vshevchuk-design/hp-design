@@ -3,77 +3,1390 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Explore Degrees</title>
+<title>Explore Your Degree</title>
 <link rel="stylesheet" href="../../assets/fonts/sora/sora.css" />
 <style>
 :root {
   --tok-surface-page: #f9fafb;
   --tok-surface-default: #ffffff;
+  --tok-surface-dim: #f4f5f7;
+  --tok-surface-dim-hover: #e6e8eb;
+  --tok-surface-sunken: #e6e8eb;
+  --tok-surface-disabled: #e6e8eb;
   --tok-border-default: #dadde0;
+  --tok-border-strong: #adb5be;
   --tok-border-focus: #0468c4;
   --tok-text-default: #121921;
-  --tok-fill-neutral: #e6e8eb;
+  --tok-text-secondary: #5d6a7a;
+  --tok-text-muted: #758191;
+  --tok-text-primary: #0468c4;
+  --tok-text-on-fill: #ffffff;
+  --tok-text-disabled: #adb5be;
   --tok-icon-default: #485462;
+  --tok-icon-secondary: #758191;
+  --tok-icon-muted: #8e99a7;
+  --tok-icon-on-fill: #ffffff;
+  --tok-icon-primary: #077fec;
+  --tok-fill-primary: #077fec;
+  --tok-fill-primary-hover: #0468c4;
+  --tok-fill-primary-active: #01519c;
+  --tok-fill-disabled: #e6e8eb;
+  --tok-fill-neutral: #e6e8eb;
+  --tok-fill-neutral-hover: #e6e8eb;
+  --tok-fill-neutral-active: #cdd1d6;
   --tok-fill-neutral-hover-strong: #cdd1d6;
   --tok-fill-neutral-active-strong: #adb5be;
-  --tok-text-secondary: #5d6a7a;
+  --tok-fill-success: #0a994e;
+  --tok-bg-primary: #d9eaff;
+  --tok-bg-primary-hover: #eff6ff;
   --tok-bg-neutral: #e6e8eb;
+  --tok-bg-success: #d4f1da;
+  --tok-bg-warning: #ffe2c5;
+  --tok-bg-danger: #ffdfde;
+  --tok-border-primary: #b2d4fe;
+  --tok-border-success: #a5e2b4;
+  --tok-border-warning: #fec486;
+  --tok-border-danger: #febebd;
+  --tok-status-success: #0a994e;
+  --tok-status-warning: #b26f07;
+  --tok-status-danger: #de394b;
+  --tok-text-success: #057e3f;
+  --tok-text-warning: #935a03;
+  --tok-text-danger: #c11435;
+  --tok-avatar-blue-bg: #d9eaff;
+  --tok-avatar-blue-text: #0468c4;
+  --tok-avatar-green-bg: #d4f1da;
+  --tok-avatar-green-text: #057e3f;
+  --tok-avatar-magenta-bg: #ffddec;
+  --tok-avatar-magenta-text: #b51c79;
+  --tok-avatar-amber-bg: #ffe2c5;
+  --tok-avatar-amber-text: #935a03;
+  --tok-avatar-teal-bg: #cfefef;
+  --tok-avatar-teal-text: #057878;
+  --tok-avatar-orange-bg: #ffe1d5;
+  --tok-avatar-orange-text: #ae4103;
+  --tok-avatar-violet-bg: #e8e4ff;
+  --tok-avatar-violet-text: #743ed8;
+  --tok-avatar-red-bg: #ffdfde;
+  --tok-avatar-red-text: #c11435;
   --tok-family-sans: 'Sora', sans-serif;
 }
 
-/* ---- portal app shell (tools/lib/app-shell.mjs) ---- */
-.app { min-height: 100%; display: flex; flex-direction: column; }
-/* Exactly dim.16 (64px) tall, border included: everything lands on the 4px
-   grid, and vertical padding + a 1px border can never total a multiple of 4
-   (dim.3 + 40 + dim.3 + 1 = 65). So the height is declared and the hairline
-   sits inside it (border-box), leaving a 63px content band with the 40px
-   control optically centred. */
-.app__topbar { position: sticky; top: 0; z-index: 1; height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 16px; background: var(--tok-surface-default); border-bottom: 1px solid var(--tok-border-default); }
-.app__logo { display: flex; align-items: center; color: var(--tok-text-default); }
-.app__logo svg { display: block; height: 24px; width: auto; }
-@media (min-width: 768px) {
-  /* match the content padding so the wordmark lines up with what's under it */
-  .app__topbar { padding: 0 24px; }
-}
-
-/* Button secondary — the shell's actions, resolved from button.tokens.json.
-   Its icon colour is set explicitly: secondary's label (text.default) and icon
-   (icon.default) are different values, so currentColor would be wrong. */
-.btn { display: inline-flex; align-items: center; justify-content: center; border: none; cursor: pointer; font-family: inherit; border-radius: 8px; }
-.btn--secondary { background: var(--tok-fill-neutral); }
-.btn--secondary.btn--base.btn--icon-only { width: 40px; height: 40px; padding: 0; }
-.btn--secondary.btn--sm { height: 32px; padding: 0 8px; gap: 8px; color: var(--tok-text-default); font-weight: 600; font-size: 12px; line-height: 1.4; }
-.btn--secondary .btn__icon { width: 20px; height: 20px; color: var(--tok-icon-default); }
-.btn--secondary:hover { background: var(--tok-fill-neutral-hover-strong); }
-.btn--secondary:active { background: var(--tok-fill-neutral-active-strong); }
-.btn--secondary:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
-
+/* ============ page shell + wizard chrome (ed-* composition) ============ */
 * { box-sizing: border-box; }
 html, body { height: 100%; }
 body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-family-sans); }
+.ed { min-height: 100%; display: flex; flex-direction: column; }
 
-/* ed-* composition layer — just the body slot until the screen is designed */
-.ed__main { flex: 1; width: 100%; max-width: 1400px; margin: 0 auto; display: flex; padding: 16px; }
-@media (min-width: 768px) { .ed__main { padding: 24px; } }
+/* This flow is PUBLIC — "No account needed" — so it does NOT wear the logged-in
+   portal's shell (logo + settings). Its own header is what the reference shows:
+   the wizard's name, the school, and that reassurance on the right. */
+.ed__topbar { flex-shrink: 0; height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 16px; border-bottom: 1px solid var(--tok-border-default); }
+@media (min-width: 768px) { .ed__topbar { padding: 0 24px; } }
+.ed__brand { display: flex; align-items: baseline; gap: 4px; min-width: 0; }
+.ed__brand-name { color: var(--tok-text-primary); font-weight: 600; font-size: 16px; line-height: 1.4; }
+.ed__brand-school { color: var(--tok-text-secondary); font-weight: 400; font-size: 14px; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ed__noaccount { flex-shrink: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.ed__main { flex: 1; width: 100%; max-width: 880px; margin: 0 auto; padding: 24px 16px 40px; display: flex; flex-direction: column; gap: 24px; }
+@media (min-width: 768px) { .ed__main { padding: 32px 24px 48px; } }
+.ed__head { display: flex; flex-direction: column; gap: 6px; }
+.ed__title { margin: 0; color: var(--tok-text-default); font-weight: 700; font-size: 24px; line-height: 1.2; }
+.ed__sub { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 14px; line-height: 1.4; }
+.ed__step { display: none; flex-direction: column; gap: 24px; }
+.ed__step.is-active { display: flex; }
+.ed__footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.ed__footer--end { justify-content: flex-end; }
+/* One card per screen; inside it, sections are separated by a divider and a
+   heading — never by another nested card. That stacking is what made the
+   reference read as a pile. */
+.ed-section { display: flex; flex-direction: column; gap: 12px; padding: 16px 0 0; border-top: 1px solid var(--tok-border-default); }
+.ed-section:first-child { padding-top: 0; border-top: none; }
+.ed-section__title { color: var(--tok-text-default); font-weight: 600; font-size: 14px; line-height: 1.4; }
+.ed-section__hint { color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.ed-note { color: var(--tok-text-muted); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.ed-eyebrow { color: var(--tok-text-secondary); font-weight: 700; font-size: 12px; line-height: 1.4; text-transform: uppercase; letter-spacing: [object Object]; }
+.ed-grid { display: grid; gap: 8px; grid-template-columns: 1fr; }
+@media (min-width: 560px) { .ed-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 880px) { .ed-grid { grid-template-columns: repeat(3, 1fr); } }
+.ed-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.ed-stack { display: flex; flex-direction: column; gap: 8px; }
+.ed-scroll { max-height: 420px; overflow-y: auto; padding-right: 4px; }
+/* Prototype-only scaffolding, marked as such — the same treatment the Message
+   Center's fake keyboard gets. */
+.ed-scaffold { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px dashed var(--tok-border-strong); border-radius: 8px; color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
 
-.empty-state { box-sizing: border-box; width: 100%; display: flex; align-items: center; justify-content: center; padding: 24px; font-family: var(--tok-family-sans); }
+/* ============ Card ============ */
+.card { background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); border-radius: 8px; }
+.card__body { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.card__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px; border-bottom: 1px solid var(--tok-border-default); }
+.card__title { color: var(--tok-text-default); font-weight: 600; font-size: 14px; line-height: 1.4; }
+.card--flush > .card__body { padding: 0; gap: 0; }
+
+/* ============ Stepper ============ */
+.stepper { display: flex; align-items: center; gap: 8px; }
+.stepper__step { display: flex; align-items: center; gap: 8px; }
+.stepper__circle { flex-shrink: 0; width: 28px; height: 28px; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; font-weight: 600; font-size: 12px; line-height: 1; background: var(--tok-surface-sunken); color: var(--tok-text-muted); }
+.stepper__circle svg { width: 16px; height: 16px; display: none; }
+.stepper__label { color: var(--tok-text-muted); font-weight: 600; font-size: 12px; line-height: 1.4; }
+.stepper__connector { flex: 1; height: 2px; background: var(--tok-border-default); border-radius: 999px; }
+.stepper__step.is-active .stepper__circle { background: var(--tok-fill-primary); color: var(--tok-text-on-fill); }
+.stepper__step.is-active .stepper__label { color: var(--tok-text-default); }
+.stepper__step.is-complete .stepper__circle { background: var(--tok-fill-primary); color: var(--tok-icon-on-fill); }
+.stepper__step.is-complete .stepper__circle span { display: none; }
+.stepper__step.is-complete .stepper__circle svg { display: block; }
+.stepper__step.is-complete .stepper__label { color: var(--tok-text-default); }
+.stepper__connector.is-complete { background: var(--tok-fill-primary); }
+/* the labels are the first thing to go when there's no room for them */
+@media (max-width: 640px) { .stepper__label { display: none; } }
+
+/* ============ ChoiceTile ============ */
+.choice-tile { display: block; position: relative; cursor: pointer; }
+.choice-tile__input { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.choice-tile__box { height: 100%; display: flex; align-items: center; gap: 12px; padding: 12px 12px; border-radius: 8px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); }
+.choice-tile__marker { flex-shrink: 0; width: 40px; height: 40px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; text-transform: uppercase; font-weight: 600; font-size: 14px; line-height: 1; }
+.choice-tile__marker svg { width: 24px; height: 24px; }
+.choice-tile__text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.choice-tile__label { color: var(--tok-text-default); font-weight: 600; font-size: 14px; line-height: 1.4; }
+.choice-tile__description { color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.choice-tile:hover .choice-tile__input:not(:checked):not(:disabled) ~ .choice-tile__box { background: var(--tok-bg-primary-hover); border-color: var(--tok-fill-primary); }
+.choice-tile__input:checked ~ .choice-tile__box { background: var(--tok-bg-primary); border-color: var(--tok-fill-primary); }
+.choice-tile__input:focus-visible ~ .choice-tile__box { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
+.choice-tile__input:disabled ~ .choice-tile__box { background: var(--tok-surface-disabled); cursor: default; }
+.choice-tile__input:disabled ~ .choice-tile__box .choice-tile__label { color: var(--tok-text-disabled); }
+
+/* ============ Alert ============ */
+.alert { display: flex; align-items: flex-start; gap: 8px; padding: 12px 16px; border-radius: 8px; border: 1px solid transparent; }
+.alert__icon { flex-shrink: 0; width: 20px; height: 20px; }
+.alert__stack { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.alert__message { margin: 0; color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; }
+.alert__title { color: var(--tok-text-default); font-weight: 600; }
+.alert__detail { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.alert__action { margin-top: 4px; }
+.alert--info { background: var(--tok-bg-primary); border-color: var(--tok-border-primary); }
+.alert--info .alert__icon { color: var(--tok-icon-primary); }
+.alert--success { background: var(--tok-bg-success); border-color: var(--tok-border-success); }
+.alert--success .alert__icon { color: var(--tok-status-success); }
+.alert--warning { background: var(--tok-bg-warning); border-color: var(--tok-border-warning); }
+.alert--warning .alert__icon { color: var(--tok-status-warning); }
+.alert--danger { background: var(--tok-bg-danger); border-color: var(--tok-border-danger); }
+.alert--danger .alert__icon { color: var(--tok-status-danger); }
+
+/* ============ Spinner / Progress ============ */
+.spinner { display: inline-block; flex-shrink: 0; border-style: solid; border-color: var(--tok-border-default); border-top-color: var(--tok-fill-primary); border-radius: 999px; animation: ed-spin 0.7s linear infinite; }
+.spinner--sm { width: 16px; height: 16px; border-width: 2px; }
+.spinner--lg { width: 32px; height: 32px; border-width: 4px; }
+@keyframes ed-spin { to { transform: rotate(360deg); } }
+.progress { display: block; width: 100%; overflow: hidden; border-radius: 999px; background: var(--tok-bg-neutral); }
+.progress--sm { height: 4px; }
+.progress--base { height: 8px; }
+.progress__bar { display: block; height: 100%; border-radius: 999px; background: var(--tok-fill-primary); }
+.progress--indeterminate .progress__bar { width: 40%; animation: ed-slide 1.4s ease-in-out infinite; }
+@keyframes ed-slide { 0% { transform: translateX(-100%); } 100% { transform: translateX(250%); } }
+/* full-page veil for the roadmap build — a composition, not a component */
+.ed-veil { position: fixed; inset: 0; z-index: 20; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 24px; background: var(--tok-surface-default); text-align: center; }
+.ed-veil.is-active { display: flex; }
+.ed-veil__title { color: var(--tok-text-default); font-weight: 600; font-size: 16px; line-height: 1.4; }
+.ed-veil__hint { color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.ed-veil__bar { width: 100%; max-width: 320px; }
+
+/* ============ Accordion ============ */
+.accordion__item { border-bottom: 1px solid var(--tok-border-default); }
+.accordion__item:last-child { border-bottom: none; }
+.accordion__summary { list-style: none; display: flex; align-items: center; gap: 8px; padding: 12px 16px; cursor: pointer; }
+.accordion__summary::-webkit-details-marker { display: none; }
+.accordion__summary:hover { background: var(--tok-fill-neutral-hover); }
+.accordion__summary:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: calc(-1 * 4px); }
+.accordion__status { flex-shrink: 0; width: 20px; height: 20px; }
+.accordion__status--done { color: var(--tok-status-success); }
+.accordion__status--todo { color: var(--tok-icon-muted); }
+.accordion__title { flex: 1; min-width: 0; color: var(--tok-text-default); font-weight: 600; font-size: 14px; line-height: 1.4; }
+.accordion__meta { flex-shrink: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.accordion__chevron { flex-shrink: 0; width: 20px; height: 20px; color: var(--tok-icon-muted); transition: transform 0.12s ease; }
+.accordion__item[open] > .accordion__summary .accordion__chevron { transform: rotate(180deg); }
+.accordion__body { display: flex; flex-direction: column; gap: 8px; padding: 0 16px 16px; }
+
+/* ============ Badge ============ */
+.badge { display: inline-flex; align-items: center; flex-shrink: 0; height: 16px; padding: 0 8px; border-radius: 999px; font-weight: 600; font-size: 10px; line-height: 1; }
+.badge--neutral { background: var(--tok-bg-neutral); color: var(--tok-text-default); }
+.badge--primary { background: var(--tok-bg-primary); color: var(--tok-text-primary); }
+.badge--success { background: var(--tok-bg-success); color: var(--tok-text-success); }
+.badge--warning { background: var(--tok-bg-warning); color: var(--tok-text-warning); }
+.badge--info { background: var(--tok-bg-primary); color: var(--tok-text-primary); }
+
+/* ============ Chip (meta variant) ============ */
+.chip { display: inline-flex; align-items: center; border-radius: 999px; border: 1px solid var(--tok-border-default); background: var(--tok-surface-default); height: 32px; padding: 0 12px; gap: 6px; color: var(--tok-text-default); font-weight: 600; font-size: 14px; line-height: 1; }
+.chip__meta-action { flex-shrink: 0; border: none; background: none; padding: 0; cursor: pointer; font-family: inherit; color: var(--tok-text-default); font-weight: 600; font-size: 12px; line-height: 1.4; }
+.chip__meta-action:hover { color: var(--tok-text-primary); }
+.chip__remove { flex-shrink: 0; width: 16px; height: 16px; display: inline-flex; align-items: center; justify-content: center; border: none; border-radius: 8px; background: transparent; padding: 0; cursor: pointer; color: var(--tok-icon-secondary); }
+.chip__remove:hover { background: var(--tok-fill-neutral-hover); }
+.chip__remove svg { width: 100%; height: 100%; }
+
+/* ============ Button ============ */
+.btn { display: inline-flex; align-items: center; justify-content: center; border: none; cursor: pointer; font-family: inherit; border-radius: 8px; }
+.btn:disabled { cursor: default; }
+.btn__icon { flex-shrink: 0; }
+.btn--primary { background: var(--tok-fill-primary); color: var(--tok-text-on-fill); }
+.btn--primary:not(:disabled):hover { background: var(--tok-fill-primary-hover); }
+.btn--primary:not(:disabled):active { background: var(--tok-fill-primary-active); }
+.btn--primary:disabled { background: var(--tok-fill-disabled); color: var(--tok-text-disabled); }
+.btn--secondary { background: var(--tok-fill-neutral); color: var(--tok-text-default); }
+.btn--secondary:not(:disabled):hover { background: var(--tok-fill-neutral-hover-strong); }
+.btn--secondary:not(:disabled):active { background: var(--tok-fill-neutral-active-strong); }
+.btn--secondary:disabled { color: var(--tok-text-disabled); }
+.btn--ghost { background: transparent; color: var(--tok-text-secondary); }
+.btn--ghost:not(:disabled):hover { background: var(--tok-fill-neutral-hover); }
+.btn--ghost .btn__icon { color: var(--tok-icon-secondary); }
+.btn--base { height: 40px; padding: 0 12px; gap: 8px; font-weight: 600; font-size: 14px; line-height: 1.4; }
+.btn--base .btn__icon { width: 20px; height: 20px; }
+.btn--sm { height: 32px; padding: 0 8px; gap: 8px; font-weight: 600; font-size: 12px; line-height: 1.4; }
+.btn--sm .btn__icon { width: 16px; height: 16px; }
+.btn--icon-only.btn--sm { width: 32px; padding: 0; }
+.btn--block { width: 100%; }
+.btn--primary .btn__icon, .btn--secondary .btn__icon { color: currentColor; }
+.btn:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
+
+/* ============ fields: Input / Select / Search ============ */
+.field { display: inline-flex; align-items: center; box-sizing: border-box; background: var(--tok-surface-dim); border: 1px solid var(--tok-border-default); border-radius: 8px; font-family: inherit; }
+.field:hover { background: var(--tok-surface-dim-hover); border-color: var(--tok-border-strong); }
+.field:focus-within { border-color: var(--tok-border-focus); }
+.field--sm { height: 32px; padding: 0 8px; }
+.field__control { border: none; outline: none; background: transparent; padding: 0; width: 100%; min-width: 0; color: var(--tok-text-default); font-weight: 400; font-size: 16px; line-height: 1.2; font-family: inherit; }
+.field__control::placeholder { color: var(--tok-text-muted); }
+.select { display: inline-flex; align-items: center; box-sizing: border-box; background: var(--tok-surface-dim); border: 1px solid var(--tok-border-default); border-radius: 8px; cursor: pointer; text-align: left; font-family: inherit; }
+.select:hover { background: var(--tok-surface-dim-hover); border-color: var(--tok-border-strong); }
+.select:focus-visible { outline: none; border-color: var(--tok-border-focus); }
+.select--base { height: 40px; padding: 0 12px; gap: 8px; }
+.select--base .select__chevron { width: 20px; height: 20px; }
+.select--sm { height: 32px; padding: 0 8px; gap: 8px; }
+.select--sm .select__chevron { width: 16px; height: 16px; }
+.select__value { flex: 1; min-width: 0; color: var(--tok-text-default); font-weight: 400; font-size: 16px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.select--sm .select__value { font-weight: 400; font-size: 16px; line-height: 1.2; }
+.select__value.is-placeholder { color: var(--tok-text-muted); }
+.select__chevron { flex-shrink: 0; margin-left: auto; color: var(--tok-icon-default); }
+.select--block { display: flex; width: 100%; }
+.search { display: flex; align-items: center; box-sizing: border-box; width: 100%; height: 40px; padding: 0 12px; gap: 8px; background: var(--tok-surface-dim); border: 1px solid var(--tok-border-default); border-radius: 8px; }
+.search:hover { background: var(--tok-surface-dim-hover); border-color: var(--tok-border-strong); }
+.search:focus-within { border-color: var(--tok-border-focus); }
+.search__icon { flex-shrink: 0; width: 20px; height: 20px; color: var(--tok-icon-default); }
+.search__input { flex: 1; min-width: 0; border: none; outline: none; background: transparent; color: var(--tok-text-default); font-weight: 400; font-size: 16px; line-height: 1.2; font-family: inherit; }
+.search__input::placeholder { color: var(--tok-text-muted); }
+
+/* ============ Listbox (popover) ============ */
+.listbox { margin: 0; box-sizing: border-box; padding: 4px; border-radius: 8px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); box-shadow: 0px 2px 8px 0px rgba(21, 25, 30, 0.10); font-family: var(--tok-family-sans); width: 340px; max-width: calc(100vw - 32px); }
+.listbox__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; max-height: 280px; overflow-y: auto; }
+.listbox__option { width: 100%; box-sizing: border-box; display: flex; align-items: center; gap: 8px; padding: 8px 8px; border: none; background: none; border-radius: 4px; cursor: pointer; text-align: left; color: var(--tok-text-default); font-family: inherit; font-weight: 400; font-size: 14px; line-height: 1.4; }
+.listbox__option:hover { background: var(--tok-fill-neutral-hover); }
+.listbox__stack { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+.listbox__desc { color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.listbox__trailing { flex-shrink: 0; margin-left: 8px; }
+.listbox__search-wrap { padding: 4px; border-bottom: 1px solid var(--tok-border-default); margin-bottom: 2px; }
+
+/* ============ Table (the classes you're bringing) ============ */
+.table { border: 1px solid var(--tok-border-default); border-radius: 8px; overflow: hidden; background: var(--tok-surface-default); }
+.table__head, .table__row { display: grid; grid-template-columns: minmax(90px, 1.4fr) minmax(88px, 1fr) 76px 64px minmax(76px, 1fr) 32px; gap: 12px; align-items: center; padding: 8px 16px; }
+.table__head { padding: 12px 16px; border-bottom: 1px solid var(--tok-border-default); color: var(--tok-text-muted); font-weight: 700; font-size: 12px; line-height: 1.4; text-transform: uppercase; letter-spacing: [object Object]; }
+.table__row { border-bottom: 1px solid var(--tok-border-default); }
+.table__row:last-child { border-bottom: none; }
+.table__code { color: var(--tok-text-default); font-weight: 600; font-size: 14px; line-height: 1.4; }
+.table__req { color: var(--tok-status-danger); }
+@media (max-width: 640px) {
+  .table__head { display: none; }
+  .table__row { grid-template-columns: 1fr 1fr 32px; row-gap: 8px; }
+}
+
+/* ============ results ============ */
+.ed-res__pills { display: flex; flex-wrap: wrap; gap: 8px; }
+.ed-res__actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.ed-tabs { display: flex; gap: 16px; border-bottom: 1px solid var(--tok-border-default); }
+.ed-tab { border: none; background: none; padding: 0 0 8px; margin-bottom: -1px; cursor: pointer; font-family: inherit; color: var(--tok-text-secondary); font-weight: 600; font-size: 14px; line-height: 1.4; border-bottom: 2px solid transparent; }
+.ed-tab:hover { color: var(--tok-text-default); }
+.ed-tab.is-active { color: var(--tok-text-default); border-bottom-color: var(--tok-fill-primary); }
+.ed-tabpanel { display: none; flex-direction: column; gap: 16px; }
+.ed-tabpanel.is-active { display: flex; }
+/* A transfer result is a flat divided ROW, not its own bordered card — the
+   reference stacks twenty bordered boxes and that pile is what reads as
+   clutter. Grouped by status so the eight identical "we'll evaluate it" rows
+   collapse into one labelled group with a count. */
+.ed-tcredit { display: grid; grid-template-columns: 1fr; gap: 8px; padding: 12px 16px; border-bottom: 1px solid var(--tok-border-default); }
+.ed-tcredit:last-child { border-bottom: none; }
+@media (min-width: 640px) { .ed-tcredit { grid-template-columns: 1fr 1fr; gap: 16px; } }
+.ed-tcredit__col { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.ed-tcredit__code { color: var(--tok-text-default); font-weight: 600; font-size: 14px; line-height: 1.4; }
+.ed-tcredit__meta { color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.ed-tcredit__note { grid-column: 1 / -1; color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.ed-course { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; color: var(--tok-text-default); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.ed-course b { font-weight: 600; }
+.ed-summary { display: grid; grid-template-columns: 1fr; gap: 4px; padding: 12px 0; border-bottom: 1px solid var(--tok-border-default); }
+.ed-summary:last-child { border-bottom: none; }
+@media (min-width: 560px) { .ed-summary { grid-template-columns: 180px 1fr; gap: 16px; } }
+.ed-summary__key { color: var(--tok-text-secondary); font-weight: 600; font-size: 14px; line-height: 1.4; }
+.ed-summary__val { display: flex; flex-direction: column; gap: 4px; color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; }
+
+/* ============ captcha stand-in ============ */
+/* A third-party embed, not a DS component — a bordered box that behaves like
+   the widget so the flow can be walked. Its geometry is the vendor's. */
+.ed-captcha { display: inline-flex; align-items: center; gap: 12px; padding: 12px; border: 1px solid var(--tok-border-default); border-radius: 6px; background: var(--tok-surface-dim); cursor: pointer; font-weight: 400; font-size: 14px; line-height: 1.4; color: var(--tok-text-default); }
+.ed-captcha__box { width: 24px; height: 24px; border: 2px solid var(--tok-border-strong); border-radius: 4px; background: var(--tok-surface-default); display: inline-flex; align-items: center; justify-content: center; color: var(--tok-status-success); }
+.ed-captcha__box svg { width: 100%; height: 100%; display: none; }
+.ed-captcha.is-checked .ed-captcha__box { border-color: var(--tok-status-success); }
+.ed-captcha.is-checked .ed-captcha__box svg { display: block; }
+.ed-captcha__brand { color: var(--tok-text-muted); font-weight: 400; font-size: 10px; line-height: 1.4; }
+
+.empty-state { width: 100%; display: flex; align-items: center; justify-content: center; padding: 24px; }
 .empty-state__text { background: var(--tok-bg-neutral); color: var(--tok-text-secondary); border-radius: 999px; padding: 8px 16px; font-weight: 400; font-size: 14px; line-height: 1.4; text-align: center; }
+.ed-link { background: none; border: none; padding: 0; cursor: pointer; font-family: inherit; color: var(--tok-text-primary); font-weight: 400; font-size: 12px; line-height: 1.4; text-decoration: none; }
+.ed-link:hover { text-decoration: underline; }
+.is-hidden { display: none !important; }
+.ed-hue--blue { background: var(--tok-avatar-blue-bg); color: var(--tok-avatar-blue-text); }
+.ed-hue--green { background: var(--tok-avatar-green-bg); color: var(--tok-avatar-green-text); }
+.ed-hue--magenta { background: var(--tok-avatar-magenta-bg); color: var(--tok-avatar-magenta-text); }
+.ed-hue--amber { background: var(--tok-avatar-amber-bg); color: var(--tok-avatar-amber-text); }
+.ed-hue--teal { background: var(--tok-avatar-teal-bg); color: var(--tok-avatar-teal-text); }
+.ed-hue--orange { background: var(--tok-avatar-orange-bg); color: var(--tok-avatar-orange-text); }
+.ed-hue--violet { background: var(--tok-avatar-violet-bg); color: var(--tok-avatar-violet-text); }
+.ed-hue--red { background: var(--tok-avatar-red-bg); color: var(--tok-avatar-red-text); }
+.ed-mark--yes { background: var(--tok-fill-success); color: var(--tok-icon-on-fill); }
+.ed-mark--no { background: var(--tok-fill-neutral); color: var(--tok-icon-secondary); }
 </style>
 </head>
 <body>
-<div class="app">
-  <header class="app__topbar">
-    <span class="app__logo"><svg width="122" height="24" viewBox="0 0 122 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect width="24" height="24" fill="#0468C4"/>
-<path d="M13.0382 6C12.9042 6.50092 12.7966 7.01224 12.7179 7.53231C12.6432 8.02529 12.5943 8.52624 12.572 9.03381C12.9967 8.76717 13.4363 8.52023 13.8889 8.2943C14.3268 8.07568 14.7772 7.87687 15.2387 7.69887C15.1632 8.14962 15.114 8.60887 15.0911 9.07462C15.0816 9.26913 15.0764 9.46495 15.0764 9.66173C15.0764 9.91396 15.0842 10.1644 15.0998 10.4129C15.5005 10.215 15.9138 10.0371 16.3377 9.87991C16.7472 9.72808 17.1668 9.59574 17.5955 9.48434C17.5944 9.5433 17.5946 9.60252 17.5946 9.66173C17.5946 10.0205 17.6147 10.3747 17.6536 10.7235C17.8768 12.7214 18.7219 14.5409 20 16H18.4141C17.3833 14.5875 16.6873 12.9334 16.4375 11.1441C16.0303 11.3102 15.6351 11.498 15.2535 11.7062C15.5243 13.2549 16.0969 14.7056 16.9123 16H15.4653C14.8473 14.8895 14.3859 13.6867 14.1111 12.4182C13.7318 12.6864 13.3697 12.9763 13.0278 13.286C13.2777 14.2305 13.6235 15.1385 14.0538 16H12.6693C12.4221 15.4553 12.2059 14.8946 12.0226 14.3203C11.5762 14.8424 11.1789 15.4046 10.8368 16H9.41927C9.99395 14.8591 10.7478 13.8163 11.645 12.9054C11.5409 12.424 11.4595 11.9343 11.4019 11.438C9.97223 12.7077 8.81812 14.2592 8.03559 16H6.67448C7.6474 13.6062 9.25665 11.5172 11.3021 9.92405C11.3006 9.83678 11.2995 9.74934 11.2995 9.66173C11.2995 9.227 11.3176 8.796 11.3533 8.37009C8.6069 10.2438 6.48141 12.9003 5.33073 16H4C5.31971 12.1395 8.03339 8.88461 11.5703 6.78281C12.0451 6.50067 12.5351 6.23926 13.0382 6ZM13.8177 9.71336C13.3912 9.9547 12.9785 10.2168 12.5825 10.4987C12.6106 10.9783 12.6629 11.4523 12.7378 11.9186C13.1065 11.6225 13.4928 11.3453 13.895 11.0899C13.8453 10.6374 13.8195 10.1781 13.8177 9.71336Z" fill="white"/>
-<path transform="translate(0 2)" d="M57.2855 6.6813C59.048 6.68139 60.3655 7.51419 61.0148 9.04954V6.9958H63.0558V15.857C63.0558 19.5199 61.2184 21 57.1364 21C56.1532 21 55.1145 20.9258 54.2611 20.7964V18.6506C55.1331 18.7616 56.2278 18.8543 57.1183 18.8543C59.6045 18.8543 60.6253 17.9842 60.6253 16.0048V15.0991C59.9573 16.4124 58.7135 17.1151 57.1364 17.1151C54.3534 17.1149 52.5348 14.8951 52.5348 12.0649V11.6765C52.5348 8.82757 54.4652 6.6813 57.2855 6.6813ZM92.5843 6.64434C95.9983 6.64437 98.0762 9.08678 98.0762 11.8432V12.2316C98.0761 14.8954 96.1095 17.3926 92.5843 17.3926C89.0405 17.3926 87.0736 14.8954 87.0734 12.2316V11.8432C87.0734 9.08677 89.1517 6.64434 92.5843 6.64434ZM118.901 6.9958H122V8.88285H118.883V13.4338C118.883 14.4142 119.439 14.9693 120.423 14.9693H122V17.1709H120.552C117.769 17.1708 116.47 16.2083 116.47 13.2671V8.88285H114.875V6.9958H116.489V4.16606H118.901V6.9958ZM36.6339 9.12345H42.8869V3.53704H45.5217V17.0411H42.8869V11.4359H36.6339V17.0411H34V3.53704H36.6339V9.12345ZM50.9732 17.0411H48.3936V8.9198H46.9836V6.9958H50.9732V17.0411ZM67.7059 8.6792C68.2441 7.38445 69.246 6.6813 70.7674 6.6813H70.8785C73.1792 6.6813 74.3855 8.3094 74.3855 11.3061V17.0411H71.8059V11.0655C71.8058 9.7893 71.0084 8.99373 69.821 8.9937C68.5408 8.9937 67.706 9.90035 67.7059 11.2322V17.0411H65.1264V3.53704H67.7059V8.6792ZM81.2957 3.44425C84.7097 3.44425 86.6582 5.183 86.6583 8.01323V8.30967C86.6583 11.1215 84.7097 12.8975 81.2957 12.8975H79.2548V17.0411H76.62V3.44425H81.2957ZM102.654 17.0411H100.075V8.9198H98.6651V6.9958H102.654V17.0411ZM110.487 6.6813C112.881 6.6813 114.143 8.23567 114.143 11.288V17.0411H111.564V11.0655C111.564 9.82627 110.803 8.9937 109.578 8.9937C108.317 8.99388 107.463 9.84542 107.463 11.1402V17.0411H104.884V6.9958H106.925V9.47491C107.352 7.62506 108.502 6.68134 110.376 6.6813H110.487ZM92.5843 8.84589C90.7474 8.84589 89.6522 10.1965 89.6522 12.0279C89.6522 13.8408 90.6918 15.1911 92.5843 15.1911C94.4582 15.191 95.4974 13.8408 95.4975 12.0279C95.4975 10.1965 94.4026 8.84593 92.5843 8.84589ZM57.8793 8.80894C56.2465 8.80894 55.1144 10.0117 55.1144 11.8801C55.1145 13.7484 56.2651 14.9135 57.8793 14.9135C59.3635 14.9133 60.5882 13.8776 60.5882 12.1018V11.4547C60.5882 9.75297 59.3078 8.80911 57.8793 8.80894ZM79.2548 10.6221H81.5181C83.0951 10.6221 83.9864 9.60461 83.9865 8.16186C83.9865 6.70042 83.0952 5.71971 81.5181 5.71971H79.2548V10.6221ZM49.34 3C50.3419 3 50.806 3.57381 50.806 4.38777C50.806 5.20168 50.3419 5.79361 49.34 5.79361C48.3197 5.79353 47.8559 5.20162 47.8558 4.38777C47.8558 3.57386 48.3196 3.00008 49.34 3ZM101.021 3C102.023 3.00011 102.487 3.57388 102.487 4.38777C102.487 5.2016 102.023 5.7935 101.021 5.79361C100.001 5.79361 99.5366 5.20168 99.5365 4.38777C99.5365 3.57381 100.001 3 101.021 3Z" fill="currentColor"/>
-</svg>
-</span>
-    <button class="btn btn--secondary btn--base btn--icon-only" type="button" aria-label="Settings"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"><g><path d="M0,0h24v24H0V0z" fill="none"/><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></g></svg></button>
+<div class="ed">
+  <header class="ed__topbar">
+    <span class="ed__brand"><span class="ed__brand-name">Explore Your Degree</span><span class="ed__brand-school">· PeopleSoft University</span></span>
+    <span class="ed__noaccount">No account needed</span>
   </header>
   <main class="ed__main">
-    <div class="empty-state"><span class="empty-state__text">Explore Degrees — layout not designed yet</span></div>
+    <div class="stepper" id="ed-stepper" role="list" aria-label="Progress">
+      <div class="stepper__step" role="listitem" data-step="1">
+        <span class="stepper__circle"><span>1</span><svg class="" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
+        <span class="stepper__label">Study</span>
+      </div>
+      <span class="stepper__connector" data-after="1"></span>
+      <div class="stepper__step" role="listitem" data-step="2">
+        <span class="stepper__circle"><span>2</span><svg class="" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
+        <span class="stepper__label">Start</span>
+      </div>
+      <span class="stepper__connector" data-after="2"></span>
+      <div class="stepper__step" role="listitem" data-step="3">
+        <span class="stepper__circle"><span>3</span><svg class="" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
+        <span class="stepper__label">Credits</span>
+      </div>
+      <span class="stepper__connector" data-after="3"></span>
+      <div class="stepper__step" role="listitem" data-step="4">
+        <span class="stepper__circle"><span>4</span><svg class="" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
+        <span class="stepper__label">Review</span>
+      </div>
+    </div>
+
+    <!-- ============ step 1 · what do you want to study ============ -->
+    <section class="ed__step is-active" data-panel="1">
+      <div class="ed__head">
+        <h1 class="ed__title">What do you want to study?</h1>
+        <p class="ed__sub">Pick anything — you can change it later. Not sure? Browse by what sounds interesting.</p>
+      </div>
+      <div class="card"><div class="card__body">
+        <div class="ed-section">
+          <div class="ed-row">
+            <span class="badge badge--neutral">School: PeopleSoft University</span>
+            <button class="ed-link" type="button">Change</button>
+          </div>
+          <div class="search"><svg class="search__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg><input class="search__input" id="ed-program-search" type="search" placeholder="Search majors: try &ldquo;computer&rdquo; or &ldquo;bio&rdquo;" aria-label="Search majors" /></div>
+          <div class="ed-scroll">
+            <div class="ed-grid" id="ed-program-grid">
+      <label class="choice-tile" data-program="A B C">
+        <input class="choice-tile__input" type="radio" name="ed-program" value="A B C" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--violet">AC</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">A B C</span></span>
+        </span>
+      </label>
+      <label class="choice-tile" data-program="Accounting">
+        <input class="choice-tile__input" type="radio" name="ed-program" value="Accounting" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--amber">AC</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">Accounting</span></span>
+        </span>
+      </label>
+      <label class="choice-tile" data-program="Accounting AA">
+        <input class="choice-tile__input" type="radio" name="ed-program" value="Accounting AA" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--orange">AA</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">Accounting AA</span></span>
+        </span>
+      </label>
+      <label class="choice-tile" data-program="Accounting AB">
+        <input class="choice-tile__input" type="radio" name="ed-program" value="Accounting AB" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--violet">AA</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">Accounting AB</span></span>
+        </span>
+      </label>
+      <label class="choice-tile" data-program="Art (BFA)">
+        <input class="choice-tile__input" type="radio" name="ed-program" value="Art (BFA)" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--green">AR</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">Art (BFA)</span></span>
+        </span>
+      </label>
+      <label class="choice-tile" data-program="Art History (BFA)">
+        <input class="choice-tile__input" type="radio" name="ed-program" value="Art History (BFA)" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--amber">AH</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">Art History (BFA)</span></span>
+        </span>
+      </label>
+      <label class="choice-tile" data-program="Art History Minor">
+        <input class="choice-tile__input" type="radio" name="ed-program" value="Art History Minor" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--violet">AM</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">Art History Minor</span></span>
+        </span>
+      </label>
+      <label class="choice-tile" data-program="Auto Technology">
+        <input class="choice-tile__input" type="radio" name="ed-program" value="Auto Technology" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--orange">AT</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">Auto Technology</span></span>
+        </span>
+      </label>
+      <label class="choice-tile" data-program="Baking and Pastry Arts">
+        <input class="choice-tile__input" type="radio" name="ed-program" value="Baking and Pastry Arts" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--teal">BA</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">Baking and Pastry Arts</span></span>
+        </span>
+      </label>
+      <label class="choice-tile" data-program="Biology (BS)">
+        <input class="choice-tile__input" type="radio" name="ed-program" value="Biology (BS)" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--amber">BI</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">Biology (BS)</span></span>
+        </span>
+      </label>
+      <label class="choice-tile" data-program="Business Administration">
+        <input class="choice-tile__input" type="radio" name="ed-program" value="Business Administration" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--magenta">BA</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">Business Administration</span></span>
+        </span>
+      </label>
+      <label class="choice-tile" data-program="Business Management">
+        <input class="choice-tile__input" type="radio" name="ed-program" value="Business Management" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--green">BM</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">Business Management</span></span>
+        </span>
+      </label>
+      <label class="choice-tile" data-program="Chemical Engineering (BE)">
+        <input class="choice-tile__input" type="radio" name="ed-program" value="Chemical Engineering (BE)" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--green">CE</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">Chemical Engineering (BE)</span></span>
+        </span>
+      </label>
+      <label class="choice-tile" data-program="Chemistry (BS)">
+        <input class="choice-tile__input" type="radio" name="ed-program" value="Chemistry (BS)" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--violet">CH</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">Chemistry (BS)</span></span>
+        </span>
+      </label>
+      <label class="choice-tile" data-program="Classics Minor">
+        <input class="choice-tile__input" type="radio" name="ed-program" value="Classics Minor" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--magenta">CM</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">Classics Minor</span></span>
+        </span>
+      </label>
+      <label class="choice-tile" data-program="Communication Technology">
+        <input class="choice-tile__input" type="radio" name="ed-program" value="Communication Technology" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--magenta">CT</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">Communication Technology</span></span>
+        </span>
+      </label>
+      <label class="choice-tile" data-program="Computer Science">
+        <input class="choice-tile__input" type="radio" name="ed-program" value="Computer Science" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--green">CS</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">Computer Science</span></span>
+        </span>
+      </label>
+      <label class="choice-tile" data-program="Computer Science Minor">
+        <input class="choice-tile__input" type="radio" name="ed-program" value="Computer Science Minor" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--violet">CM</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">Computer Science Minor</span></span>
+        </span>
+      </label>
+      <label class="choice-tile" data-program="Economics">
+        <input class="choice-tile__input" type="radio" name="ed-program" value="Economics" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--blue">EC</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">Economics</span></span>
+        </span>
+      </label>
+      <label class="choice-tile" data-program="English (BA)">
+        <input class="choice-tile__input" type="radio" name="ed-program" value="English (BA)" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--violet">EN</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">English (BA)</span></span>
+        </span>
+      </label>
+      <label class="choice-tile" data-program="English Minor">
+        <input class="choice-tile__input" type="radio" name="ed-program" value="English Minor" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--red">EM</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">English Minor</span></span>
+        </span>
+      </label>
+      <label class="choice-tile" data-program="Journalism BA">
+        <input class="choice-tile__input" type="radio" name="ed-program" value="Journalism BA" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--red">JB</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">Journalism BA</span></span>
+        </span>
+      </label>
+      <label class="choice-tile" data-program="Mathematics (BA)">
+        <input class="choice-tile__input" type="radio" name="ed-program" value="Mathematics (BA)" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--teal">MA</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">Mathematics (BA)</span></span>
+        </span>
+      </label>
+      <label class="choice-tile" data-program="Physics">
+        <input class="choice-tile__input" type="radio" name="ed-program" value="Physics" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--amber">PH</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">Physics</span></span>
+        </span>
+      </label>
+      <label class="choice-tile" data-program="Political Science">
+        <input class="choice-tile__input" type="radio" name="ed-program" value="Political Science" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--amber">PS</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">Political Science</span></span>
+        </span>
+      </label>
+      <label class="choice-tile" data-program="Psychology">
+        <input class="choice-tile__input" type="radio" name="ed-program" value="Psychology" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--green">PS</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">Psychology</span></span>
+        </span>
+      </label>
+      <label class="choice-tile" data-program="Sociology">
+        <input class="choice-tile__input" type="radio" name="ed-program" value="Sociology" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--blue">SO</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">Sociology</span></span>
+        </span>
+      </label>
+      <label class="choice-tile" data-program="Statistics">
+        <input class="choice-tile__input" type="radio" name="ed-program" value="Statistics" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--amber">ST</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">Statistics</span></span>
+        </span>
+      </label>
+      <label class="choice-tile" data-program="Undeclared Undergraduate">
+        <input class="choice-tile__input" type="radio" name="ed-program" value="Undeclared Undergraduate" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--magenta">UU</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">Undeclared Undergraduate</span></span>
+        </span>
+      </label>
+            </div>
+            <div class="empty-state is-hidden" id="ed-program-empty"><span class="empty-state__text">No majors match that search</span></div>
+          </div>
+        </div>
+
+        <!-- revealed once a program is picked -->
+        <div class="ed-section is-hidden" id="ed-pick-section">
+          <div id="ed-pick-tile"></div>
+          <div class="is-hidden" id="ed-focus-block">
+            <div class="ed-section__title">Want to focus it? (optional)</div>
+            <p class="ed-section__hint">This major offers focus areas. Pick one if you already know, or skip and decide later.</p>
+            <div class="ed-grid" id="ed-focus-grid"></div>
+          </div>
+          <div class="ed-section__title">Build your program combo (optional)</div>
+          <p class="ed-section__hint">Stack more majors or minors and we'll check them all in one go.</p>
+          <div class="ed-row" id="ed-combo-chips"></div>
+          <button class="select select--base select--block" id="ed-combo-trigger" type="button" popovertarget="ed-combo-lb" aria-haspopup="listbox">
+            <span class="select__value is-placeholder">Add a major or minor</span>
+            <svg class="select__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>
+          </button>
+          <div class="listbox" id="ed-combo-lb" popover>
+            <div class="listbox__search-wrap">
+              <div class="search"><svg class="search__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg><input class="search__input" id="ed-combo-search" type="search" placeholder="Search majors and minors…" aria-label="Search majors and minors" /></div>
+            </div>
+            <ul class="listbox__list" id="ed-combo-list" role="listbox" aria-label="Add a major or minor"></ul>
+          </div>
+        </div>
+      </div></div>
+      <div class="ed__footer ed__footer--end">
+        <button class="btn btn--primary btn--base" id="ed-next-1" type="button" disabled>Continue</button>
+      </div>
+    </section>
+
+    <!-- ============ step 2 · when would you like to start ============ -->
+    <section class="ed__step" data-panel="2">
+      <div class="ed__head">
+        <h1 class="ed__title">When would you like to start?</h1>
+        <p class="ed__sub">Most new students start with the next available term. A guess is fine.</p>
+      </div>
+      <div class="card"><div class="card__body">
+        <div class="ed-section">
+          <div class="ed-eyebrow">2027</div>
+          <div class="ed-grid">
+      <label class="choice-tile">
+        <input class="choice-tile__input" type="radio" name="ed-term" value="2027 Spring" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--blue">27</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">2027 Spring</span><span class="choice-tile__description">Next intake</span></span>
+        </span>
+      </label>
+      <label class="choice-tile">
+        <input class="choice-tile__input" type="radio" name="ed-term" value="2027 Summer" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--blue">27</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">2027 Summer</span></span>
+        </span>
+      </label>
+      <label class="choice-tile">
+        <input class="choice-tile__input" type="radio" name="ed-term" value="2027 Fall" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--blue">27</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">2027 Fall</span></span>
+        </span>
+      </label>
+          </div>
+        </div>
+        <div class="ed-section">
+          <div class="ed-eyebrow">2028</div>
+          <div class="ed-grid">
+      <label class="choice-tile">
+        <input class="choice-tile__input" type="radio" name="ed-term" value="2028 Spring" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--teal">28</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">2028 Spring</span></span>
+        </span>
+      </label>
+      <label class="choice-tile">
+        <input class="choice-tile__input" type="radio" name="ed-term" value="2028 Summer" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--teal">28</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">2028 Summer</span></span>
+        </span>
+      </label>
+      <label class="choice-tile">
+        <input class="choice-tile__input" type="radio" name="ed-term" value="2028 Fall" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--teal">28</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">2028 Fall</span></span>
+        </span>
+      </label>
+          </div>
+        </div>
+        <div class="ed-section">
+          <div class="ed-eyebrow">2029</div>
+          <div class="ed-grid">
+      <label class="choice-tile">
+        <input class="choice-tile__input" type="radio" name="ed-term" value="2029 Spring" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--violet">29</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">2029 Spring</span></span>
+        </span>
+      </label>
+      <label class="choice-tile">
+        <input class="choice-tile__input" type="radio" name="ed-term" value="2029 Summer" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--violet">29</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">2029 Summer</span></span>
+        </span>
+      </label>
+      <label class="choice-tile">
+        <input class="choice-tile__input" type="radio" name="ed-term" value="2029 Fall" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--violet">29</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">2029 Fall</span></span>
+        </span>
+      </label>
+          </div>
+        </div>
+        <div class="ed-section">
+          <div class="ed-eyebrow">2030</div>
+          <div class="ed-grid">
+      <label class="choice-tile">
+        <input class="choice-tile__input" type="radio" name="ed-term" value="2030 Spring" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--amber">30</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">2030 Spring</span></span>
+        </span>
+      </label>
+      <label class="choice-tile">
+        <input class="choice-tile__input" type="radio" name="ed-term" value="2030 Summer" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--amber">30</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">2030 Summer</span></span>
+        </span>
+      </label>
+      <label class="choice-tile">
+        <input class="choice-tile__input" type="radio" name="ed-term" value="2030 Fall" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--amber">30</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">2030 Fall</span></span>
+        </span>
+      </label>
+          </div>
+        </div>
+        <div class="ed-section">
+          <div class="ed-eyebrow">2031</div>
+          <div class="ed-grid">
+      <label class="choice-tile">
+        <input class="choice-tile__input" type="radio" name="ed-term" value="2031 Spring" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--green">31</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">2031 Spring</span></span>
+        </span>
+      </label>
+          </div>
+        </div>
+        <div class="ed-section">
+          <button class="btn btn--secondary btn--base btn--block" id="ed-term-unsure" type="button">I'm not sure yet, use 2027 Spring</button>
+        </div>
+      </div></div>
+      <div class="ed__footer">
+        <button class="btn btn--secondary btn--base" data-back="1" type="button">Back</button>
+        <button class="btn btn--primary btn--base" id="ed-next-2" type="button" disabled>Continue</button>
+      </div>
+    </section>
+
+    <!-- ============ step 3 · have you taken any college classes ============ -->
+    <section class="ed__step" data-panel="3">
+      <div class="ed__head">
+        <h1 class="ed__title">Have you taken any college classes before?</h1>
+        <p class="ed__sub">AP tests, dual-enrollment and community-college classes all count toward your degree.</p>
+      </div>
+      <div class="card"><div class="card__body">
+        <div class="ed-section">
+          <div class="ed-grid">
+      <label class="choice-tile">
+        <input class="choice-tile__input" type="radio" name="ed-credits" value="yes" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-mark--yes"><svg class="" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
+          <span class="choice-tile__text"><span class="choice-tile__label">Yes, I have credits</span><span class="choice-tile__description">We'll match them to requirements</span></span>
+        </span>
+      </label>
+      <label class="choice-tile">
+        <input class="choice-tile__input" type="radio" name="ed-credits" value="no" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-mark--no"><svg class="" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13H5v-2h14v2z"/></svg></span>
+          <span class="choice-tile__text"><span class="choice-tile__label">No, starting fresh</span><span class="choice-tile__description">Straight to your results</span></span>
+        </span>
+      </label>
+          </div>
+        </div>
+        <div class="is-hidden" id="ed-schools-block">
+          <div id="ed-schools"></div>
+          <div class="ed-section">
+            <button class="btn btn--secondary btn--base" id="ed-add-school" type="button"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>Add another school</button>
+            <p class="ed-note">We'll check these against each school's transfer rules when you run your results. This is an estimate to help you plan, not an official award of transfer credit.</p>
+          </div>
+        </div>
+      </div></div>
+      <div class="ed__footer">
+        <button class="btn btn--secondary btn--base" data-back="2" type="button">Back</button>
+        <button class="btn btn--primary btn--base" id="ed-next-3" type="button" disabled>Continue</button>
+      </div>
+    </section>
+
+    <!-- ============ step 4 · review ============ -->
+    <section class="ed__step" data-panel="4">
+      <div class="ed__head">
+        <h1 class="ed__title">Review your choices</h1>
+        <p class="ed__sub">Make sure everything looks right, then we'll build your personalized results.</p>
+      </div>
+      <div class="card"><div class="card__body">
+        <div id="ed-review"></div>
+        <div class="ed-section">
+          <div class="ed-section__title">One quick check to make sure you're human</div>
+          <label class="ed-captcha" id="ed-captcha-review">
+            <span class="ed-captcha__box"><svg class="" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
+            <span>I'm not a robot</span>
+            <span class="ed-captcha__brand">reCAPTCHA</span>
+          </label>
+        </div>
+      </div></div>
+      <div class="ed__footer">
+        <button class="btn btn--secondary btn--base" data-back="3" type="button">Back</button>
+        <button class="btn btn--primary btn--base" id="ed-build" type="button" disabled>Build my roadmap</button>
+      </div>
+    </section>
+
+    <!-- ============ step 5 · results ============ -->
+    <section class="ed__step" data-panel="5">
+      <label class="ed-scaffold">
+        <input type="checkbox" id="ed-planner-toggle" checked />
+        <span>Prototype switch: this school has a Degree Planner product</span>
+      </label>
+      <div class="ed__head">
+        <h1 class="ed__title">Your results</h1>
+      </div>
+      <div class="card"><div class="card__body">
+        <div class="ed-row" style="justify-content: space-between; align-items: flex-start">
+          <div class="ed-tcredit__col">
+            <span class="card__title" id="ed-res-headline">Your results</span>
+            <span class="ed-tcredit__meta" id="ed-res-subline"></span>
+          </div>
+          <div class="ed-res__actions" id="ed-res-actions"></div>
+        </div>
+        <div class="ed-res__pills" id="ed-res-pills"></div>
+        <span class="progress progress--base" role="progressbar" id="ed-res-progress" aria-valuemin="0" aria-valuemax="100"><span class="progress__bar" style="width:0%"></span></span>
+      </div></div>
+      <div id="ed-res-fallback"></div>
+      <div class="ed-tabs" id="ed-res-tabs" role="tablist">
+        <button class="ed-tab is-active" data-tab="credits" role="tab" aria-selected="true" type="button">Your transfer credits</button>
+        <button class="ed-tab" data-tab="reqs" role="tab" aria-selected="false" type="button">Degree requirements</button>
+      </div>
+      <div class="ed-tabpanel is-active" data-tabpanel="credits" id="ed-panel-credits"></div>
+      <div class="ed-tabpanel" data-tabpanel="reqs" id="ed-panel-reqs"></div>
+      <div class="card"><div class="card__body">
+        <div class="ed-section__title">Ready for the next step?</div>
+        <p class="ed-section__hint">Talk it through with the school's admissions team when you're ready to apply, or explore another area of study to compare first.</p>
+        <div class="ed-res__actions"><button class="btn btn--secondary btn--base" id="ed-try-another" type="button">Try another major</button></div>
+      </div></div>
+      <div class="ed__footer">
+        <button class="btn btn--secondary btn--base" data-back="4" type="button">Back</button>
+      </div>
+    </section>
   </main>
+
+  <div class="ed-veil" id="ed-veil" role="status" aria-live="polite">
+    <span class="spinner spinner--lg"></span>
+    <span class="ed-veil__title">Checking your classes…</span>
+    <span class="ed-veil__hint">This usually takes a minute or two. Please keep this page open.</span>
+    <span class="progress progress--sm progress--indeterminate ed-veil__bar" role="progressbar" aria-label="Working"><span class="progress__bar"></span></span>
+  </div>
 </div>
+<script>
+(function () {
+  var D = {"programs":[{"name":"A B C","degree":"Liberal Arts Undergraduate","kind":"Major"},{"name":"Accounting","degree":"Liberal Arts Undergraduate","kind":"Major"},{"name":"Accounting AA","degree":"Associate of Arts","kind":"Major"},{"name":"Accounting AB","degree":"Liberal Arts Undergraduate","kind":"Major"},{"name":"Art (BFA)","degree":"Fine Arts Undergraduate","kind":"Major"},{"name":"Art History (BFA)","degree":"Fine Arts Undergraduate","kind":"Major"},{"name":"Art History Minor","degree":"Liberal Arts Undergraduate","kind":"Minor"},{"name":"Auto Technology","degree":"Associate of Science","kind":"Major"},{"name":"Baking and Pastry Arts","degree":"Associate of Arts","kind":"Major"},{"name":"Biology (BS)","degree":"Liberal Arts Undergraduate","kind":"Major"},{"name":"Business Administration","degree":"Associate of Arts","kind":"Major"},{"name":"Business Management","degree":"Liberal Arts Undergraduate","kind":"Major"},{"name":"Chemical Engineering (BE)","degree":"Engineering Undergraduate","kind":"Major"},{"name":"Chemistry (BS)","degree":"Liberal Arts Undergraduate","kind":"Major"},{"name":"Classics Minor","degree":"Liberal Arts Undergraduate","kind":"Minor"},{"name":"Communication Technology","degree":"Associate of Science","kind":"Major"},{"name":"Computer Science","degree":"Liberal Arts Undergraduate","kind":"Major"},{"name":"Computer Science Minor","degree":"Liberal Arts Undergraduate","kind":"Minor"},{"name":"Economics","degree":"Liberal Arts Undergraduate","kind":"Major"},{"name":"English (BA)","degree":"Liberal Arts Undergraduate","kind":"Major"},{"name":"English Minor","degree":"Liberal Arts Undergraduate","kind":"Minor"},{"name":"Journalism BA","degree":"Liberal Arts Undergraduate","kind":"Major"},{"name":"Mathematics (BA)","degree":"Liberal Arts Undergraduate","kind":"Major"},{"name":"Physics","degree":"Liberal Arts Undergraduate","kind":"Major"},{"name":"Political Science","degree":"Liberal Arts Undergraduate","kind":"Major"},{"name":"Psychology","degree":"Liberal Arts Undergraduate","focus":["Bio-Psychology","Developmental Psychology"],"kind":"Major"},{"name":"Sociology","degree":"Liberal Arts Undergraduate","kind":"Major"},{"name":"Statistics","degree":"Liberal Arts Undergraduate","kind":"Major"},{"name":"Undeclared Undergraduate","degree":"Liberal Arts Undergraduate","kind":"Major"}],"schools":["Bainbridge Junior College","Long Beach City College","Riverside Community College"],"catalog":[{"code":"ENGL 1101","title":"English Composition I","units":3},{"code":"ENGL 1102","title":"English Composition II","units":3},{"code":"MATH 1111","title":"College Algebra","units":3},{"code":"PSYC 1101","title":"Introduction to Psychology","units":3},{"code":"PSYC 1500","title":"Theory of Personality","units":3},{"code":"HIST 2111","title":"US History I","units":3},{"code":"COMM 1100","title":"Human Communication","units":3},{"code":"BIOL 1107","title":"Principles of Biology I","units":3},{"code":"BIOL 1107L","title":"Biology Lab I","units":1},{"code":"ECON 2105","title":"Macroeconomics","units":3},{"code":"CSCI 1301","title":"Computer Science I","units":4},{"code":"SOCI 1101","title":"Introduction to Sociology","units":3},{"code":"PHED 1010","title":"Basketball","units":1}],"scanned":[{"code":"ENGL 1101","term":"Fall","year":2025,"units":3,"grade":"A"},{"code":"MATH 1111","term":"Fall","year":2025,"units":3,"grade":"B"},{"code":"PSYC 1101","term":"Fall","year":2025,"units":3,"grade":"A"},{"code":"HIST 2111","term":"Fall","year":2025,"units":3,"grade":"B"},{"code":"COMM 1100","term":"Fall","year":2025,"units":3,"grade":"A"},{"code":"ENGL 1102","term":"Spring","year":2026,"units":3,"grade":"A"},{"code":"BIOL 1107","term":"Spring","year":2026,"units":3,"grade":"B"},{"code":"BIOL 1107L","term":"Spring","year":2026,"units":1,"grade":"A"},{"code":"ECON 2105","term":"Spring","year":2026,"units":3,"grade":"B"},{"code":"CSCI 1301","term":"Spring","year":2026,"units":4,"grade":"A"}],"terms":["Fall","Spring","Summer"],"grades":["A","B","C","D","P"],"scanError":"This is a photograph of a house and pool, not a transcript — it contains no coursework, grades, or academic information. Please upload an official or unofficial transcript from your student portal.","transfer":[{"status":"accepted","took":[{"code":"HIST 10","units":3,"grade":"B"},{"code":"HIST 11","units":3,"grade":"A"}],"equates":{"code":"HISTORY 120","title":"American History","units":3}},{"status":"accepted","took":[{"code":"PSYC 15","units":3,"grade":"B"}],"equates":{"code":"PSYCH 120","title":"Psychopathology","units":3}},{"status":"accepted","took":[{"code":"PSYC 11","units":3,"grade":"A"}],"equates":{"code":"PSYCH 210","title":"Theories of Personality","units":3}},{"status":"accepted","took":[{"code":"MATH 15","units":4,"grade":"A"}],"equates":{"code":"MATH 111","title":"Calculus I for Engineers","units":3}},{"status":"accepted","took":[{"code":"ENGL 14","units":3,"grade":"B"}],"equates":{"code":"ENGLCOMP 200","title":"English Composition II (C1)","units":3}},{"status":"accepted","took":[{"code":"ENGL 12","units":3,"grade":"A"}],"equates":{"code":"ENGLCOMP 100","title":"English Composition I","units":3}},{"status":"accepted","took":[{"code":"ECON 10","units":3,"grade":"B"}],"equates":{"code":"ECON 140","title":"Principles of Economics","units":3}},{"status":"accepted","took":[{"code":"BIOL 11","units":4,"grade":"B"}],"equates":{"code":"BIOLOGY 100","title":"General Biology I","units":3.5}},{"status":"accepted","took":[{"code":"PSYC 10","units":3,"grade":"A"}],"equates":{"code":"PSYCH 100","title":"Intro to Psychology","units":3}},{"status":"review","took":[{"code":"SOC 10","units":3,"grade":"B"}],"equates":{"code":"SOC 100","title":"Introduction to Sociology","units":3}},{"status":"review","took":[{"code":"PSYC 12","units":3,"grade":"B"}],"equates":{"code":"PSYCH 205","title":"Developmental Psychology","units":3}},{"status":"review","took":[{"code":"MATH 11","units":3,"grade":"C"}],"equates":{"code":"MATH 105","title":"Quantitative Reasoning","units":3}},{"status":"review","took":[{"code":"HIST 12","units":3,"grade":"B"}],"equates":{"code":"HISTORY 121","title":"American History II","units":3}},{"status":"evaluate","took":[{"code":"COUNS 1","units":1,"grade":"A"}],"equates":null},{"status":"evaluate","took":[{"code":"ETHST 1","units":3,"grade":"A"}],"equates":null},{"status":"evaluate","took":[{"code":"PHIL 6","units":3,"grade":"A"}],"equates":null},{"status":"evaluate","took":[{"code":"STAT C1000","units":4,"grade":"A"}],"equates":null},{"status":"evaluate","took":[{"code":"PSYCH 11","units":3,"grade":"A"}],"equates":null},{"status":"evaluate","took":[{"code":"PHED 23","units":4.5,"grade":"B"}],"equates":null}],"statusCopy":{"accepted":{"label":"Accepted","role":"success","note":"These classes transfer."},"review":{"label":"Needs a quick review","role":"warning","note":"Good news: this class should transfer. It just needs a quick review by an advisor to confirm."},"evaluate":{"label":"We'll evaluate it","role":"info","note":"We don't have an automatic rule for this class yet, so an advisor will evaluate it for you."}},"groups":[{"title":"Limits (TXFRP and PE)","code":"1900 #149","rows":[],"count":{"covered":0,"total":0}},{"title":"LAU GE Distribution","code":"F25 000115","rows":[{"title":"Social Science Courses","covered":true},{"title":"Life Science","covered":true,"classes":[{"code":"BIOLOGY 100","title":"General Biology I","units":3.5,"from":"Long Beach City College"}]},{"title":"Physical Science","covered":false},{"title":"Lab Requirements","covered":false},{"title":"Lit and Arts","covered":false},{"title":"Non-western Culture","covered":false},{"title":"American Life","covered":false},{"title":"LAU Math Requirement","covered":true,"classes":[{"code":"MATH 111","title":"Calculus I for Engineers","units":3,"from":"Long Beach City College"}]}],"count":{"covered":3,"total":8}},{"title":"Undergraduate Requirements","rows":[{"title":"Minimum Credit Required for Graduation","covered":true},{"title":"Minimum GPA of 2.00","covered":true},{"title":"Diversity","covered":false},{"title":"Expository Writing","covered":true,"classes":[{"code":"ENGLCOMP 100","title":"English Composition I","units":3,"from":"Long Beach City College"}]},{"title":"Verify Writing Portfolio","covered":false},{"title":"First Year Experience","covered":false},{"title":"US History — HISTORY 120","covered":true,"classes":[{"code":"HISTORY 120","title":"American History","units":3,"from":"Long Beach City College"}]},{"title":"US Constitution — POL SCI 1","covered":false},{"title":"Second Language (2 proficiencies required)","covered":false}],"count":{"covered":4,"total":9}},{"title":"Psychology Requirements","code":"2015 #116","rows":[{"title":"Psych Stats","covered":false},{"title":"PSYCH 101 Introduction to Psychology","covered":false},{"title":"PSY 190 — Introduction to Research and Statistics in Psychology","covered":false},{"title":"PSY 393 Introduction to Development Psychology","covered":false},{"title":"PSY 390 Intermediate Research Methods and Biobehavioral Statistics"},{"title":"Psych 100 Level Elective"},{"title":"Psych electives","covered":false}],"count":{"covered":0,"total":5}},{"title":"BS in Psychology — UMiami","code":"Fall 2024 – Summer 2025","rows":[{"title":"Expository Writing","covered":true},{"title":"PSYCH 101 Introduction to Psychology","covered":false}],"count":{"covered":1,"total":2}},{"title":"Unused Courses","rows":[{"title":"Free Electives"}],"count":{"covered":0,"total":0}}],"nextIntake":"2027 Spring"};
+  var I = {"check":"<svg class=\"accordion__status accordion__status--done\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z\"/></svg>","circle":"<svg class=\"accordion__status accordion__status--todo\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z\"/></svg>","chevron":"<svg class=\"accordion__chevron\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z\"/></svg>","close":"<svg class=\"\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z\"/></svg>","print":"<svg class=\"btn__icon\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z\"/></svg>","launch":"<svg class=\"btn__icon\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z\"/></svg>","tick":"<svg class=\"listbox__checkmark\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z\"/></svg>","info":"<svg class=\"alert__icon\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z\"/></svg>","ok":"<svg class=\"alert__icon\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z\"/></svg>","warn":"<svg class=\"alert__icon\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z\"/></svg>","err":"<svg class=\"alert__icon\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z\"/></svg>"};
+  var S = { step: 1, program: null, focus: null, combo: [], term: null, credits: null,
+            schools: [], sid: 0, captcha: false, planner: true, tab: "credits", online: true };
+
+  var $ = function (sel, root) { return (root || document).querySelector(sel); };
+  var $$ = function (sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); };
+  var esc = function (s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); };
+  var show = function (el, on) { if (el) el.classList.toggle("is-hidden", !on); };
+  var programOf = function (name) { for (var i = 0; i < D.programs.length; i++) if (D.programs[i].name === name) return D.programs[i]; return null; };
+
+  // Avatar's own hash — the same 8 hues, the same modulo, so a program's mark
+  // is the identical colour wherever it appears in the flow.
+  var HUES = ["blue", "green", "magenta", "amber", "teal", "orange", "violet", "red"];
+  function edHue(name) { var s = 0; for (var i = 0; i < name.length; i++) s += name.charCodeAt(i); return HUES[s % HUES.length]; }
+  // Only words that START with a letter — "Art (BFA)" must not become "A(".
+  function edInitials(name) {
+    var words = name.trim().split(/\s+/).filter(function (w) { return /^[a-z]/i.test(w); });
+    var p = words.length ? words : [name.trim()];
+    return (p.length > 1 ? p[0][0] + p[p.length - 1][0] : p[0].slice(0, 2)).toUpperCase();
+  }
+
+  /* ---------- popover anchoring (the native API gives the top layer, not a
+     position) — same toggle-listener recipe the MC prototypes use ---------- */
+  function edAnchor(panel, trigger) {
+    panel.addEventListener("toggle", function (e) {
+      if (e.newState !== "open") return;
+      var r = trigger.getBoundingClientRect();
+      panel.style.position = "fixed";
+      panel.style.margin = "0";
+      var top = r.bottom + 4;
+      if (top + panel.offsetHeight > window.innerHeight - 8) top = Math.max(8, r.top - panel.offsetHeight - 4);
+      panel.style.top = top + "px";
+      panel.style.left = Math.max(8, Math.min(r.left, window.innerWidth - panel.offsetWidth - 8)) + "px";
+      panel.style.width = Math.max(r.width, 280) + "px";
+    });
+  }
+
+  /* ---------- step navigation ---------- */
+  function edGoto(step) {
+    S.step = step;
+    $$(".ed__step").forEach(function (el) { el.classList.toggle("is-active", +el.dataset.panel === step); });
+    edStepper();
+    window.scrollTo(0, 0);
+  }
+  function edStepper() {
+    $$("#ed-stepper .stepper__step").forEach(function (el) {
+      var n = +el.dataset.step;
+      el.classList.toggle("is-active", n === S.step);
+      el.classList.toggle("is-complete", n < S.step);
+    });
+    $$("#ed-stepper .stepper__connector").forEach(function (el) {
+      el.classList.toggle("is-complete", +el.dataset.after < S.step);
+    });
+  }
+
+  /* ---------- step 1 · programs ---------- */
+  function edPickProgram(name) {
+    S.program = name;
+    S.focus = null;
+    S.combo = [{ name: name, kind: programOf(name).kind, primary: true }];
+    var p = programOf(name);
+    show($("#ed-pick-section"), true);
+    $("#ed-pick-tile").innerHTML =
+      '<span class="choice-tile__box" style="border-color: var(--tok-fill-primary); background: var(--tok-bg-primary)">' +
+        '<span class="choice-tile__marker ed-hue--' + edHue(name) + '">' + edInitials(name) + "</span>" +
+        '<span class="choice-tile__text"><span class="choice-tile__label">' + esc(name) + "</span>" +
+        '<span class="choice-tile__description">Your primary pick</span></span></span>';
+    show($("#ed-focus-block"), !!p.focus);
+    if (p.focus) {
+      $("#ed-focus-grid").innerHTML = p.focus.map(function (f) {
+        return '<label class="choice-tile"><input class="choice-tile__input" type="radio" name="ed-focus" value="' + esc(f) + '" />' +
+          '<span class="choice-tile__box"><span class="choice-tile__marker ed-hue--' + edHue(f) + '">' + edInitials(f) + "</span>" +
+          '<span class="choice-tile__text"><span class="choice-tile__label">' + esc(f) + "</span></span></span></label>";
+      }).join("") +
+        '<label class="choice-tile"><input class="choice-tile__input" type="radio" name="ed-focus" value="__skip__" />' +
+        '<span class="choice-tile__box"><span class="choice-tile__text"><span class="choice-tile__label">Not sure yet — skip focus areas</span></span></span></label>';
+      $$('#ed-focus-grid input').forEach(function (r) {
+        r.addEventListener("change", function () { S.focus = r.value === "__skip__" ? null : r.value; });
+      });
+    }
+    edCombo();
+    edComboList();
+    edValidate();
+  }
+
+  function edCombo() {
+    $("#ed-combo-chips").innerHTML = S.combo.map(function (c, i) {
+      var badge = '<span class="badge badge--neutral">' + (c.primary ? "Primary · " : "") + c.kind + "</span>";
+      var action = c.primary
+        ? '<button class="chip__meta-action" type="button" data-change-primary="1">Change</button>'
+        : '<button class="chip__remove" type="button" data-drop="' + i + '" aria-label="Remove ' + esc(c.name) + '">' + I.close + "</button>";
+      return '<span class="chip">' + esc(c.name) + badge + action + "</span>";
+    }).join("");
+    $$("#ed-combo-chips [data-drop]").forEach(function (b) {
+      b.addEventListener("click", function () { S.combo.splice(+b.dataset.drop, 1); edCombo(); edComboList(); });
+    });
+    var change = $("#ed-combo-chips [data-change-primary]");
+    if (change) change.addEventListener("click", function () { edGoto(1); $("#ed-program-search").focus(); });
+  }
+
+  function edComboList() {
+    var q = ($("#ed-combo-search").value || "").toLowerCase();
+    var taken = S.combo.map(function (c) { return c.name; });
+    $("#ed-combo-list").innerHTML = D.programs
+      .filter(function (p) { return p.name.toLowerCase().indexOf(q) > -1; })
+      .map(function (p) {
+        var on = taken.indexOf(p.name) > -1;
+        return '<li><button class="listbox__option" type="button" role="option" aria-selected="' + on + '" data-add="' + esc(p.name) + '"' + (on ? " disabled" : "") + ">" +
+          '<span class="listbox__stack"><span>' + esc(p.name) + "</span>" +
+          '<span class="listbox__desc">' + esc(p.degree) + "</span></span>" +
+          '<span class="listbox__trailing badge badge--neutral">' + p.kind + "</span></button></li>";
+      }).join("");
+    $$("#ed-combo-list [data-add]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var p = programOf(b.dataset.add);
+        S.combo.push({ name: p.name, kind: p.kind });
+        edCombo(); edComboList();
+      });
+    });
+  }
+
+  /* ---------- step 3 · schools ---------- */
+  function edAddSchool() {
+    var id = ++S.sid;
+    S.schools.push({ id: id, name: null, scan: "idle", file: null, captcha: false, attempts: 0, classes: [] });
+    var opts = D.schools.map(function (n) {
+      return '<li><button class="listbox__option" type="button" data-pick-school="' + esc(n) + '">' + esc(n) + "</button></li>";
+    }).join("");
+    var html = "<div class=\"ed-section\" data-school-block=\"__ID__\">\n  <div class=\"ed-row\" style=\"justify-content: space-between\">\n    <span class=\"ed-section__title\">Previous school</span>\n    <button class=\"btn btn--ghost btn--sm btn--icon-only\" data-remove-school=\"__ID__\" type=\"button\" aria-label=\"Remove this school\"><svg class=\"btn__icon\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z\"/></svg></button>\n  </div>\n  <button class=\"select select--base select--block\" data-school-select=\"__ID__\" type=\"button\" popovertarget=\"ed-school-lb-__ID__\" aria-haspopup=\"listbox\">\n    <span class=\"select__value is-placeholder\">Select the school you attended</span>\n    <svg class=\"select__chevron\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z\"/></svg>\n  </button>\n  <div class=\"listbox\" id=\"ed-school-lb-__ID__\" popover>\n    <ul class=\"listbox__list\" role=\"listbox\" aria-label=\"School you attended\">__SCHOOL_OPTIONS__</ul>\n  </div>\n  <p class=\"ed-note\">Don't see your school? We don't have automatic transfer rules for it yet, but an advisor will evaluate those credits with you personally.</p>\n\n  <div class=\"is-hidden\" data-school-body=\"__ID__\">\n    <div class=\"ed-section\">\n      <div class=\"ed-section__title\"><svg class=\"btn__icon\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z\"/></svg> Scan your transcript</div>\n      <p class=\"ed-section__hint\">Upload a PDF or photo of your transcript and we'll fill in your classes for you. You can edit or remove anything afterward. This is optional.</p>\n      <div data-scan-idle=\"__ID__\">\n        <div class=\"ed-row\">\n          <button class=\"btn btn--secondary btn--base\" data-choose-file=\"__ID__\" type=\"button\"><svg class=\"btn__icon\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z\"/></svg>Choose file</button>\n          <span class=\"ed-note\" data-file-name=\"__ID__\">PDF or image, up to 10 MB</span>\n        </div>\n        <div class=\"ed-row\" style=\"margin-top: 12px\">\n          <label class=\"ed-captcha\" data-scan-captcha=\"__ID__\">\n            <span class=\"ed-captcha__box\"><svg class=\"\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z\"/></svg></span>\n            <span>I'm not a robot</span>\n            <span class=\"ed-captcha__brand\">reCAPTCHA</span>\n          </label>\n        </div>\n        <div class=\"ed-row\" style=\"margin-top: 12px\">\n          <button class=\"btn btn--primary btn--base\" data-scan-go=\"__ID__\" type=\"button\" disabled>Scan transcript</button>\n        </div>\n      </div>\n      <div class=\"is-hidden\" data-scan-reading=\"__ID__\">\n        <span class=\"ed-course\"><span class=\"spinner spinner--sm\"></span> Reading your transcript…</span>\n      </div>\n      <div class=\"is-hidden\" data-scan-result=\"__ID__\"></div>\n    </div>\n\n    <div class=\"ed-section\">\n      <div class=\"ed-section__title\">Add the classes you took</div>\n      <p class=\"ed-section__hint\">Search this school's classes and tap each one you took — we fill in the rest.</p>\n      <div class=\"search\"><svg class=\"search__icon\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z\"/></svg><input class=\"search__input\" data-class-search=\"__ID__\" type=\"search\" placeholder=\"Search your classes: try &ldquo;bio&rdquo; or a course number\" aria-label=\"Search classes\" /></div>\n      <ul class=\"listbox__list is-hidden\" data-class-results=\"__ID__\" style=\"max-height: 220px\"></ul>\n      <div data-classes=\"__ID__\"></div>\n    </div>\n  </div>\n</div>".replace(/__ID__/g, id).replace("__SCHOOL_OPTIONS__", opts);
+    var wrap = document.createElement("div");
+    wrap.innerHTML = html;
+    var block = wrap.firstElementChild;
+    $("#ed-schools").appendChild(block);
+    edWireSchool(id, block);
+    edValidate();
+  }
+
+  function edSchool(id) { for (var i = 0; i < S.schools.length; i++) if (S.schools[i].id === id) return S.schools[i]; return null; }
+
+  function edWireSchool(id, block) {
+    var sc = edSchool(id);
+    var trigger = $('[data-school-select="' + id + '"]', block);
+    var panel = $("#ed-school-lb-" + id, block);
+    edAnchor(panel, trigger);
+    $$("[data-pick-school]", panel).forEach(function (b) {
+      b.addEventListener("click", function () {
+        sc.name = b.dataset.pickSchool;
+        var v = $(".select__value", trigger);
+        v.textContent = sc.name;
+        v.classList.remove("is-placeholder");
+        panel.hidePopover();
+        show($('[data-school-body="' + id + '"]', block), true);
+        edValidate();
+      });
+    });
+    $('[data-remove-school="' + id + '"]', block).addEventListener("click", function () {
+      S.schools = S.schools.filter(function (x) { return x.id !== id; });
+      block.remove();
+      if (!S.schools.length) edAddSchool();
+      edValidate();
+    });
+
+    // --- transcript scan: idle → captcha → reading → error, then success ---
+    var captcha = $('[data-scan-captcha="' + id + '"]', block);
+    var go = $('[data-scan-go="' + id + '"]', block);
+    $('[data-choose-file="' + id + '"]', block).addEventListener("click", function () {
+      sc.file = sc.attempts === 0
+        ? "793352309_28774422868808325_n.jpg"
+        : "bainbridge-unofficial-transcript.pdf";
+      $('[data-file-name="' + id + '"]', block).textContent = sc.file;
+      go.disabled = !(sc.file && sc.captcha);
+    });
+    captcha.addEventListener("click", function (e) {
+      e.preventDefault();
+      sc.captcha = !sc.captcha;
+      captcha.classList.toggle("is-checked", sc.captcha);
+      go.disabled = !(sc.file && sc.captcha);
+    });
+    go.addEventListener("click", function () {
+      show($('[data-scan-idle="' + id + '"]', block), false);
+      show($('[data-scan-reading="' + id + '"]', block), true);
+      setTimeout(function () {
+        show($('[data-scan-reading="' + id + '"]', block), false);
+        var out = $('[data-scan-result="' + id + '"]', block);
+        show(out, true);
+        sc.attempts++;
+        if (sc.attempts === 1) {
+          // The reference's own rejection: the reader says what the file WAS.
+          out.innerHTML = '<div class="alert alert--danger">' + I.err +
+            '<div class="alert__stack"><p class="alert__message">' + esc(D.scanError) + "</p>" +
+            '<div class="alert__action"><button class="btn btn--ghost btn--sm" data-retry="' + id + '" type="button">Try another file</button></div></div></div>';
+          $('[data-retry="' + id + '"]', out).addEventListener("click", function () {
+            sc.file = null; sc.captcha = false;
+            captcha.classList.remove("is-checked");
+            $('[data-file-name="' + id + '"]', block).textContent = "PDF or image, up to 10 MB";
+            go.disabled = true;
+            show(out, false);
+            show($('[data-scan-idle="' + id + '"]', block), true);
+          });
+        } else {
+          D.scanned.forEach(function (c) { sc.classes.push(JSON.parse(JSON.stringify(c))); });
+          out.innerHTML =
+            '<div class="alert alert--info">' + I.info + '<div class="alert__stack"><p class="alert__message">Read as a transcript from <span class="alert__title">' + esc(sc.name) + "</span>.</p></div></div>" +
+            '<div class="alert alert--success" style="margin-top:8px">' + I.ok +
+            '<div class="alert__stack"><p class="alert__message"><span class="alert__title">We found ' + D.scanned.length + " classes we can import.</span> Review the grades and remove anything you don't want below.</p></div></div>";
+          edClasses(id, block);
+        }
+        edValidate();
+      }, 1100);
+    });
+
+    // --- manual class search ---
+    var searchEl = $('[data-class-search="' + id + '"]', block);
+    var results = $('[data-class-results="' + id + '"]', block);
+    searchEl.addEventListener("input", function () {
+      var q = searchEl.value.trim().toLowerCase();
+      if (!q) { show(results, false); return; }
+      var hits = D.catalog.filter(function (c) {
+        return (c.code + " " + c.title).toLowerCase().indexOf(q) > -1;
+      }).slice(0, 6);
+      show(results, true);
+      results.innerHTML = hits.length
+        ? hits.map(function (c) {
+            var added = sc.classes.some(function (x) { return x.code === c.code; });
+            return '<li><button class="listbox__option" type="button" data-add-class="' + esc(c.code) + '"' + (added ? " disabled" : "") + ">" +
+              '<span class="listbox__stack"><span>' + esc(c.code) + " · " + esc(c.title) + "</span>" +
+              '<span class="listbox__desc">' + c.units + " units</span></span>" +
+              (added ? '<span class="listbox__trailing badge badge--success">Added</span>' : '<span class="listbox__trailing badge badge--neutral">Add</span>') +
+              "</button></li>";
+          }).join("")
+        : '<li><span class="listbox__option" style="cursor:default">No classes match that search</span></li>';
+      $$("[data-add-class]", results).forEach(function (b) {
+        b.addEventListener("click", function () {
+          var c = D.catalog.filter(function (x) { return x.code === b.dataset.addClass; })[0];
+          sc.classes.push({ code: c.code, term: "Fall", year: 2025, units: c.units, grade: "" });
+          edClasses(id, block);
+          searchEl.dispatchEvent(new Event("input"));
+          edValidate();
+        });
+      });
+    });
+  }
+
+  /* ---------- the classes table ---------- */
+  function edClasses(id, block) {
+    var sc = edSchool(id);
+    var host = $('[data-classes="' + id + '"]', block || document);
+    if (!sc.classes.length) { host.innerHTML = '<p class="ed-note">Nothing added yet. Search a class above to get started.</p>'; return; }
+    var opt = function (list, val) {
+      return list.map(function (o) { return '<option value="' + o + '"' + (o === val ? " selected" : "") + ">" + o + "</option>"; }).join("");
+    };
+    host.innerHTML =
+      '<div class="ed-section__title">Classes you\'re bringing</div>' +
+      '<p class="ed-section__hint">Tell us when you took each one and the grade you earned. The year matters, because schools limit how old a class can be and still transfer.</p>' +
+      '<div class="table"><div class="table__head"><span>Class</span><span>Term</span><span>Year <span class="table__req">*</span></span><span>Units</span><span>Grade <span class="table__req">*</span></span><span></span></div>' +
+      sc.classes.map(function (c, i) {
+        return '<div class="table__row">' +
+          '<span class="table__code">' + esc(c.code) + "</span>" +
+          '<span class="select select--sm"><select class="field__control" data-cls="' + i + '" data-field="term">' + opt(D.terms, c.term) + "</select></span>" +
+          '<span class="field field--sm"><input class="field__control" data-cls="' + i + '" data-field="year" value="' + esc(c.year) + '" inputmode="numeric" aria-label="Year" /></span>' +
+          '<span class="field field--sm"><input class="field__control" data-cls="' + i + '" data-field="units" value="' + esc(c.units) + '" inputmode="decimal" aria-label="Units" /></span>' +
+          '<span class="select select--sm"><select class="field__control" data-cls="' + i + '" data-field="grade"><option value=""></option>' + opt(D.grades, c.grade) + "</select></span>" +
+          '<button class="btn btn--ghost btn--sm btn--icon-only" data-del="' + i + '" type="button" aria-label="Remove ' + esc(c.code) + '">' + I.close + "</button>" +
+          "</div>";
+      }).join("") + "</div>";
+    $$("[data-field]", host).forEach(function (el) {
+      el.addEventListener("change", function () {
+        sc.classes[+el.dataset.cls][el.dataset.field] = el.value;
+        edValidate();
+      });
+    });
+    $$("[data-del]", host).forEach(function (b) {
+      b.addEventListener("click", function () { sc.classes.splice(+b.dataset.del, 1); edClasses(id, block); edValidate(); });
+    });
+  }
+
+  /* ---------- validation per step ---------- */
+  function edClassesReady() {
+    return S.schools.length > 0 && S.schools.every(function (s) {
+      return s.name && s.classes.length > 0 && s.classes.every(function (c) { return c.year && c.grade; });
+    });
+  }
+  function edValidate() {
+    $("#ed-next-1").disabled = !S.program;
+    $("#ed-next-2").disabled = !S.term;
+    $("#ed-next-3").disabled = !(S.credits === "no" || (S.credits === "yes" && edClassesReady()));
+    $("#ed-build").disabled = !S.captcha;
+  }
+
+  /* ---------- step 4 · review (labels adapt to the data) ---------- */
+  function edReview() {
+    var rows = [];
+    rows.push(["School", esc(D.programs && "PeopleSoft University")]);
+    rows.push(["Academic level", "Undergraduate"]);
+    var extras = S.combo.filter(function (c) { return !c.primary; });
+    rows.push([extras.length ? "Majors &amp; minors" : "Major",
+      S.combo.map(function (c) {
+        return esc(c.name) + ' <span class="badge badge--neutral">' + (c.primary && extras.length ? "Primary · " : "") + c.kind + "</span>";
+      }).join("<br />")]);
+    if (S.focus) rows.push(["Focus area", esc(S.focus)]);
+    rows.push(["Starting term", esc(S.term)]);
+    if (S.credits === "no") {
+      rows.push(["Transfer credits", "None added"]);
+    } else {
+      var total = S.schools.reduce(function (n, s) { return n + s.classes.length; }, 0);
+      var detail = S.schools.map(function (s) {
+        return '<span class="alert__title">' + esc(s.name) + " (" + s.classes.length + " classes)</span><br />" +
+          s.classes.map(function (c) {
+            return '<span class="ed-tcredit__meta">' + esc(c.code) + " · " + esc(c.term) + " " + esc(c.year) + " · " + esc(c.units) + " units · grade " + esc(c.grade) + "</span>";
+          }).join("<br />");
+      }).join("<br /><br />");
+      rows.push(["Transfer credits", total + " classes from " + S.schools.length + (S.schools.length === 1 ? " school" : " schools") + "<br /><br />" + detail]);
+    }
+    $("#ed-review").innerHTML = rows.map(function (r) {
+      return '<div class="ed-summary"><span class="ed-summary__key">' + r[0] + '</span><span class="ed-summary__val">' + r[1] + "</span></div>";
+    }).join("");
+  }
+
+  /* ---------- step 5 · results ---------- */
+  function edBuild() {
+    // Riverside is the school with no online rules — that's how the
+    // "couldn't check your credits" ending gets demonstrated.
+    S.online = !S.schools.some(function (s) { return /Riverside/.test(s.name || ""); });
+    var veil = $("#ed-veil");
+    veil.classList.add("is-active");
+    setTimeout(function () {
+      veil.classList.remove("is-active");
+      edResults();
+      edGoto(5);
+    }, 1800);
+  }
+
+  function edResults() {
+    var hasCredits = S.credits === "yes";
+    var applied = D.transfer.filter(function (t) { return t.status === "accepted"; }).length;
+    var total = D.transfer.length;
+    var cov = D.groups.reduce(function (a, g) { return a + g.count.covered; }, 0);
+    var reqTotal = D.groups.reduce(function (a, g) { return a + g.count.total; }, 0);
+
+    $("#ed-res-headline").textContent = hasCredits
+      ? "Your credits already cover " + cov + " of " + reqTotal + " requirement areas"
+      : "What it takes to finish " + S.program;
+    $("#ed-res-subline").textContent = hasCredits
+      ? "What it takes to finish " + S.program + ", and where you already stand."
+      : "You're starting fresh, so everything below is still ahead of you.";
+
+    var pills = [["Start " + S.term, "primary"], [reqTotal + " requirement areas", "primary"]];
+    if (hasCredits) pills.push([cov + " already covered", "primary"], [applied + " classes applied", "primary"]);
+    $("#ed-res-pills").innerHTML = pills.map(function (p) { return '<span class="badge badge--' + p[1] + '">' + esc(p[0]) + "</span>"; }).join("");
+
+    var pct = hasCredits ? Math.round((cov / reqTotal) * 100) : 0;
+    var bar = $("#ed-res-progress");
+    bar.setAttribute("aria-valuenow", pct);
+    $(".progress__bar", bar).style.width = pct + "%";
+
+    // Always the results page; the planner is a BUTTON, never a redirect —
+    // a hard redirect would discard both the estimate and the print path.
+    var actions = [];
+    if (S.planner) actions.push('<button class="btn btn--primary btn--base" type="button">' + I.launch + "Open in Degree Planner</button>");
+    actions.push('<button class="btn btn--secondary btn--base" type="button">' + I.print + "Print or save as PDF</button>");
+    $("#ed-res-actions").innerHTML = actions.join("");
+
+
+    // With no credits there is nothing to say in the transfer tab, so it
+    // doesn't exist and requirements becomes the only view.
+    show($("#ed-res-tabs"), hasCredits);
+    if (!hasCredits) { S.tab = "reqs"; }
+    edTab(S.tab);
+    edCreditsPanel(hasCredits);
+    edReqsPanel();
+  }
+
+  function edTab(name) {
+    S.tab = name;
+    $$(".ed-tab").forEach(function (t) {
+      var on = t.dataset.tab === name;
+      t.classList.toggle("is-active", on);
+      t.setAttribute("aria-selected", on ? "true" : "false");
+    });
+    $$(".ed-tabpanel").forEach(function (p) { p.classList.toggle("is-active", p.dataset.tabpanel === name); });
+  }
+
+  function edCreditsPanel(on) {
+    var host = $("#ed-panel-credits");
+    if (!on) { host.innerHTML = ""; return; }
+    if (!S.online) {
+      // This tab IS the thing we couldn't compute, so the explanation lives
+      // here rather than above the tabs — an empty panel under a label that
+      // promises content reads as a bug.
+      host.innerHTML = '<div class="card"><div class="card__body">' +
+        '<span class="card__title">Your transfer credit</span>' +
+        '<div class="alert alert--warning">' + I.warn + '<div class="alert__stack"><p class="alert__message">' +
+        '<span class="alert__title">We couldn\'t check your credits from ' + esc(S.schools[0].name) + ' online.</span> ' +
+        'The rest of your roadmap is unaffected, and an advisor can evaluate those classes with you.</p></div></div>' +
+        '<p class="ed-note">This is an estimate to help you plan, not an official award of transfer credit.</p>' +
+        "</div></div>";
+      return;
+    }
+    var order = ["accepted", "review", "evaluate"];
+    var applied = D.transfer.filter(function (t) { return t.status === "accepted"; });
+    var head = '<div class="alert alert--success">' + I.ok +
+      '<div class="alert__stack"><p class="alert__message"><span class="alert__title">' + applied.length +
+      " classes applied to your plan.</span> The rest need a quick advisor review — they're checked off in your degree requirements.</p>" +
+      '<p class="alert__detail">Applied to: ' + applied.map(function (t) { return esc(t.equates.code); }).join(", ") + "</p></div></div>";
+
+    host.innerHTML = head + order.map(function (st) {
+      var rows = D.transfer.filter(function (t) { return t.status === st; });
+      if (!rows.length) return "";
+      var copy = D.statusCopy[st];
+      return '<div class="card"><div class="card__head"><span class="card__title">' + esc(copy.label) +
+        '</span><span class="badge badge--' + copy.role + '">' + rows.length + "</span></div>" +
+        '<div class="card__body" style="padding:0;gap:0">' +
+        rows.map(function (t) {
+          return '<div class="ed-tcredit"><div class="ed-tcredit__col"><span class="ed-eyebrow">You took</span>' +
+            t.took.map(function (k) {
+              return '<span class="ed-tcredit__code">' + esc(k.code) + '</span><span class="ed-tcredit__meta">' + k.units + " units · grade " + esc(k.grade) + "</span>";
+            }).join("") + "</div>" +
+            '<div class="ed-tcredit__col"><span class="ed-eyebrow">Equates to</span>' +
+            (t.equates
+              ? '<span class="ed-tcredit__code">' + esc(t.equates.code) + " — " + esc(t.equates.title) + '</span><span class="ed-tcredit__meta">' + t.equates.units + " units</span>"
+              : '<span class="ed-tcredit__meta">No matching class yet.</span>') + "</div>" +
+            '<span class="ed-tcredit__note">' + esc(copy.note) + "</span></div>";
+        }).join("") + "</div></div>";
+    }).join("");
+  }
+
+  function edReqsPanel() {
+    $("#ed-panel-reqs").innerHTML = D.groups.map(function (g) {
+      var count = g.count.total ? '<span class="badge badge--neutral">' + g.count.covered + " of " + g.count.total + " covered</span>" : "";
+      var rows = g.rows.map(function (r) {
+        var stateful = typeof r.covered === "boolean";
+        var status = stateful ? (r.covered ? I.check : I.circle) : "";
+        var meta = stateful ? '<span class="accordion__meta">' + (r.covered ? "Covered" : "Still to do") + "</span>" : "";
+        var body = (r.classes || []).length
+          ? '<span class="ed-eyebrow">Classes that count toward this</span>' +
+            r.classes.map(function (c) {
+              return '<span class="ed-course"><b>' + esc(c.code) + "</b> " + esc(c.title) + " · " + c.units +
+                ' units <span class="badge badge--success">Covered by your credit from ' + esc(c.from) + "</span></span>";
+            }).join("")
+          : '<span class="ed-section__hint">' + (stateful && r.covered ? "Satisfied by your transferred credit." : "No class applied to this yet.") + "</span>";
+        return '<details class="accordion__item"><summary class="accordion__summary">' + status +
+          '<span class="accordion__title">' + esc(r.title) + "</span>" + meta + I.chevron +
+          '</summary><div class="accordion__body">' + body + "</div></details>";
+      }).join("");
+      return '<div class="card"><div class="card__head"><span class="card__title">' + esc(g.title) +
+        (g.code ? ' <span class="ed-tcredit__meta">' + esc(g.code) + "</span>" : "") + "</span>" + count + "</div>" +
+        (rows ? '<div class="card__body" style="padding:0;gap:0">' + rows + "</div>" : "") + "</div>";
+    }).join("");
+  }
+
+  /* ---------- wiring ---------- */
+  $$('#ed-program-grid input').forEach(function (r) {
+    r.addEventListener("change", function () { edPickProgram(r.value); });
+  });
+  $("#ed-program-search").addEventListener("input", function () {
+    var q = this.value.trim().toLowerCase();
+    var any = false;
+    $$("#ed-program-grid .choice-tile").forEach(function (t) {
+      var hit = t.dataset.program.toLowerCase().indexOf(q) > -1;
+      t.classList.toggle("is-hidden", !hit);
+      if (hit) any = true;
+    });
+    show($("#ed-program-empty"), !any);
+  });
+  $("#ed-combo-search").addEventListener("input", edComboList);
+  edAnchor($("#ed-combo-lb"), $("#ed-combo-trigger"));
+
+  $$('input[name="ed-term"]').forEach(function (r) {
+    r.addEventListener("change", function () { S.term = r.value; edValidate(); });
+  });
+  $("#ed-term-unsure").addEventListener("click", function () {
+    var el = document.querySelector('input[name="ed-term"][value="' + D.nextIntake + '"]');
+    el.checked = true; S.term = D.nextIntake; edValidate();
+    el.closest(".choice-tile").scrollIntoView({ block: "center" });
+  });
+
+  $$('input[name="ed-credits"]').forEach(function (r) {
+    r.addEventListener("change", function () {
+      S.credits = r.value;
+      show($("#ed-schools-block"), r.value === "yes");
+      if (r.value === "yes" && !S.schools.length) edAddSchool();
+      if (r.value === "no") { S.schools = []; $("#ed-schools").innerHTML = ""; }
+      edValidate();
+    });
+  });
+  $("#ed-add-school").addEventListener("click", edAddSchool);
+
+  var cap = $("#ed-captcha-review");
+  cap.addEventListener("click", function (e) {
+    e.preventDefault();
+    S.captcha = !S.captcha;
+    cap.classList.toggle("is-checked", S.captcha);
+    edValidate();
+  });
+
+  $("#ed-next-1").addEventListener("click", function () { edGoto(2); });
+  $("#ed-next-2").addEventListener("click", function () { edGoto(3); });
+  $("#ed-next-3").addEventListener("click", function () { edReview(); edGoto(4); });
+  $("#ed-build").addEventListener("click", edBuild);
+  $$("[data-back]").forEach(function (b) {
+    b.addEventListener("click", function () { edGoto(+b.dataset.back); });
+  });
+  $$(".ed-tab").forEach(function (t) { t.addEventListener("click", function () { edTab(t.dataset.tab); }); });
+  $("#ed-planner-toggle").addEventListener("change", function () { S.planner = this.checked; edResults(); });
+  $("#ed-try-another").addEventListener("click", function () {
+    S.program = null; S.focus = null; S.combo = [];
+    $$('#ed-program-grid input').forEach(function (r) { r.checked = false; });
+    show($("#ed-pick-section"), false);
+    edValidate();
+    edGoto(1);
+  });
+
+  edStepper();
+  edValidate();
+})();
+</script>
 </body>
 </html>

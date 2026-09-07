@@ -3,21 +3,33 @@
 //     tools/lib/design-viewer.mjs: device tabs + Versions dropdown + iframe).
 //   docs/designs/explore-degrees-app.html  — the prototype itself.
 //
-// The screen behind the Springboard's Explore Degrees tile. Deliberately a
-// SCAFFOLD: it carries the portal's real app shell (tools/lib/app-shell.mjs —
-// same 64px topbar, wordmark and settings action as the Springboard, so the two
-// screens are provably the same product) and nothing else but an EmptyState.
-// Its own layout is waiting on reference screens; the same call the Springboard
-// page started from, for the same reason — inventing a degree browser here
-// would have to be thrown away, and no-speculative-builds applies to prototype
-// pages as much as to components.
+// The public "Explore Your Degree" wizard behind the Springboard's own tile: a
+// no-login estimator that takes a programme, a start term and any prior college
+// credits, then reports what transfers and what's left of the degree. Four steps
+// plus a results screen, built strictly from hp-design components — every recipe
+// resolved from its own token file.
+//
+// Split across four modules because one file carrying five screens of fixtures,
+// ~700 lines of recipes, the markup and the state machine was unreadable:
+//   lib/ed-data.mjs    — content and fixtures
+//   lib/ed-css.mjs     — component recipes + the `ed-*` composition layer
+//   lib/ed-markup.mjs  — the static skeleton of all five screens
+//   lib/ed-app.mjs     — the state machine that fills it in
+//
+// NOTE this screen does NOT wear the portal's app shell (lib/app-shell.mjs).
+// That is deliberate and comes from the reference: this flow is public — "No
+// account needed" — so it has no logged-in chrome, no wordmark-and-settings
+// topbar. Its own header names the wizard and the school instead.
 // Run: node tools/build-design-explore-degrees.mjs
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { renderRootVars, cssVarName } from "./lib/css-vars.mjs";
 import { renderDesignViewer } from "./lib/design-viewer.mjs";
-import { SHELL_CSS, SHELL_COLOR_PATHS, shellTopbar } from "./lib/app-shell.mjs";
+import { edCss, ED_COLOR_PATHS } from "./lib/ed-css.mjs";
+import { edMarkup, edSchoolBlockTemplate } from "./lib/ed-markup.mjs";
+import { edAppJs } from "./lib/ed-app.mjs";
+import { PROGRAMS, TERM_YEARS, PREV_SCHOOLS } from "./lib/ed-data.mjs";
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const load = (p) => JSON.parse(fs.readFileSync(path.join(root, p)));
@@ -27,6 +39,7 @@ const registry = {
   color: load("tokens/primitives/color.tokens.json").color,
   dim: load("tokens/primitives/dimension.tokens.json").dim,
   radius: load("tokens/primitives/radius.tokens.json").radius,
+  shadow: load("tokens/primitives/shadow.tokens.json").shadow,
   family: typo.family,
   weight: typo.weight,
   size: typo.size,
@@ -35,7 +48,16 @@ const registry = {
   "text-style": load("tokens/primitives/text-styles.tokens.json")["text-style"],
   ...load("tokens/semantic/color.tokens.json"),
 };
-const emptyState = load("tokens/components/empty-state.tokens.json").component.emptyState;
+
+// Every component this wizard uses, loaded once and handed to the CSS module.
+const comp = (name) => load(`tokens/components/${name}.tokens.json`).component;
+const tokens = {
+  ...comp("stepper"), ...comp("choice-tile"), ...comp("card"), ...comp("alert"),
+  ...comp("accordion"), ...comp("progress"), ...comp("spinner"), ...comp("badge"),
+  ...comp("chip"), ...comp("listbox"), ...comp("table"), ...comp("button"),
+  ...comp("input"), ...comp("select"), ...comp("search"), ...comp("empty-state"),
+  ...comp("avatar"),
+};
 
 function get(ref) {
   const parts = ref.replace(/[{}]/g, "").split(".");
@@ -61,56 +83,78 @@ const resolve = (ref) => resolveToken(get(ref));
 const px = (d) => `${d.value}${d.unit}`;
 const cv = (tokenPath) => `var(${cssVarName(tokenPath)})`;
 const refPath = (ref) => ref.replace(/[{}]/g, "");
+const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 const typoCss = (t) => `font-weight: ${t.fontWeight}; font-size: ${px(t.fontSize)}; line-height: ${t.lineHeight};`;
+// text-style.*'s textTransform/textDecoration live in $extensions, which
+// resolveToken() silently drops — the trap that has bitten three times.
+const textExt = (styleRef) => (get(styleRef).$extensions || {})["hp.design/text"] || {};
+const icon = (name, cls) =>
+  fs.readFileSync(path.join(root, `assets/icons/material-filled/${name}.svg`), "utf8").replace("<svg ", `<svg class="${cls}" `);
 
-// ---- EmptyState — the only component this scaffold needs so far ----
-const es = {
-  textType: resolveToken(emptyState.text),
-  textColor: refPath(emptyState.textColor.$value),
-  pillBg: refPath(emptyState.pill.bg.$value),
-  pillRadius: px(resolve(emptyState.pill.radius.$value)),
-  pillPaddingX: px(resolve(emptyState.pill.paddingX.$value)),
-  pillPaddingY: px(resolve(emptyState.pill.paddingY.$value)),
-  padding: px(resolve(emptyState.padding.$value)),
+// ---- Avatar's identity logic, verbatim: same 8 hues, same modulo, so a
+// programme's mark is the same colour on the tile, in the pick card and in the
+// combo chip. Duplicated into the client script too (see ed-app.mjs) because
+// the browser has to recolour marks the build never saw.
+const AVATAR_HUES = ["blue", "green", "magenta", "amber", "teal", "orange", "violet", "red"];
+// Avatar's initials rule, with one addition for programme names: only words
+// that START with a letter count. Avatar was written for people, where every
+// word is a name; "Art (BFA)" took the "(" of "(BFA)" and rendered "A(".
+const initialsOf = (name) => {
+  const words = name.trim().split(/\s+/).filter((w) => /^[a-z]/i.test(w));
+  const p = words.length ? words : [name.trim()];
+  return (p.length > 1 ? p[0][0] + p[p.length - 1][0] : p[0].slice(0, 2)).toUpperCase();
+};
+const hueOf = (name) => {
+  let s = 0;
+  for (const c of name) s += c.charCodeAt(0);
+  return AVATAR_HUES[s % AVATAR_HUES.length];
 };
 
-const colorPaths = [...new Set([...SHELL_COLOR_PATHS, "text.secondary", "bg.neutral"])];
+const helpers = { tokens, resolve, resolveToken, cv, px, refPath, typoCss, textExt, get, esc, icon, initialsOf, hueOf };
+
+// Every hue the marks can land on — programmes, focus areas and the term years.
+const usedHues = [...new Set([
+  ...AVATAR_HUES,
+  ...TERM_YEARS.map((y) => y.hue),
+])];
+const colorPaths = [...new Set([
+  ...ED_COLOR_PATHS,
+  ...usedHues.flatMap((h) => [`avatar.${h}.bg`, `avatar.${h}.text`]),
+])];
 const fontSans = resolve("family.sans");
 const rootVars = renderRootVars([...colorPaths.map((p) => [p, resolve(p)]), ["family.sans", `'${fontSans}', sans-serif`]]);
 
+// The marker hues + the two credit answers' marks: a composition on top of
+// Avatar's palette (pastel 100/600 tints — saturated 500s made fifty squares
+// fight each other) and the success/neutral fills for yes/no.
+const hueCss = `${usedHues.map((h) => `.ed-hue--${h} { background: ${cv(`avatar.${h}.bg`)}; color: ${cv(`avatar.${h}.text`)}; }`).join("\n")}
+.ed-mark--yes { background: ${cv("fill.success")}; color: ${cv("icon.onFill")}; }
+.ed-mark--no { background: ${cv("fill.neutral")}; color: ${cv("icon.secondary")}; }`;
+
 const appCss = `${rootVars}
+${edCss(helpers)}
+${hueCss}`;
 
-${SHELL_CSS}
-
-* { box-sizing: border-box; }
-html, body { height: 100%; }
-body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.sans")}; }
-
-/* ed-* composition layer — just the body slot until the screen is designed */
-.ed__main { flex: 1; width: 100%; max-width: 1400px; margin: 0 auto; display: flex; padding: ${px(resolve("dim.4"))}; }
-@media (min-width: 768px) { .ed__main { padding: ${px(resolve("dim.6"))}; } }
-
-.empty-state { box-sizing: border-box; width: 100%; display: flex; align-items: center; justify-content: center; padding: ${es.padding}; font-family: ${cv("family.sans")}; }
-.empty-state__text { background: ${cv(es.pillBg)}; color: ${cv(es.textColor)}; border-radius: ${es.pillRadius}; padding: ${es.pillPaddingY} ${es.pillPaddingX}; ${typoCss(es.textType)} text-align: center; }`;
+// The per-school block is templated in the markup module and instantiated by
+// the client script, so the template string crosses into JS as data.
+const appJs = edAppJs(helpers).replace('"__TEMPLATE__"', JSON.stringify(edSchoolBlockTemplate(helpers)));
 
 const appHtml = `<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Explore Degrees</title>
+<title>Explore Your Degree</title>
 <link rel="stylesheet" href="../../assets/fonts/sora/sora.css" />
 <style>
 ${appCss}
 </style>
 </head>
 <body>
-<div class="app">
-${shellTopbar()}
-  <main class="ed__main">
-    <div class="empty-state"><span class="empty-state__text">Explore Degrees — layout not designed yet</span></div>
-  </main>
-</div>
+${edMarkup(helpers)}
+<script>
+${appJs}
+</script>
 </body>
 </html>
 `;
@@ -119,7 +163,7 @@ const viewerHtml = renderDesignViewer({
   activeKey: "explore-degrees",
   title: "Explore Degrees",
   heading: "Explore Degrees",
-  sub: "The screen behind the Springboard's Explore Degrees tile — a scaffold for now. It already carries the portal's real app shell (<code>tools/lib/app-shell.mjs</code>: the same 64px topbar, wordmark and settings action the Springboard uses), so the two screens are provably one product rather than two look-alikes; the screen's own layout is waiting on reference screens. Everything built here will follow the same discipline as the other prototypes: strictly hp-design components, every recipe resolved from its own token file, with a small <code>ed-</code> composition layer as the only bespoke CSS.",
+  sub: `The public <b>Explore Your Degree</b> wizard behind the Springboard's own tile — a no-login estimator: pick a programme, a start term and any prior college credits, and it reports what transfers and what's left. Four steps plus results, everything interactive. <b>All the branches are real:</b> focus areas appear only for majors that have them (try Psychology), Yes/No on prior credits, N previous schools, and the AI transcript reader runs its full path — the first file is rejected with the reference's own message ("a photograph of a house and pool"), the second imports ten classes. Two endings too: pick <b>Riverside Community College</b> to get the "we couldn't check your credits online" fallback, and answer <b>No, starting fresh</b> to see the results with no transfer tab at all. The header is deliberately not the portal's app shell — this flow is public, so it has no logged-in chrome. A prototype switch on the results screen turns the school's Degree Planner on and off; results are always rendered and the planner is a button, never a redirect, since a redirect would discard both the estimate and the print path. Built from ${PROGRAMS.length} programmes and ${PREV_SCHOOLS.length} previous schools of sample data.`,
   versions: [{ label: "v1", note: "current", file: "explore-degrees-app.html" }],
 });
 

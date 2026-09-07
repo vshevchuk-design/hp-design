@@ -1152,7 +1152,7 @@ const composeAiCss = `.mc-compose__tabs { display: none; flex-shrink: 0; }
 .mc-attach { display: inline-flex; align-items: center; gap: ${px(resolve("dim.2"))}; max-width: 240px; padding: ${px(resolve("dim.1"))} ${px(resolve("dim.2"))} ${px(resolve("dim.1"))} ${px(resolve("dim.1"))}; border: 1px solid ${cv("border.default")}; border-radius: ${px(resolve("radius.default"))}; background: ${cv("surface.default")}; }
 .mc-attach__thumb { flex-shrink: 0; width: 32px; height: 32px; border-radius: ${px(resolve("radius.sm"))}; background: ${cv("surface.dim")}; display: inline-flex; align-items: center; justify-content: center; overflow: hidden; }
 .mc-attach__thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.mc-attach__thumb svg { width: 18px; height: 18px; color: ${cv("icon.secondary")}; }
+.mc-attach__thumb svg { width: ${px(resolve("dim.4"))}; height: ${px(resolve("dim.4"))}; color: ${cv("icon.secondary")}; }
 .mc-attach__meta { min-width: 0; display: flex; flex-direction: column; }
 .mc-attach__name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: ${cv("text.default")}; ${typoCss(bodySmType)} }
 .mc-attach__size { color: ${cv("text.muted")}; font-size: 11px; }
