@@ -46,6 +46,21 @@
           }
         }
       },
+      "150": {
+        "$type": "color",
+        "$value": "#dadde0",
+        "$extensions": {
+          "hp.design/oklch": {
+            "l": 0.895,
+            "c": 0.006,
+            "h": 254
+          },
+          "hp.design/contrast": {
+            "onWhite": 1.36,
+            "onInk": 14.41
+          }
+        }
+      },
       "200": {
         "$type": "color",
         "$value": "#cdd1d6",
@@ -181,7 +196,7 @@
           }
         }
       },
-      "$description": "Cool neutral — the brand blue's own hue (254) carried at a small fraction of its chroma, peaking at 0.030 mid-ramp and tapering to 0.002 at the pale end. Regenerate with tools/gen-gray-ramp.mjs, never by hand. This reverses the original 'truly achromatic (chroma 0), deliberately not tinted toward blue' call, on explicit user request 2026-09-07: at c=0 the neutrals read flatly, dead gray in product surfaces. Lightness was left untouched step-for-step, so every contrast guarantee the palette documents still holds (the generator asserts 500 ≥ 3:1 and 600 ≥ 4.5:1 on white before writing)."
+      "$description": "Cool neutral — the brand blue's own hue (254) carried at a small fraction of its chroma, peaking at 0.030 mid-ramp and tapering to 0.002 at the pale end. Regenerate with tools/gen-color-ramps.mjs, never by hand. This reverses the original 'truly achromatic (chroma 0), deliberately not tinted toward blue' call, on explicit user request 2026-09-07: at c=0 the neutrals read flatly, dead gray in product surfaces. Lightness was left untouched step-for-step, so every contrast guarantee the palette documents still holds (the generator asserts 500 ≥ 3:1 and 600 ≥ 4.5:1 on white before writing)."
     },
     "blue": {
       "25": {
@@ -226,6 +241,21 @@
           "hp.design/contrast": {
             "onWhite": 1.22,
             "onInk": 16.06
+          }
+        }
+      },
+      "150": {
+        "$type": "color",
+        "$value": "#c7dffc",
+        "$extensions": {
+          "hp.design/oklch": {
+            "l": 0.895,
+            "c": 0.048,
+            "h": 254
+          },
+          "hp.design/contrast": {
+            "onWhite": 1.36,
+            "onInk": 14.4
           }
         }
       },
@@ -411,6 +441,21 @@
           }
         }
       },
+      "150": {
+        "$type": "color",
+        "$value": "#fdd0ce",
+        "$extensions": {
+          "hp.design/oklch": {
+            "l": 0.895,
+            "c": 0.051,
+            "h": 20
+          },
+          "hp.design/contrast": {
+            "onWhite": 1.39,
+            "onInk": 14.12
+          }
+        }
+      },
       "200": {
         "$type": "color",
         "$value": "#febebd",
@@ -550,61 +595,76 @@
     "green": {
       "25": {
         "$type": "color",
-        "$value": "#effff3",
+        "$value": "#f6fcf7",
         "$extensions": {
           "hp.design/oklch": {
             "l": 0.985,
-            "c": 0.023,
+            "c": 0.009,
             "h": 152
           },
           "hp.design/contrast": {
             "onWhite": 1.04,
-            "onInk": 18.96
+            "onInk": 18.88
           }
         }
       },
       "50": {
         "$type": "color",
-        "$value": "#dfffe6",
+        "$value": "#edf9ef",
         "$extensions": {
           "hp.design/oklch": {
             "l": 0.97,
-            "c": 0.047,
+            "c": 0.018,
             "h": 152
           },
           "hp.design/contrast": {
-            "onWhite": 1.07,
-            "onInk": 18.32
+            "onWhite": 1.08,
+            "onInk": 18.15
           }
         }
       },
       "100": {
         "$type": "color",
-        "$value": "#acffc2",
+        "$value": "#d4f1da",
         "$extensions": {
           "hp.design/oklch": {
             "l": 0.93,
-            "c": 0.116,
+            "c": 0.042,
             "h": 152
           },
           "hp.design/contrast": {
-            "onWhite": 1.18,
-            "onInk": 16.69
+            "onWhite": 1.21,
+            "onInk": 16.27
+          }
+        }
+      },
+      "150": {
+        "$type": "color",
+        "$value": "#bfe9c9",
+        "$extensions": {
+          "hp.design/oklch": {
+            "l": 0.895,
+            "c": 0.061,
+            "h": 152
+          },
+          "hp.design/contrast": {
+            "onWhite": 1.34,
+            "onInk": 14.7
           }
         }
       },
       "200": {
         "$type": "color",
-        "$value": "#75ef9c",
+        "$value": "#a5e2b4",
         "$extensions": {
           "hp.design/oklch": {
             "l": 0.86,
-            "c": 0.16,
+            "c": 0.089,
             "h": 152
           },
           "hp.design/contrast": {
-            "onWhite": 1.44,
-            "onInk": 13.64
+            "onWhite": 1.49,
+            "onInk": 13.22
           }
         }
       },
@@ -727,7 +787,8 @@
             "onInk": 1.13
           }
         }
-      }
+      },
+      "$description": "Light end (25–200) retuned 2026-09-07 to the palette-wide profile — it had been sitting at ~2.7x the family's chroma, so green-100 read as a vivid mint next to pale siblings like blue-100. Steps 300–950 untouched."
     },
     "amber": {
       "25": {
@@ -772,6 +833,21 @@
           "hp.design/contrast": {
             "onWhite": 1.24,
             "onInk": 15.84
+          }
+        }
+      },
+      "150": {
+        "$type": "color",
+        "$value": "#fcd4aa",
+        "$extensions": {
+          "hp.design/oklch": {
+            "l": 0.895,
+            "c": 0.071,
+            "h": 68
+          },
+          "hp.design/contrast": {
+            "onWhite": 1.39,
+            "onInk": 14.16
           }
         }
       },
@@ -957,6 +1033,21 @@
           }
         }
       },
+      "150": {
+        "$type": "color",
+        "$value": "#fdd1c1",
+        "$extensions": {
+          "hp.design/oklch": {
+            "l": 0.895,
+            "c": 0.054,
+            "h": 42
+          },
+          "hp.design/contrast": {
+            "onWhite": 1.39,
+            "onInk": 14.09
+          }
+        }
+      },
       "200": {
         "$type": "color",
         "$value": "#fec1a9",
@@ -1136,6 +1227,21 @@
           "hp.design/contrast": {
             "onWhite": 1.24,
             "onInk": 15.88
+          }
+        }
+      },
+      "150": {
+        "$type": "color",
+        "$value": "#ddd7fd",
+        "$extensions": {
+          "hp.design/oklch": {
+            "l": 0.895,
+            "c": 0.052,
+            "h": 293
+          },
+          "hp.design/contrast": {
+            "onWhite": 1.38,
+            "onInk": 14.23
           }
         }
       },
@@ -1321,6 +1427,21 @@
           }
         }
       },
+      "150": {
+        "$type": "color",
+        "$value": "#fdcde2",
+        "$extensions": {
+          "hp.design/oklch": {
+            "l": 0.895,
+            "c": 0.06,
+            "h": 350
+          },
+          "hp.design/contrast": {
+            "onWhite": 1.4,
+            "onInk": 14.04
+          }
+        }
+      },
       "200": {
         "$type": "color",
         "$value": "#febad9",
@@ -1460,61 +1581,76 @@
     "teal": {
       "25": {
         "$type": "color",
-        "$value": "#ebffff",
+        "$value": "#f5fcfb",
         "$extensions": {
           "hp.design/oklch": {
             "l": 0.985,
-            "c": 0.021,
+            "c": 0.007,
             "h": 195
           },
           "hp.design/contrast": {
             "onWhite": 1.04,
-            "onInk": 18.97
+            "onInk": 18.9
           }
         }
       },
       "50": {
         "$type": "color",
-        "$value": "#d5fffe",
+        "$value": "#eaf9f8",
         "$extensions": {
           "hp.design/oklch": {
             "l": 0.97,
-            "c": 0.043,
+            "c": 0.015,
             "h": 195
           },
           "hp.design/contrast": {
-            "onWhite": 1.07,
-            "onInk": 18.3
+            "onWhite": 1.08,
+            "onInk": 18.15
           }
         }
       },
       "100": {
         "$type": "color",
-        "$value": "#88fffe",
+        "$value": "#cfefef",
         "$extensions": {
           "hp.design/oklch": {
             "l": 0.93,
-            "c": 0.107,
+            "c": 0.034,
             "h": 195
           },
           "hp.design/contrast": {
-            "onWhite": 1.18,
-            "onInk": 16.63
+            "onWhite": 1.22,
+            "onInk": 16.13
+          }
+        }
+      },
+      "150": {
+        "$type": "color",
+        "$value": "#b8e7e6",
+        "$extensions": {
+          "hp.design/oklch": {
+            "l": 0.895,
+            "c": 0.049,
+            "h": 195
+          },
+          "hp.design/contrast": {
+            "onWhite": 1.35,
+            "onInk": 14.6
           }
         }
       },
       "200": {
         "$type": "color",
-        "$value": "#4aebeb",
+        "$value": "#98e0e0",
         "$extensions": {
           "hp.design/oklch": {
             "l": 0.86,
-            "c": 0.13,
+            "c": 0.072,
             "h": 195
           },
           "hp.design/contrast": {
-            "onWhite": 1.46,
-            "onInk": 13.45
+            "onWhite": 1.49,
+            "onInk": 13.17
           }
         }
       },
@@ -1637,189 +1773,206 @@
             "onInk": 1.13
           }
         }
-      }
+      },
+      "$description": "Light end (25–200) retuned 2026-09-07 to the palette-wide profile. teal-100 was #88fffe — effectively pure cyan, the single most out-of-family swatch in the palette (chroma 0.107 where the family profile wants 0.034). Steps 300–950 untouched."
     },
     "brown": {
       "25": {
         "$type": "color",
-        "$value": "#fff9f5",
+        "$value": "#fcf9f7",
         "$extensions": {
           "hp.design/oklch": {
             "l": 0.985,
-            "c": 0.008,
-            "h": 50
+            "c": 0.004,
+            "h": 58
           },
           "hp.design/contrast": {
-            "onWhite": 1.04,
-            "onInk": 18.82
+            "onWhite": 1.05,
+            "onInk": 18.74
           }
         }
       },
       "50": {
         "$type": "color",
-        "$value": "#fff2ec",
+        "$value": "#f9f4f1",
         "$extensions": {
           "hp.design/oklch": {
             "l": 0.97,
-            "c": 0.016,
-            "h": 50
+            "c": 0.007,
+            "h": 58
           },
           "hp.design/contrast": {
-            "onWhite": 1.1,
-            "onInk": 17.93
+            "onWhite": 1.09,
+            "onInk": 18
           }
         }
       },
       "100": {
         "$type": "color",
-        "$value": "#ffe1d1",
+        "$value": "#f1e5dd",
         "$extensions": {
           "hp.design/oklch": {
             "l": 0.93,
-            "c": 0.039,
-            "h": 50
+            "c": 0.017,
+            "h": 58
           },
           "hp.design/contrast": {
             "onWhite": 1.24,
-            "onInk": 15.85
+            "onInk": 15.9
+          }
+        }
+      },
+      "150": {
+        "$type": "color",
+        "$value": "#e9d9cd",
+        "$extensions": {
+          "hp.design/oklch": {
+            "l": 0.895,
+            "c": 0.024,
+            "h": 58
+          },
+          "hp.design/contrast": {
+            "onWhite": 1.38,
+            "onInk": 14.29
           }
         }
       },
       "200": {
         "$type": "color",
-        "$value": "#fec2a1",
+        "$value": "#e3ccbb",
         "$extensions": {
           "hp.design/oklch": {
             "l": 0.86,
-            "c": 0.083,
-            "h": 50
+            "c": 0.035,
+            "h": 58
           },
           "hp.design/contrast": {
-            "onWhite": 1.56,
-            "onInk": 12.58
+            "onWhite": 1.54,
+            "onInk": 12.74
           }
         }
       },
       "300": {
         "$type": "color",
-        "$value": "#e3a480",
+        "$value": "#d4ab8d",
         "$extensions": {
           "hp.design/oklch": {
             "l": 0.77,
-            "c": 0.09,
-            "h": 50
+            "c": 0.063,
+            "h": 58
           },
           "hp.design/contrast": {
-            "onWhite": 2.12,
-            "onInk": 9.25
+            "onWhite": 2.1,
+            "onInk": 9.36
           }
         }
       },
       "400": {
         "$type": "color",
-        "$value": "#c68865",
+        "$value": "#b68f72",
         "$extensions": {
           "hp.design/oklch": {
             "l": 0.68,
-            "c": 0.09,
-            "h": 50
+            "c": 0.063,
+            "h": 58
           },
           "hp.design/contrast": {
-            "onWhite": 2.95,
-            "onInk": 6.65
+            "onWhite": 2.93,
+            "onInk": 6.7
           }
         }
       },
       "500": {
         "$type": "color",
-        "$value": "#ac704e",
+        "$value": "#9d775b",
         "$extensions": {
           "hp.design/oklch": {
             "l": 0.6,
-            "c": 0.09,
-            "h": 50
+            "c": 0.063,
+            "h": 58
           },
           "hp.design/contrast": {
-            "onWhite": 4.05,
-            "onInk": 4.85
+            "onWhite": 4.02,
+            "onInk": 4.89
           }
         }
       },
       "600": {
         "$type": "color",
-        "$value": "#925837",
+        "$value": "#856044",
         "$extensions": {
           "hp.design/oklch": {
             "l": 0.52,
-            "c": 0.09,
-            "h": 50
+            "c": 0.063,
+            "h": 58
           },
           "hp.design/contrast": {
-            "onWhite": 5.72,
-            "onInk": 3.44
+            "onWhite": 5.59,
+            "onInk": 3.51
           }
         }
       },
       "700": {
         "$type": "color",
-        "$value": "#794220",
+        "$value": "#6d4a2e",
         "$extensions": {
           "hp.design/oklch": {
             "l": 0.44,
-            "c": 0.09,
-            "h": 50
+            "c": 0.063,
+            "h": 58
           },
           "hp.design/contrast": {
-            "onWhite": 8.04,
-            "onInk": 2.44
+            "onWhite": 7.87,
+            "onInk": 2.5
           }
         }
       },
       "800": {
         "$type": "color",
-        "$value": "#612c06",
+        "$value": "#55351b",
         "$extensions": {
           "hp.design/oklch": {
             "l": 0.36,
-            "c": 0.09,
-            "h": 50
+            "c": 0.06,
+            "h": 58
           },
           "hp.design/contrast": {
-            "onWhite": 11.22,
-            "onInk": 1.75
+            "onWhite": 10.99,
+            "onInk": 1.79
           }
         }
       },
       "900": {
         "$type": "color",
-        "$value": "#491c00",
+        "$value": "#40230b",
         "$extensions": {
           "hp.design/oklch": {
             "l": 0.29,
-            "c": 0.08,
-            "h": 50
+            "c": 0.056,
+            "h": 58
           },
           "hp.design/contrast": {
-            "onWhite": 14.49,
-            "onInk": 1.36
+            "onWhite": 14.35,
+            "onInk": 1.37
           }
         }
       },
       "950": {
         "$type": "color",
-        "$value": "#2e0d00",
+        "$value": "#271202",
         "$extensions": {
           "hp.design/oklch": {
             "l": 0.21,
-            "c": 0.064,
-            "h": 50
+            "c": 0.045,
+            "h": 58
           },
           "hp.design/contrast": {
             "onWhite": 17.89,
             "onInk": 1.1
           }
         }
-      }
+      },
+      "$description": "Rebuilt end to end 2026-09-07 because brown and orange were indistinguishable. Two changes, both needed: hue 50 → 58 (16° off orange, 10° off amber — brown sits in a narrow 26° corridor between them, so hue alone could never separate it) and chroma cut to 70% of the old curve. Chroma alone was tried first and failed at the pale end, where a low-chroma orange and a low-chroma brown are both just off-white. The result behaves as a warm-neutral family at the light end (greige, #f1e5dd at 100, against orange's peach #ffe1d5) and a true muted brown from 300 down — the shape Radix's sand/bronze scales use. Amber stays clear of it by carrying ~2.5x the chroma at every light step. Regenerate with tools/gen-color-ramps.mjs."
     },
     "white": {
       "$type": "color",

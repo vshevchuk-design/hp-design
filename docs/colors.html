@@ -183,6 +183,7 @@
       <div class="row"><b><span class="dot text"></span>Step 600</b><span>AA text-safe on white, ≥4.5:1 — body text, links, small icons, anything read as text.</span></div>
       <div class="row"><b><span class="dot ui"></span>Step 500</b><span>Brand/UI-safe only, ≥3:1 — large text (≥18pt/14pt bold), borders, fills, illustrations. Not for small/body text.</span></div>
       <div class="row"><b>Steps 25–200</b><span>Solid light tints for backgrounds (notification chips, subtle fills, hover washes) — used as flat colors, not via opacity, so they never shift depending on what's behind them.</span></div>
+      <div class="row"><b>Step 150</b><span>Added 2026-09-07 — 100→200 was the ramp's harshest jump (the lightness deltas accelerate across the light end: .015, .04, .07), so this splits the biggest one in two. Reach for it when a tint needs to sit between the two, not as a new default.</span></div>
       <div class="row"><b>Steps 700–950</b><span>Dark end of the ramp — reserved mostly for future dark-mode surfaces/text, not used by any light-mode style yet.</span></div>
       <div class="row"><b>Chart palette</b><span>Use only the 8 validated series slots below for data-viz identity — never a raw ramp color for a chart series, and never reorder them (order is the CVD-safety mechanism).</span></div>
       <div class="row"><b>white</b><span>Literal, not part of the gray ramp — gray-25 is a near-white neutral but not identical to it. No literal black: gray-950 already serves that role well (pure black reads too harsh for text in most modern UI).</span></div>
@@ -237,6 +238,9 @@
         <div class="swatch" style="background:#e6e8eb;color:#141414" title="gray-100  #e6e8eb  onWhite 1.23:1">
           <span class="step">100</span><span class="hex">#e6e8eb</span>
         </div>
+        <div class="swatch" style="background:#dadde0;color:#141414" title="gray-150  #dadde0  onWhite 1.36:1">
+          <span class="step">150</span><span class="hex">#dadde0</span>
+        </div>
         <div class="swatch" style="background:#cdd1d6;color:#141414" title="gray-200  #cdd1d6  onWhite 1.53:1">
           <span class="step">200</span><span class="hex">#cdd1d6</span>
         </div>
@@ -277,6 +281,9 @@
         </div>
         <div class="swatch" style="background:#d9eaff;color:#141414" title="blue-100  #d9eaff  onWhite 1.22:1">
           <span class="step">100</span><span class="hex">#d9eaff</span>
+        </div>
+        <div class="swatch" style="background:#c7dffc;color:#141414" title="blue-150  #c7dffc  onWhite 1.36:1">
+          <span class="step">150</span><span class="hex">#c7dffc</span>
         </div>
         <div class="swatch" style="background:#b2d4fe;color:#141414" title="blue-200  #b2d4fe  onWhite 1.53:1">
           <span class="step">200</span><span class="hex">#b2d4fe</span>
@@ -319,6 +326,9 @@
         <div class="swatch" style="background:#ffdfde;color:#141414" title="red-100  #ffdfde  onWhite 1.25:1">
           <span class="step">100</span><span class="hex">#ffdfde</span>
         </div>
+        <div class="swatch" style="background:#fdd0ce;color:#141414" title="red-150  #fdd0ce  onWhite 1.39:1">
+          <span class="step">150</span><span class="hex">#fdd0ce</span>
+        </div>
         <div class="swatch" style="background:#febebd;color:#141414" title="red-200  #febebd  onWhite 1.58:1">
           <span class="step">200</span><span class="hex">#febebd</span>
         </div>
@@ -351,17 +361,20 @@
       <div class="family">
         <div class="family-head"><span class="family-name">green</span><span class="family-hue">H 152°</span></div>
         <div class="ramp">
-        <div class="swatch" style="background:#effff3;color:#141414" title="green-25  #effff3  onWhite 1.04:1">
-          <span class="step">25</span><span class="hex">#effff3</span>
+        <div class="swatch" style="background:#f6fcf7;color:#141414" title="green-25  #f6fcf7  onWhite 1.04:1">
+          <span class="step">25</span><span class="hex">#f6fcf7</span>
         </div>
-        <div class="swatch" style="background:#dfffe6;color:#141414" title="green-50  #dfffe6  onWhite 1.07:1">
-          <span class="step">50</span><span class="hex">#dfffe6</span>
+        <div class="swatch" style="background:#edf9ef;color:#141414" title="green-50  #edf9ef  onWhite 1.08:1">
+          <span class="step">50</span><span class="hex">#edf9ef</span>
         </div>
-        <div class="swatch" style="background:#acffc2;color:#141414" title="green-100  #acffc2  onWhite 1.18:1">
-          <span class="step">100</span><span class="hex">#acffc2</span>
+        <div class="swatch" style="background:#d4f1da;color:#141414" title="green-100  #d4f1da  onWhite 1.21:1">
+          <span class="step">100</span><span class="hex">#d4f1da</span>
         </div>
-        <div class="swatch" style="background:#75ef9c;color:#141414" title="green-200  #75ef9c  onWhite 1.44:1">
-          <span class="step">200</span><span class="hex">#75ef9c</span>
+        <div class="swatch" style="background:#bfe9c9;color:#141414" title="green-150  #bfe9c9  onWhite 1.34:1">
+          <span class="step">150</span><span class="hex">#bfe9c9</span>
+        </div>
+        <div class="swatch" style="background:#a5e2b4;color:#141414" title="green-200  #a5e2b4  onWhite 1.49:1">
+          <span class="step">200</span><span class="hex">#a5e2b4</span>
         </div>
         <div class="swatch" style="background:#55d180;color:#141414" title="green-300  #55d180  onWhite 1.94:1">
           <span class="step">300</span><span class="hex">#55d180</span>
@@ -400,6 +413,9 @@
         </div>
         <div class="swatch" style="background:#ffe2c5;color:#141414" title="amber-100  #ffe2c5  onWhite 1.24:1">
           <span class="step">100</span><span class="hex">#ffe2c5</span>
+        </div>
+        <div class="swatch" style="background:#fcd4aa;color:#141414" title="amber-150  #fcd4aa  onWhite 1.39:1">
+          <span class="step">150</span><span class="hex">#fcd4aa</span>
         </div>
         <div class="swatch" style="background:#fec486;color:#141414" title="amber-200  #fec486  onWhite 1.56:1">
           <span class="step">200</span><span class="hex">#fec486</span>
@@ -442,6 +458,9 @@
         <div class="swatch" style="background:#ffe1d5;color:#141414" title="orange-100  #ffe1d5  onWhite 1.24:1">
           <span class="step">100</span><span class="hex">#ffe1d5</span>
         </div>
+        <div class="swatch" style="background:#fdd1c1;color:#141414" title="orange-150  #fdd1c1  onWhite 1.39:1">
+          <span class="step">150</span><span class="hex">#fdd1c1</span>
+        </div>
         <div class="swatch" style="background:#fec1a9;color:#141414" title="orange-200  #fec1a9  onWhite 1.57:1">
           <span class="step">200</span><span class="hex">#fec1a9</span>
         </div>
@@ -482,6 +501,9 @@
         </div>
         <div class="swatch" style="background:#e8e4ff;color:#141414" title="violet-100  #e8e4ff  onWhite 1.24:1">
           <span class="step">100</span><span class="hex">#e8e4ff</span>
+        </div>
+        <div class="swatch" style="background:#ddd7fd;color:#141414" title="violet-150  #ddd7fd  onWhite 1.38:1">
+          <span class="step">150</span><span class="hex">#ddd7fd</span>
         </div>
         <div class="swatch" style="background:#d2c9fe;color:#141414" title="violet-200  #d2c9fe  onWhite 1.55:1">
           <span class="step">200</span><span class="hex">#d2c9fe</span>
@@ -524,6 +546,9 @@
         <div class="swatch" style="background:#ffddec;color:#141414" title="magenta-100  #ffddec  onWhite 1.25:1">
           <span class="step">100</span><span class="hex">#ffddec</span>
         </div>
+        <div class="swatch" style="background:#fdcde2;color:#141414" title="magenta-150  #fdcde2  onWhite 1.4:1">
+          <span class="step">150</span><span class="hex">#fdcde2</span>
+        </div>
         <div class="swatch" style="background:#febad9;color:#141414" title="magenta-200  #febad9  onWhite 1.59:1">
           <span class="step">200</span><span class="hex">#febad9</span>
         </div>
@@ -556,17 +581,20 @@
       <div class="family">
         <div class="family-head"><span class="family-name">teal</span><span class="family-hue">H 195°</span></div>
         <div class="ramp">
-        <div class="swatch" style="background:#ebffff;color:#141414" title="teal-25  #ebffff  onWhite 1.04:1">
-          <span class="step">25</span><span class="hex">#ebffff</span>
+        <div class="swatch" style="background:#f5fcfb;color:#141414" title="teal-25  #f5fcfb  onWhite 1.04:1">
+          <span class="step">25</span><span class="hex">#f5fcfb</span>
         </div>
-        <div class="swatch" style="background:#d5fffe;color:#141414" title="teal-50  #d5fffe  onWhite 1.07:1">
-          <span class="step">50</span><span class="hex">#d5fffe</span>
+        <div class="swatch" style="background:#eaf9f8;color:#141414" title="teal-50  #eaf9f8  onWhite 1.08:1">
+          <span class="step">50</span><span class="hex">#eaf9f8</span>
         </div>
-        <div class="swatch" style="background:#88fffe;color:#141414" title="teal-100  #88fffe  onWhite 1.18:1">
-          <span class="step">100</span><span class="hex">#88fffe</span>
+        <div class="swatch" style="background:#cfefef;color:#141414" title="teal-100  #cfefef  onWhite 1.22:1">
+          <span class="step">100</span><span class="hex">#cfefef</span>
         </div>
-        <div class="swatch" style="background:#4aebeb;color:#141414" title="teal-200  #4aebeb  onWhite 1.46:1">
-          <span class="step">200</span><span class="hex">#4aebeb</span>
+        <div class="swatch" style="background:#b8e7e6;color:#141414" title="teal-150  #b8e7e6  onWhite 1.35:1">
+          <span class="step">150</span><span class="hex">#b8e7e6</span>
+        </div>
+        <div class="swatch" style="background:#98e0e0;color:#141414" title="teal-200  #98e0e0  onWhite 1.49:1">
+          <span class="step">200</span><span class="hex">#98e0e0</span>
         </div>
         <div class="swatch" style="background:#15cdce;color:#141414" title="teal-300  #15cdce  onWhite 1.97:1">
           <span class="step">300</span><span class="hex">#15cdce</span>
@@ -595,43 +623,46 @@
         </div>
       </div>
       <div class="family">
-        <div class="family-head"><span class="family-name">brown</span><span class="family-hue">H 50°</span></div>
+        <div class="family-head"><span class="family-name">brown</span><span class="family-hue">H 58°</span></div>
         <div class="ramp">
-        <div class="swatch" style="background:#fff9f5;color:#141414" title="brown-25  #fff9f5  onWhite 1.04:1">
-          <span class="step">25</span><span class="hex">#fff9f5</span>
+        <div class="swatch" style="background:#fcf9f7;color:#141414" title="brown-25  #fcf9f7  onWhite 1.05:1">
+          <span class="step">25</span><span class="hex">#fcf9f7</span>
         </div>
-        <div class="swatch" style="background:#fff2ec;color:#141414" title="brown-50  #fff2ec  onWhite 1.1:1">
-          <span class="step">50</span><span class="hex">#fff2ec</span>
+        <div class="swatch" style="background:#f9f4f1;color:#141414" title="brown-50  #f9f4f1  onWhite 1.09:1">
+          <span class="step">50</span><span class="hex">#f9f4f1</span>
         </div>
-        <div class="swatch" style="background:#ffe1d1;color:#141414" title="brown-100  #ffe1d1  onWhite 1.24:1">
-          <span class="step">100</span><span class="hex">#ffe1d1</span>
+        <div class="swatch" style="background:#f1e5dd;color:#141414" title="brown-100  #f1e5dd  onWhite 1.24:1">
+          <span class="step">100</span><span class="hex">#f1e5dd</span>
         </div>
-        <div class="swatch" style="background:#fec2a1;color:#141414" title="brown-200  #fec2a1  onWhite 1.56:1">
-          <span class="step">200</span><span class="hex">#fec2a1</span>
+        <div class="swatch" style="background:#e9d9cd;color:#141414" title="brown-150  #e9d9cd  onWhite 1.38:1">
+          <span class="step">150</span><span class="hex">#e9d9cd</span>
         </div>
-        <div class="swatch" style="background:#e3a480;color:#141414" title="brown-300  #e3a480  onWhite 2.12:1">
-          <span class="step">300</span><span class="hex">#e3a480</span>
+        <div class="swatch" style="background:#e3ccbb;color:#141414" title="brown-200  #e3ccbb  onWhite 1.54:1">
+          <span class="step">200</span><span class="hex">#e3ccbb</span>
         </div>
-        <div class="swatch" style="background:#c68865;color:#141414" title="brown-400  #c68865  onWhite 2.95:1">
-          <span class="step">400</span><span class="hex">#c68865</span>
+        <div class="swatch" style="background:#d4ab8d;color:#141414" title="brown-300  #d4ab8d  onWhite 2.1:1">
+          <span class="step">300</span><span class="hex">#d4ab8d</span>
         </div>
-        <div class="swatch" style="background:#ac704e;color:#fdfdfd" title="brown-500  #ac704e  onWhite 4.05:1">
-          <span class="step">500</span><span class="mark dot ui"></span><span class="hex">#ac704e</span>
+        <div class="swatch" style="background:#b68f72;color:#141414" title="brown-400  #b68f72  onWhite 2.93:1">
+          <span class="step">400</span><span class="hex">#b68f72</span>
         </div>
-        <div class="swatch" style="background:#925837;color:#fdfdfd" title="brown-600  #925837  onWhite 5.72:1">
-          <span class="step">600</span><span class="mark dot text"></span><span class="hex">#925837</span>
+        <div class="swatch" style="background:#9d775b;color:#fdfdfd" title="brown-500  #9d775b  onWhite 4.02:1">
+          <span class="step">500</span><span class="mark dot ui"></span><span class="hex">#9d775b</span>
         </div>
-        <div class="swatch" style="background:#794220;color:#fdfdfd" title="brown-700  #794220  onWhite 8.04:1">
-          <span class="step">700</span><span class="mark dot text"></span><span class="hex">#794220</span>
+        <div class="swatch" style="background:#856044;color:#fdfdfd" title="brown-600  #856044  onWhite 5.59:1">
+          <span class="step">600</span><span class="mark dot text"></span><span class="hex">#856044</span>
         </div>
-        <div class="swatch" style="background:#612c06;color:#fdfdfd" title="brown-800  #612c06  onWhite 11.22:1">
-          <span class="step">800</span><span class="mark dot text"></span><span class="hex">#612c06</span>
+        <div class="swatch" style="background:#6d4a2e;color:#fdfdfd" title="brown-700  #6d4a2e  onWhite 7.87:1">
+          <span class="step">700</span><span class="mark dot text"></span><span class="hex">#6d4a2e</span>
         </div>
-        <div class="swatch" style="background:#491c00;color:#fdfdfd" title="brown-900  #491c00  onWhite 14.49:1">
-          <span class="step">900</span><span class="mark dot text"></span><span class="hex">#491c00</span>
+        <div class="swatch" style="background:#55351b;color:#fdfdfd" title="brown-800  #55351b  onWhite 10.99:1">
+          <span class="step">800</span><span class="mark dot text"></span><span class="hex">#55351b</span>
         </div>
-        <div class="swatch" style="background:#2e0d00;color:#fdfdfd" title="brown-950  #2e0d00  onWhite 17.89:1">
-          <span class="step">950</span><span class="mark dot text"></span><span class="hex">#2e0d00</span>
+        <div class="swatch" style="background:#40230b;color:#fdfdfd" title="brown-900  #40230b  onWhite 14.35:1">
+          <span class="step">900</span><span class="mark dot text"></span><span class="hex">#40230b</span>
+        </div>
+        <div class="swatch" style="background:#271202;color:#fdfdfd" title="brown-950  #271202  onWhite 17.89:1">
+          <span class="step">950</span><span class="mark dot text"></span><span class="hex">#271202</span>
         </div>
         </div>
       </div>

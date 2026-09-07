@@ -831,7 +831,7 @@ User: "мене харить сірий колір дуже (він прям с�
 **Two artefacts the repo was missing, now added.** `color.tokens.json` forbids hand-editing its hex ("regenerate from the OKLCH source script") but that script was never committed:
 - `tools/lib/oklch.mjs` — OKLCH→sRGB + WCAG helpers, **validated against the file it's supposed to have produced**: replaying the stored `l/c/h` reproduces 96/120 hexes exactly, and all 24 misses are high-chroma blue/red/green 500–800 off by one unit in one channel (gamut-edge rounding). Zero/low-chroma steps round-trip exactly — hence safe for neutrals, explicitly unsafe to re-run over the saturated ramps.
 - The unrecorded **"ink" reference** behind every `contrast.onInk` number was recovered by least-squares fitting one luminance across all 120 stored ratios: **0.003450** (rmse 0.0030, worst deviation 0.005 — i.e. inside the stored values' own 2-decimal rounding). Pinned as `INK_LUMINANCE` so regenerated metadata stays consistent with the untouched ramps instead of drifting to a second, slightly different ink.
-- `tools/gen-gray-ramp.mjs` — writes `JSON.stringify(…, null, 2)` with no trailing newline to match the file byte-for-byte, so the diff stays confined to gray. Verified: a structural comparison against `HEAD` shows **`gray` is the only ramp that changed**.
+- `tools/gen-gray-ramp.mjs` (renamed `gen-color-ramps.mjs` later the same day) — writes `JSON.stringify(…, null, 2)` with no trailing newline to match the file byte-for-byte, so the diff stays confined to gray. Verified: a structural comparison against `HEAD` shows **`gray` is the only ramp that changed**.
 
 All 46 pages rebuilt; checked Springboard, the staff MC console and `colors.html` live — no literal old grays left anywhere (`grep` for `#808080`/`#696969`/`#e8e8e8`/`#f5f5f5` in the generated output returns 0).
 
@@ -867,3 +867,27 @@ It also flagged `--tok-avatar-` in the staff app, which is a false positive: pro
 And it exposed a real convention violation in `build-button-doc.mjs`: the variant→role map was **hardcoded** (`fillHover: "fill.neutralHover"`) instead of read from `button.tokens.json`, so Button's own page would have kept painting the old role while the token file said otherwise — secondary would have hovered to exactly its resting fill. Now every role is read off the token file, and the builder throws if a role the token file names isn't in `colorPaths`. Same "resolve real values, never retype a role name" rule that has now caught bugs three separate times — this time on a component's own page.
 
 Verified: 50 pages pass the var checker; staff console row hover is now the quiet `#e6e8eb` wash; Button secondary still steps rest `#e6e8eb` → hover `#cdd1d6` → active `#adb5be`.
+
+## 2026-09-07 (cont. 6) — Palette pass: step 150, green/teal light ends, brown rebuilt
+
+Three notes off the primitives page. `gen-gray-ramp.mjs` is renamed **`gen-color-ramps.mjs`** — it now owns every generated step, not just gray, with each decision declared as data at the top of the file.
+
+### Step 150 in every ramp
+
+100→200 was the ramp's harshest jump, and it's structural: the lightness deltas *accelerate* across the light end (.015 → .04 → .07). 150 sits at L 0.895 and splits the biggest delta into two .035s. Its chroma is the **geometric** mean of its neighbours — chroma roughly doubles per light step, so an arithmetic midpoint would sit visibly high and the new step would read closer to 200 than to 100. Generated last, so the retuned ramps below interpolate their *new* neighbours. Documented as an interpolation step, not a new default, in the colors page legend.
+
+### green + teal light ends: a measured rule, not taste
+
+Rather than eyeball "teal-100 вибивається", measured what the well-behaved ramps actually do: blue/red/orange/violet/magenta all place their light steps at the same fraction of their **own** 300-step chroma — 25: 0.057×, 50: 0.113×, 100: 0.264×, 200: 0.557× (median). green and teal sat at ~2.7–3× that, which is why `teal.100` was `#88fffe`, effectively pure cyan, next to `blue.100`'s pale wash. Applying the profile to each ramp's existing C300 keeps its own character and its own ~1.8× 200→300 progression: teal.100 `#88fffe → #cfefef`, green.100 `#acffc2 → #d4f1da`. Now a palette-wide check for any new ramp.
+
+**Anomaly found and surfaced, deliberately not fixed:** teal and green are the only ramps whose chroma *peaks at 300* instead of 500 (C300/C500 = 1.28 and 1.03 vs a family median of 0.67), which is why their 200→300 step still reads as the steepest in the palette. Fixing it means rebuilding two more ramps beyond what was asked, so it went to the user as a measurement plus an offer.
+
+### brown: chroma alone was not enough — the first fix was wrong
+
+First attempt reasoned that "low saturation is what makes a colour brown", cut brown's chroma to the family profile, and left hue at 50. **Rendered side by side with orange, that failed** — at the pale end a low-chroma orange and a low-chroma brown are both just off-white, so 100/150/200 still matched. Worth recording because the reasoning was sound and the result still wasn't.
+
+Hue alone can't do it either, and that's provable from the palette's own geometry: brown lives in the **26° corridor between orange (42) and amber (68)**, so any brown hue is within ~13° of one neighbour, while the palette's own comfortable gap is 18–22°. Push brown away from orange and it lands on amber.
+
+So: **both**, picked by rendering four candidates against *both* neighbours — hue **58** (16° off orange, 10° off amber) with chroma at **70%** of the previous curve. Light steps become warm greige (`#f1e5dd` at 100 vs orange's peach `#ffe1d5`); 300–500 read as muted tan (`#d4ab8d` → `#9d775b`) instead of terracotta; amber stays clear by carrying ~2.5× the chroma at every light step. Net shape: warm-neutral at the light end, true brown from 300 down — what Radix's sand/bronze scales do. Contrast guarantees re-asserted per ramp by the generator (it throws rather than writes).
+
+Scope verified structurally against `HEAD` rather than trusted: **150 added to all 10 ramps; 25–200 changed in green and teal; the full ramp changed in brown; every other stored hex byte-identical.** All 50 pages rebuilt, `check-css-vars.mjs` clean, and the knock-on consumers eyeballed — `bg.success`/`border.success` (green 100/200) and the Springboard's teal/green icon squares are now soft pastels in family with their siblings instead of the two loud outliers.
