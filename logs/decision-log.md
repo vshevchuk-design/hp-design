@@ -794,3 +794,20 @@ Four screenshot notes, all applied.
 - One scale trap: `dim.4_5` doesn't exist — the half-steps stop at `3_5` (0_5/1_5/2_5/3_5, then whole steps). The 28px small icon square carries a 16px (`dim.4`) glyph.
 
 Verified at 1280 / 768 / 375: page `rgb(255,255,255)`, gear 40×40 on `fill.neutral` with all three states token-backed, 3+3 tiles from 768 up, 2-per-row vertical tiles at 375, and still no literal hex anywhere outside the `:root --tok-*` block.
+
+## 2026-09-07 (cont. 3) — Logo lockup: the wordmark was optically 2px high
+
+User, from the Springboard topbar: "лого включає в себе надпис highpoint? бо наче воно но текст шось трохи вверх зіхав". Both halves of that were right, and the second one is measurable.
+
+`assets/highpoint-logo.svg` is one 122×24 lockup: blue 24×24 square, white mountain glyph inside it, and **the whole "HighPoint" wordmark as a single merged path** (88px wide, x34–122). There is no mark-only asset in the repo.
+
+Measured the wordmark by rasterising its `d` into a canvas at 8× and scanning ink per SVG-pixel row (`getBBox()` alone can't answer this — it reports the *geometric* box):
+- letter body (caps + x-height): **y3–17, centre 10.0**
+- narrow tail at x54–62 only, y18–20: the **descender of the "g"**
+- blue square: y0–24, **centre 12.0**
+
+So the bbox looked centred precisely *because* the descender padded it downward, while the letter body everyone actually reads sat **2px above** the mark's centre. Fix (user picked it over a Springboard-local compensation): `transform="translate(0 2)"` on the wordmark path **in the asset itself** — letter body is now y5–19, centre **12.0 = the square's centre**, descender to y22 with 2px of viewBox left. One edit, correct everywhere (Springboard topbar, docs sidebar, anything later).
+
+**Trap worth remembering:** the fix had to be applied *twice* — `docs/index.html`'s hand-maintained sidebar block carries its own inlined copy of the logo SVG, so it doesn't pick up asset changes from `renderNav` the way every generated page does. Noted in status.md next to the existing "index.html sidebar is hand-maintained" warning.
+
+Verified after the edit by re-running the same ink scan (through the element's own transform, and with a cache-busting query — the local server happily served the stale SVG on the first check, which read as "transform: null" and nearly sent me chasing a phantom), plus eyeballing the Springboard topbar and the docs sidebar. All 46 pages rebuilt.
