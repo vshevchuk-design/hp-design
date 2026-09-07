@@ -74,8 +74,8 @@
     "$description": "Hairlines, dividers, and role-colored outlines. border.focus is always blue regardless of the focused element's own role.",
     "default": {
       "$type": "color",
-      "$value": "{color.gray.200}",
-      "$description": "Default hairline — card edges, dividers, input borders at rest."
+      "$value": "{color.gray.150}",
+      "$description": "The neutral hairline — every card edge, section divider, table row rule and form-field outline in the system. Moved gray.200 → gray.150 on 2026-09-07 (\"шось трохи темний\"): at 200 it read as a drawn line rather than a hairline, especially once the page went to gray.25. This is step 150's first real consumer — it was added the same day precisely because 100→200 was too big a jump to pick from. border.strong (gray.300) is left alone, so hover on a form field now moves two steps instead of one and reads more clearly."
     },
     "strong": {
       "$type": "color",

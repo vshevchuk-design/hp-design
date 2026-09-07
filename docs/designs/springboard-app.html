@@ -9,7 +9,7 @@
 :root {
   --tok-surface-page: #f9fafb;
   --tok-surface-default: #ffffff;
-  --tok-border-default: #cdd1d6;
+  --tok-border-default: #dadde0;
   --tok-border-focus: #0468c4;
   --tok-text-default: #121921;
   --tok-text-secondary: #5d6a7a;
@@ -55,11 +55,12 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
    track lists and the 768/1024px breakpoints are structural literals
    (Grid's own "column count isn't tokenized" rule). ---- */
 .sb { min-height: 100%; display: flex; flex-direction: column; }
-/* dim.3 vertical → 65px tall with the 40px gear inside: measured midpoint
-   between this bar's old 57px and the Message Center's 73px, and it lands on
-   a real scale step rather than a split-the-difference number. Both app
-   shells now share that height. */
-.sb__topbar { position: sticky; top: 0; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; background: var(--tok-surface-default); border-bottom: 1px solid var(--tok-border-default); }
+/* Exactly dim.16 (64px) tall, border included — everything in this system
+   lands on the 4px grid, and vertical padding + a 1px border can never total
+   a multiple of 4 (dim.3 + 40 + dim.3 + 1 = 65). So the height is declared
+   and the hairline sits inside it (border-box), which leaves a 63px content
+   band with the 40px control optically centred. Both app shells share it. */
+.sb__topbar { position: sticky; top: 0; z-index: 1; height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 16px; background: var(--tok-surface-default); border-bottom: 1px solid var(--tok-border-default); }
 .sb__logo { display: flex; align-items: center; color: var(--tok-text-default); }
 .sb__logo svg { display: block; height: 24px; width: auto; }
 /* max-width so the six tiles stay a readable block instead of stretching
@@ -68,7 +69,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 @media (min-width: 768px) {
   .sb__main { gap: 24px; padding: 24px; }
   /* match the content padding so the wordmark lines up with the tiles */
-  .sb__topbar { padding: 12px 24px; }
+  .sb__topbar { padding: 0 24px; }
 }
 
 /* Quick links — the tile SHAPE changes with width, not just the track count:

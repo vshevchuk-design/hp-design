@@ -849,7 +849,9 @@ const layoutCss = `/* ---- mc-* composition layer (app shell) — mobile-first, 
 html, body { height: 100%; }
 body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.sans")}; color: ${cv("text.default")}; }
 .mc { height: 100dvh; display: flex; flex-direction: column; }
-.mc__topbar { flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: ${px(resolve("dim.3"))}; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))}; background: ${cv("surface.default")}; border-bottom: 1px solid ${cv("border.default")}; }
+/* 64px flat (dim.16), border included — see the 4px-grid note: padding plus
+   a 1px hairline can't add up to a multiple of 4, so the height is declared. */
+.mc__topbar { flex-shrink: 0; height: ${px(resolve("dim.16"))}; display: flex; align-items: center; justify-content: space-between; gap: ${px(resolve("dim.3"))}; padding: 0 ${px(resolve("dim.4"))}; background: ${cv("surface.default")}; border-bottom: 1px solid ${cv("border.default")}; }
 /* New message entry point: floating pill over the list on mobile, a regular
    topbar button on every split view (>=768) */
 .mc-topbar-new { display: none; }
@@ -960,9 +962,7 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 }
 @media (min-width: 1024px) {
   .mc__rail, .mc--thread-open .mc__rail { width: 380px; }
-  /* vertical stays dim.3 (65px) at every width — dim.4 made this bar 73px,
-     visibly taller than the Springboard shell's; both now match. */
-  .mc__topbar { padding: ${px(resolve("dim.3"))} ${px(resolve("dim.6"))}; }
+  .mc__topbar { padding: 0 ${px(resolve("dim.6"))}; }
   .mc-thread__bar { padding-left: ${px(resolve("dim.6"))}; padding-right: ${px(resolve("dim.6"))}; }
   .mc-thread__scroll { padding: ${px(resolve("dim.6"))}; }
   .mc-thread__composer { padding: ${px(resolve("dim.4"))} ${px(resolve("dim.6"))} ${px(resolve("dim.6"))}; }

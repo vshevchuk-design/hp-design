@@ -11,7 +11,7 @@
   --tok-surface-default: #ffffff;
   --tok-surface-sunken: #e6e8eb;
   --tok-surface-dim: #f4f5f7;
-  --tok-border-default: #cdd1d6;
+  --tok-border-default: #dadde0;
   --tok-border-strong: #adb5be;
   --tok-border-focus: #0468c4;
   --tok-text-default: #121921;
@@ -549,7 +549,9 @@
 html, body { height: 100%; }
 body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-family-sans); color: var(--tok-text-default); }
 .mc { height: 100dvh; display: flex; flex-direction: column; }
-.mc__topbar { flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; background: var(--tok-surface-default); border-bottom: 1px solid var(--tok-border-default); }
+/* 64px flat (dim.16), border included — see the 4px-grid note: padding plus
+   a 1px hairline can't add up to a multiple of 4, so the height is declared. */
+.mc__topbar { flex-shrink: 0; height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 16px; background: var(--tok-surface-default); border-bottom: 1px solid var(--tok-border-default); }
 /* New message entry point: floating pill over the list on mobile, a regular
    topbar button on every split view (>=768) */
 .mc-topbar-new { display: none; }
@@ -700,9 +702,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   .mc-filters-chip { display: none; }
 }
 @media (min-width: 1024px) {
-  /* vertical stays dim.3 (65px) at every width — dim.4 made this bar 73px,
-     visibly taller than the Springboard shell's; both now match. */
-  .mc__topbar { padding: 12px 24px; }
+  .mc__topbar { padding: 0 24px; }
   /* keep the whole rail on one left edge: toolbar tabs + filter chips must line
      up with the list/table below (all dim.6), not sit 8px inside it */
   .mc-rail__topbar { padding-left: 24px; padding-right: 24px; }
@@ -712,7 +712,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 
 .mc-compose__tabs { display: none; flex-shrink: 0; }
 .mc-compose__tabs .tabs--segmented { width: 100%; }
-.mc-compose__tabs .tab__icon { flex-shrink: 0; width: 15px; height: 15px; }
+.mc-compose__tabs .tab__icon { flex-shrink: 0; width: 16px; height: 16px; }
 .mc-compose__cols { flex: 1; min-height: 0; display: flex; }
 .mc-compose__main { flex: 1; min-width: 0; display: flex; flex-direction: column; min-height: 0; }
 /* the AI column is itself a flex column so the panel inside can fill its
@@ -738,7 +738,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
    handle on the divider), not a header bar */
 .mc-ai__handle { position: absolute; top: 12px; z-index: 2; width: 28px; height: 28px; border-radius: 999px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); box-shadow: 0px 2px 8px 0px rgba(21, 25, 30, 0.10); display: inline-flex; align-items: center; justify-content: center; padding: 0; cursor: pointer; color: var(--tok-icon-secondary); }
 .mc-ai__handle:hover { background: var(--tok-fill-neutral-hover); }
-.mc-ai__handle-icon { width: 18px; height: 18px; display: block; }
+.mc-ai__handle-icon { width: 20px; height: 20px; display: block; }
 .mc-ai__handle--collapse { left: -14px; }
 .mc-ai__handle--close { right: 12px; }
 /* suggestions sit at the bottom of the empty panel (ref), pushed down by an
@@ -819,7 +819,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .mc-gwiz__fchip { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 6px 0 10px; border: 1px solid var(--tok-border-default); border-radius: 999px; background: var(--tok-surface-default); color: var(--tok-text-default); font-weight: 400; font-size: 12px; line-height: 1.4; cursor: pointer; font-family: inherit; }
 .mc-gwiz__fchip:hover { border-color: var(--tok-border-strong); }
 .mc-gwiz__fchip b { font-weight: 600; }
-.mc-gwiz__fchip-x { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border: none; background: none; padding: 0; cursor: pointer; color: var(--tok-icon-secondary); border-radius: 999px; }
+.mc-gwiz__fchip-x { display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; border: none; background: none; padding: 0; cursor: pointer; color: var(--tok-icon-secondary); border-radius: 999px; }
 .mc-gwiz__fchip-x:hover { background: var(--tok-fill-neutral-hover); }
 .mc-gwiz__fchip-x svg { width: 14px; height: 14px; }
 .mc-gwiz__reshead { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 4px 8px; }
@@ -841,7 +841,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .mc-gwiz__fpop-opt svg { width: 16px; height: 16px; color: var(--tok-icon-secondary); }
 .mc-gwiz__fpop-head { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-bottom: 1px solid var(--tok-border-default); margin-bottom: 6px; }
 .mc-gwiz__fpop-back { display: inline-flex; align-items: center; border: none; background: none; padding: 0; cursor: pointer; color: var(--tok-icon-secondary); }
-.mc-gwiz__fpop-back svg { width: 18px; height: 18px; }
+.mc-gwiz__fpop-back svg { width: 20px; height: 20px; }
 .mc-gwiz__fpop-title { color: var(--tok-text-default); font-weight: 600; font-weight: 400; font-size: 12px; line-height: 1.4; }
 .mc-gwiz__fpop-vals { display: flex; flex-direction: column; gap: 4px; padding: 0 6px; max-height: 200px; overflow-y: auto; }
 .mc-gwiz__fpop-vals .checkbox { padding: 6px 4px; }

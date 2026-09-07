@@ -951,7 +951,9 @@ const layoutCss = `/* ---- mc-* composition layer (app shell) — mobile-first, 
 html, body { height: 100%; }
 body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.sans")}; color: ${cv("text.default")}; }
 .mc { height: 100dvh; display: flex; flex-direction: column; }
-.mc__topbar { flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: ${px(resolve("dim.3"))}; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))}; background: ${cv("surface.default")}; border-bottom: 1px solid ${cv("border.default")}; }
+/* 64px flat (dim.16), border included — see the 4px-grid note: padding plus
+   a 1px hairline can't add up to a multiple of 4, so the height is declared. */
+.mc__topbar { flex-shrink: 0; height: ${px(resolve("dim.16"))}; display: flex; align-items: center; justify-content: space-between; gap: ${px(resolve("dim.3"))}; padding: 0 ${px(resolve("dim.4"))}; background: ${cv("surface.default")}; border-bottom: 1px solid ${cv("border.default")}; }
 /* New message entry point: floating pill over the list on mobile, a regular
    topbar button on every split view (>=768) */
 .mc-topbar-new { display: none; }
@@ -1102,9 +1104,7 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
   .mc-filters-chip { display: none; }
 }
 @media (min-width: 1024px) {
-  /* vertical stays dim.3 (65px) at every width — dim.4 made this bar 73px,
-     visibly taller than the Springboard shell's; both now match. */
-  .mc__topbar { padding: ${px(resolve("dim.3"))} ${px(resolve("dim.6"))}; }
+  .mc__topbar { padding: 0 ${px(resolve("dim.6"))}; }
   /* keep the whole rail on one left edge: toolbar tabs + filter chips must line
      up with the list/table below (all dim.6), not sit 8px inside it */
   .mc-rail__topbar { padding-left: ${px(resolve("dim.6"))}; padding-right: ${px(resolve("dim.6"))}; }
@@ -1120,7 +1120,7 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 // Button/Select — every piece a real component, resolved from its token file. ----
 const composeAiCss = `.mc-compose__tabs { display: none; flex-shrink: 0; }
 .mc-compose__tabs .tabs--segmented { width: 100%; }
-.mc-compose__tabs .tab__icon { flex-shrink: 0; width: 15px; height: 15px; }
+.mc-compose__tabs .tab__icon { flex-shrink: 0; width: ${px(resolve(tabs.size.sm.iconSize.$value))}; height: ${px(resolve(tabs.size.sm.iconSize.$value))}; }
 .mc-compose__cols { flex: 1; min-height: 0; display: flex; }
 .mc-compose__main { flex: 1; min-width: 0; display: flex; flex-direction: column; min-height: 0; }
 /* the AI column is itself a flex column so the panel inside can fill its
@@ -1146,7 +1146,7 @@ const composeAiCss = `.mc-compose__tabs { display: none; flex-shrink: 0; }
    handle on the divider), not a header bar */
 .mc-ai__handle { position: absolute; top: ${px(resolve("dim.3"))}; z-index: 2; width: 28px; height: 28px; border-radius: ${px(resolve("radius.full"))}; background: ${cv("surface.default")}; border: 1px solid ${cv("border.default")}; box-shadow: ${lbShadowCss}; display: inline-flex; align-items: center; justify-content: center; padding: 0; cursor: pointer; color: ${cv("icon.secondary")}; }
 .mc-ai__handle:hover { background: ${cv("fill.neutralHover")}; }
-.mc-ai__handle-icon { width: 18px; height: 18px; display: block; }
+.mc-ai__handle-icon { width: ${px(resolve("dim.5"))}; height: ${px(resolve("dim.5"))}; display: block; }
 .mc-ai__handle--collapse { left: -14px; }
 .mc-ai__handle--close { right: ${px(resolve("dim.3"))}; }
 /* suggestions sit at the bottom of the empty panel (ref), pushed down by an
@@ -1761,7 +1761,7 @@ const gwizCss = `.mc-gwiz { border: none; padding: 0; background: ${cv(mdBg)}; f
 .mc-gwiz__fchip { display: inline-flex; align-items: center; gap: ${px(resolve("dim.1_5"))}; height: 28px; padding: 0 ${px(resolve("dim.1_5"))} 0 ${px(resolve("dim.2_5"))}; border: 1px solid ${cv("border.default")}; border-radius: ${px(resolve("radius.full"))}; background: ${cv("surface.default")}; color: ${cv("text.default")}; ${typoCss(bodySmType)} cursor: pointer; font-family: inherit; }
 .mc-gwiz__fchip:hover { border-color: ${cv("border.strong")}; }
 .mc-gwiz__fchip b { font-weight: 600; }
-.mc-gwiz__fchip-x { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border: none; background: none; padding: 0; cursor: pointer; color: ${cv("icon.secondary")}; border-radius: ${px(resolve("radius.full"))}; }
+.mc-gwiz__fchip-x { display: inline-flex; align-items: center; justify-content: center; width: ${px(resolve("dim.4"))}; height: ${px(resolve("dim.4"))}; border: none; background: none; padding: 0; cursor: pointer; color: ${cv("icon.secondary")}; border-radius: ${px(resolve("radius.full"))}; }
 .mc-gwiz__fchip-x:hover { background: ${cv("fill.neutralHover")}; }
 .mc-gwiz__fchip-x svg { width: 14px; height: 14px; }
 .mc-gwiz__reshead { display: flex; align-items: center; justify-content: space-between; gap: ${px(resolve("dim.2"))}; padding: 0 ${px(resolve("dim.1"))} ${px(resolve("dim.2"))}; }
@@ -1783,7 +1783,7 @@ const gwizCss = `.mc-gwiz { border: none; padding: 0; background: ${cv(mdBg)}; f
 .mc-gwiz__fpop-opt svg { width: 16px; height: 16px; color: ${cv("icon.secondary")}; }
 .mc-gwiz__fpop-head { display: flex; align-items: center; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.1_5"))} ${px(resolve("dim.2"))}; border-bottom: 1px solid ${cv("border.default")}; margin-bottom: ${px(resolve("dim.1_5"))}; }
 .mc-gwiz__fpop-back { display: inline-flex; align-items: center; border: none; background: none; padding: 0; cursor: pointer; color: ${cv("icon.secondary")}; }
-.mc-gwiz__fpop-back svg { width: 18px; height: 18px; }
+.mc-gwiz__fpop-back svg { width: ${px(resolve("dim.5"))}; height: ${px(resolve("dim.5"))}; }
 .mc-gwiz__fpop-title { color: ${cv("text.default")}; font-weight: 600; ${typoCss(bodySmType)} }
 .mc-gwiz__fpop-vals { display: flex; flex-direction: column; gap: ${px(resolve("dim.1"))}; padding: 0 ${px(resolve("dim.1_5"))}; max-height: 200px; overflow-y: auto; }
 .mc-gwiz__fpop-vals .checkbox { padding: ${px(resolve("dim.1_5"))} ${px(resolve("dim.1"))}; }

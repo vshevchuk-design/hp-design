@@ -919,3 +919,44 @@ Two follow-through details that are easy to miss and were both done:
 - Every consumer had to register `bg.primaryHover` in its `colorPaths`, and each builder reads the role **off the token file** rather than retyping it — `check-css-vars.mjs` was the safety net and came back clean on all 50 pages.
 
 Verified live: Springboard tile hover paints blue.50 + a blue border, MC topbar measures 65px, page background reads `rgb(249,250,251)`.
+
+## 2026-09-07 (cont. 8) — 64px on the grid, and a lighter hairline
+
+### The 4px grid is a rule about the RENDERED result, not the tokens
+
+"давай вже хедер 64 шоб кратно 4 усе було… запомни шо ми по сєтці робим." The previous cut had landed the topbars on 65px and I'd defended it as "the midpoint AND a real scale step" — the token inputs were all on-grid (`dim.3` + 40 + `dim.3`), but the **sum** wasn't, because a 1px border can never keep a padding-built band on a multiple of 4. Fixed by declaring the height instead of accumulating it: `height: dim.16` (64px) with the hairline inside via border-box and `padding: 0 <horizontal>`. The content band is then 63px with the 40px control optically centred (12 above / 13 below). Verified as `getBoundingClientRect().height % 4 === 0` rather than by reading the CSS — reading the CSS is exactly what let 65px through.
+
+Recorded as a standing convention in status.md and saved to memory, since it generalises well beyond this one bar: **check the output, not the inputs**, and for any bordered band declare the height.
+
+### `border.default`: gray.200 → gray.150
+
+"який зараз колір обводок у карточок і загалом? шось трохи темний" — it was `gray.200` (`#cdd1d6`), which reads as a drawn line rather than a hairline, and got more obvious once the page moved to gray.25. Now `gray.150` (`#dadde0`) — **the new 150 step's first real consumer**, which is a decent post-hoc justification for adding it earlier the same day: the old ramp forced a choice between 200 (too dark) and 100 (too faint to hold an edge).
+
+Deliberately left alone:
+- **`border.strong` stays gray.300.** Field/chip hover now moves two steps instead of one, which reads more clearly than the old single step — a hover cue should be noticeable.
+- **The role-coloured borders stay at their 200 tints** (`border.primary/success/danger/warning`). Those are meaning-carrying outlines; an error border getting quieter would be a regression, not a refinement. Flagged to the user rather than changed.
+
+One thing this does NOT do: `border.default` at gray.150 is ~1.4:1 on white, so form-field outlines remain far below WCAG 1.4.11's 3:1 for non-text UI boundaries. That was already true at gray.200 (1.53:1) — the field's own `surface.dim` fill plus its focus ring are what carry the affordance, not the resting hairline. Worth knowing before anyone cites 1.4.11 at this system.
+
+## 2026-09-07 (cont. 9) — 64px for real, a lighter hairline, and a grid checker
+
+### Topbars: 64px, height declared not accumulated
+
+Detail on why 65 → 64 needed a different technique rather than a different number: with a 1px bottom border, no combination of vertical `dim.*` padding can total a multiple of 4. So the bars now **declare** `height: dim.16` and let the hairline sit inside via border-box, with `padding: 0 <horizontal>`. Content band = 63px, the 40px control optically centred (12 above / 13 below). Confirmed in the browser as `getBoundingClientRect().height === 64`.
+
+### `border.default`: gray.200 → gray.150
+
+Details and the two deliberate non-changes are in the status.md convention entry. Short version: gray.200 read as a drawn line, gray.150 reads as a hairline, and it's the new 150 step's first real consumer.
+
+### The grid audit → `tools/check-grid.mjs`
+
+Since the rule is "everything ÷4" and the 65px slipped past a CSS read-through, I ran an audit over the generated prototype CSS instead of trusting the tokens. It found four genuine hand-typed literals nobody had noticed:
+- **three 18px** in the staff builder's `mc-*` layer (`mc-ai__handle-icon`, `mc-gwiz__fchip-x`, `mc-gwiz__fpop-back svg`) — 18 is on neither the grid nor the `dim` scale, which has 16 and 20 and nothing between. → `dim.5` (20px), and `dim.4` (16px) for the chip's × so it doesn't crowd a 24px pill.
+- **15px** on the compose dialog's segmented tab icons → resolved from **Tabs' own** `size.sm.iconSize` (16px) instead of a literal, which is the standing "resolve, never retype" rule.
+
+Then made the audit permanent. Two scoping decisions in the checker worth knowing:
+- **It scans `docs/designs/*-app.html` only.** Pointing it at all of `docs/` produced ~9 hits per page, all from the *docs chrome* (`.navlink` 7px, `.legend` 14/18px, `.story` 22px, `.nav-tabs` 3px) — hand-written furniture that isn't tokenized. Burying four real findings under 450 known non-findings would make the checker useless, so the chrome is out of scope until it gets aligned (still a standing offer to the user; when it happens, widen the glob).
+- **It checks declarations, not sums** — adding up a box needs layout, which a text scan can't do. So the browser check (`height % 4 === 0`) stays part of the convention; the script covers the half a build can cover.
+- Allowlist: the fake-keyboard scaffolding, which status.md already documents as a deliberately non-tokenized device mock. Its selector pattern needed care — `/\.mc-kbd\b/` does **not** match `.mc-kbd__row`, because `_` is a word character so there's no boundary after "kbd"; the element selectors slipped through until it became a plain prefix.
+
+Both checkers green: 3 prototype pages on-grid, 50 pages with every `--tok-*` defined.

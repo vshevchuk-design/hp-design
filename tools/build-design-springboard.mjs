@@ -231,11 +231,12 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
    track lists and the 768/1024px breakpoints are structural literals
    (Grid's own "column count isn't tokenized" rule). ---- */
 .sb { min-height: 100%; display: flex; flex-direction: column; }
-/* dim.3 vertical → 65px tall with the 40px gear inside: measured midpoint
-   between this bar's old 57px and the Message Center's 73px, and it lands on
-   a real scale step rather than a split-the-difference number. Both app
-   shells now share that height. */
-.sb__topbar { position: sticky; top: 0; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: ${gridGapSm}; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))}; background: ${cv("surface.default")}; border-bottom: 1px solid ${cv("border.default")}; }
+/* Exactly dim.16 (64px) tall, border included — everything in this system
+   lands on the 4px grid, and vertical padding + a 1px border can never total
+   a multiple of 4 (dim.3 + 40 + dim.3 + 1 = 65). So the height is declared
+   and the hairline sits inside it (border-box), which leaves a 63px content
+   band with the 40px control optically centred. Both app shells share it. */
+.sb__topbar { position: sticky; top: 0; z-index: 1; height: ${px(resolve("dim.16"))}; display: flex; align-items: center; justify-content: space-between; gap: ${gridGapSm}; padding: 0 ${px(resolve("dim.4"))}; background: ${cv("surface.default")}; border-bottom: 1px solid ${cv("border.default")}; }
 .sb__logo { display: flex; align-items: center; color: ${cv("text.default")}; }
 .sb__logo svg { display: block; height: ${px(resolve("dim.6"))}; width: auto; }
 /* max-width so the six tiles stay a readable block instead of stretching
@@ -244,7 +245,7 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 @media (min-width: 768px) {
   .sb__main { gap: ${gridGapLg}; padding: ${px(resolve("dim.6"))}; }
   /* match the content padding so the wordmark lines up with the tiles */
-  .sb__topbar { padding: ${px(resolve("dim.3"))} ${px(resolve("dim.6"))}; }
+  .sb__topbar { padding: 0 ${px(resolve("dim.6"))}; }
 }
 
 /* Quick links — the tile SHAPE changes with width, not just the track count:
