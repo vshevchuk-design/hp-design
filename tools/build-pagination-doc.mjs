@@ -62,7 +62,7 @@ const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, 
 // ---- color tokens this page uses, as CSS custom properties ----
 const colorPaths = [
   "text.default", "text.onFill", "text.disabled", "text.muted", "fill.neutralHover", "fill.primary",
-  "surface.sunken", "surface.dim", "border.default", "border.strong", "icon.default",
+  "surface.sunken", "surface.dim", "surface.dimHover", "border.default", "border.strong", "icon.default",
 ];
 const colorValue = Object.fromEntries(colorPaths.map((p) => [p, resolve(p)]));
 const fontSans = resolve("family.sans");
@@ -125,7 +125,7 @@ const css = `${rootVars}
 .pagination { display: inline-flex; align-items: center; gap: ${item.gap}; }
 
 .select { display: inline-flex; align-items: center; box-sizing: border-box; background: ${cv("surface.dim")}; border: 1px solid ${cv("border.default")}; border-radius: ${selectRadius}; font-family: ${cv("family.sans")}; cursor: pointer; height: ${sel.height}; padding: 0 ${sel.paddingX}; gap: ${sel.gap}; }
-.select:hover { border-color: ${cv("border.strong")}; }
+.select:hover { background: ${cv("surface.dimHover")}; border-color: ${cv("border.strong")}; }
 .select__value { color: ${cv("text.default")}; ${typoCss(sel.value)} }
 .select__chevron { flex-shrink: 0; margin-left: auto; color: ${cv("icon.default")}; width: ${sel.iconSize}; height: ${sel.iconSize}; }
 .rows-per-page { display: inline-flex; align-items: center; gap: ${px(resolve("dim.2"))}; }

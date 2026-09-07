@@ -185,6 +185,11 @@
         <span class="tok-alias">color.gray.50</span>
         <span class="tok-hex">#f4f5f7</span>
       </div><div class="tok-desc-wrap"><p class="tok-desc">A barely-dimmed surface, one step lighter than sunken — for de-emphasized rows that must read quieter than surface.default without looking recessed like a form field (added 2026-07-24 for ThreadListItem's read inbox rows: sunken/gray.100 read as too heavy a stripe next to unread's white; explicit feedback asked for gray.25-or-50 territory). Use for read/visited/muted list rows, not as a generic nested-container background — the same restraint rule as sunken.</p></div>
+      <div class="tok-card" style="background:#e6e8eb;color:#141414">
+        <code class="tok-name">surface.dimHover</code>
+        <span class="tok-alias">color.gray.100</span>
+        <span class="tok-hex">#e6e8eb</span>
+      </div><div class="tok-desc-wrap"><p class="tok-desc">Hover fill for a form field (Input/Select/Search/DatePicker trigger/Composer field) — one step down from surface.dim, so the field visibly recesses under the cursor. Added 2026-09-07: the hover had been a border-only change (border.default → border.strong) and read as almost nothing. Deliberately NEUTRAL, never blue — in this system blue means focus/active, so a blue hover on a field would claim a state it isn't in. Same value as surface.sunken but a separate role on purpose: sunken describes what a surface IS, dimHover describes a transition.</p></div>
       <div class="tok-card" style="background:rgba(21, 25, 30, 0.5);color:#141414">
         <code class="tok-name">surface.overlay</code>
         <span class="tok-alias">literal</span>

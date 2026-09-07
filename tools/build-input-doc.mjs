@@ -61,7 +61,9 @@ const px = (d) => `${d.value}${d.unit}`;
 const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
 // ---- color tokens this page uses, as CSS custom properties ----
+const hoverBgRole = input.state.hover.bg.$value.replace(/[{}]/g, "");
 const colorPaths = [
+  "surface.dimHover",
   "surface.sunken", "surface.dim", "surface.disabled", "border.default", "border.strong", "border.focus", "border.danger",
   "text.muted", "text.default", "text.disabled", "text.primary", "icon.default", "icon.disabled",
 ];
@@ -129,7 +131,7 @@ ${sizes
   })
   .join("\n\n")}
 
-.input:not(.input--disabled):hover, .input--hover { border-color: ${cv("border.strong")}; }
+.input:not(.input--disabled):hover, .input--hover { background: ${cv(hoverBgRole)}; border-color: ${cv("border.strong")}; }
 .input--focus { border-color: ${cv("border.focus")}; }
 .input--focus .input__label { color: ${cv("text.primary")}; }
 .input--disabled { background: ${cv("surface.disabled")}; cursor: not-allowed; }

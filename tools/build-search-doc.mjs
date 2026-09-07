@@ -59,7 +59,9 @@ const resolve = (ref) => resolveToken(get(ref));
 const px = (d) => `${d.value}${d.unit}`;
 const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
+const hoverBgRole = search.state.hover.bg.$value.replace(/[{}]/g, "");
 const colorPaths = [
+  "surface.dimHover",
   "surface.sunken", "surface.dim", "surface.disabled", "border.default", "border.strong", "border.focus",
   "text.muted", "text.default", "text.disabled", "icon.default", "icon.disabled",
 ];
@@ -113,7 +115,7 @@ ${sizes
   )
   .join("\n\n")}
 
-.search:not(.search--disabled):hover, .search--hover { border-color: ${cv("border.strong")}; }
+.search:not(.search--disabled):hover, .search--hover { background: ${cv(hoverBgRole)}; border-color: ${cv("border.strong")}; }
 .search--focus { border-color: ${cv("border.focus")}; }
 .search--disabled { background: ${cv("surface.disabled")}; cursor: not-allowed; }
 .search--disabled .search__placeholder, .search--disabled .search__value { color: ${cv("text.disabled")}; }

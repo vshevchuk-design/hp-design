@@ -69,13 +69,16 @@
 
   .ov-btn { box-sizing: border-box; height: 40px; padding: 0 12px; border-radius: 8px; border: none; cursor: pointer; font-family: var(--sans); font-weight: 600; font-size: 14px; line-height: 1.4; }
   .ov-btn--secondary { background: var(--tok-fill-neutral); color: var(--tok-text-default); }
-  .ov-btn--secondary:hover { background: var(--tok-fill-neutral-hover); }
+  /* Strong tier — this button rests on fill.neutral (gray.100), where the
+   fill.neutralHover wash is the same colour and the hover shows nothing. */
+.ov-btn--secondary:hover { background: var(--tok-fill-neutral-hover-strong); }
   .ov-btn--secondary:active { background: var(--tok-fill-neutral-active); }
   .ov-btn:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
 
   .placeholder-note { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-muted); border: 0.5px dashed var(--border-strong); border-radius: 6px; padding: 4px 10px; margin-top: 1.5rem; }
 
   :root {
+  --tok-fill-neutral-hover-strong: #cdd1d6;
   --tok-surface-default: #ffffff;
   --tok-surface-sunken: #e6e8eb;
   --tok-surface-dim: #f4f5f7;
@@ -235,6 +238,7 @@
 
     <h2 class="big-section">CSS</h2>
     <pre class="code"><code>:root {
+  --tok-fill-neutral-hover-strong: #cdd1d6;
   --tok-surface-default: #ffffff;
   --tok-surface-sunken: #e6e8eb;
   --tok-surface-dim: #f4f5f7;

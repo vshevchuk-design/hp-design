@@ -31,7 +31,9 @@
   --tok-fill-neutral: #e6e8eb;
   --tok-fill-neutral-hover: #e6e8eb;
   --tok-fill-neutral-active: #cdd1d6;
+  --tok-fill-neutral-hover-strong: #cdd1d6;
   --tok-fill-neutral-active-strong: #adb5be;
+  --tok-surface-dim-hover: #e6e8eb;
   --tok-bg-primary: #d9eaff;
   --tok-bg-primary-hover: #eff6ff;
   --tok-bg-neutral: #e6e8eb;
@@ -69,7 +71,8 @@
 .tab { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: none; background: transparent; cursor: pointer; white-space: nowrap; color: var(--tok-text-secondary); font-family: var(--tok-family-sans); font-weight: 400; font-size: 14px; line-height: 1.2; }
 .tab--sm { height: 32px; padding: 0 8px; }
 .tabs--segmented .tab { flex: 1; border-radius: 8px; }
-.tabs--segmented .tab:not(.tab--active):hover { background: var(--tok-fill-neutral-hover); color: var(--tok-text-default); }
+/* same story as the secondary button — the segmented track IS gray.100 */
+.tabs--segmented .tab:not(.tab--active):hover { background: var(--tok-fill-neutral-hover-strong); color: var(--tok-text-default); }
 .tabs--segmented .tab--active { background: var(--tok-surface-default); color: var(--tok-text-default); font-weight: 600; }
 
 .counter { display: inline-flex; align-items: center; justify-content: center; font-variant-numeric: tabular-nums; font-family: var(--tok-family-sans); font-weight: 700; border-radius: 999px; }
@@ -99,7 +102,7 @@
 .search__clear[hidden] { display: none; }
 .search__input { flex: 1; min-width: 0; border: none; outline: none; background: transparent; color: var(--tok-text-default); font-family: var(--tok-family-sans); font-weight: 400; font-size: 16px; line-height: 1.2; }
 .search__input::placeholder { color: var(--tok-text-muted); }
-.search:hover { border-color: var(--tok-border-strong); }
+.search:hover { background: var(--tok-surface-dim-hover); border-color: var(--tok-border-strong); }
 .search:focus-within { border-color: var(--tok-border-focus); }
 
 .listbox { margin: 0; box-sizing: border-box; padding: 4px; border-radius: 8px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); box-shadow: 0px 2px 8px 0px rgba(21, 25, 30, 0.10); font-family: var(--tok-family-sans); min-width: 200px; }
@@ -219,7 +222,7 @@
 
 .composer { display: flex; flex-direction: column; gap: 8px; font-family: var(--tok-family-sans); }
 .composer__field { display: flex; align-items: center; gap: 8px; padding: 12px; border-radius: 8px; background: var(--tok-surface-dim); border: 1px solid var(--tok-border-default); }
-.composer__field:hover { border-color: var(--tok-border-strong); }
+.composer__field:hover { background: var(--tok-surface-dim-hover); border-color: var(--tok-border-strong); }
 .composer__field:focus-within { border-color: var(--tok-border-focus); }
 .composer__input { flex: 1; min-width: 0; border: none; outline: none; background: transparent; color: var(--tok-text-default); font-weight: 400; font-size: 16px; line-height: 1.4; font-family: var(--tok-family-sans); }
 .composer__input::placeholder { color: var(--tok-text-muted); }
@@ -238,8 +241,10 @@
 .btn--primary.btn--sm.btn--icon-only { width: 32px; height: 32px; padding: 0; }
 .btn--primary.btn--sm.btn--icon-only .btn__icon { width: 16px; height: 16px; }
 .btn--secondary { background: var(--tok-fill-neutral); color: var(--tok-text-default); }
-.btn--secondary:hover { background: var(--tok-fill-neutral-hover); }
-.btn--secondary:active { background: var(--tok-fill-neutral-active); }
+/* Strong tier, read from button.tokens.json: this button RESTS on gray.100,
+   where the fill.neutralHover wash is the same colour and shows nothing. */
+.btn--secondary:hover { background: var(--tok-fill-neutral-hover-strong); }
+.btn--secondary:active { background: var(--tok-fill-neutral-active-strong); }
 .btn--secondary .btn__icon { color: var(--tok-icon-default); }
 .btn--secondary.btn--base { height: 40px; padding: 0 12px; gap: 8px; font-weight: 600; font-size: 14px; line-height: 1.4; }
 .btn--secondary.btn--base .btn__icon { width: 20px; height: 20px; }
@@ -281,7 +286,7 @@
 .select__stack { display: flex; flex-direction: column; justify-content: center; flex: 1; min-width: 0; gap: 0px; }
 .select__label { color: var(--tok-text-muted); font-weight: 400; font-size: 12px; line-height: 1.2; }
 .select__value { color: var(--tok-text-default); font-weight: 400; font-size: 16px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.select:hover { border-color: var(--tok-border-strong); }
+.select:hover { background: var(--tok-surface-dim-hover); border-color: var(--tok-border-strong); }
 .select:focus-visible { outline: none; border-color: var(--tok-border-focus); }
 
 /* compose dialog — one native <dialog>, two responsive shells around the
@@ -308,7 +313,7 @@
 /* lg (48px) fixed height, NOT base 40 — the floating label + value stack
    must fit INSIDE the resting height, or the field visibly grows on focus */
 .mc-field { box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; gap: 0px; min-height: 48px; padding: 6px 12px; border: 1px solid var(--tok-border-default); border-radius: 8px; background: var(--tok-surface-dim); cursor: text; flex-shrink: 0; }
-.mc-field:hover { border-color: var(--tok-border-strong); }
+.mc-field:hover { background: var(--tok-surface-dim-hover); border-color: var(--tok-border-strong); }
 .mc-field:focus-within { border-color: var(--tok-border-focus); }
 .mc-field__label { display: none; color: var(--tok-text-muted); font-weight: 400; font-size: 12px; line-height: 1.2; }
 .mc-field--floated .mc-field__label { display: block; }

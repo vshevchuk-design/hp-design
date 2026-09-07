@@ -71,6 +71,7 @@
   .placeholder-note { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-muted); border: 0.5px dashed var(--border-strong); border-radius: 6px; padding: 4px 10px; margin-top: 1.5rem; }
 
   :root {
+  --tok-surface-dim-hover: #e6e8eb;
   --tok-surface-sunken: #e6e8eb;
   --tok-surface-dim: #f4f5f7;
   --tok-surface-disabled: #e6e8eb;
@@ -110,7 +111,7 @@
 .search--lg { height: 48px; padding: 0 16px; gap: 8px; }
 .search--lg .search__icon, .search--lg .search__clear { width: 24px; height: 24px; }
 
-.search:not(.search--disabled):hover, .search--hover { border-color: var(--tok-border-strong); }
+.search:not(.search--disabled):hover, .search--hover { background: var(--tok-surface-dim-hover); border-color: var(--tok-border-strong); }
 .search--focus { border-color: var(--tok-border-focus); }
 .search--disabled { background: var(--tok-surface-disabled); cursor: not-allowed; }
 .search--disabled .search__placeholder, .search--disabled .search__value { color: var(--tok-text-disabled); }
@@ -231,6 +232,7 @@
     <h2 class="big-section">CSS</h2>
     <p class="section-desc">One shared value/placeholder text style (16px at every size, no per-size label) plus size modifiers and state classes.</p>
     <pre class="code"><code>:root {
+  --tok-surface-dim-hover: #e6e8eb;
   --tok-surface-sunken: #e6e8eb;
   --tok-surface-dim: #f4f5f7;
   --tok-surface-disabled: #e6e8eb;
@@ -270,7 +272,7 @@
 .search--lg { height: 48px; padding: 0 16px; gap: 8px; }
 .search--lg .search__icon, .search--lg .search__clear { width: 24px; height: 24px; }
 
-.search:not(.search--disabled):hover, .search--hover { border-color: var(--tok-border-strong); }
+.search:not(.search--disabled):hover, .search--hover { background: var(--tok-surface-dim-hover); border-color: var(--tok-border-strong); }
 .search--focus { border-color: var(--tok-border-focus); }
 .search--disabled { background: var(--tok-surface-disabled); cursor: not-allowed; }
 .search--disabled .search__placeholder, .search--disabled .search__value { color: var(--tok-text-disabled); }

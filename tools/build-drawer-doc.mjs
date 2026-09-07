@@ -66,6 +66,7 @@ const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, 
 const cv = (tokenPath) => `var(${cssVarName(tokenPath)})`;
 
 const colorPaths = [
+  "fill.neutralHoverStrong",
   "surface.default", "surface.overlay", "border.default", "border.focus", "text.default", "text.secondary", "text.onFill", "icon.secondary",
   "fill.neutral", "fill.neutralHover", "fill.neutralActive", "fill.primary", "fill.primaryHover", "fill.primaryActive",
 ];
@@ -120,7 +121,9 @@ dialog.drawer--bottom[open] { transform: translateY(0); }
 
 .ov-btn { box-sizing: border-box; height: ${px(resolve("dim.10"))}; padding: 0 ${px(resolve("dim.3"))}; border-radius: ${px(resolve("radius.default"))}; border: none; cursor: pointer; font-family: ${cv("family.sans")}; ${typoCss(resolveToken(get("text-style.heading-base")))} }
 .ov-btn--secondary { background: ${cv("fill.neutral")}; color: ${cv("text.default")}; }
-.ov-btn--secondary:hover { background: ${cv("fill.neutralHover")}; }
+/* Strong tier — this button rests on fill.neutral (gray.100), where the
+   fill.neutralHover wash is the same colour and the hover shows nothing. */
+.ov-btn--secondary:hover { background: ${cv("fill.neutralHoverStrong")}; }
 .ov-btn--secondary:active { background: ${cv("fill.neutralActive")}; }
 .ov-btn--primary { background: ${cv("fill.primary")}; color: ${cv("text.onFill")}; font-weight: 600; }
 .ov-btn--primary:hover { background: ${cv("fill.primaryHover")}; }

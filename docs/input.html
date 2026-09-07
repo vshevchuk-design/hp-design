@@ -71,6 +71,7 @@
   .placeholder-note { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-muted); border: 0.5px dashed var(--border-strong); border-radius: 6px; padding: 4px 10px; margin-top: 1.5rem; }
 
   :root {
+  --tok-surface-dim-hover: #e6e8eb;
   --tok-surface-sunken: #e6e8eb;
   --tok-surface-dim: #f4f5f7;
   --tok-surface-disabled: #e6e8eb;
@@ -119,7 +120,7 @@
 .input--lg .input__stack { gap: 4px; }
 .input--lg .input__label { font-weight: 400; font-size: 12px; line-height: 1.2; }
 
-.input:not(.input--disabled):hover, .input--hover { border-color: var(--tok-border-strong); }
+.input:not(.input--disabled):hover, .input--hover { background: var(--tok-surface-dim-hover); border-color: var(--tok-border-strong); }
 .input--focus { border-color: var(--tok-border-focus); }
 .input--focus .input__label { color: var(--tok-text-primary); }
 .input--disabled { background: var(--tok-surface-disabled); cursor: not-allowed; }
@@ -241,6 +242,7 @@
     <h2 class="big-section">CSS</h2>
     <p class="section-desc">One <code class="tok">:root</code> block of color custom properties, then a base <code class="tok">.input</code> class + <code class="tok">--sm/--base/--lg</code> size modifiers, then state modifiers as plain classes (also wired to real <code class="tok">:hover</code> for bonus interactivity where it doesn't conflict with a specific demonstrated state).</p>
     <pre class="code"><code>:root {
+  --tok-surface-dim-hover: #e6e8eb;
   --tok-surface-sunken: #e6e8eb;
   --tok-surface-dim: #f4f5f7;
   --tok-surface-disabled: #e6e8eb;
@@ -289,7 +291,7 @@
 .input--lg .input__stack { gap: 4px; }
 .input--lg .input__label { font-weight: 400; font-size: 12px; line-height: 1.2; }
 
-.input:not(.input--disabled):hover, .input--hover { border-color: var(--tok-border-strong); }
+.input:not(.input--disabled):hover, .input--hover { background: var(--tok-surface-dim-hover); border-color: var(--tok-border-strong); }
 .input--focus { border-color: var(--tok-border-focus); }
 .input--focus .input__label { color: var(--tok-text-primary); }
 .input--disabled { background: var(--tok-surface-disabled); cursor: not-allowed; }

@@ -131,13 +131,17 @@ const identityNames = [
 ];
 const usedHues = [...new Set(identityNames.map(hueOf))];
 
+// The field hover fill, read from input.tokens.json — the whole field family
+// (Input/Select/Search/Composer/compose fields) shares one recipe.
+const fieldHoverBg = refPath(input.state.hover.bg.$value);
 const colorPaths = [
   "surface.page", "surface.default", "surface.sunken", "surface.dim",
   "border.default", "border.strong", "border.focus",
   "text.default", "text.secondary", "text.muted", "text.primary", "text.onFill",
   "icon.default", "icon.secondary", "icon.muted", "icon.onFill", "icon.primary", "icon.warning",
   "fill.primary", "fill.primaryHover", "fill.primaryActive",
-  "fill.neutral", "fill.neutralHover", "fill.neutralActive", "fill.neutralActiveStrong",
+  "fill.neutral", "fill.neutralHover", "fill.neutralActive", "fill.neutralHoverStrong", "fill.neutralActiveStrong",
+  "surface.dimHover",
   "bg.primary", "bg.primaryHover", "bg.neutral", "bg.warning", "text.warning", "bg.danger", "text.danger", "bg.success", "text.success", "status.success", "surface.overlay",
   "fill.danger", "fill.dangerHover", "fill.disabled", "text.disabled", "icon.disabled", "surface.disabled",
   "bg.ai", "text.ai", "icon.ai", "fill.ai",
@@ -581,7 +585,8 @@ const componentCss = `/* ---- component recipes, resolved from each component's 
 .tab { display: inline-flex; align-items: center; justify-content: center; gap: ${tabItemGap}; border: none; background: transparent; cursor: pointer; white-space: nowrap; color: ${cv("text.secondary")}; font-family: ${cv("family.sans")}; ${typoCss(tabItemLabel)} }
 .tab--sm { height: ${tabSm.height}; padding: 0 ${tabSm.paddingX}; }
 .tabs--segmented .tab { flex: 1; border-radius: ${segPillRadiusApp}; }
-.tabs--segmented .tab:not(.tab--active):hover { background: ${cv("fill.neutralHover")}; color: ${cv("text.default")}; }
+/* same story as the secondary button — the segmented track IS gray.100 */
+.tabs--segmented .tab:not(.tab--active):hover { background: ${cv(refPath(tabs.segmented.state.hover.bg.$value))}; color: ${cv("text.default")}; }
 .tabs--segmented .tab--active { background: ${cv("surface.default")}; color: ${cv("text.default")}; font-weight: ${tabActiveWeight}; }
 
 .counter { display: inline-flex; align-items: center; justify-content: center; font-variant-numeric: tabular-nums; font-family: ${cv("family.sans")}; font-weight: ${counterSm.label.fontWeight}; border-radius: ${counterRadius}; }
@@ -617,7 +622,7 @@ const componentCss = `/* ---- component recipes, resolved from each component's 
 .search__clear[hidden] { display: none; }
 .search__input { flex: 1; min-width: 0; border: none; outline: none; background: transparent; color: ${cv("text.default")}; font-family: ${cv("family.sans")}; ${typoCss(searchValueType)} }
 .search__input::placeholder { color: ${cv("text.muted")}; }
-.search:hover { border-color: ${cv("border.strong")}; }
+.search:hover { background: ${cv(fieldHoverBg)}; border-color: ${cv("border.strong")}; }
 .search:focus-within { border-color: ${cv("border.focus")}; }
 
 .listbox { margin: 0; box-sizing: border-box; padding: ${lbPadding}; border-radius: ${lbRadius}; background: ${cv("surface.default")}; border: 1px solid ${cv("border.default")}; box-shadow: ${lbShadowCss}; font-family: ${cv("family.sans")}; min-width: 200px; }
@@ -720,7 +725,7 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
 
 .composer { display: flex; flex-direction: column; gap: ${compFieldGap}; font-family: ${cv("family.sans")}; }
 .composer__field { display: flex; align-items: center; gap: ${compFieldGap}; padding: ${compFieldPadding}; border-radius: ${compRadius}; background: ${cv("surface.dim")}; border: 1px solid ${cv("border.default")}; }
-.composer__field:hover { border-color: ${cv("border.strong")}; }
+.composer__field:hover { background: ${cv(fieldHoverBg)}; border-color: ${cv("border.strong")}; }
 .composer__field:focus-within { border-color: ${cv("border.focus")}; }
 .composer__input { flex: 1; min-width: 0; border: none; outline: none; background: transparent; color: ${cv("text.default")}; ${typoCss(compInputType)} font-family: ${cv("family.sans")}; }
 .composer__input::placeholder { color: ${cv("text.muted")}; }
@@ -771,8 +776,10 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
 .btn--primary.btn--sm.btn--icon-only { width: ${btnPrimSmHeight}; height: ${btnPrimSmHeight}; padding: 0; }
 .btn--primary.btn--sm.btn--icon-only .btn__icon { width: ${btnPrimSmIconSize}; height: ${btnPrimSmIconSize}; }
 .btn--secondary { background: ${cv("fill.neutral")}; color: ${cv("text.default")}; }
-.btn--secondary:hover { background: ${cv("fill.neutralHover")}; }
-.btn--secondary:active { background: ${cv("fill.neutralActive")}; }
+/* Strong tier, read from button.tokens.json: this button RESTS on gray.100,
+   where the fill.neutralHover wash is the same colour and shows nothing. */
+.btn--secondary:hover { background: ${cv(refPath(button.secondary.state.hover.fill.$value))}; }
+.btn--secondary:active { background: ${cv(refPath(button.secondary.state.pressed.fill.$value))}; }
 .btn--secondary .btn__icon { color: ${cv("icon.default")}; }
 .btn--secondary.btn--base { height: ${btnSecHeight}; padding: 0 ${btnSecPaddingX}; gap: ${btnSecGap}; ${typoCss(btnSecLabelType)} }
 .btn--secondary.btn--base .btn__icon { width: ${btnSecIconSize}; height: ${btnSecIconSize}; }
@@ -814,7 +821,7 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
 .select__stack { display: flex; flex-direction: column; justify-content: center; flex: 1; min-width: 0; gap: ${selectBase.labelGap}; }
 .select__label { color: ${cv("text.muted")}; ${typoCss(selectBase.label)} }
 .select__value { color: ${cv("text.default")}; ${typoCss(selectBase.value)} white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.select:hover { border-color: ${cv("border.strong")}; }
+.select:hover { background: ${cv(fieldHoverBg)}; border-color: ${cv("border.strong")}; }
 .select:focus-visible { outline: none; border-color: ${cv("border.focus")}; }
 
 /* compose dialog — one native <dialog>, two responsive shells around the
@@ -841,7 +848,7 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
 /* lg (48px) fixed height, NOT base 40 — the floating label + value stack
    must fit INSIDE the resting height, or the field visibly grows on focus */
 .mc-field { box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; gap: ${inputLabelGap}; min-height: ${inputLgHeight}; padding: ${px(resolve("dim.1_5"))} ${inputPaddingX}; border: 1px solid ${cv("border.default")}; border-radius: ${inputRadius}; background: ${cv("surface.dim")}; cursor: text; flex-shrink: 0; }
-.mc-field:hover { border-color: ${cv("border.strong")}; }
+.mc-field:hover { background: ${cv(fieldHoverBg)}; border-color: ${cv("border.strong")}; }
 .mc-field:focus-within { border-color: ${cv("border.focus")}; }
 .mc-field__label { display: none; color: ${cv(inputPopulatedLabelColor)}; ${typoCss(inputLabelType)} }
 .mc-field--floated .mc-field__label { display: block; }

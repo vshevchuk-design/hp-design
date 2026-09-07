@@ -70,6 +70,7 @@
   .placeholder-note { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-muted); border: 0.5px dashed var(--border-strong); border-radius: 6px; padding: 4px 10px; margin-top: 1.5rem; }
 
   :root {
+  --tok-fill-neutral-hover-strong: #cdd1d6;
   --tok-surface-default: #ffffff;
   --tok-surface-overlay: rgba(21, 25, 30, 0.5);
   --tok-border-default: #dadde0;
@@ -109,7 +110,9 @@ dialog.modal[open]::backdrop { opacity: 1; }
 
 .ov-btn { box-sizing: border-box; height: 40px; padding: 0 12px; border-radius: 8px; border: none; cursor: pointer; font-family: var(--tok-family-sans); font-weight: 600; font-size: 14px; line-height: 1.4; }
 .ov-btn--secondary { background: var(--tok-fill-neutral); color: var(--tok-text-default); }
-.ov-btn--secondary:hover { background: var(--tok-fill-neutral-hover); }
+/* Strong tier — this button rests on fill.neutral (gray.100), where the
+   fill.neutralHover wash is the same colour and the hover shows nothing. */
+.ov-btn--secondary:hover { background: var(--tok-fill-neutral-hover-strong); }
 .ov-btn--secondary:active { background: var(--tok-fill-neutral-active); }
 .ov-btn--danger { background: var(--tok-fill-danger); color: var(--tok-text-on-fill); font-weight: 600; }
 .ov-btn--danger:hover { background: var(--tok-fill-danger-hover); }
@@ -233,6 +236,7 @@ dialog.modal[open]::backdrop { opacity: 1; }
 
     <h2 class="big-section">CSS</h2>
     <pre class="code"><code>:root {
+  --tok-fill-neutral-hover-strong: #cdd1d6;
   --tok-surface-default: #ffffff;
   --tok-surface-overlay: rgba(21, 25, 30, 0.5);
   --tok-border-default: #dadde0;
@@ -272,7 +276,9 @@ dialog.modal[open]::backdrop { opacity: 1; }
 
 .ov-btn { box-sizing: border-box; height: 40px; padding: 0 12px; border-radius: 8px; border: none; cursor: pointer; font-family: var(--tok-family-sans); font-weight: 600; font-size: 14px; line-height: 1.4; }
 .ov-btn--secondary { background: var(--tok-fill-neutral); color: var(--tok-text-default); }
-.ov-btn--secondary:hover { background: var(--tok-fill-neutral-hover); }
+/* Strong tier — this button rests on fill.neutral (gray.100), where the
+   fill.neutralHover wash is the same colour and the hover shows nothing. */
+.ov-btn--secondary:hover { background: var(--tok-fill-neutral-hover-strong); }
 .ov-btn--secondary:active { background: var(--tok-fill-neutral-active); }
 .ov-btn--danger { background: var(--tok-fill-danger); color: var(--tok-text-on-fill); font-weight: 600; }
 .ov-btn--danger:hover { background: var(--tok-fill-danger-hover); }

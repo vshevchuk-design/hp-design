@@ -59,7 +59,9 @@ const resolve = (ref) => resolveToken(get(ref));
 const px = (d) => `${d.value}${d.unit}`;
 const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
+const hoverBgRole = select.state.hover.bg.$value.replace(/[{}]/g, "");
 const colorPaths = [
+  "surface.dimHover",
   "surface.sunken", "surface.dim", "surface.disabled", "border.default", "border.strong", "border.focus", "border.danger",
   "text.muted", "text.default", "text.disabled", "text.primary", "icon.default", "icon.disabled",
 ];
@@ -127,7 +129,7 @@ ${sizes
   })
   .join("\n\n")}
 
-.select:not(.select--disabled):hover, .select--hover { border-color: ${cv("border.strong")}; }
+.select:not(.select--disabled):hover, .select--hover { background: ${cv(hoverBgRole)}; border-color: ${cv("border.strong")}; }
 .select--focus { border-color: ${cv("border.focus")}; }
 .select--focus .select__label { color: ${cv("text.primary")}; }
 .select--disabled { background: ${cv("surface.disabled")}; cursor: not-allowed; }

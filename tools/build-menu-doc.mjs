@@ -64,6 +64,7 @@ const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, 
 const cv = (tokenPath) => `var(${cssVarName(tokenPath)})`;
 
 const colorPaths = [
+  "fill.neutralHoverStrong",
   "surface.default", "border.default", "border.focus", "text.default", "text.disabled", "text.danger",
   "icon.secondary", "icon.disabled", "icon.danger", "fill.neutral", "fill.neutralHover", "fill.neutralActive", "bg.danger",
 ];
@@ -245,7 +246,9 @@ const html = `<!doctype html>
 
   .ov-btn { box-sizing: border-box; height: ${px(resolve("dim.10"))}; padding: 0 ${px(resolve("dim.3"))}; border-radius: ${px(resolve("radius.default"))}; border: none; cursor: pointer; font-family: var(--sans); ${typoCss(resolveToken(get("text-style.heading-base")))} }
   .ov-btn--secondary { background: ${cv("fill.neutral")}; color: ${cv("text.default")}; }
-  .ov-btn--secondary:hover { background: ${cv("fill.neutralHover")}; }
+  /* Strong tier — this button rests on fill.neutral (gray.100), where the
+   fill.neutralHover wash is the same colour and the hover shows nothing. */
+.ov-btn--secondary:hover { background: ${cv("fill.neutralHoverStrong")}; }
   .ov-btn--secondary:active { background: ${cv("fill.neutralActive")}; }
   .ov-btn:focus-visible { outline: ${px(resolve("dim.1"))} solid ${cv("border.focus")}; outline-offset: ${px(resolve("dim.0_5"))}; }
 

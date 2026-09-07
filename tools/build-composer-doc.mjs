@@ -69,7 +69,9 @@ const px = (d) => `${d.value}${d.unit}`;
 const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 const cv = (tokenPath) => `var(${cssVarName(tokenPath)})`;
 
+const fieldHoverBgRole = composer.field.bgHover.$value.replace(/[{}]/g, "");
 const colorPaths = [
+  "surface.dimHover",
   "surface.sunken", "surface.dim", "border.default", "border.strong", "border.focus", "text.default", "text.muted",
   "icon.secondary", "fill.neutralHover", "fill.neutralActive",
   "bg.ai", "text.ai", "icon.ai", "fill.ai",
@@ -151,7 +153,7 @@ const css = `${rootVars}
 .composer__ai-assist:hover { border-color: ${cv("fill.ai")}; }
 
 .composer__field { display: flex; align-items: center; gap: ${fieldGap}; padding: ${fieldPadding}; border-radius: ${radius}; background: ${cv("surface.dim")}; border: 1px solid ${cv("border.default")}; }
-.composer__field:hover { border-color: ${cv("border.strong")}; }
+.composer__field:hover { background: ${cv(fieldHoverBgRole)}; border-color: ${cv("border.strong")}; }
 .composer__field:focus-within { border-color: ${cv("border.focus")}; }
 .composer__input { flex: 1; min-width: 0; border: none; outline: none; background: transparent; resize: none; color: ${cv("text.default")}; ${typoCss(inputType)} font-family: ${cv("family.sans")}; }
 .composer__input::placeholder { color: ${cv("text.muted")}; }

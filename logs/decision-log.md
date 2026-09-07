@@ -960,3 +960,27 @@ Then made the audit permanent. Two scoping decisions in the checker worth knowin
 - Allowlist: the fake-keyboard scaffolding, which status.md already documents as a deliberately non-tokenized device mock. Its selector pattern needed care — `/\.mc-kbd\b/` does **not** match `.mc-kbd__row`, because `_` is a word character so there's no boundary after "kbd"; the element selectors slipped through until it became a plain prefix.
 
 Both checkers green: 3 prototype pages on-grid, 50 pages with every `--tok-*` defined.
+
+## 2026-09-07 (cont. 10) — Dead hovers (the wash retarget's fallout) and a real field hover
+
+Five notes; items 1, 2, 3 and 5 turned out to be one bug, and the user's item 5 was the diagnosis: "а на спрінгборді у кнопки настройок вже є ховер — втф???" Exactly — Springboard's gear reads its roles from `button.tokens.json` (so it followed the token to the Strong tier), while the Message Center prototypes **hardcoded** `cv("fill.neutralHover")`. When that role was retargeted from gray.200 to gray.100 earlier the same day, every control that *rests* on gray.100 got a hover identical to its resting fill:
+
+- the segmented tabs' inactive pill (track = `surface.sunken`, gray.100) → item 1
+- `.btn--secondary` — which is the toolbar search button and the thread bar's Archive / print → items 2 and 3
+- and, found by the new checker rather than by eye, `.ov-btn--secondary` on **drawer / modal / listbox / menu** — four more pages the user hadn't got to yet
+
+Fixed by resolving from the token files (`button.secondary.state.hover.fill`, `tabs.segmented.state.hover.bg`) instead of naming roles by hand. That's the third separate bug the "resolve real values, never retype a role name" rule has caught, and the second one today.
+
+### `tools/check-states.mjs`
+
+This class of failure was invisible to everything: the token existed, the CSS variable was defined, `check-css-vars.mjs` was happy, and the page looked fine in a screenshot because a screenshot can't hover. So: a checker that resolves every `:hover`/`:active` background through the page's own `--tok-*` map and fails when it equals the element's resting background. Resolved **values**, not token names — the entire failure mode is two different roles aliasing the same hex.
+
+It found the four overlay pages on its first run. It also flagged `.btn--primary:disabled:hover`, which is a false positive worth keeping in mind: a disabled control is *supposed* to be inert, so `:disabled` selectors are excluded.
+
+### Field hover: fill, not just border (item 4)
+
+The user's reasoning was right and worth quoting as the rule: hover must not be a blue border, "бо синій означає активний стан" — blue is focus/active in this system, so a blue hover would claim a state the control isn't in. But `border.default → border.strong` alone reads as almost nothing, especially now that `border.default` is the lighter gray.150.
+
+New role **`surface.dimHover` = gray.100**: the field visibly recesses one step under the cursor, staying entirely neutral. Applied to Input / Select / Search / Composer field / the compose dialog's fields / Pagination's reused Select. Same value as `surface.sunken`, kept as a separate role on purpose — `sunken` describes what a surface *is*, `dimHover` describes what a transition *does*, and collapsing them would make the next retune of one silently move the other.
+
+All three checkers green: 50 pages with every var defined, 50 with no dead hover, 3 prototypes on the grid.
