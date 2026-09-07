@@ -193,7 +193,7 @@ const colorPaths = [
   "surface.page", "surface.default", "border.default", "border.focus",
   "text.default", "text.secondary", "text.primary",
   "icon.default", "icon.muted", "icon.primary",
-  "fill.primary", "fill.neutral", "fill.neutralHover", "fill.neutralActive",
+  "fill.primary", "fill.neutral", "fill.neutralHover", "fill.neutralActive", "fill.neutralHoverStrong", "fill.neutralActiveStrong",
   "bg.primary", "bg.neutral",
   ...[...new Set([...TILES.map((t) => t.hue), "orange", "amber", "red"])].flatMap((h) => [
     `tag.${h}.tint.bg`,

@@ -4,25 +4,52 @@
       "$description": "Two visual styles per the user's own reference screenshots — segmented (a pill track, the active tab raised on a white pill) and underline (plain text, active tab marked by a blue bottom bar). Both share the same size grid and content variants (text-only, +icon-left, +counter, +icon+counter, icon-only). No hard cap on tab count is enforced by the component — that's a content decision, not a token; the tab list scrolls horizontally (overflow-x: auto) if it doesn't fit, and the docs page carries a practical (5-7 comfortable) guideline rather than a hard-coded number.",
       "item": {
         "$description": "Text stays 14px (size.base) at both sm and base — unlike button/input where type scales with the control size, here only icon size / padding / counter size scale; the label size is flat, per spec.",
-        "gap": { "$type": "dimension", "$value": "{dim.2}" },
+        "gap": {
+          "$type": "dimension",
+          "$value": "{dim.2}"
+        },
         "label": {
           "$type": "typography",
-          "$value": { "fontFamily": "{family.sans}", "fontWeight": "{weight.normal}", "fontSize": "{size.base}", "lineHeight": "{leading.tight}", "letterSpacing": "{tracking.normal}" },
+          "$value": {
+            "fontFamily": "{family.sans}",
+            "fontWeight": "{weight.normal}",
+            "fontSize": "{size.base}",
+            "lineHeight": "{leading.tight}",
+            "letterSpacing": "{tracking.normal}"
+          },
           "$description": "Base (inactive) weight. Active state overrides fontWeight to weight.semibold only — same size/family/leading, see state.*.active.fontWeight in each style below."
         }
       },
       "size": {
         "sm": {
           "$description": "32px.",
-          "height": { "$type": "dimension", "$value": "{dim.8}" },
-          "paddingX": { "$type": "dimension", "$value": "{dim.2}" },
-          "iconSize": { "$type": "dimension", "$value": "{dim.4}" }
+          "height": {
+            "$type": "dimension",
+            "$value": "{dim.8}"
+          },
+          "paddingX": {
+            "$type": "dimension",
+            "$value": "{dim.2}"
+          },
+          "iconSize": {
+            "$type": "dimension",
+            "$value": "{dim.4}"
+          }
         },
         "base": {
           "$description": "40px, the default size.",
-          "height": { "$type": "dimension", "$value": "{dim.10}" },
-          "paddingX": { "$type": "dimension", "$value": "{dim.3}" },
-          "iconSize": { "$type": "dimension", "$value": "{dim.5}" }
+          "height": {
+            "$type": "dimension",
+            "$value": "{dim.10}"
+          },
+          "paddingX": {
+            "$type": "dimension",
+            "$value": "{dim.3}"
+          },
+          "iconSize": {
+            "$type": "dimension",
+            "$value": "{dim.5}"
+          }
         }
       },
       "counter": {
@@ -30,47 +57,104 @@
       },
       "segmented": {
         "$description": "A track (surface.sunken — literally the same 'recessed' token as an input's own background) holding the tabs; the active tab sits on a raised white pill (surface.default) directly over the track, the exact sunken/default surface pairing cards already use for 'raised above the page'. pillRadius (8px) = trackRadius (12px) − trackPadding (4px) — concentric corners, not a coincidence: an inset shape needs a proportionally smaller radius to look correctly nested inside its parent's rounded corner. trackPadding doubles as the gap between adjacent pills — tight by design, they're meant to read as one contained control, unlike underline's own (looser) inter-tab gap.",
-        "trackBg": { "$type": "color", "$value": "{surface.sunken}" },
-        "trackRadius": { "$type": "dimension", "$value": "{radius.md}" },
-        "trackPadding": { "$type": "dimension", "$value": "{dim.1}" },
-        "pillRadius": { "$type": "dimension", "$value": "{radius.default}" },
+        "trackBg": {
+          "$type": "color",
+          "$value": "{surface.sunken}"
+        },
+        "trackRadius": {
+          "$type": "dimension",
+          "$value": "{radius.md}"
+        },
+        "trackPadding": {
+          "$type": "dimension",
+          "$value": "{dim.1}"
+        },
+        "pillRadius": {
+          "$type": "dimension",
+          "$value": "{radius.default}"
+        },
         "state": {
           "default": {
-            "label": { "$type": "color", "$value": "{text.secondary}" }
+            "label": {
+              "$type": "color",
+              "$value": "{text.secondary}"
+            }
           },
           "hover": {
-            "bg": { "$type": "color", "$value": "{fill.neutralHover}" },
-            "label": { "$type": "color", "$value": "{text.default}" },
+            "bg": {
+              "$type": "color",
+              "$value": "{fill.neutralHoverStrong}"
+            },
+            "label": {
+              "$type": "color",
+              "$value": "{text.default}"
+            },
             "$description": "fill.neutralHover — one step darker than the track itself (surface.sunken/gray.100 → gray.200), same 'darker on hover so it stays visible' rule used everywhere else this session."
           },
           "active": {
-            "bg": { "$type": "color", "$value": "{surface.default}" },
-            "label": { "$type": "color", "$value": "{text.default}" },
-            "fontWeight": { "$type": "fontWeight", "$value": "{weight.semibold}" }
+            "bg": {
+              "$type": "color",
+              "$value": "{surface.default}"
+            },
+            "label": {
+              "$type": "color",
+              "$value": "{text.default}"
+            },
+            "fontWeight": {
+              "$type": "fontWeight",
+              "$value": "{weight.semibold}"
+            }
           },
           "disabled": {
-            "label": { "$type": "color", "$value": "{text.disabled}" }
+            "label": {
+              "$type": "color",
+              "$value": "{text.disabled}"
+            }
           }
         }
       },
       "underline": {
         "$description": "No background at rest, plain text — the active tab is marked only by a 2px bottom bar (a literal in the generated CSS, not itself a scale value worth tokenizing — one visual step bolder than the 1px baseline it overlaps). A 1px baseline (border.default) spans the full tab list, matching how the current live product's own underline-style tabs use a full-width hairline; the active indicator sits directly over it. Hover DOES get a background (fill.neutralHover, the same token segmented's hover already uses) — text-color-only hover was tried first and found too subtle to notice; a light background pill on hover while keeping the colored bar exclusive to the active tab is the common pattern (GitHub, Notion, Linear all do this).",
-        "baselineColor": { "$type": "color", "$value": "{border.default}" },
-        "indicatorColor": { "$type": "color", "$value": "{border.focus}" },
-        "gap": { "$type": "dimension", "$value": "{dim.6}" },
+        "baselineColor": {
+          "$type": "color",
+          "$value": "{border.default}"
+        },
+        "indicatorColor": {
+          "$type": "color",
+          "$value": "{border.focus}"
+        },
+        "gap": {
+          "$type": "dimension",
+          "$value": "{dim.6}"
+        },
         "state": {
           "default": {
-            "label": { "$type": "color", "$value": "{text.secondary}" }
+            "label": {
+              "$type": "color",
+              "$value": "{text.secondary}"
+            }
           },
           "hover": {
-            "label": { "$type": "color", "$value": "{text.default}" }
+            "label": {
+              "$type": "color",
+              "$value": "{text.default}"
+            }
           },
           "active": {
-            "label": { "$type": "color", "$value": "{text.default}" },
-            "fontWeight": { "$type": "fontWeight", "$value": "{weight.semibold}" }
+            "label": {
+              "$type": "color",
+              "$value": "{text.default}"
+            },
+            "fontWeight": {
+              "$type": "fontWeight",
+              "$value": "{weight.semibold}"
+            }
           },
           "disabled": {
-            "label": { "$type": "color", "$value": "{text.disabled}" }
+            "label": {
+              "$type": "color",
+              "$value": "{text.disabled}"
+            }
           }
         }
       }

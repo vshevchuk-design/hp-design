@@ -213,11 +213,23 @@
     },
     "neutralHover": {
       "$type": "color",
-      "$value": "{color.gray.200}"
+      "$value": "{color.gray.100}",
+      "$description": "The wash tier — hover for a control whose RESTING surface is transparent or white (Button ghost, Menu/Listbox options, Pagination items, table/thread rows, every small icon-button). Retargeted from gray.200 to gray.100 on 2026-09-07: at 200 a full-width row hover read as a heavy solid band rather than a hover cue, which the cool ramp made obvious. Use fill.neutralHoverStrong instead when the control already rests on gray.100 — this wash is invisible there."
     },
     "neutralActive": {
       "$type": "color",
-      "$value": "{color.gray.300}"
+      "$value": "{color.gray.200}",
+      "$description": "Pressed/active companion to fill.neutralHover — one step down the same wash tier."
+    },
+    "neutralHoverStrong": {
+      "$type": "color",
+      "$value": "{color.gray.200}",
+      "$description": "The strong tier — hover for a neutral control that ALREADY rests on gray.100, where the fill.neutralHover wash would be invisible: Button secondary (rest = fill.neutral) and Tabs' segmented style (track = surface.sunken). Same value fill.neutralHover used to carry for everything; split out 2026-09-07 so the common transparent-rest case could get lighter without flattening these two."
+    },
+    "neutralActiveStrong": {
+      "$type": "color",
+      "$value": "{color.gray.300}",
+      "$description": "Pressed/active companion to fill.neutralHoverStrong. Also the fill Counter's onNeutral inactive chip needs to stay legible against its gray.100 parent."
     },
     "success": {
       "$type": "color",
@@ -279,80 +291,308 @@
   "avatar": {
     "$description": "Categorical identity tints for Avatar's initials fallback — a person with no photo gets one of these 8 hues assigned deterministically (hash their name to a slot), so distinct people read as distinct colors across a list instead of every fallback avatar being the same gray. Same hue order and reasoning as tokens/primitives/chart-series.tokens.json (validated CVD-safe adjacency) but a separate token set on purpose: chart-series sits at the 500 step for saturated lines/bars on a white plot area, this sits at 100 (bg, pastel) / 600 (text, AA-safe — same step text.primary/success/danger/warning already use) for a quiet fallback badge, not a data mark. Don't reuse chart-series' own tokens here, and don't reuse these for charts.",
     "blue": {
-      "bg": { "$type": "color", "$value": "{color.blue.100}" },
-      "text": { "$type": "color", "$value": "{color.blue.600}" }
+      "bg": {
+        "$type": "color",
+        "$value": "{color.blue.100}"
+      },
+      "text": {
+        "$type": "color",
+        "$value": "{color.blue.600}"
+      }
     },
     "green": {
-      "bg": { "$type": "color", "$value": "{color.green.100}" },
-      "text": { "$type": "color", "$value": "{color.green.600}" }
+      "bg": {
+        "$type": "color",
+        "$value": "{color.green.100}"
+      },
+      "text": {
+        "$type": "color",
+        "$value": "{color.green.600}"
+      }
     },
     "magenta": {
-      "bg": { "$type": "color", "$value": "{color.magenta.100}" },
-      "text": { "$type": "color", "$value": "{color.magenta.600}" }
+      "bg": {
+        "$type": "color",
+        "$value": "{color.magenta.100}"
+      },
+      "text": {
+        "$type": "color",
+        "$value": "{color.magenta.600}"
+      }
     },
     "amber": {
-      "bg": { "$type": "color", "$value": "{color.amber.100}" },
-      "text": { "$type": "color", "$value": "{color.amber.600}" }
+      "bg": {
+        "$type": "color",
+        "$value": "{color.amber.100}"
+      },
+      "text": {
+        "$type": "color",
+        "$value": "{color.amber.600}"
+      }
     },
     "teal": {
-      "bg": { "$type": "color", "$value": "{color.teal.100}" },
-      "text": { "$type": "color", "$value": "{color.teal.600}" }
+      "bg": {
+        "$type": "color",
+        "$value": "{color.teal.100}"
+      },
+      "text": {
+        "$type": "color",
+        "$value": "{color.teal.600}"
+      }
     },
     "orange": {
-      "bg": { "$type": "color", "$value": "{color.orange.100}" },
-      "text": { "$type": "color", "$value": "{color.orange.600}" }
+      "bg": {
+        "$type": "color",
+        "$value": "{color.orange.100}"
+      },
+      "text": {
+        "$type": "color",
+        "$value": "{color.orange.600}"
+      }
     },
     "violet": {
-      "bg": { "$type": "color", "$value": "{color.violet.100}" },
-      "text": { "$type": "color", "$value": "{color.violet.600}" }
+      "bg": {
+        "$type": "color",
+        "$value": "{color.violet.100}"
+      },
+      "text": {
+        "$type": "color",
+        "$value": "{color.violet.600}"
+      }
     },
     "red": {
-      "bg": { "$type": "color", "$value": "{color.red.100}" },
-      "text": { "$type": "color", "$value": "{color.red.600}" }
+      "bg": {
+        "$type": "color",
+        "$value": "{color.red.100}"
+      },
+      "text": {
+        "$type": "color",
+        "$value": "{color.red.600}"
+      }
     }
   },
   "tag": {
     "$description": "Decorative, non-semantic categorical color for generic tagging/labeling (Badge's 'color' axis, e.g. a Notion/Linear/GitHub-style label picker) — deliberately separate from the 5 meaningful status roles (bg.*/fill.* primary/success/warning/danger + this group's own gray). Picking tag.orange means 'I want an orange label', not 'this is a warning'. Two intensities per hue: tint (pale bg + colored text, same 100/600 pairing bg.*/text.* already use) and solid (saturated bg + text.onFill, same 500-step + white pairing fill.* already uses) — same contrast trade-off already accepted for fill.primary/success/danger/warning (3.7-4.4:1 large-text/UI-component AA, not 4.5:1 small-text; pair with semibold/bold label weight). 4 of the 10 hues (blue/red/green/amber) are pure aliases of the existing primary/danger/success/warning role tokens, not new colors — 'color=blue' and 'role=primary' render identically on purpose, since blue already means primary/info everywhere else in this system. gray aliases role=neutral for tint only — see gray's own $description for why solid diverges. Only orange/violet/magenta/teal/brown are genuinely new leaf references. Same hue order as chart-series/avatar for one consistent categorical rhythm across the system.",
     "gray": {
-      "tint": { "bg": { "$type": "color", "$value": "{bg.neutral}" }, "text": { "$type": "color", "$value": "{text.default}" } },
-      "solid": { "bg": { "$type": "color", "$value": "{color.gray.500}" }, "text": { "$type": "color", "$value": "{text.onFill}" } },
+      "tint": {
+        "bg": {
+          "$type": "color",
+          "$value": "{bg.neutral}"
+        },
+        "text": {
+          "$type": "color",
+          "$value": "{text.default}"
+        }
+      },
+      "solid": {
+        "bg": {
+          "$type": "color",
+          "$value": "{color.gray.500}"
+        },
+        "text": {
+          "$type": "color",
+          "$value": "{text.onFill}"
+        }
+      },
       "$description": "The one hue that ISN'T a full role alias — tint matches role=neutral (bg.neutral/text.default) but solid diverges deliberately: fill.neutral (gray.100) is the same pale value as the tint bg, so a 'solid gray' badge built from it would look identical to the tint one, not actually filled. Uses color.gray.500 + text.onFill instead — the same saturated-500-step + white-text pattern every other solid hue already uses, gray included. role=neutral's own solid stays on fill.neutral/text.default on purpose (matches Button secondary's established pale-even-when-emphasized precedent) — a neutral *status* has no 'urgent solid' need the way a decorative gray *tag* does, so this is the one place role and color genuinely diverge rather than alias."
     },
     "blue": {
-      "tint": { "bg": { "$type": "color", "$value": "{bg.primary}" }, "text": { "$type": "color", "$value": "{text.primary}" } },
-      "solid": { "bg": { "$type": "color", "$value": "{fill.primary}" }, "text": { "$type": "color", "$value": "{text.onFill}" } }
+      "tint": {
+        "bg": {
+          "$type": "color",
+          "$value": "{bg.primary}"
+        },
+        "text": {
+          "$type": "color",
+          "$value": "{text.primary}"
+        }
+      },
+      "solid": {
+        "bg": {
+          "$type": "color",
+          "$value": "{fill.primary}"
+        },
+        "text": {
+          "$type": "color",
+          "$value": "{text.onFill}"
+        }
+      }
     },
     "red": {
-      "tint": { "bg": { "$type": "color", "$value": "{bg.danger}" }, "text": { "$type": "color", "$value": "{text.danger}" } },
-      "solid": { "bg": { "$type": "color", "$value": "{fill.danger}" }, "text": { "$type": "color", "$value": "{text.onFill}" } }
+      "tint": {
+        "bg": {
+          "$type": "color",
+          "$value": "{bg.danger}"
+        },
+        "text": {
+          "$type": "color",
+          "$value": "{text.danger}"
+        }
+      },
+      "solid": {
+        "bg": {
+          "$type": "color",
+          "$value": "{fill.danger}"
+        },
+        "text": {
+          "$type": "color",
+          "$value": "{text.onFill}"
+        }
+      }
     },
     "green": {
-      "tint": { "bg": { "$type": "color", "$value": "{bg.success}" }, "text": { "$type": "color", "$value": "{text.success}" } },
-      "solid": { "bg": { "$type": "color", "$value": "{fill.success}" }, "text": { "$type": "color", "$value": "{text.onFill}" } }
+      "tint": {
+        "bg": {
+          "$type": "color",
+          "$value": "{bg.success}"
+        },
+        "text": {
+          "$type": "color",
+          "$value": "{text.success}"
+        }
+      },
+      "solid": {
+        "bg": {
+          "$type": "color",
+          "$value": "{fill.success}"
+        },
+        "text": {
+          "$type": "color",
+          "$value": "{text.onFill}"
+        }
+      }
     },
     "amber": {
-      "tint": { "bg": { "$type": "color", "$value": "{bg.warning}" }, "text": { "$type": "color", "$value": "{text.warning}" } },
-      "solid": { "bg": { "$type": "color", "$value": "{fill.warning}" }, "text": { "$type": "color", "$value": "{text.onFill}" } }
+      "tint": {
+        "bg": {
+          "$type": "color",
+          "$value": "{bg.warning}"
+        },
+        "text": {
+          "$type": "color",
+          "$value": "{text.warning}"
+        }
+      },
+      "solid": {
+        "bg": {
+          "$type": "color",
+          "$value": "{fill.warning}"
+        },
+        "text": {
+          "$type": "color",
+          "$value": "{text.onFill}"
+        }
+      }
     },
     "orange": {
-      "tint": { "bg": { "$type": "color", "$value": "{color.orange.100}" }, "text": { "$type": "color", "$value": "{color.orange.600}" } },
-      "solid": { "bg": { "$type": "color", "$value": "{color.orange.500}" }, "text": { "$type": "color", "$value": "{text.onFill}" } }
+      "tint": {
+        "bg": {
+          "$type": "color",
+          "$value": "{color.orange.100}"
+        },
+        "text": {
+          "$type": "color",
+          "$value": "{color.orange.600}"
+        }
+      },
+      "solid": {
+        "bg": {
+          "$type": "color",
+          "$value": "{color.orange.500}"
+        },
+        "text": {
+          "$type": "color",
+          "$value": "{text.onFill}"
+        }
+      }
     },
     "violet": {
-      "tint": { "bg": { "$type": "color", "$value": "{color.violet.100}" }, "text": { "$type": "color", "$value": "{color.violet.600}" } },
-      "solid": { "bg": { "$type": "color", "$value": "{color.violet.500}" }, "text": { "$type": "color", "$value": "{text.onFill}" } }
+      "tint": {
+        "bg": {
+          "$type": "color",
+          "$value": "{color.violet.100}"
+        },
+        "text": {
+          "$type": "color",
+          "$value": "{color.violet.600}"
+        }
+      },
+      "solid": {
+        "bg": {
+          "$type": "color",
+          "$value": "{color.violet.500}"
+        },
+        "text": {
+          "$type": "color",
+          "$value": "{text.onFill}"
+        }
+      }
     },
     "magenta": {
-      "tint": { "bg": { "$type": "color", "$value": "{color.magenta.100}" }, "text": { "$type": "color", "$value": "{color.magenta.600}" } },
-      "solid": { "bg": { "$type": "color", "$value": "{color.magenta.500}" }, "text": { "$type": "color", "$value": "{text.onFill}" } }
+      "tint": {
+        "bg": {
+          "$type": "color",
+          "$value": "{color.magenta.100}"
+        },
+        "text": {
+          "$type": "color",
+          "$value": "{color.magenta.600}"
+        }
+      },
+      "solid": {
+        "bg": {
+          "$type": "color",
+          "$value": "{color.magenta.500}"
+        },
+        "text": {
+          "$type": "color",
+          "$value": "{text.onFill}"
+        }
+      }
     },
     "teal": {
-      "tint": { "bg": { "$type": "color", "$value": "{color.teal.100}" }, "text": { "$type": "color", "$value": "{color.teal.600}" } },
-      "solid": { "bg": { "$type": "color", "$value": "{color.teal.500}" }, "text": { "$type": "color", "$value": "{text.onFill}" } }
+      "tint": {
+        "bg": {
+          "$type": "color",
+          "$value": "{color.teal.100}"
+        },
+        "text": {
+          "$type": "color",
+          "$value": "{color.teal.600}"
+        }
+      },
+      "solid": {
+        "bg": {
+          "$type": "color",
+          "$value": "{color.teal.500}"
+        },
+        "text": {
+          "$type": "color",
+          "$value": "{text.onFill}"
+        }
+      }
     },
     "brown": {
-      "tint": { "bg": { "$type": "color", "$value": "{color.brown.100}" }, "text": { "$type": "color", "$value": "{color.brown.600}" } },
-      "solid": { "bg": { "$type": "color", "$value": "{color.brown.500}" }, "text": { "$type": "color", "$value": "{text.onFill}" } }
+      "tint": {
+        "bg": {
+          "$type": "color",
+          "$value": "{color.brown.100}"
+        },
+        "text": {
+          "$type": "color",
+          "$value": "{color.brown.600}"
+        }
+      },
+      "solid": {
+        "bg": {
+          "$type": "color",
+          "$value": "{color.brown.500}"
+        },
+        "text": {
+          "$type": "color",
+          "$value": "{text.onFill}"
+        }
+      }
     }
   }
 }

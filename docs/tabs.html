@@ -78,19 +78,21 @@
   .placeholder-note { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-muted); border: 0.5px dashed var(--border-strong); border-radius: 6px; padding: 4px 10px; margin-top: 1.5rem; }
 
   :root {
-  --tok-text-secondary: #596b80;
-  --tok-text-default: #101924;
-  --tok-text-disabled: #aab5c4;
-  --tok-fill-neutral-hover: #cad2dc;
-  --tok-fill-neutral-active: #aab5c4;
-  --tok-surface-sunken: #e3e8ef;
+  --tok-text-secondary: #5d6a7a;
+  --tok-text-default: #121921;
+  --tok-text-disabled: #adb5be;
+  --tok-fill-neutral-hover: #e6e8eb;
+  --tok-fill-neutral-active: #cdd1d6;
+  --tok-fill-neutral-hover-strong: #cdd1d6;
+  --tok-fill-neutral-active-strong: #adb5be;
+  --tok-surface-sunken: #e6e8eb;
   --tok-surface-default: #ffffff;
-  --tok-border-default: #cad2dc;
+  --tok-border-default: #cdd1d6;
   --tok-border-focus: #0468c4;
   --tok-text-on-fill: #ffffff;
   --tok-fill-primary: #077fec;
-  --tok-icon-default: #445467;
-  --tok-icon-disabled: #aab5c4;
+  --tok-icon-default: #485462;
+  --tok-icon-disabled: #adb5be;
   --tok-family-sans: 'Sora', sans-serif;
 }
 
@@ -118,7 +120,7 @@
 .counter { display: inline-flex; align-items: center; justify-content: center; font-variant-numeric: tabular-nums; font-family: var(--tok-family-sans); font-weight: 700; border-radius: 999px; }
 .counter--sm { height: 16px; min-width: 16px; padding: 0 4px; font-size: 10px; line-height: 1; }
 .counter--base { height: 20px; min-width: 20px; padding: 0 6px; font-size: 12px; line-height: 1; }
-.counter--onNeutral.counter--inactive { background: var(--tok-fill-neutral-active); color: var(--tok-text-default); }
+.counter--onNeutral.counter--inactive { background: var(--tok-fill-neutral-active-strong); color: var(--tok-text-default); }
 .counter--onNeutral.counter--active { background: var(--tok-fill-primary); color: var(--tok-text-on-fill); }
 </style>
 </head>
@@ -235,19 +237,21 @@
 
     <h2 class="big-section">CSS</h2>
     <pre class="code"><code>:root {
-  --tok-text-secondary: #596b80;
-  --tok-text-default: #101924;
-  --tok-text-disabled: #aab5c4;
-  --tok-fill-neutral-hover: #cad2dc;
-  --tok-fill-neutral-active: #aab5c4;
-  --tok-surface-sunken: #e3e8ef;
+  --tok-text-secondary: #5d6a7a;
+  --tok-text-default: #121921;
+  --tok-text-disabled: #adb5be;
+  --tok-fill-neutral-hover: #e6e8eb;
+  --tok-fill-neutral-active: #cdd1d6;
+  --tok-fill-neutral-hover-strong: #cdd1d6;
+  --tok-fill-neutral-active-strong: #adb5be;
+  --tok-surface-sunken: #e6e8eb;
   --tok-surface-default: #ffffff;
-  --tok-border-default: #cad2dc;
+  --tok-border-default: #cdd1d6;
   --tok-border-focus: #0468c4;
   --tok-text-on-fill: #ffffff;
   --tok-fill-primary: #077fec;
-  --tok-icon-default: #445467;
-  --tok-icon-disabled: #aab5c4;
+  --tok-icon-default: #485462;
+  --tok-icon-disabled: #adb5be;
   --tok-family-sans: 'Sora', sans-serif;
 }
 
@@ -275,7 +279,7 @@
 .counter { display: inline-flex; align-items: center; justify-content: center; font-variant-numeric: tabular-nums; font-family: var(--tok-family-sans); font-weight: 700; border-radius: 999px; }
 .counter--sm { height: 16px; min-width: 16px; padding: 0 4px; font-size: 10px; line-height: 1; }
 .counter--base { height: 20px; min-width: 20px; padding: 0 6px; font-size: 12px; line-height: 1; }
-.counter--onNeutral.counter--inactive { background: var(--tok-fill-neutral-active); color: var(--tok-text-default); }
+.counter--onNeutral.counter--inactive { background: var(--tok-fill-neutral-active-strong); color: var(--tok-text-default); }
 .counter--onNeutral.counter--active { background: var(--tok-fill-primary); color: var(--tok-text-on-fill); }</code></pre>
 
     <h2 class="big-section">Styles</h2>

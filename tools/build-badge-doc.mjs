@@ -95,6 +95,10 @@ function pathsOf(node) {
 }
 for (const r of ROLES) for (const f of FILLS) pathsOf(badge.role[r][f]);
 for (const c of COLORS) for (const f of FILLS) pathsOf(badge.color[c][f]);
+// text.secondary isn't one of Badge's own tokens — a demo row prints a caption
+// in it, so it has to be registered explicitly or the caption loses its colour
+// (undefined var). Caught by tools/check-css-vars.mjs.
+colorVarPaths.add("text.secondary");
 const uniqPaths = [...colorVarPaths];
 const colorValue = Object.fromEntries(uniqPaths.map((p) => [p, resolve(p)]));
 const fontSans = resolve("family.sans");

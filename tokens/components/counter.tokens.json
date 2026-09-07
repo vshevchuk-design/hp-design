@@ -2,12 +2,24 @@
   "component": {
     "counter": {
       "$description": "Small numeric pill sitting on top of an already-colored button fill (the icon-left+text+counter-right content variant of both button.primary and button.secondary). A general-purpose standalone counter/badge (for nav items, list rows, etc. on a plain page surface) is deferred until a real use case for it shows up — not built speculatively.",
-      "radius": { "$type": "dimension", "$value": "{radius.full}" },
+      "radius": {
+        "$type": "dimension",
+        "$value": "{radius.full}"
+      },
       "size": {
         "sm": {
-          "height": { "$type": "dimension", "$value": "{dim.4}" },
-          "minWidth": { "$type": "dimension", "$value": "{dim.4}" },
-          "paddingX": { "$type": "dimension", "$value": "{dim.1}" },
+          "height": {
+            "$type": "dimension",
+            "$value": "{dim.4}"
+          },
+          "minWidth": {
+            "$type": "dimension",
+            "$value": "{dim.4}"
+          },
+          "paddingX": {
+            "$type": "dimension",
+            "$value": "{dim.1}"
+          },
           "label": {
             "$type": "typography",
             "$value": {
@@ -20,9 +32,18 @@
           }
         },
         "base": {
-          "height": { "$type": "dimension", "$value": "{dim.5}" },
-          "minWidth": { "$type": "dimension", "$value": "{dim.5}" },
-          "paddingX": { "$type": "dimension", "$value": "{dim.1_5}" },
+          "height": {
+            "$type": "dimension",
+            "$value": "{dim.5}"
+          },
+          "minWidth": {
+            "$type": "dimension",
+            "$value": "{dim.5}"
+          },
+          "paddingX": {
+            "$type": "dimension",
+            "$value": "{dim.1_5}"
+          },
           "label": {
             "$type": "typography",
             "$value": {
@@ -35,9 +56,18 @@
           }
         },
         "lg": {
-          "height": { "$type": "dimension", "$value": "{dim.6}" },
-          "minWidth": { "$type": "dimension", "$value": "{dim.6}" },
-          "paddingX": { "$type": "dimension", "$value": "{dim.1_5}" },
+          "height": {
+            "$type": "dimension",
+            "$value": "{dim.6}"
+          },
+          "minWidth": {
+            "$type": "dimension",
+            "$value": "{dim.6}"
+          },
+          "paddingX": {
+            "$type": "dimension",
+            "$value": "{dim.1_5}"
+          },
           "label": {
             "$type": "typography",
             "$value": {
@@ -56,13 +86,25 @@
         "state": {
           "inactive": {
             "$description": "Seen/zero count — reads as quiet, close to the button's own fill so it doesn't compete for attention. Deliberately fill.primaryActive, NOT fill.primaryHover, so it stays visible instead of disappearing when the parent button is hovered.",
-            "bg": { "$type": "color", "$value": "{fill.primaryActive}" },
-            "label": { "$type": "color", "$value": "{text.onFill}" }
+            "bg": {
+              "$type": "color",
+              "$value": "{fill.primaryActive}"
+            },
+            "label": {
+              "$type": "color",
+              "$value": "{text.onFill}"
+            }
           },
           "active": {
             "$description": "Has a new/meaningful count — inverted to white so it pops off the button's blue fill instead of blending into it.",
-            "bg": { "$type": "color", "$value": "{color.white}" },
-            "label": { "$type": "color", "$value": "{text.primary}" }
+            "bg": {
+              "$type": "color",
+              "$value": "{color.white}"
+            },
+            "label": {
+              "$type": "color",
+              "$value": "{text.primary}"
+            }
           }
         }
       },
@@ -71,13 +113,25 @@
         "state": {
           "inactive": {
             "$description": "Mirrors onPrimary's logic (one step past the button's own hover shade, so it survives hover without disappearing), but in the gray family: fill.neutralActive, not fill.neutralHover. Dark label — the gray family's light steps need dark text, not white.",
-            "bg": { "$type": "color", "$value": "{fill.neutralActive}" },
-            "label": { "$type": "color", "$value": "{text.default}" }
+            "bg": {
+              "$type": "color",
+              "$value": "{fill.neutralActiveStrong}"
+            },
+            "label": {
+              "$type": "color",
+              "$value": "{text.default}"
+            }
           },
           "active": {
             "$description": "Inverts to the brand blue (fill.primary), not white — gray.100 is already near-white, so a white pill would have almost no contrast against it. Blue pops against gray the same way white pops against blue on onPrimary.",
-            "bg": { "$type": "color", "$value": "{fill.primary}" },
-            "label": { "$type": "color", "$value": "{text.onFill}" }
+            "bg": {
+              "$type": "color",
+              "$value": "{fill.primary}"
+            },
+            "label": {
+              "$type": "color",
+              "$value": "{text.onFill}"
+            }
           }
         }
       }

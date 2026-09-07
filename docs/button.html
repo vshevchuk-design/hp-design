@@ -78,16 +78,18 @@
   --tok-fill-primary-active: #01519c;
   --tok-text-on-fill: #ffffff;
   --tok-icon-on-fill: #ffffff;
-  --tok-fill-neutral: #e3e8ef;
-  --tok-fill-neutral-hover: #cad2dc;
-  --tok-fill-neutral-active: #aab5c4;
-  --tok-text-default: #101924;
-  --tok-icon-default: #445467;
-  --tok-text-secondary: #596b80;
-  --tok-icon-secondary: #718297;
-  --tok-fill-disabled: #e3e8ef;
-  --tok-text-disabled: #aab5c4;
-  --tok-icon-disabled: #aab5c4;
+  --tok-fill-neutral: #e6e8eb;
+  --tok-fill-neutral-hover: #e6e8eb;
+  --tok-fill-neutral-active: #cdd1d6;
+  --tok-fill-neutral-hover-strong: #cdd1d6;
+  --tok-fill-neutral-active-strong: #adb5be;
+  --tok-text-default: #121921;
+  --tok-icon-default: #485462;
+  --tok-text-secondary: #5d6a7a;
+  --tok-icon-secondary: #758191;
+  --tok-fill-disabled: #e6e8eb;
+  --tok-text-disabled: #adb5be;
+  --tok-icon-disabled: #adb5be;
   --tok-border-focus: #0468c4;
   --tok-color-white: #ffffff;
   --tok-text-primary: #0468c4;
@@ -151,8 +153,8 @@
 
 .btn--secondary { background: var(--tok-fill-neutral); color: var(--tok-text-default); }
 .btn--secondary .btn__icon { color: var(--tok-icon-default); }
-.btn--secondary:not(:disabled):hover { background: var(--tok-fill-neutral-hover); }
-.btn--secondary:not(:disabled):active { background: var(--tok-fill-neutral-active); }
+.btn--secondary:not(:disabled):hover { background: var(--tok-fill-neutral-hover-strong); }
+.btn--secondary:not(:disabled):active { background: var(--tok-fill-neutral-active-strong); }
 .btn--secondary:not(:disabled):focus-visible { outline: none; box-shadow: 0 0 0 2px var(--bg-card) /* substitute your own surface color */, 0 0 0 calc(2px + 4px) var(--tok-border-focus); }
 .btn--secondary:disabled { background: var(--tok-fill-disabled); color: var(--tok-text-disabled); cursor: not-allowed; }
 .btn--secondary:disabled .btn__icon { color: var(--tok-icon-disabled); }
@@ -301,16 +303,18 @@
   --tok-fill-primary-active: #01519c;
   --tok-text-on-fill: #ffffff;
   --tok-icon-on-fill: #ffffff;
-  --tok-fill-neutral: #e3e8ef;
-  --tok-fill-neutral-hover: #cad2dc;
-  --tok-fill-neutral-active: #aab5c4;
-  --tok-text-default: #101924;
-  --tok-icon-default: #445467;
-  --tok-text-secondary: #596b80;
-  --tok-icon-secondary: #718297;
-  --tok-fill-disabled: #e3e8ef;
-  --tok-text-disabled: #aab5c4;
-  --tok-icon-disabled: #aab5c4;
+  --tok-fill-neutral: #e6e8eb;
+  --tok-fill-neutral-hover: #e6e8eb;
+  --tok-fill-neutral-active: #cdd1d6;
+  --tok-fill-neutral-hover-strong: #cdd1d6;
+  --tok-fill-neutral-active-strong: #adb5be;
+  --tok-text-default: #121921;
+  --tok-icon-default: #485462;
+  --tok-text-secondary: #5d6a7a;
+  --tok-icon-secondary: #758191;
+  --tok-fill-disabled: #e6e8eb;
+  --tok-text-disabled: #adb5be;
+  --tok-icon-disabled: #adb5be;
   --tok-border-focus: #0468c4;
   --tok-color-white: #ffffff;
   --tok-text-primary: #0468c4;
@@ -374,8 +378,8 @@
 
 .btn--secondary { background: var(--tok-fill-neutral); color: var(--tok-text-default); }
 .btn--secondary .btn__icon { color: var(--tok-icon-default); }
-.btn--secondary:not(:disabled):hover { background: var(--tok-fill-neutral-hover); }
-.btn--secondary:not(:disabled):active { background: var(--tok-fill-neutral-active); }
+.btn--secondary:not(:disabled):hover { background: var(--tok-fill-neutral-hover-strong); }
+.btn--secondary:not(:disabled):active { background: var(--tok-fill-neutral-active-strong); }
 .btn--secondary:not(:disabled):focus-visible { outline: none; box-shadow: 0 0 0 2px var(--bg-card) /* substitute your own surface color */, 0 0 0 calc(2px + 4px) var(--tok-border-focus); }
 .btn--secondary:disabled { background: var(--tok-fill-disabled); color: var(--tok-text-disabled); cursor: not-allowed; }
 .btn--secondary:disabled .btn__icon { color: var(--tok-icon-disabled); }
@@ -675,20 +679,20 @@
 
       <div class="story">
         <h3>hover</h3>
-        <div class="story-preview"><button class="btn btn--secondary btn--base" style="background:var(--tok-fill-neutral-hover)"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+        <div class="story-preview"><button class="btn btn--secondary btn--base" style="background:var(--tok-fill-neutral-hover-strong)"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
     Label</button></div>
         <pre class="code"><code>.btn--secondary:hover {
-  background: var(--tok-fill-neutral-hover);
+  background: var(--tok-fill-neutral-hover-strong);
 }</code></pre>
         
       </div>
 
       <div class="story">
         <h3>pressed</h3>
-        <div class="story-preview"><button class="btn btn--secondary btn--base" style="background:var(--tok-fill-neutral-active)"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+        <div class="story-preview"><button class="btn btn--secondary btn--base" style="background:var(--tok-fill-neutral-active-strong)"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
     Label</button></div>
         <pre class="code"><code>.btn--secondary:active {
-  background: var(--tok-fill-neutral-active);
+  background: var(--tok-fill-neutral-active-strong);
 }</code></pre>
         
       </div>

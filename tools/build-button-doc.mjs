@@ -68,7 +68,7 @@ const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, 
 // as the :root block below, via cssVarName, so they can't drift apart.)
 const colorPaths = [
   "fill.primary", "fill.primaryHover", "fill.primaryActive", "text.onFill", "icon.onFill",
-  "fill.neutral", "fill.neutralHover", "fill.neutralActive", "text.default", "icon.default",
+  "fill.neutral", "fill.neutralHover", "fill.neutralActive", "fill.neutralHoverStrong", "fill.neutralActiveStrong", "text.default", "icon.default",
   "text.secondary", "icon.secondary",
   "fill.disabled", "text.disabled", "icon.disabled",
   "border.focus", "color.white", "text.primary",
@@ -136,11 +136,24 @@ const iconArrow = fs.readFileSync(path.join(root, "assets/icons/material-filled/
 // ---- variant color mapping ----
 // fill: null means "no fill token — literal transparent", used by ghost (no
 // background at rest, and disabled shouldn't suddenly gain one it never had).
+// Roles are READ from button.tokens.json, never retyped here — the locked-in
+// "resolve real values, never retype a color-role name by hand" rule applies to
+// a component's own page too. It bit exactly this file on 2026-09-07: when
+// secondary's hover moved to the new fill.neutralHoverStrong tier, a hardcoded
+// "fill.neutralHover" would have kept painting the old role, leaving secondary
+// with a hover identical to its resting fill (both gray.100) and no build error.
+const roleOf = (node) => (node ? node.$value.replace(/[{}]/g, "") : null);
 const variants = {
-  primary: { label: "Primary", fill: "fill.primary", fillHover: "fill.primaryHover", fillActive: "fill.primaryActive", text: "text.onFill", icon: "icon.onFill" },
-  secondary: { label: "Secondary", fill: "fill.neutral", fillHover: "fill.neutralHover", fillActive: "fill.neutralActive", text: "text.default", icon: "icon.default" },
-  ghost: { label: "Ghost", fill: null, fillHover: "fill.neutralHover", fillActive: "fill.neutralActive", text: "text.secondary", icon: "icon.secondary" },
+  primary: { label: "Primary", fill: roleOf(button.primary.state.default.fill), fillHover: roleOf(button.primary.state.hover.fill), fillActive: roleOf(button.primary.state.pressed.fill), text: roleOf(button.primary.state.default.label), icon: roleOf(button.primary.state.default.icon) },
+  secondary: { label: "Secondary", fill: roleOf(button.secondary.state.default.fill), fillHover: roleOf(button.secondary.state.hover.fill), fillActive: roleOf(button.secondary.state.pressed.fill), text: roleOf(button.secondary.state.default.label), icon: roleOf(button.secondary.state.default.icon) },
+  ghost: { label: "Ghost", fill: null, fillHover: roleOf(button.ghost.state.hover.fill), fillActive: roleOf(button.ghost.state.pressed.fill), text: roleOf(button.ghost.state.default.label), icon: roleOf(button.ghost.state.default.icon) },
 };
+// Whatever roles the token file names must exist as emitted CSS vars.
+for (const v of Object.values(variants)) {
+  for (const role of [v.fill, v.fillHover, v.fillActive, v.text, v.icon]) {
+    if (role && !colorPaths.includes(role)) throw new Error(`button.tokens.json references ${role}, missing from colorPaths`);
+  }
+}
 
 function variantCss(key) {
   const v = variants[key];

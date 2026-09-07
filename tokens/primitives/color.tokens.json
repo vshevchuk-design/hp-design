@@ -3,176 +3,176 @@
     "gray": {
       "25": {
         "$type": "color",
-        "$value": "#f8fafd",
+        "$value": "#f9fafb",
         "$extensions": {
           "hp.design/oklch": {
             "l": 0.985,
-            "c": 0.004,
+            "c": 0.002,
             "h": 254
           },
           "hp.design/contrast": {
             "onWhite": 1.05,
-            "onInk": 18.79
+            "onInk": 18.8
           }
         }
       },
       "50": {
         "$type": "color",
-        "$value": "#f2f5f9",
+        "$value": "#f4f5f7",
         "$extensions": {
           "hp.design/oklch": {
             "l": 0.97,
-            "c": 0.006,
+            "c": 0.003,
             "h": 254
           },
           "hp.design/contrast": {
             "onWhite": 1.09,
-            "onInk": 17.96
+            "onInk": 18.01
           }
         }
       },
       "100": {
         "$type": "color",
-        "$value": "#e3e8ef",
+        "$value": "#e6e8eb",
         "$extensions": {
           "hp.design/oklch": {
             "l": 0.93,
-            "c": 0.01,
+            "c": 0.005,
             "h": 254
           },
           "hp.design/contrast": {
             "onWhite": 1.23,
-            "onInk": 15.95
+            "onInk": 16
           }
         }
       },
       "200": {
         "$type": "color",
-        "$value": "#cad2dc",
+        "$value": "#cdd1d6",
         "$extensions": {
           "hp.design/oklch": {
             "l": 0.86,
-            "c": 0.016,
+            "c": 0.008,
             "h": 254
           },
           "hp.design/contrast": {
             "onWhite": 1.53,
-            "onInk": 12.88
+            "onInk": 12.8
           }
         }
       },
       "300": {
         "$type": "color",
-        "$value": "#aab5c4",
+        "$value": "#adb5be",
         "$extensions": {
           "hp.design/oklch": {
             "l": 0.77,
-            "c": 0.024,
+            "c": 0.016,
             "h": 254
           },
           "hp.design/contrast": {
-            "onWhite": 2.08,
-            "onInk": 9.46
+            "onWhite": 2.07,
+            "onInk": 9.48
           }
         }
       },
       "400": {
         "$type": "color",
-        "$value": "#8b9aac",
+        "$value": "#8e99a7",
         "$extensions": {
           "hp.design/oklch": {
             "l": 0.68,
-            "c": 0.032,
+            "c": 0.024,
             "h": 254
           },
           "hp.design/contrast": {
-            "onWhite": 2.87,
-            "onInk": 6.84
+            "onWhite": 2.89,
+            "onInk": 6.8
           }
         }
       },
       "500": {
         "$type": "color",
-        "$value": "#718297",
+        "$value": "#758191",
         "$extensions": {
           "hp.design/oklch": {
             "l": 0.6,
-            "c": 0.038,
+            "c": 0.028,
             "h": 254
           },
           "hp.design/contrast": {
-            "onWhite": 3.93,
-            "onInk": 5
+            "onWhite": 3.96,
+            "onInk": 4.96
           }
         }
       },
       "600": {
         "$type": "color",
-        "$value": "#596b80",
+        "$value": "#5d6a7a",
         "$extensions": {
           "hp.design/oklch": {
             "l": 0.52,
-            "c": 0.04,
+            "c": 0.03,
             "h": 254
           },
           "hp.design/contrast": {
-            "onWhite": 5.47,
-            "onInk": 3.59
+            "onWhite": 5.51,
+            "onInk": 3.56
           }
         }
       },
       "700": {
         "$type": "color",
-        "$value": "#445467",
+        "$value": "#485462",
         "$extensions": {
           "hp.design/oklch": {
             "l": 0.44,
-            "c": 0.038,
+            "c": 0.028,
             "h": 254
           },
           "hp.design/contrast": {
-            "onWhite": 7.75,
-            "onInk": 2.53
+            "onWhite": 7.72,
+            "onInk": 2.54
           }
         }
       },
       "800": {
         "$type": "color",
-        "$value": "#313e4f",
+        "$value": "#343e4b",
         "$extensions": {
           "hp.design/oklch": {
             "l": 0.36,
-            "c": 0.034,
+            "c": 0.026,
             "h": 254
           },
           "hp.design/contrast": {
-            "onWhite": 10.87,
+            "onWhite": 10.84,
             "onInk": 1.81
           }
         }
       },
       "900": {
         "$type": "color",
-        "$value": "#212c3a",
+        "$value": "#242c36",
         "$extensions": {
           "hp.design/oklch": {
             "l": 0.29,
-            "c": 0.03,
+            "c": 0.022,
             "h": 254
           },
           "hp.design/contrast": {
-            "onWhite": 14.13,
+            "onWhite": 14.11,
             "onInk": 1.39
           }
         }
       },
       "950": {
         "$type": "color",
-        "$value": "#101924",
+        "$value": "#121921",
         "$extensions": {
           "hp.design/oklch": {
             "l": 0.21,
-            "c": 0.026,
+            "c": 0.02,
             "h": 254
           },
           "hp.design/contrast": {
@@ -181,7 +181,7 @@
           }
         }
       },
-      "$description": "Cool neutral — the brand blue's own hue (254) carried at a small fraction of its chroma, peaking at 0.040 mid-ramp and tapering at both ends. Regenerate with tools/gen-gray-ramp.mjs, never by hand. This reverses the original 'truly achromatic (chroma 0), deliberately not tinted toward blue' call, on explicit user request 2026-09-07: at c=0 the neutrals read flatly, dead gray in product surfaces. Lightness was left untouched step-for-step, so every contrast guarantee the palette documents still holds (the generator asserts 500 ≥ 3:1 and 600 ≥ 4.5:1 on white before writing)."
+      "$description": "Cool neutral — the brand blue's own hue (254) carried at a small fraction of its chroma, peaking at 0.030 mid-ramp and tapering to 0.002 at the pale end. Regenerate with tools/gen-gray-ramp.mjs, never by hand. This reverses the original 'truly achromatic (chroma 0), deliberately not tinted toward blue' call, on explicit user request 2026-09-07: at c=0 the neutrals read flatly, dead gray in product surfaces. Lightness was left untouched step-for-step, so every contrast guarantee the palette documents still holds (the generator asserts 500 ≥ 3:1 and 600 ≥ 4.5:1 on white before writing)."
     },
     "blue": {
       "25": {

@@ -9,30 +9,31 @@
 :root {
   --tok-surface-page: #ffffff;
   --tok-surface-default: #ffffff;
-  --tok-surface-sunken: #e3e8ef;
-  --tok-surface-dim: #f2f5f9;
-  --tok-border-default: #cad2dc;
-  --tok-border-strong: #aab5c4;
+  --tok-surface-sunken: #e6e8eb;
+  --tok-surface-dim: #f4f5f7;
+  --tok-border-default: #cdd1d6;
+  --tok-border-strong: #adb5be;
   --tok-border-focus: #0468c4;
-  --tok-text-default: #101924;
-  --tok-text-secondary: #596b80;
-  --tok-text-muted: #718297;
+  --tok-text-default: #121921;
+  --tok-text-secondary: #5d6a7a;
+  --tok-text-muted: #758191;
   --tok-text-primary: #0468c4;
   --tok-text-on-fill: #ffffff;
-  --tok-icon-default: #445467;
-  --tok-icon-secondary: #718297;
-  --tok-icon-muted: #8b9aac;
+  --tok-icon-default: #485462;
+  --tok-icon-secondary: #758191;
+  --tok-icon-muted: #8e99a7;
   --tok-icon-on-fill: #ffffff;
   --tok-icon-primary: #077fec;
   --tok-icon-warning: #b26f07;
   --tok-fill-primary: #077fec;
   --tok-fill-primary-hover: #0468c4;
   --tok-fill-primary-active: #01519c;
-  --tok-fill-neutral: #e3e8ef;
-  --tok-fill-neutral-hover: #cad2dc;
-  --tok-fill-neutral-active: #aab5c4;
+  --tok-fill-neutral: #e6e8eb;
+  --tok-fill-neutral-hover: #e6e8eb;
+  --tok-fill-neutral-active: #cdd1d6;
+  --tok-fill-neutral-active-strong: #adb5be;
   --tok-bg-primary: #d9eaff;
-  --tok-bg-neutral: #e3e8ef;
+  --tok-bg-neutral: #e6e8eb;
   --tok-bg-warning: #ffe2c5;
   --tok-text-warning: #935a03;
   --tok-bg-danger: #ffdfde;
@@ -43,10 +44,10 @@
   --tok-surface-overlay: rgba(21, 25, 30, 0.5);
   --tok-fill-danger: #de394b;
   --tok-fill-danger-hover: #c11435;
-  --tok-fill-disabled: #e3e8ef;
-  --tok-text-disabled: #aab5c4;
-  --tok-icon-disabled: #aab5c4;
-  --tok-surface-disabled: #e3e8ef;
+  --tok-fill-disabled: #e6e8eb;
+  --tok-text-disabled: #adb5be;
+  --tok-icon-disabled: #adb5be;
+  --tok-surface-disabled: #e6e8eb;
   --tok-bg-ai: #e8e4ff;
   --tok-text-ai: #743ed8;
   --tok-icon-ai: #8a5af4;
@@ -77,7 +78,7 @@
 .counter { display: inline-flex; align-items: center; justify-content: center; font-variant-numeric: tabular-nums; font-family: var(--tok-family-sans); font-weight: 700; border-radius: 999px; }
 .counter[hidden] { display: none; }
 .counter--sm { height: 16px; min-width: 16px; padding: 0 4px; font-size: 10px; line-height: 1; }
-.counter--onNeutral.counter--inactive { background: var(--tok-fill-neutral-active); color: var(--tok-text-default); }
+.counter--onNeutral.counter--inactive { background: var(--tok-fill-neutral-active-strong); color: var(--tok-text-default); }
 .counter--onNeutral.counter--active { background: var(--tok-fill-primary); color: var(--tok-text-on-fill); }
 
 .chip { box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 32px; padding: 0 12px; border-radius: 999px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); color: var(--tok-text-default); cursor: pointer; white-space: nowrap; flex-shrink: 0; font-family: var(--tok-family-sans); font-weight: 600; font-size: 14px; line-height: 1; }

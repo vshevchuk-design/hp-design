@@ -836,3 +836,34 @@ User: "мене харить сірий колір дуже (він прям с�
 All 46 pages rebuilt; checked Springboard, the staff MC console and `colors.html` live — no literal old grays left anywhere (`grep` for `#808080`/`#696969`/`#e8e8e8`/`#f5f5f5` in the generated output returns 0).
 
 **Left alone, flagged:** the docs *chrome* (`--bg-page: #f7f7f5`, `--border: #e4e3df`) is hand-written in each builder's head template and is a **warm** gray, so docs furniture and token content are now two neutral temperatures on one page. It's not tokenized; aligning it is a 46-file chrome edit, offered to the user rather than done silently.
+
+## 2026-09-07 (cont. 5) — Two rounds in one: pull the blue back, and split the neutral-hover token
+
+Two separate complaints, deliberately kept separate — the second one turned out not to be about colour temperature at all.
+
+### 1. "тепер занадто сині" — the arc was too strong
+
+Built a side-by-side sheet (five ramps, one identical mini-UI each: borders, text, chips, field fill, empty pill) instead of guessing again, and dropped the option the user themself suggested after seeing it:
+- **B (raise lightness at the pale end, keep chroma)** — their idea, rendered and rejected *on evidence*: it doesn't remove the blue, it just makes surfaces paler, and it drops border 200's contrast on white from 1.53 to 1.41 (the hairline visibly weakens). Lightness controls how dark a neutral is; **chroma** is the knob for how blue it looks.
+- **Shipped D**: pale end halved (25–300 → 0.002/0.003/0.005/0.008/0.016), mid/dark scaled to ~75% (peak 0.040 → 0.030). Rationale: the pale steps are what actually carry the tint on a screen made of surfaces and borders, so they get cut hardest; the dark end keeps just enough temperature that text isn't dead gray again. Guarantees re-asserted by the generator: 500 = 3.96:1, 600 = 5.51:1 on white.
+
+Answered the "чи для всієї палітри чи тіки для сірого" question: **gray only.** The other ramps' 25–200 steps are not surfaces — they're `bg.*` and `tag.*` *tints*, i.e. Badge/Chip fills and the Springboard icon squares, where the colour is the entire point. Lightening those would flatten the one place colour is doing a job.
+
+### 2. "піздєц який сірий колір для ховера" — and it wasn't the tint, it was a token doing two jobs
+
+Screenshot showed a hovered console row as a heavy solid band. Traced it: the staff table reuses ThreadListItem's row recipe, whose `hoverBg` is `fill.neutralHover` = **gray.200**. That was wrong for a full-width row regardless of temperature (it was `#d1d1d1` before today) — the cool tint just made it obvious. Root cause: **one token served two different resting contexts.**
+- transparent/white rest (ghost buttons, rows, menu/listbox options, tabs underline, every icon-button) → needs a *wash*
+- gray.100 rest (Button secondary's own fill, Tabs' segmented track) → needs a genuinely *darker* step
+
+Split into two tiers: `fill.neutralHover/Active` retargeted to **gray.100/200** (the wash — 14 of 15 consumers) and new `fill.neutralHoverStrong/ActiveStrong` = **gray.200/300** for the three that rest on gray.100 (Button secondary, Tabs segmented, Counter `onNeutral`'s inactive chip — that last one isn't a hover at all, it's a fill that has to stay legible against a gray.100 parent). Selection rule written into both `$description`s and status.md: *ask what's under the control at rest.*
+
+### The tooling this exposed — `tools/check-css-vars.mjs`
+
+Repointing a component token at a **new** semantic role is silently destructive here: builders emit only the vars listed in their own `colorPaths`, so `var(--tok-fill-neutral-hover-strong)` resolved to nothing — no build error, no console warning, the element just loses its background. Wrote a checker that fails if any generated page uses a `--tok-*` it doesn't define. **First run found the live breakage in 5 pages plus two latent bugs that had been shipped for weeks:**
+- `chip.html` — Counter `onPrimary` inactive chip referenced `--tok-fill-primary-active`, never defined → no background.
+- `badge.html` — a demo caption referenced `--tok-text-secondary`, never defined → no colour (the var set is derived by walking Badge's own role/color nodes, and that caption isn't one of them).
+It also flagged `--tok-avatar-` in the staff app, which is a false positive: prototype JS builds the name at runtime (`'var(--tok-avatar-' + hue + '-bg)'`). The checker now treats a trailing `-` as a dynamic prefix and asserts the family exists instead of the literal.
+
+And it exposed a real convention violation in `build-button-doc.mjs`: the variant→role map was **hardcoded** (`fillHover: "fill.neutralHover"`) instead of read from `button.tokens.json`, so Button's own page would have kept painting the old role while the token file said otherwise — secondary would have hovered to exactly its resting fill. Now every role is read off the token file, and the builder throws if a role the token file names isn't in `colorPaths`. Same "resolve real values, never retype a role name" rule that has now caught bugs three separate times — this time on a component's own page.
+
+Verified: 50 pages pass the var checker; staff console row hover is now the quiet `#e6e8eb` wash; Button secondary still steps rest `#e6e8eb` → hover `#cdd1d6` → active `#adb5be`.

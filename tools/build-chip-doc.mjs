@@ -71,7 +71,7 @@ const colorPaths = [
   "fill.primary", "fill.primaryHover", "fill.disabled", "text.onFill", "icon.onFill",
   "bg.primary", "text.primary", "icon.primary",
   "text.disabled", "icon.disabled",
-  "icon.secondary", "fill.neutralHover", "fill.neutralActive",
+  "icon.secondary", "fill.neutralHover", "fill.neutralActive", "fill.neutralActiveStrong", "fill.primaryActive",
 ];
 const colorValue = Object.fromEntries(colorPaths.map((p) => [p, resolve(p)]));
 const fontSans = resolve("family.sans");

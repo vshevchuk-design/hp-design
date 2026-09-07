@@ -69,24 +69,26 @@
 
   :root {
   --tok-surface-default: #ffffff;
-  --tok-border-default: #cad2dc;
-  --tok-border-strong: #aab5c4;
+  --tok-border-default: #cdd1d6;
+  --tok-border-strong: #adb5be;
   --tok-border-focus: #0468c4;
-  --tok-text-default: #101924;
-  --tok-icon-default: #445467;
+  --tok-text-default: #121921;
+  --tok-icon-default: #485462;
   --tok-fill-primary: #077fec;
   --tok-fill-primary-hover: #0468c4;
-  --tok-fill-disabled: #e3e8ef;
+  --tok-fill-disabled: #e6e8eb;
   --tok-text-on-fill: #ffffff;
   --tok-icon-on-fill: #ffffff;
   --tok-bg-primary: #d9eaff;
   --tok-text-primary: #0468c4;
   --tok-icon-primary: #077fec;
-  --tok-text-disabled: #aab5c4;
-  --tok-icon-disabled: #aab5c4;
-  --tok-icon-secondary: #718297;
-  --tok-fill-neutral-hover: #cad2dc;
-  --tok-fill-neutral-active: #aab5c4;
+  --tok-text-disabled: #adb5be;
+  --tok-icon-disabled: #adb5be;
+  --tok-icon-secondary: #758191;
+  --tok-fill-neutral-hover: #e6e8eb;
+  --tok-fill-neutral-active: #cdd1d6;
+  --tok-fill-neutral-active-strong: #adb5be;
+  --tok-fill-primary-active: #01519c;
   --tok-family-sans: 'Sora', sans-serif;
 }
 
@@ -142,7 +144,7 @@
 .counter--base { height: 20px; min-width: 20px; padding: 0 6px; font-weight: 700; font-size: 12px; line-height: 1; }
 .counter--lg { height: 24px; min-width: 24px; padding: 0 6px; font-weight: 700; font-size: 14px; line-height: 1; }
 .counter--onPrimary.counter--inactive { background: var(--tok-fill-primary-active); color: var(--tok-text-on-fill); }
-.counter--onNeutral.counter--inactive { background: var(--tok-fill-neutral-active); color: var(--tok-text-default); }
+.counter--onNeutral.counter--inactive { background: var(--tok-fill-neutral-active-strong); color: var(--tok-text-default); }
 </style>
 </head>
 <body>
@@ -259,24 +261,26 @@
     <h2 class="big-section">CSS</h2>
     <pre class="code"><code>:root {
   --tok-surface-default: #ffffff;
-  --tok-border-default: #cad2dc;
-  --tok-border-strong: #aab5c4;
+  --tok-border-default: #cdd1d6;
+  --tok-border-strong: #adb5be;
   --tok-border-focus: #0468c4;
-  --tok-text-default: #101924;
-  --tok-icon-default: #445467;
+  --tok-text-default: #121921;
+  --tok-icon-default: #485462;
   --tok-fill-primary: #077fec;
   --tok-fill-primary-hover: #0468c4;
-  --tok-fill-disabled: #e3e8ef;
+  --tok-fill-disabled: #e6e8eb;
   --tok-text-on-fill: #ffffff;
   --tok-icon-on-fill: #ffffff;
   --tok-bg-primary: #d9eaff;
   --tok-text-primary: #0468c4;
   --tok-icon-primary: #077fec;
-  --tok-text-disabled: #aab5c4;
-  --tok-icon-disabled: #aab5c4;
-  --tok-icon-secondary: #718297;
-  --tok-fill-neutral-hover: #cad2dc;
-  --tok-fill-neutral-active: #aab5c4;
+  --tok-text-disabled: #adb5be;
+  --tok-icon-disabled: #adb5be;
+  --tok-icon-secondary: #758191;
+  --tok-fill-neutral-hover: #e6e8eb;
+  --tok-fill-neutral-active: #cdd1d6;
+  --tok-fill-neutral-active-strong: #adb5be;
+  --tok-fill-primary-active: #01519c;
   --tok-family-sans: 'Sora', sans-serif;
 }
 
@@ -332,7 +336,7 @@
 .counter--base { height: 20px; min-width: 20px; padding: 0 6px; font-weight: 700; font-size: 12px; line-height: 1; }
 .counter--lg { height: 24px; min-width: 24px; padding: 0 6px; font-weight: 700; font-size: 14px; line-height: 1; }
 .counter--onPrimary.counter--inactive { background: var(--tok-fill-primary-active); color: var(--tok-text-on-fill); }
-.counter--onNeutral.counter--inactive { background: var(--tok-fill-neutral-active); color: var(--tok-text-default); }</code></pre>
+.counter--onNeutral.counter--inactive { background: var(--tok-fill-neutral-active-strong); color: var(--tok-text-default); }</code></pre>
 
     <h2 class="big-section">JS</h2>
     <p class="section-desc">The only script this page needs — a click listener flipping <code class="tok">aria-pressed</code>, which the CSS above already keys off of. Every toggle chip on this page uses it, not a forced screenshot state.</p>
