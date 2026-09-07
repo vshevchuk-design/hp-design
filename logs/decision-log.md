@@ -984,3 +984,16 @@ The user's reasoning was right and worth quoting as the rule: hover must not be 
 New role **`surface.dimHover` = gray.100**: the field visibly recesses one step under the cursor, staying entirely neutral. Applied to Input / Select / Search / Composer field / the compose dialog's fields / Pagination's reused Select. Same value as `surface.sunken`, kept as a separate role on purpose — `sunken` describes what a surface *is*, `dimHover` describes what a transition *does*, and collapsing them would make the next retune of one silently move the other.
 
 All three checkers green: 50 pages with every var defined, 50 with no dead hover, 3 prototypes on the grid.
+
+## 2026-09-07 (cont. 11) — Springboard pass: X, violet, spacing, bigger tiles, RSS hover, View All
+
+Six notes, all applied. Two produced findings beyond the literal request.
+
+- **Demo Twitter Feed → Demo X Feed** (header + `aria-label`). Kept the `campaign` megaphone: it reads as "social/announcements", and there is no X glyph in the Material set.
+- **Class Search → violet.** Worth flagging: violet is the hue behind the `ai` semantic role, which is exactly why it was skipped when the tile hues were first assigned. Using `tag.violet` here is legal (decorative tag palette, not the role) and it was an explicit call — but if AI features ever land on this screen, the two violets will sit on the same page.
+- **Spacing between the tile block and the feeds**: `.sb__main`'s gap (its only gap) goes to `dim.6` on mobile and **`dim.8` (32px)** from 768. Above Grid's own `lg` step on purpose — that step governs spacing *inside* a block, and these are two distinct blocks.
+- **Bigger tiles, and the border bit again.** Bumping padding to `dim.5` produced a **90px** tile: 20 + 48 + 20 + 2px of border. Exactly the trap from the topbar, in a place I'd just written the rule for. Fixed the same way — **declare the height**: 64px (`dim.16`) for the single-line 768+ shape, **88px** at 1024+. 88 is a composition layout literal (the scale jumps 80 → 96, and 96 read as too much for "трохи більше"), the same call the MC prototypes' 560px modal already documents. **The mobile vertical shape stays content-driven on purpose** — its label wraps at narrow widths and a fixed height would clip it. So the honest line is: *single-line, fixed-purpose bands declare their height; content-driven boxes can't and don't.* Also note `check-grid.mjs` can't catch this class — it reads declared values, and 90 was a computed sum; the browser check is what caught it.
+- **RSS items had no hover because they weren't interactive** — `<article>` with a nested "Read Article" link, while the ICS rows are `<a>`. Made each item one `<a>` and turned "Read Article" into a `<span>` inside it, rather than adding hover to a non-interactive block or nesting a link in a link (Attachment's done-shape rule: the whole row is the one interactive element). Row now hovers/actives/focuses like an ICS row, and the inner affordance underlines with it via `.sb-article:hover .sb-link`. Verified: `tagName === "A"`, zero nested interactive children.
+- **View All → Button secondary sm**, resolved from `button.tokens.json`, so it inherits the same hover/pressed/focus as the settings action instead of getting a second look-alike recipe.
+
+All three checkers green; tile 88, topbar 64, section gap 32 — all ÷4.

@@ -105,8 +105,15 @@ const btnBase = {
   height: px(resolve(button.secondary.size.base.height.$value)),
   iconSize: px(resolve(button.secondary.size.base.iconSize.$value)),
 };
+const btnSm = {
+  height: px(resolve(button.secondary.size.sm.height.$value)),
+  paddingX: px(resolve(button.secondary.size.sm.paddingX.$value)),
+  gap: px(resolve(button.secondary.size.sm.gap.$value)),
+  label: resolveToken(button.secondary.size.sm.label),
+};
 const btnSecondary = {
   fill: refPath(button.secondary.state.default.fill.$value),
+  label: refPath(button.secondary.state.default.label.$value),
   icon: refPath(button.secondary.state.default.icon.$value),
   hoverFill: refPath(button.secondary.state.hover.fill.$value),
   pressedFill: refPath(button.secondary.state.pressed.fill.$value),
@@ -154,7 +161,7 @@ const TILES = [
   { label: "SIS Login", icon: "account_balance", hue: "blue" },
   { label: "Course Catalog", icon: "menu_book", hue: "green" },
   { label: "Browse Classes", icon: "explore", hue: "teal" },
-  { label: "Class Search", icon: "search", hue: "blue" },
+  { label: "Class Search", icon: "search", hue: "violet" },
   { label: "Explore Degrees", icon: "school", hue: "magenta" },
   { label: "Campus Map", icon: "map", hue: "amber" },
 ];
@@ -241,9 +248,11 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .sb__logo svg { display: block; height: ${px(resolve("dim.6"))}; width: auto; }
 /* max-width so the six tiles stay a readable block instead of stretching
    across a 27" monitor; centred, the usual app-shell cap. */
-.sb__main { flex: 1; width: 100%; max-width: 1400px; margin: 0 auto; display: flex; flex-direction: column; gap: ${gridGapMd}; padding: ${px(resolve("dim.4"))}; }
+.sb__main { flex: 1; width: 100%; max-width: 1400px; margin: 0 auto; display: flex; flex-direction: column; gap: ${px(resolve("dim.6"))}; padding: ${px(resolve("dim.4"))}; }
 @media (min-width: 768px) {
-  .sb__main { gap: ${gridGapLg}; padding: ${px(resolve("dim.6"))}; }
+  /* dim.8 — the quick links and the feeds are two distinct blocks, so they
+     get a bigger gap than Grid's lg step gives inside either one */
+  .sb__main { gap: ${px(resolve("dim.8"))}; padding: ${px(resolve("dim.6"))}; }
   /* match the content padding so the wordmark lines up with the tiles */
   .sb__topbar { padding: 0 ${px(resolve("dim.6"))}; }
 }
@@ -274,20 +283,30 @@ ${hueVars}
 
 /* A tile is Card's interactive variant on a real <button> — its own
    hover/pressed/focus tokens, verbatim. Mobile-first: the vertical launcher
-   shape, centred. */
+   shape, centred. Height stays content-driven HERE on purpose: a two-word
+   label wraps at narrow widths, and a declared height would clip it. Fixed
+   heights are for the single-line shapes at 768+ (see below). */
 .sb-tile { display: flex; flex-direction: column; align-items: center; text-align: center; gap: ${px(resolve("dim.2"))}; width: 100%; padding: ${cardPadding}; background: ${cv(cardBg)}; border: 1px solid ${cv(cardBorder)}; border-radius: ${cardRadius}; cursor: pointer; font-family: inherit; }
 .sb-tile:hover { background: ${cv(cardIx.hoverBg)}; border-color: ${cv(cardIx.hoverBorder)}; }
 .sb-tile:active { background: ${cv(cardIx.pressedBg)}; border-color: ${cv(cardIx.pressedBorder)}; }
 .sb-tile:focus-visible { outline: ${cardIx.ringWidth} solid ${cv(cardIx.ringColor)}; outline-offset: ${cardIx.ringOffset}; }
 .sb-tile__label { color: ${cv(cardTitleColor)}; ${typoCss(cardTitleType)} }
 /* From 768: the reference's horizontal row. */
+/* From 768 the tile is a single-line row, so its height is DECLARED rather
+   than summed — padding + a 1px border can't land on the 4px grid (dim.3 twice
+   plus the 40px icon plus 2px of border = 66). Same lesson as the topbar.
+   64px here = dim.16, matching the topbar's own height. */
 @media (min-width: 768px) {
-  .sb-tile { flex-direction: row; align-items: center; text-align: left; gap: ${gridGapSm}; padding: ${px(resolve("dim.3"))}; }
+  .sb-tile { flex-direction: row; align-items: center; text-align: left; gap: ${gridGapSm}; height: ${px(resolve("dim.16"))}; padding: 0 ${px(resolve("dim.3"))}; }
 }
 /* From 1024: bigger — a 48px icon square, a 16px label and Card's own dim.4
    padding, so the quick links out-weigh the (now quieter) feed rows. */
+/* Desktop: 88px — bigger, still on the grid, still declared. There is no 88
+   step on the dim scale (it jumps 80 → 96), so this is a composition layout
+   literal, the same call the MC prototypes' 560px modal and textarea heights
+   already document. 96 read as too much for a "трохи більше". */
 @media (min-width: 1024px) {
-  .sb-tile { gap: ${cardPadding}; padding: ${cardPadding} ${px(resolve("dim.5"))}; }
+  .sb-tile { gap: ${cardPadding}; height: 88px; padding: 0 ${px(resolve("dim.6"))}; }
   .sb-tile .sb-ibox--lg { width: ${px(resolve("dim.12"))}; height: ${px(resolve("dim.12"))}; }
   .sb-tile .sb-ibox--lg svg { width: ${px(resolve("dim.7"))}; height: ${px(resolve("dim.7"))}; }
   .sb-tile__label { ${typoCss(tHeadingMd)} }
@@ -331,10 +350,14 @@ ${hueVars}
 .sb-meta { display: flex; align-items: flex-start; gap: ${px(resolve("dim.1"))}; color: ${cv("text.secondary")}; ${typoCss(tBodySm)} }
 .sb-meta svg { width: ${px(resolve("dim.3_5"))}; height: ${px(resolve("dim.3_5"))}; flex-shrink: 0; color: ${cv("icon.muted")}; }
 
-.sb-article { display: flex; flex-direction: column; align-items: flex-start; gap: ${px(resolve("dim.1"))}; padding: ${px(resolve("dim.3"))}; border-bottom: 1px solid ${cv(cardDivider)}; }
+.sb-article { display: flex; flex-direction: column; align-items: flex-start; gap: ${px(resolve("dim.1"))}; padding: ${px(resolve("dim.3"))}; border-bottom: 1px solid ${cv(cardDivider)}; text-decoration: none; }
+.sb-article:hover { background: ${cv("fill.neutralHover")}; }
+.sb-article:active { background: ${cv("fill.neutralActive")}; }
+.sb-article:focus-visible { outline: ${btnSecondary.ringWidth} solid ${cv(btnSecondary.ringColor)}; outline-offset: calc(-1 * ${btnSecondary.ringWidth}); }
+.sb-article:hover .sb-link { text-decoration: ${linkSmDecoration}; }
 .sb-article:last-child { border-bottom: none; }
-.sb-article__title { margin: 0; color: ${cv("text.default")}; ${typoCss(tHeadingBase)} }
-.sb-article__excerpt { margin: 0; color: ${cv("text.secondary")}; ${typoCss(tBodySm)} display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.sb-article__title { color: ${cv("text.default")}; ${typoCss(tHeadingBase)} }
+.sb-article__excerpt { color: ${cv("text.secondary")}; ${typoCss(tBodySm)} display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .sb-article .sb-link { margin-top: ${px(resolve("dim.0_5"))}; }
 
 /* Button secondary, icon-only, base — the settings action, resolved from
@@ -342,6 +365,9 @@ ${hueVars}
 .btn { display: inline-flex; align-items: center; justify-content: center; border: none; cursor: pointer; font-family: inherit; border-radius: ${btnRadius}; }
 .btn--secondary { background: ${cv(btnSecondary.fill)}; }
 .btn--secondary.btn--base.btn--icon-only { width: ${btnBase.height}; height: ${btnBase.height}; padding: 0; }
+/* sm text button — the feed headers' View All. Same variant as the settings
+   action, so it inherits its hover/pressed/focus without a second recipe. */
+.btn--secondary.btn--sm { height: ${btnSm.height}; padding: 0 ${btnSm.paddingX}; gap: ${btnSm.gap}; color: ${cv(btnSecondary.label)}; ${typoCss(btnSm.label)} }
 .btn--secondary .btn__icon { width: ${btnBase.iconSize}; height: ${btnBase.iconSize}; color: ${cv(btnSecondary.icon)}; }
 .btn--secondary:hover { background: ${cv(btnSecondary.hoverFill)}; }
 .btn--secondary:active { background: ${cv(btnSecondary.pressedFill)}; }
@@ -362,7 +388,7 @@ const tileMarkup = (t) => `        <button class="sb-tile" type="button">
 const feedHeader = (icon, hue, title, viewAll) => `        <div class="card__header">
           <span class="sb-ibox sb-ibox--sm sb-ibox--${hue}">${iconOf(icon, "")}</span>
           <h2 class="card__title">${esc(title)}</h2>
-          ${viewAll ? `<button class="sb-link" type="button">View All</button>` : ""}
+          ${viewAll ? `<button class="btn btn--secondary btn--sm" type="button">View All</button>` : ""}
         </div>`;
 
 const eventMarkup = (e) => `        <a class="sb-row" href="#">
@@ -374,11 +400,16 @@ const eventMarkup = (e) => `        <a class="sb-row" href="#">
           </span>
         </a>`;
 
-const articleMarkup = (a) => `        <article class="sb-article">
-          <h3 class="sb-article__title">${esc(a.title)}</h3>
-          <p class="sb-article__excerpt">${esc(a.excerpt)}</p>
-          <a class="sb-link" href="#">Read Article${iconLaunch}</a>
-        </article>`;
+// One <a> per item, with "Read Article" as a plain <span> inside it — the ICS
+// rows are interactive and these weren't, which is the whole of the reported
+// "на ics фіді є ховери, а на рсс нема". Keeping the inner text a real link
+// would nest an <a> in an <a>; Attachment's done-shape already settled that
+// the whole row is the one interactive element.
+const articleMarkup = (a) => `        <a class="sb-article" href="#">
+          <span class="sb-article__title">${esc(a.title)}</span>
+          <span class="sb-article__excerpt">${esc(a.excerpt)}</span>
+          <span class="sb-link">Read Article${iconLaunch}</span>
+        </a>`;
 
 const appHtml = `<!doctype html>
 <html lang="en">
@@ -410,8 +441,8 @@ ${EVENTS.map(eventMarkup).join("\n")}
 ${feedHeader("rss_feed", "amber", "Demo RSS Feed", true)}
 ${ARTICLES.map(articleMarkup).join("\n")}
       </section>
-      <section class="card" aria-label="Demo Twitter Feed">
-${feedHeader("campaign", "red", "Demo Twitter Feed", false)}
+      <section class="card" aria-label="Demo X Feed">
+${feedHeader("campaign", "red", "Demo X Feed", false)}
         <div class="empty-state"><span class="empty-state__text">No posts to show</span></div>
       </section>
     </div>
