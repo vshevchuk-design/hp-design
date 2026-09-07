@@ -1071,3 +1071,15 @@ Explore Degrees needs three things that look like new components and aren't. Eac
 Two small mechanical lessons from doing this: these three builders each have their **own local helper signatures** (`avatarInitialsMarkup(size, name, hue)` took a bare hue, not an options bag; `storyCard` takes `(title, live, code, note)` here but `(title, live, note)` in the newer files; neither `build-chip-doc` nor `build-listbox-doc` had a `refPath`), so a patch copied from one builder into another fails on the second — every one of those failed on the first run and had to be fixed against the actual file. And **python heredocs are unusable for UTF-8 content in this environment** (non-UTF-8 locale aborts the parse before writing, which silently dropped a status.md edit earlier today): use node.
 
 All three checkers green at 57 pages. The component work for Explore Degrees is done — next is the wizard itself.
+
+## 2026-09-06 (cont. 2) — Console toolbar: two rows + Student ID search
+
+Per user: put ALL filter chips on a second row (desktop included); keep row 1 for tabs + search, leaving the middle open for future top-row filters (e.g. a dept-manager view); and add a separate **Student ID** search alongside the general one.
+- **Two-row toolbar at all widths.** Row 1: tabs (left) + `.mc-rail__searches` (Student ID + Search messages, right, `margin-left:auto` so the middle stays free). Row 2: the quick chips.
+- **Adaptive chips, breakpoint 600.** ≥600 the chips are inline on row 2 and both search fields show on row 1; <600 the chips collapse into the Filters button and the two fields collapse behind one search icon that reveals them stacked (`.mc--search-open`), retiring the toolbar. Dropped the old 768/960 chip+search rules.
+- **Student ID search:** new `studentId` on each thread + `data-student-id` on the row (and shown as the Student-cell subtitle, e.g. "CX0001 · Academic Advising"); `rowMatches` gains a prefix match; either search field flips the combined-lists `searching` state (a student may have threads in both Inbox and Resolved). `bindSearchField` wires both inputs generically.
+- **Fixed:** the Filters popover overran the viewport on mobile — positioning now runs in `requestAnimationFrame` and measures the real `getBoundingClientRect().width` (offsetWidth was stale on first open).
+
+Verified live across 1280 / 768 / 390 + the mobile search overlay: chips row, both search fields, Student ID exact + prefix (global across lists), AND-combine with chips, Filters popover in-viewport on mobile.
+
+Known follow-up (separate from filters): at ~768 the 6-column table cramps — the Expiration badge collides with the Date. Table-responsive fix pending.
