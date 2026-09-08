@@ -1366,13 +1366,14 @@ const consoleCss = `/* ---- Table (threads console) ---- */
 .mc-cellwrap { display: flex; align-items: center; gap: ${px(resolve("dim.2_5"))}; min-width: 0; }
 .mc-cellstack { display: flex; flex-direction: column; min-width: 0; gap: 1px; }
 .mc-td .badge { flex-shrink: 0; }
-/* console column template — Student | Responsible | Subject & Message | Expiration | Date | flag.
-   Expiration + Date are near-fixed widths pinned to the right; Subject takes the slack. */
-.mc-console-cols { grid-template-columns: minmax(150px, 1.4fr) minmax(96px, 0.9fr) minmax(0, 2.4fr) 132px minmax(104px, auto) 28px; gap: ${tblRowGap}; padding: ${tblRPadY} ${tblRPadX}; }
+/* console column template — flag | Student | Responsible | Subject & Message | Expiration | Date.
+   Student is narrow; Expiration + Date are near-fixed widths pinned to the right; Subject takes the slack. */
+.mc-console-cols { grid-template-columns: 28px minmax(120px, 1fr) minmax(96px, 0.9fr) minmax(0, 2.4fr) 132px minmax(104px, auto); gap: ${tblRowGap}; padding: ${tblRPadY} ${tblRPadX}; }
+.mc-col-flag { display: flex; align-items: center; justify-content: center; }
 /* tablet (768–1023): drop Expiration (near-fixed 132px is a lot here) so Subject
    and the pinned Date keep room; Responsible stays (it moved up in priority) */
 @media (min-width: 768px) and (max-width: 1023px) {
-  .mc-console-cols { grid-template-columns: minmax(140px, 1.4fr) minmax(88px, 0.8fr) minmax(0, 2fr) 0 minmax(104px, auto) 28px; }
+  .mc-console-cols { grid-template-columns: 28px minmax(110px, 1fr) minmax(88px, 0.8fr) minmax(0, 2fr) 0 minmax(104px, auto); }
   .mc-col-expiration { overflow: hidden; min-width: 0; padding-left: 0; padding-right: 0; }
 }
 /* Responsible as name pills, with a "+N" that reveals the full list on hover */
@@ -1610,12 +1611,12 @@ function rowMarkup(t, idx) {
   const dv = (t.date || "").split("/"); // MM/DD/YYYY -> YYYYMMDD for range compares
   const dateVal = dv.length === 3 ? dv[2] + dv[0] + dv[1] : "";
   return `<div class="thread-item-inbox mc-trow mc-console-cols thread-item-inbox--${t.unread ? "unread" : "read"}" role="button" tabindex="0" data-thread="${t.id}" data-idx="${idx}" data-subject="${esc(t.subject)}" data-department="${esc(t.department)}" data-student-id="${esc(t.studentId || "")}" data-responsibles="${esc((t.responsibles || []).join("|"))}" data-date-val="${dateVal}" data-involved="${involved ? "true" : "false"}"${t.expires ? ` data-expires="${t.expires.role}"` : ""}>
+        <div class="mc-td mc-col-flag"><button class="thread-item-inbox__flag-btn" type="button" aria-pressed="${t.flagged ? "true" : "false"}" aria-label="Flag thread">${iconFlagOutlined}${iconFlagFilled}</button></div>
         <div class="mc-td mc-cellwrap">${avatarMarkup(t.sender || t.department, "sm")}<span class="mc-cellstack"><span class="mc-lead">${t.sender || t.department}</span><span class="mc-td--muted" style="font-size:12px">${t.studentId || t.department}</span></span></div>
         <div class="mc-td mc-col-responsible">${responsiblePills(t.responsibles)}</div>
         <div class="mc-td mc-cellstack"><span class="mc-lead">${t.subject}</span><span class="mc-td--muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t.preview}</span></div>
         <div class="mc-td mc-col-expiration thread-item-inbox__expires">${exp}${scope}</div>
         <div class="mc-td mc-td--muted mc-col-date">${dateCell(t.date, t.time)}</div>
-        <div class="mc-td"><button class="thread-item-inbox__flag-btn" type="button" aria-pressed="${t.flagged ? "true" : "false"}" aria-label="Flag thread">${iconFlagOutlined}${iconFlagFilled}</button></div>
       </div>`;
 }
 // Responsible as name pills: the first name, then "+N" that reveals the full
@@ -2165,12 +2166,12 @@ function groupAvatarStack(n) {
 }
 function groupCardMarkup(g) {
   return `<div class="thread-item-inbox mc-trow mc-console-cols mc-group-row thread-item-inbox--read" role="button" tabindex="0" data-thread="${g.id}" data-subject="${esc(g.subject)}" data-department="Academic Advising">
+        <div class="mc-td mc-col-flag"></div>
         <div class="mc-td mc-cellwrap">${groupAvatarStack(g.n)}<span class="mc-cellstack"><span class="mc-lead">${g.n} Students</span><span class="badge badge--sm badge--role-primary" style="width:fit-content">Group</span></span></div>
         <div class="mc-td mc-col-responsible"><span class="mc-resp"><span class="mc-resp__pill">You</span></span></div>
         <div class="mc-td mc-cellstack"><span class="mc-lead">${g.subject}</span><span class="mc-td--muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Seen ${g.seen} · Replied ${g.replied}</span></div>
         <div class="mc-td mc-col-expiration thread-item-inbox__expires"><span class="badge badge--sm badge--role-neutral">Expires Aug 15</span><span class="badge badge--sm badge--role-neutral thread-item-inbox__scope">Resolved</span></div>
         <div class="mc-td mc-td--muted mc-col-date">${dateCell(g.date, "")}</div>
-        <div class="mc-td"></div>
       </div>`;
 }
 function groupPaneMarkup(g) {
@@ -2220,13 +2221,13 @@ const phaseECss = `.mc-reply-actions { display: flex; align-items: center; gap: 
 @media (max-width: 767px) {
   .mc-thead { display: none; }
   .mc-table { min-width: 0; }
-  /* stacked: Student (1) top-left, Date (5) top-right, Subject (3) full row 2;
-     hide Responsible (2), Expiration (4), flag (6) */
+  /* stacked: Student (2) top-left, Date (6) top-right, Subject (4) full row 2;
+     hide flag (1), Responsible (3), Expiration (5) */
   .mc-trow.mc-console-cols { grid-template-columns: 1fr auto; gap: 2px ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))}; align-items: center; }
-  .mc-trow.mc-console-cols > *:nth-child(1) { grid-column: 1; grid-row: 1; }
-  .mc-trow.mc-console-cols > *:nth-child(5) { grid-column: 2; grid-row: 1; }
-  .mc-trow.mc-console-cols > *:nth-child(3) { grid-column: 1 / -1; grid-row: 2; }
-  .mc-trow.mc-console-cols > *:nth-child(2), .mc-trow.mc-console-cols > *:nth-child(4), .mc-trow.mc-console-cols > *:nth-child(6) { display: none; }
+  .mc-trow.mc-console-cols > *:nth-child(2) { grid-column: 1; grid-row: 1; }
+  .mc-trow.mc-console-cols > *:nth-child(6) { grid-column: 2; grid-row: 1; }
+  .mc-trow.mc-console-cols > *:nth-child(4) { grid-column: 1 / -1; grid-row: 2; }
+  .mc-trow.mc-console-cols > *:nth-child(1), .mc-trow.mc-console-cols > *:nth-child(3), .mc-trow.mc-console-cols > *:nth-child(5) { display: none; }
 }`;
 
 const appJs = `(function () {
@@ -3440,12 +3441,12 @@ const appJs = `(function () {
     row.className = "thread-item-inbox mc-trow mc-console-cols thread-item-inbox--read";
     row.dataset.thread = id; row.dataset.subject = subject; row.dataset.department = "Academic Advising";
     row.innerHTML =
+      '<div class="mc-td mc-col-flag"></div>' +
       '<div class="mc-td mc-cellwrap"><span class="mc-avg mc-avg--sm">' + shown + more + '</span><span class="mc-cellstack"><span class="mc-lead">' + n + ' Students</span><span class="badge badge--sm badge--role-primary" style="width:fit-content">Group</span></span></div>' +
       '<div class="mc-td mc-col-responsible"><span class="mc-resp"><span class="mc-resp__pill">You</span></span></div>' +
       '<div class="mc-td mc-cellstack"><span class="mc-lead"></span><span class="mc-td--muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Seen 0 · Replied 0</span></div>' +
       '<div class="mc-td mc-col-expiration thread-item-inbox__expires"><span class="mc-td--muted">–</span><span class="badge badge--sm badge--role-neutral thread-item-inbox__scope">Resolved</span></div>' +
-      '<div class="mc-td mc-td--muted mc-col-date"><span class="mc-date__d">Just now</span></div>' +
-      '<div class="mc-td"></div>';
+      '<div class="mc-td mc-td--muted mc-col-date"><span class="mc-date__d">Just now</span></div>';
     row.querySelector(".mc-td.mc-cellstack .mc-lead").textContent = subject;
     lists.archived.insertBefore(row, lists.archived.firstChild);
     gwizDlg.close();
@@ -3607,12 +3608,12 @@ ${phaseECss}
       <div class="mc-rail__lists">
         <div class="mc-table">
           <div class="mc-thead mc-console-cols">
+            <div class="mc-th mc-col-flag"></div>
             <div class="mc-th">Student</div>
             <div class="mc-th mc-col-responsible">Responsible</div>
             <div class="mc-th">Subject &amp; Message</div>
             <div class="mc-th mc-col-expiration">Expiration</div>
             <div class="mc-th" style="text-align:right">Date</div>
-            <div class="mc-th"></div>
           </div>
           <div class="mc-list" data-list="inbox">
             ${inboxThreads.map((t, i) => rowMarkup(t, i)).join("\n          ")}
