@@ -1199,8 +1199,6 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .mc-thread__scroll > * { width: 100%; max-width: 820px; margin-left: auto; margin-right: auto; }
 .mc-thread__composer { display: flex; justify-content: center; }
 .mc-thread__composer > * { width: 100%; max-width: 820px; }
-.mc-thread__subject { order: 1; width: auto; flex: 1; }
-.mc-thread__actions { margin-left: 0; }
 
 @media (max-width: 767px) {
   .mc-table { min-width: 620px; } /* horizontal-scroll fallback until the mobile row reflow lands */
@@ -1237,6 +1235,10 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
   .mc-rail__topbar { padding-left: ${px(resolve("dim.6"))}; padding-right: ${px(resolve("dim.6"))}; }
   .mc-rail__lists { padding-left: ${px(resolve("dim.6"))}; padding-right: ${px(resolve("dim.6"))}; }
   .mc-thread__bar { padding-left: ${px(resolve("dim.6"))}; padding-right: ${px(resolve("dim.6"))}; }
+  /* desktop: the subject sits inline between Back and the actions; narrower it
+     wraps to its own full-width row below both (the mobile-first default) */
+  .mc-thread__subject { order: 1; width: auto; flex: 1; }
+  .mc-thread__actions { margin-left: 0; }
 }`;
 
 // ---- New Message compose (two-column form + AI panel) & AI Writing Assist
@@ -1395,7 +1397,7 @@ const dpDaySize = px(resolve(dpDay.size.$value)), dpDayRadius = px(resolve(dpDay
 const statValue = resolveToken(get(statTok.value.$value)), statLabel = resolveToken(get(statTok.label.$value));
 
 const consoleCss = `/* ---- Table (threads console) ---- */
-.mc-table { box-sizing: border-box; background: ${cv("surface.default")}; border: 1px solid ${cv("border.default")}; border-radius: ${px(resolve(tableTok.radius.$value))}; overflow: hidden; }
+.mc-table { box-sizing: border-box; flex-shrink: 0; background: ${cv("surface.default")}; border: 1px solid ${cv("border.default")}; border-radius: ${px(resolve(tableTok.radius.$value))}; overflow: hidden; }
 .mc-trow { display: grid; align-items: center; gap: ${tblRowGap}; padding: ${tblRPadY} ${tblRPadX}; border-bottom: 1px solid ${cv(refPath(tableTok.row.divider.$value))}; }
 .mc-trow:last-child { border-bottom: none; }
 .mc-thead { padding: ${tblHPadY} ${tblHPadX}; border-bottom: 1px solid ${cv(refPath(tableTok.header.divider.$value))}; }
