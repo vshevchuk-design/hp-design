@@ -2188,9 +2188,11 @@ const groupCss = `.mc-group__stats { display: grid; grid-template-columns: repea
 }`;
 
 function groupAvatarStack(n) {
-  const shown = GROUP_RECIPIENTS.slice(0, 3).map((r) => avatarMarkup(r.name, "sm").replace('class="avatar avatar--', 'class="mc-avg__item avatar--')).join("");
-  const more = n > 3 ? `<span class="mc-avg__item mc-avg__more">+${n - 3}</span>` : "";
-  return `<span class="mc-avg mc-avg--sm">${shown}${more}</span>`;
+  // A group shows a single count circle (one avatar-sized disc with the student
+  // count inside), not a stack of member faces — the number is what reads at a
+  // glance. Hue is derived from the count so it stays stable per build.
+  const hue = hueOf("group-" + n);
+  return `<span class="avatar avatar--${hue} avatar--sm" role="img" aria-label="${n} students"><span class="avatar__initials">${n}</span></span>`;
 }
 function groupCardMarkup(g) {
   return `<div class="thread-item-inbox mc-trow mc-console-cols mc-group-row thread-item-inbox--read" role="button" tabindex="0" data-thread="${g.id}" data-subject="${esc(g.subject)}" data-department="Academic Advising">
@@ -2247,28 +2249,41 @@ const phaseECss = `.mc-reply-actions { display: flex; align-items: center; gap: 
 .bubble-sender__seen { color: ${cv("text.success")}; font-weight: 600; }
 .mc-rail__count { display: none; } /* the tab counter already shows the count */
 @media (max-width: 1023px) {
-  /* Tablet + mobile: the console table reflows into a stacked card (mirrors the
-     student MC message card) — the desktop columns don't fit and Expiration /
-     Involved get squeezed. The six <div> cells are re-placed by role, not
-     re-authored, so every JS hook (flag button, filters, sort) still works.
-       row 1  avatar + name · ID ............ date
-       row 2  subject + preview ............. flag
-       row 3  expiration tag(s)
-       row 4  involved pills                              */
+  /* Tablet + mobile: the console reflows into a message card that mirrors the
+     student MC card — full-bleed (no table box / side margins), the avatar sits
+     top-left and everything else is indented past it (nothing under the avatar),
+     the date is small + muted, and the subject outsizes the preview. Cells are
+     re-placed by role, not re-authored, so every JS hook still works.
+       row 1  [avatar]  name · ID .............. date
+       row 2            subject + preview ...... flag
+       row 3            expiration tag(s)
+       row 4            involved pills                      */
   .mc-thead { display: none; }
-  .mc-table { min-width: 0; }
+  /* full-bleed: drop the table's card box and the list's side padding so rows
+     run edge-to-edge; each row's own dim.4 padding still insets the content to
+     line up with the toolbar */
+  .mc-table { min-width: 0; border: none; border-radius: 0; }
+  .mc-rail__lists { padding-left: 0; padding-right: 0; }
+
   .mc-trow.mc-console-cols {
     grid-template-columns: 1fr auto;
     gap: ${px(resolve("dim.1"))} ${px(resolve("dim.2"))};
     padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))};
     align-items: start;
   }
+  /* row 1: avatar + identity, date pinned right */
   .mc-trow.mc-console-cols > .mc-cellwrap { grid-column: 1; grid-row: 1; align-items: center; }
   .mc-trow.mc-console-cols > .mc-col-date { grid-column: 2; grid-row: 1; justify-self: end; }
-  .mc-trow.mc-console-cols > .mc-td.mc-cellstack { grid-column: 1; grid-row: 2; }
-  .mc-trow.mc-console-cols > .mc-col-flag { grid-column: 2; grid-row: 2; justify-self: end; align-self: end; }
-  .mc-trow.mc-console-cols > .mc-col-expiration { grid-column: 1 / -1; grid-row: 3; }
-  .mc-trow.mc-console-cols > .mc-col-responsible { grid-column: 1 / -1; grid-row: 4; }
+  /* rows 2-4 live in column 1 but are indented past the avatar (avatar + the
+     identity gap) so they align under the name, leaving the avatar column empty
+     below — the student card's tabulation. Expiration/Involved carry no fixed
+     grid-row so a hidden one leaves no gap. */
+  .mc-trow.mc-console-cols > .mc-td.mc-cellstack { grid-column: 1; grid-row: 2; padding-left: calc(${avatarSmDiameter} + ${px(resolve("dim.2_5"))}); }
+  .mc-trow.mc-console-cols > .mc-col-flag { grid-column: 2; grid-row: 2; justify-self: end; align-self: center; }
+  .mc-trow.mc-console-cols > .mc-col-expiration { grid-column: 1 / -1; padding-left: calc(${avatarSmDiameter} + ${px(resolve("dim.2_5"))}); }
+  /* order keeps Expiration above Involved during auto-flow (source order has
+     Involved first); a hidden Expiration then leaves no empty row */
+  .mc-trow.mc-console-cols > .mc-col-responsible { grid-column: 1 / -1; order: 1; padding-left: calc(${avatarSmDiameter} + ${px(resolve("dim.2_5"))}); }
 
   /* identity: name and ID on one smaller line (desktop stacks them) */
   .mc-cellwrap .mc-cellstack { flex-direction: row; align-items: baseline; gap: ${px(resolve("dim.1"))}; min-width: 0; }
@@ -2276,7 +2291,11 @@ const phaseECss = `.mc-reply-actions { display: flex; align-items: center; gap: 
   .mc-cellwrap .mc-cellstack .mc-td--muted { flex-shrink: 0; }
   .mc-cellwrap .mc-cellstack .mc-td--muted::before { content: "·"; margin-right: ${px(resolve("dim.1"))}; }
   .mc-cellwrap .mc-lead { font-size: 13px; }
-  /* date keeps the day, drops the time */
+  /* subject outsizes the preview */
+  .mc-trow.mc-console-cols > .mc-td.mc-cellstack > .mc-lead { font-size: 15px; }
+  .mc-trow.mc-console-cols > .mc-td.mc-cellstack > .mc-td--muted { font-size: 13px; }
+  /* date: small, muted, no time */
+  .mc-col-date .mc-date__d { font-size: 12px; font-weight: 400; color: ${cv("text.muted")}; }
   .mc-col-date .mc-date__t { display: none; }
   /* the Inbox/Resolved scope pill is redundant on a card (the tab already shows it) */
   .mc--searching .thread-item-inbox__expires .thread-item-inbox__scope,
@@ -3544,17 +3563,15 @@ const appJs = `(function () {
     if (!ids.length) return;
     var subject = gwizSubject.value.trim() || "(No subject)";
     var n = ids.length;
-    var shown = ids.slice(0, 3).map(function (id, i) {
-      return '<span class="mc-avg__item avatar--' + AVG_HUES[i % AVG_HUES.length] + '" style="background:var(--tok-avatar-' + AVG_HUES[i % AVG_HUES.length] + '-bg)"><span class="avatar__initials" style="color:var(--tok-avatar-' + AVG_HUES[i % AVG_HUES.length] + '-text);font-size:11px;text-transform:uppercase">' + gwizSel[id].split(" ").map(function (w){return w[0];}).join("").slice(0,2) + '</span></span>';
-    }).join("");
-    var more = n > 3 ? '<span class="mc-avg__item mc-avg__more">+' + (n - 3) + '</span>' : "";
+    var gHue = AVG_HUES[n % AVG_HUES.length];
+    var groupAv = '<span class="avatar avatar--sm avatar--' + gHue + '" style="background:var(--tok-avatar-' + gHue + '-bg)" role="img" aria-label="' + n + ' students"><span class="avatar__initials" style="color:var(--tok-avatar-' + gHue + '-text)">' + n + '</span></span>';
     var id = "grp-" + (++gwizSeq);
     var row = document.createElement("div");
     row.className = "thread-item-inbox mc-trow mc-console-cols thread-item-inbox--read";
     row.dataset.thread = id; row.dataset.subject = subject; row.dataset.department = "Academic Advising";
     row.innerHTML =
       '<div class="mc-td mc-col-flag"><button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread">${iconFlagOutlined}${iconFlagFilled}</button></div>' +
-      '<div class="mc-td mc-cellwrap"><span class="mc-avg mc-avg--sm">' + shown + more + '</span><span class="mc-cellstack"><span class="mc-lead">' + n + ' Students</span><span class="badge badge--sm badge--role-primary" style="width:fit-content">Group</span></span></div>' +
+      '<div class="mc-td mc-cellwrap">' + groupAv + '<span class="mc-cellstack"><span class="mc-lead">' + n + ' Students</span><span class="badge badge--sm badge--role-primary" style="width:fit-content">Group</span></span></div>' +
       '<div class="mc-td mc-col-responsible"><span class="mc-resp"><span class="mc-resp__pill">${SELF.name}</span></span></div>' +
       '<div class="mc-td mc-cellstack"><span class="mc-lead"></span><span class="mc-td--muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Seen 0 · Replied 0</span></div>' +
       '<div class="mc-td mc-col-expiration thread-item-inbox__expires"><span class="mc-td--muted">–</span><span class="badge badge--sm badge--role-neutral thread-item-inbox__scope">Resolved</span></div>' +

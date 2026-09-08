@@ -1051,28 +1051,41 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .bubble-sender__seen { color: var(--tok-text-success); font-weight: 600; }
 .mc-rail__count { display: none; } /* the tab counter already shows the count */
 @media (max-width: 1023px) {
-  /* Tablet + mobile: the console table reflows into a stacked card (mirrors the
-     student MC message card) — the desktop columns don't fit and Expiration /
-     Involved get squeezed. The six <div> cells are re-placed by role, not
-     re-authored, so every JS hook (flag button, filters, sort) still works.
-       row 1  avatar + name · ID ............ date
-       row 2  subject + preview ............. flag
-       row 3  expiration tag(s)
-       row 4  involved pills                              */
+  /* Tablet + mobile: the console reflows into a message card that mirrors the
+     student MC card — full-bleed (no table box / side margins), the avatar sits
+     top-left and everything else is indented past it (nothing under the avatar),
+     the date is small + muted, and the subject outsizes the preview. Cells are
+     re-placed by role, not re-authored, so every JS hook still works.
+       row 1  [avatar]  name · ID .............. date
+       row 2            subject + preview ...... flag
+       row 3            expiration tag(s)
+       row 4            involved pills                      */
   .mc-thead { display: none; }
-  .mc-table { min-width: 0; }
+  /* full-bleed: drop the table's card box and the list's side padding so rows
+     run edge-to-edge; each row's own dim.4 padding still insets the content to
+     line up with the toolbar */
+  .mc-table { min-width: 0; border: none; border-radius: 0; }
+  .mc-rail__lists { padding-left: 0; padding-right: 0; }
+
   .mc-trow.mc-console-cols {
     grid-template-columns: 1fr auto;
     gap: 4px 8px;
     padding: 12px 16px;
     align-items: start;
   }
+  /* row 1: avatar + identity, date pinned right */
   .mc-trow.mc-console-cols > .mc-cellwrap { grid-column: 1; grid-row: 1; align-items: center; }
   .mc-trow.mc-console-cols > .mc-col-date { grid-column: 2; grid-row: 1; justify-self: end; }
-  .mc-trow.mc-console-cols > .mc-td.mc-cellstack { grid-column: 1; grid-row: 2; }
-  .mc-trow.mc-console-cols > .mc-col-flag { grid-column: 2; grid-row: 2; justify-self: end; align-self: end; }
-  .mc-trow.mc-console-cols > .mc-col-expiration { grid-column: 1 / -1; grid-row: 3; }
-  .mc-trow.mc-console-cols > .mc-col-responsible { grid-column: 1 / -1; grid-row: 4; }
+  /* rows 2-4 live in column 1 but are indented past the avatar (avatar + the
+     identity gap) so they align under the name, leaving the avatar column empty
+     below — the student card's tabulation. Expiration/Involved carry no fixed
+     grid-row so a hidden one leaves no gap. */
+  .mc-trow.mc-console-cols > .mc-td.mc-cellstack { grid-column: 1; grid-row: 2; padding-left: calc(32px + 10px); }
+  .mc-trow.mc-console-cols > .mc-col-flag { grid-column: 2; grid-row: 2; justify-self: end; align-self: center; }
+  .mc-trow.mc-console-cols > .mc-col-expiration { grid-column: 1 / -1; padding-left: calc(32px + 10px); }
+  /* order keeps Expiration above Involved during auto-flow (source order has
+     Involved first); a hidden Expiration then leaves no empty row */
+  .mc-trow.mc-console-cols > .mc-col-responsible { grid-column: 1 / -1; order: 1; padding-left: calc(32px + 10px); }
 
   /* identity: name and ID on one smaller line (desktop stacks them) */
   .mc-cellwrap .mc-cellstack { flex-direction: row; align-items: baseline; gap: 4px; min-width: 0; }
@@ -1080,7 +1093,11 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   .mc-cellwrap .mc-cellstack .mc-td--muted { flex-shrink: 0; }
   .mc-cellwrap .mc-cellstack .mc-td--muted::before { content: "·"; margin-right: 4px; }
   .mc-cellwrap .mc-lead { font-size: 13px; }
-  /* date keeps the day, drops the time */
+  /* subject outsizes the preview */
+  .mc-trow.mc-console-cols > .mc-td.mc-cellstack > .mc-lead { font-size: 15px; }
+  .mc-trow.mc-console-cols > .mc-td.mc-cellstack > .mc-td--muted { font-size: 13px; }
+  /* date: small, muted, no time */
+  .mc-col-date .mc-date__d { font-size: 12px; font-weight: 400; color: var(--tok-text-muted); }
   .mc-col-date .mc-date__t { display: none; }
   /* the Inbox/Resolved scope pill is redundant on a card (the tab already shows it) */
   .mc--searching .thread-item-inbox__expires .thread-item-inbox__scope,
@@ -1291,7 +1308,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <div class="mc-list" data-list="archived" hidden>
             <div class="thread-item-inbox mc-trow mc-console-cols mc-group-row thread-item-inbox--read" role="button" tabindex="0" data-thread="grp-seed" data-subject="Fall registration opens Monday" data-department="Academic Advising">
         <div class="mc-td mc-col-flag"><button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button></div>
-        <div class="mc-td mc-cellwrap"><span class="mc-avg mc-avg--sm"><span class="mc-avg__item avatar--red avatar--sm" role="img" aria-label="Cait Adelson"><span class="avatar__initials">CA</span></span><span class="mc-avg__item avatar--orange avatar--sm" role="img" aria-label="Calam Xavier"><span class="avatar__initials">CX</span></span><span class="mc-avg__item avatar--magenta avatar--sm" role="img" aria-label="Maya Okafor"><span class="avatar__initials">MO</span></span><span class="mc-avg__item mc-avg__more">+34</span></span><span class="mc-cellstack"><span class="mc-lead">37 Students</span><span class="badge badge--sm badge--role-primary" style="width:fit-content">Group</span></span></div>
+        <div class="mc-td mc-cellwrap"><span class="avatar avatar--teal avatar--sm" role="img" aria-label="37 students"><span class="avatar__initials">37</span></span><span class="mc-cellstack"><span class="mc-lead">37 Students</span><span class="badge badge--sm badge--role-primary" style="width:fit-content">Group</span></span></div>
         <div class="mc-td mc-col-responsible"><span class="mc-resp"><span class="mc-resp__pill">Alexander Robinson</span></span></div>
         <div class="mc-td mc-cellstack"><span class="mc-lead">Fall registration opens Monday</span><span class="mc-td--muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Seen 24 · Replied 6</span></div>
         <div class="mc-td mc-col-expiration thread-item-inbox__expires"><span class="badge badge--sm badge--role-neutral">Expires Aug 15</span><span class="badge badge--sm badge--role-neutral thread-item-inbox__scope">Resolved</span></div>
@@ -3164,17 +3181,15 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     if (!ids.length) return;
     var subject = gwizSubject.value.trim() || "(No subject)";
     var n = ids.length;
-    var shown = ids.slice(0, 3).map(function (id, i) {
-      return '<span class="mc-avg__item avatar--' + AVG_HUES[i % AVG_HUES.length] + '" style="background:var(--tok-avatar-' + AVG_HUES[i % AVG_HUES.length] + '-bg)"><span class="avatar__initials" style="color:var(--tok-avatar-' + AVG_HUES[i % AVG_HUES.length] + '-text);font-size:11px;text-transform:uppercase">' + gwizSel[id].split(" ").map(function (w){return w[0];}).join("").slice(0,2) + '</span></span>';
-    }).join("");
-    var more = n > 3 ? '<span class="mc-avg__item mc-avg__more">+' + (n - 3) + '</span>' : "";
+    var gHue = AVG_HUES[n % AVG_HUES.length];
+    var groupAv = '<span class="avatar avatar--sm avatar--' + gHue + '" style="background:var(--tok-avatar-' + gHue + '-bg)" role="img" aria-label="' + n + ' students"><span class="avatar__initials" style="color:var(--tok-avatar-' + gHue + '-text)">' + n + '</span></span>';
     var id = "grp-" + (++gwizSeq);
     var row = document.createElement("div");
     row.className = "thread-item-inbox mc-trow mc-console-cols thread-item-inbox--read";
     row.dataset.thread = id; row.dataset.subject = subject; row.dataset.department = "Academic Advising";
     row.innerHTML =
       '<div class="mc-td mc-col-flag"><button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button></div>' +
-      '<div class="mc-td mc-cellwrap"><span class="mc-avg mc-avg--sm">' + shown + more + '</span><span class="mc-cellstack"><span class="mc-lead">' + n + ' Students</span><span class="badge badge--sm badge--role-primary" style="width:fit-content">Group</span></span></div>' +
+      '<div class="mc-td mc-cellwrap">' + groupAv + '<span class="mc-cellstack"><span class="mc-lead">' + n + ' Students</span><span class="badge badge--sm badge--role-primary" style="width:fit-content">Group</span></span></div>' +
       '<div class="mc-td mc-col-responsible"><span class="mc-resp"><span class="mc-resp__pill">Alexander Robinson</span></span></div>' +
       '<div class="mc-td mc-cellstack"><span class="mc-lead"></span><span class="mc-td--muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Seen 0 · Replied 0</span></div>' +
       '<div class="mc-td mc-col-expiration thread-item-inbox__expires"><span class="mc-td--muted">–</span><span class="badge badge--sm badge--role-neutral thread-item-inbox__scope">Resolved</span></div>' +
