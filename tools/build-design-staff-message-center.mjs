@@ -1034,8 +1034,8 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .mc-filters-pop:popover-open::backdrop { background: ${cv(mdOverlay)}; }
 @starting-style { .mc-filters-pop:popover-open::backdrop { background: transparent; } }
 .mc-filters-pop__close { margin: -${px(resolve("dim.1"))} -${px(resolve("dim.1"))} -${px(resolve("dim.1"))} 0; }
-.mc-filters-pop__head { flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; padding: ${px(resolve("dim.2"))} ${px(resolve("dim.4"))} ${px(resolve("dim.3"))}; border-bottom: 1px solid ${cv("border.default")}; }
-.mc-filters-pop__title { color: ${cv("text.default")}; ${typoCss(bodyBaseType)} font-size: 16px; font-weight: 700; }
+.mc-filters-pop__head { flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; padding: ${px(resolve("dim.4"))} ${px(resolve("dim.4"))}; border-bottom: 1px solid ${cv("border.default")}; }
+.mc-filters-pop__title { margin: 0; color: ${cv("text.default")}; ${typoCss(mdTitleType)} }
 .mc-filters-pop__clear { border: none; background: none; padding: 0; cursor: pointer; color: ${cv("text.primary")}; font-weight: 600; ${typoCss(bodySmType)} font-family: inherit; }
 .mc-filters-pop__body { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: ${px(resolve("dim.4"))}; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))} ${px(resolve("dim.6"))}; overflow-y: auto; }
 .mc-filt-field { display: flex; flex-direction: column; gap: ${px(resolve("dim.2"))}; }
@@ -1055,7 +1055,7 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .mc-filt-chips .mc-qchip { display: inline-flex; }
 /* sticky Apply footer */
 .mc-filters-pop__foot { flex-shrink: 0; display: flex; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))} ${px(resolve("dim.4"))}; border-top: 1px solid ${cv("border.default")}; }
-.mc-filters-clear { flex-shrink: 0; }
+.mc-filters-clear { flex: 1; }
 .mc-filters-apply { flex: 1; }
 /* inline (desktop) advanced controls: the date-range on row 1, the Department /
    Staff Selects on row 2. The Selects ARE the DS Select recipe (base) — no chip
@@ -1084,7 +1084,7 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .daterange__cals { display: flex; gap: ${px(resolve("dim.5"))}; }
 .daterange__chead { display: flex; align-items: center; justify-content: space-between; gap: ${px(resolve("dim.2"))}; margin-bottom: ${px(resolve("dim.2"))}; }
 .daterange__mrow { display: flex; align-items: center; gap: ${px(resolve("dim.1"))}; }
-.daterange__month, .daterange__year { height: 30px; border: 1px solid ${cv("border.default")}; border-radius: ${px(resolve("radius.default"))}; background: ${cv("surface.default")}; color: ${cv("text.default")}; font-family: inherit; ${typoCss(bodySmType)} padding: 0 4px 0 8px; cursor: pointer; }
+.daterange__month, .daterange__year { appearance: none; -webkit-appearance: none; height: 30px; border: 1px solid ${cv("border.default")}; border-radius: ${px(resolve("radius.default"))}; background-color: ${cv("surface.default")}; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 6px center; color: ${cv("text.default")}; font-family: inherit; ${typoCss(bodySmType)} padding: 0 24px 0 8px; cursor: pointer; }
 .daterange__month:hover, .daterange__year:hover { border-color: ${cv("border.strong")}; }
 .daterange__pnav { width: 30px; height: 30px; display: inline-flex; align-items: center; justify-content: center; border: none; background: none; border-radius: ${px(resolve("radius.default"))}; cursor: pointer; color: ${cv("icon.default")}; flex-shrink: 0; }
 .daterange__pnav:hover { background: ${cv("fill.neutralHover")}; }
@@ -1109,7 +1109,11 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
    of floating as a popover — no overflow, no overlap, the drawer just scrolls */
 .daterange__panel--inline { position: static; width: 100%; max-width: none; margin-top: ${px(resolve("dim.2"))}; box-shadow: none; z-index: auto; }
 .daterange__panel--inline[hidden] { display: none; }
-.daterange--inline .daterange__cals { justify-content: center; }
+/* inline calendar stretches to fill the drawer width (the desktop dual-month
+   keeps its fixed 34px columns so two months fit) */
+.daterange--inline .daterange__cals { display: block; }
+.daterange--inline .daterange__grid { grid-template-columns: repeat(7, 1fr); }
+.daterange--inline .daterange__weekday, .daterange--inline .daterange__day { width: 100%; }
 /* tapping the search icon reveals both fields, stacked, over row 1 */
 .mc-search-close { display: none; flex-shrink: 0; border: none; background: none; padding: 0; cursor: pointer; color: ${cv("text.primary")}; font-family: ${cv("family.sans")}; ${typoCss(linkBaseType)}${linkBaseExt.textDecoration ? ` text-decoration: ${linkBaseExt.textDecoration};` : ""} }
 .mc--search-open .mc-rail__row--top { flex-direction: column; align-items: stretch; }
@@ -1626,6 +1630,49 @@ const threads = [
     ],
   },
   {
+    id: "priya-override", archived: false, unread: true, awaiting: true, replies: true,
+    sender: "Priya Nair", studentId: "AA0533", handledBy: "Ava Robinson", responsibles: ["Ava Robinson"],
+    department: "Academic Advising", date: "09/07/2026", time: "10:22 AM PDT", subject: "Course Override Request",
+    preview: "Can you approve an override for CS 320? It's full but required for my track.",
+    meta: { Department: "Academic Advising", Status: "Open", Institution: "PeopleSoft University" },
+    content: [
+      bubbleRow({ role: "other", name: "Priya Nair", meta: "Sep 07, 10:22 AM", text: "Can you approve an override for CS 320? It's full but required for my track." }),
+    ],
+  },
+  {
+    id: "marcus-audit", archived: false, replies: true,
+    sender: "Marcus Bell", studentId: "AA0088", handledBy: "Alexander Robinson", responsibles: ["Alexander Robinson", "Sarah Nguyen"],
+    department: "Academic Advising", date: "09/02/2026", time: "1:15 PM PDT", subject: "Graduation Audit Review",
+    preview: "Could we go over my graduation audit before the deadline?",
+    expires: { label: "Expires 09/20/2026", role: "warning" },
+    meta: { Department: "Academic Advising", Status: "Open", Institution: "PeopleSoft University" },
+    content: [
+      bubbleRow({ role: "other", name: "Marcus Bell", meta: "Sep 02, 1:15 PM", text: "Could we go over my graduation audit before the deadline? I want to be sure I'm on track." }),
+    ],
+  },
+  {
+    id: "ella-thesis", archived: false, unread: true, awaiting: true, unassigned: true, replies: true,
+    sender: "Ella Fontaine", studentId: "AA0742", responsibles: [],
+    department: "English Dept", date: "08/29/2026", time: "9:40 AM PDT", subject: "Thesis Advisor Assignment",
+    preview: "I still haven't been assigned a thesis advisor for the fall.",
+    meta: { Department: "English Dept", Status: "Open", Institution: "PeopleSoft University" },
+    content: [
+      bubbleRow({ role: "other", name: "Ella Fontaine", meta: "Aug 29, 9:40 AM", text: "I still haven't been assigned a thesis advisor for the fall. Who should I follow up with?" }),
+    ],
+  },
+  {
+    id: "noah-loa", archived: false, replies: true, replied: true,
+    sender: "Noah Kim", studentId: "AA0311", handledBy: "Alexander Robinson", responsibles: ["Alexander Robinson"],
+    department: "Academic Advising", date: "08/22/2026", time: "4:05 PM PDT", subject: "Leave of Absence Paperwork",
+    preview: "Thanks — I've received your signed leave of absence form.",
+    expires: { label: "Expired 08/30/2026", role: "danger" },
+    meta: { Department: "Academic Advising", Status: "Open", Institution: "PeopleSoft University" },
+    content: [
+      bubbleRow({ role: "other", name: "Noah Kim", meta: "Aug 21, 3:00 PM", text: "Where do I submit the leave of absence paperwork?" }),
+      bubbleRow({ role: "self", name: SELF.name, meta: "Aug 22, 4:05 PM", text: "Thanks — I've received your signed leave of absence form and forwarded it to the registrar." }),
+    ],
+  },
+  {
     id: "lena-waiver", archived: true, replies: true, replied: true,
     sender: "Lena Hoffman", studentId: "AA0304", handledBy: "Alexander Robinson", responsibles: ["Alexander Robinson", "Ava Robinson"],
     department: "English Dept", date: "07/18/2026", time: "10:05 AM PDT", subject: "Prerequisite Waiver",
@@ -1645,6 +1692,50 @@ const threads = [
     content: [
       bubbleRow({ role: "other", name: "Tomas Novak", meta: "Jun 30, 3:12 PM", text: "Can we confirm my study plan is still on track after the schedule change?" }),
       bubbleRow({ role: "self", name: SELF.name, meta: "Jun 30, 3:40 PM", text: "All set — see you at the fall check-in." }),
+    ],
+  },
+  {
+    id: "dana-adddrop", archived: true, replies: true, replied: true,
+    sender: "Dana Torres", studentId: "AA0412", handledBy: "Ava Robinson", responsibles: ["Ava Robinson"],
+    department: "English Dept", date: "07/12/2026", time: "11:30 AM PDT", subject: "Add/Drop Confirmation",
+    preview: "All set — your add/drop changes are confirmed for the fall term.",
+    meta: { Department: "English Dept", Status: "Resolved", Institution: "PeopleSoft University" },
+    content: [
+      bubbleRow({ role: "other", name: "Dana Torres", meta: "Jul 12, 10:50 AM", text: "Can you confirm my add/drop went through?" }),
+      bubbleRow({ role: "self", name: SELF.name, meta: "Jul 12, 11:30 AM", text: "All set — your add/drop changes are confirmed for the fall term." }),
+    ],
+  },
+  {
+    id: "liam-reg", archived: true, replies: true, replied: true,
+    sender: "Liam Arcos", studentId: "AA0007", handledBy: "Alexander Robinson", responsibles: ["Alexander Robinson"],
+    department: "Academic Advising", date: "07/05/2026", time: "2:20 PM PDT", subject: "Registration Complete",
+    preview: "You're fully registered for the fall — nice work.",
+    meta: { Department: "Academic Advising", Status: "Resolved", Institution: "PeopleSoft University" },
+    content: [
+      bubbleRow({ role: "other", name: "Liam Arcos", meta: "Jul 05, 1:40 PM", text: "Did my registration go through for all my classes?" }),
+      bubbleRow({ role: "self", name: SELF.name, meta: "Jul 05, 2:20 PM", text: "You're fully registered for the fall — nice work." }),
+    ],
+  },
+  {
+    id: "sofia-notes", archived: true, replies: true, replied: true,
+    sender: "Sofia Duarte", studentId: "AA0620", handledBy: "Ava Robinson", responsibles: ["Ava Robinson", "Sarah Nguyen"],
+    department: "Academic Advising", date: "06/28/2026", time: "3:10 PM PDT", subject: "Advising Notes Shared",
+    preview: "I've shared the advising notes from our meeting with your file.",
+    meta: { Department: "Academic Advising", Status: "Resolved", Institution: "PeopleSoft University" },
+    content: [
+      bubbleRow({ role: "other", name: "Sofia Duarte", meta: "Jun 28, 2:30 PM", text: "Could you send me the notes from our advising meeting?" }),
+      bubbleRow({ role: "self", name: SELF.name, meta: "Jun 28, 3:10 PM", text: "I've shared the advising notes from our meeting with your file." }),
+    ],
+  },
+  {
+    id: "owen-transcript", archived: true, replies: true, replied: true,
+    sender: "Owen Pratt", studentId: "AA0159", handledBy: "Sarah Nguyen", responsibles: ["Sarah Nguyen"],
+    department: "Academic Advising", date: "06/20/2026", time: "9:05 AM PDT", subject: "Transcript Sent",
+    preview: "Your official transcript was sent to the address on file.",
+    meta: { Department: "Academic Advising", Status: "Resolved", Institution: "PeopleSoft University" },
+    content: [
+      bubbleRow({ role: "other", name: "Owen Pratt", meta: "Jun 19, 4:00 PM", text: "Has my official transcript been sent yet?" }),
+      bubbleRow({ role: "self", name: SELF.name, meta: "Jun 20, 9:05 AM", text: "Your official transcript was sent to the address on file." }),
     ],
   },
 ];
