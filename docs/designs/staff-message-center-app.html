@@ -643,8 +643,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .mc-rail__daterange { display: none; margin-left: auto; }
 .mc-rail__advsep { display: none; }
 .mc-advsel { position: relative; display: none; flex-shrink: 0; }
-.mc-advsel__trigger { min-width: 0; }
-.mc-advsel--on .mc-advsel__trigger { border-color: var(--tok-border-focus); }
+.mc-advsel__trigger .chip__icon { color: var(--tok-icon-secondary); }
 /* date-range widget (DateRangePicker recipe) */
 .mc-filters-pop .daterange { display: block; }
 .mc-filters-pop .daterange__nav { width: 100%; }
@@ -1175,8 +1174,8 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <button class="chip chip--base mc-qchip mc-qchip--expires" id="mc-chip-expires" type="button" aria-pressed="false" data-filter-key="expires">Expires Soon</button>
           <span class="mc-rail__advsep"></span>
           <div class="mc-advsel" data-adv="dept">
-              <button class="select select--base select--resting mc-advsel__trigger" id="mc-adv-dept" type="button" popovertarget="mc-adv-dept-lb" aria-haspopup="listbox">
-                <span class="select__stack"><span class="select__value" data-adv-value>Department</span></span><svg class="select__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>
+              <button class="chip chip--base chip--dropdown mc-advsel__trigger" id="mc-adv-dept" type="button" popovertarget="mc-adv-dept-lb" aria-haspopup="listbox">
+                <span class="chip__label" data-adv-value>Department</span><svg class="chip__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>
               </button>
               <div class="listbox mc-advsel__lb" id="mc-adv-dept-lb" popover>
                 <ul class="listbox__list" role="listbox" aria-label="Department">
@@ -1187,8 +1186,8 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
               </div>
             </div>
           <div class="mc-advsel" data-adv="staff">
-              <button class="select select--base select--resting mc-advsel__trigger" id="mc-adv-staff" type="button" popovertarget="mc-adv-staff-lb" aria-haspopup="listbox">
-                <span class="select__stack"><span class="select__value" data-adv-value>Staff</span></span><svg class="select__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>
+              <button class="chip chip--base chip--dropdown mc-advsel__trigger" id="mc-adv-staff" type="button" popovertarget="mc-adv-staff-lb" aria-haspopup="listbox">
+                <span class="chip__label" data-adv-value>Staff</span><svg class="chip__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>
               </button>
               <div class="listbox mc-advsel__lb" id="mc-adv-staff-lb" popover>
                 <ul class="listbox__list" role="listbox" aria-label="Staff">
@@ -2125,9 +2124,8 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     });
     var sel = document.querySelector('.mc-advsel[data-adv="' + key + '"]');
     if (sel) {
-      sel.classList.toggle("mc-advsel--on", val !== "");
       var trig = sel.querySelector(".mc-advsel__trigger");
-      if (trig) trig.classList.toggle("select--resting", val === "");
+      if (trig) trig.classList.toggle("chip--checked-outline", val !== "");
       var opts = sel.querySelectorAll(".listbox__option");
       var placeholder = opts[0] ? opts[0].textContent.trim() : key;
       opts.forEach(function (o) {

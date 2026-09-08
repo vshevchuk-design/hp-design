@@ -1030,8 +1030,7 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .mc-rail__daterange { display: none; margin-left: auto; }
 .mc-rail__advsep { display: none; }
 .mc-advsel { position: relative; display: none; flex-shrink: 0; }
-.mc-advsel__trigger { min-width: 0; }
-.mc-advsel--on .mc-advsel__trigger { border-color: ${cv("border.focus")}; }
+.mc-advsel__trigger .chip__icon { color: ${cv("icon.secondary")}; }
 /* date-range widget (DateRangePicker recipe) */
 .mc-filters-pop .daterange { display: block; }
 .mc-filters-pop .daterange__nav { width: 100%; }
@@ -1782,13 +1781,14 @@ function dateRangeWidget(suffix) {
               </div>
             </div>`;
 }
-// an inline single-select filter (Select trigger + Listbox popover) — the row-2
-// Department / Staff dropdowns; drives the same adv.* state as the panel pills
+// an inline single-select filter — a dropdown-CHIP (like "Filters" and the
+// student MC's Department), NOT a form Select. Chip trigger + Listbox popover;
+// drives the same adv.* state as the panel pills.
 function advSelectMarkup(kind, placeholder, options) {
   const lbId = "mc-adv-" + kind + "-lb";
   return `<div class="mc-advsel" data-adv="${kind}">
-              <button class="select select--base select--resting mc-advsel__trigger" id="mc-adv-${kind}" type="button" popovertarget="${lbId}" aria-haspopup="listbox">
-                <span class="select__stack"><span class="select__value" data-adv-value>${placeholder}</span></span>${iconChevronSelect}
+              <button class="chip chip--base chip--dropdown mc-advsel__trigger" id="mc-adv-${kind}" type="button" popovertarget="${lbId}" aria-haspopup="listbox">
+                <span class="chip__label" data-adv-value>${placeholder}</span>${iconChevronDown}
               </button>
               <div class="listbox mc-advsel__lb" id="${lbId}" popover>
                 <ul class="listbox__list" role="listbox" aria-label="${placeholder}">
@@ -2479,9 +2479,8 @@ const appJs = `(function () {
     });
     var sel = document.querySelector('.mc-advsel[data-adv="' + key + '"]');
     if (sel) {
-      sel.classList.toggle("mc-advsel--on", val !== "");
       var trig = sel.querySelector(".mc-advsel__trigger");
-      if (trig) trig.classList.toggle("select--resting", val === "");
+      if (trig) trig.classList.toggle("chip--checked-outline", val !== "");
       var opts = sel.querySelectorAll(".listbox__option");
       var placeholder = opts[0] ? opts[0].textContent.trim() : key;
       opts.forEach(function (o) {
