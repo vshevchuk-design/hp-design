@@ -1300,15 +1300,26 @@ const consoleCss = `/* ---- Table (threads console) ---- */
 .mc-cellwrap { display: flex; align-items: center; gap: ${px(resolve("dim.2_5"))}; min-width: 0; }
 .mc-cellstack { display: flex; flex-direction: column; min-width: 0; gap: 1px; }
 .mc-td .badge { flex-shrink: 0; }
-/* console column template — desktop: Student | Subject & Message | Responsible | Expiration | Date | flag */
-.mc-console-cols { grid-template-columns: 1.6fr 2.4fr 1fr 0.9fr 0.7fr 28px; gap: ${tblRowGap}; padding: ${tblRPadY} ${tblRPadX}; }
-/* tablet (768–1023): six columns cramp and the Expiration badge collides with
-   the Date — collapse the Responsible column to 0 (it's the least urgent for
-   triage; still shown in the thread) and guarantee Expiration a badge-width min */
+/* console column template — Student | Responsible | Subject & Message | Expiration | Date | flag.
+   Expiration + Date are near-fixed widths pinned to the right; Subject takes the slack. */
+.mc-console-cols { grid-template-columns: minmax(150px, 1.4fr) minmax(96px, 0.9fr) minmax(0, 2.4fr) 132px minmax(104px, auto) 28px; gap: ${tblRowGap}; padding: ${tblRPadY} ${tblRPadX}; }
+/* tablet (768–1023): drop Expiration (near-fixed 132px is a lot here) so Subject
+   and the pinned Date keep room; Responsible stays (it moved up in priority) */
 @media (min-width: 768px) and (max-width: 1023px) {
-  .mc-console-cols { grid-template-columns: 1.6fr 2.4fr 0 minmax(120px, 0.9fr) minmax(72px, 0.7fr) 28px; }
-  .mc-col-responsible { overflow: hidden; min-width: 0; padding-left: 0; padding-right: 0; }
+  .mc-console-cols { grid-template-columns: minmax(140px, 1.4fr) minmax(88px, 0.8fr) minmax(0, 2fr) 0 minmax(104px, auto) 28px; }
+  .mc-col-expiration { overflow: hidden; min-width: 0; padding-left: 0; padding-right: 0; }
 }
+/* Responsible as name pills, with a "+N" that reveals the full list on hover */
+.mc-col-responsible { min-width: 0; }
+.mc-resp { display: inline-flex; align-items: center; gap: ${px(resolve("dim.1"))}; min-width: 0; max-width: 100%; }
+.mc-resp__pill { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: ${px(resolve("dim.0_5"))} ${px(resolve("dim.2"))}; border: 1px solid ${cv("border.default")}; border-radius: ${px(resolve("radius.full"))}; background: ${cv("surface.dim")}; color: ${cv("text.default")}; ${typoCss(bodySmType)} }
+.mc-resp__more { position: relative; flex-shrink: 0; cursor: default; padding: ${px(resolve("dim.0_5"))} ${px(resolve("dim.1_5"))}; border: 1px solid ${cv("border.default")}; border-radius: ${px(resolve("radius.full"))}; background: ${cv("surface.default")}; color: ${cv("text.secondary")}; ${typoCss(bodySmType)} }
+.mc-resp__pop { position: absolute; top: calc(100% + 4px); left: 0; z-index: 5; display: none; flex-direction: column; gap: ${px(resolve("dim.1"))}; min-width: 160px; padding: ${px(resolve("dim.2"))} ${px(resolve("dim.2_5"))}; border: 1px solid ${cv("border.default")}; border-radius: ${px(resolve("radius.default"))}; background: ${cv("surface.default")}; box-shadow: ${lbShadowCss}; color: ${cv("text.default")}; ${typoCss(bodySmType)} white-space: nowrap; }
+.mc-resp__more:hover .mc-resp__pop, .mc-resp__more:focus-visible .mc-resp__pop { display: flex; }
+/* Date cell: date over time */
+.mc-col-date { display: flex; flex-direction: column; align-items: flex-end; gap: 1px; white-space: nowrap; }
+.mc-date__d { color: ${cv("text.default")}; }
+.mc-date__t { color: ${cv("text.muted")}; font-size: 11px; }
 
 /* "New Message" is a plain primary Button that opens a choice Menu (single /
    group) — same on desktop and mobile. The trailing chevron just hints at the
@@ -1451,8 +1462,8 @@ function bubbleRow({ role, name, meta, text, attachmentHtml = "" }) {
 const threads = [
   {
     id: "cait-minor", archived: false, unread: true, awaiting: true, replies: true,
-    sender: "Cait Genatossio", studentId: "CX0001", handledBy: "Alexander Robinson",
-    department: "Academic Advising", date: "08/05/2026", subject: "Minor Requirements Review",
+    sender: "Cait Genatossio", studentId: "CX0001", handledBy: "Alexander Robinson", responsibles: ["Alexander Robinson"],
+    department: "Academic Advising", date: "08/05/2026", time: "9:12 AM PDT", subject: "Minor Requirements Review",
     preview: "Could we also review the minor requirements before enrollment closes?",
     meta: { Department: "Academic Advising", Status: "Open", Institution: "PeopleSoft University" },
     content: [
@@ -1461,8 +1472,8 @@ const threads = [
   },
   {
     id: "maya-hold", archived: false, unread: true, awaiting: true, unassigned: true, replies: true,
-    sender: "Maya Patel", studentId: "AA0301",
-    department: "Academic Advising", date: "08/04/2026", subject: "Registration Hold Question",
+    sender: "Maya Patel", studentId: "AA0301", responsibles: [],
+    department: "Academic Advising", date: "08/04/2026", time: "4:47 PM PDT", subject: "Registration Hold Question",
     preview: "There is a hold on my account and I can't register for the fall term.",
     meta: { Department: "Academic Advising", Status: "Open", Institution: "PeopleSoft University" },
     content: [
@@ -1471,8 +1482,8 @@ const threads = [
   },
   {
     id: "diego-transcript", archived: false, replies: true,
-    sender: "Diego Fernandez", studentId: "AA0302", handledBy: "Ava Robinson",
-    department: "Academic Advising", date: "08/03/2026", subject: "Transcript for Internship Application",
+    sender: "Diego Fernandez", studentId: "AA0302", handledBy: "Ava Robinson", responsibles: ["Ava Robinson", "Alexander Robinson", "Sarah Nguyen"],
+    department: "Academic Advising", date: "08/03/2026", time: "11:20 AM PDT", subject: "Transcript for Internship Application",
     preview: "My internship application needs an official transcript by next Friday.",
     expires: { label: "Due 08/10/2026", role: "warning" },
     meta: { Department: "Academic Advising", Status: "Open", Institution: "PeopleSoft University" },
@@ -1482,8 +1493,8 @@ const threads = [
   },
   {
     id: "george-reschedule", archived: false, replies: true, replied: true,
-    sender: "George Amalor", studentId: "AA0303", handledBy: "Alexander Robinson",
-    department: "Academic Advising", date: "07/31/2026", subject: "Reschedule Advising Appointment",
+    sender: "George Amalor", studentId: "AA0303", handledBy: "Alexander Robinson", responsibles: ["Alexander Robinson"],
+    department: "Academic Advising", date: "07/31/2026", time: "8:02 AM PDT", subject: "Reschedule Advising Appointment",
     preview: "Sure — I moved your appointment to Tuesday at 3 PM.",
     meta: { Department: "Academic Advising", Status: "Open", Institution: "PeopleSoft University" },
     content: [
@@ -1493,8 +1504,8 @@ const threads = [
   },
   {
     id: "lena-waiver", archived: true, replies: true, replied: true,
-    sender: "Lena Hoffman", studentId: "AA0304", handledBy: "Alexander Robinson",
-    department: "English Dept", date: "07/18/2026", subject: "Prerequisite Waiver",
+    sender: "Lena Hoffman", studentId: "AA0304", handledBy: "Alexander Robinson", responsibles: ["Alexander Robinson", "Ava Robinson"],
+    department: "English Dept", date: "07/18/2026", time: "10:05 AM PDT", subject: "Prerequisite Waiver",
     preview: "Waiver approved — you are clear to enroll in ENG 340.",
     meta: { Department: "English Dept", Status: "Resolved", Institution: "PeopleSoft University" },
     content: [
@@ -1504,8 +1515,8 @@ const threads = [
   },
   {
     id: "tomas-plan", archived: true, replies: true, replied: true,
-    sender: "Tomas Novak", studentId: "AA0305", handledBy: "Ava Robinson",
-    department: "Academic Advising", date: "06/30/2026", subject: "Study Plan Check-in",
+    sender: "Tomas Novak", studentId: "AA0305", handledBy: "Ava Robinson", responsibles: ["Ava Robinson"],
+    department: "Academic Advising", date: "06/30/2026", time: "3:40 PM PDT", subject: "Study Plan Check-in",
     preview: "All set — see you at the fall check-in.",
     meta: { Department: "Academic Advising", Status: "Resolved", Institution: "PeopleSoft University" },
     content: [
@@ -1525,23 +1536,34 @@ const threads = [
 // inside .thread-item-inbox__expires) so applyFilter / bindRow / bindArchive
 // keep working unchanged; only the inner layout became table cells.
 function rowMarkup(t, idx) {
-  // Responsible = whoever replied last (advisory), "–" when none — replaces the
-  // old Handled by / Unassigned vocabulary per the real product
-  const responsible = t.handledBy || "–";
   const exp = t.expires ? `<span class="badge badge--sm badge--role-${t.expires.role}">${t.expires.label}</span>` : `<span class="mc-td--muted">–</span>`;
   const scope = `<span class="badge badge--sm badge--role-${t.archived ? "neutral" : "primary"} thread-item-inbox__scope">${t.archived ? "Resolved" : "Inbox"}</span>`;
   // "I'm Involved" = the logged-in advisor participated: they're the Responsible
   // or they've replied in the thread
-  const involved = t.handledBy === SELF.name || t.replied;
-  const subLine = `${t.studentId ? t.studentId + " · " : ""}${t.department}`;
+  const involved = (t.responsibles || []).indexOf(SELF.name) > -1 || t.replied;
   return `<div class="thread-item-inbox mc-trow mc-console-cols thread-item-inbox--${t.unread ? "unread" : "read"}" role="button" tabindex="0" data-thread="${t.id}" data-idx="${idx}" data-subject="${esc(t.subject)}" data-department="${esc(t.department)}" data-student-id="${esc(t.studentId || "")}" data-involved="${involved ? "true" : "false"}"${t.expires ? ` data-expires="${t.expires.role}"` : ""}>
-        <div class="mc-td mc-cellwrap">${avatarMarkup(t.sender || t.department, "sm")}<span class="mc-cellstack"><span class="mc-lead">${t.sender || t.department}</span><span class="mc-td--muted" style="font-size:12px">${subLine}</span></span></div>
+        <div class="mc-td mc-cellwrap">${avatarMarkup(t.sender || t.department, "sm")}<span class="mc-cellstack"><span class="mc-lead">${t.sender || t.department}</span><span class="mc-td--muted" style="font-size:12px">${t.studentId || t.department}</span></span></div>
+        <div class="mc-td mc-col-responsible">${responsiblePills(t.responsibles)}</div>
         <div class="mc-td mc-cellstack"><span class="mc-lead">${t.subject}</span><span class="mc-td--muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t.preview}</span></div>
-        <div class="mc-td mc-td--muted mc-col-responsible">${responsible}</div>
         <div class="mc-td mc-col-expiration thread-item-inbox__expires">${exp}${scope}</div>
-        <div class="mc-td mc-td--muted" style="text-align:right;white-space:nowrap">${t.date}</div>
+        <div class="mc-td mc-td--muted mc-col-date">${dateCell(t.date, t.time)}</div>
         <div class="mc-td"><button class="thread-item-inbox__flag-btn" type="button" aria-pressed="${t.flagged ? "true" : "false"}" aria-label="Flag thread">${iconFlagOutlined}${iconFlagFilled}</button></div>
       </div>`;
+}
+// Responsible as name pills: the first name, then "+N" that reveals the full
+// list on hover/focus (the column is too narrow for every long name inline)
+function responsiblePills(list) {
+  list = list || [];
+  if (!list.length) return `<span class="mc-td--muted">–</span>`;
+  let html = `<span class="mc-resp"><span class="mc-resp__pill">${list[0]}</span>`;
+  if (list.length > 1) {
+    html += `<span class="mc-resp__more" tabindex="0" role="button" aria-label="${list.length - 1} more responsible">+${list.length - 1}<span class="mc-resp__pop">${list.map((n) => `<span>${n}</span>`).join("")}</span></span>`;
+  }
+  return html + `</span>`;
+}
+// Date cell: date on top, time (with zone) beneath — matches the real product
+function dateCell(date, time) {
+  return `<span class="mc-date__d">${date}</span>${time ? `<span class="mc-date__t">${time}</span>` : ""}`;
 }
 
 function switchMarkup(checked) {
@@ -1631,7 +1653,7 @@ function richComposerMarkup(t) {
 
 function threadPane(t) {
   const resolveBtn = t.archived ? "" : `<button class="btn btn--secondary btn--sm mc-archive" type="button" data-thread="${t.id}">Resolve</button>`;
-  const handled = `<span class="mc-thread__meta-line">Responsible · ${t.handledBy || "–"}</span>`;
+  const handled = `<span class="mc-thread__meta-line">Responsible · ${(t.responsibles && t.responsibles.length ? t.responsibles.join(", ") : (t.handledBy || "–"))}</span>`;
   return `<article class="mc-thread" data-thread="${t.id}" hidden>
         <header class="mc-thread__bar">
           <button class="btn btn--ghost btn--sm mc-thread__back" type="button">${iconBack}Back</button>
@@ -2030,10 +2052,10 @@ function groupAvatarStack(n) {
 function groupCardMarkup(g) {
   return `<div class="thread-item-inbox mc-trow mc-console-cols mc-group-row thread-item-inbox--read" role="button" tabindex="0" data-thread="${g.id}" data-subject="${esc(g.subject)}" data-department="Academic Advising">
         <div class="mc-td mc-cellwrap">${groupAvatarStack(g.n)}<span class="mc-cellstack"><span class="mc-lead">${g.n} Students</span><span class="badge badge--sm badge--role-primary" style="width:fit-content">Group</span></span></div>
+        <div class="mc-td mc-col-responsible"><span class="mc-resp"><span class="mc-resp__pill">You</span></span></div>
         <div class="mc-td mc-cellstack"><span class="mc-lead">${g.subject}</span><span class="mc-td--muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Seen ${g.seen} · Replied ${g.replied}</span></div>
-        <div class="mc-td mc-td--muted mc-col-responsible">You</div>
         <div class="mc-td mc-col-expiration thread-item-inbox__expires"><span class="badge badge--sm badge--role-neutral">Expires Aug 15</span><span class="badge badge--sm badge--role-neutral thread-item-inbox__scope">Resolved</span></div>
-        <div class="mc-td mc-td--muted" style="text-align:right;white-space:nowrap">${g.date}</div>
+        <div class="mc-td mc-td--muted mc-col-date">${dateCell(g.date, "")}</div>
         <div class="mc-td"></div>
       </div>`;
 }
@@ -2084,11 +2106,13 @@ const phaseECss = `.mc-reply-actions { display: flex; align-items: center; gap: 
 @media (max-width: 767px) {
   .mc-thead { display: none; }
   .mc-table { min-width: 0; }
+  /* stacked: Student (1) top-left, Date (5) top-right, Subject (3) full row 2;
+     hide Responsible (2), Expiration (4), flag (6) */
   .mc-trow.mc-console-cols { grid-template-columns: 1fr auto; gap: 2px ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))}; align-items: center; }
   .mc-trow.mc-console-cols > *:nth-child(1) { grid-column: 1; grid-row: 1; }
-  .mc-trow.mc-console-cols > *:nth-child(5) { grid-column: 2; grid-row: 1; text-align: right; }
-  .mc-trow.mc-console-cols > *:nth-child(2) { grid-column: 1 / -1; grid-row: 2; }
-  .mc-trow.mc-console-cols > *:nth-child(3), .mc-trow.mc-console-cols > *:nth-child(4), .mc-trow.mc-console-cols > *:nth-child(6) { display: none; }
+  .mc-trow.mc-console-cols > *:nth-child(5) { grid-column: 2; grid-row: 1; }
+  .mc-trow.mc-console-cols > *:nth-child(3) { grid-column: 1 / -1; grid-row: 2; }
+  .mc-trow.mc-console-cols > *:nth-child(2), .mc-trow.mc-console-cols > *:nth-child(4), .mc-trow.mc-console-cols > *:nth-child(6) { display: none; }
 }`;
 
 const appJs = `(function () {
@@ -3164,10 +3188,10 @@ const appJs = `(function () {
     row.dataset.thread = id; row.dataset.subject = subject; row.dataset.department = "Academic Advising";
     row.innerHTML =
       '<div class="mc-td mc-cellwrap"><span class="mc-avg mc-avg--sm">' + shown + more + '</span><span class="mc-cellstack"><span class="mc-lead">' + n + ' Students</span><span class="badge badge--sm badge--role-primary" style="width:fit-content">Group</span></span></div>' +
+      '<div class="mc-td mc-col-responsible"><span class="mc-resp"><span class="mc-resp__pill">You</span></span></div>' +
       '<div class="mc-td mc-cellstack"><span class="mc-lead"></span><span class="mc-td--muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Seen 0 · Replied 0</span></div>' +
-      '<div class="mc-td mc-td--muted mc-col-responsible">You</div>' +
       '<div class="mc-td mc-col-expiration thread-item-inbox__expires"><span class="mc-td--muted">–</span><span class="badge badge--sm badge--role-neutral thread-item-inbox__scope">Resolved</span></div>' +
-      '<div class="mc-td mc-td--muted" style="text-align:right;white-space:nowrap">Just now</div>' +
+      '<div class="mc-td mc-td--muted mc-col-date"><span class="mc-date__d">Just now</span></div>' +
       '<div class="mc-td"></div>';
     row.querySelector(".mc-td.mc-cellstack .mc-lead").textContent = subject;
     lists.archived.insertBefore(row, lists.archived.firstChild);
@@ -3300,8 +3324,8 @@ ${phaseECss}
         <div class="mc-table">
           <div class="mc-thead mc-console-cols">
             <div class="mc-th">Student</div>
-            <div class="mc-th">Subject &amp; Message</div>
             <div class="mc-th mc-col-responsible">Responsible</div>
+            <div class="mc-th">Subject &amp; Message</div>
             <div class="mc-th mc-col-expiration">Expiration</div>
             <div class="mc-th" style="text-align:right">Date</div>
             <div class="mc-th"></div>

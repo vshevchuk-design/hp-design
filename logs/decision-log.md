@@ -1148,3 +1148,16 @@ So `shellTopbar()` now has two left slots rather than one: with no `title` it re
 One thing the change forced: the topbar title is an `h1`, and each step already had its own `h1`, so the five step headings became `h2`. That is the honest structure anyway — the document is "Explore your degree" and each step is a section of it. Font size is untouched (`.ed__title` stays title-2xl); heading level and type scale are independent.
 
 Re-verified the whole flow after the swap, and the automated walk caught nothing but did remind me of a real branch: Build stays disabled behind the mock reCAPTCHA gate, so the "No, starting fresh" path only reaches results once that is ticked — it does, with no transfer tab, one `h1`, and no horizontal overflow at 375px. All checkers green.
+
+## 2026-09-06 (cont. 5) — Console table columns reworked (Phase 1 of the batch)
+
+Per user, restructured the console table:
+- **New column order: Student · Responsible · Subject & Message · Expiration · Date · flag** (Responsible moved up to 2nd; Expiration pinned near-fixed 132px right before Date).
+- **Student** cell drops the department — shows name + Student ID only.
+- **Responsible** is now **name pills**: the first name as a pill, then a "+N" pill that reveals the full list on hover/focus (`.mc-resp__pop`). Threads carry a `responsibles[]` array (Diego has 3 → "+2"); "–" when none. Thread detail and the `involved` filter read the array; the compose/group "You" is a single pill.
+- **Date** cell is two lines: date over time-with-zone (`dateCell(date, time)`, new `time` per thread, e.g. "9:12 AM PDT").
+- Kept all four cell producers in sync (thead, rowMarkup, seeded group card, runtime group row). Reflows updated: tablet (768–1023) drops **Expiration** (the near-fixed 132px is a lot there) instead of Responsible; mobile stacked layout re-mapped to the new nth-child order (Student + Date top row, Subject full row 2).
+
+Verified 1280 / 820 / 390 + the "+N" hover popup (Ava / Alexander / Sarah).
+
+Still to do from the batch: (2) date-range picker component, (3) Department + Staff selectors, (4) rebuild the Filters popover into a real field panel (drawer) and fit it all responsively.
