@@ -1001,6 +1001,9 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
    take the row's free space and go to the right */
 .mc-rail__searches { display: flex; align-items: center; gap: ${px(resolve("dim.2"))}; margin-left: auto; min-width: 0; }
 .mc-rail__searches .search { min-width: 0; }
+/* the field's 16px value (iOS-zoom rule) dwarfed the chips/tabs — bring the
+   toolbar search text down to the chips' 14px (normal weight for an input) */
+.mc-rail__searches .search__input { font-size: 14px; }
 
 /* mobile-first (<600): the two fields collapse behind one search icon, and the
    chips collapse into the Filters button */
@@ -1374,7 +1377,8 @@ const consoleCss = `/* ---- Table (threads console) ---- */
    flag button / scope badge) — .mc-trow only restyles it as a grid table row,
    overriding the old flex list-row look */
 .mc-trow { display: grid; align-items: center; cursor: pointer; }
-.mc-trow.thread-item-inbox--read { background: ${cv("surface.default")}; } /* no gray read rows in a table */
+/* read rows keep the shared inbox read-state gray (from inboxStateCss) — same as
+   the student MC; unread rows stay white so the inbox reads at a glance */
 .mc-trow:focus-visible { outline: 2px solid ${cv("border.focus")}; outline-offset: -2px; }
 .mc-lead { display: block; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .thread-item-inbox--unread .mc-lead { font-weight: ${tblUnread.weight}; color: ${cv(tblUnread.color)}; }
@@ -1384,7 +1388,7 @@ const consoleCss = `/* ---- Table (threads console) ---- */
 .mc-td .badge { flex-shrink: 0; }
 /* console column template — flag | Student | Responsible | Subject & Message | Expiration | Date.
    Student is narrow; Expiration + Date are near-fixed widths pinned to the right; Subject takes the slack. */
-.mc-console-cols { grid-template-columns: 28px minmax(120px, 1fr) minmax(96px, 0.9fr) minmax(0, 2.4fr) 132px minmax(104px, auto); gap: ${tblRowGap}; padding: ${tblRPadY} ${tblRPadX}; }
+.mc-console-cols { grid-template-columns: 28px minmax(120px, 1fr) minmax(150px, max-content) minmax(0, 2fr) 132px minmax(104px, auto); gap: ${tblRowGap}; padding: ${tblRPadY} ${tblRPadX}; }
 .mc-col-flag { display: flex; align-items: center; justify-content: center; }
 /* tablet (768–1023): drop Expiration (near-fixed 132px is a lot here) so Subject
    and the pinned Date keep room; Responsible stays (it moved up in priority) */
@@ -1640,9 +1644,11 @@ function rowMarkup(t, idx) {
 function responsiblePills(list) {
   list = list || [];
   if (!list.length) return `<span class="mc-td--muted">–</span>`;
-  let html = `<span class="mc-resp"><span class="mc-resp__pill">${list[0]}</span>`;
-  if (list.length > 1) {
-    html += `<span class="mc-resp__more" tabindex="0" role="button" aria-label="${list.length - 1} more responsible">+${list.length - 1}<span class="mc-resp__pop">${list.map((n) => `<span>${n}</span>`).join("")}</span></span>`;
+  // the Involved column has room for two names before collapsing the rest
+  const SHOW = 2;
+  let html = `<span class="mc-resp">${list.slice(0, SHOW).map((n) => `<span class="mc-resp__pill">${n}</span>`).join("")}`;
+  if (list.length > SHOW) {
+    html += `<span class="mc-resp__more" tabindex="0" role="button" aria-label="${list.length - SHOW} more responsible">+${list.length - SHOW}<span class="mc-resp__pop">${list.map((n) => `<span>${n}</span>`).join("")}</span></span>`;
   }
   return html + `</span>`;
 }
@@ -3616,7 +3622,6 @@ ${phaseECss}
           <div class="mc-rail__daterange">${dateRangeWidget("top")}</div>
           <div class="mc-rail__searches" id="mc-searches">
             <div class="search search--base mc-rail__student">
-              ${iconSearch}
               <input class="search__input" id="mc-student-input" placeholder="Student ID" aria-label="Search by student ID" />
               <button class="search__clear" id="mc-student-clear" type="button" aria-label="Clear student ID" hidden>${iconClear.replace('<svg class="search__clear" ', '<svg ')}</button>
             </div>

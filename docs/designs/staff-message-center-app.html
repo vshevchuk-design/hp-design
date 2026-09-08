@@ -481,7 +481,8 @@
    flag button / scope badge) — .mc-trow only restyles it as a grid table row,
    overriding the old flex list-row look */
 .mc-trow { display: grid; align-items: center; cursor: pointer; }
-.mc-trow.thread-item-inbox--read { background: var(--tok-surface-default); } /* no gray read rows in a table */
+/* read rows keep the shared inbox read-state gray (from inboxStateCss) — same as
+   the student MC; unread rows stay white so the inbox reads at a glance */
 .mc-trow:focus-visible { outline: 2px solid var(--tok-border-focus); outline-offset: -2px; }
 .mc-lead { display: block; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .thread-item-inbox--unread .mc-lead { font-weight: 600; color: var(--tok-text-default); }
@@ -491,7 +492,7 @@
 .mc-td .badge { flex-shrink: 0; }
 /* console column template — flag | Student | Responsible | Subject & Message | Expiration | Date.
    Student is narrow; Expiration + Date are near-fixed widths pinned to the right; Subject takes the slack. */
-.mc-console-cols { grid-template-columns: 28px minmax(120px, 1fr) minmax(96px, 0.9fr) minmax(0, 2.4fr) 132px minmax(104px, auto); gap: 12px; padding: 12px 16px; }
+.mc-console-cols { grid-template-columns: 28px minmax(120px, 1fr) minmax(150px, max-content) minmax(0, 2fr) 132px minmax(104px, auto); gap: 12px; padding: 12px 16px; }
 .mc-col-flag { display: flex; align-items: center; justify-content: center; }
 /* tablet (768–1023): drop Expiration (near-fixed 132px is a lot here) so Subject
    and the pinned Date keep room; Responsible stays (it moved up in priority) */
@@ -625,6 +626,9 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
    take the row's free space and go to the right */
 .mc-rail__searches { display: flex; align-items: center; gap: 8px; margin-left: auto; min-width: 0; }
 .mc-rail__searches .search { min-width: 0; }
+/* the field's 16px value (iOS-zoom rule) dwarfed the chips/tabs — bring the
+   toolbar search text down to the chips' 14px (normal weight for an input) */
+.mc-rail__searches .search__input { font-size: 14px; }
 
 /* mobile-first (<600): the two fields collapse behind one search icon, and the
    chips collapse into the Filters button */
@@ -1104,7 +1108,6 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
             </div></div>
           <div class="mc-rail__searches" id="mc-searches">
             <div class="search search--base mc-rail__student">
-              <svg class="search__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
               <input class="search__input" id="mc-student-input" placeholder="Student ID" aria-label="Search by student ID" />
               <button class="search__clear" id="mc-student-clear" type="button" aria-label="Clear student ID" hidden><svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
             </div>
@@ -1243,7 +1246,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <div class="thread-item-inbox mc-trow mc-console-cols thread-item-inbox--read" role="button" tabindex="0" data-thread="diego-transcript" data-idx="2" data-subject="Transcript for Internship Application" data-department="Academic Advising" data-student-id="AA0302" data-responsibles="Ava Robinson|Alexander Robinson|Sarah Nguyen" data-date-val="20260803" data-involved="true" data-expires="warning">
         <div class="mc-td mc-col-flag"><button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button></div>
         <div class="mc-td mc-cellwrap"><span class="avatar avatar--orange avatar--sm" role="img" aria-label="Diego Fernandez"><span class="avatar__initials">DF</span></span><span class="mc-cellstack"><span class="mc-lead">Diego Fernandez</span><span class="mc-td--muted" style="font-size:12px">AA0302</span></span></div>
-        <div class="mc-td mc-col-responsible"><span class="mc-resp"><span class="mc-resp__pill">Ava Robinson</span><span class="mc-resp__more" tabindex="0" role="button" aria-label="2 more responsible">+2<span class="mc-resp__pop"><span>Ava Robinson</span><span>Alexander Robinson</span><span>Sarah Nguyen</span></span></span></span></div>
+        <div class="mc-td mc-col-responsible"><span class="mc-resp"><span class="mc-resp__pill">Ava Robinson</span><span class="mc-resp__pill">Alexander Robinson</span><span class="mc-resp__more" tabindex="0" role="button" aria-label="1 more responsible">+1<span class="mc-resp__pop"><span>Ava Robinson</span><span>Alexander Robinson</span><span>Sarah Nguyen</span></span></span></span></div>
         <div class="mc-td mc-cellstack"><span class="mc-lead">Transcript for Internship Application</span><span class="mc-td--muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">My internship application needs an official transcript by next Friday.</span></div>
         <div class="mc-td mc-col-expiration thread-item-inbox__expires"><span class="badge badge--sm badge--role-warning">Due 08/10/2026</span><span class="badge badge--sm badge--role-primary thread-item-inbox__scope">Inbox</span></div>
         <div class="mc-td mc-td--muted mc-col-date"><span class="mc-date__d">08/03/2026</span><span class="mc-date__t">11:20 AM PDT</span></div>
@@ -1269,7 +1272,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
             <div class="thread-item-inbox mc-trow mc-console-cols thread-item-inbox--read" role="button" tabindex="0" data-thread="lena-waiver" data-idx="4" data-subject="Prerequisite Waiver" data-department="English Dept" data-student-id="AA0304" data-responsibles="Alexander Robinson|Ava Robinson" data-date-val="20260718" data-involved="true">
         <div class="mc-td mc-col-flag"><button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button></div>
         <div class="mc-td mc-cellwrap"><span class="avatar avatar--red avatar--sm" role="img" aria-label="Lena Hoffman"><span class="avatar__initials">LH</span></span><span class="mc-cellstack"><span class="mc-lead">Lena Hoffman</span><span class="mc-td--muted" style="font-size:12px">AA0304</span></span></div>
-        <div class="mc-td mc-col-responsible"><span class="mc-resp"><span class="mc-resp__pill">Alexander Robinson</span><span class="mc-resp__more" tabindex="0" role="button" aria-label="1 more responsible">+1<span class="mc-resp__pop"><span>Alexander Robinson</span><span>Ava Robinson</span></span></span></span></div>
+        <div class="mc-td mc-col-responsible"><span class="mc-resp"><span class="mc-resp__pill">Alexander Robinson</span><span class="mc-resp__pill">Ava Robinson</span></span></div>
         <div class="mc-td mc-cellstack"><span class="mc-lead">Prerequisite Waiver</span><span class="mc-td--muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Waiver approved — you are clear to enroll in ENG 340.</span></div>
         <div class="mc-td mc-col-expiration thread-item-inbox__expires"><span class="mc-td--muted">–</span><span class="badge badge--sm badge--role-neutral thread-item-inbox__scope">Resolved</span></div>
         <div class="mc-td mc-td--muted mc-col-date"><span class="mc-date__d">07/18/2026</span><span class="mc-date__t">10:05 AM PDT</span></div>
