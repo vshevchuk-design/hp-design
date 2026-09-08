@@ -1034,7 +1034,7 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 /* grabber handle at the top edge, for the drawer feel */
 .mc-filters-pop::before { content: ""; flex-shrink: 0; width: 36px; height: 4px; margin: ${px(resolve("dim.2"))} auto 0; border-radius: ${px(resolve("radius.full"))}; background: ${cv("border.strong")}; }
 .mc-filters-pop__head { flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; padding: ${px(resolve("dim.2"))} ${px(resolve("dim.4"))} ${px(resolve("dim.3"))}; border-bottom: 1px solid ${cv("border.default")}; }
-.mc-filters-pop__title { color: ${cv("text.default")}; font-weight: 600; ${typoCss(bodyBaseType)} }
+.mc-filters-pop__title { color: ${cv("text.default")}; ${typoCss(bodyBaseType)} font-size: 16px; font-weight: 700; }
 .mc-filters-pop__clear { border: none; background: none; padding: 0; cursor: pointer; color: ${cv("text.primary")}; font-weight: 600; ${typoCss(bodySmType)} font-family: inherit; }
 .mc-filters-pop__body { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: ${px(resolve("dim.4"))}; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))} ${px(resolve("dim.6"))}; overflow-y: auto; }
 .mc-filt-field { display: flex; flex-direction: column; gap: ${px(resolve("dim.2"))}; }
@@ -1044,6 +1044,17 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .mc-filt-opt:hover { border-color: ${cv("border.strong")}; }
 .mc-filt-opt--on { background: ${cv("fill.primary")}; border-color: ${cv("fill.primary")}; color: ${cv("text.onFill")}; }
 .mc-filt-field--toggles .listbox__list { display: flex; flex-direction: column; gap: ${px(resolve("dim.1"))}; padding: 0; }
+/* Department / Staff as full-width DS Selects inside the drawer */
+.mc-filt-select { width: 100%; }
+.mc-filt-select .select__value { flex: 1; }
+.mc-filt-select-lb { min-width: 220px; }
+/* Quick filters stay toggle chips (the .mc-qchip is display:none on narrow for
+   the collapsed row — un-hide it here, in the drawer) */
+.mc-filt-chips { display: flex; flex-wrap: wrap; gap: ${px(resolve("dim.1_5"))}; }
+.mc-filt-chips .mc-qchip { display: inline-flex; }
+/* sticky Apply footer */
+.mc-filters-pop__foot { flex-shrink: 0; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))} ${px(resolve("dim.4"))}; border-top: 1px solid ${cv("border.default")}; }
+.mc-filters-apply { width: 100%; }
 /* inline (desktop) advanced controls: the date-range on row 1, the Department /
    Staff Selects on row 2. The Selects ARE the DS Select recipe (base) — no chip
    restyle. Hidden on mobile (< 600) where they live in the panel. */
@@ -2452,9 +2463,10 @@ const appJs = `(function () {
   document.querySelectorAll(".thread-item-inbox").forEach(bindRow);
 
 
-  // back (mobile only)
+  // back — return to the list: closeThread also clears the row's selected
+  // (blue) state and hides the pane, not just the thread-open class
   function bindBack(btn) {
-    btn.addEventListener("click", function () { mc.classList.remove("mc--thread-open"); });
+    btn.addEventListener("click", closeThread);
   }
   document.querySelectorAll(".mc-thread__back").forEach(bindBack);
 
@@ -2541,21 +2553,16 @@ const appJs = `(function () {
   }
   function setFilter(key, on) {
     filters[key] = on;
-    var chip = document.querySelector('.mc-qchip[data-filter-key="' + key + '"]');
-    if (chip) chip.setAttribute("aria-pressed", on ? "true" : "false");
-    var cb = document.querySelector('#mc-filters-listbox .listbox__cb-input[data-filter-key="' + key + '"]');
-    if (cb) cb.checked = on;
+    // sync every quick-filter chip for this key — the inline row-2 chip (desktop)
+    // and the twin inside the drawer (narrow)
+    document.querySelectorAll('.mc-qchip[data-filter-key="' + key + '"]').forEach(function (chip) {
+      chip.setAttribute("aria-pressed", on ? "true" : "false");
+    });
     updateFiltersChip();
   }
   // the Filters panel is a bottom-sheet drawer, docked by CSS — no positioning JS
-  filtersListbox.querySelectorAll(".listbox__cb-input").forEach(function (cb) {
-    cb.addEventListener("change", function () {
-      setFilter(cb.dataset.filterKey, cb.checked);
-      applyFilter();
-    });
-  });
-  // quick toggle chips (I'm Involved / Flagged / Expires Soon) — the same keys
-  // as the popover's collapsibles; setFilter keeps both surfaces in sync
+  // quick toggle chips (Unread / I'm Involved / Flagged / Expires Soon) live both
+  // inline (desktop row 2) and in the drawer (narrow); setFilter syncs both
   document.querySelectorAll(".mc-qchip").forEach(function (chip) {
     chip.addEventListener("click", function () {
       setFilter(chip.dataset.filterKey, chip.getAttribute("aria-pressed") !== "true");
@@ -2563,13 +2570,23 @@ const appJs = `(function () {
     });
   });
 
-  // ---- Department / Staff: one setAdv keeps both surfaces in sync — the panel
-  // option-pills (mobile) and the row-2 inline Selects (desktop) ----
+  // ---- Department / Staff: one setAdv keeps both surfaces in sync — the drawer
+  // Select (narrow) and the row-2 inline Select (desktop) ----
   function setAdv(key, val) {
     adv[key] = val;
-    document.querySelectorAll('#mc-filters-listbox .mc-filt-opts[data-adv="' + key + '"] .mc-filt-opt').forEach(function (o) {
-      o.classList.toggle("mc-filt-opt--on", o.dataset.val === val);
-    });
+    // drawer Select — set the shown value and the ticked option
+    var fsel = document.getElementById("mc-filt-" + key);
+    if (fsel) {
+      var flb = document.getElementById("mc-filt-" + key + "-lb");
+      var chosen = "";
+      flb.querySelectorAll(".listbox__option").forEach(function (o) {
+        var on = o.dataset.val === val;
+        o.classList.toggle("listbox__option--selected", on);
+        o.setAttribute("aria-selected", on ? "true" : "false");
+        if (on) chosen = o.textContent.trim();
+      });
+      fsel.querySelector(".select__value").textContent = chosen;
+    }
     var sel = document.querySelector('.mc-advsel[data-adv="' + key + '"]');
     if (sel) {
       var trig = sel.querySelector(".mc-advsel__trigger");
@@ -2586,11 +2603,25 @@ const appJs = `(function () {
     }
     updateFiltersChip();
   }
-  // panel option-pills
-  document.querySelectorAll("#mc-filters-listbox .mc-filt-opts").forEach(function (group) {
-    group.querySelectorAll(".mc-filt-opt").forEach(function (opt) {
-      opt.addEventListener("click", function () { setAdv(group.dataset.adv, opt.dataset.val); applyFilter(); });
+  // drawer Selects (Department / Staff) — a Listbox popover anchored under the
+  // trigger; picking an option sets the filter and closes the listbox
+  document.querySelectorAll(".mc-filt-select-lb").forEach(function (lb) {
+    var key = lb.dataset.adv;
+    var trigger = document.getElementById("mc-filt-" + key);
+    lb.addEventListener("toggle", function (e) {
+      if (e.newState !== "open") return;
+      var r = trigger.getBoundingClientRect();
+      lb.style.position = "fixed"; lb.style.margin = "0";
+      lb.style.left = Math.max(8, Math.min(r.left, window.innerWidth - lb.offsetWidth - 8)) + "px";
+      lb.style.top = (r.bottom + 4) + "px";
     });
+    lb.querySelectorAll(".listbox__option").forEach(function (opt) {
+      opt.addEventListener("click", function () { setAdv(key, opt.dataset.val); lb.hidePopover(); applyFilter(); });
+    });
+  });
+  // Apply just closes the drawer — filters already apply live as they change
+  document.getElementById("mc-filters-apply").addEventListener("click", function () {
+    filtersListbox.hidePopover();
   });
   // row-2 inline Selects (trigger opens a Listbox popover)
   document.querySelectorAll(".mc-advsel").forEach(function (sel) {
@@ -3709,31 +3740,36 @@ ${phaseECss}
               </div>
               <div class="mc-filt-field">
                 <span class="mc-filt-label">Department</span>
-                <div class="mc-filt-opts" data-adv="dept">
-                  <button class="mc-filt-opt mc-filt-opt--on" type="button" data-val="">All departments</button>
-                  ${departments.map((d) => `<button class="mc-filt-opt" type="button" data-val="${esc(d)}">${d}</button>`).join("\n                  ")}
+                <button class="select select--base mc-filt-select" id="mc-filt-dept" type="button" popovertarget="mc-filt-dept-lb"><span class="select__value" id="mc-filt-dept-value">All departments</span>${iconOf("expand_more", "select__chevron")}</button>
+                <div class="listbox mc-filt-select-lb" id="mc-filt-dept-lb" data-adv="dept" popover>
+                  <ul class="listbox__list">
+                    <li><button class="listbox__option listbox__option--selected" role="option" aria-selected="true" data-val="" type="button">All departments${iconCheckmark}</button></li>
+                    ${departments.map((d) => `<li><button class="listbox__option" role="option" aria-selected="false" data-val="${esc(d)}" type="button">${d}${iconCheckmark}</button></li>`).join("\n                    ")}
+                  </ul>
                 </div>
               </div>
               <div class="mc-filt-field">
                 <span class="mc-filt-label">Staff</span>
-                <div class="mc-filt-opts" data-adv="staff">
-                  <button class="mc-filt-opt mc-filt-opt--on" type="button" data-val="">All staff</button>
-                  ${staffList.map((s) => `<button class="mc-filt-opt" type="button" data-val="${esc(s)}">${s}</button>`).join("\n                  ")}
+                <button class="select select--base mc-filt-select" id="mc-filt-staff" type="button" popovertarget="mc-filt-staff-lb"><span class="select__value" id="mc-filt-staff-value">All staff</span>${iconOf("expand_more", "select__chevron")}</button>
+                <div class="listbox mc-filt-select-lb" id="mc-filt-staff-lb" data-adv="staff" popover>
+                  <ul class="listbox__list">
+                    <li><button class="listbox__option listbox__option--selected" role="option" aria-selected="true" data-val="" type="button">All staff${iconCheckmark}</button></li>
+                    ${staffList.map((s) => `<li><button class="listbox__option" role="option" aria-selected="false" data-val="${esc(s)}" type="button">${s}${iconCheckmark}</button></li>`).join("\n                    ")}
+                  </ul>
                 </div>
               </div>
-              <div class="mc-filt-field mc-filt-field--toggles">
+              <div class="mc-filt-field">
                 <span class="mc-filt-label">Quick filters</span>
-                <ul class="listbox__list" aria-label="Quick filters">
-                  <li class="mc-fopt--collapsible" data-filter-option="unread"><label class="listbox__cb-option" for="mc-fopt-unread"><input type="checkbox" class="listbox__cb-input" id="mc-fopt-unread" data-filter-key="unread" />
-                    <span class="listbox__cb-box">${iconCbCheck}</span><span class="listbox__cb-label">Unread</span></label></li>
-                  <li class="mc-fopt--collapsible" data-filter-option="involved"><label class="listbox__cb-option" for="mc-fopt-involved"><input type="checkbox" class="listbox__cb-input" id="mc-fopt-involved" data-filter-key="involved" />
-                    <span class="listbox__cb-box">${iconCbCheck}</span><span class="listbox__cb-label">I'm Involved</span></label></li>
-                  <li class="mc-fopt--collapsible" data-filter-option="flagged"><label class="listbox__cb-option" for="mc-fopt-flagged"><input type="checkbox" class="listbox__cb-input" id="mc-fopt-flagged" data-filter-key="flagged" />
-                    <span class="listbox__cb-box">${iconCbCheck}</span><span class="listbox__cb-label">Flagged</span></label></li>
-                  <li class="mc-fopt--collapsible" data-filter-option="expires"><label class="listbox__cb-option" for="mc-fopt-expires"><input type="checkbox" class="listbox__cb-input" id="mc-fopt-expires" data-filter-key="expires" />
-                    <span class="listbox__cb-box">${iconCbCheck}</span><span class="listbox__cb-label">Expires Soon</span></label></li>
-                </ul>
+                <div class="mc-filt-chips">
+                  <button class="chip chip--base mc-qchip mc-qchip--unread" type="button" aria-pressed="false" data-filter-key="unread">Unread</button>
+                  <button class="chip chip--base mc-qchip" type="button" aria-pressed="false" data-filter-key="involved">I'm Involved</button>
+                  <button class="chip chip--base mc-qchip" type="button" aria-pressed="false" data-filter-key="flagged">Flagged</button>
+                  <button class="chip chip--base mc-qchip mc-qchip--expires" type="button" aria-pressed="false" data-filter-key="expires">Expires Soon</button>
+                </div>
               </div>
+            </div>
+            <div class="mc-filters-pop__foot">
+              <button class="btn btn--primary btn--base mc-filters-apply" id="mc-filters-apply" type="button">Apply filters</button>
             </div>
           </div>
           <button class="chip chip--base mc-qchip mc-qchip--unread" id="mc-chip-unread" type="button" aria-pressed="false" data-filter-key="unread">Unread</button>
