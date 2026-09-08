@@ -2300,7 +2300,7 @@ const phaseECss = `.mc-reply-actions { display: flex; align-items: center; gap: 
   .mc-trow.mc-console-cols > .mc-td.mc-cellstack > .mc-lead { font-size: 15px; }
   .mc-trow.mc-console-cols > .mc-td.mc-cellstack > .mc-td--muted { font-size: 13px; }
   /* date: small, muted, no time */
-  .mc-col-date .mc-date__d { font-size: 12px; font-weight: 400; color: ${cv("text.muted")}; }
+  .mc-col-date .mc-date__d { font-size: ${px(resolve("size.xs"))}; font-weight: 400; color: ${cv("text.muted")}; }
   .mc-col-date .mc-date__t { display: none; }
   /* the Inbox/Resolved scope pill is redundant on a card (the tab already shows it) */
   .mc--searching .thread-item-inbox__expires .thread-item-inbox__scope,
