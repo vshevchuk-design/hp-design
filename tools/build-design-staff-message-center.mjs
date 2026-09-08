@@ -1031,30 +1031,37 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .mc-rail__advsep { display: none; }
 .mc-advsel { position: relative; display: none; flex-shrink: 0; }
 .mc-advsel__trigger .chip__icon { color: ${cv("icon.secondary")}; }
-/* date-range widget (DateRangePicker recipe) */
+/* date-range widget — a period navigator (‹ [range] ↻ ›) that opens a dual-month
+   calendar with month/year selects. Arrows step the whole window by a month. */
 .mc-filters-pop .daterange { display: block; }
 .mc-filters-pop .daterange__nav { width: 100%; }
-.mc-filters-pop .daterange__field { flex: 1 1 auto; justify-content: center; }
+.mc-filters-pop .daterange__field { flex: 1 1 auto; }
 .daterange__nav { box-sizing: border-box; display: inline-flex; align-items: stretch; height: 40px; border-radius: ${px(resolve("radius.default"))}; background: ${cv("surface.dim")}; border: 1px solid ${cv("border.default")}; overflow: hidden; }
 .daterange__nav:hover { border-color: ${cv("border.strong")}; }
-.daterange__nav:focus-within { border-color: ${cv("border.focus")}; }
-.daterange__arrow, .daterange__field { border: none; background: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; font-family: ${cv("family.sans")}; color: ${cv("text.default")}; }
-.daterange__arrow { width: 32px; flex-shrink: 0; color: ${cv("icon.default")}; }
-.daterange__arrow:hover { background: ${cv("fill.neutralHover")}; }
+.daterange__arrow, .daterange__field, .daterange__reset { border: none; background: none; cursor: pointer; display: inline-flex; align-items: center; font-family: ${cv("family.sans")}; color: ${cv("text.default")}; }
+.daterange__arrow { width: 32px; flex-shrink: 0; justify-content: center; color: ${cv("icon.default")}; }
+.daterange__arrow:hover, .daterange__reset:hover { background: ${cv("fill.neutralHover")}; }
 .daterange__arrow-icon { width: 18px; height: 18px; }
-.daterange__field { padding: 0 ${px(resolve("dim.2_5"))}; ${typoCss(bodySmType)} white-space: nowrap; border-left: 1px solid ${cv("border.default")}; }
+.daterange__field { gap: ${px(resolve("dim.2"))}; padding: 0 ${px(resolve("dim.3"))}; ${typoCss(bodySmType)} white-space: nowrap; border-left: 1px solid ${cv("border.default")}; }
 .daterange__field:hover { background: ${cv("fill.neutralHover")}; }
-.daterange__label { display: inline-flex; align-items: center; padding: 0 ${px(resolve("dim.2_5"))}; ${typoCss(bodySmType)} color: ${cv("text.secondary")}; white-space: nowrap; border-left: 1px solid ${cv("border.default")}; }
+.daterange__cal-icon { width: 16px; height: 16px; flex-shrink: 0; color: ${cv("icon.default")}; }
+.daterange__range-val { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.daterange__reset { width: 30px; flex-shrink: 0; justify-content: center; color: ${cv("icon.secondary")}; border-left: 1px solid ${cv("border.default")}; }
+.daterange__reset-icon { width: 15px; height: 15px; }
 .daterange__arrow--next { border-left: 1px solid ${cv("border.default")}; }
-.daterange__panel { margin: 0; box-sizing: border-box; padding: ${px(resolve("dim.3"))}; border-radius: ${px(resolve("radius.default"))}; background: ${cv("surface.default")}; border: 1px solid ${cv("border.default")}; box-shadow: ${lbShadowCss}; font-family: ${cv("family.sans")}; z-index: 20; }
-.daterange__phead { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-.daterange__month { ${typoCss(headingSmType)} color: ${cv("text.default")}; }
-.daterange__pnav { width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border: none; background: none; border-radius: ${px(resolve("radius.default"))}; cursor: pointer; color: ${cv("icon.default")}; }
+.daterange__panel { margin: 0; box-sizing: border-box; padding: ${px(resolve("dim.4"))}; border-radius: ${px(resolve("radius.default"))}; background: ${cv("surface.default")}; border: 1px solid ${cv("border.default")}; box-shadow: ${lbShadowCss}; font-family: ${cv("family.sans")}; z-index: 20; max-width: calc(100vw - 16px); }
+.daterange__cals { display: flex; gap: ${px(resolve("dim.5"))}; }
+.daterange__chead { display: flex; align-items: center; justify-content: space-between; gap: ${px(resolve("dim.2"))}; margin-bottom: ${px(resolve("dim.2"))}; }
+.daterange__mrow { display: flex; align-items: center; gap: ${px(resolve("dim.1"))}; }
+.daterange__month, .daterange__year { height: 30px; border: 1px solid ${cv("border.default")}; border-radius: ${px(resolve("radius.default"))}; background: ${cv("surface.default")}; color: ${cv("text.default")}; font-family: inherit; ${typoCss(bodySmType)} padding: 0 4px 0 8px; cursor: pointer; }
+.daterange__month:hover, .daterange__year:hover { border-color: ${cv("border.strong")}; }
+.daterange__pnav { width: 30px; height: 30px; display: inline-flex; align-items: center; justify-content: center; border: none; background: none; border-radius: ${px(resolve("radius.default"))}; cursor: pointer; color: ${cv("icon.default")}; flex-shrink: 0; }
 .daterange__pnav:hover { background: ${cv("fill.neutralHover")}; }
 .daterange__pnav-icon { width: 20px; height: 20px; }
-.daterange__grid { display: grid; grid-template-columns: repeat(7, 36px); gap: 2px 0; }
-.daterange__weekday { width: 36px; height: 28px; display: inline-flex; align-items: center; justify-content: center; color: ${cv("text.muted")}; ${typoCss(labelSmType)} }
-.daterange__day { width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid transparent; background: none; cursor: pointer; color: ${cv("text.default")}; ${typoCss(bodySmType)} font-family: inherit; border-radius: ${px(resolve("radius.default"))}; }
+.daterange__pnav-sp { width: 30px; flex-shrink: 0; }
+.daterange__grid { display: grid; grid-template-columns: repeat(7, 34px); gap: 2px 0; }
+.daterange__weekday { width: 34px; height: 28px; display: inline-flex; align-items: center; justify-content: center; color: ${cv("text.muted")}; ${typoCss(labelSmType)} }
+.daterange__day { width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid transparent; background: none; cursor: pointer; color: ${cv("text.default")}; ${typoCss(bodySmType)} font-family: inherit; border-radius: ${px(resolve("radius.default"))}; }
 .daterange__day:hover { background: ${cv("fill.neutralHover")}; }
 .daterange__day--outside { color: ${cv("text.muted")}; pointer-events: none; }
 .daterange__day--today { border-color: ${cv("border.strong")}; }
@@ -1063,9 +1070,10 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .daterange__day--start { border-radius: ${px(resolve("radius.default"))} 0 0 ${px(resolve("radius.default"))}; }
 .daterange__day--end { border-radius: 0 ${px(resolve("radius.default"))} ${px(resolve("radius.default"))} 0; }
 .daterange__day--start.daterange__day--end { border-radius: ${px(resolve("radius.default"))}; }
-.daterange__footer { display: flex; justify-content: space-between; gap: ${px(resolve("dim.2"))}; padding-top: ${px(resolve("dim.3"))}; margin-top: 8px; border-top: 1px solid ${cv("border.default")}; }
+.daterange__footer { display: flex; justify-content: space-between; gap: ${px(resolve("dim.2"))}; padding-top: ${px(resolve("dim.3"))}; margin-top: ${px(resolve("dim.2"))}; border-top: 1px solid ${cv("border.default")}; }
 .daterange__btn { border: 1px solid ${cv("border.default")}; background: ${cv("surface.default")}; color: ${cv("text.default")}; border-radius: ${px(resolve("radius.default"))}; padding: 0 ${px(resolve("dim.3"))}; height: 32px; cursor: pointer; ${typoCss(bodySmType)} font-family: inherit; }
 .daterange__btn--primary { background: ${cv("fill.primary")}; border-color: ${cv("fill.primary")}; color: ${cv("text.onFill")}; }
+@media (max-width: 560px) { .daterange__cals { flex-direction: column; gap: ${px(resolve("dim.3"))}; } }
 /* tapping the search icon reveals both fields, stacked, over row 1 */
 .mc-search-close { display: none; flex-shrink: 0; border: none; background: none; padding: 0; cursor: pointer; color: ${cv("text.primary")}; font-family: ${cv("family.sans")}; ${typoCss(linkBaseType)}${linkBaseExt.textDecoration ? ` text-decoration: ${linkBaseExt.textDecoration};` : ""} }
 .mc--search-open .mc-rail__row--top { flex-direction: column; align-items: stretch; }
@@ -1769,23 +1777,30 @@ const sortArrow = `<span class="mc-th__arrow">${iconOf("arrow_downward", "mc-th_
 // component's .daterange recipe; seeded to the current month as a starting point)
 // the DateRangePicker recipe, as a factory so the row-1 (desktop) and the panel
 // (mobile) instances get unique ids but the same behaviour + shared filter state
+const DR_MONTHS_FULL = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+const drMonthOpts = DR_MONTHS_FULL.map((m, i) => `<option value="${i}">${m}</option>`).join("");
+const drYearOpts = [2024, 2025, 2026, 2027, 2028, 2029].map((y) => `<option value="${y}">${y}</option>`).join("");
+// one calendar's header: a month + year <select> pair, flanked by the paging
+// arrow on its outer edge (prev on the left calendar, next on the right)
+function drCalHead(cal, side) {
+  const prev = side === "left" ? `<button class="daterange__pnav daterange__pnav--prev" type="button" aria-label="Previous month">${iconOf("chevron_left", "daterange__pnav-icon")}</button>` : `<span class="daterange__pnav-sp"></span>`;
+  const next = side === "right" ? `<button class="daterange__pnav daterange__pnav--next" type="button" aria-label="Next month">${iconOf("chevron_right", "daterange__pnav-icon")}</button>` : `<span class="daterange__pnav-sp"></span>`;
+  return `<div class="daterange__chead">${prev}<span class="daterange__mrow"><select class="daterange__month" data-cal="${cal}" aria-label="Month">${drMonthOpts}</select><select class="daterange__year" data-cal="${cal}" aria-label="Year">${drYearOpts}</select></span>${next}</div>`;
+}
 function dateRangeWidget(suffix) {
   const pid = "mc-dr-panel-" + suffix;
-  return `<div class="daterange" id="mc-dr-${suffix}" data-start="2026-07-15" data-end="2026-08-15">
+  return `<div class="daterange" id="mc-dr-${suffix}" data-start="2026-08-08" data-end="2026-09-08">
               <div class="daterange__nav">
-                <button class="daterange__arrow daterange__arrow--prev" type="button" aria-label="Previous period">${iconOf("chevron_left", "daterange__arrow-icon")}</button>
-                <button class="daterange__field daterange__field--start" type="button" popovertarget="${pid}" aria-haspopup="dialog"><span class="daterange__start-val">07/15/2026</span></button>
-                <span class="daterange__label">This month</span>
-                <button class="daterange__field daterange__field--end" type="button" popovertarget="${pid}" aria-haspopup="dialog"><span class="daterange__end-val">08/15/2026</span></button>
-                <button class="daterange__arrow daterange__arrow--next" type="button" aria-label="Next period">${iconOf("chevron_right", "daterange__arrow-icon")}</button>
+                <button class="daterange__arrow daterange__arrow--prev" type="button" aria-label="Previous month">${iconOf("chevron_left", "daterange__arrow-icon")}</button>
+                <button class="daterange__field" type="button" popovertarget="${pid}" aria-haspopup="dialog">${iconOf("calendar_today", "daterange__cal-icon")}<span class="daterange__range-val">Aug 08, 2026 – Sep 08, 2026</span></button>
+                <button class="daterange__reset" type="button" aria-label="Reset date range">${iconOf("refresh", "daterange__reset-icon")}</button>
+                <button class="daterange__arrow daterange__arrow--next" type="button" aria-label="Next month">${iconOf("chevron_right", "daterange__arrow-icon")}</button>
               </div>
               <div class="daterange__panel" id="${pid}" popover role="dialog" aria-label="Choose a date range">
-                <div class="daterange__phead">
-                  <button class="daterange__pnav daterange__pnav--prev" type="button" aria-label="Previous month">${iconOf("chevron_left", "daterange__pnav-icon")}</button>
-                  <span class="daterange__month">July 2026</span>
-                  <button class="daterange__pnav daterange__pnav--next" type="button" aria-label="Next month">${iconOf("chevron_right", "daterange__pnav-icon")}</button>
+                <div class="daterange__cals">
+                  <div class="daterange__cal">${drCalHead(0, "left")}<div class="daterange__grid" data-cal="0"></div></div>
+                  <div class="daterange__cal">${drCalHead(1, "right")}<div class="daterange__grid" data-cal="1"></div></div>
                 </div>
-                <div class="daterange__grid"></div>
                 <div class="daterange__footer">
                   <button class="daterange__btn daterange__clear" type="button">Clear</button>
                   <button class="daterange__btn daterange__btn--primary daterange__apply" type="button">Apply</button>
@@ -2526,35 +2541,39 @@ const appJs = `(function () {
     });
   });
 
-  // ---- date-range: both instances (row-1 desktop + panel mobile) share one
-  // committed range. DR_* names avoid colliding with the single DatePicker's DP_*.
+  // ---- date-range: a period navigator (‹ [range] ↻ ›) opening a dual-month
+  // calendar. Both widget instances (row-1 + panel) share one committed range.
+  // DR_* names avoid colliding with the single DatePicker's DP_*.
   (function () {
     var els = [].slice.call(document.querySelectorAll(".mc-rail__topbar .daterange"));
     if (!els.length) return;
-    var DR_MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+    var DR_ABBR = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
     var DR_WD = ["Su","Mo","Tu","We","Th","Fr","Sa"];
     function pad(n) { return ("0" + n).slice(-2); }
-    function fmt(a) { return pad(a.m + 1) + "/" + pad(a.d) + "/" + a.y; }
     function ymd(a) { return "" + a.y + pad(a.m + 1) + pad(a.d); }
     function cmp(a) { return a.y * 10000 + a.m * 100 + a.d; }
     function addMonths(a, n) { var d = new Date(a.y, a.m + n, a.d); return { y: d.getFullYear(), m: d.getMonth(), d: d.getDate() }; }
-    var TODAY = { y: 2026, m: 7, d: 8 };
-    var cur = { s: { y: 2026, m: 6, d: 15 }, e: { y: 2026, m: 7, d: 15 } };
-    var curMode = "period"; // "period" (arrows/default → month label) | "custom"
-    function syncAllNavs() {
-      els.forEach(function (el) {
-        el.querySelector(".daterange__start-val").textContent = fmt(cur.s);
-        el.querySelector(".daterange__end-val").textContent = fmt(cur.e);
-        el.querySelector(".daterange__label").textContent = curMode === "custom" ? "Custom" : DR_MONTHS[cur.s.m].slice(0, 3) + " " + cur.s.y;
-      });
-    }
-    function commit(s, e, mode) { cur.s = s; cur.e = e; curMode = mode || "period"; adv.dateStart = ymd(s); adv.dateEnd = ymd(e); updateFiltersChip(); syncAllNavs(); applyFilter(); }
-    function resetRange() { cur.s = { y: 2026, m: 6, d: 15 }; cur.e = { y: 2026, m: 7, d: 15 }; curMode = "period"; adv.dateStart = ""; adv.dateEnd = ""; updateFiltersChip(); syncAllNavs(); }
-    window.__mcResetDateRange = resetRange;
+    function viewAdd(vw, n) { var d = new Date(vw.y, vw.m + n, 1); return { y: d.getFullYear(), m: d.getMonth() }; }
+    function fmtRange(s, e) { return DR_ABBR[s.m] + " " + pad(s.d) + ", " + s.y + " – " + DR_ABBR[e.m] + " " + pad(e.d) + ", " + e.y; }
+    var TODAY = { y: 2026, m: 8, d: 8 };                 // Sep 8, 2026
+    function DEF_S() { return { y: 2026, m: 7, d: 8 }; }  // a month back from today
+    function DEF_E() { return { y: 2026, m: 8, d: 8 }; }
+    var cur = { s: DEF_S(), e: DEF_E() };
+    function syncTriggers() { els.forEach(function (el) { el.querySelector(".daterange__range-val").textContent = fmtRange(cur.s, cur.e); }); }
+    function commit(s, e) { if (cmp(s) > cmp(e)) { var t = s; s = e; e = t; } cur.s = s; cur.e = e; adv.dateStart = ymd(s); adv.dateEnd = ymd(e); updateFiltersChip(); syncTriggers(); applyFilter(); }
+    function resetRange() { cur.s = DEF_S(); cur.e = DEF_E(); adv.dateStart = ""; adv.dateEnd = ""; updateFiltersChip(); syncTriggers(); applyFilter(); }
+    window.__mcResetDateRange = function () { cur.s = DEF_S(); cur.e = DEF_E(); adv.dateStart = ""; adv.dateEnd = ""; updateFiltersChip(); syncTriggers(); };
     els.forEach(function (el) {
       var panel = el.querySelector(".daterange__panel");
-      var draftS = null, draftE = null, view = { y: cur.s.y, m: cur.s.m };
-      function render() {
+      var grids = [el.querySelector('.daterange__grid[data-cal="0"]'), el.querySelector('.daterange__grid[data-cal="1"]')];
+      var monthSels = [el.querySelector('.daterange__month[data-cal="0"]'), el.querySelector('.daterange__month[data-cal="1"]')];
+      var yearSels = [el.querySelector('.daterange__year[data-cal="0"]'), el.querySelector('.daterange__year[data-cal="1"]')];
+      var views = [{ y: cur.s.y, m: cur.s.m }, viewAdd({ y: cur.s.y, m: cur.s.m }, 1)];
+      var draftS = null, draftE = null;
+      function renderCal(ci) {
+        var view = views[ci], grid = grids[ci];
+        if (monthSels[ci]) monthSels[ci].value = view.m;
+        if (yearSels[ci]) yearSels[ci].value = view.y;
         var s = draftS || cur.s, e = draftE || (draftS ? null : cur.e);
         var first = new Date(view.y, view.m, 1).getDay(), days = new Date(view.y, view.m + 1, 0).getDate(), prevDays = new Date(view.y, view.m, 0).getDate();
         var cells = [], i, d;
@@ -2562,29 +2581,33 @@ const appJs = `(function () {
         for (d = 1; d <= days; d++) cells.push({ d: d, outside: false });
         while (cells.length % 7 !== 0) cells.push({ d: cells.length - (first + days) + 1, outside: true });
         var sV = s ? cmp(s) : null, eV = e ? cmp(e) : null;
-        var grid = DR_WD.map(function (w) { return '<span class="daterange__weekday">' + w + '</span>'; }).join("");
+        var html = DR_WD.map(function (w) { return '<span class="daterange__weekday">' + w + '</span>'; }).join("");
         cells.forEach(function (c) {
-          if (c.outside) { grid += '<span class="daterange__day daterange__day--outside">' + c.d + '</span>'; return; }
+          if (c.outside) { html += '<span class="daterange__day daterange__day--outside">' + c.d + '</span>'; return; }
           var v = view.y * 10000 + view.m * 100 + c.d, cls = ["daterange__day"];
           if (view.y === TODAY.y && view.m === TODAY.m && c.d === TODAY.d) cls.push("daterange__day--today");
           if (sV !== null && eV !== null) { if (v === sV) cls.push("daterange__day--start"); else if (v === eV) cls.push("daterange__day--end"); else if (v > sV && v < eV) cls.push("daterange__day--mid"); }
           else if (sV !== null && v === sV) cls.push("daterange__day--start", "daterange__day--end");
-          grid += '<button type="button" class="' + cls.join(" ") + '" data-day="' + c.d + '">' + c.d + '</button>';
+          html += '<button type="button" class="' + cls.join(" ") + '" data-day="' + c.d + '">' + c.d + '</button>';
         });
-        panel.querySelector(".daterange__month").textContent = DR_MONTHS[view.m] + " " + view.y;
-        panel.querySelector(".daterange__grid").innerHTML = grid;
-        panel.querySelectorAll(".daterange__day[data-day]").forEach(function (btn) {
+        grid.innerHTML = html;
+        grid.querySelectorAll(".daterange__day[data-day]").forEach(function (btn) {
           btn.addEventListener("click", function () {
-            var picked = { y: view.y, m: view.m, d: parseInt(btn.dataset.day, 10) };
+            var picked = { y: views[ci].y, m: views[ci].m, d: parseInt(btn.dataset.day, 10) };
             if (!draftS || (draftS && draftE)) { draftS = picked; draftE = null; }
             else { if (cmp(picked) < cmp(draftS)) { draftE = draftS; draftS = picked; } else { draftE = picked; } }
-            render();
+            renderBoth();
           });
         });
       }
+      function renderBoth() { renderCal(0); renderCal(1); }
+      [0, 1].forEach(function (ci) {
+        if (monthSels[ci]) monthSels[ci].addEventListener("change", function () { views[ci] = { y: views[ci].y, m: parseInt(monthSels[ci].value, 10) }; renderCal(ci); });
+        if (yearSels[ci]) yearSels[ci].addEventListener("change", function () { views[ci] = { y: parseInt(yearSels[ci].value, 10), m: views[ci].m }; renderCal(ci); });
+      });
       panel.addEventListener("toggle", function (e) {
         if (e.newState !== "open") return;
-        view = { y: cur.s.y, m: cur.s.m }; draftS = null; draftE = null; render();
+        views = [{ y: cur.s.y, m: cur.s.m }, viewAdd({ y: cur.s.y, m: cur.s.m }, 1)]; draftS = null; draftE = null; renderBoth();
         requestAnimationFrame(function () {
           var r = el.querySelector(".daterange__nav").getBoundingClientRect();
           var w = panel.getBoundingClientRect().width;
@@ -2593,14 +2616,16 @@ const appJs = `(function () {
           panel.style.left = Math.max(8, Math.min(r.left, window.innerWidth - w - 8)) + "px";
         });
       });
-      panel.querySelector(".daterange__pnav--prev").addEventListener("click", function () { view.m--; if (view.m < 0) { view.m = 11; view.y--; } render(); });
-      panel.querySelector(".daterange__pnav--next").addEventListener("click", function () { view.m++; if (view.m > 11) { view.m = 0; view.y++; } render(); });
-      panel.querySelector(".daterange__apply").addEventListener("click", function () { if (draftS) commit(draftS, draftE || draftS, "custom"); panel.hidePopover(); });
-      panel.querySelector(".daterange__clear").addEventListener("click", function () { resetRange(); applyFilter(); render(); });
-      el.querySelector(".daterange__arrow--prev").addEventListener("click", function () { commit(addMonths(cur.s, -1), addMonths(cur.e, -1), "period"); });
-      el.querySelector(".daterange__arrow--next").addEventListener("click", function () { commit(addMonths(cur.s, 1), addMonths(cur.e, 1), "period"); });
+      var pnavPrev = panel.querySelector(".daterange__pnav--prev"), pnavNext = panel.querySelector(".daterange__pnav--next");
+      if (pnavPrev) pnavPrev.addEventListener("click", function () { views = [viewAdd(views[0], -1), viewAdd(views[1], -1)]; renderBoth(); });
+      if (pnavNext) pnavNext.addEventListener("click", function () { views = [viewAdd(views[0], 1), viewAdd(views[1], 1)]; renderBoth(); });
+      panel.querySelector(".daterange__apply").addEventListener("click", function () { if (draftS) commit(draftS, draftE || draftS); panel.hidePopover(); });
+      panel.querySelector(".daterange__clear").addEventListener("click", function () { resetRange(); renderBoth(); });
+      el.querySelector(".daterange__arrow--prev").addEventListener("click", function () { commit(addMonths(cur.s, -1), addMonths(cur.e, -1)); });
+      el.querySelector(".daterange__arrow--next").addEventListener("click", function () { commit(addMonths(cur.s, 1), addMonths(cur.e, 1)); });
+      el.querySelector(".daterange__reset").addEventListener("click", function () { resetRange(); });
     });
-    syncAllNavs();
+    syncTriggers();
   })();
 
   // ---- Clear all: reset every filter surface ----
