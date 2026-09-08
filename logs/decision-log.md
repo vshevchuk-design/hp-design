@@ -1186,3 +1186,12 @@ Per user: the date-range is a primary control (goes up top by search), and Depar
 - Two surfaces, one state: `dateRangeWidget(suffix)` factory yields the row-1 + panel instances; the date-range JS now binds all `.daterange` and shares one committed `cur` range (`syncAllNavs` reflects both). `setAdv(key,val)` mirrors Department/Staff across the panel pills and the inline Select (label + selected option + `--on`). Clear-all resets every surface.
 
 Verified 1280 + 390: desktop row-1 date-range + row-2 Selects filter (Staff=Sarah → Diego, arrow steps the window), the Select label/active state updates; mobile keeps the full Filters panel, inline controls hidden. Batch fully addressed.
+
+## 2026-09-06 (cont. 9) — Filters polish: real Selects, date-range placement, Custom label
+
+Three fixes on the row-1/row-2 controls:
+1. **Department / Staff are now the real DS Select** (`.select select--base`) — dropped the chip restyle (radius.full / 32px) that made them look like pills. They show the placeholder → selected value (resting class toggled), with a `border.focus` hairline when active. Matches the DS Select and the student MC.
+2. **Date-range sits next to the search**, not floating centre: the date-range keeps `margin-left:auto` and the searches lost theirs, so the two group together on the right. Its height was already 40px (= the search field).
+3. **"Custom" label**: the middle period label now reads **Custom** after a calendar pick (Apply), and the month (`Jul 2026`) after the arrows / default — tracked with a `curMode` flag.
+
+Verified: custom pick → "Custom" + filters Aug 3–5 (Cait/Diego/Maya); arrow → "Jul 2026"; dept Select updates its value + active border and filters.

@@ -997,7 +997,9 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .mc-rail__topbar { display: flex; flex-direction: column; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))}; }
 .mc-rail__row { display: flex; align-items: center; gap: ${px(resolve("dim.2"))}; min-width: 0; }
 .mc-rail__row--filters { flex-wrap: wrap; }
-.mc-rail__searches { display: flex; align-items: center; gap: ${px(resolve("dim.2"))}; margin-left: auto; min-width: 0; }
+/* the date-range takes the row's free space (margin-left:auto) and the searches
+   sit right after it, so the two group together on the right, next to each other */
+.mc-rail__searches { display: flex; align-items: center; gap: ${px(resolve("dim.2"))}; min-width: 0; }
 .mc-rail__searches .search { min-width: 0; }
 
 /* mobile-first (<600): the two fields collapse behind one search icon, and the
@@ -1023,15 +1025,13 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .mc-filt-opt--on { background: ${cv("fill.primary")}; border-color: ${cv("fill.primary")}; color: ${cv("text.onFill")}; }
 .mc-filt-field--toggles .listbox__list { display: flex; flex-direction: column; gap: ${px(resolve("dim.1"))}; padding: 0; }
 /* inline (desktop) advanced controls: the date-range on row 1, the Department /
-   Staff Selects on row 2. Hidden on mobile (< 600) where they live in the panel. */
+   Staff Selects on row 2. The Selects ARE the DS Select recipe (base) — no chip
+   restyle. Hidden on mobile (< 600) where they live in the panel. */
 .mc-rail__daterange { display: none; margin-left: auto; }
 .mc-rail__advsep { display: none; }
 .mc-advsel { position: relative; display: none; flex-shrink: 0; }
-.mc-advsel__trigger { height: 32px; min-width: 0; gap: ${px(resolve("dim.1"))}; padding: 0 ${px(resolve("dim.1_5"))} 0 ${px(resolve("dim.2_5"))}; border-radius: ${px(resolve("radius.full"))}; }
-.mc-advsel__trigger .select__value { ${typoCss(bodySmType)} color: ${cv("text.default")}; white-space: nowrap; }
-.mc-advsel__trigger .select__chevron { width: 18px; height: 18px; }
-.mc-advsel--on .mc-advsel__trigger { background: ${cv("fill.primary")}; border-color: ${cv("fill.primary")}; }
-.mc-advsel--on .mc-advsel__trigger .select__value, .mc-advsel--on .mc-advsel__trigger .select__chevron { color: ${cv("text.onFill")}; }
+.mc-advsel__trigger { min-width: 0; }
+.mc-advsel--on .mc-advsel__trigger { border-color: ${cv("border.focus")}; }
 /* date-range widget (DateRangePicker recipe) */
 .mc-filters-pop .daterange { display: block; }
 .mc-filters-pop .daterange__nav { width: 100%; }
@@ -2480,6 +2480,8 @@ const appJs = `(function () {
     var sel = document.querySelector('.mc-advsel[data-adv="' + key + '"]');
     if (sel) {
       sel.classList.toggle("mc-advsel--on", val !== "");
+      var trig = sel.querySelector(".mc-advsel__trigger");
+      if (trig) trig.classList.toggle("select--resting", val === "");
       var opts = sel.querySelectorAll(".listbox__option");
       var placeholder = opts[0] ? opts[0].textContent.trim() : key;
       opts.forEach(function (o) {
@@ -2526,17 +2528,17 @@ const appJs = `(function () {
     function cmp(a) { return a.y * 10000 + a.m * 100 + a.d; }
     function addMonths(a, n) { var d = new Date(a.y, a.m + n, a.d); return { y: d.getFullYear(), m: d.getMonth(), d: d.getDate() }; }
     var TODAY = { y: 2026, m: 7, d: 8 };
-    var DEF = { s: { y: 2026, m: 6, d: 15 }, e: { y: 2026, m: 7, d: 15 } };
     var cur = { s: { y: 2026, m: 6, d: 15 }, e: { y: 2026, m: 7, d: 15 } };
+    var curMode = "period"; // "period" (arrows/default → month label) | "custom"
     function syncAllNavs() {
       els.forEach(function (el) {
         el.querySelector(".daterange__start-val").textContent = fmt(cur.s);
         el.querySelector(".daterange__end-val").textContent = fmt(cur.e);
-        el.querySelector(".daterange__label").textContent = DR_MONTHS[cur.s.m].slice(0, 3) + " " + cur.s.y;
+        el.querySelector(".daterange__label").textContent = curMode === "custom" ? "Custom" : DR_MONTHS[cur.s.m].slice(0, 3) + " " + cur.s.y;
       });
     }
-    function commit(s, e) { cur.s = s; cur.e = e; adv.dateStart = ymd(s); adv.dateEnd = ymd(e); updateFiltersChip(); syncAllNavs(); applyFilter(); }
-    function resetRange() { cur.s = { y: 2026, m: 6, d: 15 }; cur.e = { y: 2026, m: 7, d: 15 }; adv.dateStart = ""; adv.dateEnd = ""; updateFiltersChip(); syncAllNavs(); }
+    function commit(s, e, mode) { cur.s = s; cur.e = e; curMode = mode || "period"; adv.dateStart = ymd(s); adv.dateEnd = ymd(e); updateFiltersChip(); syncAllNavs(); applyFilter(); }
+    function resetRange() { cur.s = { y: 2026, m: 6, d: 15 }; cur.e = { y: 2026, m: 7, d: 15 }; curMode = "period"; adv.dateStart = ""; adv.dateEnd = ""; updateFiltersChip(); syncAllNavs(); }
     window.__mcResetDateRange = resetRange;
     els.forEach(function (el) {
       var panel = el.querySelector(".daterange__panel");
@@ -2582,10 +2584,10 @@ const appJs = `(function () {
       });
       panel.querySelector(".daterange__pnav--prev").addEventListener("click", function () { view.m--; if (view.m < 0) { view.m = 11; view.y--; } render(); });
       panel.querySelector(".daterange__pnav--next").addEventListener("click", function () { view.m++; if (view.m > 11) { view.m = 0; view.y++; } render(); });
-      panel.querySelector(".daterange__apply").addEventListener("click", function () { if (draftS) commit(draftS, draftE || draftS); panel.hidePopover(); });
+      panel.querySelector(".daterange__apply").addEventListener("click", function () { if (draftS) commit(draftS, draftE || draftS, "custom"); panel.hidePopover(); });
       panel.querySelector(".daterange__clear").addEventListener("click", function () { resetRange(); applyFilter(); render(); });
-      el.querySelector(".daterange__arrow--prev").addEventListener("click", function () { commit(addMonths(cur.s, -1), addMonths(cur.e, -1)); });
-      el.querySelector(".daterange__arrow--next").addEventListener("click", function () { commit(addMonths(cur.s, 1), addMonths(cur.e, 1)); });
+      el.querySelector(".daterange__arrow--prev").addEventListener("click", function () { commit(addMonths(cur.s, -1), addMonths(cur.e, -1), "period"); });
+      el.querySelector(".daterange__arrow--next").addEventListener("click", function () { commit(addMonths(cur.s, 1), addMonths(cur.e, 1), "period"); });
     });
     syncAllNavs();
   })();
