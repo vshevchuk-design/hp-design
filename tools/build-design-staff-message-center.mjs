@@ -572,6 +572,7 @@ const titleXlType = resolveToken(get("{text-style.title-xl}"));
 const headingLgType = resolveToken(get("{text-style.heading-lg}"));
 const headingSmType = resolveToken(get("{text-style.heading-sm}"));
 const bodySmType = resolveToken(get("{text-style.body-sm}"));
+const bodyBaseType = resolveToken(get("{text-style.body-base}"));
 // link-base for the search "Close" label — $extensions fetched directly from
 // the node, since resolveToken() drops them (documented gap)
 const linkBaseNode = get("{text-style.link-base}");
@@ -1006,6 +1007,56 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .mc-qchip { flex-shrink: 0; display: none; }
 .mc-filters-chip { display: inline-flex; }
 .mc-fopt--collapsible { display: block; }
+/* ---- Filters panel: a real form — Date range / Department / Staff, plus the
+   collapsed quick-filter toggles on narrow. The date-range field reuses the
+   DateRangePicker component recipe. ---- */
+.mc-filters-pop { margin: 0; box-sizing: border-box; width: 340px; max-width: calc(100vw - 16px); padding: 0; border-radius: ${px(resolve("radius.default"))}; background: ${cv("surface.default")}; border: 1px solid ${cv("border.default")}; box-shadow: ${lbShadowCss}; font-family: ${cv("family.sans")}; }
+.mc-filters-pop__head { display: flex; align-items: center; justify-content: space-between; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))}; border-bottom: 1px solid ${cv("border.default")}; }
+.mc-filters-pop__title { color: ${cv("text.default")}; font-weight: 600; ${typoCss(bodyBaseType)} }
+.mc-filters-pop__clear { border: none; background: none; padding: 0; cursor: pointer; color: ${cv("text.primary")}; font-weight: 600; ${typoCss(bodySmType)} font-family: inherit; }
+.mc-filters-pop__body { display: flex; flex-direction: column; gap: ${px(resolve("dim.4"))}; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))} ${px(resolve("dim.4"))}; max-height: 72vh; overflow-y: auto; }
+.mc-filt-field { display: flex; flex-direction: column; gap: ${px(resolve("dim.2"))}; }
+.mc-filt-label { color: ${cv("text.muted")}; ${typoCss(labelSmType)}${labelSmExt.textTransform ? ` text-transform: ${labelSmExt.textTransform};` : ""}${labelSmExt.letterSpacing ? ` letter-spacing: ${labelSmExt.letterSpacing};` : ""} }
+.mc-filt-opts { display: flex; flex-wrap: wrap; gap: ${px(resolve("dim.1_5"))}; }
+.mc-filt-opt { padding: ${px(resolve("dim.1"))} ${px(resolve("dim.2_5"))}; border: 1px solid ${cv("border.default")}; border-radius: ${px(resolve("radius.full"))}; background: ${cv("surface.default")}; color: ${cv("text.default")}; ${typoCss(bodySmType)} cursor: pointer; font-family: inherit; }
+.mc-filt-opt:hover { border-color: ${cv("border.strong")}; }
+.mc-filt-opt--on { background: ${cv("fill.primary")}; border-color: ${cv("fill.primary")}; color: ${cv("text.onFill")}; }
+.mc-filt-field--toggles .listbox__list { display: flex; flex-direction: column; gap: ${px(resolve("dim.1"))}; padding: 0; }
+/* date-range widget (DateRangePicker recipe) */
+.mc-filters-pop .daterange { display: block; }
+.mc-filters-pop .daterange__nav { width: 100%; }
+.mc-filters-pop .daterange__field { flex: 1 1 auto; justify-content: center; }
+.daterange__nav { box-sizing: border-box; display: inline-flex; align-items: stretch; height: 40px; border-radius: ${px(resolve("radius.default"))}; background: ${cv("surface.dim")}; border: 1px solid ${cv("border.default")}; overflow: hidden; }
+.daterange__nav:hover { border-color: ${cv("border.strong")}; }
+.daterange__nav:focus-within { border-color: ${cv("border.focus")}; }
+.daterange__arrow, .daterange__field { border: none; background: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; font-family: ${cv("family.sans")}; color: ${cv("text.default")}; }
+.daterange__arrow { width: 32px; flex-shrink: 0; color: ${cv("icon.default")}; }
+.daterange__arrow:hover { background: ${cv("fill.neutralHover")}; }
+.daterange__arrow-icon { width: 18px; height: 18px; }
+.daterange__field { padding: 0 ${px(resolve("dim.2_5"))}; ${typoCss(bodySmType)} white-space: nowrap; border-left: 1px solid ${cv("border.default")}; }
+.daterange__field:hover { background: ${cv("fill.neutralHover")}; }
+.daterange__label { display: inline-flex; align-items: center; padding: 0 ${px(resolve("dim.2_5"))}; ${typoCss(bodySmType)} color: ${cv("text.secondary")}; white-space: nowrap; border-left: 1px solid ${cv("border.default")}; }
+.daterange__arrow--next { border-left: 1px solid ${cv("border.default")}; }
+.daterange__panel { margin: 0; box-sizing: border-box; padding: ${px(resolve("dim.3"))}; border-radius: ${px(resolve("radius.default"))}; background: ${cv("surface.default")}; border: 1px solid ${cv("border.default")}; box-shadow: ${lbShadowCss}; font-family: ${cv("family.sans")}; z-index: 20; }
+.daterange__phead { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.daterange__month { ${typoCss(headingSmType)} color: ${cv("text.default")}; }
+.daterange__pnav { width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border: none; background: none; border-radius: ${px(resolve("radius.default"))}; cursor: pointer; color: ${cv("icon.default")}; }
+.daterange__pnav:hover { background: ${cv("fill.neutralHover")}; }
+.daterange__pnav-icon { width: 20px; height: 20px; }
+.daterange__grid { display: grid; grid-template-columns: repeat(7, 36px); gap: 2px 0; }
+.daterange__weekday { width: 36px; height: 28px; display: inline-flex; align-items: center; justify-content: center; color: ${cv("text.muted")}; ${typoCss(labelSmType)} }
+.daterange__day { width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid transparent; background: none; cursor: pointer; color: ${cv("text.default")}; ${typoCss(bodySmType)} font-family: inherit; border-radius: ${px(resolve("radius.default"))}; }
+.daterange__day:hover { background: ${cv("fill.neutralHover")}; }
+.daterange__day--outside { color: ${cv("text.muted")}; pointer-events: none; }
+.daterange__day--today { border-color: ${cv("border.strong")}; }
+.daterange__day--mid { background: ${cv("bg.primary")}; border-radius: 0; }
+.daterange__day--start, .daterange__day--end, .daterange__day--start:hover, .daterange__day--end:hover { background: ${cv("fill.primary")}; color: ${cv("text.onFill")}; border-color: ${cv("fill.primary")}; }
+.daterange__day--start { border-radius: ${px(resolve("radius.default"))} 0 0 ${px(resolve("radius.default"))}; }
+.daterange__day--end { border-radius: 0 ${px(resolve("radius.default"))} ${px(resolve("radius.default"))} 0; }
+.daterange__day--start.daterange__day--end { border-radius: ${px(resolve("radius.default"))}; }
+.daterange__footer { display: flex; justify-content: space-between; gap: ${px(resolve("dim.2"))}; padding-top: ${px(resolve("dim.3"))}; margin-top: 8px; border-top: 1px solid ${cv("border.default")}; }
+.daterange__btn { border: 1px solid ${cv("border.default")}; background: ${cv("surface.default")}; color: ${cv("text.default")}; border-radius: ${px(resolve("radius.default"))}; padding: 0 ${px(resolve("dim.3"))}; height: 32px; cursor: pointer; ${typoCss(bodySmType)} font-family: inherit; }
+.daterange__btn--primary { background: ${cv("fill.primary")}; border-color: ${cv("fill.primary")}; color: ${cv("text.onFill")}; }
 /* tapping the search icon reveals both fields, stacked, over row 1 */
 .mc-search-close { display: none; flex-shrink: 0; border: none; background: none; padding: 0; cursor: pointer; color: ${cv("text.primary")}; font-family: ${cv("family.sans")}; ${typoCss(linkBaseType)}${linkBaseExt.textDecoration ? ` text-decoration: ${linkBaseExt.textDecoration};` : ""} }
 .mc--search-open .mc-rail__row--top { flex-direction: column; align-items: stretch; }
@@ -1105,8 +1156,10 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
   .mc-search-open-btn, .mc-search-close { display: none; }
   .mc-rail__student { flex: 0 1 150px; }
   .mc-rail__search { flex: 0 1 220px; }
+  /* toggles become inline chips; the Filters button stays (it holds the
+     date-range / department / staff fields), just without the toggles inside */
   .mc-qchip { display: inline-flex; }
-  .mc-filters-chip { display: none; }
+  .mc-filt-field--toggles { display: none; }
 }
 @media (min-width: 768px) {
   .mc-topbar-new { display: inline-flex; }
@@ -1541,7 +1594,9 @@ function rowMarkup(t, idx) {
   // "I'm Involved" = the logged-in advisor participated: they're the Responsible
   // or they've replied in the thread
   const involved = (t.responsibles || []).indexOf(SELF.name) > -1 || t.replied;
-  return `<div class="thread-item-inbox mc-trow mc-console-cols thread-item-inbox--${t.unread ? "unread" : "read"}" role="button" tabindex="0" data-thread="${t.id}" data-idx="${idx}" data-subject="${esc(t.subject)}" data-department="${esc(t.department)}" data-student-id="${esc(t.studentId || "")}" data-involved="${involved ? "true" : "false"}"${t.expires ? ` data-expires="${t.expires.role}"` : ""}>
+  const dv = (t.date || "").split("/"); // MM/DD/YYYY -> YYYYMMDD for range compares
+  const dateVal = dv.length === 3 ? dv[2] + dv[0] + dv[1] : "";
+  return `<div class="thread-item-inbox mc-trow mc-console-cols thread-item-inbox--${t.unread ? "unread" : "read"}" role="button" tabindex="0" data-thread="${t.id}" data-idx="${idx}" data-subject="${esc(t.subject)}" data-department="${esc(t.department)}" data-student-id="${esc(t.studentId || "")}" data-responsibles="${esc((t.responsibles || []).join("|"))}" data-date-val="${dateVal}" data-involved="${involved ? "true" : "false"}"${t.expires ? ` data-expires="${t.expires.role}"` : ""}>
         <div class="mc-td mc-cellwrap">${avatarMarkup(t.sender || t.department, "sm")}<span class="mc-cellstack"><span class="mc-lead">${t.sender || t.department}</span><span class="mc-td--muted" style="font-size:12px">${t.studentId || t.department}</span></span></div>
         <div class="mc-td mc-col-responsible">${responsiblePills(t.responsibles)}</div>
         <div class="mc-td mc-cellstack"><span class="mc-lead">${t.subject}</span><span class="mc-td--muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t.preview}</span></div>
@@ -1684,6 +1739,30 @@ const archivedThreads = threads.filter((t) => t.archived);
 
 // Department filter options — single-select: "All departments" or exactly one.
 const departments = [...new Set(threads.map((t) => t.department))];
+const staffList = [...new Set(threads.flatMap((t) => t.responsibles || []))].sort();
+// the date-range widget markup for the Filters panel (reuses the DateRangePicker
+// component's .daterange recipe; seeded to the current month as a starting point)
+const filtersDateRange = `<div class="daterange" id="mc-dr" data-start="2026-07-15" data-end="2026-08-15">
+              <div class="daterange__nav">
+                <button class="daterange__arrow daterange__arrow--prev" type="button" aria-label="Previous period">${iconOf("chevron_left", "daterange__arrow-icon")}</button>
+                <button class="daterange__field daterange__field--start" type="button" popovertarget="mc-dr-panel" aria-haspopup="dialog"><span class="daterange__start-val">07/15/2026</span></button>
+                <span class="daterange__label">This month</span>
+                <button class="daterange__field daterange__field--end" type="button" popovertarget="mc-dr-panel" aria-haspopup="dialog"><span class="daterange__end-val">08/15/2026</span></button>
+                <button class="daterange__arrow daterange__arrow--next" type="button" aria-label="Next period">${iconOf("chevron_right", "daterange__arrow-icon")}</button>
+              </div>
+              <div class="daterange__panel" id="mc-dr-panel" popover role="dialog" aria-label="Choose a date range">
+                <div class="daterange__phead">
+                  <button class="daterange__pnav daterange__pnav--prev" type="button" aria-label="Previous month">${iconOf("chevron_left", "daterange__pnav-icon")}</button>
+                  <span class="daterange__month">July 2026</span>
+                  <button class="daterange__pnav daterange__pnav--next" type="button" aria-label="Next month">${iconOf("chevron_right", "daterange__pnav-icon")}</button>
+                </div>
+                <div class="daterange__grid"></div>
+                <div class="daterange__footer">
+                  <button class="daterange__btn daterange__clear" type="button">Clear</button>
+                  <button class="daterange__btn daterange__btn--primary daterange__apply" type="button">Apply</button>
+                </div>
+              </div>
+            </div>`;
 
 
 // ---- the appended-on-Send self bubble template, reused by the app script.
@@ -2128,6 +2207,8 @@ const appJs = `(function () {
   var unreadCounter = document.getElementById("mc-unread-counter");
   var activeList = "inbox";
   var filters = { unread: false, involved: false, expires: false, flagged: false };
+  // advanced (Filters panel) state: department, staff, and a date window
+  var adv = { dept: "", staff: "", dateStart: "", dateEnd: "" };
 
   function rows(listKey) {
     return Array.prototype.slice.call(lists[listKey].querySelectorAll(".thread-item-inbox"));
@@ -2146,6 +2227,11 @@ const appJs = `(function () {
     // neutral expiry deliberately doesn't count
     if (filters.expires && r.dataset.expires !== "warning" && r.dataset.expires !== "danger") return false;
     if (filters.flagged && r.querySelector(".thread-item-inbox__flag-btn") && r.querySelector(".thread-item-inbox__flag-btn").getAttribute("aria-pressed") !== "true") return false;
+    // advanced filters (from the Filters panel)
+    if (adv.dept && r.dataset.department !== adv.dept) return false;
+    if (adv.staff && ("|" + (r.dataset.responsibles || "") + "|").indexOf("|" + adv.staff + "|") === -1) return false;
+    if (adv.dateStart && r.dataset.dateVal && r.dataset.dateVal < adv.dateStart) return false;
+    if (adv.dateEnd && r.dataset.dateVal && r.dataset.dateVal > adv.dateEnd) return false;
     return true;
   }
   // While searching, the tab split is suspended: both lists show as one
@@ -2306,6 +2392,9 @@ const appJs = `(function () {
   // (narrow), so its badge simply counts every active toggle filter
   function updateFiltersChip() {
     var n = ["unread", "involved", "flagged", "expires"].filter(function (k) { return filters[k]; }).length;
+    if (adv.dept) n++;
+    if (adv.staff) n++;
+    if (adv.dateStart || adv.dateEnd) n++;
     filtersCount.textContent = n;
     filtersCount.hidden = n === 0;
     filtersChip.classList.toggle("chip--checked-outline", n > 0);
@@ -2344,6 +2433,102 @@ const appJs = `(function () {
       setFilter(chip.dataset.filterKey, chip.getAttribute("aria-pressed") !== "true");
       applyFilter();
     });
+  });
+
+  // ---- advanced Filters-panel fields: Department + Staff option lists ----
+  document.querySelectorAll("#mc-filters-listbox .mc-filt-opts").forEach(function (group) {
+    var key = group.dataset.adv; // "dept" | "staff"
+    group.querySelectorAll(".mc-filt-opt").forEach(function (opt) {
+      opt.addEventListener("click", function () {
+        group.querySelectorAll(".mc-filt-opt").forEach(function (o) { o.classList.toggle("mc-filt-opt--on", o === opt); });
+        adv[key] = opt.dataset.val;
+        updateFiltersChip();
+        applyFilter();
+      });
+    });
+  });
+
+  // ---- the date-range field (DateRangePicker recipe) — inline so Clear-all can
+  // reset it. DR_* names avoid colliding with the single DatePicker's DP_*. ----
+  (function () {
+    var el = document.getElementById("mc-dr");
+    if (!el) return;
+    var DR_MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+    var DR_WD = ["Su","Mo","Tu","We","Th","Fr","Sa"];
+    var panel = el.querySelector(".daterange__panel");
+    var startEl = el.querySelector(".daterange__start-val"), endEl = el.querySelector(".daterange__end-val"), labelEl = el.querySelector(".daterange__label");
+    function pad(n) { return ("0" + n).slice(-2); }
+    function fmt(a) { return pad(a.m + 1) + "/" + pad(a.d) + "/" + a.y; }
+    function ymd(a) { return "" + a.y + pad(a.m + 1) + pad(a.d); }
+    function parse(s) { var p = s.split("-").map(Number); return { y: p[0], m: p[1] - 1, d: p[2] }; }
+    function cmp(a) { return a.y * 10000 + a.m * 100 + a.d; }
+    function addMonths(a, n) { var d = new Date(a.y, a.m + n, a.d); return { y: d.getFullYear(), m: d.getMonth(), d: d.getDate() }; }
+    var TODAY = { y: 2026, m: 7, d: 8 };
+    var DEF_S = parse(el.dataset.start), DEF_E = parse(el.dataset.end);
+    var start = parse(el.dataset.start), end = parse(el.dataset.end);
+    var draftS = null, draftE = null, view = { y: start.y, m: start.m };
+    function syncNav() { startEl.textContent = fmt(start); endEl.textContent = fmt(end); labelEl.textContent = DR_MONTHS[start.m].slice(0, 3) + " " + start.y; }
+    function activate() { adv.dateStart = ymd(start); adv.dateEnd = ymd(end); updateFiltersChip(); }
+    function render() {
+      var s = draftS || start, e = draftE || (draftS ? null : end);
+      var first = new Date(view.y, view.m, 1).getDay(), days = new Date(view.y, view.m + 1, 0).getDate(), prevDays = new Date(view.y, view.m, 0).getDate();
+      var cells = [], i, d;
+      for (i = 0; i < first; i++) cells.push({ d: prevDays - first + 1 + i, outside: true });
+      for (d = 1; d <= days; d++) cells.push({ d: d, outside: false });
+      while (cells.length % 7 !== 0) cells.push({ d: cells.length - (first + days) + 1, outside: true });
+      var sV = s ? cmp(s) : null, eV = e ? cmp(e) : null;
+      var grid = DR_WD.map(function (w) { return '<span class="daterange__weekday">' + w + '</span>'; }).join("");
+      cells.forEach(function (c) {
+        if (c.outside) { grid += '<span class="daterange__day daterange__day--outside">' + c.d + '</span>'; return; }
+        var v = view.y * 10000 + view.m * 100 + c.d, cls = ["daterange__day"];
+        if (view.y === TODAY.y && view.m === TODAY.m && c.d === TODAY.d) cls.push("daterange__day--today");
+        if (sV !== null && eV !== null) { if (v === sV) cls.push("daterange__day--start"); else if (v === eV) cls.push("daterange__day--end"); else if (v > sV && v < eV) cls.push("daterange__day--mid"); }
+        else if (sV !== null && v === sV) cls.push("daterange__day--start", "daterange__day--end");
+        grid += '<button type="button" class="' + cls.join(" ") + '" data-day="' + c.d + '">' + c.d + '</button>';
+      });
+      panel.querySelector(".daterange__month").textContent = DR_MONTHS[view.m] + " " + view.y;
+      panel.querySelector(".daterange__grid").innerHTML = grid;
+      panel.querySelectorAll(".daterange__day[data-day]").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          var picked = { y: view.y, m: view.m, d: parseInt(btn.dataset.day, 10) };
+          if (!draftS || (draftS && draftE)) { draftS = picked; draftE = null; }
+          else { if (cmp(picked) < cmp(draftS)) { draftE = draftS; draftS = picked; } else { draftE = picked; } }
+          render();
+        });
+      });
+    }
+    panel.addEventListener("toggle", function (e) {
+      if (e.newState !== "open") return;
+      view = { y: start.y, m: start.m }; draftS = null; draftE = null; render();
+      requestAnimationFrame(function () {
+        var r = el.querySelector(".daterange__nav").getBoundingClientRect();
+        var w = panel.getBoundingClientRect().width;
+        panel.style.position = "fixed"; panel.style.margin = "0";
+        panel.style.top = (r.bottom + 4) + "px";
+        panel.style.left = Math.max(8, Math.min(r.left, window.innerWidth - w - 8)) + "px";
+      });
+    });
+    panel.querySelector(".daterange__pnav--prev").addEventListener("click", function () { view.m--; if (view.m < 0) { view.m = 11; view.y--; } render(); });
+    panel.querySelector(".daterange__pnav--next").addEventListener("click", function () { view.m++; if (view.m > 11) { view.m = 0; view.y++; } render(); });
+    panel.querySelector(".daterange__apply").addEventListener("click", function () { if (draftS) { start = draftS; end = draftE || draftS; } activate(); syncNav(); applyFilter(); panel.hidePopover(); });
+    panel.querySelector(".daterange__clear").addEventListener("click", function () { start = DEF_S; end = DEF_E; adv.dateStart = ""; adv.dateEnd = ""; draftS = null; draftE = null; syncNav(); updateFiltersChip(); applyFilter(); render(); });
+    el.querySelector(".daterange__arrow--prev").addEventListener("click", function () { start = addMonths(start, -1); end = addMonths(end, -1); activate(); syncNav(); applyFilter(); });
+    el.querySelector(".daterange__arrow--next").addEventListener("click", function () { start = addMonths(start, 1); end = addMonths(end, 1); activate(); syncNav(); applyFilter(); });
+    // exposed so Clear-all can reset the range
+    window.__mcResetDateRange = function () { start = DEF_S; end = DEF_E; adv.dateStart = ""; adv.dateEnd = ""; draftS = null; draftE = null; syncNav(); };
+    syncNav();
+  })();
+
+  // ---- Clear all: reset every filter surface ----
+  document.getElementById("mc-filters-clear").addEventListener("click", function () {
+    ["unread", "involved", "flagged", "expires"].forEach(function (k) { setFilter(k, false); });
+    adv.dept = ""; adv.staff = "";
+    document.querySelectorAll("#mc-filters-listbox .mc-filt-opts").forEach(function (group) {
+      group.querySelectorAll(".mc-filt-opt").forEach(function (o, i) { o.classList.toggle("mc-filt-opt--on", i === 0); });
+    });
+    if (window.__mcResetDateRange) window.__mcResetDateRange();
+    updateFiltersChip();
+    applyFilter();
   });
 
   // rich composer — Send appends a real self Bubble (tint). The field is a
@@ -3298,17 +3483,44 @@ ${phaseECss}
         </div>
         <div class="mc-rail__row mc-rail__row--filters">
           <button class="chip chip--base mc-filters-chip" id="mc-filters-chip" type="button" popovertarget="mc-filters-listbox" aria-haspopup="listbox">${iconFilter}<span>Filters</span><span class="counter counter--sm counter--onNeutral counter--inactive" id="mc-filters-count" hidden>0</span>${iconChevronDown}</button>
-          <div class="listbox mc-filters-pop" id="mc-filters-listbox" popover>
-            <ul class="listbox__list" aria-label="Filters">
-              <li class="mc-fopt--collapsible" data-filter-option="unread"><label class="listbox__cb-option" for="mc-fopt-unread"><input type="checkbox" class="listbox__cb-input" id="mc-fopt-unread" data-filter-key="unread" />
-                <span class="listbox__cb-box">${iconCbCheck}</span><span class="listbox__cb-label">Unread</span></label></li>
-              <li class="mc-fopt--collapsible" data-filter-option="involved"><label class="listbox__cb-option" for="mc-fopt-involved"><input type="checkbox" class="listbox__cb-input" id="mc-fopt-involved" data-filter-key="involved" />
-                <span class="listbox__cb-box">${iconCbCheck}</span><span class="listbox__cb-label">I'm Involved</span></label></li>
-              <li class="mc-fopt--collapsible" data-filter-option="flagged"><label class="listbox__cb-option" for="mc-fopt-flagged"><input type="checkbox" class="listbox__cb-input" id="mc-fopt-flagged" data-filter-key="flagged" />
-                <span class="listbox__cb-box">${iconCbCheck}</span><span class="listbox__cb-label">Flagged</span></label></li>
-              <li class="mc-fopt--collapsible" data-filter-option="expires"><label class="listbox__cb-option" for="mc-fopt-expires"><input type="checkbox" class="listbox__cb-input" id="mc-fopt-expires" data-filter-key="expires" />
-                <span class="listbox__cb-box">${iconCbCheck}</span><span class="listbox__cb-label">Expires Soon</span></label></li>
-            </ul>
+          <div class="mc-filters-pop" id="mc-filters-listbox" popover>
+            <div class="mc-filters-pop__head">
+              <span class="mc-filters-pop__title">Filters</span>
+              <button class="mc-filters-pop__clear" id="mc-filters-clear" type="button">Clear all</button>
+            </div>
+            <div class="mc-filters-pop__body">
+              <div class="mc-filt-field">
+                <span class="mc-filt-label">Date range</span>
+                ${filtersDateRange}
+              </div>
+              <div class="mc-filt-field">
+                <span class="mc-filt-label">Department</span>
+                <div class="mc-filt-opts" data-adv="dept">
+                  <button class="mc-filt-opt mc-filt-opt--on" type="button" data-val="">All departments</button>
+                  ${departments.map((d) => `<button class="mc-filt-opt" type="button" data-val="${esc(d)}">${d}</button>`).join("\n                  ")}
+                </div>
+              </div>
+              <div class="mc-filt-field">
+                <span class="mc-filt-label">Staff</span>
+                <div class="mc-filt-opts" data-adv="staff">
+                  <button class="mc-filt-opt mc-filt-opt--on" type="button" data-val="">All staff</button>
+                  ${staffList.map((s) => `<button class="mc-filt-opt" type="button" data-val="${esc(s)}">${s}</button>`).join("\n                  ")}
+                </div>
+              </div>
+              <div class="mc-filt-field mc-filt-field--toggles">
+                <span class="mc-filt-label">Quick filters</span>
+                <ul class="listbox__list" aria-label="Quick filters">
+                  <li class="mc-fopt--collapsible" data-filter-option="unread"><label class="listbox__cb-option" for="mc-fopt-unread"><input type="checkbox" class="listbox__cb-input" id="mc-fopt-unread" data-filter-key="unread" />
+                    <span class="listbox__cb-box">${iconCbCheck}</span><span class="listbox__cb-label">Unread</span></label></li>
+                  <li class="mc-fopt--collapsible" data-filter-option="involved"><label class="listbox__cb-option" for="mc-fopt-involved"><input type="checkbox" class="listbox__cb-input" id="mc-fopt-involved" data-filter-key="involved" />
+                    <span class="listbox__cb-box">${iconCbCheck}</span><span class="listbox__cb-label">I'm Involved</span></label></li>
+                  <li class="mc-fopt--collapsible" data-filter-option="flagged"><label class="listbox__cb-option" for="mc-fopt-flagged"><input type="checkbox" class="listbox__cb-input" id="mc-fopt-flagged" data-filter-key="flagged" />
+                    <span class="listbox__cb-box">${iconCbCheck}</span><span class="listbox__cb-label">Flagged</span></label></li>
+                  <li class="mc-fopt--collapsible" data-filter-option="expires"><label class="listbox__cb-option" for="mc-fopt-expires"><input type="checkbox" class="listbox__cb-input" id="mc-fopt-expires" data-filter-key="expires" />
+                    <span class="listbox__cb-box">${iconCbCheck}</span><span class="listbox__cb-label">Expires Soon</span></label></li>
+                </ul>
+              </div>
+            </div>
           </div>
           <button class="chip chip--base mc-qchip mc-qchip--unread" id="mc-chip-unread" type="button" aria-pressed="false" data-filter-key="unread">Unread</button>
           <button class="chip chip--base mc-qchip" id="mc-chip-involved" type="button" aria-pressed="false" data-filter-key="involved">I'm Involved</button>

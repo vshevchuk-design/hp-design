@@ -1165,3 +1165,15 @@ Still to do from the batch: (2) date-range picker component, (3) Department + St
 ## 2026-09-06 (cont. 6) — DateRangePicker component (Phase 2 of the batch)
 
 Built a new **DateRangePicker** DS component (tokens + doc builder + page + nav + index + Logs), for the console's date-window filter. It's a period navigator — `‹ prev · start date · period label · end date · next ›` in the field recipe — that opens a month-grid calendar popover. Arrows step the whole range by a month; the label reads "Current" for the default window, else the month (`Aug 2026`). In the calendar you click a start then an end (picking an earlier day swaps them); start/end fill `fill.primary`, the span between gets a `bg.primary` wash, today keeps its ring. Apply / Clear in the footer; positioning runs in rAF with the real width. Built on the single DatePicker's field + Popover recipes, extended with range day states (`endsBg` / `rangeBg`). Verified: default 08/09–09/08 "Current", pick 10→18 washes 7 middle days and applies "08/10–08/18 / Aug 2026", swap works, month + period arrows step. Next (Phase 4) it goes into the rebuilt Filters panel.
+
+## 2026-09-06 (cont. 7) — Filters rebuilt into a real field panel (Phases 3+4)
+
+Rebuilt the console's Filters popover from a bare checkbox list into a proper **filter panel** (340px, `max-width: calc(100vw - 16px)`), per the user:
+- **Date range** — the new DateRangePicker consumed inline (`.daterange` recipe brought into the app CSS; JS inlined as `DR_*` to avoid colliding with the single DatePicker's `DP_*`). Apply / the period arrows activate `adv.dateStart/dateEnd` (YYYYMMDD) and filter by each row's `data-date-val`; Clear resets to the default window (inactive). Nested popover: the calendar opens from inside the panel and the panel stays open (verified).
+- **Department** and **Staff** — inline option-pill lists (no nested Select popovers); Staff matches against each row's `data-responsibles`. Staff = the unique `responsibles[]` across threads.
+- **Quick filters** (Unread / I'm Involved / Flagged / Expires Soon) — the same toggles, shown in the panel only when they've collapsed off the row (< 600); hidden in the panel when they're inline chips.
+- **Clear all** resets every surface; the badge now counts the advanced filters too. The Filters button is visible at all widths again (it always holds date/dept/staff).
+
+Verified 1280 + 390: panel opens in-viewport, Staff=Sarah → only Diego, Dept=English → 0 (inbox), date range Aug 3–5 → Cait/Diego/Maya (George excluded), Clear all → 4 back, nested calendar keeps the panel open, mobile stacks the whole form at 340px with the quick-filter checkboxes shown.
+
+Batch complete (columns + DateRangePicker component + Department/Staff + rebuilt Filters panel + responsive).

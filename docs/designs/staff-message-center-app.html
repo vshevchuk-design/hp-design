@@ -620,6 +620,56 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .mc-qchip { flex-shrink: 0; display: none; }
 .mc-filters-chip { display: inline-flex; }
 .mc-fopt--collapsible { display: block; }
+/* ---- Filters panel: a real form — Date range / Department / Staff, plus the
+   collapsed quick-filter toggles on narrow. The date-range field reuses the
+   DateRangePicker component recipe. ---- */
+.mc-filters-pop { margin: 0; box-sizing: border-box; width: 340px; max-width: calc(100vw - 16px); padding: 0; border-radius: 8px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); box-shadow: 0px 2px 8px 0px rgba(21, 25, 30, 0.10); font-family: var(--tok-family-sans); }
+.mc-filters-pop__head { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid var(--tok-border-default); }
+.mc-filters-pop__title { color: var(--tok-text-default); font-weight: 600; font-weight: 400; font-size: 14px; line-height: 1.4; }
+.mc-filters-pop__clear { border: none; background: none; padding: 0; cursor: pointer; color: var(--tok-text-primary); font-weight: 600; font-weight: 400; font-size: 12px; line-height: 1.4; font-family: inherit; }
+.mc-filters-pop__body { display: flex; flex-direction: column; gap: 16px; padding: 12px 16px 16px; max-height: 72vh; overflow-y: auto; }
+.mc-filt-field { display: flex; flex-direction: column; gap: 8px; }
+.mc-filt-label { color: var(--tok-text-muted); font-weight: 700; font-size: 12px; line-height: 1.4; text-transform: uppercase; }
+.mc-filt-opts { display: flex; flex-wrap: wrap; gap: 6px; }
+.mc-filt-opt { padding: 4px 10px; border: 1px solid var(--tok-border-default); border-radius: 999px; background: var(--tok-surface-default); color: var(--tok-text-default); font-weight: 400; font-size: 12px; line-height: 1.4; cursor: pointer; font-family: inherit; }
+.mc-filt-opt:hover { border-color: var(--tok-border-strong); }
+.mc-filt-opt--on { background: var(--tok-fill-primary); border-color: var(--tok-fill-primary); color: var(--tok-text-on-fill); }
+.mc-filt-field--toggles .listbox__list { display: flex; flex-direction: column; gap: 4px; padding: 0; }
+/* date-range widget (DateRangePicker recipe) */
+.mc-filters-pop .daterange { display: block; }
+.mc-filters-pop .daterange__nav { width: 100%; }
+.mc-filters-pop .daterange__field { flex: 1 1 auto; justify-content: center; }
+.daterange__nav { box-sizing: border-box; display: inline-flex; align-items: stretch; height: 40px; border-radius: 8px; background: var(--tok-surface-dim); border: 1px solid var(--tok-border-default); overflow: hidden; }
+.daterange__nav:hover { border-color: var(--tok-border-strong); }
+.daterange__nav:focus-within { border-color: var(--tok-border-focus); }
+.daterange__arrow, .daterange__field { border: none; background: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; font-family: var(--tok-family-sans); color: var(--tok-text-default); }
+.daterange__arrow { width: 32px; flex-shrink: 0; color: var(--tok-icon-default); }
+.daterange__arrow:hover { background: var(--tok-fill-neutral-hover); }
+.daterange__arrow-icon { width: 18px; height: 18px; }
+.daterange__field { padding: 0 10px; font-weight: 400; font-size: 12px; line-height: 1.4; white-space: nowrap; border-left: 1px solid var(--tok-border-default); }
+.daterange__field:hover { background: var(--tok-fill-neutral-hover); }
+.daterange__label { display: inline-flex; align-items: center; padding: 0 10px; font-weight: 400; font-size: 12px; line-height: 1.4; color: var(--tok-text-secondary); white-space: nowrap; border-left: 1px solid var(--tok-border-default); }
+.daterange__arrow--next { border-left: 1px solid var(--tok-border-default); }
+.daterange__panel { margin: 0; box-sizing: border-box; padding: 12px; border-radius: 8px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); box-shadow: 0px 2px 8px 0px rgba(21, 25, 30, 0.10); font-family: var(--tok-family-sans); z-index: 20; }
+.daterange__phead { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.daterange__month { font-weight: 600; font-size: 12px; line-height: 1.4; color: var(--tok-text-default); }
+.daterange__pnav { width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border: none; background: none; border-radius: 8px; cursor: pointer; color: var(--tok-icon-default); }
+.daterange__pnav:hover { background: var(--tok-fill-neutral-hover); }
+.daterange__pnav-icon { width: 20px; height: 20px; }
+.daterange__grid { display: grid; grid-template-columns: repeat(7, 36px); gap: 2px 0; }
+.daterange__weekday { width: 36px; height: 28px; display: inline-flex; align-items: center; justify-content: center; color: var(--tok-text-muted); font-weight: 700; font-size: 12px; line-height: 1.4; }
+.daterange__day { width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid transparent; background: none; cursor: pointer; color: var(--tok-text-default); font-weight: 400; font-size: 12px; line-height: 1.4; font-family: inherit; border-radius: 8px; }
+.daterange__day:hover { background: var(--tok-fill-neutral-hover); }
+.daterange__day--outside { color: var(--tok-text-muted); pointer-events: none; }
+.daterange__day--today { border-color: var(--tok-border-strong); }
+.daterange__day--mid { background: var(--tok-bg-primary); border-radius: 0; }
+.daterange__day--start, .daterange__day--end, .daterange__day--start:hover, .daterange__day--end:hover { background: var(--tok-fill-primary); color: var(--tok-text-on-fill); border-color: var(--tok-fill-primary); }
+.daterange__day--start { border-radius: 8px 0 0 8px; }
+.daterange__day--end { border-radius: 0 8px 8px 0; }
+.daterange__day--start.daterange__day--end { border-radius: 8px; }
+.daterange__footer { display: flex; justify-content: space-between; gap: 8px; padding-top: 12px; margin-top: 8px; border-top: 1px solid var(--tok-border-default); }
+.daterange__btn { border: 1px solid var(--tok-border-default); background: var(--tok-surface-default); color: var(--tok-text-default); border-radius: 8px; padding: 0 12px; height: 32px; cursor: pointer; font-weight: 400; font-size: 12px; line-height: 1.4; font-family: inherit; }
+.daterange__btn--primary { background: var(--tok-fill-primary); border-color: var(--tok-fill-primary); color: var(--tok-text-on-fill); }
 /* tapping the search icon reveals both fields, stacked, over row 1 */
 .mc-search-close { display: none; flex-shrink: 0; border: none; background: none; padding: 0; cursor: pointer; color: var(--tok-text-primary); font-family: var(--tok-family-sans); font-weight: 400; font-size: 14px; line-height: 1.4; text-decoration: underline; }
 .mc--search-open .mc-rail__row--top { flex-direction: column; align-items: stretch; }
@@ -719,8 +769,10 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   .mc-search-open-btn, .mc-search-close { display: none; }
   .mc-rail__student { flex: 0 1 150px; }
   .mc-rail__search { flex: 0 1 220px; }
+  /* toggles become inline chips; the Filters button stays (it holds the
+     date-range / department / staff fields), just without the toggles inside */
   .mc-qchip { display: inline-flex; }
-  .mc-filters-chip { display: none; }
+  .mc-filt-field--toggles { display: none; }
 }
 @media (min-width: 768px) {
   .mc-topbar-new { display: inline-flex; }
@@ -1020,17 +1072,67 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         </div>
         <div class="mc-rail__row mc-rail__row--filters">
           <button class="chip chip--base mc-filters-chip" id="mc-filters-chip" type="button" popovertarget="mc-filters-listbox" aria-haspopup="listbox"><svg class="chip__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/></svg><span>Filters</span><span class="counter counter--sm counter--onNeutral counter--inactive" id="mc-filters-count" hidden>0</span><svg class="chip__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
-          <div class="listbox mc-filters-pop" id="mc-filters-listbox" popover>
-            <ul class="listbox__list" aria-label="Filters">
-              <li class="mc-fopt--collapsible" data-filter-option="unread"><label class="listbox__cb-option" for="mc-fopt-unread"><input type="checkbox" class="listbox__cb-input" id="mc-fopt-unread" data-filter-key="unread" />
-                <span class="listbox__cb-box"><svg class="listbox__cb-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="listbox__cb-label">Unread</span></label></li>
-              <li class="mc-fopt--collapsible" data-filter-option="involved"><label class="listbox__cb-option" for="mc-fopt-involved"><input type="checkbox" class="listbox__cb-input" id="mc-fopt-involved" data-filter-key="involved" />
-                <span class="listbox__cb-box"><svg class="listbox__cb-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="listbox__cb-label">I'm Involved</span></label></li>
-              <li class="mc-fopt--collapsible" data-filter-option="flagged"><label class="listbox__cb-option" for="mc-fopt-flagged"><input type="checkbox" class="listbox__cb-input" id="mc-fopt-flagged" data-filter-key="flagged" />
-                <span class="listbox__cb-box"><svg class="listbox__cb-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="listbox__cb-label">Flagged</span></label></li>
-              <li class="mc-fopt--collapsible" data-filter-option="expires"><label class="listbox__cb-option" for="mc-fopt-expires"><input type="checkbox" class="listbox__cb-input" id="mc-fopt-expires" data-filter-key="expires" />
-                <span class="listbox__cb-box"><svg class="listbox__cb-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="listbox__cb-label">Expires Soon</span></label></li>
-            </ul>
+          <div class="mc-filters-pop" id="mc-filters-listbox" popover>
+            <div class="mc-filters-pop__head">
+              <span class="mc-filters-pop__title">Filters</span>
+              <button class="mc-filters-pop__clear" id="mc-filters-clear" type="button">Clear all</button>
+            </div>
+            <div class="mc-filters-pop__body">
+              <div class="mc-filt-field">
+                <span class="mc-filt-label">Date range</span>
+                <div class="daterange" id="mc-dr" data-start="2026-07-15" data-end="2026-08-15">
+              <div class="daterange__nav">
+                <button class="daterange__arrow daterange__arrow--prev" type="button" aria-label="Previous period"><svg class="daterange__arrow-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg></button>
+                <button class="daterange__field daterange__field--start" type="button" popovertarget="mc-dr-panel" aria-haspopup="dialog"><span class="daterange__start-val">07/15/2026</span></button>
+                <span class="daterange__label">This month</span>
+                <button class="daterange__field daterange__field--end" type="button" popovertarget="mc-dr-panel" aria-haspopup="dialog"><span class="daterange__end-val">08/15/2026</span></button>
+                <button class="daterange__arrow daterange__arrow--next" type="button" aria-label="Next period"><svg class="daterange__arrow-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button>
+              </div>
+              <div class="daterange__panel" id="mc-dr-panel" popover role="dialog" aria-label="Choose a date range">
+                <div class="daterange__phead">
+                  <button class="daterange__pnav daterange__pnav--prev" type="button" aria-label="Previous month"><svg class="daterange__pnav-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg></button>
+                  <span class="daterange__month">July 2026</span>
+                  <button class="daterange__pnav daterange__pnav--next" type="button" aria-label="Next month"><svg class="daterange__pnav-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button>
+                </div>
+                <div class="daterange__grid"></div>
+                <div class="daterange__footer">
+                  <button class="daterange__btn daterange__clear" type="button">Clear</button>
+                  <button class="daterange__btn daterange__btn--primary daterange__apply" type="button">Apply</button>
+                </div>
+              </div>
+            </div>
+              </div>
+              <div class="mc-filt-field">
+                <span class="mc-filt-label">Department</span>
+                <div class="mc-filt-opts" data-adv="dept">
+                  <button class="mc-filt-opt mc-filt-opt--on" type="button" data-val="">All departments</button>
+                  <button class="mc-filt-opt" type="button" data-val="Academic Advising">Academic Advising</button>
+                  <button class="mc-filt-opt" type="button" data-val="English Dept">English Dept</button>
+                </div>
+              </div>
+              <div class="mc-filt-field">
+                <span class="mc-filt-label">Staff</span>
+                <div class="mc-filt-opts" data-adv="staff">
+                  <button class="mc-filt-opt mc-filt-opt--on" type="button" data-val="">All staff</button>
+                  <button class="mc-filt-opt" type="button" data-val="Alexander Robinson">Alexander Robinson</button>
+                  <button class="mc-filt-opt" type="button" data-val="Ava Robinson">Ava Robinson</button>
+                  <button class="mc-filt-opt" type="button" data-val="Sarah Nguyen">Sarah Nguyen</button>
+                </div>
+              </div>
+              <div class="mc-filt-field mc-filt-field--toggles">
+                <span class="mc-filt-label">Quick filters</span>
+                <ul class="listbox__list" aria-label="Quick filters">
+                  <li class="mc-fopt--collapsible" data-filter-option="unread"><label class="listbox__cb-option" for="mc-fopt-unread"><input type="checkbox" class="listbox__cb-input" id="mc-fopt-unread" data-filter-key="unread" />
+                    <span class="listbox__cb-box"><svg class="listbox__cb-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="listbox__cb-label">Unread</span></label></li>
+                  <li class="mc-fopt--collapsible" data-filter-option="involved"><label class="listbox__cb-option" for="mc-fopt-involved"><input type="checkbox" class="listbox__cb-input" id="mc-fopt-involved" data-filter-key="involved" />
+                    <span class="listbox__cb-box"><svg class="listbox__cb-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="listbox__cb-label">I'm Involved</span></label></li>
+                  <li class="mc-fopt--collapsible" data-filter-option="flagged"><label class="listbox__cb-option" for="mc-fopt-flagged"><input type="checkbox" class="listbox__cb-input" id="mc-fopt-flagged" data-filter-key="flagged" />
+                    <span class="listbox__cb-box"><svg class="listbox__cb-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="listbox__cb-label">Flagged</span></label></li>
+                  <li class="mc-fopt--collapsible" data-filter-option="expires"><label class="listbox__cb-option" for="mc-fopt-expires"><input type="checkbox" class="listbox__cb-input" id="mc-fopt-expires" data-filter-key="expires" />
+                    <span class="listbox__cb-box"><svg class="listbox__cb-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="listbox__cb-label">Expires Soon</span></label></li>
+                </ul>
+              </div>
+            </div>
           </div>
           <button class="chip chip--base mc-qchip mc-qchip--unread" id="mc-chip-unread" type="button" aria-pressed="false" data-filter-key="unread">Unread</button>
           <button class="chip chip--base mc-qchip" id="mc-chip-involved" type="button" aria-pressed="false" data-filter-key="involved">I'm Involved</button>
@@ -1053,7 +1155,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
             <div class="mc-th"></div>
           </div>
           <div class="mc-list" data-list="inbox">
-            <div class="thread-item-inbox mc-trow mc-console-cols thread-item-inbox--unread" role="button" tabindex="0" data-thread="cait-minor" data-idx="0" data-subject="Minor Requirements Review" data-department="Academic Advising" data-student-id="CX0001" data-involved="true">
+            <div class="thread-item-inbox mc-trow mc-console-cols thread-item-inbox--unread" role="button" tabindex="0" data-thread="cait-minor" data-idx="0" data-subject="Minor Requirements Review" data-department="Academic Advising" data-student-id="CX0001" data-responsibles="Alexander Robinson" data-date-val="20260805" data-involved="true">
         <div class="mc-td mc-cellwrap"><span class="avatar avatar--orange avatar--sm" role="img" aria-label="Cait Genatossio"><span class="avatar__initials">CG</span></span><span class="mc-cellstack"><span class="mc-lead">Cait Genatossio</span><span class="mc-td--muted" style="font-size:12px">CX0001</span></span></div>
         <div class="mc-td mc-col-responsible"><span class="mc-resp"><span class="mc-resp__pill">Alexander Robinson</span></span></div>
         <div class="mc-td mc-cellstack"><span class="mc-lead">Minor Requirements Review</span><span class="mc-td--muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Could we also review the minor requirements before enrollment closes?</span></div>
@@ -1061,7 +1163,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         <div class="mc-td mc-td--muted mc-col-date"><span class="mc-date__d">08/05/2026</span><span class="mc-date__t">9:12 AM PDT</span></div>
         <div class="mc-td"><button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button></div>
       </div>
-          <div class="thread-item-inbox mc-trow mc-console-cols thread-item-inbox--unread" role="button" tabindex="0" data-thread="maya-hold" data-idx="1" data-subject="Registration Hold Question" data-department="Academic Advising" data-student-id="AA0301" data-involved="false">
+          <div class="thread-item-inbox mc-trow mc-console-cols thread-item-inbox--unread" role="button" tabindex="0" data-thread="maya-hold" data-idx="1" data-subject="Registration Hold Question" data-department="Academic Advising" data-student-id="AA0301" data-responsibles="" data-date-val="20260804" data-involved="false">
         <div class="mc-td mc-cellwrap"><span class="avatar avatar--violet avatar--sm" role="img" aria-label="Maya Patel"><span class="avatar__initials">MP</span></span><span class="mc-cellstack"><span class="mc-lead">Maya Patel</span><span class="mc-td--muted" style="font-size:12px">AA0301</span></span></div>
         <div class="mc-td mc-col-responsible"><span class="mc-td--muted">–</span></div>
         <div class="mc-td mc-cellstack"><span class="mc-lead">Registration Hold Question</span><span class="mc-td--muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">There is a hold on my account and I can't register for the fall term.</span></div>
@@ -1069,7 +1171,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         <div class="mc-td mc-td--muted mc-col-date"><span class="mc-date__d">08/04/2026</span><span class="mc-date__t">4:47 PM PDT</span></div>
         <div class="mc-td"><button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button></div>
       </div>
-          <div class="thread-item-inbox mc-trow mc-console-cols thread-item-inbox--read" role="button" tabindex="0" data-thread="diego-transcript" data-idx="2" data-subject="Transcript for Internship Application" data-department="Academic Advising" data-student-id="AA0302" data-involved="true" data-expires="warning">
+          <div class="thread-item-inbox mc-trow mc-console-cols thread-item-inbox--read" role="button" tabindex="0" data-thread="diego-transcript" data-idx="2" data-subject="Transcript for Internship Application" data-department="Academic Advising" data-student-id="AA0302" data-responsibles="Ava Robinson|Alexander Robinson|Sarah Nguyen" data-date-val="20260803" data-involved="true" data-expires="warning">
         <div class="mc-td mc-cellwrap"><span class="avatar avatar--orange avatar--sm" role="img" aria-label="Diego Fernandez"><span class="avatar__initials">DF</span></span><span class="mc-cellstack"><span class="mc-lead">Diego Fernandez</span><span class="mc-td--muted" style="font-size:12px">AA0302</span></span></div>
         <div class="mc-td mc-col-responsible"><span class="mc-resp"><span class="mc-resp__pill">Ava Robinson</span><span class="mc-resp__more" tabindex="0" role="button" aria-label="2 more responsible">+2<span class="mc-resp__pop"><span>Ava Robinson</span><span>Alexander Robinson</span><span>Sarah Nguyen</span></span></span></span></div>
         <div class="mc-td mc-cellstack"><span class="mc-lead">Transcript for Internship Application</span><span class="mc-td--muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">My internship application needs an official transcript by next Friday.</span></div>
@@ -1077,7 +1179,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         <div class="mc-td mc-td--muted mc-col-date"><span class="mc-date__d">08/03/2026</span><span class="mc-date__t">11:20 AM PDT</span></div>
         <div class="mc-td"><button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button></div>
       </div>
-          <div class="thread-item-inbox mc-trow mc-console-cols thread-item-inbox--read" role="button" tabindex="0" data-thread="george-reschedule" data-idx="3" data-subject="Reschedule Advising Appointment" data-department="Academic Advising" data-student-id="AA0303" data-involved="true">
+          <div class="thread-item-inbox mc-trow mc-console-cols thread-item-inbox--read" role="button" tabindex="0" data-thread="george-reschedule" data-idx="3" data-subject="Reschedule Advising Appointment" data-department="Academic Advising" data-student-id="AA0303" data-responsibles="Alexander Robinson" data-date-val="20260731" data-involved="true">
         <div class="mc-td mc-cellwrap"><span class="avatar avatar--orange avatar--sm" role="img" aria-label="George Amalor"><span class="avatar__initials">GA</span></span><span class="mc-cellstack"><span class="mc-lead">George Amalor</span><span class="mc-td--muted" style="font-size:12px">AA0303</span></span></div>
         <div class="mc-td mc-col-responsible"><span class="mc-resp"><span class="mc-resp__pill">Alexander Robinson</span></span></div>
         <div class="mc-td mc-cellstack"><span class="mc-lead">Reschedule Advising Appointment</span><span class="mc-td--muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Sure — I moved your appointment to Tuesday at 3 PM.</span></div>
@@ -1095,7 +1197,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         <div class="mc-td mc-td--muted mc-col-date"><span class="mc-date__d">Jul 12</span></div>
         <div class="mc-td"></div>
       </div>
-            <div class="thread-item-inbox mc-trow mc-console-cols thread-item-inbox--read" role="button" tabindex="0" data-thread="lena-waiver" data-idx="4" data-subject="Prerequisite Waiver" data-department="English Dept" data-student-id="AA0304" data-involved="true">
+            <div class="thread-item-inbox mc-trow mc-console-cols thread-item-inbox--read" role="button" tabindex="0" data-thread="lena-waiver" data-idx="4" data-subject="Prerequisite Waiver" data-department="English Dept" data-student-id="AA0304" data-responsibles="Alexander Robinson|Ava Robinson" data-date-val="20260718" data-involved="true">
         <div class="mc-td mc-cellwrap"><span class="avatar avatar--red avatar--sm" role="img" aria-label="Lena Hoffman"><span class="avatar__initials">LH</span></span><span class="mc-cellstack"><span class="mc-lead">Lena Hoffman</span><span class="mc-td--muted" style="font-size:12px">AA0304</span></span></div>
         <div class="mc-td mc-col-responsible"><span class="mc-resp"><span class="mc-resp__pill">Alexander Robinson</span><span class="mc-resp__more" tabindex="0" role="button" aria-label="1 more responsible">+1<span class="mc-resp__pop"><span>Alexander Robinson</span><span>Ava Robinson</span></span></span></span></div>
         <div class="mc-td mc-cellstack"><span class="mc-lead">Prerequisite Waiver</span><span class="mc-td--muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Waiver approved — you are clear to enroll in ENG 340.</span></div>
@@ -1103,7 +1205,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         <div class="mc-td mc-td--muted mc-col-date"><span class="mc-date__d">07/18/2026</span><span class="mc-date__t">10:05 AM PDT</span></div>
         <div class="mc-td"><button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button></div>
       </div>
-          <div class="thread-item-inbox mc-trow mc-console-cols thread-item-inbox--read" role="button" tabindex="0" data-thread="tomas-plan" data-idx="5" data-subject="Study Plan Check-in" data-department="Academic Advising" data-student-id="AA0305" data-involved="true">
+          <div class="thread-item-inbox mc-trow mc-console-cols thread-item-inbox--read" role="button" tabindex="0" data-thread="tomas-plan" data-idx="5" data-subject="Study Plan Check-in" data-department="Academic Advising" data-student-id="AA0305" data-responsibles="Ava Robinson" data-date-val="20260630" data-involved="true">
         <div class="mc-td mc-cellwrap"><span class="avatar avatar--amber avatar--sm" role="img" aria-label="Tomas Novak"><span class="avatar__initials">TN</span></span><span class="mc-cellstack"><span class="mc-lead">Tomas Novak</span><span class="mc-td--muted" style="font-size:12px">AA0305</span></span></div>
         <div class="mc-td mc-col-responsible"><span class="mc-resp"><span class="mc-resp__pill">Ava Robinson</span></span></div>
         <div class="mc-td mc-cellstack"><span class="mc-lead">Study Plan Check-in</span><span class="mc-td--muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">All set — see you at the fall check-in.</span></div>
@@ -1725,6 +1827,8 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   var unreadCounter = document.getElementById("mc-unread-counter");
   var activeList = "inbox";
   var filters = { unread: false, involved: false, expires: false, flagged: false };
+  // advanced (Filters panel) state: department, staff, and a date window
+  var adv = { dept: "", staff: "", dateStart: "", dateEnd: "" };
 
   function rows(listKey) {
     return Array.prototype.slice.call(lists[listKey].querySelectorAll(".thread-item-inbox"));
@@ -1743,6 +1847,11 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     // neutral expiry deliberately doesn't count
     if (filters.expires && r.dataset.expires !== "warning" && r.dataset.expires !== "danger") return false;
     if (filters.flagged && r.querySelector(".thread-item-inbox__flag-btn") && r.querySelector(".thread-item-inbox__flag-btn").getAttribute("aria-pressed") !== "true") return false;
+    // advanced filters (from the Filters panel)
+    if (adv.dept && r.dataset.department !== adv.dept) return false;
+    if (adv.staff && ("|" + (r.dataset.responsibles || "") + "|").indexOf("|" + adv.staff + "|") === -1) return false;
+    if (adv.dateStart && r.dataset.dateVal && r.dataset.dateVal < adv.dateStart) return false;
+    if (adv.dateEnd && r.dataset.dateVal && r.dataset.dateVal > adv.dateEnd) return false;
     return true;
   }
   // While searching, the tab split is suspended: both lists show as one
@@ -1903,6 +2012,9 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   // (narrow), so its badge simply counts every active toggle filter
   function updateFiltersChip() {
     var n = ["unread", "involved", "flagged", "expires"].filter(function (k) { return filters[k]; }).length;
+    if (adv.dept) n++;
+    if (adv.staff) n++;
+    if (adv.dateStart || adv.dateEnd) n++;
     filtersCount.textContent = n;
     filtersCount.hidden = n === 0;
     filtersChip.classList.toggle("chip--checked-outline", n > 0);
@@ -1941,6 +2053,102 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
       setFilter(chip.dataset.filterKey, chip.getAttribute("aria-pressed") !== "true");
       applyFilter();
     });
+  });
+
+  // ---- advanced Filters-panel fields: Department + Staff option lists ----
+  document.querySelectorAll("#mc-filters-listbox .mc-filt-opts").forEach(function (group) {
+    var key = group.dataset.adv; // "dept" | "staff"
+    group.querySelectorAll(".mc-filt-opt").forEach(function (opt) {
+      opt.addEventListener("click", function () {
+        group.querySelectorAll(".mc-filt-opt").forEach(function (o) { o.classList.toggle("mc-filt-opt--on", o === opt); });
+        adv[key] = opt.dataset.val;
+        updateFiltersChip();
+        applyFilter();
+      });
+    });
+  });
+
+  // ---- the date-range field (DateRangePicker recipe) — inline so Clear-all can
+  // reset it. DR_* names avoid colliding with the single DatePicker's DP_*. ----
+  (function () {
+    var el = document.getElementById("mc-dr");
+    if (!el) return;
+    var DR_MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+    var DR_WD = ["Su","Mo","Tu","We","Th","Fr","Sa"];
+    var panel = el.querySelector(".daterange__panel");
+    var startEl = el.querySelector(".daterange__start-val"), endEl = el.querySelector(".daterange__end-val"), labelEl = el.querySelector(".daterange__label");
+    function pad(n) { return ("0" + n).slice(-2); }
+    function fmt(a) { return pad(a.m + 1) + "/" + pad(a.d) + "/" + a.y; }
+    function ymd(a) { return "" + a.y + pad(a.m + 1) + pad(a.d); }
+    function parse(s) { var p = s.split("-").map(Number); return { y: p[0], m: p[1] - 1, d: p[2] }; }
+    function cmp(a) { return a.y * 10000 + a.m * 100 + a.d; }
+    function addMonths(a, n) { var d = new Date(a.y, a.m + n, a.d); return { y: d.getFullYear(), m: d.getMonth(), d: d.getDate() }; }
+    var TODAY = { y: 2026, m: 7, d: 8 };
+    var DEF_S = parse(el.dataset.start), DEF_E = parse(el.dataset.end);
+    var start = parse(el.dataset.start), end = parse(el.dataset.end);
+    var draftS = null, draftE = null, view = { y: start.y, m: start.m };
+    function syncNav() { startEl.textContent = fmt(start); endEl.textContent = fmt(end); labelEl.textContent = DR_MONTHS[start.m].slice(0, 3) + " " + start.y; }
+    function activate() { adv.dateStart = ymd(start); adv.dateEnd = ymd(end); updateFiltersChip(); }
+    function render() {
+      var s = draftS || start, e = draftE || (draftS ? null : end);
+      var first = new Date(view.y, view.m, 1).getDay(), days = new Date(view.y, view.m + 1, 0).getDate(), prevDays = new Date(view.y, view.m, 0).getDate();
+      var cells = [], i, d;
+      for (i = 0; i < first; i++) cells.push({ d: prevDays - first + 1 + i, outside: true });
+      for (d = 1; d <= days; d++) cells.push({ d: d, outside: false });
+      while (cells.length % 7 !== 0) cells.push({ d: cells.length - (first + days) + 1, outside: true });
+      var sV = s ? cmp(s) : null, eV = e ? cmp(e) : null;
+      var grid = DR_WD.map(function (w) { return '<span class="daterange__weekday">' + w + '</span>'; }).join("");
+      cells.forEach(function (c) {
+        if (c.outside) { grid += '<span class="daterange__day daterange__day--outside">' + c.d + '</span>'; return; }
+        var v = view.y * 10000 + view.m * 100 + c.d, cls = ["daterange__day"];
+        if (view.y === TODAY.y && view.m === TODAY.m && c.d === TODAY.d) cls.push("daterange__day--today");
+        if (sV !== null && eV !== null) { if (v === sV) cls.push("daterange__day--start"); else if (v === eV) cls.push("daterange__day--end"); else if (v > sV && v < eV) cls.push("daterange__day--mid"); }
+        else if (sV !== null && v === sV) cls.push("daterange__day--start", "daterange__day--end");
+        grid += '<button type="button" class="' + cls.join(" ") + '" data-day="' + c.d + '">' + c.d + '</button>';
+      });
+      panel.querySelector(".daterange__month").textContent = DR_MONTHS[view.m] + " " + view.y;
+      panel.querySelector(".daterange__grid").innerHTML = grid;
+      panel.querySelectorAll(".daterange__day[data-day]").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          var picked = { y: view.y, m: view.m, d: parseInt(btn.dataset.day, 10) };
+          if (!draftS || (draftS && draftE)) { draftS = picked; draftE = null; }
+          else { if (cmp(picked) < cmp(draftS)) { draftE = draftS; draftS = picked; } else { draftE = picked; } }
+          render();
+        });
+      });
+    }
+    panel.addEventListener("toggle", function (e) {
+      if (e.newState !== "open") return;
+      view = { y: start.y, m: start.m }; draftS = null; draftE = null; render();
+      requestAnimationFrame(function () {
+        var r = el.querySelector(".daterange__nav").getBoundingClientRect();
+        var w = panel.getBoundingClientRect().width;
+        panel.style.position = "fixed"; panel.style.margin = "0";
+        panel.style.top = (r.bottom + 4) + "px";
+        panel.style.left = Math.max(8, Math.min(r.left, window.innerWidth - w - 8)) + "px";
+      });
+    });
+    panel.querySelector(".daterange__pnav--prev").addEventListener("click", function () { view.m--; if (view.m < 0) { view.m = 11; view.y--; } render(); });
+    panel.querySelector(".daterange__pnav--next").addEventListener("click", function () { view.m++; if (view.m > 11) { view.m = 0; view.y++; } render(); });
+    panel.querySelector(".daterange__apply").addEventListener("click", function () { if (draftS) { start = draftS; end = draftE || draftS; } activate(); syncNav(); applyFilter(); panel.hidePopover(); });
+    panel.querySelector(".daterange__clear").addEventListener("click", function () { start = DEF_S; end = DEF_E; adv.dateStart = ""; adv.dateEnd = ""; draftS = null; draftE = null; syncNav(); updateFiltersChip(); applyFilter(); render(); });
+    el.querySelector(".daterange__arrow--prev").addEventListener("click", function () { start = addMonths(start, -1); end = addMonths(end, -1); activate(); syncNav(); applyFilter(); });
+    el.querySelector(".daterange__arrow--next").addEventListener("click", function () { start = addMonths(start, 1); end = addMonths(end, 1); activate(); syncNav(); applyFilter(); });
+    // exposed so Clear-all can reset the range
+    window.__mcResetDateRange = function () { start = DEF_S; end = DEF_E; adv.dateStart = ""; adv.dateEnd = ""; draftS = null; draftE = null; syncNav(); };
+    syncNav();
+  })();
+
+  // ---- Clear all: reset every filter surface ----
+  document.getElementById("mc-filters-clear").addEventListener("click", function () {
+    ["unread", "involved", "flagged", "expires"].forEach(function (k) { setFilter(k, false); });
+    adv.dept = ""; adv.staff = "";
+    document.querySelectorAll("#mc-filters-listbox .mc-filt-opts").forEach(function (group) {
+      group.querySelectorAll(".mc-filt-opt").forEach(function (o, i) { o.classList.toggle("mc-filt-opt--on", i === 0); });
+    });
+    if (window.__mcResetDateRange) window.__mcResetDateRange();
+    updateFiltersChip();
+    applyFilter();
   });
 
   // rich composer — Send appends a real self Bubble (tint). The field is a
