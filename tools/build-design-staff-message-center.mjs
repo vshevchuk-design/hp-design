@@ -2264,33 +2264,38 @@ const phaseECss = `.mc-reply-actions { display: flex; align-items: center; gap: 
      line up with the toolbar */
   .mc-table { min-width: 0; border: none; border-radius: 0; }
   .mc-rail__lists { padding-left: 0; padding-right: 0; }
+  /* show the "N THREADS" band with a rule above it (desktop relies on the tab
+     counter instead) — matches the student card */
+  .mc-rail__count { display: flex; }
+  .mc-count { border-top: 1px solid ${cv("border.default")}; padding-top: ${px(resolve("dim.3"))}; padding-bottom: ${px(resolve("dim.2"))}; }
 
   .mc-trow.mc-console-cols {
-    grid-template-columns: 1fr auto;
-    gap: ${px(resolve("dim.1"))} ${px(resolve("dim.2"))};
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    column-gap: ${px(resolve("dim.2_5"))};
+    row-gap: ${px(resolve("dim.1"))};
     padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))};
     align-items: start;
   }
-  /* row 1: avatar + identity, date pinned right */
-  .mc-trow.mc-console-cols > .mc-cellwrap { grid-column: 1; grid-row: 1; align-items: center; }
-  .mc-trow.mc-console-cols > .mc-col-date { grid-column: 2; grid-row: 1; justify-self: end; }
-  /* rows 2-4 live in column 1 but are indented past the avatar (avatar + the
-     identity gap) so they align under the name, leaving the avatar column empty
-     below — the student card's tabulation. Expiration/Involved carry no fixed
-     grid-row so a hidden one leaves no gap. */
-  .mc-trow.mc-console-cols > .mc-td.mc-cellstack { grid-column: 1; grid-row: 2; padding-left: calc(${avatarSmDiameter} + ${px(resolve("dim.2_5"))}); }
-  .mc-trow.mc-console-cols > .mc-col-flag { grid-column: 2; grid-row: 2; justify-self: end; align-self: center; }
-  .mc-trow.mc-console-cols > .mc-col-expiration { grid-column: 1 / -1; padding-left: calc(${avatarSmDiameter} + ${px(resolve("dim.2_5"))}); }
+  /* free the avatar from its cell (display:contents) so it gets its own column
+     and spans the identity + subject rows like the student card — vertically
+     centred across those two lines, with its own spacing. Everything else lives
+     in column 2, indented past it; nothing sits under the avatar. */
+  .mc-trow.mc-console-cols > .mc-cellwrap { display: contents; }
+  .mc-cellwrap > .avatar { grid-column: 1; grid-row: 1 / 3; align-self: center; }
+  .mc-cellwrap > .mc-cellstack { grid-column: 2; grid-row: 1; }
+  .mc-trow.mc-console-cols > .mc-col-date { grid-column: 3; grid-row: 1; justify-self: end; }
+  .mc-trow.mc-console-cols > .mc-td.mc-cellstack { grid-column: 2; grid-row: 2; }
+  .mc-trow.mc-console-cols > .mc-col-flag { grid-column: 3; grid-row: 2; justify-self: end; align-self: center; }
+  .mc-trow.mc-console-cols > .mc-col-expiration { grid-column: 2 / -1; }
   /* order keeps Expiration above Involved during auto-flow (source order has
      Involved first); a hidden Expiration then leaves no empty row */
-  .mc-trow.mc-console-cols > .mc-col-responsible { grid-column: 1 / -1; order: 1; padding-left: calc(${avatarSmDiameter} + ${px(resolve("dim.2_5"))}); }
+  .mc-trow.mc-console-cols > .mc-col-responsible { grid-column: 2 / -1; order: 1; }
 
   /* identity: name and ID on one smaller line (desktop stacks them) */
-  .mc-cellwrap .mc-cellstack { flex-direction: row; align-items: baseline; gap: ${px(resolve("dim.1"))}; min-width: 0; }
-  .mc-cellwrap .mc-cellstack .mc-lead { flex: 0 1 auto; }
-  .mc-cellwrap .mc-cellstack .mc-td--muted { flex-shrink: 0; }
-  .mc-cellwrap .mc-cellstack .mc-td--muted::before { content: "·"; margin-right: ${px(resolve("dim.1"))}; }
-  .mc-cellwrap .mc-lead { font-size: 13px; }
+  .mc-cellwrap > .mc-cellstack { flex-direction: row; align-items: baseline; gap: ${px(resolve("dim.1"))}; min-width: 0; }
+  .mc-cellwrap > .mc-cellstack .mc-lead { flex: 0 1 auto; font-size: 13px; }
+  .mc-cellwrap > .mc-cellstack .mc-td--muted { flex-shrink: 0; }
+  .mc-cellwrap > .mc-cellstack .mc-td--muted::before { content: "·"; margin-right: ${px(resolve("dim.1"))}; }
   /* subject outsizes the preview */
   .mc-trow.mc-console-cols > .mc-td.mc-cellstack > .mc-lead { font-size: 15px; }
   .mc-trow.mc-console-cols > .mc-td.mc-cellstack > .mc-td--muted { font-size: 13px; }
