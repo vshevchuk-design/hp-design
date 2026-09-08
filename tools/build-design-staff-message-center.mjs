@@ -3662,7 +3662,7 @@ ${phaseECss}
           <div class="mc-thead mc-console-cols">
             <div class="mc-th mc-col-flag"></div>
             <div class="mc-th mc-th--sortable" data-sort="student" role="button" tabindex="0">Student ${sortArrow}</div>
-            <div class="mc-th mc-col-responsible mc-th--sortable" data-sort="responsible" role="button" tabindex="0">Responsible ${sortArrow}</div>
+            <div class="mc-th mc-col-responsible mc-th--sortable" data-sort="responsible" role="button" tabindex="0">Involved ${sortArrow}</div>
             <div class="mc-th mc-th--sortable" data-sort="subject" role="button" tabindex="0">Subject &amp; Message ${sortArrow}</div>
             <div class="mc-th mc-col-expiration">Expiration</div>
             <div class="mc-th mc-th--sortable mc-th--right" data-sort="date" role="button" tabindex="0">Date ${sortArrow}</div>
