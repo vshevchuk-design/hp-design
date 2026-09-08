@@ -620,7 +620,10 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
    collapsed into the Filters button on narrow mobile (<600). */
 .mc-rail__topbar { display: flex; flex-direction: column; gap: 8px; padding: 12px 16px; }
 .mc-rail__row { display: flex; align-items: center; gap: 8px; min-width: 0; }
-.mc-rail__row--filters { flex-wrap: wrap; }
+/* <600 the filters row has nothing to show (chips/selects collapse; the Filters
+   trigger moved up to row 1) — display:contents drops its box (no empty-row gap)
+   while keeping the filters popover in a rendered ancestor so it still opens */
+.mc-rail__row--filters { flex-wrap: wrap; display: contents; }
 /* the date-range sits right after the Inbox/Resolved tabs (left); the searches
    take the row's free space and go to the right */
 .mc-rail__searches { display: flex; align-items: center; gap: 8px; margin-left: auto; min-width: 0; }
@@ -632,18 +635,32 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 /* mobile-first (<600): the two fields collapse behind one search icon, and the
    chips collapse into the Filters button */
 .mc-rail__searches { display: none; }
-.mc-search-open-btn { display: inline-flex; margin-left: auto; }
+/* Filters + Search are twin icon buttons docked right; Filters carries a small
+   blue counter badge when any filter is active */
+.mc-filters-btn { display: inline-flex; margin-left: auto; position: relative; overflow: visible; flex-shrink: 0; }
+.mc-search-open-btn { display: inline-flex; flex-shrink: 0; }
+.mc-filters-badge { position: absolute; top: -5px; right: -5px; pointer-events: none; box-shadow: 0 0 0 2px var(--tok-surface-default); }
+.mc--search-open .mc-filters-btn { display: none; }
 .mc-qchip { flex-shrink: 0; display: none; }
-.mc-filters-chip { display: inline-flex; }
 .mc-fopt--collapsible { display: block; }
 /* ---- Filters panel: a real form — Date range / Department / Staff, plus the
    collapsed quick-filter toggles on narrow. The date-range field reuses the
    DateRangePicker component recipe. ---- */
-.mc-filters-pop { margin: 0; box-sizing: border-box; width: 340px; max-width: calc(100vw - 16px); padding: 0; border-radius: 8px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); box-shadow: 0px 2px 8px 0px rgba(21, 25, 30, 0.10); font-family: var(--tok-family-sans); }
-.mc-filters-pop__head { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid var(--tok-border-default); }
+/* the Filters panel is a bottom-sheet drawer: docked to the bottom edge, full
+   width, sliding up over a dimmed backdrop (Popover API — light-dismiss + Esc
+   for free). Only ever opened on narrow, where the Filters icon button shows. */
+.mc-filters-pop { margin: 0 auto; box-sizing: border-box; position: fixed; inset: auto 0 0 0; width: 100%; max-width: 520px; max-height: 88vh; padding: 0; display: flex; flex-direction: column; border: none; border-top-left-radius: 16px; border-top-right-radius: 16px; background: var(--tok-surface-default); box-shadow: 0px 2px 8px 0px rgba(21, 25, 30, 0.10); font-family: var(--tok-family-sans); transform: translateY(100%); transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1), overlay 0.28s allow-discrete, display 0.28s allow-discrete; }
+.mc-filters-pop:popover-open { transform: translateY(0); }
+@starting-style { .mc-filters-pop:popover-open { transform: translateY(100%); } }
+.mc-filters-pop::backdrop { background: transparent; transition: background 0.28s ease, overlay 0.28s allow-discrete, display 0.28s allow-discrete; }
+.mc-filters-pop:popover-open::backdrop { background: var(--tok-surface-overlay); }
+@starting-style { .mc-filters-pop:popover-open::backdrop { background: transparent; } }
+/* grabber handle at the top edge, for the drawer feel */
+.mc-filters-pop::before { content: ""; flex-shrink: 0; width: 36px; height: 4px; margin: 8px auto 0; border-radius: 999px; background: var(--tok-border-strong); }
+.mc-filters-pop__head { flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; padding: 8px 16px 12px; border-bottom: 1px solid var(--tok-border-default); }
 .mc-filters-pop__title { color: var(--tok-text-default); font-weight: 600; font-weight: 400; font-size: 14px; line-height: 1.4; }
 .mc-filters-pop__clear { border: none; background: none; padding: 0; cursor: pointer; color: var(--tok-text-primary); font-weight: 600; font-weight: 400; font-size: 12px; line-height: 1.4; font-family: inherit; }
-.mc-filters-pop__body { display: flex; flex-direction: column; gap: 16px; padding: 12px 16px 16px; max-height: 72vh; overflow-y: auto; }
+.mc-filters-pop__body { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 16px; padding: 12px 16px 24px; overflow-y: auto; }
 .mc-filt-field { display: flex; flex-direction: column; gap: 8px; }
 .mc-filt-label { color: var(--tok-text-muted); font-weight: 700; font-size: 12px; line-height: 1.4; text-transform: uppercase; }
 .mc-filt-opts { display: flex; flex-wrap: wrap; gap: 6px; }
@@ -805,7 +822,9 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   .mc-rail__daterange { display: block; }
   .mc-advsel { display: inline-block; }
   .mc-rail__advsep { display: inline-block; width: 1px; height: 20px; background: var(--tok-border-default); align-self: center; margin: 0 4px; }
-  .mc-filters-chip { display: none; }
+  /* the Filters icon button is a narrow-only overflow home; inline chips take over */
+  .mc-filters-btn { display: none; }
+  .mc-rail__row--filters { display: flex; }
 }
 @media (min-width: 768px) {
   .mc-topbar-new { display: inline-flex; }
@@ -1170,11 +1189,11 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
               <button class="search__clear" id="mc-search-clear" type="button" aria-label="Clear search" hidden><svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
             </div>
           </div>
+          <button class="btn btn--secondary btn--base btn--icon-only mc-filters-btn" id="mc-filters-btn" type="button" popovertarget="mc-filters-listbox" aria-label="Filters" aria-haspopup="dialog"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/></svg><span class="counter counter--sm counter--onNeutral counter--active mc-filters-badge" id="mc-filters-count" hidden>0</span></button>
           <button class="btn btn--secondary btn--base btn--icon-only mc-search-open-btn" type="button" aria-label="Search"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg></button>
           <button class="mc-search-close" id="mc-search-close" type="button">Close</button>
         </div>
         <div class="mc-rail__row mc-rail__row--filters">
-          <button class="chip chip--base mc-filters-chip" id="mc-filters-chip" type="button" popovertarget="mc-filters-listbox" aria-haspopup="listbox"><svg class="chip__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/></svg><span>Filters</span><span class="counter counter--sm counter--onNeutral counter--inactive" id="mc-filters-count" hidden>0</span><svg class="chip__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
           <div class="mc-filters-pop" id="mc-filters-listbox" popover>
             <div class="mc-filters-pop__head">
               <span class="mc-filters-pop__title">Filters</span>
@@ -2130,11 +2149,11 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   // reflects those). The three quick chips — I'm Involved / Flagged / Expires
   // Soon — are inline toggle Chips (aria-pressed). One setFilter keeps every
   // surface for a key in sync.
-  var filtersChip = document.getElementById("mc-filters-chip");
+  var filtersChip = document.getElementById("mc-filters-btn");
   var filtersCount = document.getElementById("mc-filters-count");
   var filtersListbox = document.getElementById("mc-filters-listbox");
   // the Filters button only exists when the chips have collapsed into it
-  // (narrow), so its badge simply counts every active toggle filter
+  // (narrow); its small blue badge counts every active filter
   function updateFiltersChip() {
     var n = ["unread", "involved", "flagged", "expires"].filter(function (k) { return filters[k]; }).length;
     if (adv.dept) n++;
@@ -2142,7 +2161,6 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     if (adv.dateStart || adv.dateEnd) n++;
     filtersCount.textContent = n;
     filtersCount.hidden = n === 0;
-    filtersChip.classList.toggle("chip--checked-outline", n > 0);
   }
   function setFilter(key, on) {
     filters[key] = on;
@@ -2152,19 +2170,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     if (cb) cb.checked = on;
     updateFiltersChip();
   }
-  filtersListbox.addEventListener("toggle", function (e) {
-    if (e.newState !== "open") return;
-    // position AFTER layout (rAF) and measure the real rect — offsetWidth read
-    // synchronously on first open was stale, so the popover overran the viewport
-    requestAnimationFrame(function () {
-      var r = filtersChip.getBoundingClientRect();
-      var w = filtersListbox.getBoundingClientRect().width;
-      filtersListbox.style.position = "fixed";
-      filtersListbox.style.margin = "0";
-      filtersListbox.style.top = (r.bottom + 4) + "px";
-      filtersListbox.style.left = Math.max(8, Math.min(r.left, window.innerWidth - w - 8)) + "px";
-    });
-  });
+  // the Filters panel is a bottom-sheet drawer, docked by CSS — no positioning JS
   filtersListbox.querySelectorAll(".listbox__cb-input").forEach(function (cb) {
     cb.addEventListener("change", function () {
       setFilter(cb.dataset.filterKey, cb.checked);

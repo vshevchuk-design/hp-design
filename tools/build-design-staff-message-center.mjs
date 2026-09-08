@@ -996,7 +996,10 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
    collapsed into the Filters button on narrow mobile (<600). */
 .mc-rail__topbar { display: flex; flex-direction: column; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))}; }
 .mc-rail__row { display: flex; align-items: center; gap: ${px(resolve("dim.2"))}; min-width: 0; }
-.mc-rail__row--filters { flex-wrap: wrap; }
+/* <600 the filters row has nothing to show (chips/selects collapse; the Filters
+   trigger moved up to row 1) — display:contents drops its box (no empty-row gap)
+   while keeping the filters popover in a rendered ancestor so it still opens */
+.mc-rail__row--filters { flex-wrap: wrap; display: contents; }
 /* the date-range sits right after the Inbox/Resolved tabs (left); the searches
    take the row's free space and go to the right */
 .mc-rail__searches { display: flex; align-items: center; gap: ${px(resolve("dim.2"))}; margin-left: auto; min-width: 0; }
@@ -1008,18 +1011,32 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 /* mobile-first (<600): the two fields collapse behind one search icon, and the
    chips collapse into the Filters button */
 .mc-rail__searches { display: none; }
-.mc-search-open-btn { display: inline-flex; margin-left: auto; }
+/* Filters + Search are twin icon buttons docked right; Filters carries a small
+   blue counter badge when any filter is active */
+.mc-filters-btn { display: inline-flex; margin-left: auto; position: relative; overflow: visible; flex-shrink: 0; }
+.mc-search-open-btn { display: inline-flex; flex-shrink: 0; }
+.mc-filters-badge { position: absolute; top: -5px; right: -5px; pointer-events: none; box-shadow: 0 0 0 2px ${cv("surface.default")}; }
+.mc--search-open .mc-filters-btn { display: none; }
 .mc-qchip { flex-shrink: 0; display: none; }
-.mc-filters-chip { display: inline-flex; }
 .mc-fopt--collapsible { display: block; }
 /* ---- Filters panel: a real form — Date range / Department / Staff, plus the
    collapsed quick-filter toggles on narrow. The date-range field reuses the
    DateRangePicker component recipe. ---- */
-.mc-filters-pop { margin: 0; box-sizing: border-box; width: 340px; max-width: calc(100vw - 16px); padding: 0; border-radius: ${px(resolve("radius.default"))}; background: ${cv("surface.default")}; border: 1px solid ${cv("border.default")}; box-shadow: ${lbShadowCss}; font-family: ${cv("family.sans")}; }
-.mc-filters-pop__head { display: flex; align-items: center; justify-content: space-between; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))}; border-bottom: 1px solid ${cv("border.default")}; }
+/* the Filters panel is a bottom-sheet drawer: docked to the bottom edge, full
+   width, sliding up over a dimmed backdrop (Popover API — light-dismiss + Esc
+   for free). Only ever opened on narrow, where the Filters icon button shows. */
+.mc-filters-pop { margin: 0 auto; box-sizing: border-box; position: fixed; inset: auto 0 0 0; width: 100%; max-width: 520px; max-height: 88vh; padding: 0; display: flex; flex-direction: column; border: none; border-top-left-radius: ${px(resolve("radius.lg"))}; border-top-right-radius: ${px(resolve("radius.lg"))}; background: ${cv("surface.default")}; box-shadow: ${lbShadowCss}; font-family: ${cv("family.sans")}; transform: translateY(100%); transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1), overlay 0.28s allow-discrete, display 0.28s allow-discrete; }
+.mc-filters-pop:popover-open { transform: translateY(0); }
+@starting-style { .mc-filters-pop:popover-open { transform: translateY(100%); } }
+.mc-filters-pop::backdrop { background: transparent; transition: background 0.28s ease, overlay 0.28s allow-discrete, display 0.28s allow-discrete; }
+.mc-filters-pop:popover-open::backdrop { background: ${cv(mdOverlay)}; }
+@starting-style { .mc-filters-pop:popover-open::backdrop { background: transparent; } }
+/* grabber handle at the top edge, for the drawer feel */
+.mc-filters-pop::before { content: ""; flex-shrink: 0; width: 36px; height: 4px; margin: ${px(resolve("dim.2"))} auto 0; border-radius: ${px(resolve("radius.full"))}; background: ${cv("border.strong")}; }
+.mc-filters-pop__head { flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; padding: ${px(resolve("dim.2"))} ${px(resolve("dim.4"))} ${px(resolve("dim.3"))}; border-bottom: 1px solid ${cv("border.default")}; }
 .mc-filters-pop__title { color: ${cv("text.default")}; font-weight: 600; ${typoCss(bodyBaseType)} }
 .mc-filters-pop__clear { border: none; background: none; padding: 0; cursor: pointer; color: ${cv("text.primary")}; font-weight: 600; ${typoCss(bodySmType)} font-family: inherit; }
-.mc-filters-pop__body { display: flex; flex-direction: column; gap: ${px(resolve("dim.4"))}; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))} ${px(resolve("dim.4"))}; max-height: 72vh; overflow-y: auto; }
+.mc-filters-pop__body { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: ${px(resolve("dim.4"))}; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))} ${px(resolve("dim.6"))}; overflow-y: auto; }
 .mc-filt-field { display: flex; flex-direction: column; gap: ${px(resolve("dim.2"))}; }
 .mc-filt-label { color: ${cv("text.muted")}; ${typoCss(labelSmType)}${labelSmExt.textTransform ? ` text-transform: ${labelSmExt.textTransform};` : ""}${labelSmExt.letterSpacing ? ` letter-spacing: ${labelSmExt.letterSpacing};` : ""} }
 .mc-filt-opts { display: flex; flex-wrap: wrap; gap: ${px(resolve("dim.1_5"))}; }
@@ -1181,7 +1198,9 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
   .mc-rail__daterange { display: block; }
   .mc-advsel { display: inline-block; }
   .mc-rail__advsep { display: inline-block; width: 1px; height: 20px; background: ${cv("border.default")}; align-self: center; margin: 0 ${px(resolve("dim.1"))}; }
-  .mc-filters-chip { display: none; }
+  /* the Filters icon button is a narrow-only overflow home; inline chips take over */
+  .mc-filters-btn { display: none; }
+  .mc-rail__row--filters { display: flex; }
 }
 @media (min-width: 768px) {
   .mc-topbar-new { display: inline-flex; }
@@ -2507,11 +2526,11 @@ const appJs = `(function () {
   // reflects those). The three quick chips — I'm Involved / Flagged / Expires
   // Soon — are inline toggle Chips (aria-pressed). One setFilter keeps every
   // surface for a key in sync.
-  var filtersChip = document.getElementById("mc-filters-chip");
+  var filtersChip = document.getElementById("mc-filters-btn");
   var filtersCount = document.getElementById("mc-filters-count");
   var filtersListbox = document.getElementById("mc-filters-listbox");
   // the Filters button only exists when the chips have collapsed into it
-  // (narrow), so its badge simply counts every active toggle filter
+  // (narrow); its small blue badge counts every active filter
   function updateFiltersChip() {
     var n = ["unread", "involved", "flagged", "expires"].filter(function (k) { return filters[k]; }).length;
     if (adv.dept) n++;
@@ -2519,7 +2538,6 @@ const appJs = `(function () {
     if (adv.dateStart || adv.dateEnd) n++;
     filtersCount.textContent = n;
     filtersCount.hidden = n === 0;
-    filtersChip.classList.toggle("chip--checked-outline", n > 0);
   }
   function setFilter(key, on) {
     filters[key] = on;
@@ -2529,19 +2547,7 @@ const appJs = `(function () {
     if (cb) cb.checked = on;
     updateFiltersChip();
   }
-  filtersListbox.addEventListener("toggle", function (e) {
-    if (e.newState !== "open") return;
-    // position AFTER layout (rAF) and measure the real rect — offsetWidth read
-    // synchronously on first open was stale, so the popover overran the viewport
-    requestAnimationFrame(function () {
-      var r = filtersChip.getBoundingClientRect();
-      var w = filtersListbox.getBoundingClientRect().width;
-      filtersListbox.style.position = "fixed";
-      filtersListbox.style.margin = "0";
-      filtersListbox.style.top = (r.bottom + 4) + "px";
-      filtersListbox.style.left = Math.max(8, Math.min(r.left, window.innerWidth - w - 8)) + "px";
-    });
-  });
+  // the Filters panel is a bottom-sheet drawer, docked by CSS — no positioning JS
   filtersListbox.querySelectorAll(".listbox__cb-input").forEach(function (cb) {
     cb.addEventListener("change", function () {
       setFilter(cb.dataset.filterKey, cb.checked);
@@ -3686,11 +3692,11 @@ ${phaseECss}
               <button class="search__clear" id="mc-search-clear" type="button" aria-label="Clear search" hidden>${iconClear.replace('<svg class="search__clear" ', '<svg ')}</button>
             </div>
           </div>
+          <button class="btn btn--secondary btn--base btn--icon-only mc-filters-btn" id="mc-filters-btn" type="button" popovertarget="mc-filters-listbox" aria-label="Filters" aria-haspopup="dialog">${iconOf("filter_list", "btn__icon")}<span class="counter counter--sm counter--onNeutral counter--active mc-filters-badge" id="mc-filters-count" hidden>0</span></button>
           <button class="btn btn--secondary btn--base btn--icon-only mc-search-open-btn" type="button" aria-label="Search">${iconSearchBtn}</button>
           <button class="mc-search-close" id="mc-search-close" type="button">Close</button>
         </div>
         <div class="mc-rail__row mc-rail__row--filters">
-          <button class="chip chip--base mc-filters-chip" id="mc-filters-chip" type="button" popovertarget="mc-filters-listbox" aria-haspopup="listbox">${iconFilter}<span>Filters</span><span class="counter counter--sm counter--onNeutral counter--inactive" id="mc-filters-count" hidden>0</span>${iconChevronDown}</button>
           <div class="mc-filters-pop" id="mc-filters-listbox" popover>
             <div class="mc-filters-pop__head">
               <span class="mc-filters-pop__title">Filters</span>
