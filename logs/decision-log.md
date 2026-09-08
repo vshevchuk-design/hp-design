@@ -1161,3 +1161,7 @@ Per user, restructured the console table:
 Verified 1280 / 820 / 390 + the "+N" hover popup (Ava / Alexander / Sarah).
 
 Still to do from the batch: (2) date-range picker component, (3) Department + Staff selectors, (4) rebuild the Filters popover into a real field panel (drawer) and fit it all responsively.
+
+## 2026-09-06 (cont. 6) — DateRangePicker component (Phase 2 of the batch)
+
+Built a new **DateRangePicker** DS component (tokens + doc builder + page + nav + index + Logs), for the console's date-window filter. It's a period navigator — `‹ prev · start date · period label · end date · next ›` in the field recipe — that opens a month-grid calendar popover. Arrows step the whole range by a month; the label reads "Current" for the default window, else the month (`Aug 2026`). In the calendar you click a start then an end (picking an earlier day swaps them); start/end fill `fill.primary`, the span between gets a `bg.primary` wash, today keeps its ring. Apply / Clear in the footer; positioning runs in rAF with the real width. Built on the single DatePicker's field + Popover recipes, extended with range day states (`endsBg` / `rangeBg`). Verified: default 08/09–09/08 "Current", pick 10→18 washes 7 middle days and applies "08/10–08/18 / Aug 2026", swap works, month + period arrows step. Next (Phase 4) it goes into the rebuilt Filters panel.

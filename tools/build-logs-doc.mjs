@@ -20,6 +20,16 @@ const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 // ---- the changelog, newest first ----
 const POSTS = [
   {
+    date: "2026-09-06",
+    type: "new",
+    title: "DateRangePicker component",
+    body: "A date-range picker for filtering the console by a date window: a period navigator (‹ prev · start date · period label · end date · next ›) that opens a month-grid calendar. The arrows step the whole range by a month and the middle label reads \"Current\" for the default window (else the month); clicking a date opens the calendar to pick a custom start then end — picking an earlier day swaps them — with the span between washed in bg.primary and the ends filled fill.primary. Built on the same field + Popover recipes as the single DatePicker, extended with range day states. Next: it goes into the rebuilt console Filters panel.",
+    links: [
+      { label: "DateRangePicker", href: "date-range-picker.html" },
+      { label: "DatePicker", href: "date-picker.html" },
+    ],
+  },
+  {
     date: "2026-09-05",
     type: "updated",
     title: "Group Message: a faceted student picker + one-press New Message",

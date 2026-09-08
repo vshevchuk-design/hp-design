@@ -128,6 +128,7 @@
     <a class="navlink" href="input.html">Input</a>
     <a class="navlink" href="select.html">Select</a>
     <a class="navlink" href="date-picker.html">DatePicker</a>
+    <a class="navlink" href="date-range-picker.html">DateRangePicker</a>
     <a class="navlink" href="search.html">Search</a>
     <a class="navlink" href="pagination.html">Pagination</a>
     <a class="navlink" href="separator.html">Separator</a>
@@ -192,6 +193,19 @@
     <h1>Logs</h1>
     <p class="sub">Changelog for the design system — what changed, when, and where to see it. Each entry links to the component or prototype pages it touched. Newest first.</p>
 
+    <section class="log-group">
+      <div class="log-group__date"><time datetime="2026-09-06">Sep 6, 2026</time></div>
+      <div class="log-group__posts">
+        <article class="log-post">
+        <div class="log-post__head">
+          <span class="log-tag log-tag--new">New</span>
+          <h3 class="log-post__title">DateRangePicker component</h3>
+        </div>
+        <p class="log-post__body">A date-range picker for filtering the console by a date window: a period navigator (‹ prev · start date · period label · end date · next ›) that opens a month-grid calendar. The arrows step the whole range by a month and the middle label reads "Current" for the default window (else the month); clicking a date opens the calendar to pick a custom start then end — picking an earlier day swaps them — with the span between washed in bg.primary and the ends filled fill.primary. Built on the same field + Popover recipes as the single DatePicker, extended with range day states. Next: it goes into the rebuilt console Filters panel.</p>
+        <div class="log-post__links"><a class="log-link" href="date-range-picker.html">DateRangePicker</a><a class="log-link" href="date-picker.html">DatePicker</a></div>
+      </article>
+      </div>
+    </section>
     <section class="log-group">
       <div class="log-group__date"><time datetime="2026-09-05">Sep 5, 2026</time></div>
       <div class="log-group__posts">

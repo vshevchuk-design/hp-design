@@ -73,6 +73,7 @@ export const NAV_ITEMS = {
   stat: { label: "Stat", href: "stat.html" },
   "split-button": { label: "SplitButton", href: "split-button.html" },
   "date-picker": { label: "DatePicker", href: "date-picker.html" },
+  "date-range-picker": { label: "DateRangePicker", href: "date-range-picker.html" },
 };
 
 // Products → prototype pages shown in the Designs pane. Keys are the
@@ -158,6 +159,7 @@ export function renderNav(activeKey, { basePath = "" } = {}) {
     ${link("input")}
     ${link("select")}
     ${link("date-picker")}
+    ${link("date-range-picker")}
     ${link("search")}
     ${link("pagination")}
     ${link("separator")}
