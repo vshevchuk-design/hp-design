@@ -2198,9 +2198,9 @@ function groupAvatarStack(n) {
 }
 function groupCardMarkup(g) {
   return `<div class="thread-item-inbox mc-trow mc-console-cols mc-group-row thread-item-inbox--read" role="button" tabindex="0" data-thread="${g.id}" data-subject="${esc(g.subject)}" data-department="Academic Advising">
-        <div class="mc-td mc-col-flag"></div>
+        <div class="mc-td mc-col-flag"><button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread">${iconFlagOutlined}${iconFlagFilled}</button></div>
         <div class="mc-td mc-cellwrap">${groupAvatarStack(g.n)}<span class="mc-cellstack"><span class="mc-lead">${g.n} Students</span><span class="badge badge--sm badge--role-primary" style="width:fit-content">Group</span></span></div>
-        <div class="mc-td mc-col-responsible"><span class="mc-resp"><span class="mc-resp__pill">You</span></span></div>
+        <div class="mc-td mc-col-responsible"><span class="mc-resp"><span class="mc-resp__pill">${SELF.name}</span></span></div>
         <div class="mc-td mc-cellstack"><span class="mc-lead">${g.subject}</span><span class="mc-td--muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Seen ${g.seen} · Replied ${g.replied}</span></div>
         <div class="mc-td mc-col-expiration thread-item-inbox__expires"><span class="badge badge--sm badge--role-neutral">Expires Aug 15</span><span class="badge badge--sm badge--role-neutral thread-item-inbox__scope">Resolved</span></div>
         <div class="mc-td mc-td--muted mc-col-date">${dateCell(g.date, "")}</div>
@@ -3528,9 +3528,9 @@ const appJs = `(function () {
     row.className = "thread-item-inbox mc-trow mc-console-cols thread-item-inbox--read";
     row.dataset.thread = id; row.dataset.subject = subject; row.dataset.department = "Academic Advising";
     row.innerHTML =
-      '<div class="mc-td mc-col-flag"></div>' +
+      '<div class="mc-td mc-col-flag"><button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread">${iconFlagOutlined}${iconFlagFilled}</button></div>' +
       '<div class="mc-td mc-cellwrap"><span class="mc-avg mc-avg--sm">' + shown + more + '</span><span class="mc-cellstack"><span class="mc-lead">' + n + ' Students</span><span class="badge badge--sm badge--role-primary" style="width:fit-content">Group</span></span></div>' +
-      '<div class="mc-td mc-col-responsible"><span class="mc-resp"><span class="mc-resp__pill">You</span></span></div>' +
+      '<div class="mc-td mc-col-responsible"><span class="mc-resp"><span class="mc-resp__pill">${SELF.name}</span></span></div>' +
       '<div class="mc-td mc-cellstack"><span class="mc-lead"></span><span class="mc-td--muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Seen 0 · Replied 0</span></div>' +
       '<div class="mc-td mc-col-expiration thread-item-inbox__expires"><span class="mc-td--muted">–</span><span class="badge badge--sm badge--role-neutral thread-item-inbox__scope">Resolved</span></div>' +
       '<div class="mc-td mc-td--muted mc-col-date"><span class="mc-date__d">Just now</span></div>';

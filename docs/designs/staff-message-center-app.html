@@ -1265,9 +1265,9 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           </div>
           <div class="mc-list" data-list="archived" hidden>
             <div class="thread-item-inbox mc-trow mc-console-cols mc-group-row thread-item-inbox--read" role="button" tabindex="0" data-thread="grp-seed" data-subject="Fall registration opens Monday" data-department="Academic Advising">
-        <div class="mc-td mc-col-flag"></div>
+        <div class="mc-td mc-col-flag"><button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button></div>
         <div class="mc-td mc-cellwrap"><span class="mc-avg mc-avg--sm"><span class="mc-avg__item avatar--red avatar--sm" role="img" aria-label="Cait Adelson"><span class="avatar__initials">CA</span></span><span class="mc-avg__item avatar--orange avatar--sm" role="img" aria-label="Calam Xavier"><span class="avatar__initials">CX</span></span><span class="mc-avg__item avatar--magenta avatar--sm" role="img" aria-label="Maya Okafor"><span class="avatar__initials">MO</span></span><span class="mc-avg__item mc-avg__more">+34</span></span><span class="mc-cellstack"><span class="mc-lead">37 Students</span><span class="badge badge--sm badge--role-primary" style="width:fit-content">Group</span></span></div>
-        <div class="mc-td mc-col-responsible"><span class="mc-resp"><span class="mc-resp__pill">You</span></span></div>
+        <div class="mc-td mc-col-responsible"><span class="mc-resp"><span class="mc-resp__pill">Alexander Robinson</span></span></div>
         <div class="mc-td mc-cellstack"><span class="mc-lead">Fall registration opens Monday</span><span class="mc-td--muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Seen 24 · Replied 6</span></div>
         <div class="mc-td mc-col-expiration thread-item-inbox__expires"><span class="badge badge--sm badge--role-neutral">Expires Aug 15</span><span class="badge badge--sm badge--role-neutral thread-item-inbox__scope">Resolved</span></div>
         <div class="mc-td mc-td--muted mc-col-date"><span class="mc-date__d">Jul 12</span></div>
@@ -3148,9 +3148,9 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     row.className = "thread-item-inbox mc-trow mc-console-cols thread-item-inbox--read";
     row.dataset.thread = id; row.dataset.subject = subject; row.dataset.department = "Academic Advising";
     row.innerHTML =
-      '<div class="mc-td mc-col-flag"></div>' +
+      '<div class="mc-td mc-col-flag"><button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button></div>' +
       '<div class="mc-td mc-cellwrap"><span class="mc-avg mc-avg--sm">' + shown + more + '</span><span class="mc-cellstack"><span class="mc-lead">' + n + ' Students</span><span class="badge badge--sm badge--role-primary" style="width:fit-content">Group</span></span></div>' +
-      '<div class="mc-td mc-col-responsible"><span class="mc-resp"><span class="mc-resp__pill">You</span></span></div>' +
+      '<div class="mc-td mc-col-responsible"><span class="mc-resp"><span class="mc-resp__pill">Alexander Robinson</span></span></div>' +
       '<div class="mc-td mc-cellstack"><span class="mc-lead"></span><span class="mc-td--muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Seen 0 · Replied 0</span></div>' +
       '<div class="mc-td mc-col-expiration thread-item-inbox__expires"><span class="mc-td--muted">–</span><span class="badge badge--sm badge--role-neutral thread-item-inbox__scope">Resolved</span></div>' +
       '<div class="mc-td mc-td--muted mc-col-date"><span class="mc-date__d">Just now</span></div>';
