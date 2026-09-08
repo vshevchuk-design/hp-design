@@ -2247,7 +2247,12 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
       if (pnavPrev) pnavPrev.addEventListener("click", function () { views = [viewAdd(views[0], -1), viewAdd(views[1], -1)]; renderBoth(); });
       if (pnavNext) pnavNext.addEventListener("click", function () { views = [viewAdd(views[0], 1), viewAdd(views[1], 1)]; renderBoth(); });
       panel.querySelector(".daterange__apply").addEventListener("click", function () { if (draftS) commit(draftS, draftE || draftS); panel.hidePopover(); });
-      panel.querySelector(".daterange__clear").addEventListener("click", function () { resetRange(); renderBoth(); });
+      panel.querySelector(".daterange__clear").addEventListener("click", function () {
+        resetRange();
+        views = [{ y: cur.s.y, m: cur.s.m }, viewAdd({ y: cur.s.y, m: cur.s.m }, 1)];
+        draftS = null; draftE = null;
+        renderBoth();
+      });
       el.querySelector(".daterange__arrow--prev").addEventListener("click", function () { commit(addMonths(cur.s, -1), addMonths(cur.e, -1)); });
       el.querySelector(".daterange__arrow--next").addEventListener("click", function () { commit(addMonths(cur.s, 1), addMonths(cur.e, 1)); });
     });
