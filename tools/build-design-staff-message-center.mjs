@@ -997,9 +997,9 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .mc-rail__topbar { display: flex; flex-direction: column; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))}; }
 .mc-rail__row { display: flex; align-items: center; gap: ${px(resolve("dim.2"))}; min-width: 0; }
 .mc-rail__row--filters { flex-wrap: wrap; }
-/* the date-range takes the row's free space (margin-left:auto) and the searches
-   sit right after it, so the two group together on the right, next to each other */
-.mc-rail__searches { display: flex; align-items: center; gap: ${px(resolve("dim.2"))}; min-width: 0; }
+/* the date-range sits right after the Inbox/Resolved tabs (left); the searches
+   take the row's free space and go to the right */
+.mc-rail__searches { display: flex; align-items: center; gap: ${px(resolve("dim.2"))}; margin-left: auto; min-width: 0; }
 .mc-rail__searches .search { min-width: 0; }
 
 /* mobile-first (<600): the two fields collapse behind one search icon, and the
@@ -1027,7 +1027,7 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 /* inline (desktop) advanced controls: the date-range on row 1, the Department /
    Staff Selects on row 2. The Selects ARE the DS Select recipe (base) — no chip
    restyle. Hidden on mobile (< 600) where they live in the panel. */
-.mc-rail__daterange { display: none; margin-left: auto; }
+.mc-rail__daterange { display: none; }
 .mc-rail__advsep { display: none; }
 .mc-advsel { position: relative; display: none; flex-shrink: 0; }
 .mc-advsel__trigger .chip__icon { color: ${cv("icon.secondary")}; }
