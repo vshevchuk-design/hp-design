@@ -2290,10 +2290,11 @@ const phaseECss = `.mc-reply-actions { display: flex; align-items: center; gap: 
   .mc-trow.mc-console-cols > .mc-col-date { grid-column: 3; grid-row: 1; justify-self: end; }
   .mc-trow.mc-console-cols > .mc-td.mc-cellstack { grid-column: 2; grid-row: 2; }
   .mc-trow.mc-console-cols > .mc-col-flag { grid-column: 3; grid-row: 2; justify-self: end; align-self: center; }
-  .mc-trow.mc-console-cols > .mc-col-expiration { grid-column: 2 / -1; }
-  /* order keeps Expiration above Involved during auto-flow (source order has
-     Involved first); a hidden Expiration then leaves no empty row */
-  .mc-trow.mc-console-cols > .mc-col-responsible { grid-column: 2 / -1; order: 1; }
+  /* Involved chips sit above the Expires tag; order pushes Expiration below
+     Involved during auto-flow (source order has Involved first, so it flows
+     first anyway — order makes a hidden Involved leave no empty row) */
+  .mc-trow.mc-console-cols > .mc-col-responsible { grid-column: 2 / -1; }
+  .mc-trow.mc-console-cols > .mc-col-expiration { grid-column: 2 / -1; order: 1; }
 
   /* identity: name and ID on one smaller line (desktop stacks them) */
   .mc-cellwrap > .mc-cellstack { flex-direction: row; align-items: baseline; gap: ${px(resolve("dim.1"))}; min-width: 0; }
