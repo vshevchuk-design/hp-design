@@ -1105,6 +1105,11 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .daterange__btn { border: 1px solid ${cv("border.default")}; background: ${cv("surface.default")}; color: ${cv("text.default")}; border-radius: ${px(resolve("radius.default"))}; padding: 0 ${px(resolve("dim.3"))}; height: 32px; cursor: pointer; ${typoCss(bodySmType)} font-family: inherit; }
 .daterange__btn--primary { background: ${cv("fill.primary")}; border-color: ${cv("fill.primary")}; color: ${cv("text.onFill")}; }
 @media (max-width: 560px) { .daterange__cals { flex-direction: column; gap: ${px(resolve("dim.3"))}; } }
+/* inline single-month calendar (mobile/tablet drawer): expands in place instead
+   of floating as a popover — no overflow, no overlap, the drawer just scrolls */
+.daterange__panel--inline { position: static; width: 100%; max-width: none; margin-top: ${px(resolve("dim.2"))}; box-shadow: none; z-index: auto; }
+.daterange__panel--inline[hidden] { display: none; }
+.daterange--inline .daterange__cals { justify-content: center; }
 /* tapping the search icon reveals both fields, stacked, over row 1 */
 .mc-search-close { display: none; flex-shrink: 0; border: none; background: none; padding: 0; cursor: pointer; color: ${cv("text.primary")}; font-family: ${cv("family.sans")}; ${typoCss(linkBaseType)}${linkBaseExt.textDecoration ? ` text-decoration: ${linkBaseExt.textDecoration};` : ""} }
 .mc--search-open .mc-rail__row--top { flex-direction: column; align-items: stretch; }
@@ -1818,22 +1823,31 @@ const drYearOpts = [2024, 2025, 2026, 2027, 2028, 2029].map((y) => `<option valu
 // one calendar's header: a month + year <select> pair, flanked by the paging
 // arrow on its outer edge (prev on the left calendar, next on the right)
 function drCalHead(cal, side) {
-  const prev = side === "left" ? `<button class="daterange__pnav daterange__pnav--prev" type="button" aria-label="Previous month">${iconOf("chevron_left", "daterange__pnav-icon")}</button>` : `<span class="daterange__pnav-sp"></span>`;
-  const next = side === "right" ? `<button class="daterange__pnav daterange__pnav--next" type="button" aria-label="Next month">${iconOf("chevron_right", "daterange__pnav-icon")}</button>` : `<span class="daterange__pnav-sp"></span>`;
+  const prev = side === "left" || side === "both" ? `<button class="daterange__pnav daterange__pnav--prev" type="button" aria-label="Previous month">${iconOf("chevron_left", "daterange__pnav-icon")}</button>` : `<span class="daterange__pnav-sp"></span>`;
+  const next = side === "right" || side === "both" ? `<button class="daterange__pnav daterange__pnav--next" type="button" aria-label="Next month">${iconOf("chevron_right", "daterange__pnav-icon")}</button>` : `<span class="daterange__pnav-sp"></span>`;
   return `<div class="daterange__chead">${prev}<span class="daterange__mrow"><select class="daterange__month" data-cal="${cal}" aria-label="Month">${drMonthOpts}</select><select class="daterange__year" data-cal="${cal}" aria-label="Year">${drYearOpts}</select></span>${next}</div>`;
 }
-function dateRangeWidget(suffix) {
+function dateRangeWidget(suffix, opts) {
+  // inline = a single-month calendar that expands in place (used inside the
+  // mobile/tablet filters drawer, where a dual-month popover overflows and
+  // overlaps the fields). Desktop keeps the dual-month popover.
+  const inline = !!(opts && opts.inline);
   const pid = "mc-dr-panel-" + suffix;
-  return `<div class="daterange" id="mc-dr-${suffix}" data-start="2026-08-08" data-end="2026-09-08">
+  const fieldAttrs = inline ? "" : ` popovertarget="${pid}" aria-haspopup="dialog"`;
+  const panelAttrs = inline ? `class="daterange__panel daterange__panel--inline" hidden` : `class="daterange__panel" popover role="dialog" aria-label="Choose a date range"`;
+  const cals = inline
+    ? `<div class="daterange__cal">${drCalHead(0, "both")}<div class="daterange__grid" data-cal="0"></div></div>`
+    : `<div class="daterange__cal">${drCalHead(0, "left")}<div class="daterange__grid" data-cal="0"></div></div>
+                  <div class="daterange__cal">${drCalHead(1, "right")}<div class="daterange__grid" data-cal="1"></div></div>`;
+  return `<div class="daterange${inline ? " daterange--inline" : ""}" id="mc-dr-${suffix}" data-start="2026-08-08" data-end="2026-09-08">
               <div class="daterange__nav">
                 <button class="daterange__arrow daterange__arrow--prev" type="button" aria-label="Previous month">${iconOf("chevron_left", "daterange__arrow-icon")}</button>
-                <button class="daterange__field" type="button" popovertarget="${pid}" aria-haspopup="dialog">${iconOf("calendar_today", "daterange__cal-icon")}<span class="daterange__range-val">Aug 08, 2026 – Sep 08, 2026</span></button>
+                <button class="daterange__field" type="button"${fieldAttrs}>${iconOf("calendar_today", "daterange__cal-icon")}<span class="daterange__range-val">Aug 08, 2026 – Sep 08, 2026</span></button>
                 <button class="daterange__arrow daterange__arrow--next" type="button" aria-label="Next month">${iconOf("chevron_right", "daterange__arrow-icon")}</button>
               </div>
-              <div class="daterange__panel" id="${pid}" popover role="dialog" aria-label="Choose a date range">
+              <div id="${pid}" ${panelAttrs}>
                 <div class="daterange__cals">
-                  <div class="daterange__cal">${drCalHead(0, "left")}<div class="daterange__grid" data-cal="0"></div></div>
-                  <div class="daterange__cal">${drCalHead(1, "right")}<div class="daterange__grid" data-cal="1"></div></div>
+                  ${cals}
                 </div>
                 <div class="daterange__footer">
                   <button class="daterange__btn daterange__clear" type="button">Reset</button>
@@ -2666,6 +2680,7 @@ const appJs = `(function () {
     window.__mcResetDateRange = function () { cur.s = DEF_S(); cur.e = DEF_E(); adv.dateStart = ""; adv.dateEnd = ""; updateFiltersChip(); syncTriggers(); };
     els.forEach(function (el) {
       var panel = el.querySelector(".daterange__panel");
+      var inline = el.classList.contains("daterange--inline");
       var grids = [el.querySelector('.daterange__grid[data-cal="0"]'), el.querySelector('.daterange__grid[data-cal="1"]')];
       var monthSels = [el.querySelector('.daterange__month[data-cal="0"]'), el.querySelector('.daterange__month[data-cal="1"]')];
       var yearSels = [el.querySelector('.daterange__year[data-cal="0"]'), el.querySelector('.daterange__year[data-cal="1"]')];
@@ -2673,6 +2688,7 @@ const appJs = `(function () {
       var draftS = null, draftE = null;
       function renderCal(ci) {
         var view = views[ci], grid = grids[ci];
+        if (!grid) return;
         if (monthSels[ci]) monthSels[ci].value = view.m;
         if (yearSels[ci]) yearSels[ci].value = view.y;
         var s = draftS || cur.s, e = draftE || (draftS ? null : cur.e);
@@ -2706,21 +2722,30 @@ const appJs = `(function () {
         if (monthSels[ci]) monthSels[ci].addEventListener("change", function () { views[ci] = { y: views[ci].y, m: parseInt(monthSels[ci].value, 10) }; renderCal(ci); });
         if (yearSels[ci]) yearSels[ci].addEventListener("change", function () { views[ci] = { y: parseInt(yearSels[ci].value, 10), m: views[ci].m }; renderCal(ci); });
       });
-      panel.addEventListener("toggle", function (e) {
-        if (e.newState !== "open") return;
-        views = [{ y: cur.s.y, m: cur.s.m }, viewAdd({ y: cur.s.y, m: cur.s.m }, 1)]; draftS = null; draftE = null; renderBoth();
-        requestAnimationFrame(function () {
-          var r = el.querySelector(".daterange__nav").getBoundingClientRect();
-          var w = panel.getBoundingClientRect().width;
-          panel.style.position = "fixed"; panel.style.margin = "0";
-          panel.style.top = (r.bottom + 4) + "px";
-          panel.style.left = Math.max(8, Math.min(r.left, window.innerWidth - w - 8)) + "px";
+      function openReset() { views = [{ y: cur.s.y, m: cur.s.m }, viewAdd({ y: cur.s.y, m: cur.s.m }, 1)]; draftS = null; draftE = null; renderBoth(); }
+      if (inline) {
+        // expands in place; the field toggles it, no top-layer positioning
+        el.querySelector(".daterange__field").addEventListener("click", function () {
+          panel.hidden = !panel.hidden;
+          if (!panel.hidden) openReset();
         });
-      });
+      } else {
+        panel.addEventListener("toggle", function (e) {
+          if (e.newState !== "open") return;
+          openReset();
+          requestAnimationFrame(function () {
+            var r = el.querySelector(".daterange__nav").getBoundingClientRect();
+            var w = panel.getBoundingClientRect().width;
+            panel.style.position = "fixed"; panel.style.margin = "0";
+            panel.style.top = (r.bottom + 4) + "px";
+            panel.style.left = Math.max(8, Math.min(r.left, window.innerWidth - w - 8)) + "px";
+          });
+        });
+      }
       var pnavPrev = panel.querySelector(".daterange__pnav--prev"), pnavNext = panel.querySelector(".daterange__pnav--next");
       if (pnavPrev) pnavPrev.addEventListener("click", function () { views = [viewAdd(views[0], -1), viewAdd(views[1], -1)]; renderBoth(); });
       if (pnavNext) pnavNext.addEventListener("click", function () { views = [viewAdd(views[0], 1), viewAdd(views[1], 1)]; renderBoth(); });
-      panel.querySelector(".daterange__apply").addEventListener("click", function () { if (draftS) commit(draftS, draftE || draftS); panel.hidePopover(); });
+      panel.querySelector(".daterange__apply").addEventListener("click", function () { if (draftS) commit(draftS, draftE || draftS); if (inline) panel.hidden = true; else panel.hidePopover(); });
       panel.querySelector(".daterange__clear").addEventListener("click", function () {
         resetRange();
         views = [{ y: cur.s.y, m: cur.s.m }, viewAdd({ y: cur.s.y, m: cur.s.m }, 1)];
@@ -3740,7 +3765,7 @@ ${phaseECss}
             <div class="mc-filters-pop__body">
               <div class="mc-filt-field">
                 <span class="mc-filt-label">Date range</span>
-                ${dateRangeWidget("panel")}
+                ${dateRangeWidget("panel", { inline: true })}
               </div>
               <div class="mc-filt-field">
                 <span class="mc-filt-label">Department</span>
