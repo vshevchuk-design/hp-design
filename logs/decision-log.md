@@ -1177,3 +1177,12 @@ Rebuilt the console's Filters popover from a bare checkbox list into a proper **
 Verified 1280 + 390: panel opens in-viewport, Staff=Sarah → only Diego, Dept=English → 0 (inbox), date range Aug 3–5 → Cait/Diego/Maya (George excluded), Clear all → 4 back, nested calendar keeps the panel open, mobile stacks the whole form at 340px with the quick-filter checkboxes shown.
 
 Batch complete (columns + DateRangePicker component + Department/Staff + rebuilt Filters panel + responsive).
+
+## 2026-09-06 (cont. 8) — Filters: date-range to row 1, Department/Staff as Selects (desktop)
+
+Per user: the date-range is a primary control (goes up top by search), and Department/Staff are secondary — so they belong on row 2 with the chips, but as **Selects**, not pills.
+- **Desktop (≥600):** date-range moves inline to **row 1** (right, by the searches); **Department** and **Staff** are **inline Select dropdowns** on **row 2** after the chips (a hairline separates them). The Filters button is hidden again — everything's inline.
+- **Mobile (<600):** unchanged — the inline controls hide and everything lives in the **Filters panel** (date-range + dept/staff option-pills + quick-filter toggles).
+- Two surfaces, one state: `dateRangeWidget(suffix)` factory yields the row-1 + panel instances; the date-range JS now binds all `.daterange` and shares one committed `cur` range (`syncAllNavs` reflects both). `setAdv(key,val)` mirrors Department/Staff across the panel pills and the inline Select (label + selected option + `--on`). Clear-all resets every surface.
+
+Verified 1280 + 390: desktop row-1 date-range + row-2 Selects filter (Staff=Sarah → Diego, arrow steps the window), the Select label/active state updates; mobile keeps the full Filters panel, inline controls hidden. Batch fully addressed.

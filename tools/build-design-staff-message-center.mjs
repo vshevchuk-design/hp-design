@@ -1022,6 +1022,16 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .mc-filt-opt:hover { border-color: ${cv("border.strong")}; }
 .mc-filt-opt--on { background: ${cv("fill.primary")}; border-color: ${cv("fill.primary")}; color: ${cv("text.onFill")}; }
 .mc-filt-field--toggles .listbox__list { display: flex; flex-direction: column; gap: ${px(resolve("dim.1"))}; padding: 0; }
+/* inline (desktop) advanced controls: the date-range on row 1, the Department /
+   Staff Selects on row 2. Hidden on mobile (< 600) where they live in the panel. */
+.mc-rail__daterange { display: none; margin-left: auto; }
+.mc-rail__advsep { display: none; }
+.mc-advsel { position: relative; display: none; flex-shrink: 0; }
+.mc-advsel__trigger { height: 32px; min-width: 0; gap: ${px(resolve("dim.1"))}; padding: 0 ${px(resolve("dim.1_5"))} 0 ${px(resolve("dim.2_5"))}; border-radius: ${px(resolve("radius.full"))}; }
+.mc-advsel__trigger .select__value { ${typoCss(bodySmType)} color: ${cv("text.default")}; white-space: nowrap; }
+.mc-advsel__trigger .select__chevron { width: 18px; height: 18px; }
+.mc-advsel--on .mc-advsel__trigger { background: ${cv("fill.primary")}; border-color: ${cv("fill.primary")}; }
+.mc-advsel--on .mc-advsel__trigger .select__value, .mc-advsel--on .mc-advsel__trigger .select__chevron { color: ${cv("text.onFill")}; }
 /* date-range widget (DateRangePicker recipe) */
 .mc-filters-pop .daterange { display: block; }
 .mc-filters-pop .daterange__nav { width: 100%; }
@@ -1156,10 +1166,14 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
   .mc-search-open-btn, .mc-search-close { display: none; }
   .mc-rail__student { flex: 0 1 150px; }
   .mc-rail__search { flex: 0 1 220px; }
-  /* toggles become inline chips; the Filters button stays (it holds the
-     date-range / department / staff fields), just without the toggles inside */
+  /* everything goes inline: chips on row 2, the date-range on row 1, the
+     Department / Staff Selects on row 2 — so the Filters button (a mobile-only
+     overflow home) disappears entirely */
   .mc-qchip { display: inline-flex; }
-  .mc-filt-field--toggles { display: none; }
+  .mc-rail__daterange { display: block; }
+  .mc-advsel { display: inline-block; }
+  .mc-rail__advsep { display: inline-block; width: 1px; height: 20px; background: ${cv("border.default")}; align-self: center; margin: 0 ${px(resolve("dim.1"))}; }
+  .mc-filters-chip { display: none; }
 }
 @media (min-width: 768px) {
   .mc-topbar-new { display: inline-flex; }
@@ -1742,15 +1756,19 @@ const departments = [...new Set(threads.map((t) => t.department))];
 const staffList = [...new Set(threads.flatMap((t) => t.responsibles || []))].sort();
 // the date-range widget markup for the Filters panel (reuses the DateRangePicker
 // component's .daterange recipe; seeded to the current month as a starting point)
-const filtersDateRange = `<div class="daterange" id="mc-dr" data-start="2026-07-15" data-end="2026-08-15">
+// the DateRangePicker recipe, as a factory so the row-1 (desktop) and the panel
+// (mobile) instances get unique ids but the same behaviour + shared filter state
+function dateRangeWidget(suffix) {
+  const pid = "mc-dr-panel-" + suffix;
+  return `<div class="daterange" id="mc-dr-${suffix}" data-start="2026-07-15" data-end="2026-08-15">
               <div class="daterange__nav">
                 <button class="daterange__arrow daterange__arrow--prev" type="button" aria-label="Previous period">${iconOf("chevron_left", "daterange__arrow-icon")}</button>
-                <button class="daterange__field daterange__field--start" type="button" popovertarget="mc-dr-panel" aria-haspopup="dialog"><span class="daterange__start-val">07/15/2026</span></button>
+                <button class="daterange__field daterange__field--start" type="button" popovertarget="${pid}" aria-haspopup="dialog"><span class="daterange__start-val">07/15/2026</span></button>
                 <span class="daterange__label">This month</span>
-                <button class="daterange__field daterange__field--end" type="button" popovertarget="mc-dr-panel" aria-haspopup="dialog"><span class="daterange__end-val">08/15/2026</span></button>
+                <button class="daterange__field daterange__field--end" type="button" popovertarget="${pid}" aria-haspopup="dialog"><span class="daterange__end-val">08/15/2026</span></button>
                 <button class="daterange__arrow daterange__arrow--next" type="button" aria-label="Next period">${iconOf("chevron_right", "daterange__arrow-icon")}</button>
               </div>
-              <div class="daterange__panel" id="mc-dr-panel" popover role="dialog" aria-label="Choose a date range">
+              <div class="daterange__panel" id="${pid}" popover role="dialog" aria-label="Choose a date range">
                 <div class="daterange__phead">
                   <button class="daterange__pnav daterange__pnav--prev" type="button" aria-label="Previous month">${iconOf("chevron_left", "daterange__pnav-icon")}</button>
                   <span class="daterange__month">July 2026</span>
@@ -1763,6 +1781,23 @@ const filtersDateRange = `<div class="daterange" id="mc-dr" data-start="2026-07-
                 </div>
               </div>
             </div>`;
+}
+// an inline single-select filter (Select trigger + Listbox popover) — the row-2
+// Department / Staff dropdowns; drives the same adv.* state as the panel pills
+function advSelectMarkup(kind, placeholder, options) {
+  const lbId = "mc-adv-" + kind + "-lb";
+  return `<div class="mc-advsel" data-adv="${kind}">
+              <button class="select select--base select--resting mc-advsel__trigger" id="mc-adv-${kind}" type="button" popovertarget="${lbId}" aria-haspopup="listbox">
+                <span class="select__stack"><span class="select__value" data-adv-value>${placeholder}</span></span>${iconChevronSelect}
+              </button>
+              <div class="listbox mc-advsel__lb" id="${lbId}" popover>
+                <ul class="listbox__list" role="listbox" aria-label="${placeholder}">
+                  <li><button class="listbox__option listbox__option--selected" role="option" aria-selected="true" data-val="" type="button">${placeholder}${iconCheckmark}</button></li>
+                  ${options.map((o) => `<li><button class="listbox__option" role="option" aria-selected="false" data-val="${esc(o)}" type="button">${o}${iconCheckmark}</button></li>`).join("\n                  ")}
+                </ul>
+              </div>
+            </div>`;
+}
 
 
 // ---- the appended-on-Send self bubble template, reused by the app script.
@@ -2435,99 +2470,131 @@ const appJs = `(function () {
     });
   });
 
-  // ---- advanced Filters-panel fields: Department + Staff option lists ----
-  document.querySelectorAll("#mc-filters-listbox .mc-filt-opts").forEach(function (group) {
-    var key = group.dataset.adv; // "dept" | "staff"
-    group.querySelectorAll(".mc-filt-opt").forEach(function (opt) {
-      opt.addEventListener("click", function () {
-        group.querySelectorAll(".mc-filt-opt").forEach(function (o) { o.classList.toggle("mc-filt-opt--on", o === opt); });
-        adv[key] = opt.dataset.val;
-        updateFiltersChip();
-        applyFilter();
+  // ---- Department / Staff: one setAdv keeps both surfaces in sync — the panel
+  // option-pills (mobile) and the row-2 inline Selects (desktop) ----
+  function setAdv(key, val) {
+    adv[key] = val;
+    document.querySelectorAll('#mc-filters-listbox .mc-filt-opts[data-adv="' + key + '"] .mc-filt-opt').forEach(function (o) {
+      o.classList.toggle("mc-filt-opt--on", o.dataset.val === val);
+    });
+    var sel = document.querySelector('.mc-advsel[data-adv="' + key + '"]');
+    if (sel) {
+      sel.classList.toggle("mc-advsel--on", val !== "");
+      var opts = sel.querySelectorAll(".listbox__option");
+      var placeholder = opts[0] ? opts[0].textContent.trim() : key;
+      opts.forEach(function (o) {
+        var on = o.dataset.val === val;
+        o.classList.toggle("listbox__option--selected", on);
+        o.setAttribute("aria-selected", on ? "true" : "false");
       });
+      var vEl = sel.querySelector("[data-adv-value]");
+      if (vEl) vEl.textContent = val || placeholder;
+    }
+    updateFiltersChip();
+  }
+  // panel option-pills
+  document.querySelectorAll("#mc-filters-listbox .mc-filt-opts").forEach(function (group) {
+    group.querySelectorAll(".mc-filt-opt").forEach(function (opt) {
+      opt.addEventListener("click", function () { setAdv(group.dataset.adv, opt.dataset.val); applyFilter(); });
+    });
+  });
+  // row-2 inline Selects (trigger opens a Listbox popover)
+  document.querySelectorAll(".mc-advsel").forEach(function (sel) {
+    var key = sel.dataset.adv, lb = sel.querySelector(".mc-advsel__lb"), trigger = sel.querySelector(".mc-advsel__trigger");
+    lb.addEventListener("toggle", function (e) {
+      if (e.newState !== "open") return;
+      var r = trigger.getBoundingClientRect();
+      lb.style.position = "fixed"; lb.style.margin = "0";
+      lb.style.top = (r.bottom + 4) + "px";
+      lb.style.left = Math.max(8, Math.min(r.left, window.innerWidth - lb.offsetWidth - 8)) + "px";
+    });
+    lb.querySelectorAll(".listbox__option").forEach(function (opt) {
+      opt.addEventListener("click", function () { setAdv(key, opt.dataset.val); lb.hidePopover(); applyFilter(); });
     });
   });
 
-  // ---- the date-range field (DateRangePicker recipe) — inline so Clear-all can
-  // reset it. DR_* names avoid colliding with the single DatePicker's DP_*. ----
+  // ---- date-range: both instances (row-1 desktop + panel mobile) share one
+  // committed range. DR_* names avoid colliding with the single DatePicker's DP_*.
   (function () {
-    var el = document.getElementById("mc-dr");
-    if (!el) return;
+    var els = [].slice.call(document.querySelectorAll(".mc-rail__topbar .daterange"));
+    if (!els.length) return;
     var DR_MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
     var DR_WD = ["Su","Mo","Tu","We","Th","Fr","Sa"];
-    var panel = el.querySelector(".daterange__panel");
-    var startEl = el.querySelector(".daterange__start-val"), endEl = el.querySelector(".daterange__end-val"), labelEl = el.querySelector(".daterange__label");
     function pad(n) { return ("0" + n).slice(-2); }
     function fmt(a) { return pad(a.m + 1) + "/" + pad(a.d) + "/" + a.y; }
     function ymd(a) { return "" + a.y + pad(a.m + 1) + pad(a.d); }
-    function parse(s) { var p = s.split("-").map(Number); return { y: p[0], m: p[1] - 1, d: p[2] }; }
     function cmp(a) { return a.y * 10000 + a.m * 100 + a.d; }
     function addMonths(a, n) { var d = new Date(a.y, a.m + n, a.d); return { y: d.getFullYear(), m: d.getMonth(), d: d.getDate() }; }
     var TODAY = { y: 2026, m: 7, d: 8 };
-    var DEF_S = parse(el.dataset.start), DEF_E = parse(el.dataset.end);
-    var start = parse(el.dataset.start), end = parse(el.dataset.end);
-    var draftS = null, draftE = null, view = { y: start.y, m: start.m };
-    function syncNav() { startEl.textContent = fmt(start); endEl.textContent = fmt(end); labelEl.textContent = DR_MONTHS[start.m].slice(0, 3) + " " + start.y; }
-    function activate() { adv.dateStart = ymd(start); adv.dateEnd = ymd(end); updateFiltersChip(); }
-    function render() {
-      var s = draftS || start, e = draftE || (draftS ? null : end);
-      var first = new Date(view.y, view.m, 1).getDay(), days = new Date(view.y, view.m + 1, 0).getDate(), prevDays = new Date(view.y, view.m, 0).getDate();
-      var cells = [], i, d;
-      for (i = 0; i < first; i++) cells.push({ d: prevDays - first + 1 + i, outside: true });
-      for (d = 1; d <= days; d++) cells.push({ d: d, outside: false });
-      while (cells.length % 7 !== 0) cells.push({ d: cells.length - (first + days) + 1, outside: true });
-      var sV = s ? cmp(s) : null, eV = e ? cmp(e) : null;
-      var grid = DR_WD.map(function (w) { return '<span class="daterange__weekday">' + w + '</span>'; }).join("");
-      cells.forEach(function (c) {
-        if (c.outside) { grid += '<span class="daterange__day daterange__day--outside">' + c.d + '</span>'; return; }
-        var v = view.y * 10000 + view.m * 100 + c.d, cls = ["daterange__day"];
-        if (view.y === TODAY.y && view.m === TODAY.m && c.d === TODAY.d) cls.push("daterange__day--today");
-        if (sV !== null && eV !== null) { if (v === sV) cls.push("daterange__day--start"); else if (v === eV) cls.push("daterange__day--end"); else if (v > sV && v < eV) cls.push("daterange__day--mid"); }
-        else if (sV !== null && v === sV) cls.push("daterange__day--start", "daterange__day--end");
-        grid += '<button type="button" class="' + cls.join(" ") + '" data-day="' + c.d + '">' + c.d + '</button>';
-      });
-      panel.querySelector(".daterange__month").textContent = DR_MONTHS[view.m] + " " + view.y;
-      panel.querySelector(".daterange__grid").innerHTML = grid;
-      panel.querySelectorAll(".daterange__day[data-day]").forEach(function (btn) {
-        btn.addEventListener("click", function () {
-          var picked = { y: view.y, m: view.m, d: parseInt(btn.dataset.day, 10) };
-          if (!draftS || (draftS && draftE)) { draftS = picked; draftE = null; }
-          else { if (cmp(picked) < cmp(draftS)) { draftE = draftS; draftS = picked; } else { draftE = picked; } }
-          render();
-        });
+    var DEF = { s: { y: 2026, m: 6, d: 15 }, e: { y: 2026, m: 7, d: 15 } };
+    var cur = { s: { y: 2026, m: 6, d: 15 }, e: { y: 2026, m: 7, d: 15 } };
+    function syncAllNavs() {
+      els.forEach(function (el) {
+        el.querySelector(".daterange__start-val").textContent = fmt(cur.s);
+        el.querySelector(".daterange__end-val").textContent = fmt(cur.e);
+        el.querySelector(".daterange__label").textContent = DR_MONTHS[cur.s.m].slice(0, 3) + " " + cur.s.y;
       });
     }
-    panel.addEventListener("toggle", function (e) {
-      if (e.newState !== "open") return;
-      view = { y: start.y, m: start.m }; draftS = null; draftE = null; render();
-      requestAnimationFrame(function () {
-        var r = el.querySelector(".daterange__nav").getBoundingClientRect();
-        var w = panel.getBoundingClientRect().width;
-        panel.style.position = "fixed"; panel.style.margin = "0";
-        panel.style.top = (r.bottom + 4) + "px";
-        panel.style.left = Math.max(8, Math.min(r.left, window.innerWidth - w - 8)) + "px";
+    function commit(s, e) { cur.s = s; cur.e = e; adv.dateStart = ymd(s); adv.dateEnd = ymd(e); updateFiltersChip(); syncAllNavs(); applyFilter(); }
+    function resetRange() { cur.s = { y: 2026, m: 6, d: 15 }; cur.e = { y: 2026, m: 7, d: 15 }; adv.dateStart = ""; adv.dateEnd = ""; updateFiltersChip(); syncAllNavs(); }
+    window.__mcResetDateRange = resetRange;
+    els.forEach(function (el) {
+      var panel = el.querySelector(".daterange__panel");
+      var draftS = null, draftE = null, view = { y: cur.s.y, m: cur.s.m };
+      function render() {
+        var s = draftS || cur.s, e = draftE || (draftS ? null : cur.e);
+        var first = new Date(view.y, view.m, 1).getDay(), days = new Date(view.y, view.m + 1, 0).getDate(), prevDays = new Date(view.y, view.m, 0).getDate();
+        var cells = [], i, d;
+        for (i = 0; i < first; i++) cells.push({ d: prevDays - first + 1 + i, outside: true });
+        for (d = 1; d <= days; d++) cells.push({ d: d, outside: false });
+        while (cells.length % 7 !== 0) cells.push({ d: cells.length - (first + days) + 1, outside: true });
+        var sV = s ? cmp(s) : null, eV = e ? cmp(e) : null;
+        var grid = DR_WD.map(function (w) { return '<span class="daterange__weekday">' + w + '</span>'; }).join("");
+        cells.forEach(function (c) {
+          if (c.outside) { grid += '<span class="daterange__day daterange__day--outside">' + c.d + '</span>'; return; }
+          var v = view.y * 10000 + view.m * 100 + c.d, cls = ["daterange__day"];
+          if (view.y === TODAY.y && view.m === TODAY.m && c.d === TODAY.d) cls.push("daterange__day--today");
+          if (sV !== null && eV !== null) { if (v === sV) cls.push("daterange__day--start"); else if (v === eV) cls.push("daterange__day--end"); else if (v > sV && v < eV) cls.push("daterange__day--mid"); }
+          else if (sV !== null && v === sV) cls.push("daterange__day--start", "daterange__day--end");
+          grid += '<button type="button" class="' + cls.join(" ") + '" data-day="' + c.d + '">' + c.d + '</button>';
+        });
+        panel.querySelector(".daterange__month").textContent = DR_MONTHS[view.m] + " " + view.y;
+        panel.querySelector(".daterange__grid").innerHTML = grid;
+        panel.querySelectorAll(".daterange__day[data-day]").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            var picked = { y: view.y, m: view.m, d: parseInt(btn.dataset.day, 10) };
+            if (!draftS || (draftS && draftE)) { draftS = picked; draftE = null; }
+            else { if (cmp(picked) < cmp(draftS)) { draftE = draftS; draftS = picked; } else { draftE = picked; } }
+            render();
+          });
+        });
+      }
+      panel.addEventListener("toggle", function (e) {
+        if (e.newState !== "open") return;
+        view = { y: cur.s.y, m: cur.s.m }; draftS = null; draftE = null; render();
+        requestAnimationFrame(function () {
+          var r = el.querySelector(".daterange__nav").getBoundingClientRect();
+          var w = panel.getBoundingClientRect().width;
+          panel.style.position = "fixed"; panel.style.margin = "0";
+          panel.style.top = (r.bottom + 4) + "px";
+          panel.style.left = Math.max(8, Math.min(r.left, window.innerWidth - w - 8)) + "px";
+        });
       });
+      panel.querySelector(".daterange__pnav--prev").addEventListener("click", function () { view.m--; if (view.m < 0) { view.m = 11; view.y--; } render(); });
+      panel.querySelector(".daterange__pnav--next").addEventListener("click", function () { view.m++; if (view.m > 11) { view.m = 0; view.y++; } render(); });
+      panel.querySelector(".daterange__apply").addEventListener("click", function () { if (draftS) commit(draftS, draftE || draftS); panel.hidePopover(); });
+      panel.querySelector(".daterange__clear").addEventListener("click", function () { resetRange(); applyFilter(); render(); });
+      el.querySelector(".daterange__arrow--prev").addEventListener("click", function () { commit(addMonths(cur.s, -1), addMonths(cur.e, -1)); });
+      el.querySelector(".daterange__arrow--next").addEventListener("click", function () { commit(addMonths(cur.s, 1), addMonths(cur.e, 1)); });
     });
-    panel.querySelector(".daterange__pnav--prev").addEventListener("click", function () { view.m--; if (view.m < 0) { view.m = 11; view.y--; } render(); });
-    panel.querySelector(".daterange__pnav--next").addEventListener("click", function () { view.m++; if (view.m > 11) { view.m = 0; view.y++; } render(); });
-    panel.querySelector(".daterange__apply").addEventListener("click", function () { if (draftS) { start = draftS; end = draftE || draftS; } activate(); syncNav(); applyFilter(); panel.hidePopover(); });
-    panel.querySelector(".daterange__clear").addEventListener("click", function () { start = DEF_S; end = DEF_E; adv.dateStart = ""; adv.dateEnd = ""; draftS = null; draftE = null; syncNav(); updateFiltersChip(); applyFilter(); render(); });
-    el.querySelector(".daterange__arrow--prev").addEventListener("click", function () { start = addMonths(start, -1); end = addMonths(end, -1); activate(); syncNav(); applyFilter(); });
-    el.querySelector(".daterange__arrow--next").addEventListener("click", function () { start = addMonths(start, 1); end = addMonths(end, 1); activate(); syncNav(); applyFilter(); });
-    // exposed so Clear-all can reset the range
-    window.__mcResetDateRange = function () { start = DEF_S; end = DEF_E; adv.dateStart = ""; adv.dateEnd = ""; draftS = null; draftE = null; syncNav(); };
-    syncNav();
+    syncAllNavs();
   })();
 
   // ---- Clear all: reset every filter surface ----
   document.getElementById("mc-filters-clear").addEventListener("click", function () {
     ["unread", "involved", "flagged", "expires"].forEach(function (k) { setFilter(k, false); });
-    adv.dept = ""; adv.staff = "";
-    document.querySelectorAll("#mc-filters-listbox .mc-filt-opts").forEach(function (group) {
-      group.querySelectorAll(".mc-filt-opt").forEach(function (o, i) { o.classList.toggle("mc-filt-opt--on", i === 0); });
-    });
+    setAdv("dept", ""); setAdv("staff", "");
     if (window.__mcResetDateRange) window.__mcResetDateRange();
-    updateFiltersChip();
     applyFilter();
   });
 
@@ -3466,6 +3533,7 @@ ${phaseECss}
             <button class="tab tab--sm tab--active" role="tab" aria-selected="true" data-tab="inbox">Inbox<span class="counter counter--sm counter--onNeutral counter--active" id="mc-unread-counter">${threads.filter((t) => !t.archived && t.unread).length}</span></button>
             <button class="tab tab--sm" role="tab" aria-selected="false" data-tab="archived">Resolved</button>
           </div>
+          <div class="mc-rail__daterange">${dateRangeWidget("top")}</div>
           <div class="mc-rail__searches" id="mc-searches">
             <div class="search search--base mc-rail__student">
               ${iconSearch}
@@ -3491,7 +3559,7 @@ ${phaseECss}
             <div class="mc-filters-pop__body">
               <div class="mc-filt-field">
                 <span class="mc-filt-label">Date range</span>
-                ${filtersDateRange}
+                ${dateRangeWidget("panel")}
               </div>
               <div class="mc-filt-field">
                 <span class="mc-filt-label">Department</span>
@@ -3526,6 +3594,9 @@ ${phaseECss}
           <button class="chip chip--base mc-qchip" id="mc-chip-involved" type="button" aria-pressed="false" data-filter-key="involved">I'm Involved</button>
           <button class="chip chip--base mc-qchip" id="mc-chip-flagged" type="button" aria-pressed="false" data-filter-key="flagged">Flagged</button>
           <button class="chip chip--base mc-qchip mc-qchip--expires" id="mc-chip-expires" type="button" aria-pressed="false" data-filter-key="expires">Expires Soon</button>
+          <span class="mc-rail__advsep"></span>
+          ${advSelectMarkup("dept", "Department", departments)}
+          ${advSelectMarkup("staff", "Staff", staffList)}
         </div>
       </div>
       <div class="mc-rail__count">
