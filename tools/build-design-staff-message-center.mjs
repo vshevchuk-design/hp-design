@@ -1393,12 +1393,8 @@ const consoleCss = `/* ---- Table (threads console) ---- */
    collapsing — under pressure names ellipsis (full list stays in the +N pop). */
 .mc-console-cols { grid-template-columns: 28px minmax(150px, 2fr) minmax(200px, 3fr) minmax(120px, 4fr) 132px 112px; gap: ${tblRowGap}; padding: ${tblRPadY} ${tblRPadX}; }
 .mc-col-flag { display: flex; align-items: center; justify-content: center; }
-/* tablet (768–1023): drop Expiration (near-fixed 132px is a lot here) so Subject
-   and the pinned Date keep room; Responsible stays (it moved up in priority) */
-@media (min-width: 768px) and (max-width: 1023px) {
-  .mc-console-cols { grid-template-columns: 28px minmax(110px, 1fr) minmax(88px, 0.8fr) minmax(0, 2fr) 0 minmax(104px, auto); }
-  .mc-col-expiration { overflow: hidden; min-width: 0; padding-left: 0; padding-right: 0; }
-}
+/* tablet + mobile (≤1023) reflow the table into a stacked card — see the
+   media block near the end of the stylesheet. */
 /* Responsible as name pills, with a "+N" that reveals the full list on hover */
 .mc-col-responsible { min-width: 0; }
 .mc-resp { display: inline-flex; align-items: center; gap: ${px(resolve("dim.1"))}; min-width: 0; max-width: 100%; }
@@ -2250,16 +2246,45 @@ const phaseECss = `.mc-reply-actions { display: flex; align-items: center; gap: 
 .mc-reply-btns { display: flex; gap: ${px(resolve("dim.2"))}; margin-left: auto; }
 .bubble-sender__seen { color: ${cv("text.success")}; font-weight: 600; }
 .mc-rail__count { display: none; } /* the tab counter already shows the count */
-@media (max-width: 767px) {
+@media (max-width: 1023px) {
+  /* Tablet + mobile: the console table reflows into a stacked card (mirrors the
+     student MC message card) — the desktop columns don't fit and Expiration /
+     Involved get squeezed. The six <div> cells are re-placed by role, not
+     re-authored, so every JS hook (flag button, filters, sort) still works.
+       row 1  avatar + name · ID ............ date
+       row 2  subject + preview ............. flag
+       row 3  expiration tag(s)
+       row 4  involved pills                              */
   .mc-thead { display: none; }
   .mc-table { min-width: 0; }
-  /* stacked: Student (2) top-left, Date (6) top-right, Subject (4) full row 2;
-     hide flag (1), Responsible (3), Expiration (5) */
-  .mc-trow.mc-console-cols { grid-template-columns: 1fr auto; gap: 2px ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))}; align-items: center; }
-  .mc-trow.mc-console-cols > *:nth-child(2) { grid-column: 1; grid-row: 1; }
-  .mc-trow.mc-console-cols > *:nth-child(6) { grid-column: 2; grid-row: 1; }
-  .mc-trow.mc-console-cols > *:nth-child(4) { grid-column: 1 / -1; grid-row: 2; }
-  .mc-trow.mc-console-cols > *:nth-child(1), .mc-trow.mc-console-cols > *:nth-child(3), .mc-trow.mc-console-cols > *:nth-child(5) { display: none; }
+  .mc-trow.mc-console-cols {
+    grid-template-columns: 1fr auto;
+    gap: ${px(resolve("dim.1"))} ${px(resolve("dim.2"))};
+    padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))};
+    align-items: start;
+  }
+  .mc-trow.mc-console-cols > .mc-cellwrap { grid-column: 1; grid-row: 1; align-items: center; }
+  .mc-trow.mc-console-cols > .mc-col-date { grid-column: 2; grid-row: 1; justify-self: end; }
+  .mc-trow.mc-console-cols > .mc-td.mc-cellstack { grid-column: 1; grid-row: 2; }
+  .mc-trow.mc-console-cols > .mc-col-flag { grid-column: 2; grid-row: 2; justify-self: end; align-self: end; }
+  .mc-trow.mc-console-cols > .mc-col-expiration { grid-column: 1 / -1; grid-row: 3; }
+  .mc-trow.mc-console-cols > .mc-col-responsible { grid-column: 1 / -1; grid-row: 4; }
+
+  /* identity: name and ID on one smaller line (desktop stacks them) */
+  .mc-cellwrap .mc-cellstack { flex-direction: row; align-items: baseline; gap: ${px(resolve("dim.1"))}; min-width: 0; }
+  .mc-cellwrap .mc-cellstack .mc-lead { flex: 0 1 auto; }
+  .mc-cellwrap .mc-cellstack .mc-td--muted { flex-shrink: 0; }
+  .mc-cellwrap .mc-cellstack .mc-td--muted::before { content: "·"; margin-right: ${px(resolve("dim.1"))}; }
+  .mc-cellwrap .mc-lead { font-size: 13px; }
+  /* date keeps the day, drops the time */
+  .mc-col-date .mc-date__t { display: none; }
+  /* the Inbox/Resolved scope pill is redundant on a card (the tab already shows it) */
+  .mc--searching .thread-item-inbox__expires .thread-item-inbox__scope,
+  .thread-item-inbox__expires .thread-item-inbox__scope { display: none; }
+  /* collapse Expiration / Involved cells that hold only a "–" so they add no gap */
+  .mc-trow.mc-console-cols > .mc-col-expiration:not(:has(> .badge:first-child)) { display: none; }
+  .mc-trow.mc-console-cols > .mc-col-responsible:not(:has(.mc-resp)) { display: none; }
+  .mc-col-responsible .mc-resp { flex-wrap: wrap; }
 }`;
 
 const appJs = `(function () {
