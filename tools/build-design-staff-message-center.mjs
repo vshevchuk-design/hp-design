@@ -1388,7 +1388,10 @@ const consoleCss = `/* ---- Table (threads console) ---- */
 .mc-td .badge { flex-shrink: 0; }
 /* console column template — flag | Student | Responsible | Subject & Message | Expiration | Date.
    Student is narrow; Expiration + Date are near-fixed widths pinned to the right; Subject takes the slack. */
-.mc-console-cols { grid-template-columns: 28px minmax(120px, 1fr) minmax(160px, 284px) minmax(0, 2fr) 132px minmax(104px, auto); gap: ${tblRowGap}; padding: ${tblRPadY} ${tblRPadX}; }
+/* Student / Involved / Subject scale proportionally (2 : 2.5 : 4) so the row
+   reflows with the viewport; Expiration + Date are fixed. Mins keep each from
+   collapsing — under pressure names ellipsis (full list stays in the +N pop). */
+.mc-console-cols { grid-template-columns: 28px minmax(150px, 2fr) minmax(200px, 3fr) minmax(120px, 4fr) 132px 112px; gap: ${tblRowGap}; padding: ${tblRPadY} ${tblRPadX}; }
 .mc-col-flag { display: flex; align-items: center; justify-content: center; }
 /* tablet (768–1023): drop Expiration (near-fixed 132px is a lot here) so Subject
    and the pinned Date keep room; Responsible stays (it moved up in priority) */
