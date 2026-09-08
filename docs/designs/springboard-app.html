@@ -12,6 +12,7 @@
   --tok-border-default: #dadde0;
   --tok-border-focus: #0468c4;
   --tok-text-default: #121921;
+  --tok-text-muted: #758191;
   --tok-fill-neutral: #e6e8eb;
   --tok-text-default: #121921;
   --tok-icon-default: #485462;
@@ -66,6 +67,17 @@
 .app__topbar { position: sticky; top: 0; z-index: 1; height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 16px; background: var(--tok-surface-default); border-bottom: 1px solid var(--tok-border-default); }
 .app__logo { display: flex; align-items: center; color: var(--tok-text-default); }
 .app__logo svg { display: block; height: 24px; width: auto; }
+/* The other left slot: a page title instead of the wordmark, same as the
+   Message Center's topbar — heading-lg, with a muted meta note beside it. The
+   note is plain text, not a Badge: a Badge labels or categorises (MC's is a
+   department), and "No account needed" is reassurance about this screen. */
+.app__brand { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+.app__title { margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 18px; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.app__meta { color: var(--tok-text-muted); font-weight: 400; font-size: 12px; line-height: 1.4; white-space: nowrap; }
+@media (max-width: 559px) {
+  /* the note is a nicety — the title keeps the room on a phone */
+  .app__meta { display: none; }
+}
 @media (min-width: 768px) {
   /* match the content padding so the wordmark lines up with what's under it */
   .app__topbar { padding: 0 24px; }

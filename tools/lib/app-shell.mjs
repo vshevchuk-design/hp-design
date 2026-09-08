@@ -93,6 +93,7 @@ export const SHELL_COLOR_PATHS = [
   "border.default",
   "border.focus",
   "text.default",
+  "text.muted",
   secondary.fill,
   secondary.label,
   secondary.icon,
@@ -120,6 +121,17 @@ export const SHELL_TOPBAR_CSS = `/* ---- portal app shell (tools/lib/app-shell.m
 .app__topbar { position: sticky; top: 0; z-index: 1; height: ${px(resolve("dim.16"))}; display: flex; align-items: center; justify-content: space-between; gap: ${px(resolve("dim.3"))}; padding: 0 ${px(resolve("dim.4"))}; background: ${cv("surface.default")}; border-bottom: 1px solid ${cv("border.default")}; }
 .app__logo { display: flex; align-items: center; color: ${cv("text.default")}; }
 .app__logo svg { display: block; height: ${px(resolve("dim.6"))}; width: auto; }
+/* The other left slot: a page title instead of the wordmark, same as the
+   Message Center's topbar — heading-lg, with a muted meta note beside it. The
+   note is plain text, not a Badge: a Badge labels or categorises (MC's is a
+   department), and "No account needed" is reassurance about this screen. */
+.app__brand { display: flex; align-items: baseline; gap: ${px(resolve("dim.2"))}; min-width: 0; }
+.app__title { margin: 0; color: ${cv("text.default")}; ${typoCss(resolve("text-style.heading-lg"))} white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.app__meta { color: ${cv("text.muted")}; ${typoCss(resolve("text-style.body-sm"))} white-space: nowrap; }
+@media (max-width: 559px) {
+  /* the note is a nicety — the title keeps the room on a phone */
+  .app__meta { display: none; }
+}
 @media (min-width: 768px) {
   /* match the content padding so the wordmark lines up with what's under it */
   .app__topbar { padding: 0 ${px(resolve("dim.6"))}; }
@@ -146,13 +158,19 @@ export const SHELL_BUTTON_CSS = `/* Button secondary — the shell's actions, re
 export const SHELL_CSS = `${SHELL_TOPBAR_CSS}
 ${SHELL_BUTTON_CSS}`;
 
-/** The topbar markup: wordmark left, actions right (defaults to Settings). */
-export function shellTopbar({ actions } = {}) {
+/** The topbar: actions right (defaults to Settings), and on the left either the
+ *  wordmark (no `title`) or a page title with an optional muted `meta` note —
+ *  the Message Center's arrangement. A screen that *is* the product's home
+ *  shows the wordmark; a screen with a name shows its name. */
+export function shellTopbar({ title, meta, actions } = {}) {
   const right =
     actions ??
     `<button class="btn btn--secondary btn--base btn--icon-only" type="button" aria-label="Settings">${icon("settings", "btn__icon")}</button>`;
+  const left = title
+    ? `<div class="app__brand"><h1 class="app__title">${title}</h1>${meta ? `<span class="app__meta">${meta}</span>` : ""}</div>`
+    : `<span class="app__logo">${LOGO_SVG}</span>`;
   return `  <header class="app__topbar">
-    <span class="app__logo">${LOGO_SVG}</span>
+    ${left}
     ${right}
   </header>`;
 }

@@ -16,14 +16,17 @@
 //   lib/ed-markup.mjs  — the static skeleton of all five screens
 //   lib/ed-app.mjs     — the state machine that fills it in
 //
-// This screen wears the portal's app shell (lib/app-shell.mjs) — the same
-// wordmark-and-settings header as the Springboard. A first cut copied the
-// reference's bespoke header ("Explore Your Degree · PeopleSoft University" +
-// "No account needed") and reasoned that a public flow shouldn't carry
-// logged-in chrome; the user's call is that the school switcher only exists in
-// their demo environment and never will in the product, and that this screen
-// should look like every other one. So: normal header, and the school is gone
-// from the header, from step 1 and from the review summary.
+// This screen wears the portal's app shell (lib/app-shell.mjs) in its titled
+// mode — the Message Center's arrangement: white 64px bar, "Explore your
+// degree" in heading-lg, the "No account needed" note beside it, settings on
+// the right. A first cut built a bespoke header instead and reasoned that a
+// public flow shouldn't carry logged-in chrome; wrong on two counts — the
+// standard header was what was wanted, and the school switcher in the
+// reference only exists in a demo environment, so it is gone from the header,
+// step 1 and the review summary. The note survived because it says something
+// true about this screen; it is plain muted text, not a Badge, since a Badge
+// labels or categorises (MC's is a department) rather than reassures.
+// The five step headings are h2 — the topbar title is the page's h1.
 // Run: node tools/build-design-explore-degrees.mjs
 import fs from "node:fs";
 import path from "node:path";
@@ -173,7 +176,7 @@ const viewerHtml = renderDesignViewer({
   activeKey: "explore-degrees",
   title: "Explore Degrees",
   heading: "Explore Degrees",
-  sub: `The public <b>Explore Your Degree</b> wizard behind the Springboard's own tile — a no-login estimator: pick a programme, a start term and any prior college credits, and it reports what transfers and what's left. Four steps plus results, everything interactive. <b>All the branches are real:</b> focus areas appear only for majors that have them (try Psychology), Yes/No on prior credits, N previous schools, and the AI transcript reader runs its full path — the first file is rejected with the reference's own message ("a photograph of a house and pool"), the second imports ten classes. Two endings too: pick <b>Riverside Community College</b> to get the "we couldn't check your credits online" fallback, and answer <b>No, starting fresh</b> to see the results with no transfer tab at all. It wears the portal's normal header — no login is needed to use this, but that is a fact about access, not a reason to give the screen different chrome; the school switcher in the reference only exists in a demo environment and is gone here. A prototype switch on the results screen turns the school's Degree Planner on and off; results are always rendered and the planner is a button, never a redirect, since a redirect would discard both the estimate and the print path. Built from ${PROGRAMS.length} programmes and ${PREV_SCHOOLS.length} previous schools of sample data.`,
+  sub: `The public <b>Explore Your Degree</b> wizard behind the Springboard's own tile — a no-login estimator: pick a programme, a start term and any prior college credits, and it reports what transfers and what's left. Four steps plus results, everything interactive. <b>All the branches are real:</b> focus areas appear only for majors that have them (try Psychology), Yes/No on prior credits, N previous schools, and the AI transcript reader runs its full path — the first file is rejected with the reference's own message ("a photograph of a house and pool"), the second imports ten classes. Two endings too: pick <b>Riverside Community College</b> to get the "we couldn't check your credits online" fallback, and answer <b>No, starting fresh</b> to see the results with no transfer tab at all. The header is the standard portal bar in its titled mode — the same 64px white bar and heading as the Message Center, with the page's name where the wordmark sits on the Springboard, the &ldquo;No account needed&rdquo; note beside it and settings on the right. The school switcher in the reference only exists in a demo environment and is gone here. A prototype switch on the results screen turns the school's Degree Planner on and off; results are always rendered and the planner is a button, never a redirect, since a redirect would discard both the estimate and the print path. Built from ${PROGRAMS.length} programmes and ${PREV_SCHOOLS.length} previous schools of sample data.`,
   versions: [{ label: "v1", note: "current", file: "explore-degrees-app.html" }],
 });
 

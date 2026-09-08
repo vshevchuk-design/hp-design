@@ -1136,3 +1136,15 @@ To take the topbar without a duplicate Button recipe (this page needs primary an
 **Step labels name the choice, not a category:** Study/Start/Credits → **What to study / Start term / Transfer credits / Review**, and deliberately no question mark (the user asked for that explicitly) — the page's own H1 asks the question, a step label just says where you are. Checked at 1000px and 700px: no wrapping, no stepper overflow, no horizontal page overflow; below 640px the labels already hide by design.
 
 Verified after the change: the header measures 64px with the logo and a 40px settings action, the "No, starting fresh" path still reaches results, and the review reads "Academic level / Major / Starting term / Transfer credits" with no School row. All three checkers green at 57 pages.
+
+## 2026-09-07 (cont. 19) — the shell's second left slot: a page title
+
+Clarification on the previous entry: "зроби норм хедер як у всіх інших" did not mean *put the wordmark there*. It meant the Message Center's header — white, 64px, the page's own name in the same type MC uses for "Message Center". I had read "normal header" as "the Springboard's header" and swapped the title for a logo, which loses the page's name entirely.
+
+So `shellTopbar()` now has two left slots rather than one: with no `title` it renders the wordmark (a screen that *is* the product's home), with a `title` it renders `<h1 class="app__title">` plus an optional muted `meta` note (a screen that has a name). Both are the same bar; only the left slot differs. Verified against MC rather than assumed: both bars measure 64px, `surface.default`, `border.default`, and the titles are byte-identical at 18px / 600 / 25.2px / `text.default` in Sora, because both read `text-style.heading-lg` from the same token.
+
+**"No account needed" comes back as the note** — the user asked for it after the title, and it earns its place by saying something true about this screen. Plain muted `body-sm`, not a Badge: MC's badge in that slot is a department, i.e. a label, and a chip around reassurance copy would read as a category. It hides below 560px, where the title should own the room.
+
+One thing the change forced: the topbar title is an `h1`, and each step already had its own `h1`, so the five step headings became `h2`. That is the honest structure anyway — the document is "Explore your degree" and each step is a section of it. Font size is untouched (`.ed__title` stays title-2xl); heading level and type scale are independent.
+
+Re-verified the whole flow after the swap, and the automated walk caught nothing but did remind me of a real branch: Build stays disabled behind the mock reCAPTCHA gate, so the "No, starting fresh" path only reaches results once that is ticked — it does, with no transfer tab, one `h1`, and no horizontal overflow at 375px. All checkers green.

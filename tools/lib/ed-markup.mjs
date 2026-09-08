@@ -6,8 +6,8 @@ import { PROGRAMS, TERM_YEARS, NEXT_INTAKE } from "./ed-data.mjs";
 import { shellTopbar } from "./app-shell.mjs";
 
 // Step labels name the thing being chosen, not a one-word category — the
-// user's call. No question mark: the page's own H1 asks the question, a step
-// label just says where you are.
+// user's call. No question mark: each step already asks its question in its own
+// heading, so a step label just says where you are.
 const STEPS = [
   { n: 1, label: "What to study" },
   { n: 2, label: "Start term" },
@@ -56,14 +56,14 @@ ${STEPS.map(
       </label>`;
 
   return `<div class="app">
-${shellTopbar()}
+${shellTopbar({ title: "Explore your degree", meta: "No account needed" })}
   <main class="ed__main">
     ${stepper}
 
     <!-- ============ step 1 · what do you want to study ============ -->
     <section class="ed__step is-active" data-panel="1">
       <div class="ed__head">
-        <h1 class="ed__title">What do you want to study?</h1>
+        <h2 class="ed__title">What do you want to study?</h2>
         <p class="ed__sub">Pick anything — you can change it later. Not sure? Browse by what sounds interesting.</p>
       </div>
       <div class="card"><div class="card__body">
@@ -108,7 +108,7 @@ ${shellTopbar()}
     <!-- ============ step 2 · when would you like to start ============ -->
     <section class="ed__step" data-panel="2">
       <div class="ed__head">
-        <h1 class="ed__title">When would you like to start?</h1>
+        <h2 class="ed__title">When would you like to start?</h2>
         <p class="ed__sub">Most new students start with the next available term. A guess is fine.</p>
       </div>
       <div class="card"><div class="card__body">
@@ -133,7 +133,7 @@ ${TERM_YEARS.map(
     <!-- ============ step 3 · have you taken any college classes ============ -->
     <section class="ed__step" data-panel="3">
       <div class="ed__head">
-        <h1 class="ed__title">Have you taken any college classes before?</h1>
+        <h2 class="ed__title">Have you taken any college classes before?</h2>
         <p class="ed__sub">AP tests, dual-enrollment and community-college classes all count toward your degree.</p>
       </div>
       <div class="card"><div class="card__body">
@@ -160,7 +160,7 @@ ${TERM_YEARS.map(
     <!-- ============ step 4 · review ============ -->
     <section class="ed__step" data-panel="4">
       <div class="ed__head">
-        <h1 class="ed__title">Review your choices</h1>
+        <h2 class="ed__title">Review your choices</h2>
         <p class="ed__sub">Make sure everything looks right, then we'll build your personalized results.</p>
       </div>
       <div class="card"><div class="card__body">
@@ -187,7 +187,7 @@ ${TERM_YEARS.map(
         <span>Prototype switch: this school has a Degree Planner product</span>
       </label>
       <div class="ed__head">
-        <h1 class="ed__title">Your results</h1>
+        <h2 class="ed__title">Your results</h2>
       </div>
       <div class="card"><div class="card__body">
         <div class="ed-row" style="justify-content: space-between; align-items: flex-start">
