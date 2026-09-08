@@ -1357,11 +1357,10 @@ const consoleCss = `/* ---- Table (threads console) ---- */
 .mc-th--sortable { display: inline-flex; align-items: center; gap: 4px; cursor: pointer; user-select: none; }
 .mc-th--right { justify-content: flex-end; }
 .mc-th__arrow { display: inline-flex; opacity: 0; transition: opacity 0.12s ease; }
-.mc-th__arrow-icon { width: 14px; height: 14px; display: block; color: ${cv("icon.secondary")}; transition: transform 0.12s ease; }
-.mc-th--sortable:hover .mc-th__arrow { opacity: 0.45; }
+.mc-th__arrow-icon { width: 14px; height: 14px; display: block; color: ${cv("text.primary")}; transition: transform 0.12s ease; }
+.mc-th--sortable:hover .mc-th__arrow { opacity: 0.5; }
 .mc-th--sortable:focus-visible { outline: 2px solid ${cv("border.focus")}; outline-offset: 2px; border-radius: ${px(resolve("radius.xs"))}; }
 .mc-th--sort-active .mc-th__arrow { opacity: 1; }
-.mc-th--sort-active .mc-th__arrow-icon { color: ${cv("text.default")}; }
 .mc-th--sort-asc .mc-th__arrow-icon { transform: rotate(180deg); }
 .mc-td { color: ${cv(refPath(tableTok.cell.textColor.$value))}; ${typoCss(tblCellText)} min-width: 0; }
 .mc-td--muted { color: ${cv(refPath(tableTok.cell.mutedColor.$value))}; }
@@ -1799,13 +1798,13 @@ function dateRangeWidget(suffix) {
 // drives the same adv.* state as the panel pills.
 function advSelectMarkup(kind, placeholder, options) {
   const lbId = "mc-adv-" + kind + "-lb";
-  return `<div class="mc-advsel" data-adv="${kind}">
+  return `<div class="mc-advsel" data-adv="${kind}" data-placeholder="${placeholder}">
               <button class="chip chip--base chip--dropdown mc-advsel__trigger" id="mc-adv-${kind}" type="button" popovertarget="${lbId}" aria-haspopup="listbox">
                 <span class="chip__label" data-adv-value>${placeholder}</span>${iconChevronDown}
               </button>
               <div class="listbox mc-advsel__lb" id="${lbId}" popover>
                 <ul class="listbox__list" role="listbox" aria-label="${placeholder}">
-                  <li><button class="listbox__option listbox__option--selected" role="option" aria-selected="true" data-val="" type="button">${placeholder}${iconCheckmark}</button></li>
+                  <li><button class="listbox__option listbox__option--selected" role="option" aria-selected="true" data-val="" type="button">All${iconCheckmark}</button></li>
                   ${options.map((o) => `<li><button class="listbox__option" role="option" aria-selected="false" data-val="${esc(o)}" type="button">${o}${iconCheckmark}</button></li>`).join("\n                  ")}
                 </ul>
               </div>
@@ -2495,7 +2494,7 @@ const appJs = `(function () {
       var trig = sel.querySelector(".mc-advsel__trigger");
       if (trig) trig.classList.toggle("chip--checked-outline", val !== "");
       var opts = sel.querySelectorAll(".listbox__option");
-      var placeholder = opts[0] ? opts[0].textContent.trim() : key;
+      var placeholder = sel.dataset.placeholder || key;
       opts.forEach(function (o) {
         var on = o.dataset.val === val;
         o.classList.toggle("listbox__option--selected", on);
