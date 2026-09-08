@@ -1551,6 +1551,7 @@ const threads = [
     sender: "Cait Genatossio", studentId: "CX0001", handledBy: "Alexander Robinson", responsibles: ["Alexander Robinson"],
     department: "Academic Advising", date: "08/05/2026", time: "9:12 AM PDT", subject: "Minor Requirements Review",
     preview: "Could we also review the minor requirements before enrollment closes?",
+    expires: { label: "Expires 12/12/2026", role: "neutral" },
     meta: { Department: "Academic Advising", Status: "Open", Institution: "PeopleSoft University" },
     content: [
       bubbleRow({ role: "other", name: "Cait Genatossio", meta: "Aug 05, 9:12 AM", text: "Hi! Could we also review the minor requirements before enrollment closes? I want to be sure the art history courses count." }),
@@ -1571,7 +1572,7 @@ const threads = [
     sender: "Diego Fernandez", studentId: "AA0302", handledBy: "Ava Robinson", responsibles: ["Ava Robinson", "Alexander Robinson", "Sarah Nguyen"],
     department: "Academic Advising", date: "08/03/2026", time: "11:20 AM PDT", subject: "Transcript for Internship Application",
     preview: "My internship application needs an official transcript by next Friday.",
-    expires: { label: "Due 08/10/2026", role: "warning" },
+    expires: { label: "Expires 09/15/2026", role: "warning" },
     meta: { Department: "Academic Advising", Status: "Open", Institution: "PeopleSoft University" },
     content: [
       bubbleRow({ role: "other", name: "Diego Fernandez", meta: "Aug 03, 11:20 AM", text: "My internship application needs an official transcript by next Friday. Attaching the offer letter for context.", attachmentHtml: attachmentMarkup("Internship-offer.pdf", "PDF · 420 KB") }),
@@ -1582,6 +1583,7 @@ const threads = [
     sender: "George Amalor", studentId: "AA0303", handledBy: "Alexander Robinson", responsibles: ["Alexander Robinson"],
     department: "Academic Advising", date: "07/31/2026", time: "8:02 AM PDT", subject: "Reschedule Advising Appointment",
     preview: "Sure — I moved your appointment to Tuesday at 3 PM.",
+    expires: { label: "Expired 08/28/2026", role: "danger" },
     meta: { Department: "Academic Advising", Status: "Open", Institution: "PeopleSoft University" },
     content: [
       bubbleRow({ role: "other", name: "George Amalor", meta: "Jul 31, 8:02 AM", text: "Could we reschedule my advising appointment to next week?" }),
@@ -2267,7 +2269,9 @@ const phaseECss = `.mc-reply-actions { display: flex; align-items: center; gap: 
   /* show the "N THREADS" band (desktop relies on the tab counter instead); it
      sits in the toolbar region with no rule above it — only the separator below */
   .mc-rail__count { display: flex; }
-  .mc-count { padding-top: ${px(resolve("dim.2"))}; padding-bottom: ${px(resolve("dim.2"))}; }
+  /* no bottom padding — the wrapper's gap alone spaces the count from the
+     separator, matching the student card's tighter count→list gap */
+  .mc-count { padding-top: ${px(resolve("dim.2"))}; padding-bottom: 0; }
 
   .mc-trow.mc-console-cols {
     grid-template-columns: auto minmax(0, 1fr) auto;

@@ -1069,7 +1069,9 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   /* show the "N THREADS" band (desktop relies on the tab counter instead); it
      sits in the toolbar region with no rule above it — only the separator below */
   .mc-rail__count { display: flex; }
-  .mc-count { padding-top: 8px; padding-bottom: 8px; }
+  /* no bottom padding — the wrapper's gap alone spaces the count from the
+     separator, matching the student card's tighter count→list gap */
+  .mc-count { padding-top: 8px; padding-bottom: 0; }
 
   .mc-trow.mc-console-cols {
     grid-template-columns: auto minmax(0, 1fr) auto;
@@ -1277,12 +1279,12 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
             <div class="mc-th mc-th--sortable mc-th--right" data-sort="date" role="button" tabindex="0">Date <span class="mc-th__arrow"><svg class="mc-th__arrow-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M20 12l-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8 8-8z"/></svg></span></div>
           </div>
           <div class="mc-list" data-list="inbox">
-            <div class="thread-item-inbox mc-trow mc-console-cols thread-item-inbox--unread" role="button" tabindex="0" data-thread="cait-minor" data-idx="0" data-subject="Minor Requirements Review" data-department="Academic Advising" data-student-id="CX0001" data-responsibles="Alexander Robinson" data-date-val="20260805" data-involved="true">
+            <div class="thread-item-inbox mc-trow mc-console-cols thread-item-inbox--unread" role="button" tabindex="0" data-thread="cait-minor" data-idx="0" data-subject="Minor Requirements Review" data-department="Academic Advising" data-student-id="CX0001" data-responsibles="Alexander Robinson" data-date-val="20260805" data-involved="true" data-expires="neutral">
         <div class="mc-td mc-col-flag"><button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button></div>
         <div class="mc-td mc-cellwrap"><span class="avatar avatar--orange avatar--sm" role="img" aria-label="Cait Genatossio"><span class="avatar__initials">CG</span></span><span class="mc-cellstack"><span class="mc-lead">Cait Genatossio</span><span class="mc-td--muted" style="font-size:12px">CX0001</span></span></div>
         <div class="mc-td mc-col-responsible"><span class="mc-resp"><span class="mc-resp__pill">Alexander Robinson</span></span></div>
         <div class="mc-td mc-cellstack"><span class="mc-lead">Minor Requirements Review</span><span class="mc-td--muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Could we also review the minor requirements before enrollment closes?</span></div>
-        <div class="mc-td mc-col-expiration thread-item-inbox__expires"><span class="mc-td--muted">–</span><span class="badge badge--sm badge--role-primary thread-item-inbox__scope">Inbox</span></div>
+        <div class="mc-td mc-col-expiration thread-item-inbox__expires"><span class="badge badge--sm badge--role-neutral">Expires 12/12/2026</span><span class="badge badge--sm badge--role-primary thread-item-inbox__scope">Inbox</span></div>
         <div class="mc-td mc-td--muted mc-col-date"><span class="mc-date__d">08/05/2026</span><span class="mc-date__t">9:12 AM PDT</span></div>
       </div>
           <div class="thread-item-inbox mc-trow mc-console-cols thread-item-inbox--unread" role="button" tabindex="0" data-thread="maya-hold" data-idx="1" data-subject="Registration Hold Question" data-department="Academic Advising" data-student-id="AA0301" data-responsibles="" data-date-val="20260804" data-involved="false">
@@ -1298,15 +1300,15 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         <div class="mc-td mc-cellwrap"><span class="avatar avatar--orange avatar--sm" role="img" aria-label="Diego Fernandez"><span class="avatar__initials">DF</span></span><span class="mc-cellstack"><span class="mc-lead">Diego Fernandez</span><span class="mc-td--muted" style="font-size:12px">AA0302</span></span></div>
         <div class="mc-td mc-col-responsible"><span class="mc-resp"><span class="mc-resp__pill">Ava Robinson</span><span class="mc-resp__pill">Alexander Robinson</span><span class="mc-resp__more" tabindex="0" role="button" aria-label="1 more responsible">+1<span class="mc-resp__pop"><span>Ava Robinson</span><span>Alexander Robinson</span><span>Sarah Nguyen</span></span></span></span></div>
         <div class="mc-td mc-cellstack"><span class="mc-lead">Transcript for Internship Application</span><span class="mc-td--muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">My internship application needs an official transcript by next Friday.</span></div>
-        <div class="mc-td mc-col-expiration thread-item-inbox__expires"><span class="badge badge--sm badge--role-warning">Due 08/10/2026</span><span class="badge badge--sm badge--role-primary thread-item-inbox__scope">Inbox</span></div>
+        <div class="mc-td mc-col-expiration thread-item-inbox__expires"><span class="badge badge--sm badge--role-warning">Expires 09/15/2026</span><span class="badge badge--sm badge--role-primary thread-item-inbox__scope">Inbox</span></div>
         <div class="mc-td mc-td--muted mc-col-date"><span class="mc-date__d">08/03/2026</span><span class="mc-date__t">11:20 AM PDT</span></div>
       </div>
-          <div class="thread-item-inbox mc-trow mc-console-cols thread-item-inbox--read" role="button" tabindex="0" data-thread="george-reschedule" data-idx="3" data-subject="Reschedule Advising Appointment" data-department="Academic Advising" data-student-id="AA0303" data-responsibles="Alexander Robinson" data-date-val="20260731" data-involved="true">
+          <div class="thread-item-inbox mc-trow mc-console-cols thread-item-inbox--read" role="button" tabindex="0" data-thread="george-reschedule" data-idx="3" data-subject="Reschedule Advising Appointment" data-department="Academic Advising" data-student-id="AA0303" data-responsibles="Alexander Robinson" data-date-val="20260731" data-involved="true" data-expires="danger">
         <div class="mc-td mc-col-flag"><button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button></div>
         <div class="mc-td mc-cellwrap"><span class="avatar avatar--orange avatar--sm" role="img" aria-label="George Amalor"><span class="avatar__initials">GA</span></span><span class="mc-cellstack"><span class="mc-lead">George Amalor</span><span class="mc-td--muted" style="font-size:12px">AA0303</span></span></div>
         <div class="mc-td mc-col-responsible"><span class="mc-resp"><span class="mc-resp__pill">Alexander Robinson</span></span></div>
         <div class="mc-td mc-cellstack"><span class="mc-lead">Reschedule Advising Appointment</span><span class="mc-td--muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Sure — I moved your appointment to Tuesday at 3 PM.</span></div>
-        <div class="mc-td mc-col-expiration thread-item-inbox__expires"><span class="mc-td--muted">–</span><span class="badge badge--sm badge--role-primary thread-item-inbox__scope">Inbox</span></div>
+        <div class="mc-td mc-col-expiration thread-item-inbox__expires"><span class="badge badge--sm badge--role-danger">Expired 08/28/2026</span><span class="badge badge--sm badge--role-primary thread-item-inbox__scope">Inbox</span></div>
         <div class="mc-td mc-td--muted mc-col-date"><span class="mc-date__d">07/31/2026</span><span class="mc-date__t">8:02 AM PDT</span></div>
       </div>
           </div>
@@ -1357,7 +1359,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
             <span class="mc-thread__meta-line">Cait Genatossio · Academic Advising</span>
             <span class="mc-thread__meta-line">Responsible · Alexander Robinson</span>
             <span class="badge badge--sm badge--role-primary">Awaiting reply</span>
-            
+            <span class="badge badge--sm badge--role-neutral">Expires 12/12/2026</span>
             
           </div>
         </header>
@@ -1445,7 +1447,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
             <span class="mc-thread__meta-line">Diego Fernandez · Academic Advising</span>
             <span class="mc-thread__meta-line">Responsible · Ava Robinson, Alexander Robinson, Sarah Nguyen</span>
             
-            <span class="badge badge--sm badge--role-warning">Due 08/10/2026</span>
+            <span class="badge badge--sm badge--role-warning">Expires 09/15/2026</span>
             
           </div>
         </header>
@@ -1495,7 +1497,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
             <span class="mc-thread__meta-line">George Amalor · Academic Advising</span>
             <span class="mc-thread__meta-line">Responsible · Alexander Robinson</span>
             
-            
+            <span class="badge badge--sm badge--role-danger">Expired 08/28/2026</span>
             
           </div>
         </header>
