@@ -973,7 +973,9 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
    padding/gap tween): collapsed side padding = (height − iconSize) / 2,
    which lands the pill at exactly Button's icon-only width-equals-height
    circle at the end of the tween. */
-.mc-fab__label { max-width: 130px; opacity: 1; overflow: hidden; white-space: nowrap; transition: max-width 0.25s ease, opacity 0.2s ease; }
+.mc-fab__label { display: inline-flex; align-items: center; gap: ${px(resolve("dim.1"))}; max-width: 130px; opacity: 1; overflow: hidden; white-space: nowrap; transition: max-width 0.25s ease, opacity 0.2s ease; }
+.mc-fab__chev { width: 20px; height: 20px; flex-shrink: 0; opacity: 0.85; transition: transform 0.15s ease; }
+.mc-fab[aria-expanded="true"] .mc-fab__chev { transform: rotate(180deg); }
 .mc-fab.mc-fab--collapsed { padding: 0 ${(parseInt(btnPrimLgHeight) - parseInt(btnPrimLgIconSize)) / 2}px; gap: 0; }
 .mc-fab.mc-fab--collapsed .mc-fab__label { max-width: 0; opacity: 0; }
 /* v3: the topbar is PERSISTENT chrome (Gmail-style) — it stays across the
@@ -1031,8 +1033,7 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .mc-filters-pop::backdrop { background: transparent; transition: background 0.28s ease, overlay 0.28s allow-discrete, display 0.28s allow-discrete; }
 .mc-filters-pop:popover-open::backdrop { background: ${cv(mdOverlay)}; }
 @starting-style { .mc-filters-pop:popover-open::backdrop { background: transparent; } }
-/* grabber handle at the top edge, for the drawer feel */
-.mc-filters-pop::before { content: ""; flex-shrink: 0; width: 36px; height: 4px; margin: ${px(resolve("dim.2"))} auto 0; border-radius: ${px(resolve("radius.full"))}; background: ${cv("border.strong")}; }
+.mc-filters-pop__close { margin: -${px(resolve("dim.1"))} -${px(resolve("dim.1"))} -${px(resolve("dim.1"))} 0; }
 .mc-filters-pop__head { flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; padding: ${px(resolve("dim.2"))} ${px(resolve("dim.4"))} ${px(resolve("dim.3"))}; border-bottom: 1px solid ${cv("border.default")}; }
 .mc-filters-pop__title { color: ${cv("text.default")}; ${typoCss(bodyBaseType)} font-size: 16px; font-weight: 700; }
 .mc-filters-pop__clear { border: none; background: none; padding: 0; cursor: pointer; color: ${cv("text.primary")}; font-weight: 600; ${typoCss(bodySmType)} font-family: inherit; }
@@ -1053,8 +1054,9 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .mc-filt-chips { display: flex; flex-wrap: wrap; gap: ${px(resolve("dim.1_5"))}; }
 .mc-filt-chips .mc-qchip { display: inline-flex; }
 /* sticky Apply footer */
-.mc-filters-pop__foot { flex-shrink: 0; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))} ${px(resolve("dim.4"))}; border-top: 1px solid ${cv("border.default")}; }
-.mc-filters-apply { width: 100%; }
+.mc-filters-pop__foot { flex-shrink: 0; display: flex; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))} ${px(resolve("dim.4"))}; border-top: 1px solid ${cv("border.default")}; }
+.mc-filters-clear { flex-shrink: 0; }
+.mc-filters-apply { flex: 1; }
 /* inline (desktop) advanced controls: the date-range on row 1, the Department /
    Staff Selects on row 2. The Selects ARE the DS Select recipe (base) — no chip
    restyle. Hidden on mobile (< 600) where they live in the panel. */
@@ -1195,16 +1197,14 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
   .mc-table { min-width: 620px; } /* horizontal-scroll fallback until the mobile row reflow lands */
   .mc-thread__scroll > *, .mc-thread__composer > * { max-width: none; }
 }
-@media (min-width: 600px) {
-  /* room for two rows proper: row 1 shows both search fields, row 2 shows the
-     chips inline — the mobile search icon and the Filters button both go away */
+@media (min-width: 1024px) {
+  /* desktop only — the toolbar spreads out: row 1 shows both search fields, row 2
+     shows the chips + Department/Staff Selects inline. Tablet + mobile keep the
+     collapsed toolbar (search icon + Filters icon → bottom-sheet drawer). */
   .mc-rail__searches { display: flex; }
   .mc-search-open-btn, .mc-search-close { display: none; }
-  .mc-rail__student { flex: 0 1 150px; }
-  .mc-rail__search { flex: 0 1 220px; }
-  /* everything goes inline: chips on row 2, the date-range on row 1, the
-     Department / Staff Selects on row 2 — so the Filters button (a mobile-only
-     overflow home) disappears entirely */
+  .mc-rail__student { flex: 0 1 170px; }
+  .mc-rail__search { flex: 0 1 260px; }
   .mc-qchip { display: inline-flex; }
   .mc-rail__daterange { display: block; }
   .mc-advsel { display: inline-block; }
@@ -2623,6 +2623,10 @@ const appJs = `(function () {
   document.getElementById("mc-filters-apply").addEventListener("click", function () {
     filtersListbox.hidePopover();
   });
+  // the header X closes the drawer without touching the applied filters
+  document.getElementById("mc-filters-close").addEventListener("click", function () {
+    filtersListbox.hidePopover();
+  });
   // row-2 inline Selects (trigger opens a Listbox popover)
   document.querySelectorAll(".mc-advsel").forEach(function (sel) {
     var key = sel.dataset.adv, lb = sel.querySelector(".mc-advsel__lb"), trigger = sel.querySelector(".mc-advsel__trigger");
@@ -3731,7 +3735,7 @@ ${phaseECss}
           <div class="mc-filters-pop" id="mc-filters-listbox" popover>
             <div class="mc-filters-pop__head">
               <span class="mc-filters-pop__title">Filters</span>
-              <button class="mc-filters-pop__clear" id="mc-filters-clear" type="button">Clear all</button>
+              <button class="btn btn--ghost btn--sm btn--icon-only mc-filters-pop__close" id="mc-filters-close" type="button" aria-label="Close">${iconCloseBtn}</button>
             </div>
             <div class="mc-filters-pop__body">
               <div class="mc-filt-field">
@@ -3769,6 +3773,7 @@ ${phaseECss}
               </div>
             </div>
             <div class="mc-filters-pop__foot">
+              <button class="btn btn--secondary btn--base mc-filters-clear" id="mc-filters-clear" type="button">Clear all</button>
               <button class="btn btn--primary btn--base mc-filters-apply" id="mc-filters-apply" type="button">Apply filters</button>
             </div>
           </div>
@@ -3807,7 +3812,7 @@ ${phaseECss}
           <div class="empty-state"><span class="empty-state__text" id="mc-rail-empty-text">No threads found</span></div>
         </div>
       </div>
-      <button class="btn btn--primary btn--lg mc-fab" id="mc-new-fab" type="button" popovertarget="mc-new-menu" aria-haspopup="menu" aria-expanded="false">${iconEdit}<span class="mc-fab__label">New message</span></button>
+      <button class="btn btn--primary btn--lg mc-fab" id="mc-new-fab" type="button" popovertarget="mc-new-menu" aria-haspopup="menu" aria-expanded="false">${iconEdit}<span class="mc-fab__label">New${iconOf("expand_more", "mc-fab__chev")}</span></button>
     </aside>
     <section class="mc__reading" aria-label="Thread">
       <div class="mc-empty" id="mc-empty"><div class="empty-state"><span class="empty-state__text">Choose a Thread</span></div></div>

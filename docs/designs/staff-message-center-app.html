@@ -597,7 +597,9 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
    padding/gap tween): collapsed side padding = (height − iconSize) / 2,
    which lands the pill at exactly Button's icon-only width-equals-height
    circle at the end of the tween. */
-.mc-fab__label { max-width: 130px; opacity: 1; overflow: hidden; white-space: nowrap; transition: max-width 0.25s ease, opacity 0.2s ease; }
+.mc-fab__label { display: inline-flex; align-items: center; gap: 4px; max-width: 130px; opacity: 1; overflow: hidden; white-space: nowrap; transition: max-width 0.25s ease, opacity 0.2s ease; }
+.mc-fab__chev { width: 20px; height: 20px; flex-shrink: 0; opacity: 0.85; transition: transform 0.15s ease; }
+.mc-fab[aria-expanded="true"] .mc-fab__chev { transform: rotate(180deg); }
 .mc-fab.mc-fab--collapsed { padding: 0 12px; gap: 0; }
 .mc-fab.mc-fab--collapsed .mc-fab__label { max-width: 0; opacity: 0; }
 /* v3: the topbar is PERSISTENT chrome (Gmail-style) — it stays across the
@@ -655,8 +657,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .mc-filters-pop::backdrop { background: transparent; transition: background 0.28s ease, overlay 0.28s allow-discrete, display 0.28s allow-discrete; }
 .mc-filters-pop:popover-open::backdrop { background: var(--tok-surface-overlay); }
 @starting-style { .mc-filters-pop:popover-open::backdrop { background: transparent; } }
-/* grabber handle at the top edge, for the drawer feel */
-.mc-filters-pop::before { content: ""; flex-shrink: 0; width: 36px; height: 4px; margin: 8px auto 0; border-radius: 999px; background: var(--tok-border-strong); }
+.mc-filters-pop__close { margin: -4px -4px -4px 0; }
 .mc-filters-pop__head { flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; padding: 8px 16px 12px; border-bottom: 1px solid var(--tok-border-default); }
 .mc-filters-pop__title { color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; font-size: 16px; font-weight: 700; }
 .mc-filters-pop__clear { border: none; background: none; padding: 0; cursor: pointer; color: var(--tok-text-primary); font-weight: 600; font-weight: 400; font-size: 12px; line-height: 1.4; font-family: inherit; }
@@ -677,8 +678,9 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .mc-filt-chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .mc-filt-chips .mc-qchip { display: inline-flex; }
 /* sticky Apply footer */
-.mc-filters-pop__foot { flex-shrink: 0; padding: 12px 16px 16px; border-top: 1px solid var(--tok-border-default); }
-.mc-filters-apply { width: 100%; }
+.mc-filters-pop__foot { flex-shrink: 0; display: flex; gap: 8px; padding: 12px 16px 16px; border-top: 1px solid var(--tok-border-default); }
+.mc-filters-clear { flex-shrink: 0; }
+.mc-filters-apply { flex: 1; }
 /* inline (desktop) advanced controls: the date-range on row 1, the Department /
    Staff Selects on row 2. The Selects ARE the DS Select recipe (base) — no chip
    restyle. Hidden on mobile (< 600) where they live in the panel. */
@@ -819,16 +821,14 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   .mc-table { min-width: 620px; } /* horizontal-scroll fallback until the mobile row reflow lands */
   .mc-thread__scroll > *, .mc-thread__composer > * { max-width: none; }
 }
-@media (min-width: 600px) {
-  /* room for two rows proper: row 1 shows both search fields, row 2 shows the
-     chips inline — the mobile search icon and the Filters button both go away */
+@media (min-width: 1024px) {
+  /* desktop only — the toolbar spreads out: row 1 shows both search fields, row 2
+     shows the chips + Department/Staff Selects inline. Tablet + mobile keep the
+     collapsed toolbar (search icon + Filters icon → bottom-sheet drawer). */
   .mc-rail__searches { display: flex; }
   .mc-search-open-btn, .mc-search-close { display: none; }
-  .mc-rail__student { flex: 0 1 150px; }
-  .mc-rail__search { flex: 0 1 220px; }
-  /* everything goes inline: chips on row 2, the date-range on row 1, the
-     Department / Staff Selects on row 2 — so the Filters button (a mobile-only
-     overflow home) disappears entirely */
+  .mc-rail__student { flex: 0 1 170px; }
+  .mc-rail__search { flex: 0 1 260px; }
   .mc-qchip { display: inline-flex; }
   .mc-rail__daterange { display: block; }
   .mc-advsel { display: inline-block; }
@@ -1208,7 +1208,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <div class="mc-filters-pop" id="mc-filters-listbox" popover>
             <div class="mc-filters-pop__head">
               <span class="mc-filters-pop__title">Filters</span>
-              <button class="mc-filters-pop__clear" id="mc-filters-clear" type="button">Clear all</button>
+              <button class="btn btn--ghost btn--sm btn--icon-only mc-filters-pop__close" id="mc-filters-close" type="button" aria-label="Close"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
             </div>
             <div class="mc-filters-pop__body">
               <div class="mc-filt-field">
@@ -1265,6 +1265,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
               </div>
             </div>
             <div class="mc-filters-pop__foot">
+              <button class="btn btn--secondary btn--base mc-filters-clear" id="mc-filters-clear" type="button">Clear all</button>
               <button class="btn btn--primary btn--base mc-filters-apply" id="mc-filters-apply" type="button">Apply filters</button>
             </div>
           </div>
@@ -1379,7 +1380,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <div class="empty-state"><span class="empty-state__text" id="mc-rail-empty-text">No threads found</span></div>
         </div>
       </div>
-      <button class="btn btn--primary btn--lg mc-fab" id="mc-new-fab" type="button" popovertarget="mc-new-menu" aria-haspopup="menu" aria-expanded="false"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg><span class="mc-fab__label">New message</span></button>
+      <button class="btn btn--primary btn--lg mc-fab" id="mc-new-fab" type="button" popovertarget="mc-new-menu" aria-haspopup="menu" aria-expanded="false"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg><span class="mc-fab__label">New<svg class="mc-fab__chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></span></button>
     </aside>
     <section class="mc__reading" aria-label="Thread">
       <div class="mc-empty" id="mc-empty"><div class="empty-state"><span class="empty-state__text">Choose a Thread</span></div></div>
@@ -2249,6 +2250,10 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   });
   // Apply just closes the drawer — filters already apply live as they change
   document.getElementById("mc-filters-apply").addEventListener("click", function () {
+    filtersListbox.hidePopover();
+  });
+  // the header X closes the drawer without touching the applied filters
+  document.getElementById("mc-filters-close").addEventListener("click", function () {
     filtersListbox.hidePopover();
   });
   // row-2 inline Selects (trigger opens a Listbox popover)
