@@ -1122,3 +1122,17 @@ Four steps plus results, every branch real. Built as five files rather than one:
 Also worth noting three shapes that differ from what a copied recipe assumes: **Search declares its value typography once at the component root**, not per size (Input/Select do it per size); **Stepper's complete state has `circleIcon`, not `circleText`**, because a finished step shows a check rather than a number; and `surface.dimHover` needs registering in `colorPaths` wherever a field appears.
 
 Verified end to end in the browser: the Psychology→scan-fail→scan-succeed→review→build→results path, the Accounting+English-Minor combo, the "No, starting fresh" path (singular "Major", "None added", no transfer tab), the Riverside fallback, the manual-search path with its grade gate, the planner toggle, tab switching, and expanding a covered requirement to its "covered by your credit from …" chip. All three checkers green at 57 pages.
+
+## 2026-09-07 (cont. 18) — Explore Degrees wears the normal header; the school is gone
+
+Three corrections on the wizard, and the first one is a rule rather than a tweak.
+
+**"ну це дійсно для цього не треба логінитись, але як це впливає на юай)))"** — I had built a bespoke header for this screen (wizard name · school, "No account needed" on the right) and justified it in the code with "this flow is public, so it has no logged-in chrome". That reasoning conflates two separate questions: whether a screen requires an account, and what chrome it wears. A screen that lives inside the product wears the product's header regardless. So the wizard now uses `lib/app-shell.mjs` — the same wordmark-and-settings topbar as the Springboard — and `app-shell` gets its second consumer, which retro-justifies extracting it before writing the second screen rather than after.
+
+To take the topbar without a duplicate Button recipe (this page needs primary and ghost too, so it ships its own full set), `app-shell.mjs` now exports **`SHELL_TOPBAR_CSS`** and **`SHELL_BUTTON_CSS`** separately, with `SHELL_CSS` recomposed from both so Springboard's existing use is untouched — verified by rebuilding it and re-running the var checker.
+
+**The school is gone from three places** — the header, step 1's "School: PeopleSoft University / Change" row, and the review summary's School row — because the user's call is that the switcher only exists in their demo environment and never will in the product. The `SCHOOL` constant went with it rather than sitting dead in the data module. Note the *previous* school in step 3 is a different thing entirely and stays.
+
+**Step labels name the choice, not a category:** Study/Start/Credits → **What to study / Start term / Transfer credits / Review**, and deliberately no question mark (the user asked for that explicitly) — the page's own H1 asks the question, a step label just says where you are. Checked at 1000px and 700px: no wrapping, no stepper overflow, no horizontal page overflow; below 640px the labels already hide by design.
+
+Verified after the change: the header measures 64px with the logo and a 40px settings action, the "No, starting fresh" path still reaches results, and the review reads "Academic level / Major / Starting term / Transfer credits" with no School row. All three checkers green at 57 pages.

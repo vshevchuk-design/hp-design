@@ -16,10 +16,14 @@
 //   lib/ed-markup.mjs  — the static skeleton of all five screens
 //   lib/ed-app.mjs     — the state machine that fills it in
 //
-// NOTE this screen does NOT wear the portal's app shell (lib/app-shell.mjs).
-// That is deliberate and comes from the reference: this flow is public — "No
-// account needed" — so it has no logged-in chrome, no wordmark-and-settings
-// topbar. Its own header names the wizard and the school instead.
+// This screen wears the portal's app shell (lib/app-shell.mjs) — the same
+// wordmark-and-settings header as the Springboard. A first cut copied the
+// reference's bespoke header ("Explore Your Degree · PeopleSoft University" +
+// "No account needed") and reasoned that a public flow shouldn't carry
+// logged-in chrome; the user's call is that the school switcher only exists in
+// their demo environment and never will in the product, and that this screen
+// should look like every other one. So: normal header, and the school is gone
+// from the header, from step 1 and from the review summary.
 // Run: node tools/build-design-explore-degrees.mjs
 import fs from "node:fs";
 import path from "node:path";
@@ -27,6 +31,10 @@ import { fileURLToPath } from "node:url";
 import { renderRootVars, cssVarName } from "./lib/css-vars.mjs";
 import { renderDesignViewer } from "./lib/design-viewer.mjs";
 import { edCss, ED_COLOR_PATHS } from "./lib/ed-css.mjs";
+// Only the topbar half of the shell: this page ships its own full Button
+// recipe (it needs primary and ghost too), so a second copy of the shell's
+// secondary-button rules would be dead weight.
+import { SHELL_TOPBAR_CSS, SHELL_COLOR_PATHS } from "./lib/app-shell.mjs";
 import { edMarkup, edSchoolBlockTemplate } from "./lib/ed-markup.mjs";
 import { edAppJs } from "./lib/ed-app.mjs";
 import { PROGRAMS, TERM_YEARS, PREV_SCHOOLS } from "./lib/ed-data.mjs";
@@ -119,6 +127,7 @@ const usedHues = [...new Set([
 ])];
 const colorPaths = [...new Set([
   ...ED_COLOR_PATHS,
+  ...SHELL_COLOR_PATHS,
   ...usedHues.flatMap((h) => [`avatar.${h}.bg`, `avatar.${h}.text`]),
 ])];
 const fontSans = resolve("family.sans");
@@ -132,6 +141,7 @@ const hueCss = `${usedHues.map((h) => `.ed-hue--${h} { background: ${cv(`avatar.
 .ed-mark--no { background: ${cv("fill.neutral")}; color: ${cv("icon.secondary")}; }`;
 
 const appCss = `${rootVars}
+${SHELL_TOPBAR_CSS}
 ${edCss(helpers)}
 ${hueCss}`;
 
@@ -163,7 +173,7 @@ const viewerHtml = renderDesignViewer({
   activeKey: "explore-degrees",
   title: "Explore Degrees",
   heading: "Explore Degrees",
-  sub: `The public <b>Explore Your Degree</b> wizard behind the Springboard's own tile — a no-login estimator: pick a programme, a start term and any prior college credits, and it reports what transfers and what's left. Four steps plus results, everything interactive. <b>All the branches are real:</b> focus areas appear only for majors that have them (try Psychology), Yes/No on prior credits, N previous schools, and the AI transcript reader runs its full path — the first file is rejected with the reference's own message ("a photograph of a house and pool"), the second imports ten classes. Two endings too: pick <b>Riverside Community College</b> to get the "we couldn't check your credits online" fallback, and answer <b>No, starting fresh</b> to see the results with no transfer tab at all. The header is deliberately not the portal's app shell — this flow is public, so it has no logged-in chrome. A prototype switch on the results screen turns the school's Degree Planner on and off; results are always rendered and the planner is a button, never a redirect, since a redirect would discard both the estimate and the print path. Built from ${PROGRAMS.length} programmes and ${PREV_SCHOOLS.length} previous schools of sample data.`,
+  sub: `The public <b>Explore Your Degree</b> wizard behind the Springboard's own tile — a no-login estimator: pick a programme, a start term and any prior college credits, and it reports what transfers and what's left. Four steps plus results, everything interactive. <b>All the branches are real:</b> focus areas appear only for majors that have them (try Psychology), Yes/No on prior credits, N previous schools, and the AI transcript reader runs its full path — the first file is rejected with the reference's own message ("a photograph of a house and pool"), the second imports ten classes. Two endings too: pick <b>Riverside Community College</b> to get the "we couldn't check your credits online" fallback, and answer <b>No, starting fresh</b> to see the results with no transfer tab at all. It wears the portal's normal header — no login is needed to use this, but that is a fact about access, not a reason to give the screen different chrome; the school switcher in the reference only exists in a demo environment and is gone here. A prototype switch on the results screen turns the school's Degree Planner on and off; results are always rendered and the planner is a button, never a redirect, since a redirect would discard both the estimate and the print path. Built from ${PROGRAMS.length} programmes and ${PREV_SCHOOLS.length} previous schools of sample data.`,
   versions: [{ label: "v1", note: "current", file: "explore-degrees-app.html" }],
 });
 

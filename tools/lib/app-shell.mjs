@@ -110,7 +110,7 @@ export const LOGO_SVG = fs
 const icon = (name, cls) =>
   fs.readFileSync(path.join(root, `assets/icons/material-filled/${name}.svg`), "utf8").replace("<svg ", `<svg class="${cls}" `);
 
-export const SHELL_CSS = `/* ---- portal app shell (tools/lib/app-shell.mjs) ---- */
+export const SHELL_TOPBAR_CSS = `/* ---- portal app shell (tools/lib/app-shell.mjs) ---- */
 .app { min-height: 100%; display: flex; flex-direction: column; }
 /* Exactly dim.16 (64px) tall, border included: everything lands on the 4px
    grid, and vertical padding + a 1px border can never total a multiple of 4
@@ -125,7 +125,12 @@ export const SHELL_CSS = `/* ---- portal app shell (tools/lib/app-shell.mjs) ---
   .app__topbar { padding: 0 ${px(resolve("dim.6"))}; }
 }
 
-/* Button secondary — the shell's actions, resolved from button.tokens.json.
+`;
+
+/* The shell's own action button. Split from the topbar CSS so a page that
+   already ships a full Button recipe (Explore Degrees needs primary and ghost
+   as well) can take the topbar without a duplicate set of secondary rules. */
+export const SHELL_BUTTON_CSS = `/* Button secondary — the shell's actions, resolved from button.tokens.json.
    Its icon colour is set explicitly: secondary's label (text.default) and icon
    (icon.default) are different values, so currentColor would be wrong. */
 .btn { display: inline-flex; align-items: center; justify-content: center; border: none; cursor: pointer; font-family: inherit; border-radius: ${secondary.radius}; }
@@ -136,6 +141,10 @@ export const SHELL_CSS = `/* ---- portal app shell (tools/lib/app-shell.mjs) ---
 .btn--secondary:hover { background: ${cv(secondary.hoverFill)}; }
 .btn--secondary:active { background: ${cv(secondary.pressedFill)}; }
 .btn--secondary:focus-visible { outline: ${secondary.ringWidth} solid ${cv(secondary.ringColor)}; outline-offset: ${secondary.ringOffset}; }`;
+
+/** Both halves — what a page wants unless it has its own Button recipe. */
+export const SHELL_CSS = `${SHELL_TOPBAR_CSS}
+${SHELL_BUTTON_CSS}`;
 
 /** The topbar markup: wordmark left, actions right (defaults to Settings). */
 export function shellTopbar({ actions } = {}) {

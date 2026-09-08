@@ -92,17 +92,13 @@ export function edCss(h) {
 * { box-sizing: border-box; }
 html, body { height: 100%; }
 body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.sans")}; }
-.ed { min-height: 100%; display: flex; flex-direction: column; }
-
-/* This flow is PUBLIC — "No account needed" — so it does NOT wear the logged-in
-   portal's shell (logo + settings). Its own header is what the reference shows:
-   the wizard's name, the school, and that reassurance on the right. */
-.ed__topbar { flex-shrink: 0; height: ${px(resolve("dim.16"))}; display: flex; align-items: center; justify-content: space-between; gap: ${px(resolve("dim.3"))}; padding: 0 ${px(resolve("dim.4"))}; border-bottom: 1px solid ${cv("border.default")}; }
-@media (min-width: 768px) { .ed__topbar { padding: 0 ${px(resolve("dim.6"))}; } }
-.ed__brand { display: flex; align-items: baseline; gap: ${px(resolve("dim.1"))}; min-width: 0; }
-.ed__brand-name { color: ${cv("text.primary")}; ${typoCss(h.resolveToken(h.get("text-style.heading-md")))} }
-.ed__brand-school { color: ${cv("text.secondary")}; ${typoCss(h.resolveToken(h.get("text-style.body-base")))} white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.ed__noaccount { flex-shrink: 0; color: ${cv("text.secondary")}; ${typoCss(h.resolveToken(h.get("text-style.body-sm")))} }
+/* The page frame and topbar come from lib/app-shell.mjs — the SAME header the
+   Springboard wears. An earlier cut had a bespoke header naming the wizard and
+   the school, copied from the reference; the user's call is that the school
+   picker only exists in their demo and never will in the product, and that
+   this screen should wear the normal portal header like every other one. So
+   the shell gets its second consumer, and the school is gone from the header,
+   from step 1 and from the review. */
 .ed__main { flex: 1; width: 100%; max-width: 880px; margin: 0 auto; padding: ${px(resolve("dim.6"))} ${px(resolve("dim.4"))} ${px(resolve("dim.10"))}; display: flex; flex-direction: column; gap: ${px(resolve("dim.6"))}; }
 @media (min-width: 768px) { .ed__main { padding: ${px(resolve("dim.8"))} ${px(resolve("dim.6"))} ${px(resolve("dim.12"))}; } }
 .ed__head { display: flex; flex-direction: column; gap: ${px(resolve("dim.1_5"))}; }
@@ -248,6 +244,8 @@ ${["neutral", "primary", "success", "warning"].map((r) => `.badge--${r} { backgr
 .btn--sm { height: ${secondarySm.height}; padding: 0 ${secondarySm.paddingX}; gap: ${secondarySm.gap}; ${typoCss(secondarySm.label)} }
 .btn--sm .btn__icon { width: ${secondarySm.iconSize}; height: ${secondarySm.iconSize}; }
 .btn--icon-only.btn--sm { width: ${secondarySm.height}; padding: 0; }
+/* the shell's settings action is icon-only at base */
+.btn--base.btn--icon-only { width: ${primaryBase.height}; padding: 0; }
 .btn--block { width: 100%; }
 .btn--primary .btn__icon, .btn--secondary .btn__icon { color: currentColor; }
 .btn:focus-visible { outline: ${ringW} solid ${cv("border.focus")}; outline-offset: ${ringO}; }

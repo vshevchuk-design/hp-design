@@ -2,12 +2,16 @@
 // screens. Anything that depends on what the user picked (combo chips, school
 // blocks, the class table, both result tabs) is rendered by ed-app.mjs into the
 // containers this file lays out.
-import { PROGRAMS, TERM_YEARS, NEXT_INTAKE, SCHOOL, kindOf } from "./ed-data.mjs";
+import { PROGRAMS, TERM_YEARS, NEXT_INTAKE } from "./ed-data.mjs";
+import { shellTopbar } from "./app-shell.mjs";
 
+// Step labels name the thing being chosen, not a one-word category — the
+// user's call. No question mark: the page's own H1 asks the question, a step
+// label just says where you are.
 const STEPS = [
-  { n: 1, label: "Study" },
-  { n: 2, label: "Start" },
-  { n: 3, label: "Credits" },
+  { n: 1, label: "What to study" },
+  { n: 2, label: "Start term" },
+  { n: 3, label: "Transfer credits" },
   { n: 4, label: "Review" },
 ];
 
@@ -51,11 +55,8 @@ ${STEPS.map(
         </span>
       </label>`;
 
-  return `<div class="ed">
-  <header class="ed__topbar">
-    <span class="ed__brand"><span class="ed__brand-name">Explore Your Degree</span><span class="ed__brand-school">· ${esc(SCHOOL)}</span></span>
-    <span class="ed__noaccount">No account needed</span>
-  </header>
+  return `<div class="app">
+${shellTopbar()}
   <main class="ed__main">
     ${stepper}
 
@@ -67,10 +68,6 @@ ${STEPS.map(
       </div>
       <div class="card"><div class="card__body">
         <div class="ed-section">
-          <div class="ed-row">
-            <span class="badge badge--neutral">School: ${esc(SCHOOL)}</span>
-            <button class="ed-link" type="button">Change</button>
-          </div>
           <div class="search">${icon("search", "search__icon")}<input class="search__input" id="ed-program-search" type="search" placeholder="Search majors: try &ldquo;computer&rdquo; or &ldquo;bio&rdquo;" aria-label="Search majors" /></div>
           <div class="ed-scroll">
             <div class="ed-grid" id="ed-program-grid">

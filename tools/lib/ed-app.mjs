@@ -342,7 +342,8 @@ export function edAppJs(h) {
   /* ---------- step 4 · review (labels adapt to the data) ---------- */
   function edReview() {
     var rows = [];
-    rows.push(["School", esc(D.programs && "PeopleSoft University")]);
+    // No School row: there is only ever one, and the user's call is that the
+    // school picker exists in their demo and never will in the product.
     rows.push(["Academic level", "Undergraduate"]);
     var extras = S.combo.filter(function (c) { return !c.primary; });
     rows.push([extras.length ? "Majors &amp; minors" : "Major",

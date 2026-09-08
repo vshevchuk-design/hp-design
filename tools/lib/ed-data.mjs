@@ -16,8 +16,6 @@
 /** A program's kind is derivable from its name — no need to store it twice. */
 export const kindOf = (name) => (/minor/i.test(name) ? "Minor" : "Major");
 
-export const SCHOOL = "PeopleSoft University";
-
 // Step 1. ~27 programs, the reference's own list. `focus` exists on exactly one
 // (Psychology) because that's the branch the video demonstrates: focus areas
 // appear only for majors that have them.
