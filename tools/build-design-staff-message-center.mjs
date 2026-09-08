@@ -2264,10 +2264,10 @@ const phaseECss = `.mc-reply-actions { display: flex; align-items: center; gap: 
      line up with the toolbar */
   .mc-table { min-width: 0; border: none; border-radius: 0; }
   .mc-rail__lists { padding-left: 0; padding-right: 0; }
-  /* show the "N THREADS" band with a rule above it (desktop relies on the tab
-     counter instead) — matches the student card */
+  /* show the "N THREADS" band (desktop relies on the tab counter instead); it
+     sits in the toolbar region with no rule above it — only the separator below */
   .mc-rail__count { display: flex; }
-  .mc-count { border-top: 1px solid ${cv("border.default")}; padding-top: ${px(resolve("dim.3"))}; padding-bottom: ${px(resolve("dim.2"))}; }
+  .mc-count { padding-top: ${px(resolve("dim.2"))}; padding-bottom: ${px(resolve("dim.2"))}; }
 
   .mc-trow.mc-console-cols {
     grid-template-columns: auto minmax(0, 1fr) auto;
@@ -2281,7 +2281,7 @@ const phaseECss = `.mc-reply-actions { display: flex; align-items: center; gap: 
      centred across those two lines, with its own spacing. Everything else lives
      in column 2, indented past it; nothing sits under the avatar. */
   .mc-trow.mc-console-cols > .mc-cellwrap { display: contents; }
-  .mc-cellwrap > .avatar { grid-column: 1; grid-row: 1 / 3; align-self: center; }
+  .mc-cellwrap > .avatar { grid-column: 1; grid-row: 1 / 3; align-self: start; }
   .mc-cellwrap > .mc-cellstack { grid-column: 2; grid-row: 1; }
   .mc-trow.mc-console-cols > .mc-col-date { grid-column: 3; grid-row: 1; justify-self: end; }
   .mc-trow.mc-console-cols > .mc-td.mc-cellstack { grid-column: 2; grid-row: 2; }
