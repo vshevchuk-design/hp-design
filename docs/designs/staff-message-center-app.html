@@ -492,7 +492,7 @@
 .mc-td .badge { flex-shrink: 0; }
 /* console column template — flag | Student | Responsible | Subject & Message | Expiration | Date.
    Student is narrow; Expiration + Date are near-fixed widths pinned to the right; Subject takes the slack. */
-.mc-console-cols { grid-template-columns: 28px minmax(120px, 1fr) minmax(150px, max-content) minmax(0, 2fr) 132px minmax(104px, auto); gap: 12px; padding: 12px 16px; }
+.mc-console-cols { grid-template-columns: 28px minmax(120px, 1fr) minmax(160px, 284px) minmax(0, 2fr) 132px minmax(104px, auto); gap: 12px; padding: 12px 16px; }
 .mc-col-flag { display: flex; align-items: center; justify-content: center; }
 /* tablet (768–1023): drop Expiration (near-fixed 132px is a lot here) so Subject
    and the pinned Date keep room; Responsible stays (it moved up in priority) */
