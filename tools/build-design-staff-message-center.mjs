@@ -1038,16 +1038,14 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .mc-filters-pop .daterange__field { flex: 1 1 auto; }
 .daterange__nav { box-sizing: border-box; display: inline-flex; align-items: stretch; height: 40px; border-radius: ${px(resolve("radius.default"))}; background: ${cv("surface.dim")}; border: 1px solid ${cv("border.default")}; overflow: hidden; }
 .daterange__nav:hover { border-color: ${cv("border.strong")}; }
-.daterange__arrow, .daterange__field, .daterange__reset { border: none; background: none; cursor: pointer; display: inline-flex; align-items: center; font-family: ${cv("family.sans")}; color: ${cv("text.default")}; }
+.daterange__arrow, .daterange__field { border: none; background: none; cursor: pointer; display: inline-flex; align-items: center; font-family: ${cv("family.sans")}; color: ${cv("text.default")}; }
 .daterange__arrow { width: 32px; flex-shrink: 0; justify-content: center; color: ${cv("icon.default")}; }
-.daterange__arrow:hover, .daterange__reset:hover { background: ${cv("fill.neutralHover")}; }
+.daterange__arrow:hover { background: ${cv("fill.neutralHover")}; }
 .daterange__arrow-icon { width: 18px; height: 18px; }
 .daterange__field { gap: ${px(resolve("dim.2"))}; padding: 0 ${px(resolve("dim.3"))}; ${typoCss(bodySmType)} white-space: nowrap; border-left: 1px solid ${cv("border.default")}; }
 .daterange__field:hover { background: ${cv("fill.neutralHover")}; }
 .daterange__cal-icon { width: 16px; height: 16px; flex-shrink: 0; color: ${cv("icon.default")}; }
 .daterange__range-val { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
-.daterange__reset { width: 30px; flex-shrink: 0; justify-content: center; color: ${cv("icon.secondary")}; border-left: 1px solid ${cv("border.default")}; }
-.daterange__reset-icon { width: 15px; height: 15px; }
 .daterange__arrow--next { border-left: 1px solid ${cv("border.default")}; }
 .daterange__panel { margin: 0; box-sizing: border-box; padding: ${px(resolve("dim.4"))}; border-radius: ${px(resolve("radius.default"))}; background: ${cv("surface.default")}; border: 1px solid ${cv("border.default")}; box-shadow: ${lbShadowCss}; font-family: ${cv("family.sans")}; z-index: 20; max-width: calc(100vw - 16px); }
 .daterange__cals { display: flex; gap: ${px(resolve("dim.5"))}; }
@@ -1793,7 +1791,6 @@ function dateRangeWidget(suffix) {
               <div class="daterange__nav">
                 <button class="daterange__arrow daterange__arrow--prev" type="button" aria-label="Previous month">${iconOf("chevron_left", "daterange__arrow-icon")}</button>
                 <button class="daterange__field" type="button" popovertarget="${pid}" aria-haspopup="dialog">${iconOf("calendar_today", "daterange__cal-icon")}<span class="daterange__range-val">Aug 08, 2026 – Sep 08, 2026</span></button>
-                <button class="daterange__reset" type="button" aria-label="Reset date range">${iconOf("refresh", "daterange__reset-icon")}</button>
                 <button class="daterange__arrow daterange__arrow--next" type="button" aria-label="Next month">${iconOf("chevron_right", "daterange__arrow-icon")}</button>
               </div>
               <div class="daterange__panel" id="${pid}" popover role="dialog" aria-label="Choose a date range">
@@ -1802,7 +1799,7 @@ function dateRangeWidget(suffix) {
                   <div class="daterange__cal">${drCalHead(1, "right")}<div class="daterange__grid" data-cal="1"></div></div>
                 </div>
                 <div class="daterange__footer">
-                  <button class="daterange__btn daterange__clear" type="button">Clear</button>
+                  <button class="daterange__btn daterange__clear" type="button">Reset</button>
                   <button class="daterange__btn daterange__btn--primary daterange__apply" type="button">Apply</button>
                 </div>
               </div>
@@ -2623,7 +2620,6 @@ const appJs = `(function () {
       panel.querySelector(".daterange__clear").addEventListener("click", function () { resetRange(); renderBoth(); });
       el.querySelector(".daterange__arrow--prev").addEventListener("click", function () { commit(addMonths(cur.s, -1), addMonths(cur.e, -1)); });
       el.querySelector(".daterange__arrow--next").addEventListener("click", function () { commit(addMonths(cur.s, 1), addMonths(cur.e, 1)); });
-      el.querySelector(".daterange__reset").addEventListener("click", function () { resetRange(); });
     });
     syncTriggers();
   })();
