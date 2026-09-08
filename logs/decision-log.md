@@ -1195,3 +1195,7 @@ Three fixes on the row-1/row-2 controls:
 3. **"Custom" label**: the middle period label now reads **Custom** after a calendar pick (Apply), and the month (`Jul 2026`) after the arrows / default — tracked with a `curMode` flag.
 
 Verified: custom pick → "Custom" + filters Aug 3–5 (Cait/Diego/Maya); arrow → "Jul 2026"; dept Select updates its value + active border and filters.
+
+## 2026-09-06 (cont. 10) — Sortable column headers
+
+Console headers (Student / Responsible / Subject / Date) are now sortable: a down-arrow that's invisible at rest, faint on hover ("this column sorts"), and solid on the active column — pointing down for descending, up (rotate 180) for ascending. Click (or Enter/Space) toggles direction; switching columns starts asc (Date starts desc). `applySort()` reorders the `.thread-item-inbox` rows in both lists by a `sortVal` (date → data-date-val, student → the lead name, responsible → first of data-responsibles, subject → data-subject); `aria-sort` set on the active header. Default state shows Date · descending (the authored order); no reorder until the user clicks. Expiration + flag stay non-sortable.

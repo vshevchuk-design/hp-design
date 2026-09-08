@@ -1352,6 +1352,17 @@ const consoleCss = `/* ---- Table (threads console) ---- */
 .mc-trow:last-child { border-bottom: none; }
 .mc-thead { padding: ${tblHPadY} ${tblHPadX}; border-bottom: 1px solid ${cv(refPath(tableTok.header.divider.$value))}; }
 .mc-th { color: ${cv(refPath(tableTok.header.labelColor.$value))}; ${typoCss(tblHLabel)}${tblHLabelExt.textTransform ? ` text-transform: ${tblHLabelExt.textTransform};` : ""}${tblHLabelExt.letterSpacing ? ` letter-spacing: ${tblHLabelExt.letterSpacing};` : ""} white-space: nowrap; min-width: 0; }
+/* sortable header: an arrow that's invisible at rest, faint on hover ("you can
+   sort this"), solid on the active column (pointing down = desc, up = asc) */
+.mc-th--sortable { display: inline-flex; align-items: center; gap: 4px; cursor: pointer; user-select: none; }
+.mc-th--right { justify-content: flex-end; }
+.mc-th__arrow { display: inline-flex; opacity: 0; transition: opacity 0.12s ease; }
+.mc-th__arrow-icon { width: 14px; height: 14px; display: block; color: ${cv("icon.secondary")}; transition: transform 0.12s ease; }
+.mc-th--sortable:hover .mc-th__arrow { opacity: 0.45; }
+.mc-th--sortable:focus-visible { outline: 2px solid ${cv("border.focus")}; outline-offset: 2px; border-radius: ${px(resolve("radius.xs"))}; }
+.mc-th--sort-active .mc-th__arrow { opacity: 1; }
+.mc-th--sort-active .mc-th__arrow-icon { color: ${cv("text.default")}; }
+.mc-th--sort-asc .mc-th__arrow-icon { transform: rotate(180deg); }
 .mc-td { color: ${cv(refPath(tableTok.cell.textColor.$value))}; ${typoCss(tblCellText)} min-width: 0; }
 .mc-td--muted { color: ${cv(refPath(tableTok.cell.mutedColor.$value))}; }
 /* the row keeps its .thread-item-inbox JS hooks (state classes / data attrs /
@@ -1754,6 +1765,7 @@ const archivedThreads = threads.filter((t) => t.archived);
 // Department filter options — single-select: "All departments" or exactly one.
 const departments = [...new Set(threads.map((t) => t.department))];
 const staffList = [...new Set(threads.flatMap((t) => t.responsibles || []))].sort();
+const sortArrow = `<span class="mc-th__arrow">${iconOf("arrow_downward", "mc-th__arrow-icon")}</span>`;
 // the date-range widget markup for the Filters panel (reuses the DateRangePicker
 // component's .daterange recipe; seeded to the current month as a starting point)
 // the DateRangePicker recipe, as a factory so the row-1 (desktop) and the panel
@@ -2599,6 +2611,47 @@ const appJs = `(function () {
     if (window.__mcResetDateRange) window.__mcResetDateRange();
     applyFilter();
   });
+
+  // ---- sortable columns: click a header to reorder the rows in both lists ----
+  var sortState = { key: "date", dir: "desc" }; // matches the authored order
+  function sortVal(r, key) {
+    if (key === "date") return r.dataset.dateVal || "";
+    if (key === "student") { var l = r.querySelector(".mc-cellwrap .mc-lead"); return l ? l.textContent.toLowerCase() : ""; }
+    if (key === "responsible") return (r.dataset.responsibles || "").split("|")[0].toLowerCase();
+    if (key === "subject") return (r.dataset.subject || "").toLowerCase();
+    return "";
+  }
+  function applySort() {
+    ["inbox", "archived"].forEach(function (lk) {
+      var list = lists[lk];
+      if (!list) return;
+      [].slice.call(list.querySelectorAll(".thread-item-inbox")).sort(function (a, b) {
+        var va = sortVal(a, sortState.key), vb = sortVal(b, sortState.key);
+        var c = va < vb ? -1 : va > vb ? 1 : 0;
+        return sortState.dir === "asc" ? c : -c;
+      }).forEach(function (r) { list.appendChild(r); });
+    });
+  }
+  function updateSortHeaders() {
+    document.querySelectorAll(".mc-thead .mc-th--sortable").forEach(function (th) {
+      var active = th.dataset.sort === sortState.key;
+      th.classList.toggle("mc-th--sort-active", active);
+      th.classList.toggle("mc-th--sort-asc", active && sortState.dir === "asc");
+      th.setAttribute("aria-sort", active ? (sortState.dir === "asc" ? "ascending" : "descending") : "none");
+    });
+  }
+  document.querySelectorAll(".mc-thead .mc-th--sortable").forEach(function (th) {
+    function doSort() {
+      var key = th.dataset.sort;
+      if (sortState.key === key) sortState.dir = sortState.dir === "asc" ? "desc" : "asc";
+      else { sortState.key = key; sortState.dir = key === "date" ? "desc" : "asc"; }
+      updateSortHeaders();
+      applySort();
+    }
+    th.addEventListener("click", doSort);
+    th.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); doSort(); } });
+  });
+  updateSortHeaders();
 
   // rich composer — Send appends a real self Bubble (tint). The field is a
   // 1-row textarea auto-growing to ~5 lines (Enter sends, Shift+Enter
@@ -3609,11 +3662,11 @@ ${phaseECss}
         <div class="mc-table">
           <div class="mc-thead mc-console-cols">
             <div class="mc-th mc-col-flag"></div>
-            <div class="mc-th">Student</div>
-            <div class="mc-th mc-col-responsible">Responsible</div>
-            <div class="mc-th">Subject &amp; Message</div>
+            <div class="mc-th mc-th--sortable" data-sort="student" role="button" tabindex="0">Student ${sortArrow}</div>
+            <div class="mc-th mc-col-responsible mc-th--sortable" data-sort="responsible" role="button" tabindex="0">Responsible ${sortArrow}</div>
+            <div class="mc-th mc-th--sortable" data-sort="subject" role="button" tabindex="0">Subject &amp; Message ${sortArrow}</div>
             <div class="mc-th mc-col-expiration">Expiration</div>
-            <div class="mc-th" style="text-align:right">Date</div>
+            <div class="mc-th mc-th--sortable mc-th--right" data-sort="date" role="button" tabindex="0">Date ${sortArrow}</div>
           </div>
           <div class="mc-list" data-list="inbox">
             ${inboxThreads.map((t, i) => rowMarkup(t, i)).join("\n          ")}
