@@ -1116,12 +1116,12 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .daterange__panel--single { max-height: calc(100dvh - 16px); overflow-y: auto; }
 /* tapping the search icon reveals both fields, stacked, over row 1 */
 .mc-search-close { display: none; flex-shrink: 0; border: none; background: none; padding: 0; cursor: pointer; color: ${cv("text.primary")}; font-family: ${cv("family.sans")}; ${typoCss(linkBaseType)}${linkBaseExt.textDecoration ? ` text-decoration: ${linkBaseExt.textDecoration};` : ""} }
-.mc--search-open .mc-rail__row--top { flex-direction: column; align-items: stretch; }
 .mc--search-open .mc-rail__row--top .tabs--segmented,
 .mc--search-open .mc-search-open-btn { display: none; }
-.mc--search-open .mc-rail__searches { display: flex; flex-direction: column; align-items: stretch; width: 100%; margin-left: 0; }
-.mc--search-open .mc-rail__searches .search { width: 100%; }
-.mc--search-open .mc-search-close { display: inline-flex; align-self: flex-end; }
+/* the search field grows to fill the row and Close sits beside it (not below) */
+.mc--search-open .mc-rail__searches { display: flex; flex: 1; min-width: 0; margin-left: 0; }
+.mc--search-open .mc-rail__searches .search { flex: 1; }
+.mc--search-open .mc-search-close { display: inline-flex; flex-shrink: 0; }
 .mc--search-open .mc-rail__row--filters { display: none; }
 /* Unread & Expires Soon are Inbox-only — hidden on Resolved wherever they live
    (inline chip or collapsed popover option) */
