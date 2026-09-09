@@ -2,8 +2,8 @@
   "family": {
     "sans": {
       "$type": "fontFamily",
-      "$value": "Sora",
-      "$description": "Latin/Latin-ext only on Google Fonts — no Cyrillic. Confirmed fine: product is English-only."
+      "$value": "Inter",
+      "$description": "Inter (Google Fonts). Was Sora; swapped for a lighter, tighter read closer to the product. Revert this value to restore Sora."
     }
   },
   "weight": {

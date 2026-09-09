@@ -285,7 +285,7 @@ export function renderDesignViewer({ activeKey, title, heading, sub, versions })
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>hp-design — ${esc(title)}</title>
-<link rel="stylesheet" href="../../assets/fonts/sora/sora.css" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" />
 <style>
 ${DOCS_CHROME_CSS}
 
