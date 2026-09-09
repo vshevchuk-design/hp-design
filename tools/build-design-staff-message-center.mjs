@@ -845,6 +845,16 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
    airy); split views restore Modal's own padding/gap below */
 .mc-compose__body { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.4"))}; }
 .mc-compose__body .select { display: flex; width: 100%; flex-shrink: 0; }
+/* the "To" student picker: a Select trigger opening a searchable Listbox */
+.mc-compose-student-lb { display: flex; flex-direction: column; max-height: 320px; max-width: calc(100vw - 16px); }
+.mc-compose-student-search { flex-shrink: 0; width: 100%; margin-bottom: ${px(resolve("dim.2"))}; }
+.mc-compose-student-lb .listbox__list { overflow-y: auto; min-height: 0; }
+.mc-cs-opt { justify-content: space-between; }
+.mc-cs-opt__text { display: flex; flex-direction: column; min-width: 0; gap: 1px; }
+.mc-cs-opt__name { color: ${cv("text.default")}; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mc-cs-opt__meta { color: ${cv("text.muted")}; font-size: 12px; }
+.mc-cs-empty { padding: ${px(resolve("dim.2"))} ${px(resolve("dim.3"))}; color: ${cv("text.muted")}; ${typoCss(bodySmType)} list-style: none; }
+.mc-cs-empty[hidden] { display: none; }
 /* Subject / Message — Input's anatomy on real editable controls */
 /* lg (48px) fixed height, NOT base 40 — the floating label + value stack
    must fit INSIDE the resting height, or the field visibly grows on focus */
@@ -1987,6 +1997,24 @@ const composeDepartments = ["Academic Advising", "Student Records", "Financial A
 const composeCollapseAction = `<button type="button" class="mc-ai__handle mc-ai__handle--collapse" data-ai-collapse aria-label="Hide AI panel">${iconHandleCollapse}</button>`;
 const composeCloseAction = `<button type="button" class="mc-ai__handle mc-ai__handle--close" data-ai-close aria-label="Close AI panel">${iconHandleClose}</button>`;
 
+// student roster — shared by the single-compose "To" picker and the Group wizard
+const gwizStudents = [
+  { id: "CX0001", name: "Cait Genatossio", year: "Senior",    status: "Active",           major: "Art History",      advisor: "Alexander Robinson" },
+  { id: "CX0002", name: "Calam Xavier",    year: "Junior",    status: "Active",           major: "Economics",        advisor: "Ava Robinson" },
+  { id: "AA0367", name: "Allison Rao",     year: "Sophomore", status: "Active",           major: "Biology",          advisor: "Ava Robinson" },
+  { id: "AA0215", name: "Maya Okafor",     year: "Senior",    status: "Leave of absence", major: "Nursing",          advisor: "Alexander Robinson" },
+  { id: "AA0007", name: "Liam Arcos",      year: "Freshman",  status: "Active",           major: "Computer Science", advisor: "Alexander Robinson" },
+  { id: "AA0412", name: "Dana Torres",     year: "Junior",    status: "Active",           major: "English",          advisor: "Ava Robinson" },
+  { id: "AA0533", name: "Priya Nair",      year: "Senior",    status: "Active",           major: "Computer Science", advisor: "Ava Robinson" },
+  { id: "AA0088", name: "Marcus Bell",     year: "Sophomore", status: "Active",           major: "Economics",        advisor: "Alexander Robinson" },
+  { id: "AA0620", name: "Sofia Duarte",    year: "Freshman",  status: "Active",           major: "Biology",          advisor: "Ava Robinson" },
+  { id: "AA0311", name: "Noah Kim",        year: "Junior",    status: "Leave of absence", major: "English",          advisor: "Alexander Robinson" },
+  { id: "AA0742", name: "Ella Fontaine",   year: "Senior",    status: "Active",           major: "Art History",      advisor: "Alexander Robinson" },
+  { id: "AA0159", name: "Owen Pratt",      year: "Sophomore", status: "Active",           major: "Nursing",          advisor: "Ava Robinson" },
+  { id: "AA0466", name: "Zara Haddad",     year: "Freshman",  status: "Active",           major: "Computer Science", advisor: "Alexander Robinson" },
+  { id: "AA0203", name: "Ben Ortiz",       year: "Junior",    status: "Active",           major: "Economics",        advisor: "Ava Robinson" },
+];
+
 const composeMarkup = `<dialog class="mc-compose" id="mc-compose" aria-labelledby="mc-compose-title">
   <header class="mc-compose__header">
     <h2 class="mc-compose__title" id="mc-compose-title">New Message</h2>
@@ -2002,6 +2030,17 @@ const composeMarkup = `<dialog class="mc-compose" id="mc-compose" aria-labelledb
     <div class="mc-compose__main">
       <div class="mc-compose__body">
         <p class="mc-compose__lead">Compose and send a new message on behalf of your department.</p>
+        <button class="select select--base select--resting" id="mc-compose-student" type="button" popovertarget="mc-compose-student-lb">
+          <span class="select__stack"><span class="select__label">To</span><span class="select__value" id="mc-compose-student-value">Select a student</span></span>
+          ${iconChevronSelect}
+        </button>
+        <div class="listbox mc-compose-student-lb" id="mc-compose-student-lb" popover>
+          <div class="search search--base mc-compose-student-search">${iconSearch}<input class="search__input" id="mc-compose-student-input" placeholder="Search by name or ID" aria-label="Search students" /></div>
+          <ul class="listbox__list" role="listbox" aria-label="Students" id="mc-compose-student-list">
+            ${gwizStudents.map((s) => `<li><button class="listbox__option mc-cs-opt" role="option" aria-selected="false" data-id="${s.id}" data-name="${esc(s.name)}" data-search="${esc((s.name + " " + s.id).toLowerCase())}" type="button"><span class="mc-cs-opt__text"><span class="mc-cs-opt__name">${s.name}</span><span class="mc-cs-opt__meta">${s.id} · ${s.major}</span></span>${iconCheckmark}</button></li>`).join("\n            ")}
+            <li class="mc-cs-empty" id="mc-compose-student-empty" hidden>No students found</li>
+          </ul>
+        </div>
         <button class="select select--base select--resting" id="mc-compose-dept" type="button" popovertarget="mc-compose-dept-lb">
           <span class="select__stack"><span class="select__label">Department</span><span class="select__value" id="mc-compose-dept-value">Department</span></span>
           ${iconChevronSelect}
@@ -2040,7 +2079,6 @@ const composeMarkup = `<dialog class="mc-compose" id="mc-compose" aria-labelledb
         </div>
       </div>
       <footer class="mc-compose__footer">
-        <button class="btn btn--secondary btn--base" id="mc-compose-draft" type="button">Draft</button>
         <button class="btn btn--primary btn--base" id="mc-compose-send" type="button" disabled>Send Message</button>
       </footer>
     </div>
@@ -2066,22 +2104,6 @@ const composeMarkup = `<dialog class="mc-compose" id="mc-compose" aria-labelledb
 // ---- New Group Message wizard (Modal + Stepper): step 1 select students,
 // step 2 message details (reuses Select/mc-field/rich Composer/Checkbox +
 // the new DatePicker + AI Assist). Send fans out to a grouped card in Resolved. ----
-const gwizStudents = [
-  { id: "CX0001", name: "Cait Genatossio", year: "Senior",    status: "Active",           major: "Art History",      advisor: "Alexander Robinson" },
-  { id: "CX0002", name: "Calam Xavier",    year: "Junior",    status: "Active",           major: "Economics",        advisor: "Ava Robinson" },
-  { id: "AA0367", name: "Allison Rao",     year: "Sophomore", status: "Active",           major: "Biology",          advisor: "Ava Robinson" },
-  { id: "AA0215", name: "Maya Okafor",     year: "Senior",    status: "Leave of absence", major: "Nursing",          advisor: "Alexander Robinson" },
-  { id: "AA0007", name: "Liam Arcos",      year: "Freshman",  status: "Active",           major: "Computer Science", advisor: "Alexander Robinson" },
-  { id: "AA0412", name: "Dana Torres",     year: "Junior",    status: "Active",           major: "English",          advisor: "Ava Robinson" },
-  { id: "AA0533", name: "Priya Nair",      year: "Senior",    status: "Active",           major: "Computer Science", advisor: "Ava Robinson" },
-  { id: "AA0088", name: "Marcus Bell",     year: "Sophomore", status: "Active",           major: "Economics",        advisor: "Alexander Robinson" },
-  { id: "AA0620", name: "Sofia Duarte",    year: "Freshman",  status: "Active",           major: "Biology",          advisor: "Ava Robinson" },
-  { id: "AA0311", name: "Noah Kim",        year: "Junior",    status: "Leave of absence", major: "English",          advisor: "Alexander Robinson" },
-  { id: "AA0742", name: "Ella Fontaine",   year: "Senior",    status: "Active",           major: "Art History",      advisor: "Alexander Robinson" },
-  { id: "AA0159", name: "Owen Pratt",      year: "Sophomore", status: "Active",           major: "Nursing",          advisor: "Ava Robinson" },
-  { id: "AA0466", name: "Zara Haddad",     year: "Freshman",  status: "Active",           major: "Computer Science", advisor: "Alexander Robinson" },
-  { id: "AA0203", name: "Ben Ortiz",       year: "Junior",    status: "Active",           major: "Economics",        advisor: "Ava Robinson" },
-];
 // faceted-filter config (Linear/Stripe-style "+ Add filter"): only surfaced when
 // the staff picks a field, never dumped as a wall of controls
 const gwizFacets = [
@@ -3054,6 +3076,12 @@ const appJs = `(function () {
   var composeDeptValue = document.getElementById("mc-compose-dept-value");
   var composeDeptTrigger = document.getElementById("mc-compose-dept");
   var composeDeptLb = document.getElementById("mc-compose-dept-lb");
+  var composeStudent = null;
+  var composeStudentTrigger = document.getElementById("mc-compose-student");
+  var composeStudentValue = document.getElementById("mc-compose-student-value");
+  var composeStudentLb = document.getElementById("mc-compose-student-lb");
+  var composeStudentInput = document.getElementById("mc-compose-student-input");
+  var composeStudentEmpty = document.getElementById("mc-compose-student-empty");
   var composeSubject = document.getElementById("mc-compose-subject");
   var composeCounter = document.getElementById("mc-compose-counter");
   var composeMessage = document.getElementById("mc-compose-message");
@@ -3062,11 +3090,11 @@ const appJs = `(function () {
   var composeExpire = document.getElementById("mc-compose-expire");
 
   function validateCompose() {
-    var ok = !!composeDept && composeSubject.value.trim() !== "" && composeMessage.value.trim() !== "";
+    var ok = !!composeStudent && !!composeDept && composeSubject.value.trim() !== "" && composeMessage.value.trim() !== "";
     composeSendBtn.disabled = !ok;
   }
   function composeHasDraft() {
-    return !!composeDept || composeSubject.value.trim() !== "" || composeMessage.value.trim() !== "";
+    return !!composeStudent || !!composeDept || composeSubject.value.trim() !== "" || composeMessage.value.trim() !== "";
   }
 
   // Subject — Input's floating label + a live char counter (composition text,
@@ -3109,6 +3137,43 @@ const appJs = `(function () {
       composeDept = opt.dataset.dept;
       selectPopulate(composeDeptTrigger, composeDeptValue, composeDept);
       composeDeptLb.hidePopover();
+      validateCompose();
+    });
+  });
+  // "To" student picker — a searchable Listbox anchored under the trigger,
+  // positioned in rAF so the trigger rect is settled (not mid open-animation,
+  // which threw the popover off to the left)
+  composeStudentLb.addEventListener("toggle", function (e) {
+    if (e.newState !== "open") return;
+    requestAnimationFrame(function () {
+      var r = composeStudentTrigger.getBoundingClientRect();
+      composeStudentLb.style.position = "fixed";
+      composeStudentLb.style.margin = "0";
+      composeStudentLb.style.top = (r.bottom + 4) + "px";
+      composeStudentLb.style.left = r.left + "px";
+      composeStudentLb.style.minWidth = r.width + "px";
+      composeStudentInput.focus();
+    });
+  });
+  composeStudentInput.addEventListener("input", function () {
+    var query = composeStudentInput.value.trim().toLowerCase();
+    var any = false;
+    composeStudentLb.querySelectorAll(".mc-cs-opt").forEach(function (o) {
+      var show = !query || o.dataset.search.indexOf(query) > -1;
+      o.closest("li").hidden = !show;
+      if (show) any = true;
+    });
+    composeStudentEmpty.hidden = any;
+  });
+  composeStudentLb.querySelectorAll(".mc-cs-opt").forEach(function (opt) {
+    opt.addEventListener("click", function () {
+      composeStudentLb.querySelectorAll(".mc-cs-opt").forEach(function (o) {
+        o.classList.toggle("listbox__option--selected", o === opt);
+        o.setAttribute("aria-selected", o === opt ? "true" : "false");
+      });
+      composeStudent = { id: opt.dataset.id, name: opt.dataset.name };
+      selectPopulate(composeStudentTrigger, composeStudentValue, opt.dataset.name + " · " + opt.dataset.id);
+      composeStudentLb.hidePopover();
       validateCompose();
     });
   });
@@ -3200,8 +3265,17 @@ const appJs = `(function () {
 
   function resetCompose() {
     composeDept = null;
+    composeStudent = null;
     clearComposeAttachments();
     selectRest(composeDeptTrigger, composeDeptValue, "Department");
+    selectRest(composeStudentTrigger, composeStudentValue, "Select a student");
+    composeStudentInput.value = "";
+    composeStudentEmpty.hidden = true;
+    composeStudentLb.querySelectorAll(".mc-cs-opt").forEach(function (o) {
+      o.classList.remove("listbox__option--selected");
+      o.setAttribute("aria-selected", "false");
+      o.closest("li").hidden = false;
+    });
     composeSubject.value = "";
     composeMessage.value = "";
     composeMessage.style.height = "auto";
@@ -3426,6 +3500,7 @@ const appJs = `(function () {
   var COMPOSE_PANE_SKELETON = ${JSON.stringify(`<header class="mc-thread__bar"><button class="btn btn--ghost btn--sm mc-thread__back" type="button">${iconBack}Back</button><div class="mc-thread__actions"><button class="btn btn--secondary btn--sm mc-archive" type="button">Resolve</button><button class="btn btn--secondary btn--sm btn--icon-only mc-print" type="button" aria-label="Print thread">${iconPrint}</button></div><h2 class="mc-thread__subject"></h2><div class="mc-thread__tags"><span class="mc-thread__meta-line"></span><span class="badge badge--sm badge--role-primary">Awaiting reply</span></div></header><div class="mc-thread__scroll"></div><footer class="mc-thread__composer"><form class="composer composer--rich mc-composer"><div class="composer__toolbar"><button type="button" class="composer__icon-btn" aria-label="Bold">${iconBold}</button><button type="button" class="composer__icon-btn" aria-label="Italic">${iconItalic}</button><button type="button" class="composer__icon-btn" aria-label="Underline">${iconUnderline}</button><button type="button" class="btn btn--ghost btn--sm">${iconTag}Merge Tags</button><button type="button" class="composer__ai-assist">${iconAi}AI Assist</button></div><div class="composer__field"><textarea class="composer__input" rows="1" placeholder="Reply..." aria-label="Reply"></textarea></div><div class="composer__settings"><div class="composer__settings-row"><span class="composer__settings-label">Allow Replies</span>${switchMarkup(true)}</div><div class="composer__settings-row"><span class="composer__settings-label">Expiration</span><button type="button" class="composer__expiration-trigger">Aug 15, 2026 ${iconChevronRight}</button></div></div><button type="submit" class="btn btn--primary btn--base composer__send">${iconSend}Send</button></form></footer>`)};
   var COMPOSE_ROW_SKELETON = ${JSON.stringify(`<div class="thread-item-inbox__main"><div class="thread-item-inbox__top"><span class="thread-item-inbox__identity"></span><span class="thread-item-inbox__time">Just now</span></div><div class="thread-item-inbox__subject"></div><div class="thread-item-inbox__preview-row"><span class="thread-item-inbox__preview"></span><button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread">${iconFlagOutlined}${iconFlagFilled}</button></div><div class="thread-item-inbox__expires"><span class="badge badge--sm badge--role-primary">Awaiting reply</span><span class="badge badge--sm badge--role-primary thread-item-inbox__scope">Inbox</span></div></div>`)};
   var DEPT_AVATARS = ${JSON.stringify(Object.fromEntries(composeDepartments.map((d) => [d, avatarMarkup(d, "sm")])))};
+  var STUDENT_AVATARS = ${JSON.stringify(Object.fromEntries(gwizStudents.map((s) => [s.id, avatarMarkup(s.name, "sm")])))};
 
   var sentSeq = 0;
   composeSendBtn.addEventListener("click", function () {
@@ -3435,17 +3510,30 @@ const appJs = `(function () {
     var id = "sent-" + (++sentSeq);
     var identity = composeDept;
 
+    // build a proper console row (same cell structure as rowMarkup): the
+    // recipient student in the Student column, SELF as the Involved responsible
     var row = document.createElement("div");
-    row.className = "thread-item-inbox thread-item-inbox--read";
+    row.className = "thread-item-inbox mc-trow mc-console-cols thread-item-inbox--read";
     row.setAttribute("role", "button");
     row.tabIndex = 0;
     row.dataset.thread = id;
     row.dataset.subject = subject;
     row.dataset.department = composeDept;
-    row.innerHTML = (DEPT_AVATARS[composeDept] || "") + COMPOSE_ROW_SKELETON;
-    row.querySelector(".thread-item-inbox__identity").textContent = identity;
-    row.querySelector(".thread-item-inbox__subject").textContent = subject;
-    row.querySelector(".thread-item-inbox__preview").textContent = "You: " + text;
+    row.dataset.studentId = composeStudent.id;
+    row.dataset.responsibles = ${JSON.stringify(SELF.name)};
+    row.dataset.involved = "true";
+    row.dataset.dateVal = "20260909";
+    row.innerHTML =
+      '<div class="mc-td mc-col-flag"><button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread">${iconFlagOutlined}${iconFlagFilled}</button></div>' +
+      '<div class="mc-td mc-cellwrap">' + (STUDENT_AVATARS[composeStudent.id] || "") + '<span class="mc-cellstack"><span class="mc-lead"></span><span class="mc-td--muted" style="font-size:12px"></span></span></div>' +
+      '<div class="mc-td mc-col-responsible"><span class="mc-resp"><span class="mc-resp__pill">${SELF.name}</span></span></div>' +
+      '<div class="mc-td mc-cellstack"><span class="mc-lead"></span><span class="mc-td--muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span></div>' +
+      '<div class="mc-td mc-col-expiration thread-item-inbox__expires"><span class="mc-td--muted">–</span><span class="badge badge--sm badge--role-primary thread-item-inbox__scope">Inbox</span></div>' +
+      '<div class="mc-td mc-td--muted mc-col-date"><span class="mc-date__d">Just now</span></div>';
+    row.querySelector(".mc-cellwrap .mc-lead").textContent = composeStudent.name;
+    row.querySelector(".mc-cellwrap .mc-td--muted").textContent = composeStudent.id;
+    row.querySelector(".mc-td.mc-cellstack .mc-lead").textContent = subject;
+    row.querySelector(".mc-td.mc-cellstack .mc-td--muted").textContent = "You: " + text;
     bindRow(row);
     lists.inbox.insertBefore(row, lists.inbox.firstChild);
 
@@ -3455,7 +3543,7 @@ const appJs = `(function () {
     pane.hidden = true;
     pane.innerHTML = COMPOSE_PANE_SKELETON;
     pane.querySelector(".mc-thread__subject").textContent = subject;
-    pane.querySelector(".mc-thread__meta-line").textContent = identity + " · PeopleSoft University";
+    pane.querySelector(".mc-thread__meta-line").textContent = composeStudent.name + " · " + composeStudent.id + " · " + composeDept;
     pane.querySelector(".mc-archive").dataset.thread = id;
     var bubbleRowEl = document.createElement("div");
     bubbleRowEl.className = "bubble-row bubble-row--self";
