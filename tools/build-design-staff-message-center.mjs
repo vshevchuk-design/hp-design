@@ -1348,7 +1348,7 @@ const composeAiCss = `.mc-compose__tabs { display: none; flex-shrink: 0; }
 .mc-compose__editor .composer__input { display: block; resize: none; min-height: 132px; max-height: 300px; overflow-y: auto; }
 .mc-compose__editor .composer__icon-btn { width: ${px(resolve("dim.6"))}; height: ${px(resolve("dim.6"))}; }
 .mc-compose__editor .composer__icon-btn .composer__icon { width: ${px(resolve("dim.4"))}; height: ${px(resolve("dim.4"))}; }
-.mc-compose__editor .composer__tb-btn { height: ${px(resolve("dim.6"))}; padding: 0 ${px(resolve("dim.1"))}; font-size: 13px; }
+.mc-compose__editor .composer__tb-btn { height: ${px(resolve("dim.6"))}; padding: 0 ${px(resolve("dim.1"))}; font-size: 13px; font-weight: 400; }
 .mc-compose__editor .composer__tb-btn .composer__tb-chev { width: 14px; height: 14px; }
 .mc-compose__editor .composer__ai-assist { height: ${px(resolve("dim.6"))}; padding: 0 ${px(resolve("dim.2"))}; font-size: 13px; margin-left: auto; }
 .mc-compose__editor .composer__ai-assist .composer__icon { width: 14px; height: 14px; }
