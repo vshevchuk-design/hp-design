@@ -940,6 +940,11 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
 .mc-field:focus-within .mc-field__label { color: ${cv(inputFocusLabelColor)}; }
 .mc-field__control { border: none; outline: none; background: transparent; padding: 0; width: 100%; color: ${cv("text.default")}; ${typoCss(inputValueType)} font-family: ${cv("family.sans")}; }
 .mc-field__control::placeholder { color: ${cv("text.muted")}; }
+/* compose reads smaller/tighter than the DS default (Sora at 16px looks heavy):
+   pull the form controls to 14px and level the subject field to the select
+   height so the modal feels neat, closer to the product */
+.mc-compose .select__value, .mc-compose .mc-field__control, .mc-compose .composer__input, .mc-compose__lead { font-size: 14px; }
+.mc-compose .mc-field { min-height: ${px(resolve("dim.10"))}; }
 .mc-field--area { min-height: 140px; justify-content: flex-start; }
 .mc-field--area .mc-field__control { resize: none; flex: 1; min-height: 104px; }
 /* To — a second Select, always present, disabled until a department is
