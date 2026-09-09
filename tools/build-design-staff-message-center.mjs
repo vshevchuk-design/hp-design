@@ -1508,11 +1508,15 @@ const composeAiCss = `.mc-compose__tabs { display: none; flex-shrink: 0; }
   .mc-ai__handle--collapse { display: none; }
   .mc-compose__lead { display: none; }
   .mc-compose__editor .composer__ai-assist { display: none; }
-  .mc-compose__footer { flex-direction: column; align-items: stretch; gap: ${px(resolve("dim.3"))}; }
-  .mc-compose__footer .mc-compose__checks { padding-bottom: ${px(resolve("dim.3"))}; border-bottom: 1px solid ${cv(mdDivider)}; }
-  .mc-compose__foot-actions { margin-left: 0; }
-  .mc-compose__foot-actions .btn { flex: 1; }
   .mc-ai-standalone { position: fixed; inset: 0; margin: 0; width: 100vw; max-width: 100vw; height: 100dvh; max-height: 100dvh; border-radius: 0; }
+}
+/* mobile only: the footer stacks — checks strip (full-width divider) over
+   full-width 50/50 buttons. On tablet it stays a single row like desktop. */
+@media (max-width: 767px) {
+  .mc-compose__footer { flex-direction: column; align-items: stretch; gap: 0; }
+  .mc-compose__footer .mc-compose__checks { margin: 0 -${mdPadding}; padding: 0 ${mdPadding} ${px(resolve("dim.3"))}; border-bottom: 1px solid ${cv(mdDivider)}; }
+  .mc-compose__foot-actions { margin-left: 0; padding-top: ${px(resolve("dim.3"))}; }
+  .mc-compose__foot-actions .btn { flex: 1; }
 }
 @media (min-width: 1024px) {
   .mc-compose__cols { flex-direction: row; }
