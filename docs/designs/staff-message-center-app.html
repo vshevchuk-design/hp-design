@@ -392,6 +392,11 @@
    airy); split views restore Modal's own padding/gap below */
 .mc-compose__body { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding: 16px; }
 .mc-compose__body .select { display: flex; width: 100%; flex-shrink: 0; }
+/* To (student) + Department share one row */
+.mc-compose__row { display: flex; gap: 8px; flex-shrink: 0; }
+.mc-compose__row .select { flex: 1 1 0; width: auto; min-width: 0; }
+.mc-compose__row .select__stack { min-width: 0; }
+.mc-compose__row .select__value { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 /* the "To" student picker: a Select trigger opening a searchable Listbox (search
    input + scrollable list). Anchored under the trigger via CSS anchor positioning
    — JS getBoundingClientRect placement is unreliable inside the compose dialog
@@ -2259,10 +2264,16 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     <div class="mc-compose__main">
       <div class="mc-compose__body">
         <p class="mc-compose__lead">Compose and send a new message on behalf of your department.</p>
-        <button class="select select--base select--resting" id="mc-compose-student" type="button" popovertarget="mc-compose-student-lb">
-          <span class="select__stack"><span class="select__label">To</span><span class="select__value" id="mc-compose-student-value">Select a student</span></span>
-          <svg class="select__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>
-        </button>
+        <div class="mc-compose__row">
+          <button class="select select--base select--resting" id="mc-compose-student" type="button" popovertarget="mc-compose-student-lb">
+            <span class="select__stack"><span class="select__label">To</span><span class="select__value" id="mc-compose-student-value">Select a student</span></span>
+            <svg class="select__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>
+          </button>
+          <button class="select select--base select--resting" id="mc-compose-dept" type="button" popovertarget="mc-compose-dept-lb">
+            <span class="select__stack"><span class="select__label">Department</span><span class="select__value" id="mc-compose-dept-value">Department</span></span>
+            <svg class="select__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>
+          </button>
+        </div>
         <div class="listbox mc-compose-student-lb" id="mc-compose-student-lb" popover>
           <div class="search search--base mc-compose-student-search"><svg class="search__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg><input class="search__input" id="mc-compose-student-input" placeholder="Search by name or ID" aria-label="Search students" /></div>
           <ul class="listbox__list" role="listbox" aria-label="Students" id="mc-compose-student-list">
@@ -2283,10 +2294,6 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
             <li class="mc-cs-empty" id="mc-compose-student-empty" hidden>No students found</li>
           </ul>
         </div>
-        <button class="select select--base select--resting" id="mc-compose-dept" type="button" popovertarget="mc-compose-dept-lb">
-          <span class="select__stack"><span class="select__label">Department</span><span class="select__value" id="mc-compose-dept-value">Department</span></span>
-          <svg class="select__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>
-        </button>
         <div class="listbox" id="mc-compose-dept-lb" popover>
           <ul class="listbox__list" role="listbox" aria-label="Department">
             <li><button class="listbox__option" role="option" aria-selected="false" data-dept="Academic Advising" type="button">Academic Advising<svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li>

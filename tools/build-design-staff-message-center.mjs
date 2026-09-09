@@ -905,6 +905,11 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
    airy); split views restore Modal's own padding/gap below */
 .mc-compose__body { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.4"))}; }
 .mc-compose__body .select { display: flex; width: 100%; flex-shrink: 0; }
+/* To (student) + Department share one row */
+.mc-compose__row { display: flex; gap: ${px(resolve("dim.2"))}; flex-shrink: 0; }
+.mc-compose__row .select { flex: 1 1 0; width: auto; min-width: 0; }
+.mc-compose__row .select__stack { min-width: 0; }
+.mc-compose__row .select__value { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 /* the "To" student picker: a Select trigger opening a searchable Listbox (search
    input + scrollable list). Anchored under the trigger via CSS anchor positioning
    — JS getBoundingClientRect placement is unreliable inside the compose dialog
@@ -2151,10 +2156,16 @@ const composeMarkup = `<dialog class="mc-compose" id="mc-compose" aria-labelledb
     <div class="mc-compose__main">
       <div class="mc-compose__body">
         <p class="mc-compose__lead">Compose and send a new message on behalf of your department.</p>
-        <button class="select select--base select--resting" id="mc-compose-student" type="button" popovertarget="mc-compose-student-lb">
-          <span class="select__stack"><span class="select__label">To</span><span class="select__value" id="mc-compose-student-value">Select a student</span></span>
-          ${iconChevronSelect}
-        </button>
+        <div class="mc-compose__row">
+          <button class="select select--base select--resting" id="mc-compose-student" type="button" popovertarget="mc-compose-student-lb">
+            <span class="select__stack"><span class="select__label">To</span><span class="select__value" id="mc-compose-student-value">Select a student</span></span>
+            ${iconChevronSelect}
+          </button>
+          <button class="select select--base select--resting" id="mc-compose-dept" type="button" popovertarget="mc-compose-dept-lb">
+            <span class="select__stack"><span class="select__label">Department</span><span class="select__value" id="mc-compose-dept-value">Department</span></span>
+            ${iconChevronSelect}
+          </button>
+        </div>
         <div class="listbox mc-compose-student-lb" id="mc-compose-student-lb" popover>
           <div class="search search--base mc-compose-student-search">${iconSearch}<input class="search__input" id="mc-compose-student-input" placeholder="Search by name or ID" aria-label="Search students" /></div>
           <ul class="listbox__list" role="listbox" aria-label="Students" id="mc-compose-student-list">
@@ -2162,10 +2173,6 @@ const composeMarkup = `<dialog class="mc-compose" id="mc-compose" aria-labelledb
             <li class="mc-cs-empty" id="mc-compose-student-empty" hidden>No students found</li>
           </ul>
         </div>
-        <button class="select select--base select--resting" id="mc-compose-dept" type="button" popovertarget="mc-compose-dept-lb">
-          <span class="select__stack"><span class="select__label">Department</span><span class="select__value" id="mc-compose-dept-value">Department</span></span>
-          ${iconChevronSelect}
-        </button>
         <div class="listbox" id="mc-compose-dept-lb" popover>
           <ul class="listbox__list" role="listbox" aria-label="Department">
             ${composeDepartments.map((d) => `<li><button class="listbox__option" role="option" aria-selected="false" data-dept="${esc(d)}" type="button">${d}${iconCheckmark}</button></li>`).join("\n            ")}
