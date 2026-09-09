@@ -995,7 +995,9 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
 .attachment--compact { padding: ${attCompactPaddingY} ${attCompactPaddingX}; gap: ${attCompactGap}; max-width: ${attCompactMaxWidth}; flex-shrink: 0; }
 .attachment--compact .attachment__icon { width: ${attCompactIconSize}; height: ${attCompactIconSize}; color: ${cv("icon.secondary")}; flex-shrink: 0; }
 .mc-compose__attach-btn { align-self: flex-start; flex-shrink: 0; }
-.mc-compose__footer { flex-shrink: 0; display: flex; justify-content: flex-end; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.4"))} ${mdPadding}; border-top: 1px solid ${cv(mdDivider)}; }
+.mc-compose__footer { flex-shrink: 0; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: ${px(resolve("dim.2"))} ${px(resolve("dim.4"))}; padding: ${px(resolve("dim.3"))} ${mdPadding}; border-top: 1px solid ${cv(mdDivider)}; }
+.mc-compose__foot-actions { display: flex; align-items: center; gap: ${px(resolve("dim.2"))}; margin-left: auto; }
+.mc-compose__attach { align-self: flex-start; margin-top: ${px(resolve("dim.1"))}; }
 /* fake keyboard — docs-only scaffolding, NOT a DS component (a device mock,
    same non-tokenized call as the viewer's phone frame): docked under the
    body while a text field is focused on the takeover, so the layout's
@@ -1397,8 +1399,7 @@ const composeAiCss = `.mc-compose__tabs { display: none; flex-shrink: 0; }
 .mc-attach-hint { position: absolute; inset: 0; z-index: 3; display: none; align-items: center; justify-content: center; border: 2px dashed ${cv("border.focus")}; border-radius: ${px(resolve("radius.default"))}; background: ${cv("surface.dim")}; color: ${cv("text.primary")}; font-family: ${cv("family.sans")}; ${typoCss(bodySmType)} font-weight: 600; pointer-events: none; }
 .mc-compose__editor.is-dragover .mc-attach-hint { display: flex; }
 .mc-compose__counter { align-self: flex-end; color: ${cv("text.muted")}; font-size: 12px; font-family: ${cv("family.sans")}; }
-.mc-compose__checks { display: flex; flex-wrap: wrap; gap: ${px(resolve("dim.2"))} ${px(resolve("dim.6"))}; padding-top: ${px(resolve("dim.1"))}; }
-.mc-compose__footer .btn { flex: 1; }
+.mc-compose__checks { display: flex; flex-wrap: wrap; align-items: center; gap: ${px(resolve("dim.2"))} ${px(resolve("dim.5"))}; }
 /* Expiration panel — appears when Expire Thread is checked: mode radios, then
    the chosen mode's control (a DatePicker, or an Amount + unit Select) */
 .mc-compose__exp { display: flex; flex-direction: column; gap: ${px(resolve("dim.2_5"))}; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))}; border-radius: ${px(resolve("radius.default"))}; background: ${cv("surface.dim")}; }
@@ -2247,6 +2248,7 @@ const composeMarkup = `<dialog class="mc-compose" id="mc-compose" aria-labelledb
             <div class="mc-attach-hint" aria-hidden="true">Drop files to attach</div>
           </form>
         </div>
+        <button class="btn btn--ghost btn--sm mc-compose__attach" id="mc-compose-attach-btn" type="button">${iconOf("attach_file", "btn__icon")}Attach file</button>
         <div class="mc-compose__exp" id="mc-compose-exp" hidden>
           <span class="mc-compose__exp-label">Expiration</span>
           <div class="mc-compose__exp-modes">
@@ -2275,13 +2277,16 @@ const composeMarkup = `<dialog class="mc-compose" id="mc-compose" aria-labelledb
             </select>
           </div>
         </div>
+      </div>
+      <footer class="mc-compose__footer">
         <div class="mc-compose__checks">
           ${checkboxMarkup("Allow Replies", { checked: true, id: "mc-compose-allow" })}
           ${checkboxMarkup("Expire Thread", { checked: false, id: "mc-compose-expire" })}
         </div>
-      </div>
-      <footer class="mc-compose__footer">
-        <button class="btn btn--primary btn--base" id="mc-compose-send" type="button" disabled>Send Message</button>
+        <div class="mc-compose__foot-actions">
+          <button class="btn btn--secondary btn--sm" id="mc-compose-cancel" type="button">Cancel</button>
+          <button class="btn btn--primary btn--sm" id="mc-compose-send" type="button" disabled>Send</button>
+        </div>
       </footer>
     </div>
     <div class="mc-compose__ai">
@@ -3587,6 +3592,7 @@ const appJs = `(function () {
     if (elGroup) elGroup.addEventListener("click", function () { newMenu.hidePopover(); openGwiz(); });
   }
   document.getElementById("mc-compose-close").addEventListener("click", requestComposeClose);
+  document.getElementById("mc-compose-cancel").addEventListener("click", requestComposeClose);
   composeDlg.addEventListener("click", function (e) { if (e.target === composeDlg) requestComposeClose(); });
   composeDlg.addEventListener("cancel", function (e) {           // Escape
     if (composeHasDraft()) { e.preventDefault(); discardDlg.showModal(); }

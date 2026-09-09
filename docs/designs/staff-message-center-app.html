@@ -480,7 +480,9 @@
 .attachment--compact { padding: 4px 8px; gap: 6px; max-width: 160px; flex-shrink: 0; }
 .attachment--compact .attachment__icon { width: 16px; height: 16px; color: var(--tok-icon-secondary); flex-shrink: 0; }
 .mc-compose__attach-btn { align-self: flex-start; flex-shrink: 0; }
-.mc-compose__footer { flex-shrink: 0; display: flex; justify-content: flex-end; gap: 8px; padding: 16px 24px; border-top: 1px solid var(--tok-border-default); }
+.mc-compose__footer { flex-shrink: 0; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; padding: 12px 24px; border-top: 1px solid var(--tok-border-default); }
+.mc-compose__foot-actions { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+.mc-compose__attach { align-self: flex-start; margin-top: 4px; }
 /* fake keyboard — docs-only scaffolding, NOT a DS component (a device mock,
    same non-tokenized call as the viewer's phone frame): docked under the
    body while a text field is focused on the takeover, so the layout's
@@ -994,8 +996,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .mc-attach-hint { position: absolute; inset: 0; z-index: 3; display: none; align-items: center; justify-content: center; border: 2px dashed var(--tok-border-focus); border-radius: 8px; background: var(--tok-surface-dim); color: var(--tok-text-primary); font-family: var(--tok-family-sans); font-weight: 400; font-size: 12px; line-height: 1.4; font-weight: 600; pointer-events: none; }
 .mc-compose__editor.is-dragover .mc-attach-hint { display: flex; }
 .mc-compose__counter { align-self: flex-end; color: var(--tok-text-muted); font-size: 12px; font-family: var(--tok-family-sans); }
-.mc-compose__checks { display: flex; flex-wrap: wrap; gap: 8px 24px; padding-top: 4px; }
-.mc-compose__footer .btn { flex: 1; }
+.mc-compose__checks { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; }
 /* Expiration panel — appears when Expire Thread is checked: mode radios, then
    the chosen mode's control (a DatePicker, or an Amount + unit Select) */
 .mc-compose__exp { display: flex; flex-direction: column; gap: 10px; padding: 12px 16px; border-radius: 8px; background: var(--tok-surface-dim); }
@@ -2395,6 +2396,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
             <div class="mc-attach-hint" aria-hidden="true">Drop files to attach</div>
           </form>
         </div>
+        <button class="btn btn--ghost btn--sm mc-compose__attach" id="mc-compose-attach-btn" type="button"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/></svg>Attach file</button>
         <div class="mc-compose__exp" id="mc-compose-exp" hidden>
           <span class="mc-compose__exp-label">Expiration</span>
           <div class="mc-compose__exp-modes">
@@ -2423,13 +2425,16 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
             </select>
           </div>
         </div>
+      </div>
+      <footer class="mc-compose__footer">
         <div class="mc-compose__checks">
           <label class="checkbox"><input type="checkbox" class="checkbox__input" id="mc-compose-allow" checked /><span class="checkbox__box"><svg class="checkbox__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="checkbox__label">Allow Replies</span></label>
           <label class="checkbox"><input type="checkbox" class="checkbox__input" id="mc-compose-expire" /><span class="checkbox__box"><svg class="checkbox__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="checkbox__label">Expire Thread</span></label>
         </div>
-      </div>
-      <footer class="mc-compose__footer">
-        <button class="btn btn--primary btn--base" id="mc-compose-send" type="button" disabled>Send Message</button>
+        <div class="mc-compose__foot-actions">
+          <button class="btn btn--secondary btn--sm" id="mc-compose-cancel" type="button">Cancel</button>
+          <button class="btn btn--primary btn--sm" id="mc-compose-send" type="button" disabled>Send</button>
+        </div>
       </footer>
     </div>
     <div class="mc-compose__ai">
@@ -3574,6 +3579,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     if (elGroup) elGroup.addEventListener("click", function () { newMenu.hidePopover(); openGwiz(); });
   }
   document.getElementById("mc-compose-close").addEventListener("click", requestComposeClose);
+  document.getElementById("mc-compose-cancel").addEventListener("click", requestComposeClose);
   composeDlg.addEventListener("click", function (e) { if (e.target === composeDlg) requestComposeClose(); });
   composeDlg.addEventListener("cancel", function (e) {           // Escape
     if (composeHasDraft()) { e.preventDefault(); discardDlg.showModal(); }
