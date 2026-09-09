@@ -845,17 +845,17 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
    airy); split views restore Modal's own padding/gap below */
 .mc-compose__body { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.4"))}; }
 .mc-compose__body .select { display: flex; width: 100%; flex-shrink: 0; }
-/* the "To" student picker: a Select trigger opening a searchable Listbox.
-   CSS anchor positioning pins it under the trigger regardless of the dialog's
-   transform / animation (getBoundingClientRect was unreliable there). */
+/* the "To" student picker: a Select trigger opening a searchable Listbox (search
+   input + scrollable list). Anchored under the trigger via CSS anchor positioning
+   — JS getBoundingClientRect placement is unreliable inside the compose dialog
+   (its transform breaks position:fixed). display:flex is scoped to :popover-open
+   so it never overrides the popover UA [popover]:not(:popover-open){display:none}. */
 #mc-compose-student { anchor-name: --mc-cs-anchor; }
-.mc-compose-student-lb { max-height: 320px; max-width: calc(100vw - 16px);
-  position: fixed; inset: auto; margin: ${px(resolve("dim.1"))} 0 0 0;
-  position-anchor: --mc-cs-anchor; top: anchor(bottom); left: anchor(left);
-  min-width: anchor-size(width); position-try-fallbacks: flip-block; }
-/* display:flex only when open — otherwise it would override the popover UA
-   [popover]:not(:popover-open){display:none} and show the list without a click */
-.mc-compose-student-lb:popover-open { display: flex; flex-direction: column; }
+.mc-compose-student-lb { position: fixed; inset: auto; margin: ${px(resolve("dim.1"))} 0 0 0; max-width: calc(100vw - 16px);
+  position-anchor: --mc-cs-anchor; top: anchor(bottom); left: anchor(left); min-width: anchor-size(width); position-try-fallbacks: flip-block; }
+.mc-compose-student-lb:popover-open { display: flex; flex-direction: column; max-height: 320px; }
+#mc-compose-dept { anchor-name: --mc-cd-anchor; }
+#mc-compose-dept-lb { position: fixed; inset: auto; margin: ${px(resolve("dim.1"))} 0 0 0; position-anchor: --mc-cd-anchor; top: anchor(bottom); left: anchor(left); min-width: anchor-size(width); position-try-fallbacks: flip-block; }
 .mc-compose-student-search { flex-shrink: 0; width: 100%; margin-bottom: ${px(resolve("dim.2"))}; }
 .mc-compose-student-lb .listbox__list { overflow-y: auto; min-height: 0; }
 .mc-cs-opt { justify-content: space-between; }
@@ -864,10 +864,6 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
 .mc-cs-opt__meta { color: ${cv("text.muted")}; font-size: 12px; }
 .mc-cs-empty { padding: ${px(resolve("dim.2"))} ${px(resolve("dim.3"))}; color: ${cv("text.muted")}; ${typoCss(bodySmType)} list-style: none; }
 .mc-cs-empty[hidden] { display: none; }
-/* Department dropdown — same CSS anchoring (JS placement was unreliable in the
-   transformed dialog) */
-#mc-compose-dept { anchor-name: --mc-cd-anchor; }
-#mc-compose-dept-lb { position: fixed; inset: auto; margin: ${px(resolve("dim.1"))} 0 0 0; position-anchor: --mc-cd-anchor; top: anchor(bottom); left: anchor(left); min-width: anchor-size(width); position-try-fallbacks: flip-block; }
 /* Subject / Message — Input's anatomy on real editable controls */
 /* lg (48px) fixed height, NOT base 40 — the floating label + value stack
    must fit INSIDE the resting height, or the field visibly grows on focus */
@@ -3131,7 +3127,8 @@ const appJs = `(function () {
   // label floats in once a value exists
   function selectPopulate(trigger, valueEl, text) { trigger.classList.remove("select--resting"); valueEl.textContent = text; }
   function selectRest(trigger, valueEl, placeholder) { trigger.classList.add("select--resting"); valueEl.textContent = placeholder; }
-  // Department dropdown is anchored under its trigger by CSS (anchor positioning)
+  // both compose dropdowns are anchored under their triggers by CSS (anchor
+  // positioning) — JS placement is unreliable inside the transformed dialog
   composeDeptLb.querySelectorAll(".listbox__option").forEach(function (opt) {
     opt.addEventListener("click", function () {
       composeDeptLb.querySelectorAll(".listbox__option").forEach(function (o) {
@@ -3144,8 +3141,7 @@ const appJs = `(function () {
       validateCompose();
     });
   });
-  // "To" student picker — anchored under the trigger by CSS (anchor positioning),
-  // so no JS placement; just focus the search on open
+  // "To" student picker — focus the search on open (placement is CSS-anchored)
   composeStudentLb.addEventListener("toggle", function (e) {
     if (e.newState !== "open") return;
     requestAnimationFrame(function () { composeStudentInput.focus(); });
