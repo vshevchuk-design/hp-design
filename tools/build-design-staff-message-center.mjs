@@ -1116,7 +1116,11 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .daterange__panel--single { max-height: calc(100dvh - 16px); overflow-y: auto; }
 /* tapping the search icon reveals both fields, stacked, over row 1 */
 .mc-search-close { display: none; flex-shrink: 0; border: none; background: none; padding: 0; cursor: pointer; color: ${cv("text.primary")}; font-family: ${cv("family.sans")}; ${typoCss(linkBaseType)}${linkBaseExt.textDecoration ? ` text-decoration: ${linkBaseExt.textDecoration};` : ""} }
+/* opening search takes over the row — everything else on it steps aside (tabs,
+   the search icon, and on tablet the date range + Student ID that sit inline) */
 .mc--search-open .mc-rail__row--top .tabs--segmented,
+.mc--search-open .mc-rail__daterange,
+.mc--search-open .mc-rail__student,
 .mc--search-open .mc-search-open-btn { display: none; }
 /* the search field grows to fill the row and Close sits beside it (not below) */
 .mc--search-open .mc-rail__searches { display: flex; flex: 1; min-width: 0; margin-left: 0; }
