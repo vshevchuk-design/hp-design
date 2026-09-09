@@ -1032,7 +1032,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 /* floating tools beside the title: download transcript + start over */
 .mc-ai__tools { position: absolute; top: 12px; right: 12px; z-index: 2; display: flex; gap: 8px; }
 .mc-ai[data-ai="standalone"] .mc-ai__tools { right: calc(12px + 28px + 8px); }
-.mc-ai__tool { width: 32px; height: 32px; border-radius: 999px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); display: inline-flex; align-items: center; justify-content: center; padding: 0; cursor: pointer; color: var(--tok-icon-secondary); }
+.mc-ai__tool { width: 28px; height: 28px; border-radius: 999px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); display: inline-flex; align-items: center; justify-content: center; padding: 0; cursor: pointer; color: var(--tok-icon-secondary); }
 .mc-ai__tool:hover { background: var(--tok-fill-neutral-hover); border-color: var(--tok-border-strong); }
 .mc-ai__tool-icon { width: 20px; height: 20px; display: block; }
 /* suggestions sit at the bottom of the empty panel (ref), pushed down by an
@@ -1054,6 +1054,8 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .mc-ai__msg-head--self { justify-content: flex-end; }
 .mc-ai__msg-head .mc-ai__spark { width: 14px; height: 14px; }
 .mc-ai__msg-time { color: var(--tok-text-muted); font-weight: 400; }
+/* the chat bubbles read smaller than the composed message — 12px */
+.mc-ai__scroll .bubble, .mc-ai__scroll .bubble p { font-size: 12px; line-height: 1.5; }
 .mc-ai__msg-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
 .mc-ai__composer { flex-shrink: 0; margin: 12px 16px 16px; border: 1px solid var(--tok-border-default); border-radius: 8px; background: var(--tok-surface-dim); padding: 8px; display: flex; flex-direction: column; gap: 8px; }
 .mc-ai__composer:focus-within { border-color: var(--tok-border-focus); }
@@ -2432,7 +2434,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     </div>
     <div class="mc-compose__ai">
       <div class="mc-ai" data-ai="compose">
-      <button type="button" class="mc-ai__handle mc-ai__handle--collapse" data-ai-collapse aria-label="Hide AI panel"><svg class="mc-ai__handle-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg></button>
+      <button type="button" class="mc-ai__handle mc-ai__handle--collapse" data-ai-collapse aria-label="Hide AI panel"><svg class="mc-ai__handle-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
       <div class="mc-ai__tools">
         <button type="button" class="mc-ai__tool" data-ai-download aria-label="Download transcript" title="Download transcript"><svg class="mc-ai__tool-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"><g><rect fill="none" height="24" width="24"/></g><g><path d="M5,20h14v-2H5V20z M19,9h-4V3H9v6H5l7,7L19,9z"/></g></svg></button>
         <button type="button" class="mc-ai__tool" data-ai-restart aria-label="Start over" title="Start over"><svg class="mc-ai__tool-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg></button>

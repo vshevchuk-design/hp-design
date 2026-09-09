@@ -202,7 +202,7 @@ const iconReplace = iconOf("swap_horiz", "btn__icon");
 const iconRegen = iconOf("refresh", "btn__icon");
 const iconAiSend = iconOf("arrow_upward", "btn__icon");
 const iconMiniChevron = iconOf("expand_more", "mc-ai__opt-chevron");
-const iconHandleCollapse = iconOf("chevron_left", "mc-ai__handle-icon");
+const iconHandleCollapse = iconOf("close", "mc-ai__handle-icon");
 const iconHandleClose = iconOf("close", "mc-ai__handle-icon");
 const iconAiDownload = iconOf("download", "mc-ai__tool-icon");
 const iconAiRestart = iconOf("refresh", "mc-ai__tool-icon");
@@ -1435,7 +1435,7 @@ const composeAiCss = `.mc-compose__tabs { display: none; flex-shrink: 0; }
 /* floating tools beside the title: download transcript + start over */
 .mc-ai__tools { position: absolute; top: ${px(resolve("dim.3"))}; right: ${px(resolve("dim.3"))}; z-index: 2; display: flex; gap: ${px(resolve("dim.2"))}; }
 .mc-ai[data-ai="standalone"] .mc-ai__tools { right: calc(${px(resolve("dim.3"))} + 28px + ${px(resolve("dim.2"))}); }
-.mc-ai__tool { width: 32px; height: 32px; border-radius: ${px(resolve("radius.full"))}; background: ${cv("surface.default")}; border: 1px solid ${cv("border.default")}; display: inline-flex; align-items: center; justify-content: center; padding: 0; cursor: pointer; color: ${cv("icon.secondary")}; }
+.mc-ai__tool { width: 28px; height: 28px; border-radius: ${px(resolve("radius.full"))}; background: ${cv("surface.default")}; border: 1px solid ${cv("border.default")}; display: inline-flex; align-items: center; justify-content: center; padding: 0; cursor: pointer; color: ${cv("icon.secondary")}; }
 .mc-ai__tool:hover { background: ${cv("fill.neutralHover")}; border-color: ${cv("border.strong")}; }
 .mc-ai__tool-icon { width: ${px(resolve("dim.5"))}; height: ${px(resolve("dim.5"))}; display: block; }
 /* suggestions sit at the bottom of the empty panel (ref), pushed down by an
@@ -1457,6 +1457,8 @@ const composeAiCss = `.mc-compose__tabs { display: none; flex-shrink: 0; }
 .mc-ai__msg-head--self { justify-content: flex-end; }
 .mc-ai__msg-head .mc-ai__spark { width: 14px; height: 14px; }
 .mc-ai__msg-time { color: ${cv("text.muted")}; font-weight: 400; }
+/* the chat bubbles read smaller than the composed message — 12px */
+.mc-ai__scroll .bubble, .mc-ai__scroll .bubble p { font-size: 12px; line-height: 1.5; }
 .mc-ai__msg-actions { display: flex; flex-wrap: wrap; gap: ${px(resolve("dim.1_5"))}; margin-top: ${px(resolve("dim.0_5"))}; }
 .mc-ai__composer { flex-shrink: 0; margin: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))} ${px(resolve("dim.4"))}; border: 1px solid ${cv("border.default")}; border-radius: ${px(resolve("radius.default"))}; background: ${cv("surface.dim")}; padding: ${px(resolve("dim.2"))}; display: flex; flex-direction: column; gap: ${px(resolve("dim.2"))}; }
 .mc-ai__composer:focus-within { border-color: ${cv("border.focus")}; }
