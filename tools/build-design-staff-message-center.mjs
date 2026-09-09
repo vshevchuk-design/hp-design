@@ -1032,7 +1032,7 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 /* the Filters panel is a bottom-sheet drawer: docked to the bottom edge, full
    width, sliding up over a dimmed backdrop (Popover API — light-dismiss + Esc
    for free). Only ever opened on narrow, where the Filters icon button shows. */
-.mc-filters-pop { margin: 0 auto; box-sizing: border-box; position: fixed; inset: auto 0 0 0; width: 100%; max-width: 520px; max-height: 88vh; padding: 0; display: flex; flex-direction: column; border: none; border-top-left-radius: ${px(resolve("radius.lg"))}; border-top-right-radius: ${px(resolve("radius.lg"))}; background: ${cv("surface.default")}; box-shadow: ${lbShadowCss}; font-family: ${cv("family.sans")}; transform: translateY(100%); transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1), overlay 0.28s allow-discrete, display 0.28s allow-discrete; }
+.mc-filters-pop { margin: 0; box-sizing: border-box; position: fixed; inset: auto 0 0 0; width: 100%; max-width: none; max-height: 88vh; padding: 0; display: flex; flex-direction: column; border: none; border-top-left-radius: ${px(resolve("radius.lg"))}; border-top-right-radius: ${px(resolve("radius.lg"))}; background: ${cv("surface.default")}; box-shadow: ${lbShadowCss}; font-family: ${cv("family.sans")}; transform: translateY(100%); transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1), overlay 0.28s allow-discrete, display 0.28s allow-discrete; }
 .mc-filters-pop:popover-open { transform: translateY(0); }
 @starting-style { .mc-filters-pop:popover-open { transform: translateY(100%); } }
 .mc-filters-pop::backdrop { background: transparent; transition: background 0.28s ease, overlay 0.28s allow-discrete, display 0.28s allow-discrete; }
@@ -1211,10 +1211,7 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 @media (min-width: 768px) {
   /* tablet + desktop — filters go inline like the desktop toolbar: chips +
      Department/Staff selects on row 2, date range + Student ID on row 1. The
-     message search stays behind its icon on tablet (inline fields only >=1024). */
-  .mc-topbar-new { display: inline-flex; }
-  .mc-fab { display: none; }
-  .mc-rail__lists { padding-bottom: ${px(resolve("dim.4"))}; }
+     message search + the New FAB stay in their mobile form on tablet. */
   .mc-rail__row--top .tabs--segmented { flex: 0 0 auto; }
   .mc-rail__daterange { display: block; }
   .mc-rail__student { display: flex; flex: 0 1 150px; }
@@ -1228,11 +1225,15 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
   .mc-search-open-btn { margin-left: auto; }
 }
 @media (min-width: 1024px) {
-  /* desktop only — the message-search fields go inline; the search icon retires */
+  /* desktop only — the message-search fields go inline, the search icon retires,
+     and New moves from the floating FAB up into the top bar */
   .mc-rail__searches { display: flex; }
   .mc-search-open-btn, .mc-search-close { display: none; }
   .mc-rail__student { flex: 0 1 170px; }
   .mc-rail__search { flex: 0 1 260px; }
+  .mc-topbar-new { display: inline-flex; }
+  .mc-fab { display: none; }
+  .mc-rail__lists { padding-bottom: ${px(resolve("dim.4"))}; }
   .mc__topbar { padding: 0 ${px(resolve("dim.6"))}; }
   /* keep the whole rail on one left edge: toolbar tabs + filter chips must line
      up with the list/table below (all dim.6), not sit 8px inside it. A bit more
