@@ -828,31 +828,31 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   .mc-table { min-width: 620px; } /* horizontal-scroll fallback until the mobile row reflow lands */
   .mc-thread__scroll > *, .mc-thread__composer > * { max-width: none; }
 }
-@media (min-width: 1024px) {
-  /* desktop only — the toolbar spreads out: row 1 shows both search fields, row 2
-     shows the chips + Department/Staff Selects inline. Tablet + mobile keep the
-     collapsed toolbar (search icon + Filters icon → bottom-sheet drawer). */
-  .mc-rail__searches { display: flex; }
-  .mc-search-open-btn, .mc-search-close { display: none; }
-  .mc-rail__student { display: flex; flex: 0 1 150px; }
-  .mc-rail__search { flex: 0 1 260px; }
-  .mc-qchip { display: inline-flex; }
-  .mc-rail__daterange { display: block; }
-  .mc-advsel { display: inline-block; }
-  .mc-rail__advsep { display: inline-block; width: 1px; height: 20px; background: var(--tok-border-default); align-self: center; margin: 0 4px; }
-  /* the Filters icon button is a narrow-only overflow home; inline chips take over */
-  .mc-filters-btn { display: none; }
-  .mc-rail__row--filters { display: flex; }
-}
 @media (min-width: 768px) {
+  /* tablet + desktop — filters go inline like the desktop toolbar: chips +
+     Department/Staff selects on row 2, date range + Student ID on row 1. The
+     message search stays behind its icon on tablet (inline fields only >=1024). */
   .mc-topbar-new { display: inline-flex; }
   .mc-fab { display: none; }
   .mc-rail__lists { padding-bottom: 16px; }
   .mc-rail__row--top .tabs--segmented { flex: 0 0 auto; }
-  .mc-rail__student { flex: 0 1 170px; }
-  .mc-rail__search { flex: 0 1 260px; }
+  .mc-rail__daterange { display: block; }
+  .mc-rail__student { display: flex; flex: 0 1 150px; }
+  .mc-qchip { display: inline-flex; }
+  .mc-advsel { display: inline-block; }
+  .mc-rail__advsep { display: inline-block; width: 1px; height: 20px; background: var(--tok-border-default); align-self: center; margin: 0 4px; }
+  /* the Filters icon button is a mobile-only overflow home; inline chips take over */
+  .mc-filters-btn { display: none; }
+  .mc-rail__row--filters { display: flex; }
+  /* the message search stays an icon on tablet — dock it to the right */
+  .mc-search-open-btn { margin-left: auto; }
 }
 @media (min-width: 1024px) {
+  /* desktop only — the message-search fields go inline; the search icon retires */
+  .mc-rail__searches { display: flex; }
+  .mc-search-open-btn, .mc-search-close { display: none; }
+  .mc-rail__student { flex: 0 1 170px; }
+  .mc-rail__search { flex: 0 1 260px; }
   .mc__topbar { padding: 0 24px; }
   /* keep the whole rail on one left edge: toolbar tabs + filter chips must line
      up with the list/table below (all dim.6), not sit 8px inside it. A bit more
