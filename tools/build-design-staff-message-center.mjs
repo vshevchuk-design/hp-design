@@ -999,6 +999,17 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
 .mc-compose__foot-actions { display: flex; align-items: center; gap: ${px(resolve("dim.2"))}; margin-left: auto; }
 .mc-compose__foot-actions .btn { height: ${px(resolve("dim.10"))}; }
 .mc-compose__attach { align-self: flex-start; margin-top: ${px(resolve("dim.1"))}; }
+/* attached files — the student MC's compact Attachment chip (icon + name/size + remove) */
+.mc-compose__atts { display: flex; flex-wrap: wrap; gap: ${px(resolve("dim.2"))}; }
+.mc-compose__atts[hidden] { display: none; }
+.attachment { box-sizing: border-box; display: flex; align-items: center; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.1"))} ${px(resolve("dim.2"))}; border-radius: ${px(resolve("radius.default"))}; background: ${cv("surface.dim")}; border: 1px solid ${cv("border.default")}; max-width: 260px; }
+.attachment__icon { flex-shrink: 0; width: ${px(resolve("dim.5"))}; height: ${px(resolve("dim.5"))}; color: ${cv("icon.secondary")}; }
+.attachment__content { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.attachment__title { color: ${cv("text.default")}; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.attachment__description { color: ${cv("text.muted")}; font-size: 11px; }
+.attachment__action { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; width: ${px(resolve("dim.6"))}; height: ${px(resolve("dim.6"))}; border: none; border-radius: ${px(resolve("radius.default"))}; background: transparent; padding: 0; cursor: pointer; color: ${cv("icon.secondary")}; }
+.attachment__action:hover { background: ${cv("fill.neutralHover")}; }
+.attachment__action-glyph { width: ${px(resolve("dim.4"))}; height: ${px(resolve("dim.4"))}; display: block; }
 /* fake keyboard — docs-only scaffolding, NOT a DS component (a device mock,
    same non-tokenized call as the viewer's phone frame): docked under the
    body while a text field is focused on the takeover, so the layout's
@@ -1425,18 +1436,20 @@ const composeAiCss = `.mc-compose__tabs { display: none; flex-shrink: 0; }
 
 .mc-ai { position: relative; display: flex; flex-direction: column; min-height: 0; height: 100%; background: ${cv("surface.default")}; }
 /* static header bar (title + collapse/close + tools) with a divider under it */
-.mc-ai__header { flex-shrink: 0; display: flex; align-items: center; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))}; border-bottom: 1px solid ${cv("border.default")}; }
-.mc-ai__scroll { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: ${px(resolve("dim.4"))}; padding: ${px(resolve("dim.4"))}; }
-.mc-ai__title { flex: 1; display: flex; align-items: center; justify-content: center; gap: ${px(resolve("dim.1_5"))}; margin: 0; color: ${cv("text.secondary")}; ${typoCss(headingSmType)} }
+/* header: title is centered in the full width; the ghost buttons sit absolute on
+   each side so the title stays centered regardless of their widths */
+.mc-ai__header { position: relative; flex-shrink: 0; box-sizing: border-box; height: 48px; display: flex; align-items: center; justify-content: center; padding: 0 ${px(resolve("dim.3"))}; border-bottom: 1px solid ${cv("border.default")}; }
+.mc-ai__scroll { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: ${px(resolve("dim.3"))}; padding: ${px(resolve("dim.3"))}; }
+.mc-ai__title { display: flex; align-items: center; justify-content: center; gap: ${px(resolve("dim.1_5"))}; margin: 0; color: ${cv("text.secondary")}; ${typoCss(headingSmType)} }
 .mc-ai__spark { flex-shrink: 0; width: 16px; height: 16px; color: ${cv("icon.ai")}; }
-/* collapse (compose) / close (standalone) — round ghost button on the header's left */
-.mc-ai__handle { flex-shrink: 0; width: 28px; height: 28px; border-radius: ${px(resolve("radius.full"))}; background: ${cv("surface.default")}; border: 1px solid ${cv("border.default")}; display: inline-flex; align-items: center; justify-content: center; padding: 0; cursor: pointer; color: ${cv("icon.secondary")}; }
-.mc-ai__handle:hover { background: ${cv("fill.neutralHover")}; border-color: ${cv("border.strong")}; }
+/* collapse (compose) / close (standalone) — ghost icon button, absolute left */
+.mc-ai__handle { position: absolute; left: ${px(resolve("dim.2"))}; top: 50%; transform: translateY(-50%); width: 28px; height: 28px; border-radius: ${px(resolve("radius.default"))}; background: transparent; border: none; display: inline-flex; align-items: center; justify-content: center; padding: 0; cursor: pointer; color: ${cv("icon.secondary")}; }
+.mc-ai__handle:hover { background: ${cv("fill.neutralHover")}; }
 .mc-ai__handle-icon { width: ${px(resolve("dim.5"))}; height: ${px(resolve("dim.5"))}; display: block; }
-/* tools on the header's right: download transcript + start over */
-.mc-ai__tools { display: flex; gap: ${px(resolve("dim.2"))}; flex-shrink: 0; }
-.mc-ai__tool { width: 28px; height: 28px; border-radius: ${px(resolve("radius.full"))}; background: ${cv("surface.default")}; border: 1px solid ${cv("border.default")}; display: inline-flex; align-items: center; justify-content: center; padding: 0; cursor: pointer; color: ${cv("icon.secondary")}; }
-.mc-ai__tool:hover { background: ${cv("fill.neutralHover")}; border-color: ${cv("border.strong")}; }
+/* tools: download transcript + start over — ghost icon buttons, absolute right */
+.mc-ai__tools { position: absolute; right: ${px(resolve("dim.2"))}; top: 50%; transform: translateY(-50%); display: flex; gap: ${px(resolve("dim.1"))}; }
+.mc-ai__tool { width: 28px; height: 28px; border-radius: ${px(resolve("radius.default"))}; background: transparent; border: none; display: inline-flex; align-items: center; justify-content: center; padding: 0; cursor: pointer; color: ${cv("icon.secondary")}; }
+.mc-ai__tool:hover { background: ${cv("fill.neutralHover")}; }
 .mc-ai__tool-icon { width: ${px(resolve("dim.5"))}; height: ${px(resolve("dim.5"))}; display: block; }
 /* suggestions sit at the bottom of the empty panel (ref), pushed down by an
    auto top margin until the first chat bubble appears */
@@ -1460,7 +1473,7 @@ const composeAiCss = `.mc-compose__tabs { display: none; flex-shrink: 0; }
 /* the chat bubbles read smaller than the composed message — 12px */
 .mc-ai__scroll .bubble, .mc-ai__scroll .bubble p { font-size: 12px; line-height: 1.5; }
 .mc-ai__msg-actions { display: flex; flex-wrap: wrap; gap: ${px(resolve("dim.1_5"))}; margin-top: ${px(resolve("dim.0_5"))}; }
-.mc-ai__composer { flex-shrink: 0; margin: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))} ${px(resolve("dim.4"))}; border: 1px solid ${cv("border.default")}; border-radius: ${px(resolve("radius.default"))}; background: ${cv("surface.dim")}; padding: ${px(resolve("dim.2"))}; display: flex; flex-direction: column; gap: ${px(resolve("dim.2"))}; }
+.mc-ai__composer { flex-shrink: 0; margin: ${px(resolve("dim.3"))}; border: 1px solid ${cv("border.default")}; border-radius: ${px(resolve("radius.default"))}; background: ${cv("surface.dim")}; padding: ${px(resolve("dim.2"))}; display: flex; flex-direction: column; gap: ${px(resolve("dim.2"))}; }
 .mc-ai__composer:focus-within { border-color: ${cv("border.focus")}; }
 /* value text is 14px here (not the 16px Safari-zoom size the message body
    uses) — a secondary side-panel input, 16px read oversized */
@@ -1482,7 +1495,10 @@ const composeAiCss = `.mc-compose__tabs { display: none; flex-shrink: 0; }
 .mc-ai-standalone::backdrop { background: ${cv(mdOverlay)}; }
 .mc-ai-standalone .mc-ai { height: 100%; }
 
-@media (max-width: 767px) {
+/* mobile + tablet (< 1024): the AI panel is a TAB, not a side split — tabs at
+   the top switch Edit / AI. The toolbar's AI Assist button is redundant here
+   (the tabs do it), and the footer stacks: checks strip over full-width buttons */
+@media (max-width: 1023px) {
   .mc-compose__tabs { display: block; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))} 0; }
   .mc-compose__cols { flex-direction: column; }
   .mc-compose:not(.mc-compose--tab-ai) .mc-compose__ai { display: none; }
@@ -1491,9 +1507,14 @@ const composeAiCss = `.mc-compose__tabs { display: none; flex-shrink: 0; }
   .mc-ai { height: auto; flex: 1; }
   .mc-ai__handle--collapse { display: none; }
   .mc-compose__lead { display: none; }
+  .mc-compose__editor .composer__ai-assist { display: none; }
+  .mc-compose__footer { flex-direction: column; align-items: stretch; gap: ${px(resolve("dim.3"))}; }
+  .mc-compose__footer .mc-compose__checks { padding-bottom: ${px(resolve("dim.3"))}; border-bottom: 1px solid ${cv(mdDivider)}; }
+  .mc-compose__foot-actions { margin-left: 0; }
+  .mc-compose__foot-actions .btn { flex: 1; }
   .mc-ai-standalone { position: fixed; inset: 0; margin: 0; width: 100vw; max-width: 100vw; height: 100dvh; max-height: 100dvh; border-radius: 0; }
 }
-@media (min-width: 768px) {
+@media (min-width: 1024px) {
   .mc-compose__cols { flex-direction: row; }
   .mc-compose__ai { width: 340px; flex-shrink: 0; border-left: 1px solid ${cv(mdDivider)}; }
   .mc-compose:not(.mc-compose--ai-open) .mc-compose__ai { display: none; }
@@ -2250,6 +2271,7 @@ const composeMarkup = `<dialog class="mc-compose" id="mc-compose" aria-labelledb
           </form>
         </div>
         <button class="btn btn--ghost btn--sm mc-compose__attach" id="mc-compose-attach-btn" type="button">${iconOf("attach_file", "btn__icon")}Attach file</button>
+        <div class="mc-compose__atts" id="mc-compose-atts" hidden></div>
         <div class="mc-compose__exp" id="mc-compose-exp" hidden>
           <span class="mc-compose__exp-label">Expiration</span>
           <div class="mc-compose__exp-modes">
@@ -3459,7 +3481,7 @@ const appJs = `(function () {
   // the compose toolbar's AI Assist TOGGLES the panel: on desktop expand /
   // collapse the AI column, on mobile switch to / back from the AI tab
   document.getElementById("mc-compose-ai-assist").addEventListener("click", function () {
-    if (window.innerWidth < 768) {
+    if (window.innerWidth < 1024) {
       composeSetTab(composeDlg.classList.contains("mc-compose--tab-ai") ? "edit" : "ai");
     } else {
       var opened = composeDlg.classList.toggle("mc-compose--ai-open");
@@ -3470,47 +3492,44 @@ const appJs = `(function () {
     }
   });
 
-  // --- compose attachments: paperclip picker + drag-drop; images get a real
-  // thumbnail (FileReader), other files a glyph; each chip is removable ---
+  // --- compose attachments: clicking "Attach file" drops a sample attachment
+  // (this is a demo — no real picker), rendered as the compact Attachment chip;
+  // drag-drop of real files adds their name/size the same way ---
   var composeEditor = document.getElementById("mc-compose-editor");
   var composeAttachBtn = document.getElementById("mc-compose-attach-btn");
-  var composeFileInput = document.getElementById("mc-compose-file");
-  var composeAttachments = document.getElementById("mc-compose-attachments");
-  var ATTACH_FILE_ICON = ${JSON.stringify(iconOf("insert_drive_file", ""))};
-  var ATTACH_X_ICON = ${JSON.stringify(iconOf("close", ""))};
+  var composeAttsWrap = document.getElementById("mc-compose-atts");
+  var ATT_FILE_ICON = ${JSON.stringify(iconOf("insert_drive_file", "attachment__icon"))};
+  var ATT_X_ICON = ${JSON.stringify(iconOf("close", "attachment__action-glyph"))};
+  var COMPOSE_FAKE_FILES = [["Transcript-request.pdf", "PDF · 1.1 MB"], ["Enrollment-form.pdf", "PDF · 640 KB"], ["Advising-notes.docx", "DOCX · 28 KB"], ["Course-plan.xlsx", "XLSX · 54 KB"]];
+  var composeAtts = [];
   function fmtSize(b) {
     if (b < 1024) return b + " B";
     if (b < 1048576) return Math.round(b / 1024) + " KB";
     return (b / 1048576).toFixed(1) + " MB";
   }
-  function addComposeFiles(fileList) {
-    Array.prototype.forEach.call(fileList, function (file) {
+  function renderComposeAtts() {
+    composeAttsWrap.innerHTML = "";
+    composeAtts.forEach(function (file, i) {
       var chip = document.createElement("div");
-      chip.className = "mc-attach";
-      var isImg = /^image\\//.test(file.type);
-      chip.innerHTML = '<span class="mc-attach__thumb">' + (isImg ? "" : ATTACH_FILE_ICON) + '</span>'
-        + '<span class="mc-attach__meta"><span class="mc-attach__name"></span><span class="mc-attach__size"></span></span>'
-        + '<button type="button" class="mc-attach__x" aria-label="Remove attachment">' + ATTACH_X_ICON + '</button>';
-      chip.querySelector(".mc-attach__name").textContent = file.name;
-      chip.querySelector(".mc-attach__size").textContent = fmtSize(file.size);
-      if (isImg) {
-        var img = document.createElement("img");
-        chip.querySelector(".mc-attach__thumb").appendChild(img);
-        var reader = new FileReader();
-        reader.onload = function (e) { img.src = e.target.result; };
-        reader.readAsDataURL(file);
-      }
-      chip.querySelector(".mc-attach__x").addEventListener("click", function () {
-        chip.remove();
-        composeAttachments.hidden = composeAttachments.children.length === 0;
+      chip.className = "attachment attachment--compact";
+      chip.innerHTML = ATT_FILE_ICON
+        + '<span class="attachment__content"><span class="attachment__title"></span><span class="attachment__description"></span></span>'
+        + '<button type="button" class="attachment__action mc-att-remove" aria-label="Remove attachment">' + ATT_X_ICON + '</button>';
+      chip.querySelector(".attachment__title").textContent = file[0];
+      chip.querySelector(".attachment__description").textContent = file[1];
+      chip.querySelector(".mc-att-remove").addEventListener("click", function () {
+        composeAtts.splice(i, 1);
+        renderComposeAtts();
       });
-      composeAttachments.appendChild(chip);
+      composeAttsWrap.appendChild(chip);
     });
-    composeAttachments.hidden = composeAttachments.children.length === 0;
+    composeAttsWrap.hidden = composeAtts.length === 0;
   }
-  function clearComposeAttachments() { composeAttachments.innerHTML = ""; composeAttachments.hidden = true; }
-  if (composeAttachBtn) composeAttachBtn.addEventListener("click", function () { composeFileInput.click(); });
-  composeFileInput.addEventListener("change", function () { addComposeFiles(composeFileInput.files); composeFileInput.value = ""; });
+  function clearComposeAttachments() { composeAtts = []; renderComposeAtts(); }
+  if (composeAttachBtn) composeAttachBtn.addEventListener("click", function () {
+    composeAtts.push(COMPOSE_FAKE_FILES[composeAtts.length % COMPOSE_FAKE_FILES.length]);
+    renderComposeAtts();
+  });
   ["dragenter", "dragover"].forEach(function (ev) {
     composeEditor.addEventListener(ev, function (e) { e.preventDefault(); composeEditor.classList.add("is-dragover"); });
   });
@@ -3520,7 +3539,10 @@ const appJs = `(function () {
   composeEditor.addEventListener("drop", function (e) {
     e.preventDefault();
     composeEditor.classList.remove("is-dragover");
-    if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length) addComposeFiles(e.dataTransfer.files);
+    if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length) {
+      Array.prototype.forEach.call(e.dataTransfer.files, function (f) { composeAtts.push([f.name, fmtSize(f.size)]); });
+      renderComposeAtts();
+    }
   });
 
   function resetCompose() {
