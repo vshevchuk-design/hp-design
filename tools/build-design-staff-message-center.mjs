@@ -183,6 +183,7 @@ const iconStrike = iconOf("format_strikethrough", "composer__icon");
 const iconCode = iconOf("code", "composer__icon");
 const iconAlign = iconOf("format_align_left", "composer__icon");
 const iconLink = iconOf("insert_link", "composer__icon");
+const iconEmail = iconOf("email", "composer__icon");
 const iconTbChevron = iconOf("expand_more", "composer__tb-chev");
 const iconTbMore = iconOf("expand_more", "composer__tb-more-chev");
 const iconChevronRight = iconOf("chevron_right", "composer__icon");
@@ -1335,10 +1336,23 @@ const composeAiCss = `.mc-compose__tabs { display: none; flex-shrink: 0; }
 .mc-compose__ai { display: flex; flex-direction: column; min-height: 0; }
 .mc-compose__lead { margin: 0; color: ${cv("text.secondary")}; ${typoCss(bodySmType)} }
 .mc-compose__lead[hidden] { display: none; }
-.mc-compose__editor { position: relative; display: flex; flex-direction: column; gap: ${px(resolve("dim.1"))}; }
-.mc-compose__editor .composer { gap: ${px(resolve("dim.2"))}; }
-.mc-compose__editor .composer__field { align-items: flex-start; }
+/* the compose editor is ONE bordered box: the toolbar is a header glued to the
+   textarea (divider between them), matching the product's rich-text field. The
+   toolbar controls are deliberately compact (smaller icons + 13px labels). */
+.mc-compose__editor { position: relative; display: flex; flex-direction: column; border: 1px solid ${cv("border.default")}; border-radius: ${compRadius}; background: ${cv("surface.default")}; overflow: hidden; }
+.mc-compose__editor:focus-within { border-color: ${cv("border.focus")}; }
+.mc-compose__editor .composer { gap: 0; }
+.mc-compose__editor .composer__toolbar { gap: 2px; padding: ${px(resolve("dim.1"))} ${px(resolve("dim.2"))}; border-bottom: 1px solid ${cv("border.default")}; background: ${cv("surface.default")}; }
+.mc-compose__editor .composer__field { align-items: flex-start; border: none; border-radius: 0; background: transparent; padding: ${px(resolve("dim.3"))}; }
+.mc-compose__editor .composer__field:hover { background: transparent; border-color: transparent; }
 .mc-compose__editor .composer__input { display: block; resize: none; min-height: 132px; max-height: 300px; overflow-y: auto; }
+.mc-compose__editor .composer__icon-btn { width: ${px(resolve("dim.6"))}; height: ${px(resolve("dim.6"))}; }
+.mc-compose__editor .composer__icon-btn .composer__icon { width: ${px(resolve("dim.4"))}; height: ${px(resolve("dim.4"))}; }
+.mc-compose__editor .composer__tb-btn { height: ${px(resolve("dim.6"))}; padding: 0 ${px(resolve("dim.1"))}; font-size: 13px; }
+.mc-compose__editor .composer__tb-btn .composer__tb-chev { width: 14px; height: 14px; }
+.mc-compose__editor .composer__ai-assist { height: ${px(resolve("dim.6"))}; padding: 0 ${px(resolve("dim.2"))}; font-size: 13px; margin-left: auto; }
+.mc-compose__editor .composer__ai-assist .composer__icon { width: 14px; height: 14px; }
+.mc-compose__editor .composer__tb-sep { align-self: auto; height: ${px(resolve("dim.4"))}; margin: 0 ${px(resolve("dim.1"))}; }
 /* pending attachments — a wrap of removable chips (image thumbnail or file
    glyph); the editor is also a drop target ("drop files to attach") */
 .mc-attachments { display: flex; flex-wrap: wrap; gap: ${px(resolve("dim.2"))}; }
@@ -2082,7 +2096,7 @@ const HYPERLINKS = ["1098-TConsent", "Accept/DeclineAward", "Address", "Applicat
 // a toolbar dropdown: an icon/label trigger opening a listbox popover of insertable tokens
 function composerTbMenu(kind, label, items) {
   const lbId = "mc-compose-" + kind + "-lb";
-  return `<button type="button" class="composer__tb-btn composer__tb-adv" id="mc-compose-${kind}-btn" popovertarget="${lbId}" aria-haspopup="listbox">${kind === "merge" ? iconTag : iconLink}${label}${iconTbChevron}</button>
+  return `<button type="button" class="composer__tb-btn composer__tb-adv" id="mc-compose-${kind}-btn" popovertarget="${lbId}" aria-haspopup="listbox">${label}</button>
               <div class="listbox composer__tb-lb" id="${lbId}" data-tb="${kind}" popover>
                 <ul class="listbox__list" role="listbox" aria-label="${label}">
                   ${items.map((t) => `<li><button class="listbox__option" role="option" type="button" data-insert="${esc(t)}">${t}</button></li>`).join("\n                  ")}
@@ -2158,6 +2172,8 @@ const composeMarkup = `<dialog class="mc-compose" id="mc-compose" aria-labelledb
               <button type="button" class="composer__icon-btn composer__tb-adv" aria-label="Undo" tabindex="-1">${iconUndo}</button>
               <button type="button" class="composer__icon-btn composer__tb-adv" aria-label="Redo" tabindex="-1">${iconRedo}</button>
               <span class="composer__tb-sep composer__tb-adv"></span>
+              <button type="button" class="composer__tb-btn composer__tb-style composer__tb-adv" tabindex="-1">Normal${iconTbChevron}</button>
+              <span class="composer__tb-sep composer__tb-adv"></span>
               <button type="button" class="composer__icon-btn" aria-label="Bold">${iconBold}</button>
               <button type="button" class="composer__icon-btn" aria-label="Italic">${iconItalic}</button>
               <button type="button" class="composer__icon-btn" aria-label="Underline">${iconUnderline}</button>
@@ -2165,14 +2181,15 @@ const composeMarkup = `<dialog class="mc-compose" id="mc-compose" aria-labelledb
               <button type="button" class="composer__icon-btn composer__tb-adv" aria-label="Strikethrough" tabindex="-1">${iconStrike}</button>
               <button type="button" class="composer__icon-btn composer__tb-adv" aria-label="Code" tabindex="-1">${iconCode}</button>
               <button type="button" class="composer__icon-btn composer__tb-adv" aria-label="Align" tabindex="-1">${iconAlign}</button>
-              <button type="button" class="composer__icon-btn composer__tb-adv" id="mc-compose-attach-btn" aria-label="Attach files">${iconAttach}</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" aria-label="Insert link" tabindex="-1">${iconLink}</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" aria-label="Insert email" tabindex="-1">${iconEmail}</button>
               <span class="composer__tb-sep composer__tb-adv"></span>
               ${composerTbMenu("merge", "Merge Tags", MERGE_TAGS)}
               ${composerTbMenu("links", "Hyperlinks", HYPERLINKS)}
               <button type="button" class="composer__ai-assist" id="mc-compose-ai-assist">${iconAi}AI Assist</button>
             </div>
             <div class="composer__field">
-              <textarea class="composer__input" id="mc-compose-message" rows="1" placeholder="Write your message..." aria-label="Message"></textarea>
+              <textarea class="composer__input" id="mc-compose-message" rows="1" placeholder="Message *" aria-label="Message"></textarea>
             </div>
             <div class="mc-attachments" id="mc-compose-attachments" hidden></div>
             <input type="file" id="mc-compose-file" accept="image/*,.pdf" multiple hidden />
@@ -3405,7 +3422,7 @@ const appJs = `(function () {
     composeAttachments.hidden = composeAttachments.children.length === 0;
   }
   function clearComposeAttachments() { composeAttachments.innerHTML = ""; composeAttachments.hidden = true; }
-  composeAttachBtn.addEventListener("click", function () { composeFileInput.click(); });
+  if (composeAttachBtn) composeAttachBtn.addEventListener("click", function () { composeFileInput.click(); });
   composeFileInput.addEventListener("change", function () { addComposeFiles(composeFileInput.files); composeFileInput.value = ""; });
   ["dragenter", "dragover"].forEach(function (ev) {
     composeEditor.addEventListener(ev, function (e) { e.preventDefault(); composeEditor.classList.add("is-dragover"); });
