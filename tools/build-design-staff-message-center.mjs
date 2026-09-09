@@ -1009,10 +1009,15 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 /* the field's 16px value (iOS-zoom rule) dwarfed the chips/tabs — bring the
    toolbar search text down to the chips' 14px (normal weight for an input) */
 .mc-rail__searches .search__input { font-size: 14px; }
+/* Student ID sits inline next to the date range on desktop (its own field, no
+   longer in the searches group); 14px like the rest of the toolbar */
+.mc-rail__student .search__input { font-size: 14px; }
 
-/* mobile-first (<600): the two fields collapse behind one search icon, and the
-   chips collapse into the Filters button */
+/* mobile-first (<600): the searches collapse behind one search icon, the chips
+   collapse into the Filters button, and Student ID moves into the drawer */
 .mc-rail__searches { display: none; }
+.mc-rail__student { display: none; }
+.mc-filt-student-search { width: 100%; }
 /* Filters + Search are twin icon buttons docked right; Filters carries a small
    blue counter badge when any filter is active */
 .mc-filters-btn { display: inline-flex; margin-left: auto; position: relative; overflow: visible; flex-shrink: 0; }
@@ -1210,7 +1215,7 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
      collapsed toolbar (search icon + Filters icon → bottom-sheet drawer). */
   .mc-rail__searches { display: flex; }
   .mc-search-open-btn, .mc-search-close { display: none; }
-  .mc-rail__student { flex: 0 1 170px; }
+  .mc-rail__student { display: flex; flex: 0 1 150px; }
   .mc-rail__search { flex: 0 1 260px; }
   .mc-qchip { display: inline-flex; }
   .mc-rail__daterange { display: block; }
@@ -2502,7 +2507,9 @@ const appJs = `(function () {
   var countWrap = document.querySelector(".mc-rail__count");
   function applyFilter() {
     var searchOpen = mc.classList.contains("mc--search-open");
-    var searching = searchInput.value.trim() !== "" || studentInput.value.trim() !== "";
+    // only the message Search merges Inbox+Resolved; Student ID is a plain
+    // filter that narrows the active tab
+    var searching = searchInput.value.trim() !== "";
     mc.classList.toggle("mc--searching", searching);
     if (searchOpen && !searching) {
       lists.inbox.hidden = true;
@@ -2614,14 +2621,13 @@ const appJs = `(function () {
   function closeSearch() {
     mc.classList.remove("mc--search-open");
     searchInput.value = ""; searchClear.hidden = true;
-    studentInput.value = ""; studentClear.hidden = true;
     applyFilter();
   }
   searchOpenBtn.addEventListener("click", function () {
     mc.classList.add("mc--search-open");
     resetChipFilters(["unread", "involved", "expires", "flagged"]);
     applyFilter();
-    studentInput.focus();
+    searchInput.focus();
   });
   searchCloseBtn.addEventListener("click", closeSearch);
   // wire an input + its clear button to the shared filter, generically
@@ -2640,6 +2646,19 @@ const appJs = `(function () {
   }
   bindSearchField(searchInput, searchClear);
   bindSearchField(studentInput, studentClear);
+  // Student ID lives in two places — the desktop row-1 field and the mobile
+  // Filters drawer. rowMatches reads mc-student-input, so keep them mirrored.
+  var filtStudent = document.getElementById("mc-filt-student");
+  var filtStudentClear = document.getElementById("mc-filt-student-clear");
+  function applyStudent(val, echo) {
+    studentInput.value = val; studentClear.hidden = val.trim() === "";
+    filtStudent.value = val; filtStudentClear.hidden = val.trim() === "";
+    updateFiltersChip();
+    applyFilter();
+  }
+  studentInput.addEventListener("input", function () { filtStudent.value = studentInput.value; filtStudentClear.hidden = studentInput.value.trim() === ""; updateFiltersChip(); });
+  filtStudent.addEventListener("input", function () { applyStudent(filtStudent.value); });
+  filtStudentClear.addEventListener("click", function () { applyStudent(""); filtStudent.focus(); });
 
   // Filters: a popover with Unread + a Department sub-group (the count badge
   // reflects those). The three quick chips — I'm Involved / Flagged / Expires
@@ -2655,6 +2674,7 @@ const appJs = `(function () {
     if (adv.dept) n++;
     if (adv.staff) n++;
     if (adv.dateStart || adv.dateEnd) n++;
+    if (studentInput.value.trim()) n++;
     filtersCount.textContent = n;
     filtersCount.hidden = n === 0;
   }
@@ -2855,7 +2875,10 @@ const appJs = `(function () {
   document.getElementById("mc-filters-clear").addEventListener("click", function () {
     ["unread", "involved", "flagged", "expires"].forEach(function (k) { setFilter(k, false); });
     setAdv("dept", ""); setAdv("staff", "");
+    studentInput.value = ""; studentClear.hidden = true;
+    filtStudent.value = ""; filtStudentClear.hidden = true;
     if (window.__mcResetDateRange) window.__mcResetDateRange();
+    updateFiltersChip();
     applyFilter();
   });
 
@@ -3834,11 +3857,11 @@ ${phaseECss}
             <button class="tab tab--sm" role="tab" aria-selected="false" data-tab="archived">Resolved</button>
           </div>
           <div class="mc-rail__daterange">${dateRangeWidget("top")}</div>
+          <div class="search search--base mc-rail__student">
+            <input class="search__input" id="mc-student-input" placeholder="Student ID" aria-label="Search by student ID" />
+            <button class="search__clear" id="mc-student-clear" type="button" aria-label="Clear student ID" hidden>${iconClear.replace('<svg class="search__clear" ', '<svg ')}</button>
+          </div>
           <div class="mc-rail__searches" id="mc-searches">
-            <div class="search search--base mc-rail__student">
-              <input class="search__input" id="mc-student-input" placeholder="Student ID" aria-label="Search by student ID" />
-              <button class="search__clear" id="mc-student-clear" type="button" aria-label="Clear student ID" hidden>${iconClear.replace('<svg class="search__clear" ', '<svg ')}</button>
-            </div>
             <div class="search search--base mc-rail__search">
               ${iconSearch}
               <input class="search__input" id="mc-search-input" placeholder="Search messages" aria-label="Search messages" />
@@ -3856,6 +3879,14 @@ ${phaseECss}
               <button class="btn btn--ghost btn--sm btn--icon-only mc-filters-pop__close" id="mc-filters-close" type="button" aria-label="Close">${iconCloseBtn}</button>
             </div>
             <div class="mc-filters-pop__body">
+              <div class="mc-filt-field">
+                <span class="mc-filt-label">Student ID</span>
+                <div class="search search--base mc-filt-student-search">
+                  ${iconSearch}
+                  <input class="search__input" id="mc-filt-student" placeholder="Search by student ID" aria-label="Search by student ID" />
+                  <button class="search__clear" id="mc-filt-student-clear" type="button" aria-label="Clear student ID" hidden>${iconClear.replace('<svg class="search__clear" ', '<svg ')}</button>
+                </div>
+              </div>
               <div class="mc-filt-field">
                 <span class="mc-filt-label">Date range</span>
                 ${dateRangeWidget("panel", { inline: true })}
