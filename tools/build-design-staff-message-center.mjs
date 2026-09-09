@@ -177,6 +177,14 @@ const iconBold = iconOf("format_bold", "composer__icon");
 const iconItalic = iconOf("format_italic", "composer__icon");
 const iconUnderline = iconOf("format_underlined", "composer__icon");
 const iconAi = iconOf("auto_awesome", "composer__icon");
+const iconUndo = iconOf("undo", "composer__icon");
+const iconRedo = iconOf("redo", "composer__icon");
+const iconStrike = iconOf("format_strikethrough", "composer__icon");
+const iconCode = iconOf("code", "composer__icon");
+const iconAlign = iconOf("format_align_left", "composer__icon");
+const iconLink = iconOf("insert_link", "composer__icon");
+const iconTbChevron = iconOf("expand_more", "composer__tb-chev");
+const iconTbMore = iconOf("expand_more", "composer__tb-more-chev");
 const iconChevronRight = iconOf("chevron_right", "composer__icon");
 const iconTag = iconOf("local_offer", "btn__icon");
 const iconCloseAtt = iconOf("close", "attachment__action-glyph");
@@ -746,7 +754,27 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
 .composer__icon-btn:active { background: ${cv("fill.neutralActive")}; }
 /* rich variant (staff side) — toolbar + AI Assist + settings rows + labeled
    Send, all straight from Composer's own docs recipe */
-.composer__toolbar { display: flex; align-items: center; gap: ${px(resolve("dim.1"))}; }
+.composer__toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: ${px(resolve("dim.1"))}; }
+.composer__tb-sep { flex-shrink: 0; width: 1px; align-self: stretch; margin: 3px ${px(resolve("dim.1"))}; background: ${cv("border.default")}; }
+/* Merge Tags / Hyperlinks — ghost triggers opening a listbox of insertable tokens */
+.composer__tb-btn { flex-shrink: 0; display: inline-flex; align-items: center; gap: ${px(resolve("dim.1"))}; height: ${btnGhostSmHeight}; padding: 0 ${px(resolve("dim.2"))}; border: none; border-radius: ${px(resolve("radius.default"))}; background: transparent; cursor: pointer; color: ${cv("text.secondary")}; font-family: ${cv("family.sans")}; ${typoCss(btnGhostSmLabelType)} }
+.composer__tb-btn:hover { background: ${cv("fill.neutralHover")}; }
+.composer__tb-btn .composer__icon { width: ${btnGhostSmIconSize}; height: ${btnGhostSmIconSize}; color: ${cv("icon.secondary")}; flex-shrink: 0; }
+.composer__tb-chev { width: 16px; height: 16px; opacity: 0.7; flex-shrink: 0; }
+.composer__tb-lb { max-height: 260px; overflow-y: auto; }
+/* mobile/tablet: the fuller toolbar collapses behind a "More" chevron — B/I/U
+   and AI Assist stay visible; everything else (undo/redo, strike/code/align,
+   attach, Merge Tags, Hyperlinks) tucks away until the chevron is toggled.
+   Desktop (>=1024) shows the whole toolbar and hides the chevron. */
+.composer__tb-adv { display: none; }
+.composer__toolbar.is-expanded .composer__tb-adv { display: inline-flex; }
+.composer__tb-more { display: inline-flex; }
+.composer__tb-more-chev { width: 18px; height: 18px; color: ${cv("icon.secondary")}; flex-shrink: 0; transition: transform 0.15s ease; }
+.composer__toolbar.is-expanded .composer__tb-more-chev { transform: rotate(180deg); }
+#mc-compose-merge-btn { anchor-name: --mc-mt-anchor; }
+#mc-compose-merge-lb { position: fixed; inset: auto; margin: ${px(resolve("dim.1"))} 0 0 0; position-anchor: --mc-mt-anchor; top: anchor(bottom); left: anchor(left); position-try-fallbacks: flip-block; }
+#mc-compose-links-btn { anchor-name: --mc-hl-anchor; }
+#mc-compose-links-lb { position: fixed; inset: auto; margin: ${px(resolve("dim.1"))} 0 0 0; position-anchor: --mc-hl-anchor; top: anchor(bottom); left: anchor(left); position-try-fallbacks: flip-block; }
 .composer__ai-assist { flex-shrink: 0; display: inline-flex; align-items: center; gap: ${px(resolve("dim.1"))}; height: ${btnGhostSmHeight}; padding: 0 ${px(resolve("dim.2"))}; border: 1px solid transparent; border-radius: ${px(resolve("radius.default"))}; background: ${cv("bg.ai")}; color: ${cv("text.ai")}; cursor: pointer; font-family: ${cv("family.sans")}; ${typoCss(btnGhostSmLabelType)} }
 .composer__ai-assist .composer__icon { width: ${btnGhostSmIconSize}; height: ${btnGhostSmIconSize}; color: ${cv("icon.ai")}; }
 .composer__ai-assist:hover { border-color: ${cv("fill.ai")}; }
@@ -959,7 +987,7 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
   .mc-kbd__key--return { flex: 2; max-width: none; background: ${cv("fill.primary")}; color: ${cv("text.onFill")}; font-size: 13px; }
 }
 @media (min-width: 768px) {
-  .mc-compose { width: min(560px, calc(100vw - ${px(resolve("dim.8"))})); max-height: calc(100dvh - ${px(resolve("dim.16"))}); border-radius: ${mdRadius}; box-shadow: ${mdShadowCss}; }
+  .mc-compose { width: min(640px, calc(100vw - ${px(resolve("dim.8"))})); max-height: calc(100dvh - ${px(resolve("dim.16"))}); border-radius: ${mdRadius}; box-shadow: ${mdShadowCss}; }
   .mc-compose__cancel-m, .mc-compose__send-m { display: none; }
   .mc-compose__header { padding: ${px(resolve("dim.4"))} ${mdPadding}; }
   .mc-compose__body { padding: ${mdPadding}; gap: ${mdGap}; }
@@ -1273,6 +1301,10 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
   .mc-rail__search { flex: 0 1 260px; }
   .mc-topbar-new { display: inline-flex; }
   .mc-fab { display: none; }
+  /* the compose toolbar is roomy on desktop — show the whole thing, retire the
+     "More" chevron that collapses it on mobile/tablet */
+  .composer__tb-adv { display: inline-flex; }
+  .composer__tb-more { display: none; }
   .mc-rail__lists { padding-bottom: ${px(resolve("dim.4"))}; }
   .mc__topbar { padding: 0 ${px(resolve("dim.6"))}; }
   /* keep the whole rail on one left edge: toolbar tabs + filter chips must line
@@ -2045,6 +2077,18 @@ const selfBubbleSender = `<div class="bubble-sender"><p class="bubble-sender__te
 // The department list is a little richer than the inbox's own two, so the
 // compose picker reads like a real staff-side sender-department choice. ----
 const composeDepartments = ["Academic Advising", "Student Records", "Financial Aid", "Office of the Registrar", "English Dept"];
+const MERGE_TAGS = ["{{studentName}}", "{{studentFirstName}}", "{{studentLastName}}"];
+const HYPERLINKS = ["1098-TConsent", "Accept/DeclineAward", "Address", "ApplicationStatus", "ApplyforGraduation", "FAFSA", "FederalStudentAid", "FinancialAidAward", "MessageCenter", "ScheduleBuilder", "ShoppingCart"];
+// a toolbar dropdown: an icon/label trigger opening a listbox popover of insertable tokens
+function composerTbMenu(kind, label, items) {
+  const lbId = "mc-compose-" + kind + "-lb";
+  return `<button type="button" class="composer__tb-btn composer__tb-adv" id="mc-compose-${kind}-btn" popovertarget="${lbId}" aria-haspopup="listbox">${kind === "merge" ? iconTag : iconLink}${label}${iconTbChevron}</button>
+              <div class="listbox composer__tb-lb" id="${lbId}" data-tb="${kind}" popover>
+                <ul class="listbox__list" role="listbox" aria-label="${label}">
+                  ${items.map((t) => `<li><button class="listbox__option" role="option" type="button" data-insert="${esc(t)}">${t}</button></li>`).join("\n                  ")}
+                </ul>
+              </div>`;
+}
 // collapse / close as a round handle straddling the panel edge (per ref), not
 // a full-width header bar
 const composeCollapseAction = `<button type="button" class="mc-ai__handle mc-ai__handle--collapse" data-ai-collapse aria-label="Hide AI panel">${iconHandleCollapse}</button>`;
@@ -2111,11 +2155,20 @@ const composeMarkup = `<dialog class="mc-compose" id="mc-compose" aria-labelledb
         <div class="mc-compose__editor" id="mc-compose-editor">
           <form class="composer composer--rich" onsubmit="return false">
             <div class="composer__toolbar">
+              <button type="button" class="composer__icon-btn composer__tb-adv" aria-label="Undo" tabindex="-1">${iconUndo}</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" aria-label="Redo" tabindex="-1">${iconRedo}</button>
+              <span class="composer__tb-sep composer__tb-adv"></span>
               <button type="button" class="composer__icon-btn" aria-label="Bold">${iconBold}</button>
               <button type="button" class="composer__icon-btn" aria-label="Italic">${iconItalic}</button>
               <button type="button" class="composer__icon-btn" aria-label="Underline">${iconUnderline}</button>
-              <button type="button" class="composer__icon-btn" id="mc-compose-attach-btn" aria-label="Attach files">${iconAttach}</button>
-              <button type="button" class="btn btn--ghost btn--sm">${iconTag}Merge Tags</button>
+              <button type="button" class="composer__tb-btn composer__tb-more" id="mc-compose-tb-more" aria-expanded="false" aria-label="More formatting options">${iconTbMore}</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" aria-label="Strikethrough" tabindex="-1">${iconStrike}</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" aria-label="Code" tabindex="-1">${iconCode}</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" aria-label="Align" tabindex="-1">${iconAlign}</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" id="mc-compose-attach-btn" aria-label="Attach files">${iconAttach}</button>
+              <span class="composer__tb-sep composer__tb-adv"></span>
+              ${composerTbMenu("merge", "Merge Tags", MERGE_TAGS)}
+              ${composerTbMenu("links", "Hyperlinks", HYPERLINKS)}
               <button type="button" class="composer__ai-assist" id="mc-compose-ai-assist">${iconAi}AI Assist</button>
             </div>
             <div class="composer__field">
@@ -3207,6 +3260,33 @@ const appJs = `(function () {
     composeMessage.style.height = Math.min(composeMessage.scrollHeight, 300) + "px";
   }
   composeMessage.addEventListener("input", function () { growMessage(); validateCompose(); });
+  // Merge Tags / Hyperlinks dropdowns — insert the chosen token at the cursor
+  function insertAtCursor(ta, text) {
+    var start = ta.selectionStart != null ? ta.selectionStart : ta.value.length;
+    var end = ta.selectionEnd != null ? ta.selectionEnd : ta.value.length;
+    ta.value = ta.value.slice(0, start) + text + ta.value.slice(end);
+    var pos = start + text.length;
+    ta.selectionStart = ta.selectionEnd = pos;
+    ta.focus();
+    ta.dispatchEvent(new Event("input", { bubbles: true }));
+  }
+  composeDlg.querySelectorAll(".composer__tb-lb").forEach(function (lb) {
+    lb.querySelectorAll(".listbox__option").forEach(function (opt) {
+      opt.addEventListener("click", function () {
+        insertAtCursor(composeMessage, opt.dataset.insert + " ");
+        lb.hidePopover();
+      });
+    });
+  });
+  // mobile/tablet: the "More" chevron reveals the collapsed advanced toolbar
+  var composeTbMore = document.getElementById("mc-compose-tb-more");
+  if (composeTbMore) {
+    composeTbMore.addEventListener("click", function () {
+      var tb = composeTbMore.closest(".composer__toolbar");
+      var expanded = tb.classList.toggle("is-expanded");
+      composeTbMore.setAttribute("aria-expanded", expanded ? "true" : "false");
+    });
+  }
 
   // Select float model (Input's own): resting = placeholder only; the 12px
   // label floats in once a value exists
