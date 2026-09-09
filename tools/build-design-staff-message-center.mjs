@@ -987,7 +987,7 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
   .mc-kbd__key--return { flex: 2; max-width: none; background: ${cv("fill.primary")}; color: ${cv("text.onFill")}; font-size: 13px; }
 }
 @media (min-width: 768px) {
-  .mc-compose { width: min(640px, calc(100vw - ${px(resolve("dim.8"))})); max-height: calc(100dvh - ${px(resolve("dim.16"))}); border-radius: ${mdRadius}; box-shadow: ${mdShadowCss}; }
+  .mc-compose { width: min(720px, calc(100vw - ${px(resolve("dim.8"))})); max-height: calc(100dvh - ${px(resolve("dim.16"))}); border-radius: ${mdRadius}; box-shadow: ${mdShadowCss}; }
   .mc-compose__cancel-m, .mc-compose__send-m { display: none; }
   .mc-compose__header { padding: ${px(resolve("dim.4"))} ${mdPadding}; }
   .mc-compose__body { padding: ${mdPadding}; gap: ${mdGap}; }
