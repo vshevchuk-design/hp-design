@@ -55,6 +55,7 @@
   --tok-text-ai: #743ed8;
   --tok-icon-ai: #8a5af4;
   --tok-fill-ai: #8a5af4;
+  --tok-color-violet-150: #ddd7fd;
   --tok-avatar-teal-bg: #cfefef;
   --tok-avatar-teal-text: #057878;
   --tok-avatar-orange-bg: #ffe1d5;
@@ -250,13 +251,18 @@
 .composer__tb-btn .composer__icon { width: 16px; height: 16px; color: var(--tok-icon-secondary); flex-shrink: 0; }
 .composer__tb-chev { width: 16px; height: 16px; opacity: 0.7; flex-shrink: 0; }
 .composer__tb-lb { max-height: 260px; overflow-y: auto; }
-/* mobile/tablet: the fuller toolbar collapses behind a "More" chevron — B/I/U
-   and AI Assist stay visible; everything else (undo/redo, strike/code/align,
-   attach, Merge Tags, Hyperlinks) tucks away until the chevron is toggled.
-   Desktop (>=1024) shows the whole toolbar and hides the chevron. */
-.composer__tb-adv { display: none; }
-.composer__toolbar.is-expanded .composer__tb-adv { display: inline-flex; }
-.composer__tb-more { display: inline-flex; background: var(--tok-surface-sunken); }
+/* progressive overflow: JS hides collapsible controls (.composer__tb-adv) one by
+   one — rightmost group first — as the toolbar narrows, and shows the "More"
+   chevron holding whatever overflowed. B/I/U + AI Assist never collapse.
+   Clicking More expands to reveal the hidden controls inline. */
+.composer__tb-collapsed { display: none; }
+.composer__toolbar.is-expanded .composer__tb-collapsed { display: inline-flex; }
+/* measurement pass: force a single line so scrollWidth vs clientWidth reveals
+   real overflow (offsetTop is unreliable — the AI Assist tab's negative margins
+   put it on its own offset line even while visually on row one) */
+.composer__toolbar.is-measuring { flex-wrap: nowrap; overflow: hidden; }
+.composer__tb-more { display: none; background: var(--tok-surface-sunken); }
+.composer__toolbar.has-overflow .composer__tb-more { display: inline-flex; }
 .composer__tb-more:hover { background: var(--tok-fill-neutral-hover); }
 .composer__tb-more-chev { width: 18px; height: 18px; color: var(--tok-icon-secondary); flex-shrink: 0; transition: transform 0.15s ease; }
 .composer__toolbar.is-expanded .composer__tb-more-chev { transform: rotate(180deg); }
@@ -908,15 +914,6 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   .mc-rail__search { flex: 0 1 260px; }
   .mc-topbar-new { display: inline-flex; }
   .mc-fab { display: none; }
-  /* the compose toolbar is roomy on desktop — show the whole thing, retire the
-     "More" chevron that collapses it on mobile/tablet */
-  .composer__tb-adv { display: inline-flex; }
-  .composer__tb-more { display: none; }
-  /* ...unless the AI panel is open: the editor narrows, so collapse the overflow
-     back behind the "More" chevron instead of letting the toolbar wrap */
-  .mc-compose--ai-open .composer__tb-adv { display: none; }
-  .mc-compose--ai-open .composer__toolbar.is-expanded .composer__tb-adv { display: inline-flex; }
-  .mc-compose--ai-open .composer__tb-more { display: inline-flex; }
   .mc-rail__lists { padding-bottom: 16px; }
   .mc__topbar { padding: 0 24px; }
   /* keep the whole rail on one left edge: toolbar tabs + filter chips must line
@@ -959,7 +956,10 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
    a glued, distinct tab (its own lavender ground + a left divider) so it reads as
    the standout action. The box's overflow:hidden clips its corner to the radius,
    and negative margins cancel the toolbar padding so it sits flush to the edges. */
-.mc-compose__editor .composer__ai-assist { align-self: stretch; height: auto; margin: -4px -8px -4px auto; padding: 0 12px; border-radius: 0; border-left: 1px solid var(--tok-border-default); font-size: 13px; }
+.mc-compose__editor .composer__ai-assist { align-self: stretch; height: auto; margin: -4px -8px -4px auto; padding: 0 12px; border-radius: 0; border: none; border-left: 1px solid var(--tok-border-default); font-size: 13px; }
+/* glued tab: hover shifts the lavender ground (no border — a border here would
+   draw a square corner past the box's rounded clip and read as broken) */
+.mc-compose__editor .composer__ai-assist:hover { border-color: transparent; border-left-color: var(--tok-border-default); background: var(--tok-color-violet-150); }
 .mc-compose__editor .composer__ai-assist .composer__icon { width: 14px; height: 14px; }
 .mc-compose__editor .composer__tb-sep { align-self: auto; height: 16px; margin: 0 4px; }
 /* pending attachments — a wrap of removable chips (image thumbnail or file
@@ -2304,28 +2304,27 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         <div class="mc-compose__editor" id="mc-compose-editor">
           <form class="composer composer--rich" onsubmit="return false">
             <div class="composer__toolbar">
-              <button type="button" class="composer__icon-btn composer__tb-adv" aria-label="Undo" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="13" aria-label="Undo" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg>
 </button>
-              <button type="button" class="composer__icon-btn composer__tb-adv" aria-label="Redo" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M18.4 10.6C16.55 8.99 14.15 8 11.5 8c-4.65 0-8.58 3.03-9.96 7.22L3.9 16c1.05-3.19 4.05-5.5 7.6-5.5 1.95 0 3.73.72 5.12 1.88L13 16h9V7l-3.6 3.6z"/></svg>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="12" aria-label="Redo" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M18.4 10.6C16.55 8.99 14.15 8 11.5 8c-4.65 0-8.58 3.03-9.96 7.22L3.9 16c1.05-3.19 4.05-5.5 7.6-5.5 1.95 0 3.73.72 5.12 1.88L13 16h9V7l-3.6 3.6z"/></svg>
 </button>
-              <span class="composer__tb-sep composer__tb-adv"></span>
-              <button type="button" class="composer__tb-btn composer__tb-style composer__tb-adv" tabindex="-1">Normal<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
-              <span class="composer__tb-sep composer__tb-adv"></span>
+              <span class="composer__tb-sep composer__tb-adv" data-tb-order="11"></span>
+              <button type="button" class="composer__tb-btn composer__tb-style composer__tb-adv" data-tb-order="9" tabindex="-1">Normal<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <span class="composer__tb-sep composer__tb-adv" data-tb-order="10"></span>
               <button type="button" class="composer__icon-btn" aria-label="Bold"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.6 10.79c.97-.67 1.65-1.77 1.65-2.79 0-2.26-1.75-4-4-4H7v14h7.04c2.09 0 3.71-1.7 3.71-3.79 0-1.52-.86-2.82-2.15-3.42zM10 6.5h3c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-3v-3zm3.5 9H10v-3h3.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5z"/></svg></button>
               <button type="button" class="composer__icon-btn" aria-label="Italic"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 4v3h2.21l-3.42 8H6v3h8v-3h-2.21l3.42-8H18V4z"/></svg></button>
               <button type="button" class="composer__icon-btn" aria-label="Underline"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 17c3.31 0 6-2.69 6-6V3h-2.5v8c0 1.93-1.57 3.5-3.5 3.5S8.5 12.93 8.5 11V3H6v8c0 3.31 2.69 6 6 6zm-7 2v2h14v-2H5z"/></svg></button>
-              <button type="button" class="composer__tb-btn composer__tb-more" id="mc-compose-tb-more" aria-expanded="false" aria-label="More formatting options"><svg class="composer__tb-more-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
-              <button type="button" class="composer__icon-btn composer__tb-adv" aria-label="Strikethrough" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 19h4v-3h-4v3zM5 4v3h5v3h4V7h5V4H5zM3 14h18v-2H3v2z"/></svg>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="8" aria-label="Strikethrough" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 19h4v-3h-4v3zM5 4v3h5v3h4V7h5V4H5zM3 14h18v-2H3v2z"/></svg>
 </button>
-              <button type="button" class="composer__icon-btn composer__tb-adv" aria-label="Code" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="7" aria-label="Code" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg>
 </button>
-              <button type="button" class="composer__icon-btn composer__tb-adv" aria-label="Align" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15 15H3v2h12v-2zm0-8H3v2h12V7zM3 13h18v-2H3v2zm0 8h18v-2H3v2zM3 3v2h18V3H3z"/></svg>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="6" aria-label="Align" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15 15H3v2h12v-2zm0-8H3v2h12V7zM3 13h18v-2H3v2zm0 8h18v-2H3v2zM3 3v2h18V3H3z"/></svg>
 </button>
-              <button type="button" class="composer__icon-btn composer__tb-adv" aria-label="Insert link" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="5" aria-label="Insert link" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg>
 </button>
-              <button type="button" class="composer__icon-btn composer__tb-adv" aria-label="Insert email" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></button>
-              <span class="composer__tb-sep composer__tb-adv"></span>
-              <button type="button" class="composer__tb-btn composer__tb-adv" id="mc-compose-merge-btn" popovertarget="mc-compose-merge-lb" aria-haspopup="listbox">Merge Tags<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="4" aria-label="Insert email" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></button>
+              <span class="composer__tb-sep composer__tb-adv" data-tb-order="3"></span>
+              <button type="button" class="composer__tb-btn composer__tb-adv" id="mc-compose-merge-btn" data-tb-order="2" popovertarget="mc-compose-merge-lb" aria-haspopup="listbox">Merge Tags<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
               <div class="listbox composer__tb-lb" id="mc-compose-merge-lb" data-tb="merge" popover>
                 <ul class="listbox__list" role="listbox" aria-label="Merge Tags">
                   <li><button class="listbox__option" role="option" type="button" data-insert="{{studentName}}">{{studentName}}</button></li>
@@ -2333,7 +2332,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
                   <li><button class="listbox__option" role="option" type="button" data-insert="{{studentLastName}}">{{studentLastName}}</button></li>
                 </ul>
               </div>
-              <button type="button" class="composer__tb-btn composer__tb-adv" id="mc-compose-links-btn" popovertarget="mc-compose-links-lb" aria-haspopup="listbox">Hyperlinks<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <button type="button" class="composer__tb-btn composer__tb-adv" id="mc-compose-links-btn" data-tb-order="1" popovertarget="mc-compose-links-lb" aria-haspopup="listbox">Hyperlinks<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
               <div class="listbox composer__tb-lb" id="mc-compose-links-lb" data-tb="links" popover>
                 <ul class="listbox__list" role="listbox" aria-label="Hyperlinks">
                   <li><button class="listbox__option" role="option" type="button" data-insert="1098-TConsent">1098-TConsent</button></li>
@@ -2349,6 +2348,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
                   <li><button class="listbox__option" role="option" type="button" data-insert="ShoppingCart">ShoppingCart</button></li>
                 </ul>
               </div>
+              <button type="button" class="composer__tb-btn composer__tb-more" id="mc-compose-tb-more" aria-expanded="false" aria-label="More formatting options"><svg class="composer__tb-more-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
               <button type="button" class="composer__ai-assist" id="mc-compose-ai-assist"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
             </div>
             <div class="composer__field">
@@ -3285,14 +3285,44 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
       });
     });
   });
-  // mobile/tablet: the "More" chevron reveals the collapsed advanced toolbar
+  // Toolbar overflow: as the editor narrows, hide collapsible controls one at a
+  // time (rightmost group first, per data-tb-order) and reveal the "More"
+  // chevron; B/I/U + AI Assist never collapse. Clicking More expands to show the
+  // hidden controls inline. Driven by the toolbar's own width (ResizeObserver).
   var composeTbMore = document.getElementById("mc-compose-tb-more");
-  if (composeTbMore) {
+  var composeToolbar = composeTbMore ? composeTbMore.closest(".composer__toolbar") : null;
+  if (composeToolbar) {
+    var tbItems = Array.prototype.slice.call(composeToolbar.querySelectorAll(".composer__tb-adv"));
+    tbItems.sort(function (a, b) { return (+a.dataset.tbOrder) - (+b.dataset.tbOrder); });
+    function tbOverflowing() { return composeToolbar.scrollWidth > composeToolbar.clientWidth + 1; }
+    function tbReflow() {
+      if (composeToolbar.classList.contains("is-expanded")) return;
+      composeToolbar.classList.add("is-measuring");
+      tbItems.forEach(function (el) { el.classList.remove("composer__tb-collapsed"); });
+      composeToolbar.classList.remove("has-overflow");
+      if (tbOverflowing()) {
+        composeToolbar.classList.add("has-overflow");
+        for (var i = 0; i < tbItems.length && tbOverflowing(); i++) {
+          tbItems[i].classList.add("composer__tb-collapsed");
+        }
+      }
+      composeToolbar.classList.remove("is-measuring");
+    }
     composeTbMore.addEventListener("click", function () {
-      var tb = composeTbMore.closest(".composer__toolbar");
-      var expanded = tb.classList.toggle("is-expanded");
+      var expanded = composeToolbar.classList.toggle("is-expanded");
       composeTbMore.setAttribute("aria-expanded", expanded ? "true" : "false");
+      if (!expanded) tbReflow();
     });
+    var tbLastW = -1;
+    if (typeof ResizeObserver !== "undefined") {
+      new ResizeObserver(function () {
+        var w = Math.round(composeToolbar.clientWidth);
+        if (w === tbLastW) return;
+        tbLastW = w;
+        tbReflow();
+      }).observe(composeToolbar);
+    }
+    requestAnimationFrame(tbReflow);
   }
 
   // Select float model (Input's own): resting = placeholder only; the 12px

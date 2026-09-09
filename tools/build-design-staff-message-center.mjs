@@ -145,7 +145,7 @@ const colorPaths = [
   "surface.dimHover",
   "bg.primary", "bg.primaryHover", "bg.neutral", "bg.warning", "text.warning", "bg.danger", "text.danger", "bg.success", "text.success", "status.success", "surface.overlay",
   "fill.danger", "fill.dangerHover", "fill.disabled", "text.disabled", "icon.disabled", "surface.disabled",
-  "bg.ai", "text.ai", "icon.ai", "fill.ai",
+  "bg.ai", "text.ai", "icon.ai", "fill.ai", "color.violet.150",
   ...usedHues.flatMap((h) => [`avatar.${h}.bg`, `avatar.${h}.text`]),
 ];
 const colorValue = Object.fromEntries(colorPaths.map((p) => [p, resolve(p)]));
@@ -763,13 +763,18 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
 .composer__tb-btn .composer__icon { width: ${btnGhostSmIconSize}; height: ${btnGhostSmIconSize}; color: ${cv("icon.secondary")}; flex-shrink: 0; }
 .composer__tb-chev { width: 16px; height: 16px; opacity: 0.7; flex-shrink: 0; }
 .composer__tb-lb { max-height: 260px; overflow-y: auto; }
-/* mobile/tablet: the fuller toolbar collapses behind a "More" chevron — B/I/U
-   and AI Assist stay visible; everything else (undo/redo, strike/code/align,
-   attach, Merge Tags, Hyperlinks) tucks away until the chevron is toggled.
-   Desktop (>=1024) shows the whole toolbar and hides the chevron. */
-.composer__tb-adv { display: none; }
-.composer__toolbar.is-expanded .composer__tb-adv { display: inline-flex; }
-.composer__tb-more { display: inline-flex; background: ${cv("surface.sunken")}; }
+/* progressive overflow: JS hides collapsible controls (.composer__tb-adv) one by
+   one — rightmost group first — as the toolbar narrows, and shows the "More"
+   chevron holding whatever overflowed. B/I/U + AI Assist never collapse.
+   Clicking More expands to reveal the hidden controls inline. */
+.composer__tb-collapsed { display: none; }
+.composer__toolbar.is-expanded .composer__tb-collapsed { display: inline-flex; }
+/* measurement pass: force a single line so scrollWidth vs clientWidth reveals
+   real overflow (offsetTop is unreliable — the AI Assist tab's negative margins
+   put it on its own offset line even while visually on row one) */
+.composer__toolbar.is-measuring { flex-wrap: nowrap; overflow: hidden; }
+.composer__tb-more { display: none; background: ${cv("surface.sunken")}; }
+.composer__toolbar.has-overflow .composer__tb-more { display: inline-flex; }
 .composer__tb-more:hover { background: ${cv("fill.neutralHover")}; }
 .composer__tb-more-chev { width: 18px; height: 18px; color: ${cv("icon.secondary")}; flex-shrink: 0; transition: transform 0.15s ease; }
 .composer__toolbar.is-expanded .composer__tb-more-chev { transform: rotate(180deg); }
@@ -1303,15 +1308,6 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
   .mc-rail__search { flex: 0 1 260px; }
   .mc-topbar-new { display: inline-flex; }
   .mc-fab { display: none; }
-  /* the compose toolbar is roomy on desktop — show the whole thing, retire the
-     "More" chevron that collapses it on mobile/tablet */
-  .composer__tb-adv { display: inline-flex; }
-  .composer__tb-more { display: none; }
-  /* ...unless the AI panel is open: the editor narrows, so collapse the overflow
-     back behind the "More" chevron instead of letting the toolbar wrap */
-  .mc-compose--ai-open .composer__tb-adv { display: none; }
-  .mc-compose--ai-open .composer__toolbar.is-expanded .composer__tb-adv { display: inline-flex; }
-  .mc-compose--ai-open .composer__tb-more { display: inline-flex; }
   .mc-rail__lists { padding-bottom: ${px(resolve("dim.4"))}; }
   .mc__topbar { padding: 0 ${px(resolve("dim.6"))}; }
   /* keep the whole rail on one left edge: toolbar tabs + filter chips must line
@@ -1360,7 +1356,10 @@ const composeAiCss = `.mc-compose__tabs { display: none; flex-shrink: 0; }
    a glued, distinct tab (its own lavender ground + a left divider) so it reads as
    the standout action. The box's overflow:hidden clips its corner to the radius,
    and negative margins cancel the toolbar padding so it sits flush to the edges. */
-.mc-compose__editor .composer__ai-assist { align-self: stretch; height: auto; margin: -${px(resolve("dim.1"))} -${px(resolve("dim.2"))} -${px(resolve("dim.1"))} auto; padding: 0 ${px(resolve("dim.3"))}; border-radius: 0; border-left: 1px solid ${cv("border.default")}; font-size: 13px; }
+.mc-compose__editor .composer__ai-assist { align-self: stretch; height: auto; margin: -${px(resolve("dim.1"))} -${px(resolve("dim.2"))} -${px(resolve("dim.1"))} auto; padding: 0 ${px(resolve("dim.3"))}; border-radius: 0; border: none; border-left: 1px solid ${cv("border.default")}; font-size: 13px; }
+/* glued tab: hover shifts the lavender ground (no border — a border here would
+   draw a square corner past the box's rounded clip and read as broken) */
+.mc-compose__editor .composer__ai-assist:hover { border-color: transparent; border-left-color: ${cv("border.default")}; background: ${cv("color.violet.150")}; }
 .mc-compose__editor .composer__ai-assist .composer__icon { width: 14px; height: 14px; }
 .mc-compose__editor .composer__tb-sep { align-self: auto; height: ${px(resolve("dim.4"))}; margin: 0 ${px(resolve("dim.1"))}; }
 /* pending attachments — a wrap of removable chips (image thumbnail or file
@@ -2104,9 +2103,9 @@ const composeDepartments = ["Academic Advising", "Student Records", "Financial A
 const MERGE_TAGS = ["{{studentName}}", "{{studentFirstName}}", "{{studentLastName}}"];
 const HYPERLINKS = ["1098-TConsent", "Accept/DeclineAward", "Address", "ApplicationStatus", "ApplyforGraduation", "FAFSA", "FederalStudentAid", "FinancialAidAward", "MessageCenter", "ScheduleBuilder", "ShoppingCart"];
 // a toolbar dropdown: an icon/label trigger opening a listbox popover of insertable tokens
-function composerTbMenu(kind, label, items) {
+function composerTbMenu(kind, label, items, order) {
   const lbId = "mc-compose-" + kind + "-lb";
-  return `<button type="button" class="composer__tb-btn composer__tb-adv" id="mc-compose-${kind}-btn" popovertarget="${lbId}" aria-haspopup="listbox">${label}${iconTbChevron}</button>
+  return `<button type="button" class="composer__tb-btn composer__tb-adv" id="mc-compose-${kind}-btn" data-tb-order="${order}" popovertarget="${lbId}" aria-haspopup="listbox">${label}${iconTbChevron}</button>
               <div class="listbox composer__tb-lb" id="${lbId}" data-tb="${kind}" popover>
                 <ul class="listbox__list" role="listbox" aria-label="${label}">
                   ${items.map((t) => `<li><button class="listbox__option" role="option" type="button" data-insert="${esc(t)}">${t}</button></li>`).join("\n                  ")}
@@ -2179,23 +2178,23 @@ const composeMarkup = `<dialog class="mc-compose" id="mc-compose" aria-labelledb
         <div class="mc-compose__editor" id="mc-compose-editor">
           <form class="composer composer--rich" onsubmit="return false">
             <div class="composer__toolbar">
-              <button type="button" class="composer__icon-btn composer__tb-adv" aria-label="Undo" tabindex="-1">${iconUndo}</button>
-              <button type="button" class="composer__icon-btn composer__tb-adv" aria-label="Redo" tabindex="-1">${iconRedo}</button>
-              <span class="composer__tb-sep composer__tb-adv"></span>
-              <button type="button" class="composer__tb-btn composer__tb-style composer__tb-adv" tabindex="-1">Normal${iconTbChevron}</button>
-              <span class="composer__tb-sep composer__tb-adv"></span>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="13" aria-label="Undo" tabindex="-1">${iconUndo}</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="12" aria-label="Redo" tabindex="-1">${iconRedo}</button>
+              <span class="composer__tb-sep composer__tb-adv" data-tb-order="11"></span>
+              <button type="button" class="composer__tb-btn composer__tb-style composer__tb-adv" data-tb-order="9" tabindex="-1">Normal${iconTbChevron}</button>
+              <span class="composer__tb-sep composer__tb-adv" data-tb-order="10"></span>
               <button type="button" class="composer__icon-btn" aria-label="Bold">${iconBold}</button>
               <button type="button" class="composer__icon-btn" aria-label="Italic">${iconItalic}</button>
               <button type="button" class="composer__icon-btn" aria-label="Underline">${iconUnderline}</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="8" aria-label="Strikethrough" tabindex="-1">${iconStrike}</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="7" aria-label="Code" tabindex="-1">${iconCode}</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="6" aria-label="Align" tabindex="-1">${iconAlign}</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="5" aria-label="Insert link" tabindex="-1">${iconLink}</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="4" aria-label="Insert email" tabindex="-1">${iconEmail}</button>
+              <span class="composer__tb-sep composer__tb-adv" data-tb-order="3"></span>
+              ${composerTbMenu("merge", "Merge Tags", MERGE_TAGS, 2)}
+              ${composerTbMenu("links", "Hyperlinks", HYPERLINKS, 1)}
               <button type="button" class="composer__tb-btn composer__tb-more" id="mc-compose-tb-more" aria-expanded="false" aria-label="More formatting options">${iconTbMore}</button>
-              <button type="button" class="composer__icon-btn composer__tb-adv" aria-label="Strikethrough" tabindex="-1">${iconStrike}</button>
-              <button type="button" class="composer__icon-btn composer__tb-adv" aria-label="Code" tabindex="-1">${iconCode}</button>
-              <button type="button" class="composer__icon-btn composer__tb-adv" aria-label="Align" tabindex="-1">${iconAlign}</button>
-              <button type="button" class="composer__icon-btn composer__tb-adv" aria-label="Insert link" tabindex="-1">${iconLink}</button>
-              <button type="button" class="composer__icon-btn composer__tb-adv" aria-label="Insert email" tabindex="-1">${iconEmail}</button>
-              <span class="composer__tb-sep composer__tb-adv"></span>
-              ${composerTbMenu("merge", "Merge Tags", MERGE_TAGS)}
-              ${composerTbMenu("links", "Hyperlinks", HYPERLINKS)}
               <button type="button" class="composer__ai-assist" id="mc-compose-ai-assist">${iconAi}AI Assist</button>
             </div>
             <div class="composer__field">
@@ -3305,14 +3304,44 @@ const appJs = `(function () {
       });
     });
   });
-  // mobile/tablet: the "More" chevron reveals the collapsed advanced toolbar
+  // Toolbar overflow: as the editor narrows, hide collapsible controls one at a
+  // time (rightmost group first, per data-tb-order) and reveal the "More"
+  // chevron; B/I/U + AI Assist never collapse. Clicking More expands to show the
+  // hidden controls inline. Driven by the toolbar's own width (ResizeObserver).
   var composeTbMore = document.getElementById("mc-compose-tb-more");
-  if (composeTbMore) {
+  var composeToolbar = composeTbMore ? composeTbMore.closest(".composer__toolbar") : null;
+  if (composeToolbar) {
+    var tbItems = Array.prototype.slice.call(composeToolbar.querySelectorAll(".composer__tb-adv"));
+    tbItems.sort(function (a, b) { return (+a.dataset.tbOrder) - (+b.dataset.tbOrder); });
+    function tbOverflowing() { return composeToolbar.scrollWidth > composeToolbar.clientWidth + 1; }
+    function tbReflow() {
+      if (composeToolbar.classList.contains("is-expanded")) return;
+      composeToolbar.classList.add("is-measuring");
+      tbItems.forEach(function (el) { el.classList.remove("composer__tb-collapsed"); });
+      composeToolbar.classList.remove("has-overflow");
+      if (tbOverflowing()) {
+        composeToolbar.classList.add("has-overflow");
+        for (var i = 0; i < tbItems.length && tbOverflowing(); i++) {
+          tbItems[i].classList.add("composer__tb-collapsed");
+        }
+      }
+      composeToolbar.classList.remove("is-measuring");
+    }
     composeTbMore.addEventListener("click", function () {
-      var tb = composeTbMore.closest(".composer__toolbar");
-      var expanded = tb.classList.toggle("is-expanded");
+      var expanded = composeToolbar.classList.toggle("is-expanded");
       composeTbMore.setAttribute("aria-expanded", expanded ? "true" : "false");
+      if (!expanded) tbReflow();
     });
+    var tbLastW = -1;
+    if (typeof ResizeObserver !== "undefined") {
+      new ResizeObserver(function () {
+        var w = Math.round(composeToolbar.clientWidth);
+        if (w === tbLastW) return;
+        tbLastW = w;
+        tbReflow();
+      }).observe(composeToolbar);
+    }
+    requestAnimationFrame(tbReflow);
   }
 
   // Select float model (Input's own): resting = placeholder only; the 12px
