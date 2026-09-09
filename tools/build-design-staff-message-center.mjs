@@ -2284,8 +2284,8 @@ const composeMarkup = `<dialog class="mc-compose" id="mc-compose" aria-labelledb
           ${checkboxMarkup("Expire Thread", { checked: false, id: "mc-compose-expire" })}
         </div>
         <div class="mc-compose__foot-actions">
-          <button class="btn btn--secondary btn--sm" id="mc-compose-cancel" type="button">Cancel</button>
-          <button class="btn btn--primary btn--sm" id="mc-compose-send" type="button" disabled>Send</button>
+          <button class="btn btn--secondary btn--base" id="mc-compose-cancel" type="button">Cancel</button>
+          <button class="btn btn--primary btn--base" id="mc-compose-send" type="button" disabled>${iconSend}Send Message</button>
         </div>
       </footer>
     </div>
