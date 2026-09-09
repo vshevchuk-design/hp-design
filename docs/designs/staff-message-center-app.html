@@ -475,7 +475,7 @@
   .mc-kbd__key--return { flex: 2; max-width: none; background: var(--tok-fill-primary); color: var(--tok-text-on-fill); font-size: 13px; }
 }
 @media (min-width: 768px) {
-  .mc-compose { width: min(720px, calc(100vw - 32px)); max-height: calc(100dvh - 64px); border-radius: 24px; box-shadow: 0px 8px 24px -2px rgba(21, 25, 30, 0.16); }
+  .mc-compose { width: min(760px, calc(100vw - 32px)); max-height: calc(100dvh - 64px); border-radius: 24px; box-shadow: 0px 8px 24px -2px rgba(21, 25, 30, 0.16); }
   .mc-compose__cancel-m, .mc-compose__send-m { display: none; }
   .mc-compose__header { padding: 16px 24px; }
   .mc-compose__body { padding: 24px; gap: 12px; }
@@ -2315,7 +2315,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 </button>
               <button type="button" class="composer__icon-btn composer__tb-adv" aria-label="Insert email" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></button>
               <span class="composer__tb-sep composer__tb-adv"></span>
-              <button type="button" class="composer__tb-btn composer__tb-adv" id="mc-compose-merge-btn" popovertarget="mc-compose-merge-lb" aria-haspopup="listbox">Merge Tags</button>
+              <button type="button" class="composer__tb-btn composer__tb-adv" id="mc-compose-merge-btn" popovertarget="mc-compose-merge-lb" aria-haspopup="listbox">Merge Tags<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
               <div class="listbox composer__tb-lb" id="mc-compose-merge-lb" data-tb="merge" popover>
                 <ul class="listbox__list" role="listbox" aria-label="Merge Tags">
                   <li><button class="listbox__option" role="option" type="button" data-insert="{{studentName}}">{{studentName}}</button></li>
@@ -2323,7 +2323,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
                   <li><button class="listbox__option" role="option" type="button" data-insert="{{studentLastName}}">{{studentLastName}}</button></li>
                 </ul>
               </div>
-              <button type="button" class="composer__tb-btn composer__tb-adv" id="mc-compose-links-btn" popovertarget="mc-compose-links-lb" aria-haspopup="listbox">Hyperlinks</button>
+              <button type="button" class="composer__tb-btn composer__tb-adv" id="mc-compose-links-btn" popovertarget="mc-compose-links-lb" aria-haspopup="listbox">Hyperlinks<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
               <div class="listbox composer__tb-lb" id="mc-compose-links-lb" data-tb="links" popover>
                 <ul class="listbox__list" role="listbox" aria-label="Hyperlinks">
                   <li><button class="listbox__option" role="option" type="button" data-insert="1098-TConsent">1098-TConsent</button></li>

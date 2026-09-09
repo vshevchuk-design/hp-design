@@ -988,7 +988,7 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
   .mc-kbd__key--return { flex: 2; max-width: none; background: ${cv("fill.primary")}; color: ${cv("text.onFill")}; font-size: 13px; }
 }
 @media (min-width: 768px) {
-  .mc-compose { width: min(720px, calc(100vw - ${px(resolve("dim.8"))})); max-height: calc(100dvh - ${px(resolve("dim.16"))}); border-radius: ${mdRadius}; box-shadow: ${mdShadowCss}; }
+  .mc-compose { width: min(760px, calc(100vw - ${px(resolve("dim.8"))})); max-height: calc(100dvh - ${px(resolve("dim.16"))}); border-radius: ${mdRadius}; box-shadow: ${mdShadowCss}; }
   .mc-compose__cancel-m, .mc-compose__send-m { display: none; }
   .mc-compose__header { padding: ${px(resolve("dim.4"))} ${mdPadding}; }
   .mc-compose__body { padding: ${mdPadding}; gap: ${mdGap}; }
@@ -2096,7 +2096,7 @@ const HYPERLINKS = ["1098-TConsent", "Accept/DeclineAward", "Address", "Applicat
 // a toolbar dropdown: an icon/label trigger opening a listbox popover of insertable tokens
 function composerTbMenu(kind, label, items) {
   const lbId = "mc-compose-" + kind + "-lb";
-  return `<button type="button" class="composer__tb-btn composer__tb-adv" id="mc-compose-${kind}-btn" popovertarget="${lbId}" aria-haspopup="listbox">${label}</button>
+  return `<button type="button" class="composer__tb-btn composer__tb-adv" id="mc-compose-${kind}-btn" popovertarget="${lbId}" aria-haspopup="listbox">${label}${iconTbChevron}</button>
               <div class="listbox composer__tb-lb" id="${lbId}" data-tb="${kind}" popover>
                 <ul class="listbox__list" role="listbox" aria-label="${label}">
                   ${items.map((t) => `<li><button class="listbox__option" role="option" type="button" data-insert="${esc(t)}">${t}</button></li>`).join("\n                  ")}
