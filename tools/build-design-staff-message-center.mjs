@@ -905,11 +905,16 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
    airy); split views restore Modal's own padding/gap below */
 .mc-compose__body { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.4"))}; }
 .mc-compose__body .select { display: flex; width: 100%; flex-shrink: 0; }
-/* To (student) + Department share one row */
-.mc-compose__row { display: flex; gap: ${px(resolve("dim.2"))}; flex-shrink: 0; }
-.mc-compose__row .select { flex: 1 1 0; width: auto; min-width: 0; }
-.mc-compose__row .select__stack { min-width: 0; }
-.mc-compose__row .select__value { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* each field = a caption ("Student *") over its control; a red asterisk marks
+   required. Student + Department captions/controls share one row. */
+.mc-compose__fld { display: flex; flex-direction: column; gap: ${px(resolve("dim.1"))}; min-width: 0; flex-shrink: 0; }
+.mc-compose__flabel { color: ${cv("text.secondary")}; font-size: 13px; font-weight: 500; }
+.mc-req { color: ${cv("text.danger")}; }
+.mc-compose__row { display: flex; align-items: flex-start; gap: ${px(resolve("dim.2"))}; flex-shrink: 0; }
+.mc-compose__row .mc-compose__fld { flex: 1 1 0; }
+.mc-compose__fld .select { width: 100%; min-width: 0; }
+.mc-compose__fld .select__stack { min-width: 0; }
+.mc-compose__fld .select__value { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 /* the "To" student picker: a Select trigger opening a searchable Listbox (search
    input + scrollable list). Anchored under the trigger via CSS anchor positioning
    — JS getBoundingClientRect placement is unreliable inside the compose dialog
@@ -2164,14 +2169,20 @@ const composeMarkup = `<dialog class="mc-compose" id="mc-compose" aria-labelledb
       <div class="mc-compose__body">
         <p class="mc-compose__lead">Compose and send a new message on behalf of your department.</p>
         <div class="mc-compose__row">
-          <button class="select select--base select--resting" id="mc-compose-student" type="button" popovertarget="mc-compose-student-lb">
-            <span class="select__stack"><span class="select__label">To</span><span class="select__value" id="mc-compose-student-value">Select a student</span></span>
-            ${iconChevronSelect}
-          </button>
-          <button class="select select--base select--resting" id="mc-compose-dept" type="button" popovertarget="mc-compose-dept-lb">
-            <span class="select__stack"><span class="select__label">Department</span><span class="select__value" id="mc-compose-dept-value">Department</span></span>
-            ${iconChevronSelect}
-          </button>
+          <div class="mc-compose__fld">
+            <span class="mc-compose__flabel">Student<span class="mc-req"> *</span></span>
+            <button class="select select--base select--resting" id="mc-compose-student" type="button" popovertarget="mc-compose-student-lb">
+              <span class="select__stack"><span class="select__value" id="mc-compose-student-value">Select a student</span></span>
+              ${iconChevronSelect}
+            </button>
+          </div>
+          <div class="mc-compose__fld">
+            <span class="mc-compose__flabel">Department<span class="mc-req"> *</span></span>
+            <button class="select select--base select--resting" id="mc-compose-dept" type="button" popovertarget="mc-compose-dept-lb">
+              <span class="select__stack"><span class="select__value" id="mc-compose-dept-value">Department</span></span>
+              ${iconChevronSelect}
+            </button>
+          </div>
         </div>
         <div class="listbox mc-compose-student-lb" id="mc-compose-student-lb" popover>
           <div class="search search--base mc-compose-student-search">${iconSearch}<input class="search__input" id="mc-compose-student-input" placeholder="Search by name or ID" aria-label="Search students" /></div>
@@ -2185,11 +2196,15 @@ const composeMarkup = `<dialog class="mc-compose" id="mc-compose" aria-labelledb
             ${composeDepartments.map((d) => `<li><button class="listbox__option" role="option" aria-selected="false" data-dept="${esc(d)}" type="button">${d}${iconCheckmark}</button></li>`).join("\n            ")}
           </ul>
         </div>
-        <label class="mc-field">
-          <span class="mc-field__label">Subject</span>
-          <input class="mc-field__control" id="mc-compose-subject" maxlength="50" placeholder="Subject" aria-label="Subject" />
-        </label>
-        <span class="mc-compose__counter" id="mc-compose-counter">0/50</span>
+        <div class="mc-compose__fld">
+          <span class="mc-compose__flabel">Subject<span class="mc-req"> *</span></span>
+          <label class="mc-field">
+            <input class="mc-field__control" id="mc-compose-subject" maxlength="50" placeholder="Subject" aria-label="Subject" />
+          </label>
+          <span class="mc-compose__counter" id="mc-compose-counter">0/50</span>
+        </div>
+        <div class="mc-compose__fld">
+        <span class="mc-compose__flabel">Message<span class="mc-req"> *</span></span>
         <div class="mc-compose__editor" id="mc-compose-editor">
           <form class="composer composer--rich" onsubmit="return false">
             <div class="composer__toolbar">
@@ -2214,12 +2229,13 @@ const composeMarkup = `<dialog class="mc-compose" id="mc-compose" aria-labelledb
               <span class="composer__tb-break" aria-hidden="true"></span>
             </div>
             <div class="composer__field">
-              <textarea class="composer__input" id="mc-compose-message" rows="1" placeholder="Message *" aria-label="Message"></textarea>
+              <textarea class="composer__input" id="mc-compose-message" rows="1" placeholder="Write your message..." aria-label="Message"></textarea>
             </div>
             <div class="mc-attachments" id="mc-compose-attachments" hidden></div>
             <input type="file" id="mc-compose-file" accept="image/*,.pdf" multiple hidden />
             <div class="mc-attach-hint" aria-hidden="true">Drop files to attach</div>
           </form>
+        </div>
         </div>
         <div class="mc-compose__exp" id="mc-compose-exp" hidden>
           <span class="mc-compose__exp-label">Expiration</span>
