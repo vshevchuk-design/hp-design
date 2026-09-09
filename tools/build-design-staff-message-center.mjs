@@ -908,7 +908,7 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
 /* each field = a caption ("Student *") over its control; a red asterisk marks
    required. Student + Department captions/controls share one row. */
 .mc-compose__fld { display: flex; flex-direction: column; gap: ${px(resolve("dim.1"))}; min-width: 0; flex-shrink: 0; }
-.mc-compose__flabel { color: ${cv("text.secondary")}; font-size: 13px; font-weight: 500; }
+.mc-compose__flabel { color: ${cv("text.default")}; font-size: 13px; font-weight: 600; }
 .mc-req { color: ${cv("text.danger")}; }
 .mc-compose__row { display: flex; align-items: flex-start; gap: ${px(resolve("dim.2"))}; flex-shrink: 0; }
 .mc-compose__row .mc-compose__fld { flex: 1 1 0; }
@@ -2167,7 +2167,6 @@ const composeMarkup = `<dialog class="mc-compose" id="mc-compose" aria-labelledb
   <div class="mc-compose__cols">
     <div class="mc-compose__main">
       <div class="mc-compose__body">
-        <p class="mc-compose__lead">Compose and send a new message on behalf of your department.</p>
         <div class="mc-compose__row">
           <div class="mc-compose__fld">
             <span class="mc-compose__flabel">Student<span class="mc-req"> *</span></span>
@@ -2203,8 +2202,6 @@ const composeMarkup = `<dialog class="mc-compose" id="mc-compose" aria-labelledb
           </label>
           <span class="mc-compose__counter" id="mc-compose-counter">0/50</span>
         </div>
-        <div class="mc-compose__fld">
-        <span class="mc-compose__flabel">Message<span class="mc-req"> *</span></span>
         <div class="mc-compose__editor" id="mc-compose-editor">
           <form class="composer composer--rich" onsubmit="return false">
             <div class="composer__toolbar">
@@ -2235,7 +2232,6 @@ const composeMarkup = `<dialog class="mc-compose" id="mc-compose" aria-labelledb
             <input type="file" id="mc-compose-file" accept="image/*,.pdf" multiple hidden />
             <div class="mc-attach-hint" aria-hidden="true">Drop files to attach</div>
           </form>
-        </div>
         </div>
         <div class="mc-compose__exp" id="mc-compose-exp" hidden>
           <span class="mc-compose__exp-label">Expiration</span>
