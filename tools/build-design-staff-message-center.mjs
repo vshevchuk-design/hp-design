@@ -1236,8 +1236,9 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 @media (min-width: 1024px) {
   .mc__topbar { padding: 0 ${px(resolve("dim.6"))}; }
   /* keep the whole rail on one left edge: toolbar tabs + filter chips must line
-     up with the list/table below (all dim.6), not sit 8px inside it */
-  .mc-rail__topbar { padding-left: ${px(resolve("dim.6"))}; padding-right: ${px(resolve("dim.6"))}; }
+     up with the list/table below (all dim.6), not sit 8px inside it. A bit more
+     air between the two toolbar rows, and a wider gap down to the table. */
+  .mc-rail__topbar { padding-left: ${px(resolve("dim.6"))}; padding-right: ${px(resolve("dim.6"))}; gap: ${px(resolve("dim.3"))}; padding-bottom: ${px(resolve("dim.6"))}; }
   .mc-rail__lists { padding-left: ${px(resolve("dim.6"))}; padding-right: ${px(resolve("dim.6"))}; }
   .mc-thread__bar { padding-left: ${px(resolve("dim.6"))}; padding-right: ${px(resolve("dim.6"))}; }
   /* desktop: the subject sits inline between Back and the actions; narrower it
@@ -3882,8 +3883,7 @@ ${phaseECss}
               <div class="mc-filt-field">
                 <span class="mc-filt-label">Student ID</span>
                 <div class="search search--base mc-filt-student-search">
-                  ${iconSearch}
-                  <input class="search__input" id="mc-filt-student" placeholder="Search by student ID" aria-label="Search by student ID" />
+                  <input class="search__input" id="mc-filt-student" placeholder="Student ID" aria-label="Search by student ID" />
                   <button class="search__clear" id="mc-filt-student-clear" type="button" aria-label="Clear student ID" hidden>${iconClear.replace('<svg class="search__clear" ', '<svg ')}</button>
                 </div>
               </div>

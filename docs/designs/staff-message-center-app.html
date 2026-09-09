@@ -860,8 +860,9 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 @media (min-width: 1024px) {
   .mc__topbar { padding: 0 24px; }
   /* keep the whole rail on one left edge: toolbar tabs + filter chips must line
-     up with the list/table below (all dim.6), not sit 8px inside it */
-  .mc-rail__topbar { padding-left: 24px; padding-right: 24px; }
+     up with the list/table below (all dim.6), not sit 8px inside it. A bit more
+     air between the two toolbar rows, and a wider gap down to the table. */
+  .mc-rail__topbar { padding-left: 24px; padding-right: 24px; gap: 12px; padding-bottom: 24px; }
   .mc-rail__lists { padding-left: 24px; padding-right: 24px; }
   .mc-thread__bar { padding-left: 24px; padding-right: 24px; }
   /* desktop: the subject sits inline between Back and the actions; narrower it
@@ -1230,8 +1231,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
               <div class="mc-filt-field">
                 <span class="mc-filt-label">Student ID</span>
                 <div class="search search--base mc-filt-student-search">
-                  <svg class="search__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-                  <input class="search__input" id="mc-filt-student" placeholder="Search by student ID" aria-label="Search by student ID" />
+                  <input class="search__input" id="mc-filt-student" placeholder="Student ID" aria-label="Search by student ID" />
                   <button class="search__clear" id="mc-filt-student-clear" type="button" aria-label="Clear student ID" hidden><svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
                 </div>
               </div>
