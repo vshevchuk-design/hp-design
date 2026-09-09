@@ -1149,11 +1149,15 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   /* date: small, muted, no time */
   .mc-col-date .mc-date__d { font-size: 10px; font-weight: 400; color: var(--tok-text-muted); }
   .mc-col-date .mc-date__t { display: none; }
-  /* the Inbox/Resolved scope pill is redundant on a card (the tab already shows it) */
-  .mc--searching .thread-item-inbox__expires .thread-item-inbox__scope,
+  /* the Inbox/Resolved scope pill is redundant on a card (the tab shows it) —
+     EXCEPT in search results, where both folders are merged, so it shows at the
+     expire level (the "–" placeholder drops out) */
   .thread-item-inbox__expires .thread-item-inbox__scope { display: none; }
-  /* collapse Expiration / Involved cells that hold only a "–" so they add no gap */
-  .mc-trow.mc-console-cols > .mc-col-expiration:not(:has(> .badge:first-child)) { display: none; }
+  .mc--searching .thread-item-inbox__expires .thread-item-inbox__scope { display: inline-flex; }
+  .mc--searching .mc-col-expiration > .mc-td--muted { display: none; }
+  /* collapse the Expiration cell when it holds only a "–" (not searching); while
+     searching it always shows for the scope pill. Involved collapses likewise. */
+  .mc:not(.mc--searching) .mc-trow.mc-console-cols > .mc-col-expiration:not(:has(> .badge:first-child)) { display: none; }
   .mc-trow.mc-console-cols > .mc-col-responsible:not(:has(.mc-resp)) { display: none; }
   .mc-col-responsible .mc-resp { flex-wrap: wrap; }
 }
