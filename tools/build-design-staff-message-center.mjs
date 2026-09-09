@@ -145,7 +145,7 @@ const colorPaths = [
   "surface.dimHover",
   "bg.primary", "bg.primaryHover", "bg.neutral", "bg.warning", "text.warning", "bg.danger", "text.danger", "bg.success", "text.success", "status.success", "surface.overlay",
   "fill.danger", "fill.dangerHover", "fill.disabled", "text.disabled", "icon.disabled", "surface.disabled",
-  "bg.ai", "text.ai", "icon.ai", "fill.ai", "color.violet.150",
+  "bg.ai", "text.ai", "icon.ai", "fill.ai",
   ...usedHues.flatMap((h) => [`avatar.${h}.bg`, `avatar.${h}.text`]),
 ];
 const colorValue = Object.fromEntries(colorPaths.map((p) => [p, resolve(p)]));
@@ -768,10 +768,14 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
    chevron holding whatever overflowed. B/I/U + AI Assist never collapse.
    Clicking More expands to reveal the hidden controls inline. */
 .composer__tb-collapsed { display: none; }
-.composer__toolbar.is-expanded .composer__tb-collapsed { display: inline-flex; }
+/* expanded: the "More" chevron stays put on row one; the revealed controls drop
+   onto a fresh second row. A zero-height flex-basis:100% break forces the wrap,
+   and order:2 sends the revealed items past it. */
+.composer__toolbar.is-expanded .composer__tb-collapsed { display: inline-flex; order: 2; }
+.composer__tb-break { display: none; flex-basis: 100%; width: 0; height: 0; }
+.composer__toolbar.is-expanded .composer__tb-break { display: block; order: 1; }
 /* measurement pass: force a single line so scrollWidth vs clientWidth reveals
-   real overflow (offsetTop is unreliable — the AI Assist tab's negative margins
-   put it on its own offset line even while visually on row one) */
+   real overflow (offsetTop is unreliable inside a wrapping flex toolbar) */
 .composer__toolbar.is-measuring { flex-wrap: nowrap; overflow: hidden; }
 .composer__tb-more { display: none; background: ${cv("surface.sunken")}; }
 .composer__toolbar.has-overflow .composer__tb-more { display: inline-flex; }
@@ -1356,10 +1360,7 @@ const composeAiCss = `.mc-compose__tabs { display: none; flex-shrink: 0; }
    a glued, distinct tab (its own lavender ground + a left divider) so it reads as
    the standout action. The box's overflow:hidden clips its corner to the radius,
    and negative margins cancel the toolbar padding so it sits flush to the edges. */
-.mc-compose__editor .composer__ai-assist { align-self: stretch; height: auto; margin: -${px(resolve("dim.1"))} -${px(resolve("dim.2"))} -${px(resolve("dim.1"))} auto; padding: 0 ${px(resolve("dim.3"))}; border-radius: 0; border: none; border-left: 1px solid ${cv("border.default")}; font-size: 13px; }
-/* glued tab: hover shifts the lavender ground (no border — a border here would
-   draw a square corner past the box's rounded clip and read as broken) */
-.mc-compose__editor .composer__ai-assist:hover { border-color: transparent; border-left-color: ${cv("border.default")}; background: ${cv("color.violet.150")}; }
+.mc-compose__editor .composer__ai-assist { height: ${px(resolve("dim.6"))}; padding: 0 ${px(resolve("dim.2"))}; font-size: 13px; margin-left: auto; }
 .mc-compose__editor .composer__ai-assist .composer__icon { width: 14px; height: 14px; }
 .mc-compose__editor .composer__tb-sep { align-self: auto; height: ${px(resolve("dim.4"))}; margin: 0 ${px(resolve("dim.1"))}; }
 /* pending attachments — a wrap of removable chips (image thumbnail or file
@@ -2196,6 +2197,7 @@ const composeMarkup = `<dialog class="mc-compose" id="mc-compose" aria-labelledb
               ${composerTbMenu("links", "Hyperlinks", HYPERLINKS, 1)}
               <button type="button" class="composer__tb-btn composer__tb-more" id="mc-compose-tb-more" aria-expanded="false" aria-label="More formatting options">${iconTbMore}</button>
               <button type="button" class="composer__ai-assist" id="mc-compose-ai-assist">${iconAi}AI Assist</button>
+              <span class="composer__tb-break" aria-hidden="true"></span>
             </div>
             <div class="composer__field">
               <textarea class="composer__input" id="mc-compose-message" rows="1" placeholder="Message *" aria-label="Message"></textarea>
