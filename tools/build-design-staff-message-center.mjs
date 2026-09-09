@@ -1425,7 +1425,10 @@ const composeAiCss = `.mc-compose__tabs { display: none; flex-shrink: 0; }
 .mc-ai__suggestions { display: flex; flex-direction: column; gap: ${px(resolve("dim.2"))}; margin-top: auto; }
 .mc-ai__suggestions[hidden] { display: none; }
 .mc-ai__suggestions-label { margin: 0; color: ${cv("text.muted")}; ${typoCss(labelSmType)}${labelSmExt.textTransform ? ` text-transform: ${labelSmExt.textTransform};` : ""}${labelSmExt.letterSpacing ? ` letter-spacing: ${labelSmExt.letterSpacing};` : ""} }
-.mc-ai__suggestions-list { display: flex; flex-direction: column; align-items: flex-start; gap: ${px(resolve("dim.2"))}; }
+/* suggestions flow into rows — as many chips per row as fit; smaller, regular */
+.mc-ai__suggestions-list { display: flex; flex-flow: row wrap; align-items: flex-start; gap: ${px(resolve("dim.2"))}; }
+.mc-ai__suggestions-list .chip--action { height: ${px(resolve("dim.7"))}; padding: 0 ${px(resolve("dim.2"))}; }
+.mc-ai__suggestions-list .chip__label { font-weight: 400; font-size: 13px; }
 /* Bubble runs full-width in the narrow AI panel (its own 75% chat cap would
    leave it hugging one edge here) */
 .mc-ai .bubble-row { max-width: 100%; }
@@ -1932,10 +1935,10 @@ function checkboxMarkup(label, { checked = false, id } = {}) {
 // collapse), plus small Tone/Length cyclers. Rendered twice (compose column +
 // standalone overlay), so it's one template keyed by a prefix. ----
 const AI_SUGGESTIONS = ["Registration reminder", "Missed appointment", "Check-in message", "Exam preparation", "Schedule meeting"];
-const AI_TONES = ["Formal", "Friendly", "Concise"];
+const AI_TONES = ["Formal", "Friendly", "Casual", "Direct", "Persuasive", "Empathetic"];
 const AI_LENGTHS = ["Short", "Medium", "Long"];
 function actionChipMarkup(label) {
-  return `<button type="button" class="chip chip--base chip--action" data-ai-suggestion="${esc(label)}"><span class="chip__label">${label}</span>${iconChipArrow}</button>`;
+  return `<button type="button" class="chip chip--base chip--action" data-ai-suggestion="${esc(label)}"><span class="chip__label">${label}</span></button>`;
 }
 // Tone / Length — real single-select dropdowns (Listbox popover), one per
 // panel instance, IDs namespaced by the panel prefix so the two panels don't
@@ -1959,7 +1962,6 @@ function aiPanelMarkup(prefix, headerAction = "") {
       <div class="mc-ai__scroll" data-ai-scroll>
         <p class="mc-ai__title">${iconAiSpark}AI Writing Assist</p>
         <div class="mc-ai__suggestions" data-ai-suggestions>
-          <p class="mc-ai__suggestions-label">Suggestions</p>
           <div class="mc-ai__suggestions-list">
             ${AI_SUGGESTIONS.map(actionChipMarkup).join("\n            ")}
           </div>
