@@ -1029,6 +1029,12 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .mc-ai__handle-icon { width: 20px; height: 20px; display: block; }
 .mc-ai__handle--collapse { left: -14px; }
 .mc-ai__handle--close { right: 12px; }
+/* floating tools beside the title: download transcript + start over */
+.mc-ai__tools { position: absolute; top: 12px; right: 12px; z-index: 2; display: flex; gap: 8px; }
+.mc-ai[data-ai="standalone"] .mc-ai__tools { right: calc(12px + 28px + 8px); }
+.mc-ai__tool { width: 32px; height: 32px; border-radius: 999px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); display: inline-flex; align-items: center; justify-content: center; padding: 0; cursor: pointer; color: var(--tok-icon-secondary); }
+.mc-ai__tool:hover { background: var(--tok-fill-neutral-hover); border-color: var(--tok-border-strong); }
+.mc-ai__tool-icon { width: 20px; height: 20px; display: block; }
 /* suggestions sit at the bottom of the empty panel (ref), pushed down by an
    auto top margin until the first chat bubble appears */
 .mc-ai__suggestions { display: flex; flex-direction: column; gap: 8px; margin-top: auto; }
@@ -2427,6 +2433,10 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     <div class="mc-compose__ai">
       <div class="mc-ai" data-ai="compose">
       <button type="button" class="mc-ai__handle mc-ai__handle--collapse" data-ai-collapse aria-label="Hide AI panel"><svg class="mc-ai__handle-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg></button>
+      <div class="mc-ai__tools">
+        <button type="button" class="mc-ai__tool" data-ai-download aria-label="Download transcript" title="Download transcript"><svg class="mc-ai__tool-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"><g><rect fill="none" height="24" width="24"/></g><g><path d="M5,20h14v-2H5V20z M19,9h-4V3H9v6H5l7,7L19,9z"/></g></svg></button>
+        <button type="button" class="mc-ai__tool" data-ai-restart aria-label="Start over" title="Start over"><svg class="mc-ai__tool-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg></button>
+      </div>
       <div class="mc-ai__scroll" data-ai-scroll>
         <p class="mc-ai__title"><svg class="mc-ai__spark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Writing Assist</p>
         <div class="mc-ai__suggestions" data-ai-suggestions>
@@ -2481,6 +2491,10 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 <dialog class="mc-ai-standalone" id="mc-ai-standalone" aria-label="AI Writing Assist">
   <div class="mc-ai" data-ai="standalone">
       <button type="button" class="mc-ai__handle mc-ai__handle--close" data-ai-close aria-label="Close AI panel"><svg class="mc-ai__handle-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
+      <div class="mc-ai__tools">
+        <button type="button" class="mc-ai__tool" data-ai-download aria-label="Download transcript" title="Download transcript"><svg class="mc-ai__tool-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"><g><rect fill="none" height="24" width="24"/></g><g><path d="M5,20h14v-2H5V20z M19,9h-4V3H9v6H5l7,7L19,9z"/></g></svg></button>
+        <button type="button" class="mc-ai__tool" data-ai-restart aria-label="Start over" title="Start over"><svg class="mc-ai__tool-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg></button>
+      </div>
       <div class="mc-ai__scroll" data-ai-scroll>
         <p class="mc-ai__title"><svg class="mc-ai__spark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Writing Assist</p>
         <div class="mc-ai__suggestions" data-ai-suggestions>
@@ -3698,6 +3712,26 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     if (collapse) collapse.addEventListener("click", function () { composeDlg.classList.remove("mc-compose--ai-open"); });
     var close = panel.querySelector("[data-ai-close]");
     if (close) close.addEventListener("click", function () { aiStandaloneDlg.close(); });
+    // floating tools — download the chat transcript / start the session over
+    var download = panel.querySelector("[data-ai-download]");
+    if (download) download.addEventListener("click", function () {
+      var lines = [];
+      scroll.querySelectorAll(".bubble-row").forEach(function (row) {
+        var who = row.classList.contains("bubble-row--self") ? "You" : "Assistant";
+        var p = row.querySelector(".bubble p");
+        if (p && p.textContent.trim()) lines.push(who + ": " + p.textContent.trim());
+      });
+      if (!lines.length) { showToast("success", "No transcript yet"); return; }
+      var blob = new Blob([lines.join("\n\n")], { type: "text/plain" });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement("a");
+      a.href = url; a.download = "ai-transcript.txt";
+      document.body.appendChild(a); a.click(); a.remove();
+      URL.revokeObjectURL(url);
+      showToast("success", "Transcript downloaded");
+    });
+    var restart = panel.querySelector("[data-ai-restart]");
+    if (restart) restart.addEventListener("click", function () { resetAiPanel(panel); });
   }
   bindAiPanel(composeDlg.querySelector('.mc-ai[data-ai="compose"]'), function () { return composeMessage; });
   // the standalone AI panel writes into whichever field last opened it — an

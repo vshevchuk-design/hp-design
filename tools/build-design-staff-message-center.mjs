@@ -204,6 +204,8 @@ const iconAiSend = iconOf("arrow_upward", "btn__icon");
 const iconMiniChevron = iconOf("expand_more", "mc-ai__opt-chevron");
 const iconHandleCollapse = iconOf("chevron_left", "mc-ai__handle-icon");
 const iconHandleClose = iconOf("close", "mc-ai__handle-icon");
+const iconAiDownload = iconOf("download", "mc-ai__tool-icon");
+const iconAiRestart = iconOf("refresh", "mc-ai__tool-icon");
 
 // ================= component recipes, each resolved from its own token file =================
 
@@ -1430,6 +1432,12 @@ const composeAiCss = `.mc-compose__tabs { display: none; flex-shrink: 0; }
 .mc-ai__handle-icon { width: ${px(resolve("dim.5"))}; height: ${px(resolve("dim.5"))}; display: block; }
 .mc-ai__handle--collapse { left: -14px; }
 .mc-ai__handle--close { right: ${px(resolve("dim.3"))}; }
+/* floating tools beside the title: download transcript + start over */
+.mc-ai__tools { position: absolute; top: ${px(resolve("dim.3"))}; right: ${px(resolve("dim.3"))}; z-index: 2; display: flex; gap: ${px(resolve("dim.2"))}; }
+.mc-ai[data-ai="standalone"] .mc-ai__tools { right: calc(${px(resolve("dim.3"))} + 28px + ${px(resolve("dim.2"))}); }
+.mc-ai__tool { width: 32px; height: 32px; border-radius: ${px(resolve("radius.full"))}; background: ${cv("surface.default")}; border: 1px solid ${cv("border.default")}; display: inline-flex; align-items: center; justify-content: center; padding: 0; cursor: pointer; color: ${cv("icon.secondary")}; }
+.mc-ai__tool:hover { background: ${cv("fill.neutralHover")}; border-color: ${cv("border.strong")}; }
+.mc-ai__tool-icon { width: ${px(resolve("dim.5"))}; height: ${px(resolve("dim.5"))}; display: block; }
 /* suggestions sit at the bottom of the empty panel (ref), pushed down by an
    auto top margin until the first chat bubble appears */
 .mc-ai__suggestions { display: flex; flex-direction: column; gap: ${px(resolve("dim.2"))}; margin-top: auto; }
@@ -1969,6 +1977,10 @@ function aiOptMarkup(prefix, kind, options) {
 function aiPanelMarkup(prefix, headerAction = "") {
   return `<div class="mc-ai" data-ai="${prefix}">
       ${headerAction}
+      <div class="mc-ai__tools">
+        <button type="button" class="mc-ai__tool" data-ai-download aria-label="Download transcript" title="Download transcript">${iconAiDownload}</button>
+        <button type="button" class="mc-ai__tool" data-ai-restart aria-label="Start over" title="Start over">${iconAiRestart}</button>
+      </div>
       <div class="mc-ai__scroll" data-ai-scroll>
         <p class="mc-ai__title">${iconAiSpark}AI Writing Assist</p>
         <div class="mc-ai__suggestions" data-ai-suggestions>
@@ -3720,6 +3732,26 @@ const appJs = `(function () {
     if (collapse) collapse.addEventListener("click", function () { composeDlg.classList.remove("mc-compose--ai-open"); });
     var close = panel.querySelector("[data-ai-close]");
     if (close) close.addEventListener("click", function () { aiStandaloneDlg.close(); });
+    // floating tools — download the chat transcript / start the session over
+    var download = panel.querySelector("[data-ai-download]");
+    if (download) download.addEventListener("click", function () {
+      var lines = [];
+      scroll.querySelectorAll(".bubble-row").forEach(function (row) {
+        var who = row.classList.contains("bubble-row--self") ? "You" : "Assistant";
+        var p = row.querySelector(".bubble p");
+        if (p && p.textContent.trim()) lines.push(who + ": " + p.textContent.trim());
+      });
+      if (!lines.length) { showToast("success", "No transcript yet"); return; }
+      var blob = new Blob([lines.join("\\n\\n")], { type: "text/plain" });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement("a");
+      a.href = url; a.download = "ai-transcript.txt";
+      document.body.appendChild(a); a.click(); a.remove();
+      URL.revokeObjectURL(url);
+      showToast("success", "Transcript downloaded");
+    });
+    var restart = panel.querySelector("[data-ai-restart]");
+    if (restart) restart.addEventListener("click", function () { resetAiPanel(panel); });
   }
   bindAiPanel(composeDlg.querySelector('.mc-ai[data-ai="compose"]'), function () { return composeMessage; });
   // the standalone AI panel writes into whichever field last opened it — an
