@@ -849,10 +849,13 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
    CSS anchor positioning pins it under the trigger regardless of the dialog's
    transform / animation (getBoundingClientRect was unreliable there). */
 #mc-compose-student { anchor-name: --mc-cs-anchor; }
-.mc-compose-student-lb { display: flex; flex-direction: column; max-height: 320px; max-width: calc(100vw - 16px);
+.mc-compose-student-lb { max-height: 320px; max-width: calc(100vw - 16px);
   position: fixed; inset: auto; margin: ${px(resolve("dim.1"))} 0 0 0;
   position-anchor: --mc-cs-anchor; top: anchor(bottom); left: anchor(left);
   min-width: anchor-size(width); position-try-fallbacks: flip-block; }
+/* display:flex only when open — otherwise it would override the popover UA
+   [popover]:not(:popover-open){display:none} and show the list without a click */
+.mc-compose-student-lb:popover-open { display: flex; flex-direction: column; }
 .mc-compose-student-search { flex-shrink: 0; width: 100%; margin-bottom: ${px(resolve("dim.2"))}; }
 .mc-compose-student-lb .listbox__list { overflow-y: auto; min-height: 0; }
 .mc-cs-opt { justify-content: space-between; }
