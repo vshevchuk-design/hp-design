@@ -997,6 +997,7 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
 .mc-compose__attach-btn { align-self: flex-start; flex-shrink: 0; }
 .mc-compose__footer { flex-shrink: 0; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: ${px(resolve("dim.2"))} ${px(resolve("dim.4"))}; padding: ${px(resolve("dim.3"))} ${mdPadding}; border-top: 1px solid ${cv(mdDivider)}; }
 .mc-compose__foot-actions { display: flex; align-items: center; gap: ${px(resolve("dim.2"))}; margin-left: auto; }
+.mc-compose__foot-actions .btn { height: ${px(resolve("dim.10"))}; }
 .mc-compose__attach { align-self: flex-start; margin-top: ${px(resolve("dim.1"))}; }
 /* fake keyboard — docs-only scaffolding, NOT a DS component (a device mock,
    same non-tokenized call as the viewer's phone frame): docked under the
@@ -1017,7 +1018,9 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
   .mc-kbd__key--return { flex: 2; max-width: none; background: ${cv("fill.primary")}; color: ${cv("text.onFill")}; font-size: 13px; }
 }
 @media (min-width: 768px) {
-  .mc-compose { width: min(760px, calc(100vw - ${px(resolve("dim.8"))})); max-height: calc(100dvh - ${px(resolve("dim.16"))}); border-radius: ${mdRadius}; box-shadow: ${mdShadowCss}; }
+  /* fixed base height so the modal doesn't grow as the AI chat fills up; on
+     shorter screens it shrinks to fit and the panes scroll internally */
+  .mc-compose { width: min(760px, calc(100vw - ${px(resolve("dim.8"))})); height: min(720px, calc(100dvh - ${px(resolve("dim.16"))})); max-height: calc(100dvh - ${px(resolve("dim.16"))}); border-radius: ${mdRadius}; box-shadow: ${mdShadowCss}; }
   .mc-compose__cancel-m, .mc-compose__send-m { display: none; }
   .mc-compose__header { padding: ${px(resolve("dim.4"))} ${mdPadding}; }
   .mc-compose__body { padding: ${mdPadding}; gap: ${mdGap}; }
@@ -1421,21 +1424,17 @@ const composeAiCss = `.mc-compose__tabs { display: none; flex-shrink: 0; }
 #mc-gwiz-dp-panel { position: fixed; inset: auto; margin: ${px(resolve("dim.1"))} 0 0 0; position-anchor: --mc-gdp-anchor; top: anchor(bottom); left: anchor(left); position-try-fallbacks: flip-block; }
 
 .mc-ai { position: relative; display: flex; flex-direction: column; min-height: 0; height: 100%; background: ${cv("surface.default")}; }
+/* static header bar (title + collapse/close + tools) with a divider under it */
+.mc-ai__header { flex-shrink: 0; display: flex; align-items: center; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))}; border-bottom: 1px solid ${cv("border.default")}; }
 .mc-ai__scroll { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: ${px(resolve("dim.4"))}; padding: ${px(resolve("dim.4"))}; }
-/* the title lives INSIDE the scroll (no static header bar — vertical space is
-   tight); centered, and it scrolls away with the conversation */
-.mc-ai__title { display: flex; align-items: center; justify-content: center; gap: ${px(resolve("dim.1_5"))}; margin: 0; color: ${cv("text.secondary")}; ${typoCss(headingSmType)} }
+.mc-ai__title { flex: 1; display: flex; align-items: center; justify-content: center; gap: ${px(resolve("dim.1_5"))}; margin: 0; color: ${cv("text.secondary")}; ${typoCss(headingSmType)} }
 .mc-ai__spark { flex-shrink: 0; width: 16px; height: 16px; color: ${cv("icon.ai")}; }
-/* collapse / close — a round handle straddling the panel edge (the ref's
-   handle on the divider), not a header bar */
-.mc-ai__handle { position: absolute; top: ${px(resolve("dim.3"))}; z-index: 2; width: 28px; height: 28px; border-radius: ${px(resolve("radius.full"))}; background: ${cv("surface.default")}; border: 1px solid ${cv("border.default")}; box-shadow: ${lbShadowCss}; display: inline-flex; align-items: center; justify-content: center; padding: 0; cursor: pointer; color: ${cv("icon.secondary")}; }
-.mc-ai__handle:hover { background: ${cv("fill.neutralHover")}; }
+/* collapse (compose) / close (standalone) — round ghost button on the header's left */
+.mc-ai__handle { flex-shrink: 0; width: 28px; height: 28px; border-radius: ${px(resolve("radius.full"))}; background: ${cv("surface.default")}; border: 1px solid ${cv("border.default")}; display: inline-flex; align-items: center; justify-content: center; padding: 0; cursor: pointer; color: ${cv("icon.secondary")}; }
+.mc-ai__handle:hover { background: ${cv("fill.neutralHover")}; border-color: ${cv("border.strong")}; }
 .mc-ai__handle-icon { width: ${px(resolve("dim.5"))}; height: ${px(resolve("dim.5"))}; display: block; }
-.mc-ai__handle--collapse { left: -14px; }
-.mc-ai__handle--close { right: ${px(resolve("dim.3"))}; }
-/* floating tools beside the title: download transcript + start over */
-.mc-ai__tools { position: absolute; top: ${px(resolve("dim.3"))}; right: ${px(resolve("dim.3"))}; z-index: 2; display: flex; gap: ${px(resolve("dim.2"))}; }
-.mc-ai[data-ai="standalone"] .mc-ai__tools { right: calc(${px(resolve("dim.3"))} + 28px + ${px(resolve("dim.2"))}); }
+/* tools on the header's right: download transcript + start over */
+.mc-ai__tools { display: flex; gap: ${px(resolve("dim.2"))}; flex-shrink: 0; }
 .mc-ai__tool { width: 28px; height: 28px; border-radius: ${px(resolve("radius.full"))}; background: ${cv("surface.default")}; border: 1px solid ${cv("border.default")}; display: inline-flex; align-items: center; justify-content: center; padding: 0; cursor: pointer; color: ${cv("icon.secondary")}; }
 .mc-ai__tool:hover { background: ${cv("fill.neutralHover")}; border-color: ${cv("border.strong")}; }
 .mc-ai__tool-icon { width: ${px(resolve("dim.5"))}; height: ${px(resolve("dim.5"))}; display: block; }
@@ -1979,13 +1978,15 @@ function aiOptMarkup(prefix, kind, options) {
 }
 function aiPanelMarkup(prefix, headerAction = "") {
   return `<div class="mc-ai" data-ai="${prefix}">
-      ${headerAction}
-      <div class="mc-ai__tools">
-        <button type="button" class="mc-ai__tool" data-ai-download aria-label="Download transcript" title="Download transcript">${iconAiDownload}</button>
-        <button type="button" class="mc-ai__tool" data-ai-restart aria-label="Start over" title="Start over">${iconAiRestart}</button>
+      <div class="mc-ai__header">
+        ${headerAction}
+        <p class="mc-ai__title">${iconAiSpark}AI Writing Assist</p>
+        <div class="mc-ai__tools">
+          <button type="button" class="mc-ai__tool" data-ai-download aria-label="Download transcript" title="Download transcript">${iconAiDownload}</button>
+          <button type="button" class="mc-ai__tool" data-ai-restart aria-label="Start over" title="Start over">${iconAiRestart}</button>
+        </div>
       </div>
       <div class="mc-ai__scroll" data-ai-scroll>
-        <p class="mc-ai__title">${iconAiSpark}AI Writing Assist</p>
         <div class="mc-ai__suggestions" data-ai-suggestions>
           <div class="mc-ai__suggestions-list">
             ${AI_SUGGESTIONS.map(actionChipMarkup).join("\n            ")}

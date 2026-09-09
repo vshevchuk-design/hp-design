@@ -482,6 +482,7 @@
 .mc-compose__attach-btn { align-self: flex-start; flex-shrink: 0; }
 .mc-compose__footer { flex-shrink: 0; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; padding: 12px 24px; border-top: 1px solid var(--tok-border-default); }
 .mc-compose__foot-actions { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+.mc-compose__foot-actions .btn { height: 40px; }
 .mc-compose__attach { align-self: flex-start; margin-top: 4px; }
 /* fake keyboard — docs-only scaffolding, NOT a DS component (a device mock,
    same non-tokenized call as the viewer's phone frame): docked under the
@@ -502,7 +503,9 @@
   .mc-kbd__key--return { flex: 2; max-width: none; background: var(--tok-fill-primary); color: var(--tok-text-on-fill); font-size: 13px; }
 }
 @media (min-width: 768px) {
-  .mc-compose { width: min(760px, calc(100vw - 32px)); max-height: calc(100dvh - 64px); border-radius: 24px; box-shadow: 0px 8px 24px -2px rgba(21, 25, 30, 0.16); }
+  /* fixed base height so the modal doesn't grow as the AI chat fills up; on
+     shorter screens it shrinks to fit and the panes scroll internally */
+  .mc-compose { width: min(760px, calc(100vw - 32px)); height: min(720px, calc(100dvh - 64px)); max-height: calc(100dvh - 64px); border-radius: 24px; box-shadow: 0px 8px 24px -2px rgba(21, 25, 30, 0.16); }
   .mc-compose__cancel-m, .mc-compose__send-m { display: none; }
   .mc-compose__header { padding: 16px 24px; }
   .mc-compose__body { padding: 24px; gap: 12px; }
@@ -1018,21 +1021,17 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 #mc-gwiz-dp-panel { position: fixed; inset: auto; margin: 4px 0 0 0; position-anchor: --mc-gdp-anchor; top: anchor(bottom); left: anchor(left); position-try-fallbacks: flip-block; }
 
 .mc-ai { position: relative; display: flex; flex-direction: column; min-height: 0; height: 100%; background: var(--tok-surface-default); }
+/* static header bar (title + collapse/close + tools) with a divider under it */
+.mc-ai__header { flex-shrink: 0; display: flex; align-items: center; gap: 8px; padding: 12px 16px; border-bottom: 1px solid var(--tok-border-default); }
 .mc-ai__scroll { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; padding: 16px; }
-/* the title lives INSIDE the scroll (no static header bar — vertical space is
-   tight); centered, and it scrolls away with the conversation */
-.mc-ai__title { display: flex; align-items: center; justify-content: center; gap: 6px; margin: 0; color: var(--tok-text-secondary); font-weight: 600; font-size: 12px; line-height: 1.4; }
+.mc-ai__title { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; margin: 0; color: var(--tok-text-secondary); font-weight: 600; font-size: 12px; line-height: 1.4; }
 .mc-ai__spark { flex-shrink: 0; width: 16px; height: 16px; color: var(--tok-icon-ai); }
-/* collapse / close — a round handle straddling the panel edge (the ref's
-   handle on the divider), not a header bar */
-.mc-ai__handle { position: absolute; top: 12px; z-index: 2; width: 28px; height: 28px; border-radius: 999px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); box-shadow: 0px 2px 8px 0px rgba(21, 25, 30, 0.10); display: inline-flex; align-items: center; justify-content: center; padding: 0; cursor: pointer; color: var(--tok-icon-secondary); }
-.mc-ai__handle:hover { background: var(--tok-fill-neutral-hover); }
+/* collapse (compose) / close (standalone) — round ghost button on the header's left */
+.mc-ai__handle { flex-shrink: 0; width: 28px; height: 28px; border-radius: 999px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); display: inline-flex; align-items: center; justify-content: center; padding: 0; cursor: pointer; color: var(--tok-icon-secondary); }
+.mc-ai__handle:hover { background: var(--tok-fill-neutral-hover); border-color: var(--tok-border-strong); }
 .mc-ai__handle-icon { width: 20px; height: 20px; display: block; }
-.mc-ai__handle--collapse { left: -14px; }
-.mc-ai__handle--close { right: 12px; }
-/* floating tools beside the title: download transcript + start over */
-.mc-ai__tools { position: absolute; top: 12px; right: 12px; z-index: 2; display: flex; gap: 8px; }
-.mc-ai[data-ai="standalone"] .mc-ai__tools { right: calc(12px + 28px + 8px); }
+/* tools on the header's right: download transcript + start over */
+.mc-ai__tools { display: flex; gap: 8px; flex-shrink: 0; }
 .mc-ai__tool { width: 28px; height: 28px; border-radius: 999px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); display: inline-flex; align-items: center; justify-content: center; padding: 0; cursor: pointer; color: var(--tok-icon-secondary); }
 .mc-ai__tool:hover { background: var(--tok-fill-neutral-hover); border-color: var(--tok-border-strong); }
 .mc-ai__tool-icon { width: 20px; height: 20px; display: block; }
@@ -2439,13 +2438,15 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     </div>
     <div class="mc-compose__ai">
       <div class="mc-ai" data-ai="compose">
-      <button type="button" class="mc-ai__handle mc-ai__handle--collapse" data-ai-collapse aria-label="Hide AI panel"><svg class="mc-ai__handle-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
-      <div class="mc-ai__tools">
-        <button type="button" class="mc-ai__tool" data-ai-download aria-label="Download transcript" title="Download transcript"><svg class="mc-ai__tool-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"><g><rect fill="none" height="24" width="24"/></g><g><path d="M5,20h14v-2H5V20z M19,9h-4V3H9v6H5l7,7L19,9z"/></g></svg></button>
-        <button type="button" class="mc-ai__tool" data-ai-restart aria-label="Start over" title="Start over"><svg class="mc-ai__tool-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg></button>
+      <div class="mc-ai__header">
+        <button type="button" class="mc-ai__handle mc-ai__handle--collapse" data-ai-collapse aria-label="Hide AI panel"><svg class="mc-ai__handle-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
+        <p class="mc-ai__title"><svg class="mc-ai__spark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Writing Assist</p>
+        <div class="mc-ai__tools">
+          <button type="button" class="mc-ai__tool" data-ai-download aria-label="Download transcript" title="Download transcript"><svg class="mc-ai__tool-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"><g><rect fill="none" height="24" width="24"/></g><g><path d="M5,20h14v-2H5V20z M19,9h-4V3H9v6H5l7,7L19,9z"/></g></svg></button>
+          <button type="button" class="mc-ai__tool" data-ai-restart aria-label="Start over" title="Start over"><svg class="mc-ai__tool-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg></button>
+        </div>
       </div>
       <div class="mc-ai__scroll" data-ai-scroll>
-        <p class="mc-ai__title"><svg class="mc-ai__spark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Writing Assist</p>
         <div class="mc-ai__suggestions" data-ai-suggestions>
           <div class="mc-ai__suggestions-list">
             <button type="button" class="chip chip--base chip--action" data-ai-suggestion="Registration reminder"><span class="chip__label">Registration reminder</span></button>
@@ -2497,13 +2498,15 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 </dialog>
 <dialog class="mc-ai-standalone" id="mc-ai-standalone" aria-label="AI Writing Assist">
   <div class="mc-ai" data-ai="standalone">
-      <button type="button" class="mc-ai__handle mc-ai__handle--close" data-ai-close aria-label="Close AI panel"><svg class="mc-ai__handle-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
-      <div class="mc-ai__tools">
-        <button type="button" class="mc-ai__tool" data-ai-download aria-label="Download transcript" title="Download transcript"><svg class="mc-ai__tool-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"><g><rect fill="none" height="24" width="24"/></g><g><path d="M5,20h14v-2H5V20z M19,9h-4V3H9v6H5l7,7L19,9z"/></g></svg></button>
-        <button type="button" class="mc-ai__tool" data-ai-restart aria-label="Start over" title="Start over"><svg class="mc-ai__tool-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg></button>
+      <div class="mc-ai__header">
+        <button type="button" class="mc-ai__handle mc-ai__handle--close" data-ai-close aria-label="Close AI panel"><svg class="mc-ai__handle-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
+        <p class="mc-ai__title"><svg class="mc-ai__spark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Writing Assist</p>
+        <div class="mc-ai__tools">
+          <button type="button" class="mc-ai__tool" data-ai-download aria-label="Download transcript" title="Download transcript"><svg class="mc-ai__tool-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"><g><rect fill="none" height="24" width="24"/></g><g><path d="M5,20h14v-2H5V20z M19,9h-4V3H9v6H5l7,7L19,9z"/></g></svg></button>
+          <button type="button" class="mc-ai__tool" data-ai-restart aria-label="Start over" title="Start over"><svg class="mc-ai__tool-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg></button>
+        </div>
       </div>
       <div class="mc-ai__scroll" data-ai-scroll>
-        <p class="mc-ai__title"><svg class="mc-ai__spark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Writing Assist</p>
         <div class="mc-ai__suggestions" data-ai-suggestions>
           <div class="mc-ai__suggestions-list">
             <button type="button" class="chip chip--base chip--action" data-ai-suggestion="Registration reminder"><span class="chip__label">Registration reminder</span></button>
