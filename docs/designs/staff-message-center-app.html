@@ -272,6 +272,17 @@
 .checkbox__input:checked ~ .checkbox__box .checkbox__icon { display: block; }
 .checkbox__input:focus-visible ~ .checkbox__box { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
 .checkbox__label { color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; }
+/* ---- Radio (from radio.tokens.json) — Expiration mode picker ---- */
+.radio { display: inline-flex; align-items: center; gap: 8px; font-family: var(--tok-family-sans); cursor: pointer; }
+.radio__input { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.radio__circle { box-sizing: border-box; width: 20px; height: 20px; border-radius: 999px; border: 2px solid var(--tok-border-default); background: var(--tok-surface-default); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.radio__dot { width: 8px; height: 8px; border-radius: 999px; background: transparent; }
+.radio__label { color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; }
+.radio:hover .radio__input:not(:checked):not(:disabled) ~ .radio__circle { background: var(--tok-bg-primary-hover); }
+.radio:hover .radio__circle { border-color: var(--tok-fill-primary); }
+.radio__input:focus-visible ~ .radio__circle { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
+.radio__input:checked ~ .radio__circle { border-color: var(--tok-fill-primary); }
+.radio__input:checked ~ .radio__circle .radio__dot { background: var(--tok-fill-primary); }
 
 .btn { display: inline-flex; align-items: center; justify-content: center; border: none; cursor: pointer; font-family: var(--tok-family-sans); border-radius: 8px; }
 .btn:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
@@ -923,6 +934,25 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .mc-compose__counter { align-self: flex-end; color: var(--tok-text-muted); font-size: 12px; font-family: var(--tok-family-sans); }
 .mc-compose__checks { display: flex; flex-wrap: wrap; gap: 8px 24px; padding-top: 4px; }
 .mc-compose__footer .btn { flex: 1; }
+/* Expiration panel — appears when Expire Thread is checked: mode radios, then
+   the chosen mode's control (a DatePicker, or an Amount + unit Select) */
+.mc-compose__exp { display: flex; flex-direction: column; gap: 10px; padding: 12px 16px; border-radius: 8px; background: var(--tok-surface-dim); }
+.mc-compose__exp[hidden] { display: none; }
+.mc-compose__exp-label { color: var(--tok-text-default); font-weight: 600; font-weight: 400; font-size: 14px; line-height: 1.4; }
+.mc-compose__exp-modes { display: flex; gap: 20px; }
+.mc-compose__exp-ctl { display: flex; gap: 8px; }
+.mc-compose__exp-ctl[hidden] { display: none; }
+.mc-compose__exp-ctl .mc-dp { flex: 1; }
+.mc-compose__exp-ctl .mc-dp__trigger { width: 100%; background: var(--tok-surface-default); }
+.mc-compose__exp-amount { flex: 1; min-width: 0; box-sizing: border-box; height: 40px; border: 1px solid var(--tok-border-default); border-radius: 8px; background: var(--tok-surface-default); padding: 0 12px; font-family: var(--tok-family-sans); font-weight: 400; font-size: 14px; line-height: 1.4; color: var(--tok-text-default); }
+.mc-compose__exp-amount:focus-visible { outline: none; border-color: var(--tok-border-focus); }
+.mc-compose__exp-unit { flex-shrink: 0; appearance: none; -webkit-appearance: none; height: 40px; border: 1px solid var(--tok-border-default); border-radius: 8px; background-color: var(--tok-surface-default); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; color: var(--tok-text-default); font-family: inherit; font-weight: 400; font-size: 14px; line-height: 1.4; padding: 0 30px 0 12px; cursor: pointer; }
+/* the compose DatePicker panel is anchored (getBoundingClientRect placement is
+   unreliable inside the transformed dialog) */
+#mc-compose-dp .mc-dp__trigger { anchor-name: --mc-cdp-anchor; }
+#mc-compose-dp-panel { position: fixed; inset: auto; margin: 4px 0 0 0; position-anchor: --mc-cdp-anchor; top: anchor(bottom); left: anchor(left); position-try-fallbacks: flip-block; }
+#mc-gwiz-dp .mc-dp__trigger { anchor-name: --mc-gdp-anchor; }
+#mc-gwiz-dp-panel { position: fixed; inset: auto; margin: 4px 0 0 0; position-anchor: --mc-gdp-anchor; top: anchor(bottom); left: anchor(left); position-try-fallbacks: flip-block; }
 
 .mc-ai { position: relative; display: flex; flex-direction: column; min-height: 0; height: 100%; background: var(--tok-surface-default); }
 .mc-ai__scroll { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; padding: 16px; }
@@ -2242,6 +2272,34 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
             <div class="mc-attach-hint" aria-hidden="true">Drop files to attach</div>
           </form>
         </div>
+        <div class="mc-compose__exp" id="mc-compose-exp" hidden>
+          <span class="mc-compose__exp-label">Expiration</span>
+          <div class="mc-compose__exp-modes">
+            <label class="radio"><input type="radio" class="radio__input" name="mc-exp-mode" id="mc-exp-fixed" checked /><span class="radio__circle"><span class="radio__dot"></span></span><span class="radio__label">Fixed Date</span></label>
+            <label class="radio"><input type="radio" class="radio__input" name="mc-exp-mode" id="mc-exp-amount" /><span class="radio__circle"><span class="radio__dot"></span></span><span class="radio__label">Amount of Time</span></label>
+          </div>
+          <div class="mc-compose__exp-ctl" data-exp="fixed">
+            <div class="mc-dp" data-date="2026-09-09" id="mc-compose-dp">
+              <button class="mc-dp__trigger" type="button" popovertarget="mc-compose-dp-panel" aria-haspopup="dialog"><svg class="mc-dp__cal" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 3h-1V1h-2v2H7V1H5v2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H4V8h16v13z"/></svg><span class="mc-dp__value">Sep 9, 2026</span><svg class="mc-dp__chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <div class="mc-dp__panel" id="mc-compose-dp-panel" popover role="dialog" aria-label="Choose a date">
+                <div class="mc-dp__header">
+                  <button class="mc-dp__nav mc-dp__nav--prev" type="button" aria-label="Previous month"><svg class="" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg></button>
+                  <span class="mc-dp__month">September 2026</span>
+                  <button class="mc-dp__nav mc-dp__nav--next" type="button" aria-label="Next month"><svg class="" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button>
+                </div>
+                <div class="mc-dp__grid"></div>
+              </div>
+            </div>
+          </div>
+          <div class="mc-compose__exp-ctl" data-exp="amount" hidden>
+            <input class="mc-compose__exp-amount" id="mc-compose-exp-amount" type="number" min="1" placeholder="Amount" aria-label="Amount" />
+            <select class="mc-compose__exp-unit" id="mc-compose-exp-unit" aria-label="Time unit">
+              <option>Day(s)</option>
+              <option>Week(s)</option>
+              <option>Month(s)</option>
+            </select>
+          </div>
+        </div>
         <div class="mc-compose__checks">
           <label class="checkbox"><input type="checkbox" class="checkbox__input" id="mc-compose-allow" checked /><span class="checkbox__box"><svg class="checkbox__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="checkbox__label">Allow Replies</span></label>
           <label class="checkbox"><input type="checkbox" class="checkbox__input" id="mc-compose-expire" /><span class="checkbox__box"><svg class="checkbox__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="checkbox__label">Expire Thread</span></label>
@@ -3084,6 +3142,19 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   var composeSendBtn = document.getElementById("mc-compose-send");
   var composeAllow = document.getElementById("mc-compose-allow");
   var composeExpire = document.getElementById("mc-compose-expire");
+  // Expiration: Expire Thread reveals the panel; the radios swap Fixed Date /
+  // Amount of Time controls
+  var composeExpPanel = document.getElementById("mc-compose-exp");
+  var composeExpFixedRadio = document.getElementById("mc-exp-fixed");
+  var composeExpAmountRadio = document.getElementById("mc-exp-amount");
+  function syncExpMode() {
+    var amount = composeExpAmountRadio.checked;
+    composeExpPanel.querySelector('.mc-compose__exp-ctl[data-exp="fixed"]').hidden = amount;
+    composeExpPanel.querySelector('.mc-compose__exp-ctl[data-exp="amount"]').hidden = !amount;
+  }
+  composeExpire.addEventListener("change", function () { composeExpPanel.hidden = !composeExpire.checked; });
+  composeExpFixedRadio.addEventListener("change", syncExpMode);
+  composeExpAmountRadio.addEventListener("change", syncExpMode);
 
   function validateCompose() {
     var ok = !!composeStudent && !!composeDept && composeSubject.value.trim() !== "" && composeMessage.value.trim() !== "";
@@ -3260,6 +3331,10 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     composeCounter.textContent = "0/50";
     composeAllow.checked = true;
     composeExpire.checked = false;
+    composeExpPanel.hidden = true;
+    composeExpFixedRadio.checked = true;
+    syncExpMode();
+    document.getElementById("mc-compose-exp-amount").value = "";
     subjectField.classList.remove("mc-field--floated");
     composeDeptLb.querySelectorAll(".listbox__option").forEach(function (o) {
       o.classList.remove("listbox__option--selected");
@@ -3577,15 +3652,9 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     }
     panel.querySelector(".mc-dp__nav--prev").addEventListener("click", function () { view.m--; if (view.m < 0) { view.m = 11; view.y--; } render(); });
     panel.querySelector(".mc-dp__nav--next").addEventListener("click", function () { view.m++; if (view.m > 11) { view.m = 0; view.y++; } render(); });
-    panel.addEventListener("toggle", function (e) {
-      if (e.newState === "open") {
-        view = { y: sel.y, m: sel.m }; render();
-        var r = trigger.getBoundingClientRect();
-        panel.style.position = "fixed"; panel.style.margin = "0";
-        panel.style.top = (r.bottom + 4) + "px";
-        panel.style.left = Math.max(8, Math.min(r.left, window.innerWidth - panel.offsetWidth - 8)) + "px";
-      }
-    });
+    // placement is CSS-anchored per instance (getBoundingClientRect is unreliable
+    // inside the transformed compose/wizard dialogs)
+    panel.addEventListener("toggle", function (e) { if (e.newState === "open") { view = { y: sel.y, m: sel.m }; render(); } });
     render();
   }
   document.querySelectorAll(".mc-dp").forEach(bindDatePicker);

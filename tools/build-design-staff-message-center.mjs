@@ -55,6 +55,7 @@ const button = load("tokens/components/button.tokens.json").component.button;
 const swtch = load("tokens/components/switch.tokens.json").component.switch;
 const separator = load("tokens/components/separator.tokens.json").component.separator;
 const checkbox = load("tokens/components/checkbox.tokens.json").component.checkbox;
+const radio = load("tokens/components/radio.tokens.json").component.radio;
 // MC v3 email-console components
 const tableTok = load("tokens/components/table.tokens.json").component.table;
 const splitBtn = load("tokens/components/split-button.tokens.json").component.splitButton;
@@ -507,6 +508,15 @@ const swTravel = swTrackWidth.value - swThumb.value - 2 * swInset.value;
 const cbBox = px(resolve(checkbox.size.box.$value));
 const cbRadius = px(resolve(checkbox.radius.$value));
 const cbBorderWidth = px(resolve(checkbox.size.borderWidth.$value));
+const rdCircle = px(resolve(radio.size.circle.$value));
+const rdDot = px(resolve(radio.size.dot.$value));
+const rdBorderWidth = px(resolve(radio.size.borderWidth.$value));
+const rdGap = px(resolve(radio.size.gap.$value));
+const rdCircleRadius = px(resolve(radio.radius.$value));
+const rdLabelType = resolveToken(radio.label);
+const rdRingWidth = px(resolve(radio.state.focused.ringWidth.$value));
+const rdRingOffset = px(resolve(radio.state.focused.ringOffset.$value));
+const rdHoverBg = radio.state.hover.bg.$value.replace(/[{}]/g, "");
 const cbGap = px(resolve(checkbox.size.gap.$value));
 const cbLabelType = resolveToken(get(checkbox.label.$value));
 const cbIconSize = px(resolve("dim.4"));
@@ -766,6 +776,17 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
 .checkbox__input:checked ~ .checkbox__box .checkbox__icon { display: block; }
 .checkbox__input:focus-visible ~ .checkbox__box { outline: ${cbRingWidth} solid ${cv("border.focus")}; outline-offset: ${cbRingOffset}; }
 .checkbox__label { color: ${cv("text.default")}; ${typoCss(cbLabelType)} }
+/* ---- Radio (from radio.tokens.json) — Expiration mode picker ---- */
+.radio { display: inline-flex; align-items: center; gap: ${rdGap}; font-family: ${cv("family.sans")}; cursor: pointer; }
+.radio__input { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.radio__circle { box-sizing: border-box; width: ${rdCircle}; height: ${rdCircle}; border-radius: ${rdCircleRadius}; border: ${rdBorderWidth} solid ${cv("border.default")}; background: ${cv("surface.default")}; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.radio__dot { width: ${rdDot}; height: ${rdDot}; border-radius: ${rdCircleRadius}; background: transparent; }
+.radio__label { color: ${cv("text.default")}; ${typoCss(rdLabelType)} }
+.radio:hover .radio__input:not(:checked):not(:disabled) ~ .radio__circle { background: ${cv(rdHoverBg)}; }
+.radio:hover .radio__circle { border-color: ${cv("fill.primary")}; }
+.radio__input:focus-visible ~ .radio__circle { outline: ${rdRingWidth} solid ${cv("border.focus")}; outline-offset: ${rdRingOffset}; }
+.radio__input:checked ~ .radio__circle { border-color: ${cv("fill.primary")}; }
+.radio__input:checked ~ .radio__circle .radio__dot { background: ${cv("fill.primary")}; }
 
 .btn { display: inline-flex; align-items: center; justify-content: center; border: none; cursor: pointer; font-family: ${cv("family.sans")}; border-radius: ${btnRadius}; }
 .btn:focus-visible { outline: ${btnRingWidth} solid ${cv("border.focus")}; outline-offset: ${btnRingOffset}; }
@@ -1305,6 +1326,25 @@ const composeAiCss = `.mc-compose__tabs { display: none; flex-shrink: 0; }
 .mc-compose__counter { align-self: flex-end; color: ${cv("text.muted")}; font-size: 12px; font-family: ${cv("family.sans")}; }
 .mc-compose__checks { display: flex; flex-wrap: wrap; gap: ${px(resolve("dim.2"))} ${px(resolve("dim.6"))}; padding-top: ${px(resolve("dim.1"))}; }
 .mc-compose__footer .btn { flex: 1; }
+/* Expiration panel — appears when Expire Thread is checked: mode radios, then
+   the chosen mode's control (a DatePicker, or an Amount + unit Select) */
+.mc-compose__exp { display: flex; flex-direction: column; gap: ${px(resolve("dim.2_5"))}; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))}; border-radius: ${px(resolve("radius.default"))}; background: ${cv("surface.dim")}; }
+.mc-compose__exp[hidden] { display: none; }
+.mc-compose__exp-label { color: ${cv("text.default")}; font-weight: 600; ${typoCss(bodyBaseType)} }
+.mc-compose__exp-modes { display: flex; gap: ${px(resolve("dim.5"))}; }
+.mc-compose__exp-ctl { display: flex; gap: ${px(resolve("dim.2"))}; }
+.mc-compose__exp-ctl[hidden] { display: none; }
+.mc-compose__exp-ctl .mc-dp { flex: 1; }
+.mc-compose__exp-ctl .mc-dp__trigger { width: 100%; background: ${cv("surface.default")}; }
+.mc-compose__exp-amount { flex: 1; min-width: 0; box-sizing: border-box; height: 40px; border: 1px solid ${cv("border.default")}; border-radius: ${px(resolve("radius.default"))}; background: ${cv("surface.default")}; padding: 0 ${px(resolve("dim.3"))}; font-family: ${cv("family.sans")}; ${typoCss(bodyBaseType)} color: ${cv("text.default")}; }
+.mc-compose__exp-amount:focus-visible { outline: none; border-color: ${cv("border.focus")}; }
+.mc-compose__exp-unit { flex-shrink: 0; appearance: none; -webkit-appearance: none; height: 40px; border: 1px solid ${cv("border.default")}; border-radius: ${px(resolve("radius.default"))}; background-color: ${cv("surface.default")}; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; color: ${cv("text.default")}; font-family: inherit; ${typoCss(bodyBaseType)} padding: 0 30px 0 12px; cursor: pointer; }
+/* the compose DatePicker panel is anchored (getBoundingClientRect placement is
+   unreliable inside the transformed dialog) */
+#mc-compose-dp .mc-dp__trigger { anchor-name: --mc-cdp-anchor; }
+#mc-compose-dp-panel { position: fixed; inset: auto; margin: ${px(resolve("dim.1"))} 0 0 0; position-anchor: --mc-cdp-anchor; top: anchor(bottom); left: anchor(left); position-try-fallbacks: flip-block; }
+#mc-gwiz-dp .mc-dp__trigger { anchor-name: --mc-gdp-anchor; }
+#mc-gwiz-dp-panel { position: fixed; inset: auto; margin: ${px(resolve("dim.1"))} 0 0 0; position-anchor: --mc-gdp-anchor; top: anchor(bottom); left: anchor(left); position-try-fallbacks: flip-block; }
 
 .mc-ai { position: relative; display: flex; flex-direction: column; min-height: 0; height: 100%; background: ${cv("surface.default")}; }
 .mc-ai__scroll { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: ${px(resolve("dim.4"))}; padding: ${px(resolve("dim.4"))}; }
@@ -1815,6 +1855,10 @@ function switchMarkup(checked) {
   return `<label class="switch"><input type="checkbox" class="switch__input"${checked ? " checked" : ""} /><span class="switch__track"><span class="switch__thumb"></span></span></label>`;
 }
 
+function radioMarkup(name, id, label, checked) {
+  return `<label class="radio"><input type="radio" class="radio__input" name="${name}" id="${id}"${checked ? " checked" : ""} /><span class="radio__circle"><span class="radio__dot"></span></span><span class="radio__label">${label}</span></label>`;
+}
+
 // Checkbox — the compose dialog's Allow Replies + Expire Thread controls
 // (real component, its own recipe; compose uses checkboxes per explicit
 // request, unlike the thread composer's Switch)
@@ -2081,6 +2125,34 @@ const composeMarkup = `<dialog class="mc-compose" id="mc-compose" aria-labelledb
             <input type="file" id="mc-compose-file" accept="image/*,.pdf" multiple hidden />
             <div class="mc-attach-hint" aria-hidden="true">Drop files to attach</div>
           </form>
+        </div>
+        <div class="mc-compose__exp" id="mc-compose-exp" hidden>
+          <span class="mc-compose__exp-label">Expiration</span>
+          <div class="mc-compose__exp-modes">
+            ${radioMarkup("mc-exp-mode", "mc-exp-fixed", "Fixed Date", true)}
+            ${radioMarkup("mc-exp-mode", "mc-exp-amount", "Amount of Time", false)}
+          </div>
+          <div class="mc-compose__exp-ctl" data-exp="fixed">
+            <div class="mc-dp" data-date="2026-09-09" id="mc-compose-dp">
+              <button class="mc-dp__trigger" type="button" popovertarget="mc-compose-dp-panel" aria-haspopup="dialog">${iconOf("calendar_today", "mc-dp__cal")}<span class="mc-dp__value">Sep 9, 2026</span>${iconOf("expand_more", "mc-dp__chev")}</button>
+              <div class="mc-dp__panel" id="mc-compose-dp-panel" popover role="dialog" aria-label="Choose a date">
+                <div class="mc-dp__header">
+                  <button class="mc-dp__nav mc-dp__nav--prev" type="button" aria-label="Previous month">${iconOf("chevron_left", "")}</button>
+                  <span class="mc-dp__month">September 2026</span>
+                  <button class="mc-dp__nav mc-dp__nav--next" type="button" aria-label="Next month">${iconOf("chevron_right", "")}</button>
+                </div>
+                <div class="mc-dp__grid"></div>
+              </div>
+            </div>
+          </div>
+          <div class="mc-compose__exp-ctl" data-exp="amount" hidden>
+            <input class="mc-compose__exp-amount" id="mc-compose-exp-amount" type="number" min="1" placeholder="Amount" aria-label="Amount" />
+            <select class="mc-compose__exp-unit" id="mc-compose-exp-unit" aria-label="Time unit">
+              <option>Day(s)</option>
+              <option>Week(s)</option>
+              <option>Month(s)</option>
+            </select>
+          </div>
         </div>
         <div class="mc-compose__checks">
           ${checkboxMarkup("Allow Replies", { checked: true, id: "mc-compose-allow" })}
@@ -3097,6 +3169,19 @@ const appJs = `(function () {
   var composeSendBtn = document.getElementById("mc-compose-send");
   var composeAllow = document.getElementById("mc-compose-allow");
   var composeExpire = document.getElementById("mc-compose-expire");
+  // Expiration: Expire Thread reveals the panel; the radios swap Fixed Date /
+  // Amount of Time controls
+  var composeExpPanel = document.getElementById("mc-compose-exp");
+  var composeExpFixedRadio = document.getElementById("mc-exp-fixed");
+  var composeExpAmountRadio = document.getElementById("mc-exp-amount");
+  function syncExpMode() {
+    var amount = composeExpAmountRadio.checked;
+    composeExpPanel.querySelector('.mc-compose__exp-ctl[data-exp="fixed"]').hidden = amount;
+    composeExpPanel.querySelector('.mc-compose__exp-ctl[data-exp="amount"]').hidden = !amount;
+  }
+  composeExpire.addEventListener("change", function () { composeExpPanel.hidden = !composeExpire.checked; });
+  composeExpFixedRadio.addEventListener("change", syncExpMode);
+  composeExpAmountRadio.addEventListener("change", syncExpMode);
 
   function validateCompose() {
     var ok = !!composeStudent && !!composeDept && composeSubject.value.trim() !== "" && composeMessage.value.trim() !== "";
@@ -3273,6 +3358,10 @@ const appJs = `(function () {
     composeCounter.textContent = "0/50";
     composeAllow.checked = true;
     composeExpire.checked = false;
+    composeExpPanel.hidden = true;
+    composeExpFixedRadio.checked = true;
+    syncExpMode();
+    document.getElementById("mc-compose-exp-amount").value = "";
     subjectField.classList.remove("mc-field--floated");
     composeDeptLb.querySelectorAll(".listbox__option").forEach(function (o) {
       o.classList.remove("listbox__option--selected");
@@ -3597,15 +3686,9 @@ const appJs = `(function () {
     }
     panel.querySelector(".mc-dp__nav--prev").addEventListener("click", function () { view.m--; if (view.m < 0) { view.m = 11; view.y--; } render(); });
     panel.querySelector(".mc-dp__nav--next").addEventListener("click", function () { view.m++; if (view.m > 11) { view.m = 0; view.y++; } render(); });
-    panel.addEventListener("toggle", function (e) {
-      if (e.newState === "open") {
-        view = { y: sel.y, m: sel.m }; render();
-        var r = trigger.getBoundingClientRect();
-        panel.style.position = "fixed"; panel.style.margin = "0";
-        panel.style.top = (r.bottom + 4) + "px";
-        panel.style.left = Math.max(8, Math.min(r.left, window.innerWidth - panel.offsetWidth - 8)) + "px";
-      }
-    });
+    // placement is CSS-anchored per instance (getBoundingClientRect is unreliable
+    // inside the transformed compose/wizard dialogs)
+    panel.addEventListener("toggle", function (e) { if (e.newState === "open") { view = { y: sel.y, m: sel.m }; render(); } });
     render();
   }
   document.querySelectorAll(".mc-dp").forEach(bindDatePicker);
