@@ -2195,6 +2195,7 @@ function composerTbMenu(prefix, kind, label, items, order) {
 // a full-width header bar
 const composeCollapseAction = `<button type="button" class="mc-ai__handle mc-ai__handle--collapse" data-ai-collapse aria-label="Hide AI panel">${iconHandleCollapse}</button>`;
 const composeCloseAction = `<button type="button" class="mc-ai__handle mc-ai__handle--close" data-ai-close aria-label="Close AI panel">${iconHandleClose}</button>`;
+const gwizCollapseAction = `<button type="button" class="mc-ai__handle mc-ai__handle--gclose" data-gwiz-collapse aria-label="Close AI panel">${iconHandleClose}</button>`;
 
 // student roster — shared by the single-compose "To" picker and the Group wizard
 const gwizStudents = [
@@ -2351,7 +2352,13 @@ const gwizCss = `.mc-gwiz { border: none; padding: 0; background: ${cv(mdBg)}; f
 .mc-gwiz__header { flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; padding: ${px(resolve("dim.4"))} ${mdPadding} ${px(resolve("dim.3"))}; border-bottom: 1px solid ${cv(mdDivider)}; }
 .mc-gwiz__title { margin: 0; color: ${cv(mdTitleColor)}; ${typoCss(mdTitleType)} }
 .mc-gwiz__steps { flex-shrink: 0; padding: ${px(resolve("dim.4"))} ${mdPadding}; border-bottom: 1px solid ${cv(mdDivider)}; }
-.mc-gwiz__body { flex: 1; min-height: 0; overflow-y: auto; padding: ${mdPadding}; }
+.mc-gwiz__body { position: relative; flex: 1; min-height: 0; overflow-y: auto; padding: ${mdPadding}; }
+/* AI Writing Assist opens as an overlay INSIDE the wizard body (integrated, with
+   an X to return to the form) — not a detached side dialog */
+.mc-gwiz__aipane { position: absolute; inset: 0; z-index: 5; display: none; background: ${cv("surface.default")}; }
+.mc-gwiz--ai-open .mc-gwiz__aipane { display: flex; flex-direction: column; }
+.mc-gwiz--ai-open .mc-gwiz__body { overflow: hidden; }
+.mc-gwiz__aipane .mc-ai { height: 100%; }
 .mc-gwiz__step[hidden] { display: none; }
 .mc-gwiz__cols { display: grid; grid-template-columns: 1.3fr 1fr; gap: ${px(resolve("dim.4"))}; }
 .mc-gwiz__cols > * { min-width: 0; }
@@ -2420,6 +2427,8 @@ const gwizCss = `.mc-gwiz { border: none; padding: 0; background: ${cv(mdBg)}; f
 .mc-gwiz__step[hidden] { display: none; }
 @media (min-width: 768px) {
   .mc-gwiz { width: min(760px, calc(100vw - ${px(resolve("dim.8"))})); max-height: calc(100dvh - ${px(resolve("dim.16"))}); border-radius: ${mdRadius}; box-shadow: ${mdShadowCss}; }
+  /* give the modal a real height while the AI overlay is up, so the panel fills it */
+  .mc-gwiz.mc-gwiz--ai-open { height: min(720px, calc(100dvh - ${px(resolve("dim.16"))})); }
 }
 @media (max-width: 767px) {
   .mc-gwiz { position: fixed; inset: 0; margin: 0; width: 100vw; max-width: 100vw; height: 100dvh; max-height: 100dvh; border-radius: 0; }
@@ -2520,6 +2529,7 @@ const gwizMarkup = `<dialog class="mc-gwiz" id="mc-gwiz" aria-labelledby="mc-gwi
           </div>
         </div>
       </div>
+      <div class="mc-gwiz__aipane">${aiPanelMarkup("gwiz", gwizCollapseAction)}</div>
     </div>
   </div>
   <footer class="mc-gwiz__footer">
@@ -4118,12 +4128,22 @@ const appJs = `(function () {
     });
     document.getElementById("mc-gwiz-conn").classList.toggle("mc-step__connector--filled", n > 1);
     gwizNext.hidden = n !== 1; gwizBack.hidden = n !== 2; gwizSend.hidden = n !== 2;
+    if (n !== 2) gwizDlg.classList.remove("mc-gwiz--ai-open");
   }
   gwizNext.addEventListener("click", function () { if (gwizCount() > 0) gwizStep(2); });
   gwizBack.addEventListener("click", function () { gwizStep(1); });
   document.getElementById("mc-gwiz-edit").addEventListener("click", function () { gwizStep(1); });
   gwizMessage.addEventListener("input", function () { gwizMessage.style.height = "auto"; gwizMessage.style.height = Math.min(gwizMessage.scrollHeight, 220) + "px"; });
-  document.getElementById("mc-gwiz-ai").addEventListener("click", function () { currentAiTarget = gwizMessage; aiStandaloneDlg.showModal(); });
+  // AI Assist opens the AI panel as an overlay inside the wizard (not the
+  // detached standalone dialog); the panel's X returns to the form
+  bindAiPanel(gwizDlg.querySelector('.mc-ai[data-ai="gwiz"]'), function () { return gwizMessage; });
+  document.getElementById("mc-gwiz-ai").addEventListener("click", function () {
+    gwizDlg.classList.add("mc-gwiz--ai-open");
+    var input = gwizDlg.querySelector('.mc-ai[data-ai="gwiz"] [data-ai-input]');
+    if (input) requestAnimationFrame(function () { input.focus(); });
+  });
+  var gwizAiClose = gwizDlg.querySelector("[data-gwiz-collapse]");
+  if (gwizAiClose) gwizAiClose.addEventListener("click", function () { gwizDlg.classList.remove("mc-gwiz--ai-open"); });
   // wizard step 2 shares the compose editor: Merge Tags / Hyperlinks insert +
   // toolbar overflow, subject counter, and the same sample-attachment chips
   bindEditorTools(gwizDlg, gwizMessage);
@@ -4153,6 +4173,7 @@ const appJs = `(function () {
   function openGwiz() {
     gwizSel = {}; gwizFilters = {}; gwizSearch.value = ""; gwizSubject.value = ""; gwizMessage.value = ""; gwizMessage.style.height = "auto";
     gwizAtts = []; renderGwizAtts(); gwizCounter.textContent = "0/50";
+    gwizDlg.classList.remove("mc-gwiz--ai-open");
     document.getElementById("mc-gwiz-ids").value = "";
     document.getElementById("mc-gwiz-paste-hint").textContent = "Recognized IDs are added to your selection.";
     // reset to the Search tab

@@ -1121,7 +1121,13 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .mc-gwiz__header { flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; padding: 16px 24px 12px; border-bottom: 1px solid var(--tok-border-default); }
 .mc-gwiz__title { margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 18px; line-height: 1.4; }
 .mc-gwiz__steps { flex-shrink: 0; padding: 16px 24px; border-bottom: 1px solid var(--tok-border-default); }
-.mc-gwiz__body { flex: 1; min-height: 0; overflow-y: auto; padding: 24px; }
+.mc-gwiz__body { position: relative; flex: 1; min-height: 0; overflow-y: auto; padding: 24px; }
+/* AI Writing Assist opens as an overlay INSIDE the wizard body (integrated, with
+   an X to return to the form) — not a detached side dialog */
+.mc-gwiz__aipane { position: absolute; inset: 0; z-index: 5; display: none; background: var(--tok-surface-default); }
+.mc-gwiz--ai-open .mc-gwiz__aipane { display: flex; flex-direction: column; }
+.mc-gwiz--ai-open .mc-gwiz__body { overflow: hidden; }
+.mc-gwiz__aipane .mc-ai { height: 100%; }
 .mc-gwiz__step[hidden] { display: none; }
 .mc-gwiz__cols { display: grid; grid-template-columns: 1.3fr 1fr; gap: 16px; }
 .mc-gwiz__cols > * { min-width: 0; }
@@ -1190,6 +1196,8 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .mc-gwiz__step[hidden] { display: none; }
 @media (min-width: 768px) {
   .mc-gwiz { width: min(760px, calc(100vw - 32px)); max-height: calc(100dvh - 64px); border-radius: 24px; box-shadow: 0px 8px 24px -2px rgba(21, 25, 30, 0.16); }
+  /* give the modal a real height while the AI overlay is up, so the panel fills it */
+  .mc-gwiz.mc-gwiz--ai-open { height: min(720px, calc(100dvh - 64px)); }
 }
 @media (max-width: 767px) {
   .mc-gwiz { position: fixed; inset: 0; margin: 0; width: 100vw; max-width: 100vw; height: 100dvh; max-height: 100dvh; border-radius: 0; }
@@ -2710,6 +2718,52 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           </div>
         </div>
       </div>
+      <div class="mc-gwiz__aipane"><div class="mc-ai" data-ai="gwiz">
+      <div class="mc-ai__header">
+        <button type="button" class="mc-ai__handle mc-ai__handle--gclose" data-gwiz-collapse aria-label="Close AI panel"><svg class="mc-ai__handle-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
+        <p class="mc-ai__title"><svg class="mc-ai__spark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Writing Assist</p>
+        <div class="mc-ai__tools">
+          <button type="button" class="mc-ai__tool" data-ai-download aria-label="Download transcript" title="Download transcript"><svg class="mc-ai__tool-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"><g><rect fill="none" height="24" width="24"/></g><g><path d="M5,20h14v-2H5V20z M19,9h-4V3H9v6H5l7,7L19,9z"/></g></svg></button>
+          <button type="button" class="mc-ai__tool" data-ai-restart aria-label="Start over" title="Start over"><svg class="mc-ai__tool-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg></button>
+        </div>
+      </div>
+      <div class="mc-ai__scroll" data-ai-scroll>
+        <div class="mc-ai__suggestions" data-ai-suggestions>
+          <div class="mc-ai__suggestions-list">
+            <button type="button" class="chip chip--base chip--action" data-ai-suggestion="Registration reminder"><span class="chip__label">Registration reminder</span></button>
+            <button type="button" class="chip chip--base chip--action" data-ai-suggestion="Missed appointment"><span class="chip__label">Missed appointment</span></button>
+            <button type="button" class="chip chip--base chip--action" data-ai-suggestion="Check-in message"><span class="chip__label">Check-in message</span></button>
+            <button type="button" class="chip chip--base chip--action" data-ai-suggestion="Exam preparation"><span class="chip__label">Exam preparation</span></button>
+            <button type="button" class="chip chip--base chip--action" data-ai-suggestion="Schedule meeting"><span class="chip__label">Schedule meeting</span></button>
+          </div>
+        </div>
+      </div>
+      <div class="mc-ai__composer">
+        <textarea class="mc-ai__input" data-ai-input rows="1" placeholder="Ask AI to write or improve a message..." aria-label="Ask AI to write or improve a message"></textarea>
+        <div class="mc-ai__controls">
+          <button type="button" class="mc-ai__opt" data-ai-opt="tone" popovertarget="gwiz-tone-lb" aria-haspopup="listbox">Tone: <b>Formal</b><svg class="mc-ai__opt-chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+        <div class="listbox mc-ai__opt-lb" id="gwiz-tone-lb" popover>
+          <ul class="listbox__list" role="listbox" aria-label="Tone">
+            <li><button type="button" class="listbox__option listbox__option--selected" role="option" aria-selected="true" data-val="Formal">Formal<svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li>
+            <li><button type="button" class="listbox__option" role="option" aria-selected="false" data-val="Friendly">Friendly<svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li>
+            <li><button type="button" class="listbox__option" role="option" aria-selected="false" data-val="Casual">Casual<svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li>
+            <li><button type="button" class="listbox__option" role="option" aria-selected="false" data-val="Direct">Direct<svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li>
+            <li><button type="button" class="listbox__option" role="option" aria-selected="false" data-val="Persuasive">Persuasive<svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li>
+            <li><button type="button" class="listbox__option" role="option" aria-selected="false" data-val="Empathetic">Empathetic<svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li>
+          </ul>
+        </div>
+          <button type="button" class="mc-ai__opt" data-ai-opt="length" popovertarget="gwiz-length-lb" aria-haspopup="listbox">Length: <b>Short</b><svg class="mc-ai__opt-chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+        <div class="listbox mc-ai__opt-lb" id="gwiz-length-lb" popover>
+          <ul class="listbox__list" role="listbox" aria-label="Length">
+            <li><button type="button" class="listbox__option listbox__option--selected" role="option" aria-selected="true" data-val="Short">Short<svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li>
+            <li><button type="button" class="listbox__option" role="option" aria-selected="false" data-val="Medium">Medium<svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li>
+            <li><button type="button" class="listbox__option" role="option" aria-selected="false" data-val="Long">Long<svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li>
+          </ul>
+        </div>
+          <button type="button" class="btn btn--primary btn--sm btn--icon-only mc-ai__send" data-ai-send aria-label="Ask AI"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z"/></svg></button>
+        </div>
+      </div>
+    </div></div>
     </div>
   </div>
   <footer class="mc-gwiz__footer">
@@ -4140,12 +4194,22 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     });
     document.getElementById("mc-gwiz-conn").classList.toggle("mc-step__connector--filled", n > 1);
     gwizNext.hidden = n !== 1; gwizBack.hidden = n !== 2; gwizSend.hidden = n !== 2;
+    if (n !== 2) gwizDlg.classList.remove("mc-gwiz--ai-open");
   }
   gwizNext.addEventListener("click", function () { if (gwizCount() > 0) gwizStep(2); });
   gwizBack.addEventListener("click", function () { gwizStep(1); });
   document.getElementById("mc-gwiz-edit").addEventListener("click", function () { gwizStep(1); });
   gwizMessage.addEventListener("input", function () { gwizMessage.style.height = "auto"; gwizMessage.style.height = Math.min(gwizMessage.scrollHeight, 220) + "px"; });
-  document.getElementById("mc-gwiz-ai").addEventListener("click", function () { currentAiTarget = gwizMessage; aiStandaloneDlg.showModal(); });
+  // AI Assist opens the AI panel as an overlay inside the wizard (not the
+  // detached standalone dialog); the panel's X returns to the form
+  bindAiPanel(gwizDlg.querySelector('.mc-ai[data-ai="gwiz"]'), function () { return gwizMessage; });
+  document.getElementById("mc-gwiz-ai").addEventListener("click", function () {
+    gwizDlg.classList.add("mc-gwiz--ai-open");
+    var input = gwizDlg.querySelector('.mc-ai[data-ai="gwiz"] [data-ai-input]');
+    if (input) requestAnimationFrame(function () { input.focus(); });
+  });
+  var gwizAiClose = gwizDlg.querySelector("[data-gwiz-collapse]");
+  if (gwizAiClose) gwizAiClose.addEventListener("click", function () { gwizDlg.classList.remove("mc-gwiz--ai-open"); });
   // wizard step 2 shares the compose editor: Merge Tags / Hyperlinks insert +
   // toolbar overflow, subject counter, and the same sample-attachment chips
   bindEditorTools(gwizDlg, gwizMessage);
@@ -4175,6 +4239,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   function openGwiz() {
     gwizSel = {}; gwizFilters = {}; gwizSearch.value = ""; gwizSubject.value = ""; gwizMessage.value = ""; gwizMessage.style.height = "auto";
     gwizAtts = []; renderGwizAtts(); gwizCounter.textContent = "0/50";
+    gwizDlg.classList.remove("mc-gwiz--ai-open");
     document.getElementById("mc-gwiz-ids").value = "";
     document.getElementById("mc-gwiz-paste-hint").textContent = "Recognized IDs are added to your selection.";
     // reset to the Search tab
