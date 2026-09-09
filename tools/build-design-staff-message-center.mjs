@@ -769,7 +769,8 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
    Desktop (>=1024) shows the whole toolbar and hides the chevron. */
 .composer__tb-adv { display: none; }
 .composer__toolbar.is-expanded .composer__tb-adv { display: inline-flex; }
-.composer__tb-more { display: inline-flex; }
+.composer__tb-more { display: inline-flex; background: ${cv("surface.sunken")}; }
+.composer__tb-more:hover { background: ${cv("fill.neutralHover")}; }
 .composer__tb-more-chev { width: 18px; height: 18px; color: ${cv("icon.secondary")}; flex-shrink: 0; transition: transform 0.15s ease; }
 .composer__toolbar.is-expanded .composer__tb-more-chev { transform: rotate(180deg); }
 #mc-compose-merge-btn { anchor-name: --mc-mt-anchor; }
@@ -1306,6 +1307,11 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
      "More" chevron that collapses it on mobile/tablet */
   .composer__tb-adv { display: inline-flex; }
   .composer__tb-more { display: none; }
+  /* ...unless the AI panel is open: the editor narrows, so collapse the overflow
+     back behind the "More" chevron instead of letting the toolbar wrap */
+  .mc-compose--ai-open .composer__tb-adv { display: none; }
+  .mc-compose--ai-open .composer__toolbar.is-expanded .composer__tb-adv { display: inline-flex; }
+  .mc-compose--ai-open .composer__tb-more { display: inline-flex; }
   .mc-rail__lists { padding-bottom: ${px(resolve("dim.4"))}; }
   .mc__topbar { padding: 0 ${px(resolve("dim.6"))}; }
   /* keep the whole rail on one left edge: toolbar tabs + filter chips must line
@@ -1350,7 +1356,11 @@ const composeAiCss = `.mc-compose__tabs { display: none; flex-shrink: 0; }
 .mc-compose__editor .composer__icon-btn .composer__icon { width: ${px(resolve("dim.4"))}; height: ${px(resolve("dim.4"))}; }
 .mc-compose__editor .composer__tb-btn { height: ${px(resolve("dim.6"))}; padding: 0 ${px(resolve("dim.1"))}; font-size: 13px; font-weight: 400; }
 .mc-compose__editor .composer__tb-btn .composer__tb-chev { width: 14px; height: 14px; }
-.mc-compose__editor .composer__ai-assist { height: ${px(resolve("dim.6"))}; padding: 0 ${px(resolve("dim.2"))}; font-size: 13px; margin-left: auto; }
+/* AI Assist is pinned to the top-right of the header and fills its full height —
+   a glued, distinct tab (its own lavender ground + a left divider) so it reads as
+   the standout action. The box's overflow:hidden clips its corner to the radius,
+   and negative margins cancel the toolbar padding so it sits flush to the edges. */
+.mc-compose__editor .composer__ai-assist { align-self: stretch; height: auto; margin: -${px(resolve("dim.1"))} -${px(resolve("dim.2"))} -${px(resolve("dim.1"))} auto; padding: 0 ${px(resolve("dim.3"))}; border-radius: 0; border-left: 1px solid ${cv("border.default")}; font-size: 13px; }
 .mc-compose__editor .composer__ai-assist .composer__icon { width: 14px; height: 14px; }
 .mc-compose__editor .composer__tb-sep { align-self: auto; height: ${px(resolve("dim.4"))}; margin: 0 ${px(resolve("dim.1"))}; }
 /* pending attachments — a wrap of removable chips (image thumbnail or file
