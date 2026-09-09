@@ -788,6 +788,10 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
 #mc-compose-merge-lb { position: fixed; inset: auto; margin: ${px(resolve("dim.1"))} 0 0 0; position-anchor: --mc-mt-anchor; top: anchor(bottom); left: anchor(left); position-try-fallbacks: flip-block; }
 #mc-compose-links-btn { anchor-name: --mc-hl-anchor; }
 #mc-compose-links-lb { position: fixed; inset: auto; margin: ${px(resolve("dim.1"))} 0 0 0; position-anchor: --mc-hl-anchor; top: anchor(bottom); left: anchor(left); position-try-fallbacks: flip-block; }
+#mc-gwiz-merge-btn { anchor-name: --mc-gmt-anchor; }
+#mc-gwiz-merge-lb { position: fixed; inset: auto; margin: ${px(resolve("dim.1"))} 0 0 0; position-anchor: --mc-gmt-anchor; top: anchor(bottom); left: anchor(left); position-try-fallbacks: flip-block; }
+#mc-gwiz-links-btn { anchor-name: --mc-ghl-anchor; }
+#mc-gwiz-links-lb { position: fixed; inset: auto; margin: ${px(resolve("dim.1"))} 0 0 0; position-anchor: --mc-ghl-anchor; top: anchor(bottom); left: anchor(left); position-try-fallbacks: flip-block; }
 .composer__ai-assist { flex-shrink: 0; display: inline-flex; align-items: center; gap: ${px(resolve("dim.1"))}; height: ${btnGhostSmHeight}; padding: 0 ${px(resolve("dim.2"))}; border: 1px solid transparent; border-radius: ${px(resolve("radius.default"))}; background: ${cv("bg.ai")}; color: ${cv("text.ai")}; cursor: pointer; font-family: ${cv("family.sans")}; ${typoCss(btnGhostSmLabelType)} }
 .composer__ai-assist .composer__icon { width: ${btnGhostSmIconSize}; height: ${btnGhostSmIconSize}; color: ${cv("icon.ai")}; }
 .composer__ai-assist:hover { border-color: ${cv("fill.ai")}; }
@@ -1398,18 +1402,6 @@ const composeAiCss = `.mc-compose__tabs { display: none; flex-shrink: 0; }
 .mc-compose__editor .composer__tb-sep { align-self: auto; height: ${px(resolve("dim.4"))}; margin: 0 ${px(resolve("dim.1"))}; }
 /* pending attachments — a wrap of removable chips (image thumbnail or file
    glyph); the editor is also a drop target ("drop files to attach") */
-.mc-attachments { display: flex; flex-wrap: wrap; gap: ${px(resolve("dim.2"))}; }
-.mc-attachments:not([hidden]) { margin-top: ${px(resolve("dim.2"))}; }
-.mc-attach { display: inline-flex; align-items: center; gap: ${px(resolve("dim.2"))}; max-width: 240px; padding: ${px(resolve("dim.1"))} ${px(resolve("dim.2"))} ${px(resolve("dim.1"))} ${px(resolve("dim.1"))}; border: 1px solid ${cv("border.default")}; border-radius: ${px(resolve("radius.default"))}; background: ${cv("surface.default")}; }
-.mc-attach__thumb { flex-shrink: 0; width: 32px; height: 32px; border-radius: ${px(resolve("radius.sm"))}; background: ${cv("surface.dim")}; display: inline-flex; align-items: center; justify-content: center; overflow: hidden; }
-.mc-attach__thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.mc-attach__thumb svg { width: ${px(resolve("dim.4"))}; height: ${px(resolve("dim.4"))}; color: ${cv("icon.secondary")}; }
-.mc-attach__meta { min-width: 0; display: flex; flex-direction: column; }
-.mc-attach__name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: ${cv("text.default")}; ${typoCss(bodySmType)} }
-.mc-attach__size { color: ${cv("text.muted")}; font-size: 11px; }
-.mc-attach__x { flex-shrink: 0; margin-left: ${px(resolve("dim.1"))}; border: none; background: none; padding: 0; cursor: pointer; color: ${cv("icon.secondary")}; display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: ${px(resolve("radius.full"))}; }
-.mc-attach__x:hover { background: ${cv("fill.neutralHover")}; }
-.mc-attach__x svg { width: 14px; height: 14px; }
 .mc-attach-hint { position: absolute; inset: 0; z-index: 3; display: none; align-items: center; justify-content: center; border: 2px dashed ${cv("border.focus")}; border-radius: ${px(resolve("radius.default"))}; background: ${cv("surface.dim")}; color: ${cv("text.primary")}; font-family: ${cv("family.sans")}; ${typoCss(bodySmType)} font-weight: 600; pointer-events: none; }
 .mc-compose__editor.is-dragover .mc-attach-hint { display: flex; }
 .mc-compose__counter { align-self: flex-end; color: ${cv("text.muted")}; font-size: 12px; font-family: ${cv("family.sans")}; }
@@ -1507,7 +1499,7 @@ const composeAiCss = `.mc-compose__tabs { display: none; flex-shrink: 0; }
   .mc-ai { height: auto; flex: 1; }
   .mc-ai__handle--collapse { display: none; }
   .mc-compose__lead { display: none; }
-  .mc-compose__editor .composer__ai-assist { display: none; }
+  .mc-compose .composer__ai-assist { display: none; }
   .mc-ai-standalone { position: fixed; inset: 0; margin: 0; width: 100vw; max-width: 100vw; height: 100dvh; max-height: 100dvh; border-radius: 0; }
 }
 /* mobile only: the footer stacks — checks strip (full-width divider) over
@@ -2131,6 +2123,34 @@ function dateRangeWidget(suffix, opts) {
               </div>
             </div>`;
 }
+// the fuller rich toolbar (undo/redo, Normal, B/I/U, strike/code/align/link/mail,
+// Merge Tags + Hyperlinks dropdowns, More overflow, AI Assist) — shared by the
+// New Message compose and the Group wizard's step 2 so both stay in parity.
+// `prefix` scopes the ids (${prefix}-tb-more, ${prefix}-merge-lb, …);
+// `aiBtnId` is the AI Assist button's id (bound per surface).
+function richToolbarMarkup(prefix, aiBtnId) {
+  return `<div class="composer__toolbar">
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="13" aria-label="Undo" tabindex="-1">${iconUndo}</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="12" aria-label="Redo" tabindex="-1">${iconRedo}</button>
+              <span class="composer__tb-sep composer__tb-adv" data-tb-order="11"></span>
+              <button type="button" class="composer__tb-btn composer__tb-style composer__tb-adv" data-tb-order="9" tabindex="-1">Normal${iconTbChevron}</button>
+              <span class="composer__tb-sep composer__tb-adv" data-tb-order="10"></span>
+              <button type="button" class="composer__icon-btn" aria-label="Bold">${iconBold}</button>
+              <button type="button" class="composer__icon-btn" aria-label="Italic">${iconItalic}</button>
+              <button type="button" class="composer__icon-btn" aria-label="Underline">${iconUnderline}</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="8" aria-label="Strikethrough" tabindex="-1">${iconStrike}</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="7" aria-label="Code" tabindex="-1">${iconCode}</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="6" aria-label="Align" tabindex="-1">${iconAlign}</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="5" aria-label="Insert link" tabindex="-1">${iconLink}</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="4" aria-label="Insert email" tabindex="-1">${iconEmail}</button>
+              <span class="composer__tb-sep composer__tb-adv" data-tb-order="3"></span>
+              ${composerTbMenu(prefix, "merge", "Merge Tags", MERGE_TAGS, 2)}
+              ${composerTbMenu(prefix, "links", "Hyperlinks", HYPERLINKS, 1)}
+              <button type="button" class="composer__tb-btn composer__tb-more" id="${prefix}-tb-more" aria-expanded="false" aria-label="More formatting options">${iconTbMore}</button>
+              <button type="button" class="composer__ai-assist" id="${aiBtnId}">${iconAi}AI Assist</button>
+              <span class="composer__tb-break" aria-hidden="true"></span>
+            </div>`;
+}
 // an inline single-select filter — a dropdown-CHIP (like "Filters" and the
 // student MC's Department), NOT a form Select. Chip trigger + Listbox popover;
 // drives the same adv.* state as the panel pills.
@@ -2162,9 +2182,9 @@ const composeDepartments = ["Academic Advising", "Student Records", "Financial A
 const MERGE_TAGS = ["{{studentName}}", "{{studentFirstName}}", "{{studentLastName}}"];
 const HYPERLINKS = ["1098-TConsent", "Accept/DeclineAward", "Address", "ApplicationStatus", "ApplyforGraduation", "FAFSA", "FederalStudentAid", "FinancialAidAward", "MessageCenter", "ScheduleBuilder", "ShoppingCart"];
 // a toolbar dropdown: an icon/label trigger opening a listbox popover of insertable tokens
-function composerTbMenu(kind, label, items, order) {
-  const lbId = "mc-compose-" + kind + "-lb";
-  return `<button type="button" class="composer__tb-btn composer__tb-adv" id="mc-compose-${kind}-btn" data-tb-order="${order}" popovertarget="${lbId}" aria-haspopup="listbox">${label}${iconTbChevron}</button>
+function composerTbMenu(prefix, kind, label, items, order) {
+  const lbId = prefix + "-" + kind + "-lb";
+  return `<button type="button" class="composer__tb-btn composer__tb-adv" id="${prefix}-${kind}-btn" data-tb-order="${order}" popovertarget="${lbId}" aria-haspopup="listbox">${label}${iconTbChevron}</button>
               <div class="listbox composer__tb-lb" id="${lbId}" data-tb="${kind}" popover>
                 <ul class="listbox__list" role="listbox" aria-label="${label}">
                   ${items.map((t) => `<li><button class="listbox__option" role="option" type="button" data-insert="${esc(t)}">${t}</button></li>`).join("\n                  ")}
@@ -2245,32 +2265,10 @@ const composeMarkup = `<dialog class="mc-compose" id="mc-compose" aria-labelledb
         </div>
         <div class="mc-compose__editor" id="mc-compose-editor">
           <form class="composer composer--rich" onsubmit="return false">
-            <div class="composer__toolbar">
-              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="13" aria-label="Undo" tabindex="-1">${iconUndo}</button>
-              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="12" aria-label="Redo" tabindex="-1">${iconRedo}</button>
-              <span class="composer__tb-sep composer__tb-adv" data-tb-order="11"></span>
-              <button type="button" class="composer__tb-btn composer__tb-style composer__tb-adv" data-tb-order="9" tabindex="-1">Normal${iconTbChevron}</button>
-              <span class="composer__tb-sep composer__tb-adv" data-tb-order="10"></span>
-              <button type="button" class="composer__icon-btn" aria-label="Bold">${iconBold}</button>
-              <button type="button" class="composer__icon-btn" aria-label="Italic">${iconItalic}</button>
-              <button type="button" class="composer__icon-btn" aria-label="Underline">${iconUnderline}</button>
-              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="8" aria-label="Strikethrough" tabindex="-1">${iconStrike}</button>
-              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="7" aria-label="Code" tabindex="-1">${iconCode}</button>
-              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="6" aria-label="Align" tabindex="-1">${iconAlign}</button>
-              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="5" aria-label="Insert link" tabindex="-1">${iconLink}</button>
-              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="4" aria-label="Insert email" tabindex="-1">${iconEmail}</button>
-              <span class="composer__tb-sep composer__tb-adv" data-tb-order="3"></span>
-              ${composerTbMenu("merge", "Merge Tags", MERGE_TAGS, 2)}
-              ${composerTbMenu("links", "Hyperlinks", HYPERLINKS, 1)}
-              <button type="button" class="composer__tb-btn composer__tb-more" id="mc-compose-tb-more" aria-expanded="false" aria-label="More formatting options">${iconTbMore}</button>
-              <button type="button" class="composer__ai-assist" id="mc-compose-ai-assist">${iconAi}AI Assist</button>
-              <span class="composer__tb-break" aria-hidden="true"></span>
-            </div>
+            ${richToolbarMarkup("mc-compose", "mc-compose-ai-assist")}
             <div class="composer__field">
               <textarea class="composer__input" id="mc-compose-message" rows="1" placeholder="Write your message..." aria-label="Message"></textarea>
             </div>
-            <div class="mc-attachments" id="mc-compose-attachments" hidden></div>
-            <input type="file" id="mc-compose-file" accept="image/*,.pdf" multiple hidden />
             <div class="mc-attach-hint" aria-hidden="true">Drop files to attach</div>
           </form>
         </div>
@@ -2486,25 +2484,24 @@ const gwizMarkup = `<dialog class="mc-gwiz" id="mc-gwiz" aria-labelledby="mc-gwi
     <div class="mc-gwiz__step" data-panel="2" hidden>
       <div class="mc-gwiz__frow"><span class="mc-gwiz__flabel">To</span><span class="mc-gwiz__fval" id="mc-gwiz-to">0 students selected</span><button class="mc-gwiz__edit" id="mc-gwiz-edit" type="button">Edit</button></div>
       <div class="mc-gwiz__frow"><span class="mc-gwiz__flabel">From</span><span class="mc-gwiz__fval">Academic Advising</span></div>
-      <label class="mc-field">
-        <span class="mc-field__label">Subject</span>
-        <input class="mc-field__control" id="mc-gwiz-subject" maxlength="50" placeholder="Subject" aria-label="Subject" />
-      </label>
-      <div class="mc-compose__editor">
+      <div class="mc-compose__fld">
+        <span class="mc-compose__flabel">Subject<span class="mc-req"> *</span></span>
+        <label class="mc-field">
+          <input class="mc-field__control" id="mc-gwiz-subject" maxlength="50" placeholder="Subject" aria-label="Subject" />
+        </label>
+        <span class="mc-compose__counter" id="mc-gwiz-counter">0/50</span>
+      </div>
+      <div class="mc-compose__editor" id="mc-gwiz-editor">
         <form class="composer composer--rich" onsubmit="return false">
-          <div class="composer__toolbar">
-            <button type="button" class="composer__icon-btn" aria-label="Bold">${iconBold}</button>
-            <button type="button" class="composer__icon-btn" aria-label="Italic">${iconItalic}</button>
-            <button type="button" class="composer__icon-btn" aria-label="Underline">${iconUnderline}</button>
-            <button type="button" class="btn btn--ghost btn--sm">${iconTag}Merge Tags</button>
-            <button type="button" class="btn btn--ghost btn--sm">Hyperlinks</button>
-            <button type="button" class="composer__ai-assist" id="mc-gwiz-ai">${iconAi}AI Assist</button>
-          </div>
+          ${richToolbarMarkup("mc-gwiz", "mc-gwiz-ai")}
           <div class="composer__field">
             <textarea class="composer__input" id="mc-gwiz-message" rows="1" placeholder="Write your message..." aria-label="Message"></textarea>
           </div>
+          <div class="mc-attach-hint" aria-hidden="true">Drop files to attach</div>
         </form>
       </div>
+      <button class="btn btn--ghost btn--sm mc-compose__attach" id="mc-gwiz-attach-btn" type="button">${iconOf("attach_file", "btn__icon")}Attach file</button>
+      <div class="mc-compose__atts" id="mc-gwiz-atts" hidden></div>
       <div class="mc-compose__checks">
         ${checkboxMarkup("Allow Replies", { checked: true, id: "mc-gwiz-allow" })}
         ${checkboxMarkup("Expire Thread", { checked: true, id: "mc-gwiz-expire" })}
@@ -3360,7 +3357,8 @@ const appJs = `(function () {
     composeMessage.style.height = Math.min(composeMessage.scrollHeight, 300) + "px";
   }
   composeMessage.addEventListener("input", function () { growMessage(); validateCompose(); });
-  // Merge Tags / Hyperlinks dropdowns — insert the chosen token at the cursor
+  // Merge Tags / Hyperlinks insert-at-cursor + progressive toolbar overflow —
+  // shared by the New Message compose editor AND the Group wizard's editor.
   function insertAtCursor(ta, text) {
     var start = ta.selectionStart != null ? ta.selectionStart : ta.value.length;
     var end = ta.selectionEnd != null ? ta.selectionEnd : ta.value.length;
@@ -3370,53 +3368,54 @@ const appJs = `(function () {
     ta.focus();
     ta.dispatchEvent(new Event("input", { bubbles: true }));
   }
-  composeDlg.querySelectorAll(".composer__tb-lb").forEach(function (lb) {
-    lb.querySelectorAll(".listbox__option").forEach(function (opt) {
-      opt.addEventListener("click", function () {
-        insertAtCursor(composeMessage, opt.dataset.insert + " ");
-        lb.hidePopover();
+  function bindEditorTools(root, messageEl) {
+    root.querySelectorAll(".composer__tb-lb").forEach(function (lb) {
+      lb.querySelectorAll(".listbox__option").forEach(function (opt) {
+        opt.addEventListener("click", function () {
+          insertAtCursor(messageEl, opt.dataset.insert + " ");
+          lb.hidePopover();
+        });
       });
     });
-  });
-  // Toolbar overflow: as the editor narrows, hide collapsible controls one at a
-  // time (rightmost group first, per data-tb-order) and reveal the "More"
-  // chevron; B/I/U + AI Assist never collapse. Clicking More expands to show the
-  // hidden controls inline. Driven by the toolbar's own width (ResizeObserver).
-  var composeTbMore = document.getElementById("mc-compose-tb-more");
-  var composeToolbar = composeTbMore ? composeTbMore.closest(".composer__toolbar") : null;
-  if (composeToolbar) {
-    var tbItems = Array.prototype.slice.call(composeToolbar.querySelectorAll(".composer__tb-adv"));
+    // as the editor narrows, hide collapsible controls one at a time (rightmost
+    // group first, per data-tb-order) and reveal the "More" chevron; B/I/U + AI
+    // Assist never collapse. Clicking More expands to show the hidden controls.
+    var tbMore = root.querySelector(".composer__tb-more");
+    var toolbar = tbMore ? tbMore.closest(".composer__toolbar") : null;
+    if (!toolbar) return;
+    var tbItems = Array.prototype.slice.call(toolbar.querySelectorAll(".composer__tb-adv"));
     tbItems.sort(function (a, b) { return (+a.dataset.tbOrder) - (+b.dataset.tbOrder); });
-    function tbOverflowing() { return composeToolbar.scrollWidth > composeToolbar.clientWidth + 1; }
+    function tbOverflowing() { return toolbar.scrollWidth > toolbar.clientWidth + 1; }
     function tbReflow() {
-      if (composeToolbar.classList.contains("is-expanded")) return;
-      composeToolbar.classList.add("is-measuring");
+      if (toolbar.classList.contains("is-expanded")) return;
+      toolbar.classList.add("is-measuring");
       tbItems.forEach(function (el) { el.classList.remove("composer__tb-collapsed"); });
-      composeToolbar.classList.remove("has-overflow");
+      toolbar.classList.remove("has-overflow");
       if (tbOverflowing()) {
-        composeToolbar.classList.add("has-overflow");
+        toolbar.classList.add("has-overflow");
         for (var i = 0; i < tbItems.length && tbOverflowing(); i++) {
           tbItems[i].classList.add("composer__tb-collapsed");
         }
       }
-      composeToolbar.classList.remove("is-measuring");
+      toolbar.classList.remove("is-measuring");
     }
-    composeTbMore.addEventListener("click", function () {
-      var expanded = composeToolbar.classList.toggle("is-expanded");
-      composeTbMore.setAttribute("aria-expanded", expanded ? "true" : "false");
+    tbMore.addEventListener("click", function () {
+      var expanded = toolbar.classList.toggle("is-expanded");
+      tbMore.setAttribute("aria-expanded", expanded ? "true" : "false");
       if (!expanded) tbReflow();
     });
-    var tbLastW = -1;
+    var lastW = -1;
     if (typeof ResizeObserver !== "undefined") {
       new ResizeObserver(function () {
-        var w = Math.round(composeToolbar.clientWidth);
-        if (w === tbLastW) return;
-        tbLastW = w;
+        var w = Math.round(toolbar.clientWidth);
+        if (w === lastW) return;
+        lastW = w;
         tbReflow();
-      }).observe(composeToolbar);
+      }).observe(toolbar);
     }
     requestAnimationFrame(tbReflow);
   }
+  bindEditorTools(composeDlg, composeMessage);
 
   // Select float model (Input's own): resting = placeholder only; the 12px
   // label floats in once a value exists
@@ -4125,8 +4124,35 @@ const appJs = `(function () {
   document.getElementById("mc-gwiz-edit").addEventListener("click", function () { gwizStep(1); });
   gwizMessage.addEventListener("input", function () { gwizMessage.style.height = "auto"; gwizMessage.style.height = Math.min(gwizMessage.scrollHeight, 220) + "px"; });
   document.getElementById("mc-gwiz-ai").addEventListener("click", function () { currentAiTarget = gwizMessage; aiStandaloneDlg.showModal(); });
+  // wizard step 2 shares the compose editor: Merge Tags / Hyperlinks insert +
+  // toolbar overflow, subject counter, and the same sample-attachment chips
+  bindEditorTools(gwizDlg, gwizMessage);
+  var gwizCounter = document.getElementById("mc-gwiz-counter");
+  gwizSubject.addEventListener("input", function () { gwizCounter.textContent = gwizSubject.value.length + "/50"; });
+  var gwizAttsWrap = document.getElementById("mc-gwiz-atts");
+  var gwizAtts = [];
+  function renderGwizAtts() {
+    gwizAttsWrap.innerHTML = "";
+    gwizAtts.forEach(function (file, i) {
+      var chip = document.createElement("div");
+      chip.className = "attachment attachment--compact";
+      chip.innerHTML = ATT_FILE_ICON
+        + '<span class="attachment__content"><span class="attachment__title"></span><span class="attachment__description"></span></span>'
+        + '<button type="button" class="attachment__action mc-att-remove" aria-label="Remove attachment">' + ATT_X_ICON + '</button>';
+      chip.querySelector(".attachment__title").textContent = file[0];
+      chip.querySelector(".attachment__description").textContent = file[1];
+      chip.querySelector(".mc-att-remove").addEventListener("click", function () { gwizAtts.splice(i, 1); renderGwizAtts(); });
+      gwizAttsWrap.appendChild(chip);
+    });
+    gwizAttsWrap.hidden = gwizAtts.length === 0;
+  }
+  document.getElementById("mc-gwiz-attach-btn").addEventListener("click", function () {
+    gwizAtts.push(COMPOSE_FAKE_FILES[gwizAtts.length % COMPOSE_FAKE_FILES.length]);
+    renderGwizAtts();
+  });
   function openGwiz() {
     gwizSel = {}; gwizFilters = {}; gwizSearch.value = ""; gwizSubject.value = ""; gwizMessage.value = ""; gwizMessage.style.height = "auto";
+    gwizAtts = []; renderGwizAtts(); gwizCounter.textContent = "0/50";
     document.getElementById("mc-gwiz-ids").value = "";
     document.getElementById("mc-gwiz-paste-hint").textContent = "Recognized IDs are added to your selection.";
     // reset to the Search tab

@@ -273,6 +273,10 @@
 #mc-compose-merge-lb { position: fixed; inset: auto; margin: 4px 0 0 0; position-anchor: --mc-mt-anchor; top: anchor(bottom); left: anchor(left); position-try-fallbacks: flip-block; }
 #mc-compose-links-btn { anchor-name: --mc-hl-anchor; }
 #mc-compose-links-lb { position: fixed; inset: auto; margin: 4px 0 0 0; position-anchor: --mc-hl-anchor; top: anchor(bottom); left: anchor(left); position-try-fallbacks: flip-block; }
+#mc-gwiz-merge-btn { anchor-name: --mc-gmt-anchor; }
+#mc-gwiz-merge-lb { position: fixed; inset: auto; margin: 4px 0 0 0; position-anchor: --mc-gmt-anchor; top: anchor(bottom); left: anchor(left); position-try-fallbacks: flip-block; }
+#mc-gwiz-links-btn { anchor-name: --mc-ghl-anchor; }
+#mc-gwiz-links-lb { position: fixed; inset: auto; margin: 4px 0 0 0; position-anchor: --mc-ghl-anchor; top: anchor(bottom); left: anchor(left); position-try-fallbacks: flip-block; }
 .composer__ai-assist { flex-shrink: 0; display: inline-flex; align-items: center; gap: 4px; height: 32px; padding: 0 8px; border: 1px solid transparent; border-radius: 8px; background: var(--tok-bg-ai); color: var(--tok-text-ai); cursor: pointer; font-family: var(--tok-family-sans); font-weight: 600; font-size: 12px; line-height: 1.4; }
 .composer__ai-assist .composer__icon { width: 16px; height: 16px; color: var(--tok-icon-ai); }
 .composer__ai-assist:hover { border-color: var(--tok-fill-ai); }
@@ -995,18 +999,6 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .mc-compose__editor .composer__tb-sep { align-self: auto; height: 16px; margin: 0 4px; }
 /* pending attachments — a wrap of removable chips (image thumbnail or file
    glyph); the editor is also a drop target ("drop files to attach") */
-.mc-attachments { display: flex; flex-wrap: wrap; gap: 8px; }
-.mc-attachments:not([hidden]) { margin-top: 8px; }
-.mc-attach { display: inline-flex; align-items: center; gap: 8px; max-width: 240px; padding: 4px 8px 4px 4px; border: 1px solid var(--tok-border-default); border-radius: 8px; background: var(--tok-surface-default); }
-.mc-attach__thumb { flex-shrink: 0; width: 32px; height: 32px; border-radius: 6px; background: var(--tok-surface-dim); display: inline-flex; align-items: center; justify-content: center; overflow: hidden; }
-.mc-attach__thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.mc-attach__thumb svg { width: 16px; height: 16px; color: var(--tok-icon-secondary); }
-.mc-attach__meta { min-width: 0; display: flex; flex-direction: column; }
-.mc-attach__name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--tok-text-default); font-weight: 400; font-size: 12px; line-height: 1.4; }
-.mc-attach__size { color: var(--tok-text-muted); font-size: 11px; }
-.mc-attach__x { flex-shrink: 0; margin-left: 4px; border: none; background: none; padding: 0; cursor: pointer; color: var(--tok-icon-secondary); display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 999px; }
-.mc-attach__x:hover { background: var(--tok-fill-neutral-hover); }
-.mc-attach__x svg { width: 14px; height: 14px; }
 .mc-attach-hint { position: absolute; inset: 0; z-index: 3; display: none; align-items: center; justify-content: center; border: 2px dashed var(--tok-border-focus); border-radius: 8px; background: var(--tok-surface-dim); color: var(--tok-text-primary); font-family: var(--tok-family-sans); font-weight: 400; font-size: 12px; line-height: 1.4; font-weight: 600; pointer-events: none; }
 .mc-compose__editor.is-dragover .mc-attach-hint { display: flex; }
 .mc-compose__counter { align-self: flex-end; color: var(--tok-text-muted); font-size: 12px; font-family: var(--tok-family-sans); }
@@ -1104,7 +1096,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   .mc-ai { height: auto; flex: 1; }
   .mc-ai__handle--collapse { display: none; }
   .mc-compose__lead { display: none; }
-  .mc-compose__editor .composer__ai-assist { display: none; }
+  .mc-compose .composer__ai-assist { display: none; }
   .mc-ai-standalone { position: fixed; inset: 0; margin: 0; width: 100vw; max-width: 100vw; height: 100dvh; max-height: 100dvh; border-radius: 0; }
 }
 /* mobile only: the footer stacks — checks strip (full-width divider) over
@@ -2415,8 +2407,6 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
             <div class="composer__field">
               <textarea class="composer__input" id="mc-compose-message" rows="1" placeholder="Write your message..." aria-label="Message"></textarea>
             </div>
-            <div class="mc-attachments" id="mc-compose-attachments" hidden></div>
-            <input type="file" id="mc-compose-file" accept="image/*,.pdf" multiple hidden />
             <div class="mc-attach-hint" aria-hidden="true">Drop files to attach</div>
           </form>
         </div>
@@ -2636,25 +2626,72 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     <div class="mc-gwiz__step" data-panel="2" hidden>
       <div class="mc-gwiz__frow"><span class="mc-gwiz__flabel">To</span><span class="mc-gwiz__fval" id="mc-gwiz-to">0 students selected</span><button class="mc-gwiz__edit" id="mc-gwiz-edit" type="button">Edit</button></div>
       <div class="mc-gwiz__frow"><span class="mc-gwiz__flabel">From</span><span class="mc-gwiz__fval">Academic Advising</span></div>
-      <label class="mc-field">
-        <span class="mc-field__label">Subject</span>
-        <input class="mc-field__control" id="mc-gwiz-subject" maxlength="50" placeholder="Subject" aria-label="Subject" />
-      </label>
-      <div class="mc-compose__editor">
+      <div class="mc-compose__fld">
+        <span class="mc-compose__flabel">Subject<span class="mc-req"> *</span></span>
+        <label class="mc-field">
+          <input class="mc-field__control" id="mc-gwiz-subject" maxlength="50" placeholder="Subject" aria-label="Subject" />
+        </label>
+        <span class="mc-compose__counter" id="mc-gwiz-counter">0/50</span>
+      </div>
+      <div class="mc-compose__editor" id="mc-gwiz-editor">
         <form class="composer composer--rich" onsubmit="return false">
           <div class="composer__toolbar">
-            <button type="button" class="composer__icon-btn" aria-label="Bold"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.6 10.79c.97-.67 1.65-1.77 1.65-2.79 0-2.26-1.75-4-4-4H7v14h7.04c2.09 0 3.71-1.7 3.71-3.79 0-1.52-.86-2.82-2.15-3.42zM10 6.5h3c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-3v-3zm3.5 9H10v-3h3.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5z"/></svg></button>
-            <button type="button" class="composer__icon-btn" aria-label="Italic"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 4v3h2.21l-3.42 8H6v3h8v-3h-2.21l3.42-8H18V4z"/></svg></button>
-            <button type="button" class="composer__icon-btn" aria-label="Underline"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 17c3.31 0 6-2.69 6-6V3h-2.5v8c0 1.93-1.57 3.5-3.5 3.5S8.5 12.93 8.5 11V3H6v8c0 3.31 2.69 6 6 6zm-7 2v2h14v-2H5z"/></svg></button>
-            <button type="button" class="btn btn--ghost btn--sm"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="m21.41 11.58-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.55-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z"/></svg>Merge Tags</button>
-            <button type="button" class="btn btn--ghost btn--sm">Hyperlinks</button>
-            <button type="button" class="composer__ai-assist" id="mc-gwiz-ai"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
-          </div>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="13" aria-label="Undo" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="12" aria-label="Redo" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M18.4 10.6C16.55 8.99 14.15 8 11.5 8c-4.65 0-8.58 3.03-9.96 7.22L3.9 16c1.05-3.19 4.05-5.5 7.6-5.5 1.95 0 3.73.72 5.12 1.88L13 16h9V7l-3.6 3.6z"/></svg>
+</button>
+              <span class="composer__tb-sep composer__tb-adv" data-tb-order="11"></span>
+              <button type="button" class="composer__tb-btn composer__tb-style composer__tb-adv" data-tb-order="9" tabindex="-1">Normal<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <span class="composer__tb-sep composer__tb-adv" data-tb-order="10"></span>
+              <button type="button" class="composer__icon-btn" aria-label="Bold"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.6 10.79c.97-.67 1.65-1.77 1.65-2.79 0-2.26-1.75-4-4-4H7v14h7.04c2.09 0 3.71-1.7 3.71-3.79 0-1.52-.86-2.82-2.15-3.42zM10 6.5h3c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-3v-3zm3.5 9H10v-3h3.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5z"/></svg></button>
+              <button type="button" class="composer__icon-btn" aria-label="Italic"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 4v3h2.21l-3.42 8H6v3h8v-3h-2.21l3.42-8H18V4z"/></svg></button>
+              <button type="button" class="composer__icon-btn" aria-label="Underline"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 17c3.31 0 6-2.69 6-6V3h-2.5v8c0 1.93-1.57 3.5-3.5 3.5S8.5 12.93 8.5 11V3H6v8c0 3.31 2.69 6 6 6zm-7 2v2h14v-2H5z"/></svg></button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="8" aria-label="Strikethrough" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 19h4v-3h-4v3zM5 4v3h5v3h4V7h5V4H5zM3 14h18v-2H3v2z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="7" aria-label="Code" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="6" aria-label="Align" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15 15H3v2h12v-2zm0-8H3v2h12V7zM3 13h18v-2H3v2zm0 8h18v-2H3v2zM3 3v2h18V3H3z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="5" aria-label="Insert link" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="4" aria-label="Insert email" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></button>
+              <span class="composer__tb-sep composer__tb-adv" data-tb-order="3"></span>
+              <button type="button" class="composer__tb-btn composer__tb-adv" id="mc-gwiz-merge-btn" data-tb-order="2" popovertarget="mc-gwiz-merge-lb" aria-haspopup="listbox">Merge Tags<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <div class="listbox composer__tb-lb" id="mc-gwiz-merge-lb" data-tb="merge" popover>
+                <ul class="listbox__list" role="listbox" aria-label="Merge Tags">
+                  <li><button class="listbox__option" role="option" type="button" data-insert="{{studentName}}">{{studentName}}</button></li>
+                  <li><button class="listbox__option" role="option" type="button" data-insert="{{studentFirstName}}">{{studentFirstName}}</button></li>
+                  <li><button class="listbox__option" role="option" type="button" data-insert="{{studentLastName}}">{{studentLastName}}</button></li>
+                </ul>
+              </div>
+              <button type="button" class="composer__tb-btn composer__tb-adv" id="mc-gwiz-links-btn" data-tb-order="1" popovertarget="mc-gwiz-links-lb" aria-haspopup="listbox">Hyperlinks<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <div class="listbox composer__tb-lb" id="mc-gwiz-links-lb" data-tb="links" popover>
+                <ul class="listbox__list" role="listbox" aria-label="Hyperlinks">
+                  <li><button class="listbox__option" role="option" type="button" data-insert="1098-TConsent">1098-TConsent</button></li>
+                  <li><button class="listbox__option" role="option" type="button" data-insert="Accept/DeclineAward">Accept/DeclineAward</button></li>
+                  <li><button class="listbox__option" role="option" type="button" data-insert="Address">Address</button></li>
+                  <li><button class="listbox__option" role="option" type="button" data-insert="ApplicationStatus">ApplicationStatus</button></li>
+                  <li><button class="listbox__option" role="option" type="button" data-insert="ApplyforGraduation">ApplyforGraduation</button></li>
+                  <li><button class="listbox__option" role="option" type="button" data-insert="FAFSA">FAFSA</button></li>
+                  <li><button class="listbox__option" role="option" type="button" data-insert="FederalStudentAid">FederalStudentAid</button></li>
+                  <li><button class="listbox__option" role="option" type="button" data-insert="FinancialAidAward">FinancialAidAward</button></li>
+                  <li><button class="listbox__option" role="option" type="button" data-insert="MessageCenter">MessageCenter</button></li>
+                  <li><button class="listbox__option" role="option" type="button" data-insert="ScheduleBuilder">ScheduleBuilder</button></li>
+                  <li><button class="listbox__option" role="option" type="button" data-insert="ShoppingCart">ShoppingCart</button></li>
+                </ul>
+              </div>
+              <button type="button" class="composer__tb-btn composer__tb-more" id="mc-gwiz-tb-more" aria-expanded="false" aria-label="More formatting options"><svg class="composer__tb-more-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <button type="button" class="composer__ai-assist" id="mc-gwiz-ai"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
+              <span class="composer__tb-break" aria-hidden="true"></span>
+            </div>
           <div class="composer__field">
             <textarea class="composer__input" id="mc-gwiz-message" rows="1" placeholder="Write your message..." aria-label="Message"></textarea>
           </div>
+          <div class="mc-attach-hint" aria-hidden="true">Drop files to attach</div>
         </form>
       </div>
+      <button class="btn btn--ghost btn--sm mc-compose__attach" id="mc-gwiz-attach-btn" type="button"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/></svg>Attach file</button>
+      <div class="mc-compose__atts" id="mc-gwiz-atts" hidden></div>
       <div class="mc-compose__checks">
         <label class="checkbox"><input type="checkbox" class="checkbox__input" id="mc-gwiz-allow" checked /><span class="checkbox__box"><svg class="checkbox__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="checkbox__label">Allow Replies</span></label>
         <label class="checkbox"><input type="checkbox" class="checkbox__input" id="mc-gwiz-expire" checked /><span class="checkbox__box"><svg class="checkbox__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="checkbox__label">Expire Thread</span></label>
@@ -3349,7 +3386,8 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     composeMessage.style.height = Math.min(composeMessage.scrollHeight, 300) + "px";
   }
   composeMessage.addEventListener("input", function () { growMessage(); validateCompose(); });
-  // Merge Tags / Hyperlinks dropdowns — insert the chosen token at the cursor
+  // Merge Tags / Hyperlinks insert-at-cursor + progressive toolbar overflow —
+  // shared by the New Message compose editor AND the Group wizard's editor.
   function insertAtCursor(ta, text) {
     var start = ta.selectionStart != null ? ta.selectionStart : ta.value.length;
     var end = ta.selectionEnd != null ? ta.selectionEnd : ta.value.length;
@@ -3359,53 +3397,54 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     ta.focus();
     ta.dispatchEvent(new Event("input", { bubbles: true }));
   }
-  composeDlg.querySelectorAll(".composer__tb-lb").forEach(function (lb) {
-    lb.querySelectorAll(".listbox__option").forEach(function (opt) {
-      opt.addEventListener("click", function () {
-        insertAtCursor(composeMessage, opt.dataset.insert + " ");
-        lb.hidePopover();
+  function bindEditorTools(root, messageEl) {
+    root.querySelectorAll(".composer__tb-lb").forEach(function (lb) {
+      lb.querySelectorAll(".listbox__option").forEach(function (opt) {
+        opt.addEventListener("click", function () {
+          insertAtCursor(messageEl, opt.dataset.insert + " ");
+          lb.hidePopover();
+        });
       });
     });
-  });
-  // Toolbar overflow: as the editor narrows, hide collapsible controls one at a
-  // time (rightmost group first, per data-tb-order) and reveal the "More"
-  // chevron; B/I/U + AI Assist never collapse. Clicking More expands to show the
-  // hidden controls inline. Driven by the toolbar's own width (ResizeObserver).
-  var composeTbMore = document.getElementById("mc-compose-tb-more");
-  var composeToolbar = composeTbMore ? composeTbMore.closest(".composer__toolbar") : null;
-  if (composeToolbar) {
-    var tbItems = Array.prototype.slice.call(composeToolbar.querySelectorAll(".composer__tb-adv"));
+    // as the editor narrows, hide collapsible controls one at a time (rightmost
+    // group first, per data-tb-order) and reveal the "More" chevron; B/I/U + AI
+    // Assist never collapse. Clicking More expands to show the hidden controls.
+    var tbMore = root.querySelector(".composer__tb-more");
+    var toolbar = tbMore ? tbMore.closest(".composer__toolbar") : null;
+    if (!toolbar) return;
+    var tbItems = Array.prototype.slice.call(toolbar.querySelectorAll(".composer__tb-adv"));
     tbItems.sort(function (a, b) { return (+a.dataset.tbOrder) - (+b.dataset.tbOrder); });
-    function tbOverflowing() { return composeToolbar.scrollWidth > composeToolbar.clientWidth + 1; }
+    function tbOverflowing() { return toolbar.scrollWidth > toolbar.clientWidth + 1; }
     function tbReflow() {
-      if (composeToolbar.classList.contains("is-expanded")) return;
-      composeToolbar.classList.add("is-measuring");
+      if (toolbar.classList.contains("is-expanded")) return;
+      toolbar.classList.add("is-measuring");
       tbItems.forEach(function (el) { el.classList.remove("composer__tb-collapsed"); });
-      composeToolbar.classList.remove("has-overflow");
+      toolbar.classList.remove("has-overflow");
       if (tbOverflowing()) {
-        composeToolbar.classList.add("has-overflow");
+        toolbar.classList.add("has-overflow");
         for (var i = 0; i < tbItems.length && tbOverflowing(); i++) {
           tbItems[i].classList.add("composer__tb-collapsed");
         }
       }
-      composeToolbar.classList.remove("is-measuring");
+      toolbar.classList.remove("is-measuring");
     }
-    composeTbMore.addEventListener("click", function () {
-      var expanded = composeToolbar.classList.toggle("is-expanded");
-      composeTbMore.setAttribute("aria-expanded", expanded ? "true" : "false");
+    tbMore.addEventListener("click", function () {
+      var expanded = toolbar.classList.toggle("is-expanded");
+      tbMore.setAttribute("aria-expanded", expanded ? "true" : "false");
       if (!expanded) tbReflow();
     });
-    var tbLastW = -1;
+    var lastW = -1;
     if (typeof ResizeObserver !== "undefined") {
       new ResizeObserver(function () {
-        var w = Math.round(composeToolbar.clientWidth);
-        if (w === tbLastW) return;
-        tbLastW = w;
+        var w = Math.round(toolbar.clientWidth);
+        if (w === lastW) return;
+        lastW = w;
         tbReflow();
-      }).observe(composeToolbar);
+      }).observe(toolbar);
     }
     requestAnimationFrame(tbReflow);
   }
+  bindEditorTools(composeDlg, composeMessage);
 
   // Select float model (Input's own): resting = placeholder only; the 12px
   // label floats in once a value exists
@@ -4107,8 +4146,35 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   document.getElementById("mc-gwiz-edit").addEventListener("click", function () { gwizStep(1); });
   gwizMessage.addEventListener("input", function () { gwizMessage.style.height = "auto"; gwizMessage.style.height = Math.min(gwizMessage.scrollHeight, 220) + "px"; });
   document.getElementById("mc-gwiz-ai").addEventListener("click", function () { currentAiTarget = gwizMessage; aiStandaloneDlg.showModal(); });
+  // wizard step 2 shares the compose editor: Merge Tags / Hyperlinks insert +
+  // toolbar overflow, subject counter, and the same sample-attachment chips
+  bindEditorTools(gwizDlg, gwizMessage);
+  var gwizCounter = document.getElementById("mc-gwiz-counter");
+  gwizSubject.addEventListener("input", function () { gwizCounter.textContent = gwizSubject.value.length + "/50"; });
+  var gwizAttsWrap = document.getElementById("mc-gwiz-atts");
+  var gwizAtts = [];
+  function renderGwizAtts() {
+    gwizAttsWrap.innerHTML = "";
+    gwizAtts.forEach(function (file, i) {
+      var chip = document.createElement("div");
+      chip.className = "attachment attachment--compact";
+      chip.innerHTML = ATT_FILE_ICON
+        + '<span class="attachment__content"><span class="attachment__title"></span><span class="attachment__description"></span></span>'
+        + '<button type="button" class="attachment__action mc-att-remove" aria-label="Remove attachment">' + ATT_X_ICON + '</button>';
+      chip.querySelector(".attachment__title").textContent = file[0];
+      chip.querySelector(".attachment__description").textContent = file[1];
+      chip.querySelector(".mc-att-remove").addEventListener("click", function () { gwizAtts.splice(i, 1); renderGwizAtts(); });
+      gwizAttsWrap.appendChild(chip);
+    });
+    gwizAttsWrap.hidden = gwizAtts.length === 0;
+  }
+  document.getElementById("mc-gwiz-attach-btn").addEventListener("click", function () {
+    gwizAtts.push(COMPOSE_FAKE_FILES[gwizAtts.length % COMPOSE_FAKE_FILES.length]);
+    renderGwizAtts();
+  });
   function openGwiz() {
     gwizSel = {}; gwizFilters = {}; gwizSearch.value = ""; gwizSubject.value = ""; gwizMessage.value = ""; gwizMessage.style.height = "auto";
+    gwizAtts = []; renderGwizAtts(); gwizCounter.textContent = "0/50";
     document.getElementById("mc-gwiz-ids").value = "";
     document.getElementById("mc-gwiz-paste-hint").textContent = "Recognized IDs are added to your selection.";
     // reset to the Search tab
