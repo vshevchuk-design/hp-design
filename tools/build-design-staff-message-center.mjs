@@ -2368,6 +2368,14 @@ const gwizCss = `.mc-gwiz { border: none; padding: 0; background: ${cv(mdBg)}; f
 .mc-gwiz__aipane .mc-ai { height: 100%; }
 .mc-gwiz__step[hidden] { display: none; }
 .mc-gwiz__cols { display: grid; grid-template-columns: 1.3fr 1fr; gap: ${px(resolve("dim.4"))}; }
+/* step 1 fills the fixed-height modal: the student list grows to take the free
+   space (more rows visible) instead of leaving a gap above the footer */
+.mc-gwiz__step[data-panel="1"] { height: 100%; }
+.mc-gwiz__step[data-panel="1"] > .mc-gwiz__cols { height: 100%; }
+.mc-gwiz__cols > div { min-height: 0; }
+.mc-gwiz__cols > div:first-child { display: flex; flex-direction: column; }
+.mc-gwiz__ptab:not([hidden]) { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+.mc-gwiz__ptab .mc-gwiz__list { flex: 1; max-height: none; min-height: 120px; }
 .mc-gwiz__cols > * { min-width: 0; }
 .mc-gwiz__hint { margin: 0 0 ${px(resolve("dim.2"))}; color: ${cv("text.secondary")}; ${typoCss(bodySmType)} }
 /* Step 1 picker: segmented Tabs (Search / Paste) over a shared Selected panel */
@@ -2435,9 +2443,9 @@ const gwizCss = `.mc-gwiz { border: none; padding: 0; background: ${cv(mdBg)}; f
 .mc-gwiz__footer .btn[hidden] { display: none; }
 .mc-gwiz__step[hidden] { display: none; }
 @media (min-width: 768px) {
-  .mc-gwiz { width: min(760px, calc(100vw - ${px(resolve("dim.8"))})); max-height: calc(100dvh - ${px(resolve("dim.16"))}); border-radius: ${mdRadius}; box-shadow: ${mdShadowCss}; }
-  /* a real height while AI is open, so the panel fills it */
-  .mc-gwiz.mc-gwiz--ai-open { height: min(720px, calc(100dvh - ${px(resolve("dim.16"))})); }
+  /* fixed height so the modal (and its footer) stays put across both steps and
+     whether or not the AI panel is open — no resizing between steps */
+  .mc-gwiz { width: min(760px, calc(100vw - ${px(resolve("dim.8"))})); height: min(720px, calc(100dvh - ${px(resolve("dim.16"))})); max-height: calc(100dvh - ${px(resolve("dim.16"))}); border-radius: ${mdRadius}; box-shadow: ${mdShadowCss}; }
 }
 /* desktop: the AI panel sits BESIDE the form (like New Message) — widen the modal,
    each column scrolls on its own */
