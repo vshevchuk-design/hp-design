@@ -1178,11 +1178,11 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .mc-gwiz__srow .checkbox { pointer-events: none; }
 /* add (+) / remove (−) toggle instead of a checkbox — the state is immediate, so
    a + to add and a filled − to remove reads clearer than a checkbox awaiting submit */
-.mc-gwiz__toggle { flex-shrink: 0; width: 28px; height: 28px; border-radius: 999px; border: 1px solid var(--tok-border-default); background: var(--tok-surface-default); display: inline-flex; align-items: center; justify-content: center; color: var(--tok-icon-secondary); }
+.mc-gwiz__toggle { flex-shrink: 0; width: 28px; height: 28px; border-radius: 8px; border: none; background: transparent; display: inline-flex; align-items: center; justify-content: center; color: var(--tok-icon-secondary); }
 .mc-gwiz__toggle-add, .mc-gwiz__toggle-remove { width: 18px; height: 18px; display: block; }
 .mc-gwiz__toggle-remove { display: none; }
-.mc-gwiz__srow:hover .mc-gwiz__toggle { border-color: var(--tok-border-strong); color: var(--tok-icon-default); }
-.mc-gwiz__srow.is-selected .mc-gwiz__toggle { background: var(--tok-fill-primary); border-color: var(--tok-fill-primary); color: var(--tok-icon-on-fill); }
+.mc-gwiz__srow:hover .mc-gwiz__toggle { background: var(--tok-fill-neutral-hover); color: var(--tok-icon-default); }
+.mc-gwiz__srow.is-selected .mc-gwiz__toggle { color: var(--tok-text-primary); }
 .mc-gwiz__srow.is-selected .mc-gwiz__toggle-add { display: none; }
 .mc-gwiz__srow.is-selected .mc-gwiz__toggle-remove { display: block; }
 .mc-gwiz__sid { color: var(--tok-text-default); font-weight: 600; font-weight: 400; font-size: 12px; line-height: 1.4; width: 64px; flex-shrink: 0; }
@@ -1211,14 +1211,17 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .mc-gwiz__selected { display: flex; flex-direction: column; min-height: 0; background: var(--tok-surface-dim); border: 1px solid var(--tok-border-default); border-radius: 8px; padding: 12px; }
 .mc-gwiz__sel-head { flex-shrink: 0; margin: 0 0 12px; display: flex; align-items: center; gap: 8px; color: var(--tok-text-default); font-weight: 700; font-weight: 400; font-size: 14px; line-height: 1.4; }
 .mc-gwiz__sel-count { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 999px; background: var(--tok-bg-primary); color: var(--tok-text-primary); font-size: 12px; font-weight: 600; }
-.mc-gwiz__chips { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+.mc-gwiz__chips { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 0; margin: 0 calc(-1 * 12px) calc(-1 * 12px); }
 .mc-gwiz__chips:empty { flex: 0; }
 .mc-gwiz__sel-empty { flex: 1; min-height: 0; }
 .mc-gwiz__sel-empty[hidden] { display: none; }
-.mc-gwiz__chip { display: flex; align-items: center; gap: 8px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); border-radius: 8px; padding: 6px 8px; }
-.mc-gwiz__chip b { color: var(--tok-text-default); font-weight: 400; font-size: 12px; line-height: 1.4; }
-.mc-gwiz__chip span { color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; flex: 1; min-width: 0; }
+/* selected rows mirror the left list: full-width rows, no gaps, bleeding to the
+   panel edges (they cancel the panel's side/bottom padding), divided by borders */
+.mc-gwiz__chip { box-sizing: border-box; display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 8px 12px; border-top: 1px solid var(--tok-border-default); background: transparent; }
+.mc-gwiz__chip b { flex-shrink: 0; width: 64px; color: var(--tok-text-default); font-weight: 600; font-weight: 400; font-size: 12px; line-height: 1.4; }
+.mc-gwiz__chip span { flex: 1; min-width: 0; color: var(--tok-text-default); font-weight: 400; font-size: 12px; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .mc-gwiz__chip button { flex-shrink: 0; border: none; background: none; padding: 0; cursor: pointer; color: var(--tok-icon-secondary); display: inline-flex; }
+.mc-gwiz__chip button:hover { color: var(--tok-icon-default); }
 .mc-gwiz__chip button svg { width: 16px; height: 16px; }
 .mc-gwiz__step[data-panel="2"] { display: flex; flex-direction: column; }
 /* mobile/tablet: Edit / AI writing assist tabs (like New Message) switch the form
@@ -2666,7 +2669,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 
           <div class="mc-gwiz__ptab" data-ptab-panel="search">
             <div class="mc-gwiz__searchrow">
-              <div class="search search--base mc-gwiz__searchbar"><svg class="search__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg><input class="search__input" id="mc-gwiz-search" placeholder="Search by name or ID" aria-label="Search students" /></div>
+              <div class="search search--base mc-gwiz__searchbar"><svg class="search__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg><input class="search__input" id="mc-gwiz-search" placeholder="Search by name or ID" aria-label="Search students" /><button class="search__clear" id="mc-gwiz-search-clear" type="button" aria-label="Clear search" hidden><svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button></div>
               <button class="btn btn--secondary btn--base btn--icon-only mc-gwiz__filterbtn" id="mc-gwiz-addfilter" type="button" aria-label="Filters" aria-haspopup="menu"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/></svg></button>
             </div>
             <div class="mc-gwiz__filters" id="mc-gwiz-filters" hidden></div>
@@ -4213,6 +4216,9 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     syncSelAll();
   }
   gwizSearch.addEventListener("input", applyGwizFilters);
+  var gwizSearchClear = document.getElementById("mc-gwiz-search-clear");
+  gwizSearch.addEventListener("input", function () { gwizSearchClear.hidden = gwizSearch.value.trim() === ""; });
+  gwizSearchClear.addEventListener("click", function () { gwizSearch.value = ""; gwizSearchClear.hidden = true; applyGwizFilters(); gwizSearch.focus(); });
 
   // ---- select-all toggles every *visible* (filtered) row ----
   function syncSelAll() {
@@ -4407,7 +4413,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     renderGwizAtts();
   });
   function openGwiz() {
-    gwizSel = {}; gwizFilters = {}; gwizSearch.value = ""; gwizSubject.value = ""; gwizMessage.value = ""; gwizMessage.style.height = "auto";
+    gwizSel = {}; gwizFilters = {}; gwizSearch.value = ""; gwizSearchClear.hidden = true; gwizSubject.value = ""; gwizMessage.value = ""; gwizMessage.style.height = "auto";
     gwizAtts = []; renderGwizAtts(); gwizCounter.textContent = "0/50";
     document.getElementById("mc-gwiz-allow").checked = true;
     gwizExpire.checked = true; gwizExpFixed.checked = true; gwizExpAmount.checked = false;

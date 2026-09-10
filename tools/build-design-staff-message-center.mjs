@@ -2409,11 +2409,11 @@ const gwizCss = `.mc-gwiz { border: none; padding: 0; background: ${cv(mdBg)}; f
 .mc-gwiz__srow .checkbox { pointer-events: none; }
 /* add (+) / remove (−) toggle instead of a checkbox — the state is immediate, so
    a + to add and a filled − to remove reads clearer than a checkbox awaiting submit */
-.mc-gwiz__toggle { flex-shrink: 0; width: 28px; height: 28px; border-radius: ${px(resolve("radius.full"))}; border: 1px solid ${cv("border.default")}; background: ${cv("surface.default")}; display: inline-flex; align-items: center; justify-content: center; color: ${cv("icon.secondary")}; }
+.mc-gwiz__toggle { flex-shrink: 0; width: 28px; height: 28px; border-radius: ${px(resolve("radius.default"))}; border: none; background: transparent; display: inline-flex; align-items: center; justify-content: center; color: ${cv("icon.secondary")}; }
 .mc-gwiz__toggle-add, .mc-gwiz__toggle-remove { width: 18px; height: 18px; display: block; }
 .mc-gwiz__toggle-remove { display: none; }
-.mc-gwiz__srow:hover .mc-gwiz__toggle { border-color: ${cv("border.strong")}; color: ${cv("icon.default")}; }
-.mc-gwiz__srow.is-selected .mc-gwiz__toggle { background: ${cv("fill.primary")}; border-color: ${cv("fill.primary")}; color: ${cv("icon.onFill")}; }
+.mc-gwiz__srow:hover .mc-gwiz__toggle { background: ${cv("fill.neutralHover")}; color: ${cv("icon.default")}; }
+.mc-gwiz__srow.is-selected .mc-gwiz__toggle { color: ${cv("text.primary")}; }
 .mc-gwiz__srow.is-selected .mc-gwiz__toggle-add { display: none; }
 .mc-gwiz__srow.is-selected .mc-gwiz__toggle-remove { display: block; }
 .mc-gwiz__sid { color: ${cv("text.default")}; font-weight: 600; ${typoCss(bodySmType)} width: 64px; flex-shrink: 0; }
@@ -2442,14 +2442,17 @@ const gwizCss = `.mc-gwiz { border: none; padding: 0; background: ${cv(mdBg)}; f
 .mc-gwiz__selected { display: flex; flex-direction: column; min-height: 0; background: ${cv("surface.dim")}; border: 1px solid ${cv("border.default")}; border-radius: ${px(resolve("radius.default"))}; padding: ${px(resolve("dim.3"))}; }
 .mc-gwiz__sel-head { flex-shrink: 0; margin: 0 0 ${px(resolve("dim.3"))}; display: flex; align-items: center; gap: ${px(resolve("dim.2"))}; color: ${cv("text.default")}; font-weight: 700; ${typoCss(bodyBaseType)} }
 .mc-gwiz__sel-count { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; min-width: 22px; height: 22px; padding: 0 ${px(resolve("dim.1_5"))}; border-radius: ${px(resolve("radius.full"))}; background: ${cv("bg.primary")}; color: ${cv("text.primary")}; font-size: 12px; font-weight: 600; }
-.mc-gwiz__chips { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: ${px(resolve("dim.2"))}; }
+.mc-gwiz__chips { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 0; margin: 0 calc(-1 * ${px(resolve("dim.3"))}) calc(-1 * ${px(resolve("dim.3"))}); }
 .mc-gwiz__chips:empty { flex: 0; }
 .mc-gwiz__sel-empty { flex: 1; min-height: 0; }
 .mc-gwiz__sel-empty[hidden] { display: none; }
-.mc-gwiz__chip { display: flex; align-items: center; gap: ${px(resolve("dim.2"))}; background: ${cv("surface.default")}; border: 1px solid ${cv("border.default")}; border-radius: ${px(resolve("radius.default"))}; padding: ${px(resolve("dim.1_5"))} ${px(resolve("dim.2"))}; }
-.mc-gwiz__chip b { color: ${cv("text.default")}; ${typoCss(bodySmType)} }
-.mc-gwiz__chip span { color: ${cv("text.secondary")}; ${typoCss(bodySmType)} flex: 1; min-width: 0; }
+/* selected rows mirror the left list: full-width rows, no gaps, bleeding to the
+   panel edges (they cancel the panel's side/bottom padding), divided by borders */
+.mc-gwiz__chip { box-sizing: border-box; display: flex; align-items: center; gap: ${px(resolve("dim.3"))}; min-height: ${px(resolve("dim.11"))}; padding: ${px(resolve("dim.2"))} ${px(resolve("dim.3"))}; border-top: 1px solid ${cv("border.default")}; background: transparent; }
+.mc-gwiz__chip b { flex-shrink: 0; width: 64px; color: ${cv("text.default")}; font-weight: 600; ${typoCss(bodySmType)} }
+.mc-gwiz__chip span { flex: 1; min-width: 0; color: ${cv("text.default")}; ${typoCss(bodySmType)} white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .mc-gwiz__chip button { flex-shrink: 0; border: none; background: none; padding: 0; cursor: pointer; color: ${cv("icon.secondary")}; display: inline-flex; }
+.mc-gwiz__chip button:hover { color: ${cv("icon.default")}; }
 .mc-gwiz__chip button svg { width: 16px; height: 16px; }
 .mc-gwiz__step[data-panel="2"] { display: flex; flex-direction: column; }
 /* mobile/tablet: Edit / AI writing assist tabs (like New Message) switch the form
@@ -2538,7 +2541,7 @@ const gwizMarkup = `<dialog class="mc-gwiz" id="mc-gwiz" aria-labelledby="mc-gwi
 
           <div class="mc-gwiz__ptab" data-ptab-panel="search">
             <div class="mc-gwiz__searchrow">
-              <div class="search search--base mc-gwiz__searchbar">${iconSearch}<input class="search__input" id="mc-gwiz-search" placeholder="Search by name or ID" aria-label="Search students" /></div>
+              <div class="search search--base mc-gwiz__searchbar">${iconSearch}<input class="search__input" id="mc-gwiz-search" placeholder="Search by name or ID" aria-label="Search students" /><button class="search__clear" id="mc-gwiz-search-clear" type="button" aria-label="Clear search" hidden>${iconClear.replace('<svg class="search__clear" ', '<svg ')}</button></div>
               <button class="btn btn--secondary btn--base btn--icon-only mc-gwiz__filterbtn" id="mc-gwiz-addfilter" type="button" aria-label="Filters" aria-haspopup="menu">${iconOf("filter_list", "btn__icon")}</button>
             </div>
             <div class="mc-gwiz__filters" id="mc-gwiz-filters" hidden></div>
@@ -4143,6 +4146,9 @@ const appJs = `(function () {
     syncSelAll();
   }
   gwizSearch.addEventListener("input", applyGwizFilters);
+  var gwizSearchClear = document.getElementById("mc-gwiz-search-clear");
+  gwizSearch.addEventListener("input", function () { gwizSearchClear.hidden = gwizSearch.value.trim() === ""; });
+  gwizSearchClear.addEventListener("click", function () { gwizSearch.value = ""; gwizSearchClear.hidden = true; applyGwizFilters(); gwizSearch.focus(); });
 
   // ---- select-all toggles every *visible* (filtered) row ----
   function syncSelAll() {
@@ -4337,7 +4343,7 @@ const appJs = `(function () {
     renderGwizAtts();
   });
   function openGwiz() {
-    gwizSel = {}; gwizFilters = {}; gwizSearch.value = ""; gwizSubject.value = ""; gwizMessage.value = ""; gwizMessage.style.height = "auto";
+    gwizSel = {}; gwizFilters = {}; gwizSearch.value = ""; gwizSearchClear.hidden = true; gwizSubject.value = ""; gwizMessage.value = ""; gwizMessage.style.height = "auto";
     gwizAtts = []; renderGwizAtts(); gwizCounter.textContent = "0/50";
     document.getElementById("mc-gwiz-allow").checked = true;
     gwizExpire.checked = true; gwizExpFixed.checked = true; gwizExpAmount.checked = false;
