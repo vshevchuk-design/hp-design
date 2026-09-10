@@ -2517,6 +2517,9 @@ const gwizCss = `.mc-gwiz { border: none; padding: 0; background: ${cv(mdBg)}; f
   .mc-gwiz__sel-head { margin: 0; cursor: pointer; height: 36px; }
   .mc-gwiz__sel-chev { display: inline-flex; align-items: center; }
   .mc-gwiz__selected.is-open .mc-gwiz__sel-chev { transform: rotate(180deg); }
+  /* collapsed = only the bar; the list/empty placeholder show once it's open */
+  .mc-gwiz__selected:not(.is-open) .mc-gwiz__chips,
+  .mc-gwiz__selected:not(.is-open) .mc-gwiz__sel-empty { display: none; }
   /* the chips only get their top spacing (and scroll) once the sheet is open */
   .mc-gwiz__selected.is-open .mc-gwiz__chips { margin-top: ${px(resolve("dim.3"))}; }
   /* the row's year·major meta is a nicety on desktop; on a phone it just steals

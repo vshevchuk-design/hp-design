@@ -1285,6 +1285,9 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   .mc-gwiz__sel-head { margin: 0; cursor: pointer; height: 36px; }
   .mc-gwiz__sel-chev { display: inline-flex; align-items: center; }
   .mc-gwiz__selected.is-open .mc-gwiz__sel-chev { transform: rotate(180deg); }
+  /* collapsed = only the bar; the list/empty placeholder show once it's open */
+  .mc-gwiz__selected:not(.is-open) .mc-gwiz__chips,
+  .mc-gwiz__selected:not(.is-open) .mc-gwiz__sel-empty { display: none; }
   /* the chips only get their top spacing (and scroll) once the sheet is open */
   .mc-gwiz__selected.is-open .mc-gwiz__chips { margin-top: 12px; }
   /* the row's year·major meta is a nicety on desktop; on a phone it just steals
