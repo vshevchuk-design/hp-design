@@ -1184,7 +1184,9 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .mc-gwiz__chip span { color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; flex: 1; min-width: 0; }
 .mc-gwiz__chip button { flex-shrink: 0; border: none; background: none; padding: 0; cursor: pointer; color: var(--tok-icon-secondary); display: inline-flex; }
 .mc-gwiz__chip button svg { width: 16px; height: 16px; }
-.mc-gwiz__body .mc-field, .mc-gwiz__body .mc-compose__editor, .mc-gwiz__body .mc-compose__exp, .mc-gwiz__body .mc-compose__attach { margin-top: 12px; }
+/* step 2 stacks its blocks with an even gap (Department, Subject, editor, attach,
+   attachments, expiration) — the AI overlay is absolute, so it stays out of flow */
+.mc-gwiz__step[data-panel="2"] { display: flex; flex-direction: column; gap: 12px; }
 .mc-gwiz__footer { flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 16px 24px; border-top: 1px solid var(--tok-border-default); }
 .mc-gwiz__checks[hidden] { display: none; }
 .mc-gwiz__footer-end { display: flex; gap: 8px; margin-left: auto; }
@@ -2795,7 +2797,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     <div class="mc-gwiz__footer-end">
       <button class="btn btn--secondary btn--base" id="mc-gwiz-cancel" type="button">Cancel</button>
       <button class="btn btn--primary btn--base" id="mc-gwiz-next" type="button" disabled>Next</button>
-      <button class="btn btn--primary btn--base" id="mc-gwiz-send" type="button" hidden>Send</button>
+      <button class="btn btn--primary btn--base" id="mc-gwiz-send" type="button" hidden><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>Send Message</button>
     </div>
   </footer>
 </dialog>

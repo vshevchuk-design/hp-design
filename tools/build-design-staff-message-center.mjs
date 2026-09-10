@@ -2415,7 +2415,9 @@ const gwizCss = `.mc-gwiz { border: none; padding: 0; background: ${cv(mdBg)}; f
 .mc-gwiz__chip span { color: ${cv("text.secondary")}; ${typoCss(bodySmType)} flex: 1; min-width: 0; }
 .mc-gwiz__chip button { flex-shrink: 0; border: none; background: none; padding: 0; cursor: pointer; color: ${cv("icon.secondary")}; display: inline-flex; }
 .mc-gwiz__chip button svg { width: 16px; height: 16px; }
-.mc-gwiz__body .mc-field, .mc-gwiz__body .mc-compose__editor, .mc-gwiz__body .mc-compose__exp, .mc-gwiz__body .mc-compose__attach { margin-top: ${px(resolve("dim.3"))}; }
+/* step 2 stacks its blocks with an even gap (Department, Subject, editor, attach,
+   attachments, expiration) — the AI overlay is absolute, so it stays out of flow */
+.mc-gwiz__step[data-panel="2"] { display: flex; flex-direction: column; gap: ${px(resolve("dim.3"))}; }
 .mc-gwiz__footer { flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.4"))} ${mdPadding}; border-top: 1px solid ${cv(mdDivider)}; }
 .mc-gwiz__checks[hidden] { display: none; }
 .mc-gwiz__footer-end { display: flex; gap: ${px(resolve("dim.2"))}; margin-left: auto; }
@@ -2557,7 +2559,7 @@ const gwizMarkup = `<dialog class="mc-gwiz" id="mc-gwiz" aria-labelledby="mc-gwi
     <div class="mc-gwiz__footer-end">
       <button class="btn btn--secondary btn--base" id="mc-gwiz-cancel" type="button">Cancel</button>
       <button class="btn btn--primary btn--base" id="mc-gwiz-next" type="button" disabled>Next</button>
-      <button class="btn btn--primary btn--base" id="mc-gwiz-send" type="button" hidden>Send</button>
+      <button class="btn btn--primary btn--base" id="mc-gwiz-send" type="button" hidden>${iconSend}Send Message</button>
     </div>
   </footer>
 </dialog>`;
