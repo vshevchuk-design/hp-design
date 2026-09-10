@@ -2512,7 +2512,8 @@ const gwizCss = `.mc-gwiz { border: none; padding: 0; background: ${cv(mdBg)}; f
 .mc-gwiz__paste-area { display: block; width: 100%; box-sizing: border-box; min-height: 168px; resize: vertical; padding: ${px(resolve("dim.3"))}; border: 1px solid ${cv("border.default")}; border-radius: ${px(resolve("radius.default"))}; background: ${cv("surface.dim")}; color: ${cv("text.default")}; ${typoCss(inputValueType)} font-family: ${cv("family.sans")}; line-height: 1.5; }
 .mc-gwiz__paste-area:focus { outline: 2px solid ${cv("border.focus")}; outline-offset: -1px; border-color: ${cv("border.focus")}; }
 .mc-gwiz__paste-foot { display: flex; align-items: center; justify-content: space-between; gap: ${px(resolve("dim.2"))}; margin-top: ${px(resolve("dim.2_5"))}; }
-.mc-gwiz__paste-hint { color: ${cv("text.muted")}; ${typoCss(bodySmType)} }
+.mc-gwiz__paste-foot .btn { flex-shrink: 0; white-space: nowrap; }
+.mc-gwiz__paste-hint { min-width: 0; color: ${cv("text.muted")}; ${typoCss(bodySmType)} }
 /* the Selected panel fills the column height; a clear header, then the chips (or
    a placeholder pill when empty) */
 .mc-gwiz__selected { display: flex; flex-direction: column; min-height: 0; background: ${cv("surface.dim")}; border: 1px solid ${cv("border.default")}; border-radius: ${px(resolve("radius.default"))}; padding: ${px(resolve("dim.3"))}; }

@@ -1234,7 +1234,8 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .mc-gwiz__paste-area { display: block; width: 100%; box-sizing: border-box; min-height: 168px; resize: vertical; padding: 12px; border: 1px solid var(--tok-border-default); border-radius: 8px; background: var(--tok-surface-dim); color: var(--tok-text-default); font-weight: 400; font-size: 16px; line-height: 1.2; font-family: var(--tok-family-sans); line-height: 1.5; }
 .mc-gwiz__paste-area:focus { outline: 2px solid var(--tok-border-focus); outline-offset: -1px; border-color: var(--tok-border-focus); }
 .mc-gwiz__paste-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 10px; }
-.mc-gwiz__paste-hint { color: var(--tok-text-muted); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.mc-gwiz__paste-foot .btn { flex-shrink: 0; white-space: nowrap; }
+.mc-gwiz__paste-hint { min-width: 0; color: var(--tok-text-muted); font-weight: 400; font-size: 12px; line-height: 1.4; }
 /* the Selected panel fills the column height; a clear header, then the chips (or
    a placeholder pill when empty) */
 .mc-gwiz__selected { display: flex; flex-direction: column; min-height: 0; background: var(--tok-surface-dim); border: 1px solid var(--tok-border-default); border-radius: 8px; padding: 12px; }
