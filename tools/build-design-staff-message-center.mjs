@@ -2441,8 +2441,9 @@ const gwizCss = `.mc-gwiz { border: none; padding: 0; background: ${cv(mdBg)}; f
 /* the Selected panel fills the column height; a clear header, then the chips (or
    a placeholder pill when empty) */
 .mc-gwiz__selected { display: flex; flex-direction: column; min-height: 0; background: ${cv("surface.dim")}; border: 1px solid ${cv("border.default")}; border-radius: ${px(resolve("radius.default"))}; padding: ${px(resolve("dim.3"))}; }
-.mc-gwiz__sel-head { flex-shrink: 0; margin: 0 0 ${px(resolve("dim.3"))}; display: flex; align-items: center; gap: ${px(resolve("dim.2"))}; color: ${cv("text.default")}; font-weight: 700; ${typoCss(bodyBaseType)} }
-.mc-gwiz__sel-count { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; min-width: 22px; height: 22px; padding: 0 ${px(resolve("dim.1_5"))}; border-radius: ${px(resolve("radius.full"))}; background: ${cv("bg.primary")}; color: ${cv("text.primary")}; font-size: 12px; font-weight: 600; }
+.mc-gwiz__sel-head { flex-shrink: 0; margin: 0 0 ${px(resolve("dim.3"))}; display: flex; align-items: center; gap: ${px(resolve("dim.2"))}; color: ${cv("text.default")}; ${typoCss(bodyBaseType)} font-weight: 700; }
+.mc-gwiz__sel-count { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; min-width: 22px; height: 22px; padding: 0 ${px(resolve("dim.1_5"))}; border-radius: ${px(resolve("radius.full"))}; background: ${cv("fill.neutral")}; color: ${cv("text.secondary")}; font-size: 12px; font-weight: 600; }
+.mc-gwiz__sel-count.is-active { background: ${cv("bg.primary")}; color: ${cv("text.primary")}; }
 .mc-gwiz__chips { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 0; margin: 0 calc(-1 * ${px(resolve("dim.3"))}) calc(-1 * ${px(resolve("dim.3"))}); }
 .mc-gwiz__chips:empty { flex: 0; }
 .mc-gwiz__sel-empty { flex: 1; min-height: 0; }
@@ -4081,6 +4082,7 @@ const appJs = `(function () {
       b.addEventListener("click", function () { setSelected(b.dataset.rm, false); });
     });
     gwizCountEl.textContent = gwizCount();
+    gwizCountEl.classList.toggle("is-active", gwizCount() > 0);
     document.getElementById("mc-gwiz-sel-empty").hidden = gwizCount() > 0;
   }
   // reflect the selection back into row checkboxes + Clear button + select-all

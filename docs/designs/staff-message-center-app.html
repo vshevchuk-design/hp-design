@@ -1209,8 +1209,9 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 /* the Selected panel fills the column height; a clear header, then the chips (or
    a placeholder pill when empty) */
 .mc-gwiz__selected { display: flex; flex-direction: column; min-height: 0; background: var(--tok-surface-dim); border: 1px solid var(--tok-border-default); border-radius: 8px; padding: 12px; }
-.mc-gwiz__sel-head { flex-shrink: 0; margin: 0 0 12px; display: flex; align-items: center; gap: 8px; color: var(--tok-text-default); font-weight: 700; font-weight: 400; font-size: 14px; line-height: 1.4; }
-.mc-gwiz__sel-count { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 999px; background: var(--tok-bg-primary); color: var(--tok-text-primary); font-size: 12px; font-weight: 600; }
+.mc-gwiz__sel-head { flex-shrink: 0; margin: 0 0 12px; display: flex; align-items: center; gap: 8px; color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; font-weight: 700; }
+.mc-gwiz__sel-count { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 999px; background: var(--tok-fill-neutral); color: var(--tok-text-secondary); font-size: 12px; font-weight: 600; }
+.mc-gwiz__sel-count.is-active { background: var(--tok-bg-primary); color: var(--tok-text-primary); }
 .mc-gwiz__chips { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 0; margin: 0 calc(-1 * 12px) calc(-1 * 12px); }
 .mc-gwiz__chips:empty { flex: 0; }
 .mc-gwiz__sel-empty { flex: 1; min-height: 0; }
@@ -4150,6 +4151,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
       b.addEventListener("click", function () { setSelected(b.dataset.rm, false); });
     });
     gwizCountEl.textContent = gwizCount();
+    gwizCountEl.classList.toggle("is-active", gwizCount() > 0);
     document.getElementById("mc-gwiz-sel-empty").hidden = gwizCount() > 0;
   }
   // reflect the selection back into row checkboxes + Clear button + select-all
