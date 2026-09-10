@@ -1349,7 +1349,10 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .mc-composer__body { display: flex; flex-direction: column; gap: 12px; }
 .mc-thread__editor { position: relative; display: flex; flex-direction: column; border: 1px solid var(--tok-border-default); border-radius: 8px; background: var(--tok-surface-default); overflow: hidden; }
 .mc-thread__editor:focus-within { border-color: var(--tok-border-focus); }
-.mc-thread__editor .composer__toolbar { gap: 2px; padding: 4px 8px; border-bottom: 1px solid var(--tok-border-default); background: var(--tok-surface-default); }
+.mc-thread__editor .composer__toolbar { gap: 2px; padding: 4px 12px; border-bottom: 1px solid var(--tok-border-default); background: var(--tok-surface-default); }
+/* AI Assist sits at the far end; the extra toolbar padding-right keeps it clear
+   of the card's 16px corner so the rounding never clips it */
+.mc-thread__editor .composer__ai-assist { margin-left: auto; }
 .mc-thread__editor .composer__field { align-items: flex-start; border: none; border-radius: 0; background: transparent; padding: 12px; }
 .mc-thread__editor .composer__field:hover { background: transparent; border-color: transparent; }
 .mc-thread__editor .composer__input { display: block; resize: none; min-height: 80px; max-height: 220px; overflow-y: auto; }

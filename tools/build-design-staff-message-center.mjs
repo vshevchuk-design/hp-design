@@ -2808,7 +2808,10 @@ const phaseECss = `.mc-reply-actions { display: flex; align-items: center; gap: 
 .mc-composer__body { display: flex; flex-direction: column; gap: ${px(resolve("dim.3"))}; }
 .mc-thread__editor { position: relative; display: flex; flex-direction: column; border: 1px solid ${cv("border.default")}; border-radius: ${compRadius}; background: ${cv("surface.default")}; overflow: hidden; }
 .mc-thread__editor:focus-within { border-color: ${cv("border.focus")}; }
-.mc-thread__editor .composer__toolbar { gap: 2px; padding: ${px(resolve("dim.1"))} ${px(resolve("dim.2"))}; border-bottom: 1px solid ${cv("border.default")}; background: ${cv("surface.default")}; }
+.mc-thread__editor .composer__toolbar { gap: 2px; padding: ${px(resolve("dim.1"))} ${px(resolve("dim.3"))}; border-bottom: 1px solid ${cv("border.default")}; background: ${cv("surface.default")}; }
+/* AI Assist sits at the far end; the extra toolbar padding-right keeps it clear
+   of the card's 16px corner so the rounding never clips it */
+.mc-thread__editor .composer__ai-assist { margin-left: auto; }
 .mc-thread__editor .composer__field { align-items: flex-start; border: none; border-radius: 0; background: transparent; padding: ${px(resolve("dim.3"))}; }
 .mc-thread__editor .composer__field:hover { background: transparent; border-color: transparent; }
 .mc-thread__editor .composer__input { display: block; resize: none; min-height: 80px; max-height: 220px; overflow-y: auto; }
