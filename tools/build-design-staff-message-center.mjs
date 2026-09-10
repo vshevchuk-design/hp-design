@@ -1739,25 +1739,21 @@ function messageMarkup(sender, meta, bodyHtml) {
           </div>
         </div>`;
 }
-function bubbleRow({ role, name, meta, text, attachmentHtml = "" }) {
-  // read receipt — staff self-replies show "· Seen · time" (the student has
-  // opened it); the student's own messages just show the time
-  const metaHtml = role === "self"
-    ? `<span class="bubble-sender__meta"><span class="bubble-sender__seen">Seen</span> · ${meta}</span>`
-    : `<span class="bubble-sender__meta">${meta}</span>`;
-  const senderText = `<p class="bubble-sender__text"><span class="bubble-sender__name">${name}</span> ${metaHtml}</p>`;
+function bubbleRow({ role, name, meta, text, attachmentHtml = "", seen = "" }) {
+  const senderText = `<p class="bubble-sender__text"><span class="bubble-sender__name">${name}</span> <span class="bubble-sender__meta">${meta}</span></p>`;
   const av = avatarMarkup(name, "sm");
   const sender = `<div class="bubble-sender">${role === "self" ? senderText + av : av + senderText}</div>`;
   const fillClass = role === "self" ? " bubble--tint" : "";
+  // read receipt — a staff self-reply the student has opened gets its own line
+  // under the bubble, stamped with WHEN it was seen (distinct from the send time)
+  const receipt = role === "self" && seen
+    ? `<p class="bubble-receipt">${iconOf("done", "bubble-receipt__icon")}Seen · ${seen}</p>`
+    : "";
   return `<div class="bubble-row bubble-row--${role}">
           ${sender}
           <div class="bubble bubble--${role}${fillClass}">${text ? `<p>${text}</p>` : ""}${attachmentHtml}</div>
+          ${receipt}
         </div>`;
-}
-// day separator between messages sent on different calendar days (email-thread
-// convention) — a centered date label flanked by hairlines, tokens only
-function dayDivider(label) {
-  return `<div class="mc-thread__day"><span class="mc-thread__day-label">${label}</span></div>`;
 }
 
 // ---- thread data ----
@@ -1792,8 +1788,6 @@ const threads = [
     meta: { Department: "Academic Advising", Status: "Open", Institution: "PeopleSoft University" },
     content: [
       bubbleRow({ role: "other", name: "Diego Fernandez", meta: "Aug 03, 11:20 AM", text: "My internship application needs an official transcript by next Friday. Attaching the offer letter for context.", attachmentHtml: attachmentMarkup("Internship-offer.pdf", "PDF · 420 KB") }),
-      dayDivider("August 4, 2026"),
-      bubbleRow({ role: "self", name: SELF.name, meta: "Aug 04, 8:30 AM", text: "Thanks, Diego — I've requested the official transcript. It'll be ready by Thursday and I'll send you the tracking link." }),
     ],
   },
   {
@@ -1805,7 +1799,7 @@ const threads = [
     meta: { Department: "Academic Advising", Status: "Open", Institution: "PeopleSoft University" },
     content: [
       bubbleRow({ role: "other", name: "George Amalor", meta: "Jul 31, 8:02 AM", text: "Could we reschedule my advising appointment to next week?" }),
-      bubbleRow({ role: "self", name: SELF.name, meta: "Jul 31, 9:15 AM", text: "Sure — I moved your appointment to Tuesday at 3 PM. Let me know if that works." }),
+      bubbleRow({ role: "self", name: SELF.name, meta: "Jul 31, 9:15 AM", seen: "Jul 31, 9:22 AM", text: "Sure — I moved your appointment to Tuesday at 3 PM. Let me know if that works." }),
     ],
   },
   {
@@ -1848,8 +1842,7 @@ const threads = [
     meta: { Department: "Academic Advising", Status: "Open", Institution: "PeopleSoft University" },
     content: [
       bubbleRow({ role: "other", name: "Noah Kim", meta: "Aug 21, 3:00 PM", text: "Where do I submit the leave of absence paperwork?" }),
-      dayDivider("August 22, 2026"),
-      bubbleRow({ role: "self", name: SELF.name, meta: "Aug 22, 4:05 PM", text: "Thanks — I've received your signed leave of absence form and forwarded it to the registrar." }),
+      bubbleRow({ role: "self", name: SELF.name, meta: "Aug 22, 4:05 PM", seen: "Aug 22, 5:10 PM", text: "Thanks — I've received your signed leave of absence form and forwarded it to the registrar." }),
     ],
   },
   {
@@ -2803,16 +2796,13 @@ const recipDrawerMarkup = `<dialog class="mc-recip" id="mc-recip" aria-labelledb
 const phaseECss = `.mc-reply-actions { display: flex; align-items: center; gap: ${px(resolve("dim.3"))}; flex-wrap: wrap; }
 .mc-reply-note { color: ${cv("text.muted")}; ${typoCss(bodySmType)} }
 .mc-reply-btns { display: flex; gap: ${px(resolve("dim.2"))}; margin-left: auto; }
-/* day separator in the thread scroll: a centered date flanked by hairlines */
-.mc-thread__day { display: flex; align-items: center; gap: ${px(resolve("dim.3"))}; margin: 0; }
-.mc-thread__day::before, .mc-thread__day::after { content: ""; flex: 1; height: 1px; background: ${cv("border.default")}; }
-.mc-thread__day-label { flex-shrink: 0; color: ${cv("text.muted")}; ${typoCss(labelSmType)} }
 /* expired reply window: the composer is replaced by a danger notice + Reopen */
 .mc-composer__expired { display: flex; align-items: center; justify-content: space-between; gap: ${px(resolve("dim.3"))}; flex-wrap: wrap; }
 .mc-composer__expired-note { display: inline-flex; align-items: center; gap: ${px(resolve("dim.2"))}; color: ${cv("text.danger")}; ${typoCss(bodySmType)} }
 .mc-composer__expired-icon { flex-shrink: 0; width: 18px; height: 18px; color: ${cv("text.danger")}; }
 .mc-composer__body[hidden], .mc-composer__expired[hidden] { display: none; }
-.bubble-sender__seen { color: ${cv("text.success")}; font-weight: 600; }
+.bubble-receipt { display: inline-flex; align-items: center; gap: ${px(resolve("dim.1"))}; align-self: flex-end; margin: ${px(resolve("dim.0_5"))} ${px(resolve("dim.1"))} 0; color: ${cv("text.success")}; font-weight: 600; ${typoCss(msgMetaType)} }
+.bubble-receipt__icon { flex-shrink: 0; width: 14px; height: 14px; }
 .mc-rail__count { display: none; } /* the tab counter already shows the count */
 @media (max-width: 1023px) {
   /* Tablet + mobile: the console reflows into a message card that mirrors the

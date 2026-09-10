@@ -1337,16 +1337,13 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .mc-reply-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .mc-reply-note { color: var(--tok-text-muted); font-weight: 400; font-size: 12px; line-height: 1.4; }
 .mc-reply-btns { display: flex; gap: 8px; margin-left: auto; }
-/* day separator in the thread scroll: a centered date flanked by hairlines */
-.mc-thread__day { display: flex; align-items: center; gap: 12px; margin: 0; }
-.mc-thread__day::before, .mc-thread__day::after { content: ""; flex: 1; height: 1px; background: var(--tok-border-default); }
-.mc-thread__day-label { flex-shrink: 0; color: var(--tok-text-muted); font-weight: 700; font-size: 12px; line-height: 1.4; }
 /* expired reply window: the composer is replaced by a danger notice + Reopen */
 .mc-composer__expired { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 .mc-composer__expired-note { display: inline-flex; align-items: center; gap: 8px; color: var(--tok-text-danger); font-weight: 400; font-size: 12px; line-height: 1.4; }
 .mc-composer__expired-icon { flex-shrink: 0; width: 18px; height: 18px; color: var(--tok-text-danger); }
 .mc-composer__body[hidden], .mc-composer__expired[hidden] { display: none; }
-.bubble-sender__seen { color: var(--tok-text-success); font-weight: 600; }
+.bubble-receipt { display: inline-flex; align-items: center; gap: 4px; align-self: flex-end; margin: 2px 4px 0; color: var(--tok-text-success); font-weight: 600; font-weight: 400; font-size: 12px; line-height: 1.2; }
+.bubble-receipt__icon { flex-shrink: 0; width: 14px; height: 14px; }
 .mc-rail__count { display: none; } /* the tab counter already shows the count */
 @media (max-width: 1023px) {
   /* Tablet + mobile: the console reflows into a message card that mirrors the
@@ -1746,6 +1743,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <div class="bubble-row bubble-row--other">
           <div class="bubble-sender"><span class="avatar avatar--orange avatar--sm" role="img" aria-label="Cait Genatossio"><span class="avatar__initials">CG</span></span><p class="bubble-sender__text"><span class="bubble-sender__name">Cait Genatossio</span> <span class="bubble-sender__meta">Aug 05, 9:12 AM</span></p></div>
           <div class="bubble bubble--other"><p>Hi! Could we also review the minor requirements before enrollment closes? I want to be sure the art history courses count.</p></div>
+          
         </div>
         </div>
         <footer class="mc-thread__composer">
@@ -1819,6 +1817,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <div class="bubble-row bubble-row--other">
           <div class="bubble-sender"><span class="avatar avatar--violet avatar--sm" role="img" aria-label="Maya Patel"><span class="avatar__initials">MP</span></span><p class="bubble-sender__text"><span class="bubble-sender__name">Maya Patel</span> <span class="bubble-sender__meta">Aug 04, 4:47 PM</span></p></div>
           <div class="bubble bubble--other"><p>There is a hold on my account and I can't register for the fall term. Could you tell me what it is about?</p></div>
+          
         </div>
         </div>
         <footer class="mc-thread__composer">
@@ -1898,11 +1897,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
                 <span class="attachment__description">PDF · 420 KB</span>
               </span>
             </a></div>
-        </div>
-          <div class="mc-thread__day"><span class="mc-thread__day-label">August 4, 2026</span></div>
-          <div class="bubble-row bubble-row--self">
-          <div class="bubble-sender"><p class="bubble-sender__text"><span class="bubble-sender__name">Alexander Robinson</span> <span class="bubble-sender__meta"><span class="bubble-sender__seen">Seen</span> · Aug 04, 8:30 AM</span></p><span class="avatar avatar--violet avatar--sm" role="img" aria-label="Alexander Robinson"><img class="avatar__img" src="../../assets/avatars/alexander-robinson.jpg" alt="" /></span></div>
-          <div class="bubble bubble--self bubble--tint"><p>Thanks, Diego — I've requested the official transcript. It'll be ready by Thursday and I'll send you the tracking link.</p></div>
+          
         </div>
         </div>
         <footer class="mc-thread__composer">
@@ -1976,10 +1971,12 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <div class="bubble-row bubble-row--other">
           <div class="bubble-sender"><span class="avatar avatar--orange avatar--sm" role="img" aria-label="George Amalor"><span class="avatar__initials">GA</span></span><p class="bubble-sender__text"><span class="bubble-sender__name">George Amalor</span> <span class="bubble-sender__meta">Jul 31, 8:02 AM</span></p></div>
           <div class="bubble bubble--other"><p>Could we reschedule my advising appointment to next week?</p></div>
+          
         </div>
           <div class="bubble-row bubble-row--self">
-          <div class="bubble-sender"><p class="bubble-sender__text"><span class="bubble-sender__name">Alexander Robinson</span> <span class="bubble-sender__meta"><span class="bubble-sender__seen">Seen</span> · Jul 31, 9:15 AM</span></p><span class="avatar avatar--violet avatar--sm" role="img" aria-label="Alexander Robinson"><img class="avatar__img" src="../../assets/avatars/alexander-robinson.jpg" alt="" /></span></div>
+          <div class="bubble-sender"><p class="bubble-sender__text"><span class="bubble-sender__name">Alexander Robinson</span> <span class="bubble-sender__meta">Jul 31, 9:15 AM</span></p><span class="avatar avatar--violet avatar--sm" role="img" aria-label="Alexander Robinson"><img class="avatar__img" src="../../assets/avatars/alexander-robinson.jpg" alt="" /></span></div>
           <div class="bubble bubble--self bubble--tint"><p>Sure — I moved your appointment to Tuesday at 3 PM. Let me know if that works.</p></div>
+          <p class="bubble-receipt"><svg class="bubble-receipt__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>Seen · Jul 31, 9:22 AM</p>
         </div>
         </div>
         <footer class="mc-thread__composer">
@@ -2053,6 +2050,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <div class="bubble-row bubble-row--other">
           <div class="bubble-sender"><span class="avatar avatar--red avatar--sm" role="img" aria-label="Priya Nair"><span class="avatar__initials">PN</span></span><p class="bubble-sender__text"><span class="bubble-sender__name">Priya Nair</span> <span class="bubble-sender__meta">Sep 07, 10:22 AM</span></p></div>
           <div class="bubble bubble--other"><p>Can you approve an override for CS 320? It's full but required for my track.</p></div>
+          
         </div>
         </div>
         <footer class="mc-thread__composer">
@@ -2126,6 +2124,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <div class="bubble-row bubble-row--other">
           <div class="bubble-sender"><span class="avatar avatar--magenta avatar--sm" role="img" aria-label="Marcus Bell"><span class="avatar__initials">MB</span></span><p class="bubble-sender__text"><span class="bubble-sender__name">Marcus Bell</span> <span class="bubble-sender__meta">Sep 02, 1:15 PM</span></p></div>
           <div class="bubble bubble--other"><p>Could we go over my graduation audit before the deadline? I want to be sure I'm on track.</p></div>
+          
         </div>
         </div>
         <footer class="mc-thread__composer">
@@ -2199,6 +2198,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <div class="bubble-row bubble-row--other">
           <div class="bubble-sender"><span class="avatar avatar--magenta avatar--sm" role="img" aria-label="Ella Fontaine"><span class="avatar__initials">EF</span></span><p class="bubble-sender__text"><span class="bubble-sender__name">Ella Fontaine</span> <span class="bubble-sender__meta">Aug 29, 9:40 AM</span></p></div>
           <div class="bubble bubble--other"><p>I still haven't been assigned a thesis advisor for the fall. Who should I follow up with?</p></div>
+          
         </div>
         </div>
         <footer class="mc-thread__composer">
@@ -2272,11 +2272,12 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <div class="bubble-row bubble-row--other">
           <div class="bubble-sender"><span class="avatar avatar--red avatar--sm" role="img" aria-label="Noah Kim"><span class="avatar__initials">NK</span></span><p class="bubble-sender__text"><span class="bubble-sender__name">Noah Kim</span> <span class="bubble-sender__meta">Aug 21, 3:00 PM</span></p></div>
           <div class="bubble bubble--other"><p>Where do I submit the leave of absence paperwork?</p></div>
+          
         </div>
-          <div class="mc-thread__day"><span class="mc-thread__day-label">August 22, 2026</span></div>
           <div class="bubble-row bubble-row--self">
-          <div class="bubble-sender"><p class="bubble-sender__text"><span class="bubble-sender__name">Alexander Robinson</span> <span class="bubble-sender__meta"><span class="bubble-sender__seen">Seen</span> · Aug 22, 4:05 PM</span></p><span class="avatar avatar--violet avatar--sm" role="img" aria-label="Alexander Robinson"><img class="avatar__img" src="../../assets/avatars/alexander-robinson.jpg" alt="" /></span></div>
+          <div class="bubble-sender"><p class="bubble-sender__text"><span class="bubble-sender__name">Alexander Robinson</span> <span class="bubble-sender__meta">Aug 22, 4:05 PM</span></p><span class="avatar avatar--violet avatar--sm" role="img" aria-label="Alexander Robinson"><img class="avatar__img" src="../../assets/avatars/alexander-robinson.jpg" alt="" /></span></div>
           <div class="bubble bubble--self bubble--tint"><p>Thanks — I've received your signed leave of absence form and forwarded it to the registrar.</p></div>
+          <p class="bubble-receipt"><svg class="bubble-receipt__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>Seen · Aug 22, 5:10 PM</p>
         </div>
         </div>
         <footer class="mc-thread__composer">
@@ -2350,10 +2351,12 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <div class="bubble-row bubble-row--other">
           <div class="bubble-sender"><span class="avatar avatar--red avatar--sm" role="img" aria-label="Lena Hoffman"><span class="avatar__initials">LH</span></span><p class="bubble-sender__text"><span class="bubble-sender__name">Lena Hoffman</span> <span class="bubble-sender__meta">Jul 17, 2:30 PM</span></p></div>
           <div class="bubble bubble--other"><p>I am requesting a prerequisite waiver for ENG 340 based on my transfer credits.</p></div>
+          
         </div>
           <div class="bubble-row bubble-row--self">
-          <div class="bubble-sender"><p class="bubble-sender__text"><span class="bubble-sender__name">Alexander Robinson</span> <span class="bubble-sender__meta"><span class="bubble-sender__seen">Seen</span> · Jul 18, 10:05 AM</span></p><span class="avatar avatar--violet avatar--sm" role="img" aria-label="Alexander Robinson"><img class="avatar__img" src="../../assets/avatars/alexander-robinson.jpg" alt="" /></span></div>
+          <div class="bubble-sender"><p class="bubble-sender__text"><span class="bubble-sender__name">Alexander Robinson</span> <span class="bubble-sender__meta">Jul 18, 10:05 AM</span></p><span class="avatar avatar--violet avatar--sm" role="img" aria-label="Alexander Robinson"><img class="avatar__img" src="../../assets/avatars/alexander-robinson.jpg" alt="" /></span></div>
           <div class="bubble bubble--self bubble--tint"><p>Waiver approved — you are clear to enroll in ENG 340.</p></div>
+          
         </div>
         </div>
         <footer class="mc-thread__composer">
@@ -2427,10 +2430,12 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <div class="bubble-row bubble-row--other">
           <div class="bubble-sender"><span class="avatar avatar--amber avatar--sm" role="img" aria-label="Tomas Novak"><span class="avatar__initials">TN</span></span><p class="bubble-sender__text"><span class="bubble-sender__name">Tomas Novak</span> <span class="bubble-sender__meta">Jun 30, 3:12 PM</span></p></div>
           <div class="bubble bubble--other"><p>Can we confirm my study plan is still on track after the schedule change?</p></div>
+          
         </div>
           <div class="bubble-row bubble-row--self">
-          <div class="bubble-sender"><p class="bubble-sender__text"><span class="bubble-sender__name">Alexander Robinson</span> <span class="bubble-sender__meta"><span class="bubble-sender__seen">Seen</span> · Jun 30, 3:40 PM</span></p><span class="avatar avatar--violet avatar--sm" role="img" aria-label="Alexander Robinson"><img class="avatar__img" src="../../assets/avatars/alexander-robinson.jpg" alt="" /></span></div>
+          <div class="bubble-sender"><p class="bubble-sender__text"><span class="bubble-sender__name">Alexander Robinson</span> <span class="bubble-sender__meta">Jun 30, 3:40 PM</span></p><span class="avatar avatar--violet avatar--sm" role="img" aria-label="Alexander Robinson"><img class="avatar__img" src="../../assets/avatars/alexander-robinson.jpg" alt="" /></span></div>
           <div class="bubble bubble--self bubble--tint"><p>All set — see you at the fall check-in.</p></div>
+          
         </div>
         </div>
         <footer class="mc-thread__composer">
@@ -2504,10 +2509,12 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <div class="bubble-row bubble-row--other">
           <div class="bubble-sender"><span class="avatar avatar--amber avatar--sm" role="img" aria-label="Dana Torres"><span class="avatar__initials">DT</span></span><p class="bubble-sender__text"><span class="bubble-sender__name">Dana Torres</span> <span class="bubble-sender__meta">Jul 12, 10:50 AM</span></p></div>
           <div class="bubble bubble--other"><p>Can you confirm my add/drop went through?</p></div>
+          
         </div>
           <div class="bubble-row bubble-row--self">
-          <div class="bubble-sender"><p class="bubble-sender__text"><span class="bubble-sender__name">Alexander Robinson</span> <span class="bubble-sender__meta"><span class="bubble-sender__seen">Seen</span> · Jul 12, 11:30 AM</span></p><span class="avatar avatar--violet avatar--sm" role="img" aria-label="Alexander Robinson"><img class="avatar__img" src="../../assets/avatars/alexander-robinson.jpg" alt="" /></span></div>
+          <div class="bubble-sender"><p class="bubble-sender__text"><span class="bubble-sender__name">Alexander Robinson</span> <span class="bubble-sender__meta">Jul 12, 11:30 AM</span></p><span class="avatar avatar--violet avatar--sm" role="img" aria-label="Alexander Robinson"><img class="avatar__img" src="../../assets/avatars/alexander-robinson.jpg" alt="" /></span></div>
           <div class="bubble bubble--self bubble--tint"><p>All set — your add/drop changes are confirmed for the fall term.</p></div>
+          
         </div>
         </div>
         <footer class="mc-thread__composer">
@@ -2581,10 +2588,12 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <div class="bubble-row bubble-row--other">
           <div class="bubble-sender"><span class="avatar avatar--amber avatar--sm" role="img" aria-label="Liam Arcos"><span class="avatar__initials">LA</span></span><p class="bubble-sender__text"><span class="bubble-sender__name">Liam Arcos</span> <span class="bubble-sender__meta">Jul 05, 1:40 PM</span></p></div>
           <div class="bubble bubble--other"><p>Did my registration go through for all my classes?</p></div>
+          
         </div>
           <div class="bubble-row bubble-row--self">
-          <div class="bubble-sender"><p class="bubble-sender__text"><span class="bubble-sender__name">Alexander Robinson</span> <span class="bubble-sender__meta"><span class="bubble-sender__seen">Seen</span> · Jul 05, 2:20 PM</span></p><span class="avatar avatar--violet avatar--sm" role="img" aria-label="Alexander Robinson"><img class="avatar__img" src="../../assets/avatars/alexander-robinson.jpg" alt="" /></span></div>
+          <div class="bubble-sender"><p class="bubble-sender__text"><span class="bubble-sender__name">Alexander Robinson</span> <span class="bubble-sender__meta">Jul 05, 2:20 PM</span></p><span class="avatar avatar--violet avatar--sm" role="img" aria-label="Alexander Robinson"><img class="avatar__img" src="../../assets/avatars/alexander-robinson.jpg" alt="" /></span></div>
           <div class="bubble bubble--self bubble--tint"><p>You're fully registered for the fall — nice work.</p></div>
+          
         </div>
         </div>
         <footer class="mc-thread__composer">
@@ -2658,10 +2667,12 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <div class="bubble-row bubble-row--other">
           <div class="bubble-sender"><span class="avatar avatar--red avatar--sm" role="img" aria-label="Sofia Duarte"><span class="avatar__initials">SD</span></span><p class="bubble-sender__text"><span class="bubble-sender__name">Sofia Duarte</span> <span class="bubble-sender__meta">Jun 28, 2:30 PM</span></p></div>
           <div class="bubble bubble--other"><p>Could you send me the notes from our advising meeting?</p></div>
+          
         </div>
           <div class="bubble-row bubble-row--self">
-          <div class="bubble-sender"><p class="bubble-sender__text"><span class="bubble-sender__name">Alexander Robinson</span> <span class="bubble-sender__meta"><span class="bubble-sender__seen">Seen</span> · Jun 28, 3:10 PM</span></p><span class="avatar avatar--violet avatar--sm" role="img" aria-label="Alexander Robinson"><img class="avatar__img" src="../../assets/avatars/alexander-robinson.jpg" alt="" /></span></div>
+          <div class="bubble-sender"><p class="bubble-sender__text"><span class="bubble-sender__name">Alexander Robinson</span> <span class="bubble-sender__meta">Jun 28, 3:10 PM</span></p><span class="avatar avatar--violet avatar--sm" role="img" aria-label="Alexander Robinson"><img class="avatar__img" src="../../assets/avatars/alexander-robinson.jpg" alt="" /></span></div>
           <div class="bubble bubble--self bubble--tint"><p>I've shared the advising notes from our meeting with your file.</p></div>
+          
         </div>
         </div>
         <footer class="mc-thread__composer">
@@ -2735,10 +2746,12 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <div class="bubble-row bubble-row--other">
           <div class="bubble-sender"><span class="avatar avatar--teal avatar--sm" role="img" aria-label="Owen Pratt"><span class="avatar__initials">OP</span></span><p class="bubble-sender__text"><span class="bubble-sender__name">Owen Pratt</span> <span class="bubble-sender__meta">Jun 19, 4:00 PM</span></p></div>
           <div class="bubble bubble--other"><p>Has my official transcript been sent yet?</p></div>
+          
         </div>
           <div class="bubble-row bubble-row--self">
-          <div class="bubble-sender"><p class="bubble-sender__text"><span class="bubble-sender__name">Alexander Robinson</span> <span class="bubble-sender__meta"><span class="bubble-sender__seen">Seen</span> · Jun 20, 9:05 AM</span></p><span class="avatar avatar--violet avatar--sm" role="img" aria-label="Alexander Robinson"><img class="avatar__img" src="../../assets/avatars/alexander-robinson.jpg" alt="" /></span></div>
+          <div class="bubble-sender"><p class="bubble-sender__text"><span class="bubble-sender__name">Alexander Robinson</span> <span class="bubble-sender__meta">Jun 20, 9:05 AM</span></p><span class="avatar avatar--violet avatar--sm" role="img" aria-label="Alexander Robinson"><img class="avatar__img" src="../../assets/avatars/alexander-robinson.jpg" alt="" /></span></div>
           <div class="bubble bubble--self bubble--tint"><p>Your official transcript was sent to the address on file.</p></div>
+          
         </div>
         </div>
         <footer class="mc-thread__composer">
