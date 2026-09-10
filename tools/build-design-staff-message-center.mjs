@@ -1754,6 +1754,11 @@ function bubbleRow({ role, name, meta, text, attachmentHtml = "" }) {
           <div class="bubble bubble--${role}${fillClass}">${text ? `<p>${text}</p>` : ""}${attachmentHtml}</div>
         </div>`;
 }
+// day separator between messages sent on different calendar days (email-thread
+// convention) — a centered date label flanked by hairlines, tokens only
+function dayDivider(label) {
+  return `<div class="mc-thread__day"><span class="mc-thread__day-label">${label}</span></div>`;
+}
 
 // ---- thread data ----
 const threads = [
@@ -1787,6 +1792,8 @@ const threads = [
     meta: { Department: "Academic Advising", Status: "Open", Institution: "PeopleSoft University" },
     content: [
       bubbleRow({ role: "other", name: "Diego Fernandez", meta: "Aug 03, 11:20 AM", text: "My internship application needs an official transcript by next Friday. Attaching the offer letter for context.", attachmentHtml: attachmentMarkup("Internship-offer.pdf", "PDF · 420 KB") }),
+      dayDivider("August 4, 2026"),
+      bubbleRow({ role: "self", name: SELF.name, meta: "Aug 04, 8:30 AM", text: "Thanks, Diego — I've requested the official transcript. It'll be ready by Thursday and I'll send you the tracking link." }),
     ],
   },
   {
@@ -1841,6 +1848,7 @@ const threads = [
     meta: { Department: "Academic Advising", Status: "Open", Institution: "PeopleSoft University" },
     content: [
       bubbleRow({ role: "other", name: "Noah Kim", meta: "Aug 21, 3:00 PM", text: "Where do I submit the leave of absence paperwork?" }),
+      dayDivider("August 22, 2026"),
       bubbleRow({ role: "self", name: SELF.name, meta: "Aug 22, 4:05 PM", text: "Thanks — I've received your signed leave of absence form and forwarded it to the registrar." }),
     ],
   },
@@ -2029,22 +2037,34 @@ function aiPanelMarkup(prefix, headerAction = "") {
 // Switch + Expiration row, labeled primary Send)
 function richComposerMarkup(t) {
   const first = t.sender.split(" ")[0];
-  return `<form class="composer composer--rich mc-composer" data-thread="${t.id}">
-            <div class="composer__toolbar">
-              <button type="button" class="composer__icon-btn" aria-label="Bold">${iconBold}</button>
-              <button type="button" class="composer__icon-btn" aria-label="Italic">${iconItalic}</button>
-              <button type="button" class="composer__icon-btn" aria-label="Underline">${iconUnderline}</button>
-              <button type="button" class="btn btn--ghost btn--sm">${iconTag}Merge Tags</button>
-              <button type="button" class="composer__ai-assist">${iconAi}AI Assist</button>
+  // when the reply window has lapsed the student can no longer reply — the
+  // composer is replaced by a danger notice + a Reopen affordance (staff can
+  // still reopen to continue). Reopen reveals the normal reply composer.
+  const expired = !!(t.expires && t.expires.role === "danger");
+  const expDate = expired ? t.expires.label.replace(/^Expired\s*/, "") : "";
+  return `<form class="composer composer--rich mc-composer${expired ? " mc-composer--expired" : ""}" data-thread="${t.id}">
+            <div class="mc-composer__expired" ${expired ? "" : "hidden"}>
+              <span class="mc-composer__expired-note">${iconOf("schedule", "mc-composer__expired-icon")}This thread expired ${expDate} — ${first} can no longer reply.</span>
+              <button type="button" class="btn btn--secondary btn--base mc-reopen">Reopen thread</button>
             </div>
-            <div class="composer__field">
-              <textarea class="composer__input" rows="1" placeholder="Reply to ${first}..." aria-label="Reply to ${first}"></textarea>
-            </div>
-            <div class="mc-reply-actions">
-              <span class="mc-reply-note">Resolve is available because you have replied in this thread.</span>
-              <div class="mc-reply-btns">
-                <button type="submit" class="btn btn--secondary btn--base composer__send">Reply</button>
-                <button type="button" class="btn btn--primary btn--base mc-reply-resolve">${iconOf("check", "btn__icon")}Reply &amp; Resolve</button>
+            <div class="mc-composer__body" ${expired ? "hidden" : ""}>
+              <div class="composer__toolbar">
+                <button type="button" class="composer__icon-btn" aria-label="Bold">${iconBold}</button>
+                <button type="button" class="composer__icon-btn" aria-label="Italic">${iconItalic}</button>
+                <button type="button" class="composer__icon-btn" aria-label="Underline">${iconUnderline}</button>
+                ${composerTbMenu(t.id, "merge", "Merge Tags", MERGE_TAGS, 2)}
+                ${composerTbMenu(t.id, "links", "Hyperlinks", HYPERLINKS, 1)}
+                <button type="button" class="composer__ai-assist">${iconAi}AI Assist</button>
+              </div>
+              <div class="composer__field">
+                <textarea class="composer__input" rows="1" placeholder="Reply to ${first}..." aria-label="Reply to ${first}"></textarea>
+              </div>
+              <div class="mc-reply-actions">
+                <span class="mc-reply-note">Resolve is available because you have replied in this thread.</span>
+                <div class="mc-reply-btns">
+                  <button type="submit" class="btn btn--secondary btn--base composer__send">Reply</button>
+                  <button type="button" class="btn btn--primary btn--base mc-reply-resolve">${iconOf("check", "btn__icon")}Reply &amp; Resolve</button>
+                </div>
               </div>
             </div>
           </form>`;
@@ -2783,6 +2803,15 @@ const recipDrawerMarkup = `<dialog class="mc-recip" id="mc-recip" aria-labelledb
 const phaseECss = `.mc-reply-actions { display: flex; align-items: center; gap: ${px(resolve("dim.3"))}; flex-wrap: wrap; }
 .mc-reply-note { color: ${cv("text.muted")}; ${typoCss(bodySmType)} }
 .mc-reply-btns { display: flex; gap: ${px(resolve("dim.2"))}; margin-left: auto; }
+/* day separator in the thread scroll: a centered date flanked by hairlines */
+.mc-thread__day { display: flex; align-items: center; gap: ${px(resolve("dim.3"))}; margin: 0; }
+.mc-thread__day::before, .mc-thread__day::after { content: ""; flex: 1; height: 1px; background: ${cv("border.default")}; }
+.mc-thread__day-label { flex-shrink: 0; color: ${cv("text.muted")}; ${typoCss(labelSmType)} }
+/* expired reply window: the composer is replaced by a danger notice + Reopen */
+.mc-composer__expired { display: flex; align-items: center; justify-content: space-between; gap: ${px(resolve("dim.3"))}; flex-wrap: wrap; }
+.mc-composer__expired-note { display: inline-flex; align-items: center; gap: ${px(resolve("dim.2"))}; color: ${cv("text.danger")}; ${typoCss(bodySmType)} }
+.mc-composer__expired-icon { flex-shrink: 0; width: 18px; height: 18px; color: ${cv("text.danger")}; }
+.mc-composer__body[hidden], .mc-composer__expired[hidden] { display: none; }
 .bubble-sender__seen { color: ${cv("text.success")}; font-weight: 600; }
 .mc-rail__count { display: none; } /* the tab counter already shows the count */
 @media (max-width: 1023px) {
@@ -3356,6 +3385,34 @@ const appJs = `(function () {
       if (!sendReply()) return;
       var archiveBtn = form.closest(".mc-thread").querySelector(".mc-archive");
       if (archiveBtn) setTimeout(function () { archiveBtn.click(); }, 150);
+    });
+    // Merge Tags / Hyperlinks dropdowns insert their token at the caret — the
+    // same real Listbox popovers the compose editor uses
+    form.querySelectorAll(".composer__tb-lb").forEach(function (lb) {
+      lb.querySelectorAll(".listbox__option").forEach(function (opt) {
+        opt.addEventListener("click", function () {
+          var s = input.selectionStart != null ? input.selectionStart : input.value.length;
+          var e = input.selectionEnd != null ? input.selectionEnd : input.value.length;
+          var ins = opt.dataset.insert + " ";
+          input.value = input.value.slice(0, s) + ins + input.value.slice(e);
+          input.selectionStart = input.selectionEnd = s + ins.length;
+          input.focus(); grow();
+          if (lb.hidePopover) lb.hidePopover();
+        });
+      });
+    });
+    // Reopen an expired thread: swap the danger notice back for the composer
+    var reopenBtn = form.querySelector(".mc-reopen");
+    if (reopenBtn) reopenBtn.addEventListener("click", function () {
+      form.classList.remove("mc-composer--expired");
+      form.querySelector(".mc-composer__expired").hidden = true;
+      form.querySelector(".mc-composer__body").hidden = false;
+      // soften the header expiration badge to a neutral "Reopened" state
+      var pane = form.closest(".mc-thread");
+      var badge = pane && pane.querySelector(".mc-thread__tags .badge--role-danger");
+      if (badge) { badge.className = "badge badge--sm badge--role-neutral"; badge.textContent = "Reopened"; }
+      input.focus();
+      showToast("success", "Thread reopened — you can reply again");
     });
   }
   document.querySelectorAll(".mc-composer").forEach(bindComposer);
