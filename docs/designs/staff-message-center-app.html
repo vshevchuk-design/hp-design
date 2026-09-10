@@ -1171,6 +1171,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .mc-gwiz__reshead[hidden] { display: none; }
 .mc-gwiz__reshead .checkbox__label { color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
 .mc-gwiz__clearsel { border: none; background: none; padding: 0; cursor: pointer; color: var(--tok-text-primary); font-weight: 600; font-weight: 400; font-size: 12px; line-height: 1.4; font-family: inherit; }
+.mc-gwiz__removeall { margin-left: auto; }
 .mc-gwiz__list { border: 1px solid var(--tok-border-default); border-radius: 8px; overflow-y: auto; max-height: 264px; }
 .mc-gwiz__srow { box-sizing: border-box; height: 40px; display: flex; align-items: center; gap: 12px; padding: 0 12px; border-bottom: 1px solid var(--tok-border-default); cursor: pointer; }
 .mc-gwiz__srow:last-child { border-bottom: none; }
@@ -2676,7 +2677,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
             <div class="mc-gwiz__filters" id="mc-gwiz-filters" hidden></div>
             <div class="mc-gwiz__reshead" id="mc-gwiz-reshead" hidden>
               <label class="checkbox"><input type="checkbox" class="checkbox__input" id="mc-gwiz-selall" /><span class="checkbox__box"><svg class="checkbox__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="checkbox__label"><span id="mc-gwiz-rescount">All students</span></span></label>
-              <button class="mc-gwiz__clearsel" id="mc-gwiz-clearsel" type="button" hidden>Clear selection</button>
+              <button class="mc-gwiz__clearsel" id="mc-gwiz-clearsearch" type="button">Clear search results</button>
             </div>
             <div class="mc-gwiz__list" id="mc-gwiz-list" hidden>
               <div class="mc-gwiz__srow" data-id="CX0001" data-name="Cait Genatossio" data-career="Undergraduate" data-program="Liberal Arts &amp; Sciences" data-plan="Art History BA" data-term="Fall 2026" data-level="Senior"><span class="mc-gwiz__toggle" aria-hidden="true"><svg class="mc-gwiz__toggle-add" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg><svg class="mc-gwiz__toggle-remove" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13H5v-2h14v2z"/></svg></span><span class="mc-gwiz__sid">CX0001</span><span class="mc-gwiz__sname">Cait Genatossio</span><span class="mc-gwiz__smeta">Senior · Art History BA</span></div>
@@ -2708,7 +2709,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           </div>
         </div>
         <div class="mc-gwiz__selected">
-          <p class="mc-gwiz__sel-head">Selected students<span class="mc-gwiz__sel-count" id="mc-gwiz-count">0</span></p>
+          <p class="mc-gwiz__sel-head">Selected students<span class="mc-gwiz__sel-count" id="mc-gwiz-count">0</span><button class="mc-gwiz__clearsel mc-gwiz__removeall" id="mc-gwiz-removeall" type="button" hidden>Remove all</button></p>
           <div class="mc-gwiz__chips" id="mc-gwiz-chips"></div>
           <div class="mc-gwiz__sel-empty empty-state" id="mc-gwiz-sel-empty"><span class="empty-state__text">No selected students</span></div>
         </div>
@@ -4137,7 +4138,8 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   var filtersEl = document.getElementById("mc-gwiz-filters");
   var addFilterBtn = document.getElementById("mc-gwiz-addfilter");
   var selAll = document.getElementById("mc-gwiz-selall");
-  var clearSelBtn = document.getElementById("mc-gwiz-clearsel");
+  var clearSearchBtn = document.getElementById("mc-gwiz-clearsearch");
+  var removeAllBtn = document.getElementById("mc-gwiz-removeall");
   var gwizRescount = document.getElementById("mc-gwiz-rescount");
   var fpop = document.getElementById("mc-gwiz-fpop");
   var gwizFilters = {}; // facetKey -> [values], AND-combined
@@ -4152,6 +4154,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     });
     gwizCountEl.textContent = gwizCount();
     gwizCountEl.classList.toggle("is-active", gwizCount() > 0);
+    removeAllBtn.hidden = gwizCount() === 0;
     document.getElementById("mc-gwiz-sel-empty").hidden = gwizCount() > 0;
   }
   // reflect the selection back into row checkboxes + Clear button + select-all
@@ -4159,7 +4162,6 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     document.querySelectorAll("#mc-gwiz-list .mc-gwiz__srow").forEach(function (row) {
       row.classList.toggle("is-selected", !!gwizSel[row.dataset.id]);
     });
-    clearSelBtn.hidden = gwizCount() === 0;
     syncSelAll();
   }
   function gwizSync() {
@@ -4237,7 +4239,13 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     });
     syncGwizList(); gwizRenderSelected(); gwizSync();
   });
-  clearSelBtn.addEventListener("click", function () { gwizSel = {}; syncGwizList(); gwizRenderSelected(); gwizSync(); });
+  // left "Clear search results": resets only the left panel (query + filters), keeps selection
+  clearSearchBtn.addEventListener("click", function () {
+    gwizSearch.value = ""; gwizSearchClear.hidden = true;
+    gwizFilters = {}; renderFilterChips(); applyGwizFilters();
+  });
+  // right "Remove all": clears only the selected (right) column
+  removeAllBtn.addEventListener("click", function () { gwizSel = {}; syncGwizList(); gwizRenderSelected(); gwizSync(); });
 
   // ---- Paste tab: commas / spaces / new lines, any mix ----
   document.getElementById("mc-gwiz-addids").addEventListener("click", function () {

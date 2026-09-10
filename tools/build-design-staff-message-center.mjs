@@ -2403,6 +2403,7 @@ const gwizCss = `.mc-gwiz { border: none; padding: 0; background: ${cv(mdBg)}; f
 .mc-gwiz__reshead[hidden] { display: none; }
 .mc-gwiz__reshead .checkbox__label { color: ${cv("text.secondary")}; ${typoCss(bodySmType)} }
 .mc-gwiz__clearsel { border: none; background: none; padding: 0; cursor: pointer; color: ${cv("text.primary")}; font-weight: 600; ${typoCss(bodySmType)} font-family: inherit; }
+.mc-gwiz__removeall { margin-left: auto; }
 .mc-gwiz__list { border: 1px solid ${cv("border.default")}; border-radius: ${px(resolve("radius.default"))}; overflow-y: auto; max-height: 264px; }
 .mc-gwiz__srow { box-sizing: border-box; height: 40px; display: flex; align-items: center; gap: ${px(resolve("dim.3"))}; padding: 0 ${px(resolve("dim.3"))}; border-bottom: 1px solid ${cv("border.default")}; cursor: pointer; }
 .mc-gwiz__srow:last-child { border-bottom: none; }
@@ -2549,7 +2550,7 @@ const gwizMarkup = `<dialog class="mc-gwiz" id="mc-gwiz" aria-labelledby="mc-gwi
             <div class="mc-gwiz__filters" id="mc-gwiz-filters" hidden></div>
             <div class="mc-gwiz__reshead" id="mc-gwiz-reshead" hidden>
               ${checkboxMarkup('<span id="mc-gwiz-rescount">All students</span>', { id: "mc-gwiz-selall" })}
-              <button class="mc-gwiz__clearsel" id="mc-gwiz-clearsel" type="button" hidden>Clear selection</button>
+              <button class="mc-gwiz__clearsel" id="mc-gwiz-clearsearch" type="button">Clear search results</button>
             </div>
             <div class="mc-gwiz__list" id="mc-gwiz-list" hidden>
               ${gwizStudents.map((s) => `<div class="mc-gwiz__srow" data-id="${s.id}" data-name="${esc(s.name)}" data-career="${esc(s.career)}" data-program="${esc(s.program)}" data-plan="${esc(s.plan)}" data-term="${esc(s.term)}" data-level="${esc(s.level)}"><span class="mc-gwiz__toggle" aria-hidden="true">${iconOf("add", "mc-gwiz__toggle-add")}${iconOf("remove", "mc-gwiz__toggle-remove")}</span><span class="mc-gwiz__sid">${s.id}</span><span class="mc-gwiz__sname">${s.name}</span><span class="mc-gwiz__smeta">${s.level} · ${s.plan}</span></div>`).join("\n              ")}
@@ -2568,7 +2569,7 @@ const gwizMarkup = `<dialog class="mc-gwiz" id="mc-gwiz" aria-labelledby="mc-gwi
           </div>
         </div>
         <div class="mc-gwiz__selected">
-          <p class="mc-gwiz__sel-head">Selected students<span class="mc-gwiz__sel-count" id="mc-gwiz-count">0</span></p>
+          <p class="mc-gwiz__sel-head">Selected students<span class="mc-gwiz__sel-count" id="mc-gwiz-count">0</span><button class="mc-gwiz__clearsel mc-gwiz__removeall" id="mc-gwiz-removeall" type="button" hidden>Remove all</button></p>
           <div class="mc-gwiz__chips" id="mc-gwiz-chips"></div>
           <div class="mc-gwiz__sel-empty empty-state" id="mc-gwiz-sel-empty"><span class="empty-state__text">No selected students</span></div>
         </div>
@@ -4068,7 +4069,8 @@ const appJs = `(function () {
   var filtersEl = document.getElementById("mc-gwiz-filters");
   var addFilterBtn = document.getElementById("mc-gwiz-addfilter");
   var selAll = document.getElementById("mc-gwiz-selall");
-  var clearSelBtn = document.getElementById("mc-gwiz-clearsel");
+  var clearSearchBtn = document.getElementById("mc-gwiz-clearsearch");
+  var removeAllBtn = document.getElementById("mc-gwiz-removeall");
   var gwizRescount = document.getElementById("mc-gwiz-rescount");
   var fpop = document.getElementById("mc-gwiz-fpop");
   var gwizFilters = {}; // facetKey -> [values], AND-combined
@@ -4083,6 +4085,7 @@ const appJs = `(function () {
     });
     gwizCountEl.textContent = gwizCount();
     gwizCountEl.classList.toggle("is-active", gwizCount() > 0);
+    removeAllBtn.hidden = gwizCount() === 0;
     document.getElementById("mc-gwiz-sel-empty").hidden = gwizCount() > 0;
   }
   // reflect the selection back into row checkboxes + Clear button + select-all
@@ -4090,7 +4093,6 @@ const appJs = `(function () {
     document.querySelectorAll("#mc-gwiz-list .mc-gwiz__srow").forEach(function (row) {
       row.classList.toggle("is-selected", !!gwizSel[row.dataset.id]);
     });
-    clearSelBtn.hidden = gwizCount() === 0;
     syncSelAll();
   }
   function gwizSync() {
@@ -4168,7 +4170,13 @@ const appJs = `(function () {
     });
     syncGwizList(); gwizRenderSelected(); gwizSync();
   });
-  clearSelBtn.addEventListener("click", function () { gwizSel = {}; syncGwizList(); gwizRenderSelected(); gwizSync(); });
+  // left "Clear search results": resets only the left panel (query + filters), keeps selection
+  clearSearchBtn.addEventListener("click", function () {
+    gwizSearch.value = ""; gwizSearchClear.hidden = true;
+    gwizFilters = {}; renderFilterChips(); applyGwizFilters();
+  });
+  // right "Remove all": clears only the selected (right) column
+  removeAllBtn.addEventListener("click", function () { gwizSel = {}; syncGwizList(); gwizRenderSelected(); gwizSync(); });
 
   // ---- Paste tab: commas / spaces / new lines, any mix ----
   document.getElementById("mc-gwiz-addids").addEventListener("click", function () {
