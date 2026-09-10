@@ -2203,20 +2203,20 @@ const gwizCollapseAction = `<button type="button" class="mc-ai__handle mc-ai__ha
 
 // student roster — shared by the single-compose "To" picker and the Group wizard
 const gwizStudents = [
-  { id: "CX0001", name: "Cait Genatossio", year: "Senior",    status: "Active",           major: "Art History",      advisor: "Alexander Robinson" },
-  { id: "CX0002", name: "Calam Xavier",    year: "Junior",    status: "Active",           major: "Economics",        advisor: "Ava Robinson" },
-  { id: "AA0367", name: "Allison Rao",     year: "Sophomore", status: "Active",           major: "Biology",          advisor: "Ava Robinson" },
-  { id: "AA0215", name: "Maya Okafor",     year: "Senior",    status: "Leave of absence", major: "Nursing",          advisor: "Alexander Robinson" },
-  { id: "AA0007", name: "Liam Arcos",      year: "Freshman",  status: "Active",           major: "Computer Science", advisor: "Alexander Robinson" },
-  { id: "AA0412", name: "Dana Torres",     year: "Junior",    status: "Active",           major: "English",          advisor: "Ava Robinson" },
-  { id: "AA0533", name: "Priya Nair",      year: "Senior",    status: "Active",           major: "Computer Science", advisor: "Ava Robinson" },
-  { id: "AA0088", name: "Marcus Bell",     year: "Sophomore", status: "Active",           major: "Economics",        advisor: "Alexander Robinson" },
-  { id: "AA0620", name: "Sofia Duarte",    year: "Freshman",  status: "Active",           major: "Biology",          advisor: "Ava Robinson" },
-  { id: "AA0311", name: "Noah Kim",        year: "Junior",    status: "Leave of absence", major: "English",          advisor: "Alexander Robinson" },
-  { id: "AA0742", name: "Ella Fontaine",   year: "Senior",    status: "Active",           major: "Art History",      advisor: "Alexander Robinson" },
-  { id: "AA0159", name: "Owen Pratt",      year: "Sophomore", status: "Active",           major: "Nursing",          advisor: "Ava Robinson" },
-  { id: "AA0466", name: "Zara Haddad",     year: "Freshman",  status: "Active",           major: "Computer Science", advisor: "Alexander Robinson" },
-  { id: "AA0203", name: "Ben Ortiz",       year: "Junior",    status: "Active",           major: "Economics",        advisor: "Ava Robinson" },
+  { id: "CX0001", name: "Cait Genatossio", career: "Undergraduate", program: "Liberal Arts & Sciences",  plan: "Art History BA",       term: "Fall 2026",   level: "Senior" },
+  { id: "CX0002", name: "Calam Xavier",    career: "Undergraduate", program: "Business & Economics",     plan: "Economics BA",         term: "Fall 2026",   level: "Junior" },
+  { id: "AA0367", name: "Allison Rao",     career: "Undergraduate", program: "Natural Sciences",         plan: "Biology BS",           term: "Fall 2026",   level: "Sophomore" },
+  { id: "AA0215", name: "Maya Okafor",     career: "Undergraduate", program: "Health Sciences",          plan: "Nursing BSN",          term: "Spring 2026", level: "Senior" },
+  { id: "AA0007", name: "Liam Arcos",      career: "Undergraduate", program: "Engineering & Computing",  plan: "Computer Science BS",  term: "Fall 2026",   level: "Freshman" },
+  { id: "AA0412", name: "Dana Torres",     career: "Undergraduate", program: "Liberal Arts & Sciences",  plan: "English BA",           term: "Fall 2026",   level: "Junior" },
+  { id: "AA0533", name: "Priya Nair",      career: "Graduate",      program: "Engineering & Computing",  plan: "Computer Science MS",  term: "Fall 2026",   level: "Graduate" },
+  { id: "AA0088", name: "Marcus Bell",     career: "Undergraduate", program: "Business & Economics",     plan: "Economics BA",         term: "Spring 2026", level: "Sophomore" },
+  { id: "AA0620", name: "Sofia Duarte",    career: "Undergraduate", program: "Natural Sciences",         plan: "Biology BS",           term: "Fall 2026",   level: "Freshman" },
+  { id: "AA0311", name: "Noah Kim",        career: "Undergraduate", program: "Liberal Arts & Sciences",  plan: "English BA",           term: "Fall 2026",   level: "Junior" },
+  { id: "AA0742", name: "Ella Fontaine",   career: "Undergraduate", program: "Liberal Arts & Sciences",  plan: "Art History BA",       term: "Spring 2026", level: "Senior" },
+  { id: "AA0159", name: "Owen Pratt",      career: "Undergraduate", program: "Health Sciences",          plan: "Nursing BSN",          term: "Fall 2026",   level: "Sophomore" },
+  { id: "AA0466", name: "Zara Haddad",     career: "Graduate",      program: "Engineering & Computing",  plan: "Computer Science MS",  term: "Fall 2026",   level: "Graduate" },
+  { id: "AA0203", name: "Ben Ortiz",       career: "Undergraduate", program: "Business & Economics",     plan: "Economics BA",         term: "Fall 2026",   level: "Junior" },
 ];
 
 const composeMarkup = `<dialog class="mc-compose" id="mc-compose" aria-labelledby="mc-compose-title">
@@ -2252,7 +2252,7 @@ const composeMarkup = `<dialog class="mc-compose" id="mc-compose" aria-labelledb
         <div class="listbox mc-compose-student-lb" id="mc-compose-student-lb" popover>
           <div class="search search--base mc-compose-student-search">${iconSearch}<input class="search__input" id="mc-compose-student-input" placeholder="Search by name or ID" aria-label="Search students" /></div>
           <ul class="listbox__list" role="listbox" aria-label="Students" id="mc-compose-student-list">
-            ${gwizStudents.map((s) => `<li><button class="listbox__option mc-cs-opt" role="option" aria-selected="false" data-id="${s.id}" data-name="${esc(s.name)}" data-search="${esc((s.name + " " + s.id).toLowerCase())}" type="button"><span class="mc-cs-opt__text"><span class="mc-cs-opt__name">${s.name}</span><span class="mc-cs-opt__meta">${s.id} · ${s.major}</span></span>${iconCheckmark}</button></li>`).join("\n            ")}
+            ${gwizStudents.map((s) => `<li><button class="listbox__option mc-cs-opt" role="option" aria-selected="false" data-id="${s.id}" data-name="${esc(s.name)}" data-search="${esc((s.name + " " + s.id).toLowerCase())}" type="button"><span class="mc-cs-opt__text"><span class="mc-cs-opt__name">${s.name}</span><span class="mc-cs-opt__meta">${s.id} · ${s.plan}</span></span>${iconCheckmark}</button></li>`).join("\n            ")}
             <li class="mc-cs-empty" id="mc-compose-student-empty" hidden>No students found</li>
           </ul>
         </div>
@@ -2344,10 +2344,11 @@ const composeMarkup = `<dialog class="mc-compose" id="mc-compose" aria-labelledb
 // faceted-filter config (Linear/Stripe-style "+ Add filter"): only surfaced when
 // the staff picks a field, never dumped as a wall of controls
 const gwizFacets = [
-  { key: "year",    label: "Class year",        values: ["Freshman", "Sophomore", "Junior", "Senior"] },
-  { key: "status",  label: "Enrollment status", values: ["Active", "Leave of absence"] },
-  { key: "major",   label: "Major",             values: [...new Set(gwizStudents.map((s) => s.major))].sort() },
-  { key: "advisor", label: "Advisor",           values: [...new Set(gwizStudents.map((s) => s.advisor))].sort() },
+  { key: "career",  label: "Career",  values: [...new Set(gwizStudents.map((s) => s.career))].sort() },
+  { key: "program", label: "Program", values: [...new Set(gwizStudents.map((s) => s.program))].sort() },
+  { key: "plan",    label: "Plan",    values: [...new Set(gwizStudents.map((s) => s.plan))].sort() },
+  { key: "term",    label: "Term",    values: [...new Set(gwizStudents.map((s) => s.term))].sort() },
+  { key: "level",   label: "Level",   values: [...new Set(gwizStudents.map((s) => s.level))].sort() },
 ];
 const gwizCss = `.mc-gwiz { border: none; padding: 0; background: ${cv(mdBg)}; font-family: ${cv("family.sans")}; }
 .mc-gwiz:focus, .mc-gwiz:focus-visible { outline: none; }
@@ -2422,13 +2423,13 @@ const gwizCss = `.mc-gwiz { border: none; padding: 0; background: ${cv(mdBg)}; f
 .mc-gwiz__empty { margin: ${px(resolve("dim.4"))} 0 0; text-align: center; color: ${cv("text.muted")}; ${typoCss(bodySmType)} }
 /* the filter Popover: a field list, then a value checklist (two-level) */
 .mc-gwiz__fpop { border: 1px solid ${cv("border.default")}; border-radius: ${px(resolve("radius.default"))}; background: ${cv("surface.default")}; box-shadow: ${composerShadowCss}; padding: ${px(resolve("dim.1_5"))}; min-width: 220px; }
-.mc-gwiz__fpop-opt { display: flex; align-items: center; justify-content: space-between; width: 100%; gap: ${px(resolve("dim.3"))}; padding: ${px(resolve("dim.2"))} ${px(resolve("dim.2_5"))}; border: none; background: none; cursor: pointer; border-radius: ${px(resolve("radius.sm"))}; color: ${cv("text.default")}; ${typoCss(bodySmType)} font-family: inherit; text-align: left; }
+.mc-gwiz__fpop-opt { display: flex; align-items: center; justify-content: space-between; width: 100%; gap: ${px(resolve("dim.3"))}; padding: ${px(resolve("dim.2"))} ${px(resolve("dim.2_5"))}; border: none; background: none; cursor: pointer; border-radius: ${px(resolve("radius.sm"))}; color: ${cv("text.default")}; ${typoCss(bodyBaseType)} font-family: inherit; text-align: left; }
 .mc-gwiz__fpop-opt:hover { background: ${cv("surface.dim")}; }
 .mc-gwiz__fpop-opt svg { width: 16px; height: 16px; color: ${cv("icon.secondary")}; }
 .mc-gwiz__fpop-head { display: flex; align-items: center; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.1_5"))} ${px(resolve("dim.2"))}; border-bottom: 1px solid ${cv("border.default")}; margin-bottom: ${px(resolve("dim.1_5"))}; }
 .mc-gwiz__fpop-back { display: inline-flex; align-items: center; border: none; background: none; padding: 0; cursor: pointer; color: ${cv("icon.secondary")}; }
 .mc-gwiz__fpop-back svg { width: ${px(resolve("dim.5"))}; height: ${px(resolve("dim.5"))}; }
-.mc-gwiz__fpop-title { color: ${cv("text.default")}; font-weight: 600; ${typoCss(bodySmType)} }
+.mc-gwiz__fpop-title { color: ${cv("text.default")}; font-weight: 600; ${typoCss(bodyBaseType)} }
 .mc-gwiz__fpop-vals { display: flex; flex-direction: column; gap: ${px(resolve("dim.1"))}; padding: 0 ${px(resolve("dim.1_5"))}; max-height: 200px; overflow-y: auto; }
 .mc-gwiz__fpop-vals .checkbox { padding: ${px(resolve("dim.1_5"))} ${px(resolve("dim.1"))}; }
 .mc-gwiz__fpop-foot { display: flex; justify-content: space-between; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.2"))} ${px(resolve("dim.1_5"))} ${px(resolve("dim.1"))}; margin-top: ${px(resolve("dim.1_5"))}; border-top: 1px solid ${cv("border.default")}; }
@@ -2550,7 +2551,7 @@ const gwizMarkup = `<dialog class="mc-gwiz" id="mc-gwiz" aria-labelledby="mc-gwi
               <button class="mc-gwiz__clearsel" id="mc-gwiz-clearsel" type="button" hidden>Clear selection</button>
             </div>
             <div class="mc-gwiz__list" id="mc-gwiz-list" hidden>
-              ${gwizStudents.map((s) => `<div class="mc-gwiz__srow" data-id="${s.id}" data-name="${esc(s.name)}" data-year="${s.year}" data-status="${esc(s.status)}" data-major="${esc(s.major)}" data-advisor="${esc(s.advisor)}"><span class="mc-gwiz__toggle" aria-hidden="true">${iconOf("add", "mc-gwiz__toggle-add")}${iconOf("remove", "mc-gwiz__toggle-remove")}</span><span class="mc-gwiz__sid">${s.id}</span><span class="mc-gwiz__sname">${s.name}</span><span class="mc-gwiz__smeta">${s.year} · ${s.major}</span></div>`).join("\n              ")}
+              ${gwizStudents.map((s) => `<div class="mc-gwiz__srow" data-id="${s.id}" data-name="${esc(s.name)}" data-career="${esc(s.career)}" data-program="${esc(s.program)}" data-plan="${esc(s.plan)}" data-term="${esc(s.term)}" data-level="${esc(s.level)}"><span class="mc-gwiz__toggle" aria-hidden="true">${iconOf("add", "mc-gwiz__toggle-add")}${iconOf("remove", "mc-gwiz__toggle-remove")}</span><span class="mc-gwiz__sid">${s.id}</span><span class="mc-gwiz__sname">${s.name}</span><span class="mc-gwiz__smeta">${s.level} · ${s.plan}</span></div>`).join("\n              ")}
             </div>
             <p class="mc-gwiz__empty" id="mc-gwiz-empty" hidden>No students match these filters.</p>
             <div class="mc-gwiz__prompt empty-state" id="mc-gwiz-prompt"><span class="empty-state__text">Search or apply filters to find students</span></div>
