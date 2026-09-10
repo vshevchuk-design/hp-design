@@ -1157,8 +1157,9 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 /* faceted-filter row: a "+ Add filter" action Chip + removable applied Chips */
 .mc-gwiz__filters { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 10px; }
 .mc-gwiz__filters[hidden] { display: none; }
-/* the default state (no search / no filters) — a centered placeholder pill */
-.mc-gwiz__prompt { flex: 1; min-height: 120px; }
+/* the default state (no search / no filters) — a centered placeholder pill inside
+   the same bordered frame the results list uses */
+.mc-gwiz__prompt { flex: 1; min-height: 120px; border: 1px solid var(--tok-border-default); border-radius: 8px; }
 .mc-gwiz__prompt[hidden] { display: none; }
 .mc-gwiz__fchip { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 6px 0 10px; border: 1px solid var(--tok-border-default); border-radius: 999px; background: var(--tok-surface-default); color: var(--tok-text-default); font-weight: 400; font-size: 12px; line-height: 1.4; cursor: pointer; font-family: inherit; }
 .mc-gwiz__fchip:hover { border-color: var(--tok-border-strong); }

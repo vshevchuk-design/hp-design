@@ -2388,8 +2388,9 @@ const gwizCss = `.mc-gwiz { border: none; padding: 0; background: ${cv(mdBg)}; f
 /* faceted-filter row: a "+ Add filter" action Chip + removable applied Chips */
 .mc-gwiz__filters { display: flex; flex-wrap: wrap; align-items: center; gap: ${px(resolve("dim.2"))}; margin-bottom: ${px(resolve("dim.2_5"))}; }
 .mc-gwiz__filters[hidden] { display: none; }
-/* the default state (no search / no filters) — a centered placeholder pill */
-.mc-gwiz__prompt { flex: 1; min-height: 120px; }
+/* the default state (no search / no filters) — a centered placeholder pill inside
+   the same bordered frame the results list uses */
+.mc-gwiz__prompt { flex: 1; min-height: 120px; border: 1px solid ${cv("border.default")}; border-radius: ${px(resolve("radius.default"))}; }
 .mc-gwiz__prompt[hidden] { display: none; }
 .mc-gwiz__fchip { display: inline-flex; align-items: center; gap: ${px(resolve("dim.1_5"))}; height: 28px; padding: 0 ${px(resolve("dim.1_5"))} 0 ${px(resolve("dim.2_5"))}; border: 1px solid ${cv("border.default")}; border-radius: ${px(resolve("radius.full"))}; background: ${cv("surface.default")}; color: ${cv("text.default")}; ${typoCss(bodySmType)} cursor: pointer; font-family: inherit; }
 .mc-gwiz__fchip:hover { border-color: ${cv("border.strong")}; }
