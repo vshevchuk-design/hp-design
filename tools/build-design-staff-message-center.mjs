@@ -2074,13 +2074,14 @@ function richComposerMarkup(t) {
                 </div>
                 <div class="mc-attach-hint" aria-hidden="true">Drop files to attach</div>
               </div>
-              <div class="mc-thread__atts" hidden></div>
-              <div class="mc-reply-actions">
-                <button type="button" class="btn btn--ghost btn--sm btn--icon-only mc-reply-attach" aria-label="Attach file">${iconOf("attach_file", "btn__icon")}</button>
-                <span class="mc-reply-note">Resolve is available because you have replied in this thread.</span>
-                <div class="mc-reply-btns">
-                  <button type="submit" class="btn btn--secondary btn--base composer__send">Reply</button>
-                  <button type="button" class="btn btn--primary btn--base mc-reply-resolve">${iconOf("check", "btn__icon")}Reply &amp; Resolve</button>
+              <div class="mc-reply-foot">
+                <div class="mc-thread__atts" hidden></div>
+                <div class="mc-reply-actions">
+                  <button type="button" class="btn btn--ghost btn--sm mc-reply-attach">${iconOf("attach_file", "btn__icon")}Attach</button>
+                  <div class="mc-reply-btns">
+                    <button type="submit" class="btn btn--secondary btn--base composer__send">Reply</button>
+                    <button type="button" class="btn btn--primary btn--base mc-reply-resolve">${iconOf("check", "btn__icon")}Reply &amp; Resolve</button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -2842,7 +2843,9 @@ const phaseECss = `.mc-reply-actions { display: flex; align-items: center; gap: 
 .mc-thread__editor .composer__icon-btn { width: ${px(resolve("dim.6"))}; height: ${px(resolve("dim.6"))}; }
 .mc-thread__editor .composer__icon-btn .composer__icon { width: ${px(resolve("dim.4"))}; height: ${px(resolve("dim.4"))}; }
 .mc-thread__editor.is-dragover .mc-attach-hint { display: flex; }
-/* attached files sit below the field, above the action row */
+/* the send footer: attachments (below the field) stacked over the action row,
+   the whole group sitting under a divider line with its own breathing room */
+.mc-reply-foot { display: flex; flex-direction: column; gap: ${px(resolve("dim.3"))}; }
 .mc-thread__atts { display: flex; flex-wrap: wrap; gap: ${px(resolve("dim.2"))}; }
 .mc-thread__atts[hidden] { display: none; }
 .mc-reply-attach { flex-shrink: 0; }
@@ -2854,8 +2857,7 @@ const phaseECss = `.mc-reply-actions { display: flex; align-items: center; gap: 
   .mc-composer { border: 1px solid ${cv("border.default")}; border-radius: ${px(resolve("radius.lg"))}; background: ${cv("surface.default")}; box-shadow: ${mdShadowCss}; overflow: hidden; }
   .mc-composer__body { gap: 0; }
   .mc-composer .mc-thread__editor { border: none; border-radius: 0; }
-  .mc-composer .mc-thread__atts:not([hidden]) { padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))} 0; }
-  .mc-composer .mc-reply-actions { padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))}; border-top: 1px solid ${cv("border.default")}; }
+  .mc-composer .mc-reply-foot { padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))}; border-top: 1px solid ${cv("border.default")}; }
   .mc-composer .mc-composer__expired { padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))}; }
 }
 /* per-thread popover anchors — Merge Tags / Hyperlinks open under their own
