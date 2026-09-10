@@ -1287,7 +1287,13 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
    and every Involved advisor — plus the state Badges. Segments are divided by a
    hairline on wide screens; the row wraps (never scrolls) when tight, and on a
    phone each segment drops to its own line with the dividers hidden. */
-.mc-thread__head { flex-shrink: 0; padding-bottom: ${px(resolve("dim.4"))}; border-bottom: 1px solid ${cv("border.default")}; }
+.mc-thread__head { flex-shrink: 0; }
+/* desktop: the head is a sibling of the top bar — together they read as ONE fixed
+   white panel that doesn't scroll (the original desktop behaviour, untouched) */
+.mc-thread > .mc-thread__head { background: ${cv("surface.default")}; padding: 0 ${px(resolve("dim.4"))} ${px(resolve("dim.3"))}; border-bottom: 1px solid ${cv("border.default")}; }
+/* tablet + mobile: the head is moved INTO the scroll (JS), so it scrolls with the
+   messages; it gets its own inset separator + spacing to the first message */
+.mc-thread__scroll > .mc-thread__head { padding-bottom: ${px(resolve("dim.4"))}; border-bottom: 1px solid ${cv("border.default")}; }
 .mc-thread__tags { margin-top: ${px(resolve("dim.1_5"))}; display: flex; align-items: center; flex-wrap: wrap; gap: ${px(resolve("dim.1_5"))} ${px(resolve("dim.2_5"))}; }
 .mc-thread__meta-line { color: ${cv("text.secondary")}; ${typoCss(bodySmType)} }
 .mc-thread__student { min-width: 0; color: ${cv("text.secondary")}; ${typoCss(bodySmType)} white-space: nowrap; }
@@ -1337,10 +1343,10 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
    page — NOT stretched edge-to-edge (looks lost on a wide screen); messages and
    the reply zone share the same max width and centre so they line up */
 .mc-thread__scroll { align-items: stretch; }
+/* the subject/meta header AND the message bubbles share the same centred reading
+   column so they line up as one coherent thread (not header-full-width vs
+   messages-indented, which reads as broken on a wide screen) */
 .mc-thread__scroll > * { width: 100%; max-width: 820px; margin-left: auto; margin-right: auto; }
-/* the subject + meta header spans the full reading width (aligned with the top
-   bar), while the message bubbles keep the narrower centred column */
-.mc-thread__scroll > .mc-thread__head { max-width: none; }
 .mc-thread__composer { display: flex; justify-content: center; }
 .mc-thread__composer > * { width: 100%; max-width: 820px; }
 
@@ -1384,7 +1390,8 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
      air between the two toolbar rows, and a wider gap down to the table. */
   .mc-rail__topbar { padding-left: ${px(resolve("dim.6"))}; padding-right: ${px(resolve("dim.6"))}; gap: ${px(resolve("dim.3"))}; padding-bottom: ${px(resolve("dim.6"))}; }
   .mc-rail__lists { padding-left: ${px(resolve("dim.6"))}; padding-right: ${px(resolve("dim.6"))}; }
-  .mc-thread__topbar { padding-left: ${px(resolve("dim.6"))}; padding-right: ${px(resolve("dim.6"))}; }
+  .mc-thread__topbar { padding-left: ${px(resolve("dim.6"))}; padding-right: ${px(resolve("dim.6"))}; border-bottom: none; }
+  .mc-thread > .mc-thread__head { padding-left: ${px(resolve("dim.6"))}; padding-right: ${px(resolve("dim.6"))}; }
 }`;
 
 // ---- New Message compose (two-column form + AI panel) & AI Writing Assist
@@ -2126,21 +2133,21 @@ function threadPane(t) {
             <button class="btn btn--secondary btn--sm btn--icon-only mc-print" type="button" aria-label="Print thread">${iconPrint}</button>
           </div>
         </header>
-        <div class="mc-thread__scroll">
-          <div class="mc-thread__head">
-            <h2 class="mc-thread__subject">${t.subject}</h2>
-            <div class="mc-thread__tags">
-              <span class="mc-thread__student"><span class="mc-thread__meta-label">Student ·</span> ${t.sender}<span class="mc-thread__student-id"> · ${t.studentId || "–"}</span></span>
-              <span class="mc-thread__metasep" aria-hidden="true"></span>
-              <span class="mc-thread__dept"><span class="mc-thread__meta-label">Department ·</span> ${t.department}</span>
-              <span class="mc-thread__metasep" aria-hidden="true"></span>
-              <span class="mc-thread__involved"><span class="mc-thread__meta-label">Involved ·</span> ${involved}</span>
-              <span class="mc-thread__metasep" aria-hidden="true"></span>
-              ${t.awaiting ? `<span class="badge badge--sm badge--role-primary">Awaiting reply</span>` : ""}
-              ${t.expires ? `<span class="badge badge--sm badge--role-${t.expires.role}">${t.expires.label}</span>` : ""}
-              ${t.archived ? `<span class="badge badge--sm badge--role-neutral">Resolved</span>` : ""}
-            </div>
+        <div class="mc-thread__head">
+          <h2 class="mc-thread__subject">${t.subject}</h2>
+          <div class="mc-thread__tags">
+            <span class="mc-thread__student"><span class="mc-thread__meta-label">Student ·</span> ${t.sender}<span class="mc-thread__student-id"> · ${t.studentId || "–"}</span></span>
+            <span class="mc-thread__metasep" aria-hidden="true"></span>
+            <span class="mc-thread__dept"><span class="mc-thread__meta-label">Department ·</span> ${t.department}</span>
+            <span class="mc-thread__metasep" aria-hidden="true"></span>
+            <span class="mc-thread__involved"><span class="mc-thread__meta-label">Involved ·</span> ${involved}</span>
+            <span class="mc-thread__metasep" aria-hidden="true"></span>
+            ${t.awaiting ? `<span class="badge badge--sm badge--role-primary">Awaiting reply</span>` : ""}
+            ${t.expires ? `<span class="badge badge--sm badge--role-${t.expires.role}">${t.expires.label}</span>` : ""}
+            ${t.archived ? `<span class="badge badge--sm badge--role-neutral">Resolved</span>` : ""}
           </div>
+        </div>
+        <div class="mc-thread__scroll">
           ${t.content.join("\n          ")}
         </div>
         <footer class="mc-thread__composer">
@@ -2820,11 +2827,11 @@ function groupPaneMarkup(g) {
           <button class="btn btn--ghost btn--sm mc-thread__back" type="button">${iconBack}Back</button>
           <div class="mc-thread__actions"><button class="btn btn--secondary btn--sm" id="mc-recip-open" type="button">See All ${g.n} Recipients</button></div>
         </header>
+        <div class="mc-thread__head">
+          <h2 class="mc-thread__subject">${g.subject} <span class="badge badge--sm badge--role-neutral">Resolved</span></h2>
+          <div class="mc-thread__tags"><span class="mc-thread__meta-line">Group Message · ${g.n} Students · Started by You · ${g.date}</span></div>
+        </div>
         <div class="mc-thread__scroll">
-          <div class="mc-thread__head">
-            <h2 class="mc-thread__subject">${g.subject} <span class="badge badge--sm badge--role-neutral">Resolved</span></h2>
-            <div class="mc-thread__tags"><span class="mc-thread__meta-line">Group Message · ${g.n} Students · Started by You · ${g.date}</span></div>
-          </div>
           <div class="bubble-row bubble-row--self"><div class="bubble bubble--self bubble--tint"><p>${g.body}</p></div></div>
           <div class="mc-group__stats">${stat(g.delivered, "Delivered")}${stat(g.seen, "Seen")}${stat(g.replied, "Replied", "success")}</div>
           <div>
@@ -3047,7 +3054,25 @@ const appJs = `(function () {
     unreadCounter.textContent = n;
     unreadCounter.hidden = n === 0;
   }
+  // Desktop keeps the subject/meta head as a fixed panel beside the top bar (it
+  // does NOT scroll). On tablet + mobile (< 1024) the head is moved INTO the
+  // scroll so it scrolls away with the messages, Gmail-style. The markup ships
+  // the head as a desktop sibling; this relocates it per width.
+  function layoutThreadHeads() {
+    var toScroll = window.innerWidth < 1024;
+    document.querySelectorAll(".mc-thread").forEach(function (th) {
+      var head = th.querySelector(".mc-thread__head");
+      var scroll = th.querySelector(".mc-thread__scroll");
+      if (!head || !scroll) return;
+      if (toScroll) { if (head.parentElement !== scroll) scroll.insertBefore(head, scroll.firstChild); }
+      else { if (head.parentElement !== th) th.insertBefore(head, scroll); }
+    });
+  }
+  layoutThreadHeads();
+  window.addEventListener("resize", layoutThreadHeads);
+
   function showPane(id) {
+    layoutThreadHeads();
     panes().forEach(function (p) { p.hidden = p.dataset.thread !== id; });
     empty.hidden = !!id;
     if (!id) empty.hidden = false;
@@ -4180,7 +4205,7 @@ const appJs = `(function () {
   // ---- Send Message — creates a real outbound Inbox thread (a staff-initiated
   // message the student hasn't answered yet: Awaiting reply). Faithful to the
   // student side's send-creates-a-thread behaviour, staff-flavoured. ----
-  var COMPOSE_PANE_SKELETON = ${JSON.stringify(`<header class="mc-thread__topbar"><button class="btn btn--ghost btn--sm mc-thread__back" type="button">${iconBack}Back</button><div class="mc-thread__actions"><button class="btn btn--secondary btn--sm mc-archive" type="button">Resolve</button><button class="btn btn--secondary btn--sm btn--icon-only mc-print" type="button" aria-label="Print thread">${iconPrint}</button></div></header><div class="mc-thread__scroll"><div class="mc-thread__head"><h2 class="mc-thread__subject"></h2><div class="mc-thread__tags"><span class="mc-thread__meta-line"></span><span class="badge badge--sm badge--role-primary">Awaiting reply</span></div></div></div><footer class="mc-thread__composer"><form class="composer composer--rich mc-composer"><div class="composer__toolbar"><button type="button" class="composer__icon-btn" aria-label="Bold">${iconBold}</button><button type="button" class="composer__icon-btn" aria-label="Italic">${iconItalic}</button><button type="button" class="composer__icon-btn" aria-label="Underline">${iconUnderline}</button><button type="button" class="btn btn--ghost btn--sm">${iconTag}Merge Tags</button><button type="button" class="composer__ai-assist">${iconAi}AI Assist</button></div><div class="composer__field"><textarea class="composer__input" rows="1" placeholder="Reply..." aria-label="Reply"></textarea></div><div class="composer__settings"><div class="composer__settings-row"><span class="composer__settings-label">Allow Replies</span>${switchMarkup(true)}</div><div class="composer__settings-row"><span class="composer__settings-label">Expiration</span><button type="button" class="composer__expiration-trigger">Aug 15, 2026 ${iconChevronRight}</button></div></div><button type="submit" class="btn btn--primary btn--base composer__send">${iconSend}Send</button></form></footer>`)};
+  var COMPOSE_PANE_SKELETON = ${JSON.stringify(`<header class="mc-thread__topbar"><button class="btn btn--ghost btn--sm mc-thread__back" type="button">${iconBack}Back</button><div class="mc-thread__actions"><button class="btn btn--secondary btn--sm mc-archive" type="button">Resolve</button><button class="btn btn--secondary btn--sm btn--icon-only mc-print" type="button" aria-label="Print thread">${iconPrint}</button></div></header><div class="mc-thread__head"><h2 class="mc-thread__subject"></h2><div class="mc-thread__tags"><span class="mc-thread__meta-line"></span><span class="badge badge--sm badge--role-primary">Awaiting reply</span></div></div><div class="mc-thread__scroll"></div><footer class="mc-thread__composer"><form class="composer composer--rich mc-composer"><div class="composer__toolbar"><button type="button" class="composer__icon-btn" aria-label="Bold">${iconBold}</button><button type="button" class="composer__icon-btn" aria-label="Italic">${iconItalic}</button><button type="button" class="composer__icon-btn" aria-label="Underline">${iconUnderline}</button><button type="button" class="btn btn--ghost btn--sm">${iconTag}Merge Tags</button><button type="button" class="composer__ai-assist">${iconAi}AI Assist</button></div><div class="composer__field"><textarea class="composer__input" rows="1" placeholder="Reply..." aria-label="Reply"></textarea></div><div class="composer__settings"><div class="composer__settings-row"><span class="composer__settings-label">Allow Replies</span>${switchMarkup(true)}</div><div class="composer__settings-row"><span class="composer__settings-label">Expiration</span><button type="button" class="composer__expiration-trigger">Aug 15, 2026 ${iconChevronRight}</button></div></div><button type="submit" class="btn btn--primary btn--base composer__send">${iconSend}Send</button></form></footer>`)};
   var COMPOSE_ROW_SKELETON = ${JSON.stringify(`<div class="thread-item-inbox__main"><div class="thread-item-inbox__top"><span class="thread-item-inbox__identity"></span><span class="thread-item-inbox__time">Just now</span></div><div class="thread-item-inbox__subject"></div><div class="thread-item-inbox__preview-row"><span class="thread-item-inbox__preview"></span><button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread">${iconFlagOutlined}${iconFlagFilled}</button></div><div class="thread-item-inbox__expires"><span class="badge badge--sm badge--role-primary">Awaiting reply</span><span class="badge badge--sm badge--role-primary thread-item-inbox__scope">Inbox</span></div></div>`)};
   var DEPT_AVATARS = ${JSON.stringify(Object.fromEntries(composeDepartments.map((d) => [d, avatarMarkup(d, "sm")])))};
   var STUDENT_AVATARS = ${JSON.stringify(Object.fromEntries(gwizStudents.map((s) => [s.id, avatarMarkup(s.name, "sm")])))};
