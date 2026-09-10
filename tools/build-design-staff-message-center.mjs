@@ -2445,6 +2445,8 @@ const gwizCss = `.mc-gwiz { border: none; padding: 0; background: ${cv(mdBg)}; f
 .mc-gwiz__sel-head { flex-shrink: 0; margin: 0 0 ${px(resolve("dim.3"))}; display: flex; align-items: center; gap: ${px(resolve("dim.2"))}; color: ${cv("text.default")}; ${typoCss(bodyBaseType)} font-weight: 700; }
 .mc-gwiz__sel-count { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; min-width: 22px; height: 22px; padding: 0 ${px(resolve("dim.1_5"))}; border-radius: ${px(resolve("radius.full"))}; background: ${cv("fill.neutral")}; color: ${cv("text.secondary")}; font-size: 12px; font-weight: 600; }
 .mc-gwiz__sel-count.is-active { background: ${cv("bg.primary")}; color: ${cv("text.primary")}; }
+/* accordion chevron: only surfaced on mobile, where the panel is a bottom sheet */
+.mc-gwiz__sel-chev { display: none; flex-shrink: 0; width: ${px(resolve("dim.5"))}; height: ${px(resolve("dim.5"))}; color: ${cv("icon.secondary")}; transition: transform .2s ease; }
 .mc-gwiz__chips { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 0; margin: 0 calc(-1 * ${px(resolve("dim.3"))}) calc(-1 * ${px(resolve("dim.3"))}); }
 .mc-gwiz__chips:empty { flex: 0; }
 .mc-gwiz__sel-empty { flex: 1; min-height: 0; }
@@ -2504,7 +2506,19 @@ const gwizCss = `.mc-gwiz { border: none; padding: 0; background: ${cv(mdBg)}; f
 }
 @media (max-width: 767px) {
   .mc-gwiz { position: fixed; inset: 0; margin: 0; width: 100vw; max-width: 100vw; height: 100dvh; max-height: 100dvh; border-radius: 0; }
-  .mc-gwiz__cols { grid-template-columns: 1fr; }
+  /* Selected students becomes a docked bottom sheet: the search column takes the
+     whole step, the sheet overlays it from the bottom and grows UP on tap (accordion)
+     — it covers the list rather than pushing it, since neither fits stacked */
+  .mc-gwiz__step[data-panel="1"] { position: relative; }
+  .mc-gwiz__cols { display: block; height: 100%; }
+  .mc-gwiz__cols > div:first-child { height: 100%; box-sizing: border-box; padding-bottom: ${px(resolve("dim.16"))}; }
+  .mc-gwiz__selected { position: absolute; left: 0; right: 0; bottom: 0; z-index: 5; height: auto; max-height: 60px; overflow: hidden; box-shadow: ${composerShadowCss}; transition: max-height .25s ease; }
+  /* collapsed = just the tappable bar */
+  .mc-gwiz__sel-head { margin: 0; cursor: pointer; height: 36px; }
+  .mc-gwiz__sel-chev { display: inline-flex; align-items: center; }
+  .mc-gwiz__selected.is-open .mc-gwiz__sel-chev { transform: rotate(180deg); }
+  /* the chips only get their top spacing (and scroll) once the sheet is open */
+  .mc-gwiz__selected.is-open .mc-gwiz__chips { margin-top: ${px(resolve("dim.3"))}; }
   /* the row's year·major meta is a nicety on desktop; on a phone it just steals
      name width, and the facet filters already cover that need — so drop it */
   .mc-gwiz__smeta { display: none; }
@@ -2571,7 +2585,7 @@ const gwizMarkup = `<dialog class="mc-gwiz" id="mc-gwiz" aria-labelledby="mc-gwi
           </div>
         </div>
         <div class="mc-gwiz__selected">
-          <p class="mc-gwiz__sel-head">Selected students<span class="mc-gwiz__sel-count" id="mc-gwiz-count">0</span><button class="mc-gwiz__clearsel mc-gwiz__removeall" id="mc-gwiz-removeall" type="button" hidden>Remove all</button></p>
+          <p class="mc-gwiz__sel-head" id="mc-gwiz-selhead"><span class="mc-gwiz__sel-title">Selected students</span><span class="mc-gwiz__sel-count" id="mc-gwiz-count">0</span><button class="mc-gwiz__clearsel mc-gwiz__removeall" id="mc-gwiz-removeall" type="button" hidden>Remove all</button>${iconOf("expand_more", "mc-gwiz__sel-chev")}</p>
           <div class="mc-gwiz__chips" id="mc-gwiz-chips"></div>
           <div class="mc-gwiz__sel-empty empty-state" id="mc-gwiz-sel-empty"><span class="empty-state__text">No selected students</span></div>
         </div>
@@ -4179,6 +4193,22 @@ const appJs = `(function () {
   });
   // right "Remove all": clears only the selected (right) column
   removeAllBtn.addEventListener("click", function () { gwizSel = {}; syncGwizList(); gwizRenderSelected(); gwizSync(); });
+  // mobile: the Selected header is an accordion — tap grows the docked sheet up
+  // over the list (Remove all inside it keeps its own action)
+  var gwizSelPanel = document.querySelector("#mc-gwiz .mc-gwiz__selected");
+  document.getElementById("mc-gwiz-selhead").addEventListener("click", function (e) {
+    if (e.target.closest("#mc-gwiz-removeall")) return;
+    var opening = !gwizSelPanel.classList.contains("is-open");
+    gwizSelPanel.classList.toggle("is-open", opening);
+    // drive the grow in pixels (px<->px animates; px<->% doesn't) — target the
+    // step's own height so the sheet rises to just under the wizard body top
+    if (opening) {
+      var step = gwizSelPanel.closest(".mc-gwiz__step");
+      gwizSelPanel.style.maxHeight = step.clientHeight + "px";
+    } else {
+      gwizSelPanel.style.maxHeight = "";
+    }
+  });
 
   // ---- Paste tab: commas / spaces / new lines, any mix ----
   document.getElementById("mc-gwiz-addids").addEventListener("click", function () {
@@ -4376,6 +4406,7 @@ const appJs = `(function () {
       t.classList.toggle("tab--active", isSearch); t.setAttribute("aria-selected", isSearch ? "true" : "false");
     });
     document.querySelectorAll(".mc-gwiz__ptab").forEach(function (p) { p.hidden = p.dataset.ptabPanel !== "search"; });
+    var gsp = document.querySelector("#mc-gwiz .mc-gwiz__selected"); gsp.classList.remove("is-open"); gsp.style.maxHeight = "";
     renderFilterChips(); applyGwizFilters();
     syncGwizList(); gwizRenderSelected(); gwizSync(); gwizStep(1);
     gwizDlg.showModal();

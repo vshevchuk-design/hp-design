@@ -1213,6 +1213,8 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .mc-gwiz__sel-head { flex-shrink: 0; margin: 0 0 12px; display: flex; align-items: center; gap: 8px; color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; font-weight: 700; }
 .mc-gwiz__sel-count { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 999px; background: var(--tok-fill-neutral); color: var(--tok-text-secondary); font-size: 12px; font-weight: 600; }
 .mc-gwiz__sel-count.is-active { background: var(--tok-bg-primary); color: var(--tok-text-primary); }
+/* accordion chevron: only surfaced on mobile, where the panel is a bottom sheet */
+.mc-gwiz__sel-chev { display: none; flex-shrink: 0; width: 20px; height: 20px; color: var(--tok-icon-secondary); transition: transform .2s ease; }
 .mc-gwiz__chips { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 0; margin: 0 calc(-1 * 12px) calc(-1 * 12px); }
 .mc-gwiz__chips:empty { flex: 0; }
 .mc-gwiz__sel-empty { flex: 1; min-height: 0; }
@@ -1272,7 +1274,19 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 }
 @media (max-width: 767px) {
   .mc-gwiz { position: fixed; inset: 0; margin: 0; width: 100vw; max-width: 100vw; height: 100dvh; max-height: 100dvh; border-radius: 0; }
-  .mc-gwiz__cols { grid-template-columns: 1fr; }
+  /* Selected students becomes a docked bottom sheet: the search column takes the
+     whole step, the sheet overlays it from the bottom and grows UP on tap (accordion)
+     — it covers the list rather than pushing it, since neither fits stacked */
+  .mc-gwiz__step[data-panel="1"] { position: relative; }
+  .mc-gwiz__cols { display: block; height: 100%; }
+  .mc-gwiz__cols > div:first-child { height: 100%; box-sizing: border-box; padding-bottom: 64px; }
+  .mc-gwiz__selected { position: absolute; left: 0; right: 0; bottom: 0; z-index: 5; height: auto; max-height: 60px; overflow: hidden; box-shadow: 0 -2px 8px 0px rgba(21, 25, 30, 0.10); transition: max-height .25s ease; }
+  /* collapsed = just the tappable bar */
+  .mc-gwiz__sel-head { margin: 0; cursor: pointer; height: 36px; }
+  .mc-gwiz__sel-chev { display: inline-flex; align-items: center; }
+  .mc-gwiz__selected.is-open .mc-gwiz__sel-chev { transform: rotate(180deg); }
+  /* the chips only get their top spacing (and scroll) once the sheet is open */
+  .mc-gwiz__selected.is-open .mc-gwiz__chips { margin-top: 12px; }
   /* the row's year·major meta is a nicety on desktop; on a phone it just steals
      name width, and the facet filters already cover that need — so drop it */
   .mc-gwiz__smeta { display: none; }
@@ -2711,7 +2725,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           </div>
         </div>
         <div class="mc-gwiz__selected">
-          <p class="mc-gwiz__sel-head">Selected students<span class="mc-gwiz__sel-count" id="mc-gwiz-count">0</span><button class="mc-gwiz__clearsel mc-gwiz__removeall" id="mc-gwiz-removeall" type="button" hidden>Remove all</button></p>
+          <p class="mc-gwiz__sel-head" id="mc-gwiz-selhead"><span class="mc-gwiz__sel-title">Selected students</span><span class="mc-gwiz__sel-count" id="mc-gwiz-count">0</span><button class="mc-gwiz__clearsel mc-gwiz__removeall" id="mc-gwiz-removeall" type="button" hidden>Remove all</button><svg class="mc-gwiz__sel-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></p>
           <div class="mc-gwiz__chips" id="mc-gwiz-chips"></div>
           <div class="mc-gwiz__sel-empty empty-state" id="mc-gwiz-sel-empty"><span class="empty-state__text">No selected students</span></div>
         </div>
@@ -4248,6 +4262,22 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   });
   // right "Remove all": clears only the selected (right) column
   removeAllBtn.addEventListener("click", function () { gwizSel = {}; syncGwizList(); gwizRenderSelected(); gwizSync(); });
+  // mobile: the Selected header is an accordion — tap grows the docked sheet up
+  // over the list (Remove all inside it keeps its own action)
+  var gwizSelPanel = document.querySelector("#mc-gwiz .mc-gwiz__selected");
+  document.getElementById("mc-gwiz-selhead").addEventListener("click", function (e) {
+    if (e.target.closest("#mc-gwiz-removeall")) return;
+    var opening = !gwizSelPanel.classList.contains("is-open");
+    gwizSelPanel.classList.toggle("is-open", opening);
+    // drive the grow in pixels (px<->px animates; px<->% doesn't) — target the
+    // step's own height so the sheet rises to just under the wizard body top
+    if (opening) {
+      var step = gwizSelPanel.closest(".mc-gwiz__step");
+      gwizSelPanel.style.maxHeight = step.clientHeight + "px";
+    } else {
+      gwizSelPanel.style.maxHeight = "";
+    }
+  });
 
   // ---- Paste tab: commas / spaces / new lines, any mix ----
   document.getElementById("mc-gwiz-addids").addEventListener("click", function () {
@@ -4445,6 +4475,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
       t.classList.toggle("tab--active", isSearch); t.setAttribute("aria-selected", isSearch ? "true" : "false");
     });
     document.querySelectorAll(".mc-gwiz__ptab").forEach(function (p) { p.hidden = p.dataset.ptabPanel !== "search"; });
+    var gsp = document.querySelector("#mc-gwiz .mc-gwiz__selected"); gsp.classList.remove("is-open"); gsp.style.maxHeight = "";
     renderFilterChips(); applyGwizFilters();
     syncGwizList(); gwizRenderSelected(); gwizSync(); gwizStep(1);
     gwizDlg.showModal();
