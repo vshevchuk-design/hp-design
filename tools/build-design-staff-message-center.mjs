@@ -1280,14 +1280,14 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
    bottom border) divides them from the thread. The subject + meta block lives
    INSIDE the scroll (as .mc-thread__head) so it scrolls away with the messages,
    Gmail-style. */
-.mc-thread__topbar { flex-shrink: 0; display: flex; align-items: center; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))}; background: ${cv("surface.default")}; border-bottom: 1px solid ${cv("border.default")}; }
+.mc-thread__topbar { flex-shrink: 0; box-sizing: border-box; height: 48px; display: flex; align-items: center; gap: ${px(resolve("dim.2"))}; padding: 0 ${px(resolve("dim.4"))}; background: ${cv("surface.default")}; border-bottom: 1px solid ${cv("border.default")}; }
 .mc-thread__actions { margin-left: auto; display: flex; gap: ${px(resolve("dim.2"))}; }
 .mc-thread__subject { min-width: 0; margin: 0; color: ${cv("text.default")}; ${typoCss(headingMdType)} }
 /* meta row: the student (avatar + name + ID), the department you're acting from,
    and every Involved advisor — plus the state Badges. Segments are divided by a
    hairline on wide screens; the row wraps (never scrolls) when tight, and on a
    phone each segment drops to its own line with the dividers hidden. */
-.mc-thread__head { flex-shrink: 0; }
+.mc-thread__head { flex-shrink: 0; padding-bottom: ${px(resolve("dim.4"))}; border-bottom: 1px solid ${cv("border.default")}; }
 .mc-thread__tags { margin-top: ${px(resolve("dim.1_5"))}; display: flex; align-items: center; flex-wrap: wrap; gap: ${px(resolve("dim.1_5"))} ${px(resolve("dim.2_5"))}; }
 .mc-thread__meta-line { color: ${cv("text.secondary")}; ${typoCss(bodySmType)} }
 .mc-thread__student { min-width: 0; color: ${cv("text.secondary")}; ${typoCss(bodySmType)} white-space: nowrap; }

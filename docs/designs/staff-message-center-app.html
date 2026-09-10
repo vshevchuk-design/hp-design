@@ -882,14 +882,14 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
    bottom border) divides them from the thread. The subject + meta block lives
    INSIDE the scroll (as .mc-thread__head) so it scrolls away with the messages,
    Gmail-style. */
-.mc-thread__topbar { flex-shrink: 0; display: flex; align-items: center; gap: 8px; padding: 12px 16px; background: var(--tok-surface-default); border-bottom: 1px solid var(--tok-border-default); }
+.mc-thread__topbar { flex-shrink: 0; box-sizing: border-box; height: 48px; display: flex; align-items: center; gap: 8px; padding: 0 16px; background: var(--tok-surface-default); border-bottom: 1px solid var(--tok-border-default); }
 .mc-thread__actions { margin-left: auto; display: flex; gap: 8px; }
 .mc-thread__subject { min-width: 0; margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 16px; line-height: 1.4; }
 /* meta row: the student (avatar + name + ID), the department you're acting from,
    and every Involved advisor — plus the state Badges. Segments are divided by a
    hairline on wide screens; the row wraps (never scrolls) when tight, and on a
    phone each segment drops to its own line with the dividers hidden. */
-.mc-thread__head { flex-shrink: 0; }
+.mc-thread__head { flex-shrink: 0; padding-bottom: 16px; border-bottom: 1px solid var(--tok-border-default); }
 .mc-thread__tags { margin-top: 6px; display: flex; align-items: center; flex-wrap: wrap; gap: 6px 10px; }
 .mc-thread__meta-line { color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
 .mc-thread__student { min-width: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; white-space: nowrap; }
