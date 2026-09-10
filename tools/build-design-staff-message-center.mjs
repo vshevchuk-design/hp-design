@@ -1504,7 +1504,14 @@ const composeAiCss = `.mc-compose__tabs { display: none; flex-shrink: 0; }
   .mc-ai__handle--collapse { display: none; }
   .mc-compose__lead { display: none; }
   .mc-compose .composer__ai-assist { display: none; }
+}
+/* the in-thread AI panel (standalone dialog) docks as a right-hand side panel on
+   tablet AND desktop; only phones get the full-screen sheet */
+@media (max-width: 767px) {
   .mc-ai-standalone { position: fixed; inset: 0; margin: 0; width: 100vw; max-width: 100vw; height: 100dvh; max-height: 100dvh; border-radius: 0; }
+}
+@media (min-width: 768px) {
+  .mc-ai-standalone { width: min(400px, calc(100vw - ${px(resolve("dim.8"))})); height: 100dvh; max-height: 100dvh; margin: 0 0 0 auto; border-radius: 0; }
 }
 /* mobile only: the footer stacks — checks strip (full-width divider) over
    full-width 50/50 buttons. On tablet it stays a single row like desktop. */
@@ -1519,7 +1526,6 @@ const composeAiCss = `.mc-compose__tabs { display: none; flex-shrink: 0; }
   .mc-compose__ai { width: 340px; flex-shrink: 0; border-left: 1px solid ${cv(mdDivider)}; }
   .mc-compose:not(.mc-compose--ai-open) .mc-compose__ai { display: none; }
   .mc-compose.mc-compose--ai-open { width: min(920px, calc(100vw - ${px(resolve("dim.8"))})); }
-  .mc-ai-standalone { width: min(400px, calc(100vw - ${px(resolve("dim.8"))})); height: 100dvh; max-height: 100dvh; margin: 0 0 0 auto; border-radius: 0; }
 }`;
 
 // ---- MC v3 console component recipes (Table / SplitButton / Skeleton /

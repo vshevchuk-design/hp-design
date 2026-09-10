@@ -1101,7 +1101,14 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   .mc-ai__handle--collapse { display: none; }
   .mc-compose__lead { display: none; }
   .mc-compose .composer__ai-assist { display: none; }
+}
+/* the in-thread AI panel (standalone dialog) docks as a right-hand side panel on
+   tablet AND desktop; only phones get the full-screen sheet */
+@media (max-width: 767px) {
   .mc-ai-standalone { position: fixed; inset: 0; margin: 0; width: 100vw; max-width: 100vw; height: 100dvh; max-height: 100dvh; border-radius: 0; }
+}
+@media (min-width: 768px) {
+  .mc-ai-standalone { width: min(400px, calc(100vw - 32px)); height: 100dvh; max-height: 100dvh; margin: 0 0 0 auto; border-radius: 0; }
 }
 /* mobile only: the footer stacks — checks strip (full-width divider) over
    full-width 50/50 buttons. On tablet it stays a single row like desktop. */
@@ -1116,7 +1123,6 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   .mc-compose__ai { width: 340px; flex-shrink: 0; border-left: 1px solid var(--tok-border-default); }
   .mc-compose:not(.mc-compose--ai-open) .mc-compose__ai { display: none; }
   .mc-compose.mc-compose--ai-open { width: min(920px, calc(100vw - 32px)); }
-  .mc-ai-standalone { width: min(400px, calc(100vw - 32px)); height: 100dvh; max-height: 100dvh; margin: 0 0 0 auto; border-radius: 0; }
 }
 .mc-gwiz { border: none; padding: 0; background: var(--tok-surface-default); font-family: var(--tok-family-sans); }
 .mc-gwiz:focus, .mc-gwiz:focus-visible { outline: none; }
