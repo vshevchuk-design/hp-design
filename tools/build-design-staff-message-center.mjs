@@ -1353,10 +1353,6 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 @media (max-width: 767px) {
   .mc-table { min-width: 620px; } /* horizontal-scroll fallback until the mobile row reflow lands */
   .mc-thread__scroll > *, .mc-thread__composer > * { max-width: none; }
-  /* the meta row is a lot of text on a phone — drop each segment to its own line
-     and hide the dividers so it reads as a clean stacked list */
-  .mc-thread__metasep { display: none; }
-  .mc-thread__student, .mc-thread__dept, .mc-thread__involved { width: 100%; }
 }
 @media (min-width: 768px) {
   /* tablet + desktop — filters go inline like the desktop toolbar: chips +
@@ -2136,9 +2132,9 @@ function threadPane(t) {
         <div class="mc-thread__head">
           <h2 class="mc-thread__subject">${t.subject}</h2>
           <div class="mc-thread__tags">
-            <span class="mc-thread__student"><span class="mc-thread__meta-label">Student ·</span> ${t.sender}<span class="mc-thread__student-id"> · ${t.studentId || "–"}</span></span>
+            <span class="mc-thread__student">${t.sender}<span class="mc-thread__student-id"> · ${t.studentId || "–"}</span></span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
-            <span class="mc-thread__dept"><span class="mc-thread__meta-label">Department ·</span> ${t.department}</span>
+            <span class="mc-thread__dept">${t.department}</span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
             <span class="mc-thread__involved"><span class="mc-thread__meta-label">Involved ·</span> ${involved}</span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>

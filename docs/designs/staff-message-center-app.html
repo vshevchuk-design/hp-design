@@ -955,10 +955,6 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 @media (max-width: 767px) {
   .mc-table { min-width: 620px; } /* horizontal-scroll fallback until the mobile row reflow lands */
   .mc-thread__scroll > *, .mc-thread__composer > * { max-width: none; }
-  /* the meta row is a lot of text on a phone — drop each segment to its own line
-     and hide the dividers so it reads as a clean stacked list */
-  .mc-thread__metasep { display: none; }
-  .mc-thread__student, .mc-thread__dept, .mc-thread__involved { width: 100%; }
 }
 @media (min-width: 768px) {
   /* tablet + desktop — filters go inline like the desktop toolbar: chips +
@@ -1857,9 +1853,9 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         <div class="mc-thread__head">
           <h2 class="mc-thread__subject">Minor Requirements Review</h2>
           <div class="mc-thread__tags">
-            <span class="mc-thread__student"><span class="mc-thread__meta-label">Student ·</span> Cait Genatossio<span class="mc-thread__student-id"> · CX0001</span></span>
+            <span class="mc-thread__student">Cait Genatossio<span class="mc-thread__student-id"> · CX0001</span></span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
-            <span class="mc-thread__dept"><span class="mc-thread__meta-label">Department ·</span> Academic Advising</span>
+            <span class="mc-thread__dept">Academic Advising</span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
             <span class="mc-thread__involved"><span class="mc-thread__meta-label">Involved ·</span> –</span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
@@ -1963,9 +1959,9 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         <div class="mc-thread__head">
           <h2 class="mc-thread__subject">Registration Hold Question</h2>
           <div class="mc-thread__tags">
-            <span class="mc-thread__student"><span class="mc-thread__meta-label">Student ·</span> Maya Patel<span class="mc-thread__student-id"> · AA0301</span></span>
+            <span class="mc-thread__student">Maya Patel<span class="mc-thread__student-id"> · AA0301</span></span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
-            <span class="mc-thread__dept"><span class="mc-thread__meta-label">Department ·</span> Academic Advising</span>
+            <span class="mc-thread__dept">Academic Advising</span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
             <span class="mc-thread__involved"><span class="mc-thread__meta-label">Involved ·</span> –</span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
@@ -2069,9 +2065,9 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         <div class="mc-thread__head">
           <h2 class="mc-thread__subject">Transcript for Internship Application</h2>
           <div class="mc-thread__tags">
-            <span class="mc-thread__student"><span class="mc-thread__meta-label">Student ·</span> Diego Fernandez<span class="mc-thread__student-id"> · AA0302</span></span>
+            <span class="mc-thread__student">Diego Fernandez<span class="mc-thread__student-id"> · AA0302</span></span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
-            <span class="mc-thread__dept"><span class="mc-thread__meta-label">Department ·</span> Academic Advising</span>
+            <span class="mc-thread__dept">Academic Advising</span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
             <span class="mc-thread__involved"><span class="mc-thread__meta-label">Involved ·</span> Ava Robinson, Alexander Robinson, Sarah Nguyen</span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
@@ -2241,9 +2237,9 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         <div class="mc-thread__head">
           <h2 class="mc-thread__subject">Reschedule Advising Appointment</h2>
           <div class="mc-thread__tags">
-            <span class="mc-thread__student"><span class="mc-thread__meta-label">Student ·</span> George Amalor<span class="mc-thread__student-id"> · AA0303</span></span>
+            <span class="mc-thread__student">George Amalor<span class="mc-thread__student-id"> · AA0303</span></span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
-            <span class="mc-thread__dept"><span class="mc-thread__meta-label">Department ·</span> Academic Advising</span>
+            <span class="mc-thread__dept">Academic Advising</span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
             <span class="mc-thread__involved"><span class="mc-thread__meta-label">Involved ·</span> Alexander Robinson</span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
@@ -2352,9 +2348,9 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         <div class="mc-thread__head">
           <h2 class="mc-thread__subject">Course Override Request</h2>
           <div class="mc-thread__tags">
-            <span class="mc-thread__student"><span class="mc-thread__meta-label">Student ·</span> Priya Nair<span class="mc-thread__student-id"> · AA0533</span></span>
+            <span class="mc-thread__student">Priya Nair<span class="mc-thread__student-id"> · AA0533</span></span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
-            <span class="mc-thread__dept"><span class="mc-thread__meta-label">Department ·</span> Academic Advising</span>
+            <span class="mc-thread__dept">Academic Advising</span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
             <span class="mc-thread__involved"><span class="mc-thread__meta-label">Involved ·</span> Ava Robinson</span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
@@ -2474,9 +2470,9 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         <div class="mc-thread__head">
           <h2 class="mc-thread__subject">Graduation Audit Review</h2>
           <div class="mc-thread__tags">
-            <span class="mc-thread__student"><span class="mc-thread__meta-label">Student ·</span> Marcus Bell<span class="mc-thread__student-id"> · AA0088</span></span>
+            <span class="mc-thread__student">Marcus Bell<span class="mc-thread__student-id"> · AA0088</span></span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
-            <span class="mc-thread__dept"><span class="mc-thread__meta-label">Department ·</span> Academic Advising</span>
+            <span class="mc-thread__dept">Academic Advising</span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
             <span class="mc-thread__involved"><span class="mc-thread__meta-label">Involved ·</span> Alexander Robinson, Sarah Nguyen</span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
@@ -2605,9 +2601,9 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         <div class="mc-thread__head">
           <h2 class="mc-thread__subject">Thesis Advisor Assignment</h2>
           <div class="mc-thread__tags">
-            <span class="mc-thread__student"><span class="mc-thread__meta-label">Student ·</span> Ella Fontaine<span class="mc-thread__student-id"> · AA0742</span></span>
+            <span class="mc-thread__student">Ella Fontaine<span class="mc-thread__student-id"> · AA0742</span></span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
-            <span class="mc-thread__dept"><span class="mc-thread__meta-label">Department ·</span> English Dept</span>
+            <span class="mc-thread__dept">English Dept</span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
             <span class="mc-thread__involved"><span class="mc-thread__meta-label">Involved ·</span> –</span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
@@ -2711,9 +2707,9 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         <div class="mc-thread__head">
           <h2 class="mc-thread__subject">Leave of Absence Paperwork</h2>
           <div class="mc-thread__tags">
-            <span class="mc-thread__student"><span class="mc-thread__meta-label">Student ·</span> Noah Kim<span class="mc-thread__student-id"> · AA0311</span></span>
+            <span class="mc-thread__student">Noah Kim<span class="mc-thread__student-id"> · AA0311</span></span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
-            <span class="mc-thread__dept"><span class="mc-thread__meta-label">Department ·</span> Academic Advising</span>
+            <span class="mc-thread__dept">Academic Advising</span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
             <span class="mc-thread__involved"><span class="mc-thread__meta-label">Involved ·</span> Alexander Robinson</span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
@@ -2822,9 +2818,9 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         <div class="mc-thread__head">
           <h2 class="mc-thread__subject">Prerequisite Waiver</h2>
           <div class="mc-thread__tags">
-            <span class="mc-thread__student"><span class="mc-thread__meta-label">Student ·</span> Lena Hoffman<span class="mc-thread__student-id"> · AA0304</span></span>
+            <span class="mc-thread__student">Lena Hoffman<span class="mc-thread__student-id"> · AA0304</span></span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
-            <span class="mc-thread__dept"><span class="mc-thread__meta-label">Department ·</span> English Dept</span>
+            <span class="mc-thread__dept">English Dept</span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
             <span class="mc-thread__involved"><span class="mc-thread__meta-label">Involved ·</span> Alexander Robinson, Ava Robinson</span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
@@ -2938,9 +2934,9 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         <div class="mc-thread__head">
           <h2 class="mc-thread__subject">Study Plan Check-in</h2>
           <div class="mc-thread__tags">
-            <span class="mc-thread__student"><span class="mc-thread__meta-label">Student ·</span> Tomas Novak<span class="mc-thread__student-id"> · AA0305</span></span>
+            <span class="mc-thread__student">Tomas Novak<span class="mc-thread__student-id"> · AA0305</span></span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
-            <span class="mc-thread__dept"><span class="mc-thread__meta-label">Department ·</span> Academic Advising</span>
+            <span class="mc-thread__dept">Academic Advising</span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
             <span class="mc-thread__involved"><span class="mc-thread__meta-label">Involved ·</span> Ava Robinson</span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
@@ -3049,9 +3045,9 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         <div class="mc-thread__head">
           <h2 class="mc-thread__subject">Add/Drop Confirmation</h2>
           <div class="mc-thread__tags">
-            <span class="mc-thread__student"><span class="mc-thread__meta-label">Student ·</span> Dana Torres<span class="mc-thread__student-id"> · AA0412</span></span>
+            <span class="mc-thread__student">Dana Torres<span class="mc-thread__student-id"> · AA0412</span></span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
-            <span class="mc-thread__dept"><span class="mc-thread__meta-label">Department ·</span> English Dept</span>
+            <span class="mc-thread__dept">English Dept</span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
             <span class="mc-thread__involved"><span class="mc-thread__meta-label">Involved ·</span> Ava Robinson</span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
@@ -3160,9 +3156,9 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         <div class="mc-thread__head">
           <h2 class="mc-thread__subject">Registration Complete</h2>
           <div class="mc-thread__tags">
-            <span class="mc-thread__student"><span class="mc-thread__meta-label">Student ·</span> Liam Arcos<span class="mc-thread__student-id"> · AA0007</span></span>
+            <span class="mc-thread__student">Liam Arcos<span class="mc-thread__student-id"> · AA0007</span></span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
-            <span class="mc-thread__dept"><span class="mc-thread__meta-label">Department ·</span> Academic Advising</span>
+            <span class="mc-thread__dept">Academic Advising</span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
             <span class="mc-thread__involved"><span class="mc-thread__meta-label">Involved ·</span> Alexander Robinson</span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
@@ -3271,9 +3267,9 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         <div class="mc-thread__head">
           <h2 class="mc-thread__subject">Advising Notes Shared</h2>
           <div class="mc-thread__tags">
-            <span class="mc-thread__student"><span class="mc-thread__meta-label">Student ·</span> Sofia Duarte<span class="mc-thread__student-id"> · AA0620</span></span>
+            <span class="mc-thread__student">Sofia Duarte<span class="mc-thread__student-id"> · AA0620</span></span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
-            <span class="mc-thread__dept"><span class="mc-thread__meta-label">Department ·</span> Academic Advising</span>
+            <span class="mc-thread__dept">Academic Advising</span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
             <span class="mc-thread__involved"><span class="mc-thread__meta-label">Involved ·</span> Ava Robinson, Sarah Nguyen</span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
@@ -3387,9 +3383,9 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         <div class="mc-thread__head">
           <h2 class="mc-thread__subject">Transcript Sent</h2>
           <div class="mc-thread__tags">
-            <span class="mc-thread__student"><span class="mc-thread__meta-label">Student ·</span> Owen Pratt<span class="mc-thread__student-id"> · AA0159</span></span>
+            <span class="mc-thread__student">Owen Pratt<span class="mc-thread__student-id"> · AA0159</span></span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
-            <span class="mc-thread__dept"><span class="mc-thread__meta-label">Department ·</span> Academic Advising</span>
+            <span class="mc-thread__dept">Academic Advising</span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
             <span class="mc-thread__involved"><span class="mc-thread__meta-label">Involved ·</span> Sarah Nguyen</span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
