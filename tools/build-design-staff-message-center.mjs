@@ -910,6 +910,8 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
 /* mobile-first compact spacing (explicit user call — the takeover felt too
    airy); split views restore Modal's own padding/gap below */
 .mc-compose__body { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.4"))}; }
+/* blocks keep their height — the body scrolls rather than the editor shrinking */
+.mc-compose__body > * { flex-shrink: 0; }
 .mc-compose__body .select { display: flex; width: 100%; flex-shrink: 0; }
 /* each field = a caption ("Student *") over its control; a red asterisk marks
    required. Student + Department captions/controls share one row. */
@@ -1432,7 +1434,7 @@ const composeAiCss = `.mc-compose__tabs { display: none; flex-shrink: 0; }
 /* static header bar (title + collapse/close + tools) with a divider under it */
 /* header: title is centered in the full width; the ghost buttons sit absolute on
    each side so the title stays centered regardless of their widths */
-.mc-ai__header { position: relative; flex-shrink: 0; box-sizing: border-box; height: 48px; display: flex; align-items: center; justify-content: center; padding: 0 ${px(resolve("dim.3"))}; border-bottom: 1px solid ${cv("border.default")}; }
+.mc-ai__header { position: relative; flex-shrink: 0; box-sizing: border-box; height: 40px; display: flex; align-items: center; justify-content: center; padding: 0 ${px(resolve("dim.3"))}; border-bottom: 1px solid ${cv("border.default")}; }
 .mc-ai__scroll { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: ${px(resolve("dim.3"))}; padding: ${px(resolve("dim.3"))}; }
 .mc-ai__title { display: flex; align-items: center; justify-content: center; gap: ${px(resolve("dim.1_5"))}; margin: 0; color: ${cv("text.secondary")}; ${typoCss(headingSmType)} }
 .mc-ai__spark { flex-shrink: 0; width: 16px; height: 16px; color: ${cv("icon.ai")}; }
@@ -2359,6 +2361,9 @@ const gwizCss = `.mc-gwiz { border: none; padding: 0; background: ${cv(mdBg)}; f
    panel beside it. Desktop shows them side by side (modal widens); narrower the
    AI panel replaces the form. The form column carries the block spacing. */
 .mc-gwiz__form { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: ${px(resolve("dim.3"))}; }
+/* blocks keep their height — the column scrolls instead of the message editor
+   shrinking when attachments / the expiration block are added */
+.mc-gwiz__form > * { flex-shrink: 0; }
 .mc-gwiz__aipane { display: none; }
 .mc-gwiz__aipane .mc-ai { height: 100%; }
 .mc-gwiz__step[hidden] { display: none; }
