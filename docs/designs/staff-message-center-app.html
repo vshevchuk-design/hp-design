@@ -1220,6 +1220,8 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 /* selected rows mirror the left list: full-width rows, no gaps, bleeding to the
    panel edges (they cancel the panel's side/bottom padding), divided by borders */
 .mc-gwiz__chip { box-sizing: border-box; flex-shrink: 0; display: flex; align-items: center; gap: 12px; height: 40px; padding: 0 12px; border-top: 1px solid var(--tok-border-default); background: transparent; }
+.mc-gwiz__chip:last-child { border-bottom: 1px solid var(--tok-border-default); }
+.mc-gwiz__chip:hover { background: var(--tok-fill-neutral-hover); }
 .mc-gwiz__chip b { flex-shrink: 0; width: 64px; color: var(--tok-text-default); font-weight: 600; font-weight: 400; font-size: 12px; line-height: 1.4; }
 .mc-gwiz__chip span { flex: 1; min-width: 0; color: var(--tok-text-default); font-weight: 400; font-size: 12px; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .mc-gwiz__chip button { flex-shrink: 0; border: none; background: none; padding: 0; cursor: pointer; color: var(--tok-icon-secondary); display: inline-flex; }

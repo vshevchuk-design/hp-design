@@ -2452,6 +2452,8 @@ const gwizCss = `.mc-gwiz { border: none; padding: 0; background: ${cv(mdBg)}; f
 /* selected rows mirror the left list: full-width rows, no gaps, bleeding to the
    panel edges (they cancel the panel's side/bottom padding), divided by borders */
 .mc-gwiz__chip { box-sizing: border-box; flex-shrink: 0; display: flex; align-items: center; gap: ${px(resolve("dim.3"))}; height: ${px(resolve("dim.10"))}; padding: 0 ${px(resolve("dim.3"))}; border-top: 1px solid ${cv("border.default")}; background: transparent; }
+.mc-gwiz__chip:last-child { border-bottom: 1px solid ${cv("border.default")}; }
+.mc-gwiz__chip:hover { background: ${cv("fill.neutralHover")}; }
 .mc-gwiz__chip b { flex-shrink: 0; width: 64px; color: ${cv("text.default")}; font-weight: 600; ${typoCss(bodySmType)} }
 .mc-gwiz__chip span { flex: 1; min-width: 0; color: ${cv("text.default")}; ${typoCss(bodySmType)} white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .mc-gwiz__chip button { flex-shrink: 0; border: none; background: none; padding: 0; cursor: pointer; color: ${cv("icon.secondary")}; display: inline-flex; }
