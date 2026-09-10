@@ -2420,7 +2420,12 @@ const gwizCss = `.mc-gwiz { border: none; padding: 0; background: ${cv(mdBg)}; f
 .mc-gwiz__chip span { color: ${cv("text.secondary")}; ${typoCss(bodySmType)} flex: 1; min-width: 0; }
 .mc-gwiz__chip button { flex-shrink: 0; border: none; background: none; padding: 0; cursor: pointer; color: ${cv("icon.secondary")}; display: inline-flex; }
 .mc-gwiz__chip button svg { width: 16px; height: 16px; }
-.mc-gwiz__step[data-panel="2"] { display: flex; }
+.mc-gwiz__step[data-panel="2"] { display: flex; flex-direction: column; }
+/* mobile/tablet: Edit / AI writing assist tabs (like New Message) switch the form
+   and the AI panel; hidden on desktop, where the AI panel is a side split */
+.mc-gwiz__tabs2 { display: none; margin-bottom: ${px(resolve("dim.3"))}; }
+.mc-gwiz__tabs2 .tabs--segmented { width: 100%; }
+.mc-gwiz__tabs2 .tab__icon { flex-shrink: 0; width: ${px(resolve(tabs.size.sm.iconSize.$value))}; height: ${px(resolve(tabs.size.sm.iconSize.$value))}; }
 .mc-gwiz__footer { flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.4"))} ${mdPadding}; border-top: 1px solid ${cv(mdDivider)}; }
 .mc-gwiz__checks[hidden] { display: none; }
 .mc-gwiz__footer-end { display: flex; gap: ${px(resolve("dim.2"))}; margin-left: auto; }
@@ -2435,18 +2440,23 @@ const gwizCss = `.mc-gwiz { border: none; padding: 0; background: ${cv(mdBg)}; f
 /* desktop: the AI panel sits BESIDE the form (like New Message) — widen the modal,
    each column scrolls on its own */
 @media (min-width: 1024px) {
+  .mc-gwiz__step[data-panel="2"] { flex-direction: row; }
   .mc-gwiz.mc-gwiz--ai-open { width: min(1100px, calc(100vw - ${px(resolve("dim.8"))})); }
   .mc-gwiz--ai-open .mc-gwiz__body { overflow: hidden; padding: 0; }
   .mc-gwiz--ai-open .mc-gwiz__step[data-panel="2"] { height: 100%; }
   .mc-gwiz--ai-open .mc-gwiz__form { overflow-y: auto; padding: ${mdPadding}; }
   .mc-gwiz--ai-open .mc-gwiz__aipane { display: flex; flex-direction: column; width: 360px; flex-shrink: 0; border-left: 1px solid ${cv(mdDivider)}; }
 }
-/* mobile + tablet: no room for a side panel — the AI panel replaces the form */
+/* mobile + tablet: no room for a side panel — Edit/AI tabs switch the form and the
+   AI panel (which replaces the form); the toolbar AI Assist button + panel X hide */
 @media (max-width: 1023px) {
+  .mc-gwiz__tabs2 { display: block; }
+  .mc-gwiz .composer__ai-assist { display: none; }
+  .mc-ai__handle--gclose { display: none; }
   .mc-gwiz--ai-open .mc-gwiz__body { overflow: hidden; padding: 0; }
   .mc-gwiz--ai-open .mc-gwiz__step[data-panel="2"] { height: 100%; }
   .mc-gwiz--ai-open .mc-gwiz__form { display: none; }
-  .mc-gwiz--ai-open .mc-gwiz__aipane { display: flex; flex-direction: column; height: 100%; }
+  .mc-gwiz--ai-open .mc-gwiz__aipane { display: flex; flex-direction: column; flex: 1; min-height: 0; }
 }
 @media (max-width: 767px) {
   .mc-gwiz { position: fixed; inset: 0; margin: 0; width: 100vw; max-width: 100vw; height: 100dvh; max-height: 100dvh; border-radius: 0; }
@@ -2509,6 +2519,12 @@ const gwizMarkup = `<dialog class="mc-gwiz" id="mc-gwiz" aria-labelledby="mc-gwi
     </div>
     <div class="listbox mc-gwiz__fpop" id="mc-gwiz-fpop" popover></div>
     <div class="mc-gwiz__step" data-panel="2" hidden>
+      <div class="mc-gwiz__tabs2">
+        <div class="tabs tabs--segmented tabs--sm" role="tablist" aria-label="Compose mode">
+          <button class="tab tab--sm tab--active" role="tab" aria-selected="true" data-gtab="edit" type="button">Edit message</button>
+          <button class="tab tab--sm" role="tab" aria-selected="false" data-gtab="ai" type="button">${iconAiTabSpark}AI writing assist</button>
+        </div>
+      </div>
       <div class="mc-gwiz__form">
       <div class="mc-compose__fld">
         <span class="mc-compose__flabel">Department<span class="mc-req"> *</span></span>
@@ -4177,20 +4193,32 @@ const appJs = `(function () {
     // the left footer button is Cancel on step 1, Back on step 2; checks show on step 2
     gwizCancel.textContent = n === 2 ? "Back" : "Cancel";
     document.getElementById("mc-gwiz-checks").hidden = n !== 2;
-    if (n !== 2) gwizDlg.classList.remove("mc-gwiz--ai-open");
+    if (n !== 2) gwizSetAi(false);
   }
   gwizNext.addEventListener("click", function () { if (gwizCount() > 0) gwizStep(2); });
   gwizMessage.addEventListener("input", function () { gwizMessage.style.height = "auto"; gwizMessage.style.height = Math.min(gwizMessage.scrollHeight, 220) + "px"; });
-  // AI Assist opens the AI panel as an overlay inside the wizard (not the
-  // detached standalone dialog); the panel's X returns to the form
+  // AI Assist inside the wizard: desktop = side panel (AI Assist button toggles
+  // it, X collapses); mobile/tablet = Edit / AI writing assist tabs switch the
+  // form and the AI panel. gwizSetAi keeps the ai-open state + tabs in sync.
   bindAiPanel(gwizDlg.querySelector('.mc-ai[data-ai="gwiz"]'), function () { return gwizMessage; });
-  document.getElementById("mc-gwiz-ai").addEventListener("click", function () {
-    gwizDlg.classList.add("mc-gwiz--ai-open");
-    var input = gwizDlg.querySelector('.mc-ai[data-ai="gwiz"] [data-ai-input]');
-    if (input) requestAnimationFrame(function () { input.focus(); });
+  function gwizSetAi(open) {
+    gwizDlg.classList.toggle("mc-gwiz--ai-open", open);
+    gwizDlg.querySelectorAll("[data-gtab]").forEach(function (t) {
+      var on = (t.dataset.gtab === "ai") === open;
+      t.classList.toggle("tab--active", on);
+      t.setAttribute("aria-selected", on ? "true" : "false");
+    });
+    if (open) {
+      var input = gwizDlg.querySelector('.mc-ai[data-ai="gwiz"] [data-ai-input]');
+      if (input) requestAnimationFrame(function () { input.focus(); });
+    }
+  }
+  document.getElementById("mc-gwiz-ai").addEventListener("click", function () { gwizSetAi(true); });
+  gwizDlg.querySelectorAll("[data-gtab]").forEach(function (tab) {
+    tab.addEventListener("click", function () { gwizSetAi(tab.dataset.gtab === "ai"); });
   });
   var gwizAiClose = gwizDlg.querySelector("[data-gwiz-collapse]");
-  if (gwizAiClose) gwizAiClose.addEventListener("click", function () { gwizDlg.classList.remove("mc-gwiz--ai-open"); });
+  if (gwizAiClose) gwizAiClose.addEventListener("click", function () { gwizSetAi(false); });
   // wizard step 2 shares the compose editor: Merge Tags / Hyperlinks insert +
   // toolbar overflow, subject counter, and the same sample-attachment chips
   bindEditorTools(gwizDlg, gwizMessage);
@@ -4260,7 +4288,7 @@ const appJs = `(function () {
       o.classList.toggle("listbox__option--selected", on);
       o.setAttribute("aria-selected", on ? "true" : "false");
     });
-    gwizDlg.classList.remove("mc-gwiz--ai-open");
+    gwizSetAi(false);
     document.getElementById("mc-gwiz-ids").value = "";
     document.getElementById("mc-gwiz-paste-hint").textContent = "Recognized IDs are added to your selection.";
     // reset to the Search tab
