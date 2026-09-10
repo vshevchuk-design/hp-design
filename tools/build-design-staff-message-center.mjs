@@ -1410,7 +1410,7 @@ const composeAiCss = `.mc-compose__tabs { display: none; flex-shrink: 0; }
    the chosen mode's control (a DatePicker, or an Amount + unit Select) */
 .mc-compose__exp { display: flex; flex-direction: column; gap: ${px(resolve("dim.2_5"))}; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))}; border-radius: ${px(resolve("radius.default"))}; background: ${cv("surface.dim")}; }
 .mc-compose__exp[hidden] { display: none; }
-.mc-compose__exp-label { color: ${cv("text.default")}; font-weight: 600; ${typoCss(bodyBaseType)} }
+.mc-compose__exp-label { color: ${cv("text.default")}; ${typoCss(bodyBaseType)} font-weight: 700; }
 .mc-compose__exp-modes { display: flex; gap: ${px(resolve("dim.5"))}; }
 .mc-compose__exp-ctl { display: flex; gap: ${px(resolve("dim.2"))}; }
 .mc-compose__exp-ctl[hidden] { display: none; }
@@ -2417,7 +2417,7 @@ const gwizCss = `.mc-gwiz { border: none; padding: 0; background: ${cv(mdBg)}; f
 .mc-gwiz__flabel { color: ${cv("text.muted")}; width: 56px; flex-shrink: 0; ${typoCss(bodySmType)} }
 .mc-gwiz__fval { color: ${cv("text.default")}; ${typoCss(bodySmType)} flex: 1; }
 .mc-gwiz__edit { margin-left: auto; border: none; background: none; padding: 0; cursor: pointer; color: ${cv("text.primary")}; font-weight: 600; ${typoCss(bodySmType)} font-family: inherit; }
-.mc-gwiz__body .mc-field, .mc-gwiz__body .mc-compose__editor { margin-top: ${px(resolve("dim.3"))}; }
+.mc-gwiz__body .mc-field, .mc-gwiz__body .mc-compose__editor, .mc-gwiz__body .mc-compose__exp, .mc-gwiz__body .mc-compose__attach { margin-top: ${px(resolve("dim.3"))}; }
 .mc-gwiz__footer { flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.4"))} ${mdPadding}; border-top: 1px solid ${cv(mdDivider)}; }
 .mc-gwiz__checks[hidden] { display: none; }
 .mc-gwiz__footer-end { display: flex; gap: ${px(resolve("dim.2"))}; margin-left: auto; }
