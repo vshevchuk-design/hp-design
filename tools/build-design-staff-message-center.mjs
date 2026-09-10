@@ -591,6 +591,7 @@ const labelSmType = resolveToken(labelSmNode);
 const labelSmExt = labelSmNode.$extensions?.["hp.design/text"] || {};
 const titleXlType = resolveToken(get("{text-style.title-xl}"));
 const headingLgType = resolveToken(get("{text-style.heading-lg}"));
+const headingMdType = resolveToken(get("{text-style.heading-md}"));
 const headingSmType = resolveToken(get("{text-style.heading-sm}"));
 const bodySmType = resolveToken(get("{text-style.body-sm}"));
 const bodyBaseType = resolveToken(get("{text-style.body-base}"));
@@ -1278,13 +1279,29 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .mc-thread__bar { flex-shrink: 0; display: flex; flex-wrap: wrap; align-items: center; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))}; background: ${cv("surface.default")}; border-bottom: 1px solid ${cv("border.default")}; }
 .mc-thread__back { order: 1; }
 .mc-thread__actions { order: 2; margin-left: auto; display: flex; gap: ${px(resolve("dim.2"))}; }
-.mc-thread__subject { order: 3; width: 100%; min-width: 0; margin: 0; color: ${cv("text.default")}; ${typoCss(headingLgType)} }
-/* department · institution as one plain 12px line (pills lasted one round —
-   too much visual weight for what is quiet context), followed by real Badges
-   (base size) for the thread's Expires and Archived states. The row wraps
-   when tight — never a horizontal scroll that would clip a badge mid-word */
-.mc-thread__tags { order: 4; width: 100%; display: flex; align-items: center; flex-wrap: wrap; gap: ${px(resolve("dim.1_5"))} ${px(resolve("dim.2"))}; }
+.mc-thread__subject { order: 3; width: 100%; min-width: 0; margin: 0; color: ${cv("text.default")}; ${typoCss(headingMdType)} }
+/* meta row: the student (avatar + name + ID), the department you're acting from,
+   and every Involved advisor — plus the state Badges. Segments are divided by a
+   hairline on wide screens; the row wraps (never scrolls) when tight, and on a
+   phone each segment drops to its own line with the dividers hidden. */
+.mc-thread__tags { order: 4; width: 100%; margin-top: ${px(resolve("dim.2"))}; display: flex; align-items: center; flex-wrap: wrap; gap: ${px(resolve("dim.1_5"))} ${px(resolve("dim.2_5"))}; }
 .mc-thread__meta-line { color: ${cv("text.secondary")}; ${typoCss(bodySmType)} }
+.mc-thread__student { display: inline-flex; align-items: center; gap: ${px(resolve("dim.1_5"))}; min-width: 0; }
+.mc-thread__student .avatar { flex-shrink: 0; }
+.mc-thread__student-name { color: ${cv("text.default")}; font-weight: 600; ${typoCss(bodySmType)} white-space: nowrap; }
+.mc-thread__student-id { color: ${cv("text.muted")}; ${typoCss(bodySmType)} white-space: nowrap; }
+.mc-thread__student-id::before { content: "· "; }
+.mc-thread__dept { display: inline-flex; align-items: center; gap: ${px(resolve("dim.1"))}; min-width: 0; color: ${cv("text.secondary")}; ${typoCss(bodySmType)} }
+.mc-thread__dept-icon { flex-shrink: 0; width: 16px; height: 16px; color: ${cv("icon.secondary")}; }
+.mc-thread__dept span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mc-thread__involved { min-width: 0; color: ${cv("text.secondary")}; ${typoCss(bodySmType)} }
+.mc-thread__involved-label { color: ${cv("text.muted")}; }
+.mc-thread__metasep { flex-shrink: 0; width: 1px; height: ${px(resolve("dim.4"))}; background: ${cv("border.default")}; }
+/* flag toggle by Resolve — marks the thread important (syncs the list row's flag) */
+.mc-thread__flag svg { width: 18px; height: 18px; display: block; }
+.mc-thread__flag .thread-item-inbox__flag-filled { display: none; color: ${cv(refPath(inbox.flag.flaggedColor.$value))}; }
+.mc-thread__flag[aria-pressed="true"] .thread-item-inbox__flag-outlined { display: none; }
+.mc-thread__flag[aria-pressed="true"] .thread-item-inbox__flag-filled { display: block; }
 /* Gmail-style: the message stack sizes to its content (not flex:1) so a short
    thread keeps the composer right under the last message with the empty space
    BELOW it — a stretched scroll area left a big void between them. It still
@@ -1327,6 +1344,10 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 @media (max-width: 767px) {
   .mc-table { min-width: 620px; } /* horizontal-scroll fallback until the mobile row reflow lands */
   .mc-thread__scroll > *, .mc-thread__composer > * { max-width: none; }
+  /* the meta row is a lot of text on a phone — drop each segment to its own line
+     and hide the dividers so it reads as a clean stacked list */
+  .mc-thread__metasep { display: none; }
+  .mc-thread__student, .mc-thread__dept, .mc-thread__involved { width: 100%; }
 }
 @media (min-width: 768px) {
   /* tablet + desktop — filters go inline like the desktop toolbar: chips +
@@ -2096,18 +2117,22 @@ function richComposerMarkup(t) {
 
 function threadPane(t) {
   const resolveBtn = t.archived ? "" : `<button class="btn btn--secondary btn--sm mc-archive" type="button" data-thread="${t.id}">Resolve</button>`;
-  const handled = `<span class="mc-thread__meta-line">Responsible · ${(t.responsibles && t.responsibles.length ? t.responsibles.join(", ") : (t.handledBy || "–"))}</span>`;
+  const involved = t.responsibles && t.responsibles.length ? t.responsibles.join(", ") : "–";
   return `<article class="mc-thread" data-thread="${t.id}" hidden>
         <header class="mc-thread__bar">
           <button class="btn btn--ghost btn--sm mc-thread__back" type="button">${iconBack}Back</button>
           <div class="mc-thread__actions">
+            <button class="btn btn--secondary btn--sm btn--icon-only mc-thread__flag" type="button" aria-pressed="${t.flagged ? "true" : "false"}" aria-label="Flag as important" data-thread="${t.id}">${iconFlagOutlined}${iconFlagFilled}</button>
             ${resolveBtn}
             <button class="btn btn--secondary btn--sm btn--icon-only mc-print" type="button" aria-label="Print thread">${iconPrint}</button>
           </div>
           <h2 class="mc-thread__subject">${t.subject}</h2>
           <div class="mc-thread__tags">
-            <span class="mc-thread__meta-line">${t.sender} · ${t.department}</span>
-            ${handled}
+            <span class="mc-thread__student">${avatarMarkup(t.sender, "sm")}<span class="mc-thread__student-name">${t.sender}</span><span class="mc-thread__student-id">${t.studentId || "–"}</span></span>
+            <span class="mc-thread__metasep" aria-hidden="true"></span>
+            <span class="mc-thread__dept">${iconOf("account_balance", "mc-thread__dept-icon")}<span>${t.department}</span></span>
+            <span class="mc-thread__metasep" aria-hidden="true"></span>
+            <span class="mc-thread__involved"><span class="mc-thread__involved-label">Involved ·</span> ${involved}</span>
             ${t.awaiting ? `<span class="badge badge--sm badge--role-primary">Awaiting reply</span>` : ""}
             ${t.expires ? `<span class="badge badge--sm badge--role-${t.expires.role}">${t.expires.label}</span>` : ""}
             ${t.archived ? `<span class="badge badge--sm badge--role-neutral">Resolved</span>` : ""}
@@ -3030,6 +3055,10 @@ const appJs = `(function () {
         requestAnimationFrame(function () { requestAnimationFrame(shown._tbReflow); });
         setTimeout(shown._tbReflow, 60);
       }
+      // mirror the list row's flag onto the thread header
+      var hf = document.querySelector('.mc-thread[data-thread="' + id + '"] .mc-thread__flag');
+      var rf = document.querySelector('.thread-item-inbox[data-thread="' + id + '"] .thread-item-inbox__flag-btn');
+      if (hf && rf) hf.setAttribute("aria-pressed", rf.getAttribute("aria-pressed"));
     }
   }
   function closeThread() {
@@ -3062,7 +3091,11 @@ const appJs = `(function () {
     if (flag) {
       flag.addEventListener("click", function (e) {
         e.stopPropagation();
-        flag.setAttribute("aria-pressed", flag.getAttribute("aria-pressed") === "true" ? "false" : "true");
+        var on = flag.getAttribute("aria-pressed") !== "true";
+        flag.setAttribute("aria-pressed", on ? "true" : "false");
+        // keep the open thread header's flag in sync
+        var hf = document.querySelector('.mc-thread[data-thread="' + row.dataset.thread + '"] .mc-thread__flag');
+        if (hf) hf.setAttribute("aria-pressed", on ? "true" : "false");
         if (filters.flagged) applyFilter();
       });
       flag.addEventListener("keydown", function (e) { e.stopPropagation(); });
@@ -3527,6 +3560,20 @@ const appJs = `(function () {
     });
   }
   document.querySelectorAll(".mc-composer").forEach(bindComposer);
+
+  // in-thread flag toggle (by Resolve) — marks the thread important and keeps the
+  // matching list row's flag in sync both ways
+  function setThreadFlag(id, on) {
+    var hf = document.querySelector('.mc-thread[data-thread="' + id + '"] .mc-thread__flag');
+    var rf = document.querySelector('.thread-item-inbox[data-thread="' + id + '"] .thread-item-inbox__flag-btn');
+    if (hf) hf.setAttribute("aria-pressed", on ? "true" : "false");
+    if (rf) rf.setAttribute("aria-pressed", on ? "true" : "false");
+  }
+  document.querySelectorAll(".mc-thread__flag").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      setThreadFlag(btn.dataset.thread, btn.getAttribute("aria-pressed") !== "true");
+    });
+  });
 
   // Resolve gating — the top-bar "Resolve" (which resolves WITHOUT replying) is
   // only available once the thread has at least one staff reply; the note under

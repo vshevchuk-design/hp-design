@@ -881,13 +881,29 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .mc-thread__bar { flex-shrink: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 12px 16px; background: var(--tok-surface-default); border-bottom: 1px solid var(--tok-border-default); }
 .mc-thread__back { order: 1; }
 .mc-thread__actions { order: 2; margin-left: auto; display: flex; gap: 8px; }
-.mc-thread__subject { order: 3; width: 100%; min-width: 0; margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 18px; line-height: 1.4; }
-/* department · institution as one plain 12px line (pills lasted one round —
-   too much visual weight for what is quiet context), followed by real Badges
-   (base size) for the thread's Expires and Archived states. The row wraps
-   when tight — never a horizontal scroll that would clip a badge mid-word */
-.mc-thread__tags { order: 4; width: 100%; display: flex; align-items: center; flex-wrap: wrap; gap: 6px 8px; }
+.mc-thread__subject { order: 3; width: 100%; min-width: 0; margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 16px; line-height: 1.4; }
+/* meta row: the student (avatar + name + ID), the department you're acting from,
+   and every Involved advisor — plus the state Badges. Segments are divided by a
+   hairline on wide screens; the row wraps (never scrolls) when tight, and on a
+   phone each segment drops to its own line with the dividers hidden. */
+.mc-thread__tags { order: 4; width: 100%; margin-top: 8px; display: flex; align-items: center; flex-wrap: wrap; gap: 6px 10px; }
 .mc-thread__meta-line { color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.mc-thread__student { display: inline-flex; align-items: center; gap: 6px; min-width: 0; }
+.mc-thread__student .avatar { flex-shrink: 0; }
+.mc-thread__student-name { color: var(--tok-text-default); font-weight: 600; font-weight: 400; font-size: 12px; line-height: 1.4; white-space: nowrap; }
+.mc-thread__student-id { color: var(--tok-text-muted); font-weight: 400; font-size: 12px; line-height: 1.4; white-space: nowrap; }
+.mc-thread__student-id::before { content: "· "; }
+.mc-thread__dept { display: inline-flex; align-items: center; gap: 4px; min-width: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.mc-thread__dept-icon { flex-shrink: 0; width: 16px; height: 16px; color: var(--tok-icon-secondary); }
+.mc-thread__dept span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mc-thread__involved { min-width: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.mc-thread__involved-label { color: var(--tok-text-muted); }
+.mc-thread__metasep { flex-shrink: 0; width: 1px; height: 16px; background: var(--tok-border-default); }
+/* flag toggle by Resolve — marks the thread important (syncs the list row's flag) */
+.mc-thread__flag svg { width: 18px; height: 18px; display: block; }
+.mc-thread__flag .thread-item-inbox__flag-filled { display: none; color: var(--tok-icon-warning); }
+.mc-thread__flag[aria-pressed="true"] .thread-item-inbox__flag-outlined { display: none; }
+.mc-thread__flag[aria-pressed="true"] .thread-item-inbox__flag-filled { display: block; }
 /* Gmail-style: the message stack sizes to its content (not flex:1) so a short
    thread keeps the composer right under the last message with the empty space
    BELOW it — a stretched scroll area left a big void between them. It still
@@ -930,6 +946,10 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 @media (max-width: 767px) {
   .mc-table { min-width: 620px; } /* horizontal-scroll fallback until the mobile row reflow lands */
   .mc-thread__scroll > *, .mc-thread__composer > * { max-width: none; }
+  /* the meta row is a lot of text on a phone — drop each segment to its own line
+     and hide the dividers so it reads as a clean stacked list */
+  .mc-thread__metasep { display: none; }
+  .mc-thread__student, .mc-thread__dept, .mc-thread__involved { width: 100%; }
 }
 @media (min-width: 768px) {
   /* tablet + desktop — filters go inline like the desktop toolbar: chips +
@@ -1823,13 +1843,17 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         <header class="mc-thread__bar">
           <button class="btn btn--ghost btn--sm mc-thread__back" type="button"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>Back</button>
           <div class="mc-thread__actions">
+            <button class="btn btn--secondary btn--sm btn--icon-only mc-thread__flag" type="button" aria-pressed="false" aria-label="Flag as important" data-thread="cait-minor"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
             <button class="btn btn--secondary btn--sm mc-archive" type="button" data-thread="cait-minor">Resolve</button>
             <button class="btn btn--secondary btn--sm btn--icon-only mc-print" type="button" aria-label="Print thread"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg></button>
           </div>
           <h2 class="mc-thread__subject">Minor Requirements Review</h2>
           <div class="mc-thread__tags">
-            <span class="mc-thread__meta-line">Cait Genatossio · Academic Advising</span>
-            <span class="mc-thread__meta-line">Responsible · –</span>
+            <span class="mc-thread__student"><span class="avatar avatar--orange avatar--sm" role="img" aria-label="Cait Genatossio"><span class="avatar__initials">CG</span></span><span class="mc-thread__student-name">Cait Genatossio</span><span class="mc-thread__student-id">CX0001</span></span>
+            <span class="mc-thread__metasep" aria-hidden="true"></span>
+            <span class="mc-thread__dept"><svg class="mc-thread__dept-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"><g><rect fill="none" height="24" width="24"/></g><g><g><rect height="7" width="3" x="4" y="10"/><rect height="7" width="3" x="10.5" y="10"/><rect height="3" width="20" x="2" y="19"/><rect height="7" width="3" x="17" y="10"/><polygon points="12,1 2,6 2,8 22,8 22,6"/></g></g></svg><span>Academic Advising</span></span>
+            <span class="mc-thread__metasep" aria-hidden="true"></span>
+            <span class="mc-thread__involved"><span class="mc-thread__involved-label">Involved ·</span> –</span>
             <span class="badge badge--sm badge--role-primary">Awaiting reply</span>
             <span class="badge badge--sm badge--role-neutral">Expires 12/12/2026</span>
             
@@ -1922,13 +1946,17 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         <header class="mc-thread__bar">
           <button class="btn btn--ghost btn--sm mc-thread__back" type="button"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>Back</button>
           <div class="mc-thread__actions">
+            <button class="btn btn--secondary btn--sm btn--icon-only mc-thread__flag" type="button" aria-pressed="false" aria-label="Flag as important" data-thread="maya-hold"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
             <button class="btn btn--secondary btn--sm mc-archive" type="button" data-thread="maya-hold">Resolve</button>
             <button class="btn btn--secondary btn--sm btn--icon-only mc-print" type="button" aria-label="Print thread"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg></button>
           </div>
           <h2 class="mc-thread__subject">Registration Hold Question</h2>
           <div class="mc-thread__tags">
-            <span class="mc-thread__meta-line">Maya Patel · Academic Advising</span>
-            <span class="mc-thread__meta-line">Responsible · –</span>
+            <span class="mc-thread__student"><span class="avatar avatar--violet avatar--sm" role="img" aria-label="Maya Patel"><span class="avatar__initials">MP</span></span><span class="mc-thread__student-name">Maya Patel</span><span class="mc-thread__student-id">AA0301</span></span>
+            <span class="mc-thread__metasep" aria-hidden="true"></span>
+            <span class="mc-thread__dept"><svg class="mc-thread__dept-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"><g><rect fill="none" height="24" width="24"/></g><g><g><rect height="7" width="3" x="4" y="10"/><rect height="7" width="3" x="10.5" y="10"/><rect height="3" width="20" x="2" y="19"/><rect height="7" width="3" x="17" y="10"/><polygon points="12,1 2,6 2,8 22,8 22,6"/></g></g></svg><span>Academic Advising</span></span>
+            <span class="mc-thread__metasep" aria-hidden="true"></span>
+            <span class="mc-thread__involved"><span class="mc-thread__involved-label">Involved ·</span> –</span>
             <span class="badge badge--sm badge--role-primary">Awaiting reply</span>
             
             
@@ -2021,13 +2049,17 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         <header class="mc-thread__bar">
           <button class="btn btn--ghost btn--sm mc-thread__back" type="button"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>Back</button>
           <div class="mc-thread__actions">
+            <button class="btn btn--secondary btn--sm btn--icon-only mc-thread__flag" type="button" aria-pressed="false" aria-label="Flag as important" data-thread="diego-transcript"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
             <button class="btn btn--secondary btn--sm mc-archive" type="button" data-thread="diego-transcript">Resolve</button>
             <button class="btn btn--secondary btn--sm btn--icon-only mc-print" type="button" aria-label="Print thread"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg></button>
           </div>
           <h2 class="mc-thread__subject">Transcript for Internship Application</h2>
           <div class="mc-thread__tags">
-            <span class="mc-thread__meta-line">Diego Fernandez · Academic Advising</span>
-            <span class="mc-thread__meta-line">Responsible · Ava Robinson, Alexander Robinson, Sarah Nguyen</span>
+            <span class="mc-thread__student"><span class="avatar avatar--orange avatar--sm" role="img" aria-label="Diego Fernandez"><span class="avatar__initials">DF</span></span><span class="mc-thread__student-name">Diego Fernandez</span><span class="mc-thread__student-id">AA0302</span></span>
+            <span class="mc-thread__metasep" aria-hidden="true"></span>
+            <span class="mc-thread__dept"><svg class="mc-thread__dept-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"><g><rect fill="none" height="24" width="24"/></g><g><g><rect height="7" width="3" x="4" y="10"/><rect height="7" width="3" x="10.5" y="10"/><rect height="3" width="20" x="2" y="19"/><rect height="7" width="3" x="17" y="10"/><polygon points="12,1 2,6 2,8 22,8 22,6"/></g></g></svg><span>Academic Advising</span></span>
+            <span class="mc-thread__metasep" aria-hidden="true"></span>
+            <span class="mc-thread__involved"><span class="mc-thread__involved-label">Involved ·</span> Ava Robinson, Alexander Robinson, Sarah Nguyen</span>
             
             <span class="badge badge--sm badge--role-warning">Expires 09/15/2026</span>
             
@@ -2186,13 +2218,17 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         <header class="mc-thread__bar">
           <button class="btn btn--ghost btn--sm mc-thread__back" type="button"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>Back</button>
           <div class="mc-thread__actions">
+            <button class="btn btn--secondary btn--sm btn--icon-only mc-thread__flag" type="button" aria-pressed="false" aria-label="Flag as important" data-thread="george-reschedule"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
             <button class="btn btn--secondary btn--sm mc-archive" type="button" data-thread="george-reschedule">Resolve</button>
             <button class="btn btn--secondary btn--sm btn--icon-only mc-print" type="button" aria-label="Print thread"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg></button>
           </div>
           <h2 class="mc-thread__subject">Reschedule Advising Appointment</h2>
           <div class="mc-thread__tags">
-            <span class="mc-thread__meta-line">George Amalor · Academic Advising</span>
-            <span class="mc-thread__meta-line">Responsible · Alexander Robinson</span>
+            <span class="mc-thread__student"><span class="avatar avatar--orange avatar--sm" role="img" aria-label="George Amalor"><span class="avatar__initials">GA</span></span><span class="mc-thread__student-name">George Amalor</span><span class="mc-thread__student-id">AA0303</span></span>
+            <span class="mc-thread__metasep" aria-hidden="true"></span>
+            <span class="mc-thread__dept"><svg class="mc-thread__dept-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"><g><rect fill="none" height="24" width="24"/></g><g><g><rect height="7" width="3" x="4" y="10"/><rect height="7" width="3" x="10.5" y="10"/><rect height="3" width="20" x="2" y="19"/><rect height="7" width="3" x="17" y="10"/><polygon points="12,1 2,6 2,8 22,8 22,6"/></g></g></svg><span>Academic Advising</span></span>
+            <span class="mc-thread__metasep" aria-hidden="true"></span>
+            <span class="mc-thread__involved"><span class="mc-thread__involved-label">Involved ·</span> Alexander Robinson</span>
             
             <span class="badge badge--sm badge--role-danger">Expired 08/28/2026</span>
             
@@ -2290,13 +2326,17 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         <header class="mc-thread__bar">
           <button class="btn btn--ghost btn--sm mc-thread__back" type="button"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>Back</button>
           <div class="mc-thread__actions">
+            <button class="btn btn--secondary btn--sm btn--icon-only mc-thread__flag" type="button" aria-pressed="false" aria-label="Flag as important" data-thread="priya-override"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
             <button class="btn btn--secondary btn--sm mc-archive" type="button" data-thread="priya-override">Resolve</button>
             <button class="btn btn--secondary btn--sm btn--icon-only mc-print" type="button" aria-label="Print thread"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg></button>
           </div>
           <h2 class="mc-thread__subject">Course Override Request</h2>
           <div class="mc-thread__tags">
-            <span class="mc-thread__meta-line">Priya Nair · Academic Advising</span>
-            <span class="mc-thread__meta-line">Responsible · Ava Robinson</span>
+            <span class="mc-thread__student"><span class="avatar avatar--red avatar--sm" role="img" aria-label="Priya Nair"><span class="avatar__initials">PN</span></span><span class="mc-thread__student-name">Priya Nair</span><span class="mc-thread__student-id">AA0533</span></span>
+            <span class="mc-thread__metasep" aria-hidden="true"></span>
+            <span class="mc-thread__dept"><svg class="mc-thread__dept-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"><g><rect fill="none" height="24" width="24"/></g><g><g><rect height="7" width="3" x="4" y="10"/><rect height="7" width="3" x="10.5" y="10"/><rect height="3" width="20" x="2" y="19"/><rect height="7" width="3" x="17" y="10"/><polygon points="12,1 2,6 2,8 22,8 22,6"/></g></g></svg><span>Academic Advising</span></span>
+            <span class="mc-thread__metasep" aria-hidden="true"></span>
+            <span class="mc-thread__involved"><span class="mc-thread__involved-label">Involved ·</span> Ava Robinson</span>
             <span class="badge badge--sm badge--role-primary">Awaiting reply</span>
             
             
@@ -2405,13 +2445,17 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         <header class="mc-thread__bar">
           <button class="btn btn--ghost btn--sm mc-thread__back" type="button"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>Back</button>
           <div class="mc-thread__actions">
+            <button class="btn btn--secondary btn--sm btn--icon-only mc-thread__flag" type="button" aria-pressed="false" aria-label="Flag as important" data-thread="marcus-audit"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
             <button class="btn btn--secondary btn--sm mc-archive" type="button" data-thread="marcus-audit">Resolve</button>
             <button class="btn btn--secondary btn--sm btn--icon-only mc-print" type="button" aria-label="Print thread"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg></button>
           </div>
           <h2 class="mc-thread__subject">Graduation Audit Review</h2>
           <div class="mc-thread__tags">
-            <span class="mc-thread__meta-line">Marcus Bell · Academic Advising</span>
-            <span class="mc-thread__meta-line">Responsible · Alexander Robinson, Sarah Nguyen</span>
+            <span class="mc-thread__student"><span class="avatar avatar--magenta avatar--sm" role="img" aria-label="Marcus Bell"><span class="avatar__initials">MB</span></span><span class="mc-thread__student-name">Marcus Bell</span><span class="mc-thread__student-id">AA0088</span></span>
+            <span class="mc-thread__metasep" aria-hidden="true"></span>
+            <span class="mc-thread__dept"><svg class="mc-thread__dept-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"><g><rect fill="none" height="24" width="24"/></g><g><g><rect height="7" width="3" x="4" y="10"/><rect height="7" width="3" x="10.5" y="10"/><rect height="3" width="20" x="2" y="19"/><rect height="7" width="3" x="17" y="10"/><polygon points="12,1 2,6 2,8 22,8 22,6"/></g></g></svg><span>Academic Advising</span></span>
+            <span class="mc-thread__metasep" aria-hidden="true"></span>
+            <span class="mc-thread__involved"><span class="mc-thread__involved-label">Involved ·</span> Alexander Robinson, Sarah Nguyen</span>
             
             <span class="badge badge--sm badge--role-warning">Expires 09/20/2026</span>
             
@@ -2529,13 +2573,17 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         <header class="mc-thread__bar">
           <button class="btn btn--ghost btn--sm mc-thread__back" type="button"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>Back</button>
           <div class="mc-thread__actions">
+            <button class="btn btn--secondary btn--sm btn--icon-only mc-thread__flag" type="button" aria-pressed="false" aria-label="Flag as important" data-thread="ella-thesis"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
             <button class="btn btn--secondary btn--sm mc-archive" type="button" data-thread="ella-thesis">Resolve</button>
             <button class="btn btn--secondary btn--sm btn--icon-only mc-print" type="button" aria-label="Print thread"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg></button>
           </div>
           <h2 class="mc-thread__subject">Thesis Advisor Assignment</h2>
           <div class="mc-thread__tags">
-            <span class="mc-thread__meta-line">Ella Fontaine · English Dept</span>
-            <span class="mc-thread__meta-line">Responsible · –</span>
+            <span class="mc-thread__student"><span class="avatar avatar--magenta avatar--sm" role="img" aria-label="Ella Fontaine"><span class="avatar__initials">EF</span></span><span class="mc-thread__student-name">Ella Fontaine</span><span class="mc-thread__student-id">AA0742</span></span>
+            <span class="mc-thread__metasep" aria-hidden="true"></span>
+            <span class="mc-thread__dept"><svg class="mc-thread__dept-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"><g><rect fill="none" height="24" width="24"/></g><g><g><rect height="7" width="3" x="4" y="10"/><rect height="7" width="3" x="10.5" y="10"/><rect height="3" width="20" x="2" y="19"/><rect height="7" width="3" x="17" y="10"/><polygon points="12,1 2,6 2,8 22,8 22,6"/></g></g></svg><span>English Dept</span></span>
+            <span class="mc-thread__metasep" aria-hidden="true"></span>
+            <span class="mc-thread__involved"><span class="mc-thread__involved-label">Involved ·</span> –</span>
             <span class="badge badge--sm badge--role-primary">Awaiting reply</span>
             
             
@@ -2628,13 +2676,17 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         <header class="mc-thread__bar">
           <button class="btn btn--ghost btn--sm mc-thread__back" type="button"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>Back</button>
           <div class="mc-thread__actions">
+            <button class="btn btn--secondary btn--sm btn--icon-only mc-thread__flag" type="button" aria-pressed="false" aria-label="Flag as important" data-thread="noah-loa"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
             <button class="btn btn--secondary btn--sm mc-archive" type="button" data-thread="noah-loa">Resolve</button>
             <button class="btn btn--secondary btn--sm btn--icon-only mc-print" type="button" aria-label="Print thread"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg></button>
           </div>
           <h2 class="mc-thread__subject">Leave of Absence Paperwork</h2>
           <div class="mc-thread__tags">
-            <span class="mc-thread__meta-line">Noah Kim · Academic Advising</span>
-            <span class="mc-thread__meta-line">Responsible · Alexander Robinson</span>
+            <span class="mc-thread__student"><span class="avatar avatar--red avatar--sm" role="img" aria-label="Noah Kim"><span class="avatar__initials">NK</span></span><span class="mc-thread__student-name">Noah Kim</span><span class="mc-thread__student-id">AA0311</span></span>
+            <span class="mc-thread__metasep" aria-hidden="true"></span>
+            <span class="mc-thread__dept"><svg class="mc-thread__dept-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"><g><rect fill="none" height="24" width="24"/></g><g><g><rect height="7" width="3" x="4" y="10"/><rect height="7" width="3" x="10.5" y="10"/><rect height="3" width="20" x="2" y="19"/><rect height="7" width="3" x="17" y="10"/><polygon points="12,1 2,6 2,8 22,8 22,6"/></g></g></svg><span>Academic Advising</span></span>
+            <span class="mc-thread__metasep" aria-hidden="true"></span>
+            <span class="mc-thread__involved"><span class="mc-thread__involved-label">Involved ·</span> Alexander Robinson</span>
             
             <span class="badge badge--sm badge--role-danger">Expired 08/30/2026</span>
             
@@ -2732,13 +2784,17 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         <header class="mc-thread__bar">
           <button class="btn btn--ghost btn--sm mc-thread__back" type="button"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>Back</button>
           <div class="mc-thread__actions">
+            <button class="btn btn--secondary btn--sm btn--icon-only mc-thread__flag" type="button" aria-pressed="false" aria-label="Flag as important" data-thread="lena-waiver"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
             
             <button class="btn btn--secondary btn--sm btn--icon-only mc-print" type="button" aria-label="Print thread"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg></button>
           </div>
           <h2 class="mc-thread__subject">Prerequisite Waiver</h2>
           <div class="mc-thread__tags">
-            <span class="mc-thread__meta-line">Lena Hoffman · English Dept</span>
-            <span class="mc-thread__meta-line">Responsible · Alexander Robinson, Ava Robinson</span>
+            <span class="mc-thread__student"><span class="avatar avatar--red avatar--sm" role="img" aria-label="Lena Hoffman"><span class="avatar__initials">LH</span></span><span class="mc-thread__student-name">Lena Hoffman</span><span class="mc-thread__student-id">AA0304</span></span>
+            <span class="mc-thread__metasep" aria-hidden="true"></span>
+            <span class="mc-thread__dept"><svg class="mc-thread__dept-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"><g><rect fill="none" height="24" width="24"/></g><g><g><rect height="7" width="3" x="4" y="10"/><rect height="7" width="3" x="10.5" y="10"/><rect height="3" width="20" x="2" y="19"/><rect height="7" width="3" x="17" y="10"/><polygon points="12,1 2,6 2,8 22,8 22,6"/></g></g></svg><span>English Dept</span></span>
+            <span class="mc-thread__metasep" aria-hidden="true"></span>
+            <span class="mc-thread__involved"><span class="mc-thread__involved-label">Involved ·</span> Alexander Robinson, Ava Robinson</span>
             
             
             <span class="badge badge--sm badge--role-neutral">Resolved</span>
@@ -2841,13 +2897,17 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         <header class="mc-thread__bar">
           <button class="btn btn--ghost btn--sm mc-thread__back" type="button"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>Back</button>
           <div class="mc-thread__actions">
+            <button class="btn btn--secondary btn--sm btn--icon-only mc-thread__flag" type="button" aria-pressed="false" aria-label="Flag as important" data-thread="tomas-plan"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
             
             <button class="btn btn--secondary btn--sm btn--icon-only mc-print" type="button" aria-label="Print thread"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg></button>
           </div>
           <h2 class="mc-thread__subject">Study Plan Check-in</h2>
           <div class="mc-thread__tags">
-            <span class="mc-thread__meta-line">Tomas Novak · Academic Advising</span>
-            <span class="mc-thread__meta-line">Responsible · Ava Robinson</span>
+            <span class="mc-thread__student"><span class="avatar avatar--amber avatar--sm" role="img" aria-label="Tomas Novak"><span class="avatar__initials">TN</span></span><span class="mc-thread__student-name">Tomas Novak</span><span class="mc-thread__student-id">AA0305</span></span>
+            <span class="mc-thread__metasep" aria-hidden="true"></span>
+            <span class="mc-thread__dept"><svg class="mc-thread__dept-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"><g><rect fill="none" height="24" width="24"/></g><g><g><rect height="7" width="3" x="4" y="10"/><rect height="7" width="3" x="10.5" y="10"/><rect height="3" width="20" x="2" y="19"/><rect height="7" width="3" x="17" y="10"/><polygon points="12,1 2,6 2,8 22,8 22,6"/></g></g></svg><span>Academic Advising</span></span>
+            <span class="mc-thread__metasep" aria-hidden="true"></span>
+            <span class="mc-thread__involved"><span class="mc-thread__involved-label">Involved ·</span> Ava Robinson</span>
             
             
             <span class="badge badge--sm badge--role-neutral">Resolved</span>
@@ -2945,13 +3005,17 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         <header class="mc-thread__bar">
           <button class="btn btn--ghost btn--sm mc-thread__back" type="button"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>Back</button>
           <div class="mc-thread__actions">
+            <button class="btn btn--secondary btn--sm btn--icon-only mc-thread__flag" type="button" aria-pressed="false" aria-label="Flag as important" data-thread="dana-adddrop"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
             
             <button class="btn btn--secondary btn--sm btn--icon-only mc-print" type="button" aria-label="Print thread"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg></button>
           </div>
           <h2 class="mc-thread__subject">Add/Drop Confirmation</h2>
           <div class="mc-thread__tags">
-            <span class="mc-thread__meta-line">Dana Torres · English Dept</span>
-            <span class="mc-thread__meta-line">Responsible · Ava Robinson</span>
+            <span class="mc-thread__student"><span class="avatar avatar--amber avatar--sm" role="img" aria-label="Dana Torres"><span class="avatar__initials">DT</span></span><span class="mc-thread__student-name">Dana Torres</span><span class="mc-thread__student-id">AA0412</span></span>
+            <span class="mc-thread__metasep" aria-hidden="true"></span>
+            <span class="mc-thread__dept"><svg class="mc-thread__dept-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"><g><rect fill="none" height="24" width="24"/></g><g><g><rect height="7" width="3" x="4" y="10"/><rect height="7" width="3" x="10.5" y="10"/><rect height="3" width="20" x="2" y="19"/><rect height="7" width="3" x="17" y="10"/><polygon points="12,1 2,6 2,8 22,8 22,6"/></g></g></svg><span>English Dept</span></span>
+            <span class="mc-thread__metasep" aria-hidden="true"></span>
+            <span class="mc-thread__involved"><span class="mc-thread__involved-label">Involved ·</span> Ava Robinson</span>
             
             
             <span class="badge badge--sm badge--role-neutral">Resolved</span>
@@ -3049,13 +3113,17 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         <header class="mc-thread__bar">
           <button class="btn btn--ghost btn--sm mc-thread__back" type="button"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>Back</button>
           <div class="mc-thread__actions">
+            <button class="btn btn--secondary btn--sm btn--icon-only mc-thread__flag" type="button" aria-pressed="false" aria-label="Flag as important" data-thread="liam-reg"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
             
             <button class="btn btn--secondary btn--sm btn--icon-only mc-print" type="button" aria-label="Print thread"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg></button>
           </div>
           <h2 class="mc-thread__subject">Registration Complete</h2>
           <div class="mc-thread__tags">
-            <span class="mc-thread__meta-line">Liam Arcos · Academic Advising</span>
-            <span class="mc-thread__meta-line">Responsible · Alexander Robinson</span>
+            <span class="mc-thread__student"><span class="avatar avatar--amber avatar--sm" role="img" aria-label="Liam Arcos"><span class="avatar__initials">LA</span></span><span class="mc-thread__student-name">Liam Arcos</span><span class="mc-thread__student-id">AA0007</span></span>
+            <span class="mc-thread__metasep" aria-hidden="true"></span>
+            <span class="mc-thread__dept"><svg class="mc-thread__dept-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"><g><rect fill="none" height="24" width="24"/></g><g><g><rect height="7" width="3" x="4" y="10"/><rect height="7" width="3" x="10.5" y="10"/><rect height="3" width="20" x="2" y="19"/><rect height="7" width="3" x="17" y="10"/><polygon points="12,1 2,6 2,8 22,8 22,6"/></g></g></svg><span>Academic Advising</span></span>
+            <span class="mc-thread__metasep" aria-hidden="true"></span>
+            <span class="mc-thread__involved"><span class="mc-thread__involved-label">Involved ·</span> Alexander Robinson</span>
             
             
             <span class="badge badge--sm badge--role-neutral">Resolved</span>
@@ -3153,13 +3221,17 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         <header class="mc-thread__bar">
           <button class="btn btn--ghost btn--sm mc-thread__back" type="button"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>Back</button>
           <div class="mc-thread__actions">
+            <button class="btn btn--secondary btn--sm btn--icon-only mc-thread__flag" type="button" aria-pressed="false" aria-label="Flag as important" data-thread="sofia-notes"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
             
             <button class="btn btn--secondary btn--sm btn--icon-only mc-print" type="button" aria-label="Print thread"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg></button>
           </div>
           <h2 class="mc-thread__subject">Advising Notes Shared</h2>
           <div class="mc-thread__tags">
-            <span class="mc-thread__meta-line">Sofia Duarte · Academic Advising</span>
-            <span class="mc-thread__meta-line">Responsible · Ava Robinson, Sarah Nguyen</span>
+            <span class="mc-thread__student"><span class="avatar avatar--red avatar--sm" role="img" aria-label="Sofia Duarte"><span class="avatar__initials">SD</span></span><span class="mc-thread__student-name">Sofia Duarte</span><span class="mc-thread__student-id">AA0620</span></span>
+            <span class="mc-thread__metasep" aria-hidden="true"></span>
+            <span class="mc-thread__dept"><svg class="mc-thread__dept-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"><g><rect fill="none" height="24" width="24"/></g><g><g><rect height="7" width="3" x="4" y="10"/><rect height="7" width="3" x="10.5" y="10"/><rect height="3" width="20" x="2" y="19"/><rect height="7" width="3" x="17" y="10"/><polygon points="12,1 2,6 2,8 22,8 22,6"/></g></g></svg><span>Academic Advising</span></span>
+            <span class="mc-thread__metasep" aria-hidden="true"></span>
+            <span class="mc-thread__involved"><span class="mc-thread__involved-label">Involved ·</span> Ava Robinson, Sarah Nguyen</span>
             
             
             <span class="badge badge--sm badge--role-neutral">Resolved</span>
@@ -3262,13 +3334,17 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         <header class="mc-thread__bar">
           <button class="btn btn--ghost btn--sm mc-thread__back" type="button"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>Back</button>
           <div class="mc-thread__actions">
+            <button class="btn btn--secondary btn--sm btn--icon-only mc-thread__flag" type="button" aria-pressed="false" aria-label="Flag as important" data-thread="owen-transcript"><svg class="thread-item-inbox__flag-outlined" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12.36 6l.4 2H18v6h-3.36l-.4-2H7V6h5.36M14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6L14 4z"/></svg><svg class="thread-item-inbox__flag-filled" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
             
             <button class="btn btn--secondary btn--sm btn--icon-only mc-print" type="button" aria-label="Print thread"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg></button>
           </div>
           <h2 class="mc-thread__subject">Transcript Sent</h2>
           <div class="mc-thread__tags">
-            <span class="mc-thread__meta-line">Owen Pratt · Academic Advising</span>
-            <span class="mc-thread__meta-line">Responsible · Sarah Nguyen</span>
+            <span class="mc-thread__student"><span class="avatar avatar--teal avatar--sm" role="img" aria-label="Owen Pratt"><span class="avatar__initials">OP</span></span><span class="mc-thread__student-name">Owen Pratt</span><span class="mc-thread__student-id">AA0159</span></span>
+            <span class="mc-thread__metasep" aria-hidden="true"></span>
+            <span class="mc-thread__dept"><svg class="mc-thread__dept-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"><g><rect fill="none" height="24" width="24"/></g><g><g><rect height="7" width="3" x="4" y="10"/><rect height="7" width="3" x="10.5" y="10"/><rect height="3" width="20" x="2" y="19"/><rect height="7" width="3" x="17" y="10"/><polygon points="12,1 2,6 2,8 22,8 22,6"/></g></g></svg><span>Academic Advising</span></span>
+            <span class="mc-thread__metasep" aria-hidden="true"></span>
+            <span class="mc-thread__involved"><span class="mc-thread__involved-label">Involved ·</span> Sarah Nguyen</span>
             
             
             <span class="badge badge--sm badge--role-neutral">Resolved</span>
@@ -4009,6 +4085,10 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         requestAnimationFrame(function () { requestAnimationFrame(shown._tbReflow); });
         setTimeout(shown._tbReflow, 60);
       }
+      // mirror the list row's flag onto the thread header
+      var hf = document.querySelector('.mc-thread[data-thread="' + id + '"] .mc-thread__flag');
+      var rf = document.querySelector('.thread-item-inbox[data-thread="' + id + '"] .thread-item-inbox__flag-btn');
+      if (hf && rf) hf.setAttribute("aria-pressed", rf.getAttribute("aria-pressed"));
     }
   }
   function closeThread() {
@@ -4041,7 +4121,11 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     if (flag) {
       flag.addEventListener("click", function (e) {
         e.stopPropagation();
-        flag.setAttribute("aria-pressed", flag.getAttribute("aria-pressed") === "true" ? "false" : "true");
+        var on = flag.getAttribute("aria-pressed") !== "true";
+        flag.setAttribute("aria-pressed", on ? "true" : "false");
+        // keep the open thread header's flag in sync
+        var hf = document.querySelector('.mc-thread[data-thread="' + row.dataset.thread + '"] .mc-thread__flag');
+        if (hf) hf.setAttribute("aria-pressed", on ? "true" : "false");
         if (filters.flagged) applyFilter();
       });
       flag.addEventListener("keydown", function (e) { e.stopPropagation(); });
@@ -4506,6 +4590,20 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     });
   }
   document.querySelectorAll(".mc-composer").forEach(bindComposer);
+
+  // in-thread flag toggle (by Resolve) — marks the thread important and keeps the
+  // matching list row's flag in sync both ways
+  function setThreadFlag(id, on) {
+    var hf = document.querySelector('.mc-thread[data-thread="' + id + '"] .mc-thread__flag');
+    var rf = document.querySelector('.thread-item-inbox[data-thread="' + id + '"] .thread-item-inbox__flag-btn');
+    if (hf) hf.setAttribute("aria-pressed", on ? "true" : "false");
+    if (rf) rf.setAttribute("aria-pressed", on ? "true" : "false");
+  }
+  document.querySelectorAll(".mc-thread__flag").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      setThreadFlag(btn.dataset.thread, btn.getAttribute("aria-pressed") !== "true");
+    });
+  });
 
   // Resolve gating — the top-bar "Resolve" (which resolves WITHOUT replying) is
   // only available once the thread has at least one staff reply; the note under
