@@ -2778,6 +2778,31 @@ const GROUPS = [
     ],
   },
 ];
+// the detail lists EVERY reply (so the count matches what's shown) — the couple
+// authored ones plus generated fill from the student pool to reach g.replied
+const GROUP_REPLY_POOL = [
+  "Thanks for the heads up!",
+  "Can we set up a quick call about this?",
+  "I still have a couple of questions before then.",
+  "Got it — all sorted on my end.",
+  "Do I need to bring anything to the appointment?",
+  "Appreciate the reminder, thank you.",
+  "I think there may be an error on my record.",
+  "Perfect timing — I was about to ask about this.",
+  "Following up: is the deadline firm?",
+];
+GROUPS.forEach((g) => {
+  let i = 0;
+  while (g.replies.length < g.replied && i < 200) {
+    const s = gwizStudents[(i + g.n) % gwizStudents.length];
+    if (!g.replies.some((r) => r.id === s.id)) {
+      const n = g.replies.length;
+      const hr = 9 + (n % 7), mn = (10 + n * 13) % 55;
+      g.replies.push({ id: s.id, name: s.name, reply: GROUP_REPLY_POOL[n % GROUP_REPLY_POOL.length], replyTime: g.date + ", " + hr + ":" + String(mn).padStart(2, "0") + " AM", unread: false });
+    }
+    i++;
+  }
+});
 GROUPS.forEach((g) => g.replies.forEach((r) => { r.threadId = "grpc-" + g.id + "-" + r.id; }));
 const GROUP = GROUPS[0];
 // each group reply "lands in Inbox" as its own child thread — a real openable
@@ -2813,12 +2838,17 @@ const groupCss = `.mc-group__stats { display: grid; grid-template-columns: repea
 .mc-group__reply-stack { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
 .mc-group__reply-top { display: flex; align-items: center; gap: ${px(resolve("dim.2"))}; min-width: 0; }
 .mc-group__reply-dot { flex-shrink: 0; width: 8px; height: 8px; border-radius: ${px(resolve("radius.full"))}; background: ${cv("fill.primary")}; }
-.mc-group__reply-name { color: ${cv("text.default")}; ${typoCss(bodySmType)} }
+.mc-group__reply-name { min-width: 0; color: ${cv("text.default")}; ${typoCss(bodySmType)} white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .mc-group__reply--unread .mc-group__reply-name { font-weight: 700; }
 .mc-group__reply-id { flex-shrink: 0; color: ${cv("text.muted")}; ${typoCss(bodySmType)} }
 .mc-group__reply-time { flex-shrink: 0; margin-left: auto; color: ${cv("text.muted")}; ${typoCss(bodySmType)} }
 .mc-group__reply-text { color: ${cv("text.muted")}; ${typoCss(bodySmType)} overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .mc-group__reply-link { flex-shrink: 0; color: ${cv("text.primary")}; }
+/* phone: the View-in-Inbox drops to its own row at the bottom of the card */
+@media (max-width: 767px) {
+  .mc-group__reply { flex-wrap: wrap; align-items: flex-start; }
+  .mc-group__reply-link { width: 100%; text-align: right; padding: ${px(resolve("dim.1"))} 0 0; }
+}
 
 /* recipients drawer — right-docked sheet (Modal surface), like the standalone AI */
 .mc-recip { border: none; padding: 0; background: ${cv(mdBg)}; box-shadow: ${mdShadowCss}; font-family: ${cv("family.sans")}; }
@@ -2956,7 +2986,7 @@ const phaseECss = `.mc-reply-actions { display: flex; align-items: center; gap: 
 }
 /* per-thread popover anchors — Merge Tags / Hyperlinks open under their own
    button (the id-scoped anchors compose/gwiz declare, generated per thread) */
-${threads.map(function (t) { var p = "mc-tr-" + t.id; return `#${p}-merge-btn { anchor-name: --${p}-mt; }
+${threads.concat(GROUP_CHILD_THREADS).map(function (t) { var p = "mc-tr-" + t.id; return `#${p}-merge-btn { anchor-name: --${p}-mt; }
 #${p}-merge-lb { position: fixed; inset: auto; margin: ${px(resolve("dim.1"))} 0 0 0; position-anchor: --${p}-mt; top: anchor(bottom); left: anchor(left); position-try-fallbacks: flip-block; }
 #${p}-links-btn { anchor-name: --${p}-hl; }
 #${p}-links-lb { position: fixed; inset: auto; margin: ${px(resolve("dim.1"))} 0 0 0; position-anchor: --${p}-hl; top: anchor(bottom); left: anchor(left); position-try-fallbacks: flip-block; }`; }).join("\n")}
