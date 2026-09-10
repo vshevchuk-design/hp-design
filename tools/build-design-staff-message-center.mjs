@@ -2588,7 +2588,7 @@ const gwizMarkup = `<dialog class="mc-gwiz" id="mc-gwiz" aria-labelledby="mc-gwi
           </div>
         </div>
         <div class="mc-gwiz__selected">
-          <p class="mc-gwiz__sel-head" id="mc-gwiz-selhead"><span class="mc-gwiz__sel-title">Selected students</span><span class="mc-gwiz__sel-count" id="mc-gwiz-count">0</span><button class="mc-gwiz__clearsel mc-gwiz__removeall" id="mc-gwiz-removeall" type="button" hidden>Remove all</button>${iconOf("expand_more", "mc-gwiz__sel-chev")}</p>
+          <p class="mc-gwiz__sel-head" id="mc-gwiz-selhead">${iconOf("expand_more", "mc-gwiz__sel-chev")}<span class="mc-gwiz__sel-title">Selected students</span><span class="mc-gwiz__sel-count" id="mc-gwiz-count">0</span><button class="mc-gwiz__clearsel mc-gwiz__removeall" id="mc-gwiz-removeall" type="button" hidden>Remove all</button></p>
           <div class="mc-gwiz__chips" id="mc-gwiz-chips"></div>
           <div class="mc-gwiz__sel-empty empty-state" id="mc-gwiz-sel-empty"><span class="empty-state__text">No selected students</span></div>
         </div>
