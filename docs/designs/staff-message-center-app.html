@@ -1344,6 +1344,86 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .mc-composer__body[hidden], .mc-composer__expired[hidden] { display: none; }
 .bubble-receipt { display: inline-flex; align-items: center; gap: 4px; align-self: flex-end; margin: 2px 4px 0; color: var(--tok-text-success); font-weight: 600; font-weight: 400; font-size: 12px; line-height: 1.2; }
 .bubble-receipt__icon { flex-shrink: 0; width: 14px; height: 14px; }
+/* reply editor === the New Message rich toolbar in a bordered box (toolbar on
+   top, field below), same recipe as .mc-compose__editor */
+.mc-composer__body { display: flex; flex-direction: column; gap: 12px; }
+.mc-thread__editor { position: relative; display: flex; flex-direction: column; border: 1px solid var(--tok-border-default); border-radius: 8px; background: var(--tok-surface-default); overflow: hidden; }
+.mc-thread__editor:focus-within { border-color: var(--tok-border-focus); }
+.mc-thread__editor .composer__toolbar { gap: 2px; padding: 4px 8px; border-bottom: 1px solid var(--tok-border-default); background: var(--tok-surface-default); }
+.mc-thread__editor .composer__field { align-items: flex-start; border: none; border-radius: 0; background: transparent; padding: 12px; }
+.mc-thread__editor .composer__field:hover { background: transparent; border-color: transparent; }
+.mc-thread__editor .composer__input { display: block; resize: none; min-height: 80px; max-height: 220px; overflow-y: auto; }
+.mc-thread__editor .composer__icon-btn { width: 24px; height: 24px; }
+.mc-thread__editor .composer__icon-btn .composer__icon { width: 16px; height: 16px; }
+/* wide screens: the whole reply floats as a Gmail-style card (elevated, rounded,
+   detached); the editor drops its own border so the card is the one boundary.
+   Narrow / tight screens fall back to the full-width footer bar. */
+@media (min-width: 768px) {
+  .mc-thread__composer { background: transparent; box-shadow: none; padding: 16px; }
+  .mc-composer { border: 1px solid var(--tok-border-default); border-radius: 8px; background: var(--tok-surface-default); box-shadow: 0px 8px 24px -2px rgba(21, 25, 30, 0.16); overflow: hidden; }
+  .mc-composer__body { gap: 0; }
+  .mc-composer .mc-thread__editor { border: none; border-radius: 0; }
+  .mc-composer .mc-reply-actions { padding: 12px 16px; border-top: 1px solid var(--tok-border-default); }
+  .mc-composer .mc-composer__expired { padding: 12px 16px; }
+}
+/* per-thread popover anchors — Merge Tags / Hyperlinks open under their own
+   button (the id-scoped anchors compose/gwiz declare, generated per thread) */
+#mc-tr-cait-minor-merge-btn { anchor-name: --mc-tr-cait-minor-mt; }
+#mc-tr-cait-minor-merge-lb { position: fixed; inset: auto; margin: 4px 0 0 0; position-anchor: --mc-tr-cait-minor-mt; top: anchor(bottom); left: anchor(left); position-try-fallbacks: flip-block; }
+#mc-tr-cait-minor-links-btn { anchor-name: --mc-tr-cait-minor-hl; }
+#mc-tr-cait-minor-links-lb { position: fixed; inset: auto; margin: 4px 0 0 0; position-anchor: --mc-tr-cait-minor-hl; top: anchor(bottom); left: anchor(left); position-try-fallbacks: flip-block; }
+#mc-tr-maya-hold-merge-btn { anchor-name: --mc-tr-maya-hold-mt; }
+#mc-tr-maya-hold-merge-lb { position: fixed; inset: auto; margin: 4px 0 0 0; position-anchor: --mc-tr-maya-hold-mt; top: anchor(bottom); left: anchor(left); position-try-fallbacks: flip-block; }
+#mc-tr-maya-hold-links-btn { anchor-name: --mc-tr-maya-hold-hl; }
+#mc-tr-maya-hold-links-lb { position: fixed; inset: auto; margin: 4px 0 0 0; position-anchor: --mc-tr-maya-hold-hl; top: anchor(bottom); left: anchor(left); position-try-fallbacks: flip-block; }
+#mc-tr-diego-transcript-merge-btn { anchor-name: --mc-tr-diego-transcript-mt; }
+#mc-tr-diego-transcript-merge-lb { position: fixed; inset: auto; margin: 4px 0 0 0; position-anchor: --mc-tr-diego-transcript-mt; top: anchor(bottom); left: anchor(left); position-try-fallbacks: flip-block; }
+#mc-tr-diego-transcript-links-btn { anchor-name: --mc-tr-diego-transcript-hl; }
+#mc-tr-diego-transcript-links-lb { position: fixed; inset: auto; margin: 4px 0 0 0; position-anchor: --mc-tr-diego-transcript-hl; top: anchor(bottom); left: anchor(left); position-try-fallbacks: flip-block; }
+#mc-tr-george-reschedule-merge-btn { anchor-name: --mc-tr-george-reschedule-mt; }
+#mc-tr-george-reschedule-merge-lb { position: fixed; inset: auto; margin: 4px 0 0 0; position-anchor: --mc-tr-george-reschedule-mt; top: anchor(bottom); left: anchor(left); position-try-fallbacks: flip-block; }
+#mc-tr-george-reschedule-links-btn { anchor-name: --mc-tr-george-reschedule-hl; }
+#mc-tr-george-reschedule-links-lb { position: fixed; inset: auto; margin: 4px 0 0 0; position-anchor: --mc-tr-george-reschedule-hl; top: anchor(bottom); left: anchor(left); position-try-fallbacks: flip-block; }
+#mc-tr-priya-override-merge-btn { anchor-name: --mc-tr-priya-override-mt; }
+#mc-tr-priya-override-merge-lb { position: fixed; inset: auto; margin: 4px 0 0 0; position-anchor: --mc-tr-priya-override-mt; top: anchor(bottom); left: anchor(left); position-try-fallbacks: flip-block; }
+#mc-tr-priya-override-links-btn { anchor-name: --mc-tr-priya-override-hl; }
+#mc-tr-priya-override-links-lb { position: fixed; inset: auto; margin: 4px 0 0 0; position-anchor: --mc-tr-priya-override-hl; top: anchor(bottom); left: anchor(left); position-try-fallbacks: flip-block; }
+#mc-tr-marcus-audit-merge-btn { anchor-name: --mc-tr-marcus-audit-mt; }
+#mc-tr-marcus-audit-merge-lb { position: fixed; inset: auto; margin: 4px 0 0 0; position-anchor: --mc-tr-marcus-audit-mt; top: anchor(bottom); left: anchor(left); position-try-fallbacks: flip-block; }
+#mc-tr-marcus-audit-links-btn { anchor-name: --mc-tr-marcus-audit-hl; }
+#mc-tr-marcus-audit-links-lb { position: fixed; inset: auto; margin: 4px 0 0 0; position-anchor: --mc-tr-marcus-audit-hl; top: anchor(bottom); left: anchor(left); position-try-fallbacks: flip-block; }
+#mc-tr-ella-thesis-merge-btn { anchor-name: --mc-tr-ella-thesis-mt; }
+#mc-tr-ella-thesis-merge-lb { position: fixed; inset: auto; margin: 4px 0 0 0; position-anchor: --mc-tr-ella-thesis-mt; top: anchor(bottom); left: anchor(left); position-try-fallbacks: flip-block; }
+#mc-tr-ella-thesis-links-btn { anchor-name: --mc-tr-ella-thesis-hl; }
+#mc-tr-ella-thesis-links-lb { position: fixed; inset: auto; margin: 4px 0 0 0; position-anchor: --mc-tr-ella-thesis-hl; top: anchor(bottom); left: anchor(left); position-try-fallbacks: flip-block; }
+#mc-tr-noah-loa-merge-btn { anchor-name: --mc-tr-noah-loa-mt; }
+#mc-tr-noah-loa-merge-lb { position: fixed; inset: auto; margin: 4px 0 0 0; position-anchor: --mc-tr-noah-loa-mt; top: anchor(bottom); left: anchor(left); position-try-fallbacks: flip-block; }
+#mc-tr-noah-loa-links-btn { anchor-name: --mc-tr-noah-loa-hl; }
+#mc-tr-noah-loa-links-lb { position: fixed; inset: auto; margin: 4px 0 0 0; position-anchor: --mc-tr-noah-loa-hl; top: anchor(bottom); left: anchor(left); position-try-fallbacks: flip-block; }
+#mc-tr-lena-waiver-merge-btn { anchor-name: --mc-tr-lena-waiver-mt; }
+#mc-tr-lena-waiver-merge-lb { position: fixed; inset: auto; margin: 4px 0 0 0; position-anchor: --mc-tr-lena-waiver-mt; top: anchor(bottom); left: anchor(left); position-try-fallbacks: flip-block; }
+#mc-tr-lena-waiver-links-btn { anchor-name: --mc-tr-lena-waiver-hl; }
+#mc-tr-lena-waiver-links-lb { position: fixed; inset: auto; margin: 4px 0 0 0; position-anchor: --mc-tr-lena-waiver-hl; top: anchor(bottom); left: anchor(left); position-try-fallbacks: flip-block; }
+#mc-tr-tomas-plan-merge-btn { anchor-name: --mc-tr-tomas-plan-mt; }
+#mc-tr-tomas-plan-merge-lb { position: fixed; inset: auto; margin: 4px 0 0 0; position-anchor: --mc-tr-tomas-plan-mt; top: anchor(bottom); left: anchor(left); position-try-fallbacks: flip-block; }
+#mc-tr-tomas-plan-links-btn { anchor-name: --mc-tr-tomas-plan-hl; }
+#mc-tr-tomas-plan-links-lb { position: fixed; inset: auto; margin: 4px 0 0 0; position-anchor: --mc-tr-tomas-plan-hl; top: anchor(bottom); left: anchor(left); position-try-fallbacks: flip-block; }
+#mc-tr-dana-adddrop-merge-btn { anchor-name: --mc-tr-dana-adddrop-mt; }
+#mc-tr-dana-adddrop-merge-lb { position: fixed; inset: auto; margin: 4px 0 0 0; position-anchor: --mc-tr-dana-adddrop-mt; top: anchor(bottom); left: anchor(left); position-try-fallbacks: flip-block; }
+#mc-tr-dana-adddrop-links-btn { anchor-name: --mc-tr-dana-adddrop-hl; }
+#mc-tr-dana-adddrop-links-lb { position: fixed; inset: auto; margin: 4px 0 0 0; position-anchor: --mc-tr-dana-adddrop-hl; top: anchor(bottom); left: anchor(left); position-try-fallbacks: flip-block; }
+#mc-tr-liam-reg-merge-btn { anchor-name: --mc-tr-liam-reg-mt; }
+#mc-tr-liam-reg-merge-lb { position: fixed; inset: auto; margin: 4px 0 0 0; position-anchor: --mc-tr-liam-reg-mt; top: anchor(bottom); left: anchor(left); position-try-fallbacks: flip-block; }
+#mc-tr-liam-reg-links-btn { anchor-name: --mc-tr-liam-reg-hl; }
+#mc-tr-liam-reg-links-lb { position: fixed; inset: auto; margin: 4px 0 0 0; position-anchor: --mc-tr-liam-reg-hl; top: anchor(bottom); left: anchor(left); position-try-fallbacks: flip-block; }
+#mc-tr-sofia-notes-merge-btn { anchor-name: --mc-tr-sofia-notes-mt; }
+#mc-tr-sofia-notes-merge-lb { position: fixed; inset: auto; margin: 4px 0 0 0; position-anchor: --mc-tr-sofia-notes-mt; top: anchor(bottom); left: anchor(left); position-try-fallbacks: flip-block; }
+#mc-tr-sofia-notes-links-btn { anchor-name: --mc-tr-sofia-notes-hl; }
+#mc-tr-sofia-notes-links-lb { position: fixed; inset: auto; margin: 4px 0 0 0; position-anchor: --mc-tr-sofia-notes-hl; top: anchor(bottom); left: anchor(left); position-try-fallbacks: flip-block; }
+#mc-tr-owen-transcript-merge-btn { anchor-name: --mc-tr-owen-transcript-mt; }
+#mc-tr-owen-transcript-merge-lb { position: fixed; inset: auto; margin: 4px 0 0 0; position-anchor: --mc-tr-owen-transcript-mt; top: anchor(bottom); left: anchor(left); position-try-fallbacks: flip-block; }
+#mc-tr-owen-transcript-links-btn { anchor-name: --mc-tr-owen-transcript-hl; }
+#mc-tr-owen-transcript-links-lb { position: fixed; inset: auto; margin: 4px 0 0 0; position-anchor: --mc-tr-owen-transcript-hl; top: anchor(bottom); left: anchor(left); position-try-fallbacks: flip-block; }
 .mc-rail__count { display: none; } /* the tab counter already shows the count */
 @media (max-width: 1023px) {
   /* Tablet + mobile: the console reflows into a message card that mirrors the
@@ -1753,20 +1833,38 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
               <button type="button" class="btn btn--secondary btn--base mc-reopen">Reopen thread</button>
             </div>
             <div class="mc-composer__body" >
-              <div class="composer__toolbar">
-                <button type="button" class="composer__icon-btn" aria-label="Bold"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.6 10.79c.97-.67 1.65-1.77 1.65-2.79 0-2.26-1.75-4-4-4H7v14h7.04c2.09 0 3.71-1.7 3.71-3.79 0-1.52-.86-2.82-2.15-3.42zM10 6.5h3c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-3v-3zm3.5 9H10v-3h3.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5z"/></svg></button>
-                <button type="button" class="composer__icon-btn" aria-label="Italic"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 4v3h2.21l-3.42 8H6v3h8v-3h-2.21l3.42-8H18V4z"/></svg></button>
-                <button type="button" class="composer__icon-btn" aria-label="Underline"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 17c3.31 0 6-2.69 6-6V3h-2.5v8c0 1.93-1.57 3.5-3.5 3.5S8.5 12.93 8.5 11V3H6v8c0 3.31 2.69 6 6 6zm-7 2v2h14v-2H5z"/></svg></button>
-                <button type="button" class="composer__tb-btn composer__tb-adv" id="cait-minor-merge-btn" data-tb-order="2" popovertarget="cait-minor-merge-lb" aria-haspopup="listbox">Merge Tags<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
-              <div class="listbox composer__tb-lb" id="cait-minor-merge-lb" data-tb="merge" popover>
+              <div class="mc-thread__editor">
+                <div class="composer__toolbar">
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="13" aria-label="Undo" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="12" aria-label="Redo" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M18.4 10.6C16.55 8.99 14.15 8 11.5 8c-4.65 0-8.58 3.03-9.96 7.22L3.9 16c1.05-3.19 4.05-5.5 7.6-5.5 1.95 0 3.73.72 5.12 1.88L13 16h9V7l-3.6 3.6z"/></svg>
+</button>
+              <span class="composer__tb-sep composer__tb-adv" data-tb-order="11"></span>
+              <button type="button" class="composer__tb-btn composer__tb-style composer__tb-adv" data-tb-order="9" tabindex="-1">Normal<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <span class="composer__tb-sep composer__tb-adv" data-tb-order="10"></span>
+              <button type="button" class="composer__icon-btn" aria-label="Bold"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.6 10.79c.97-.67 1.65-1.77 1.65-2.79 0-2.26-1.75-4-4-4H7v14h7.04c2.09 0 3.71-1.7 3.71-3.79 0-1.52-.86-2.82-2.15-3.42zM10 6.5h3c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-3v-3zm3.5 9H10v-3h3.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5z"/></svg></button>
+              <button type="button" class="composer__icon-btn" aria-label="Italic"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 4v3h2.21l-3.42 8H6v3h8v-3h-2.21l3.42-8H18V4z"/></svg></button>
+              <button type="button" class="composer__icon-btn" aria-label="Underline"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 17c3.31 0 6-2.69 6-6V3h-2.5v8c0 1.93-1.57 3.5-3.5 3.5S8.5 12.93 8.5 11V3H6v8c0 3.31 2.69 6 6 6zm-7 2v2h14v-2H5z"/></svg></button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="8" aria-label="Strikethrough" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 19h4v-3h-4v3zM5 4v3h5v3h4V7h5V4H5zM3 14h18v-2H3v2z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="7" aria-label="Code" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="6" aria-label="Align" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15 15H3v2h12v-2zm0-8H3v2h12V7zM3 13h18v-2H3v2zm0 8h18v-2H3v2zM3 3v2h18V3H3z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="5" aria-label="Insert link" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="4" aria-label="Insert email" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></button>
+              <span class="composer__tb-sep composer__tb-adv" data-tb-order="3"></span>
+              <button type="button" class="composer__tb-btn composer__tb-adv" id="mc-tr-cait-minor-merge-btn" data-tb-order="2" popovertarget="mc-tr-cait-minor-merge-lb" aria-haspopup="listbox">Merge Tags<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <div class="listbox composer__tb-lb" id="mc-tr-cait-minor-merge-lb" data-tb="merge" popover>
                 <ul class="listbox__list" role="listbox" aria-label="Merge Tags">
                   <li><button class="listbox__option" role="option" type="button" data-insert="{{studentName}}">{{studentName}}</button></li>
                   <li><button class="listbox__option" role="option" type="button" data-insert="{{studentFirstName}}">{{studentFirstName}}</button></li>
                   <li><button class="listbox__option" role="option" type="button" data-insert="{{studentLastName}}">{{studentLastName}}</button></li>
                 </ul>
               </div>
-                <button type="button" class="composer__tb-btn composer__tb-adv" id="cait-minor-links-btn" data-tb-order="1" popovertarget="cait-minor-links-lb" aria-haspopup="listbox">Hyperlinks<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
-              <div class="listbox composer__tb-lb" id="cait-minor-links-lb" data-tb="links" popover>
+              <button type="button" class="composer__tb-btn composer__tb-adv" id="mc-tr-cait-minor-links-btn" data-tb-order="1" popovertarget="mc-tr-cait-minor-links-lb" aria-haspopup="listbox">Hyperlinks<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <div class="listbox composer__tb-lb" id="mc-tr-cait-minor-links-lb" data-tb="links" popover>
                 <ul class="listbox__list" role="listbox" aria-label="Hyperlinks">
                   <li><button class="listbox__option" role="option" type="button" data-insert="1098-TConsent">1098-TConsent</button></li>
                   <li><button class="listbox__option" role="option" type="button" data-insert="Accept/DeclineAward">Accept/DeclineAward</button></li>
@@ -1781,10 +1879,13 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
                   <li><button class="listbox__option" role="option" type="button" data-insert="ShoppingCart">ShoppingCart</button></li>
                 </ul>
               </div>
-                <button type="button" class="composer__ai-assist"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
-              </div>
-              <div class="composer__field">
-                <textarea class="composer__input" rows="1" placeholder="Reply to Cait..." aria-label="Reply to Cait"></textarea>
+              <button type="button" class="composer__tb-btn composer__tb-more" id="mc-tr-cait-minor-tb-more" aria-expanded="false" aria-label="More formatting options"><svg class="composer__tb-more-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <button type="button" class="composer__ai-assist" id="mc-tr-cait-minor-ai"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
+              <span class="composer__tb-break" aria-hidden="true"></span>
+            </div>
+                <div class="composer__field">
+                  <textarea class="composer__input" rows="1" placeholder="Reply to Cait..." aria-label="Reply to Cait"></textarea>
+                </div>
               </div>
               <div class="mc-reply-actions">
                 <span class="mc-reply-note">Resolve is available because you have replied in this thread.</span>
@@ -1827,20 +1928,38 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
               <button type="button" class="btn btn--secondary btn--base mc-reopen">Reopen thread</button>
             </div>
             <div class="mc-composer__body" >
-              <div class="composer__toolbar">
-                <button type="button" class="composer__icon-btn" aria-label="Bold"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.6 10.79c.97-.67 1.65-1.77 1.65-2.79 0-2.26-1.75-4-4-4H7v14h7.04c2.09 0 3.71-1.7 3.71-3.79 0-1.52-.86-2.82-2.15-3.42zM10 6.5h3c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-3v-3zm3.5 9H10v-3h3.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5z"/></svg></button>
-                <button type="button" class="composer__icon-btn" aria-label="Italic"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 4v3h2.21l-3.42 8H6v3h8v-3h-2.21l3.42-8H18V4z"/></svg></button>
-                <button type="button" class="composer__icon-btn" aria-label="Underline"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 17c3.31 0 6-2.69 6-6V3h-2.5v8c0 1.93-1.57 3.5-3.5 3.5S8.5 12.93 8.5 11V3H6v8c0 3.31 2.69 6 6 6zm-7 2v2h14v-2H5z"/></svg></button>
-                <button type="button" class="composer__tb-btn composer__tb-adv" id="maya-hold-merge-btn" data-tb-order="2" popovertarget="maya-hold-merge-lb" aria-haspopup="listbox">Merge Tags<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
-              <div class="listbox composer__tb-lb" id="maya-hold-merge-lb" data-tb="merge" popover>
+              <div class="mc-thread__editor">
+                <div class="composer__toolbar">
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="13" aria-label="Undo" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="12" aria-label="Redo" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M18.4 10.6C16.55 8.99 14.15 8 11.5 8c-4.65 0-8.58 3.03-9.96 7.22L3.9 16c1.05-3.19 4.05-5.5 7.6-5.5 1.95 0 3.73.72 5.12 1.88L13 16h9V7l-3.6 3.6z"/></svg>
+</button>
+              <span class="composer__tb-sep composer__tb-adv" data-tb-order="11"></span>
+              <button type="button" class="composer__tb-btn composer__tb-style composer__tb-adv" data-tb-order="9" tabindex="-1">Normal<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <span class="composer__tb-sep composer__tb-adv" data-tb-order="10"></span>
+              <button type="button" class="composer__icon-btn" aria-label="Bold"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.6 10.79c.97-.67 1.65-1.77 1.65-2.79 0-2.26-1.75-4-4-4H7v14h7.04c2.09 0 3.71-1.7 3.71-3.79 0-1.52-.86-2.82-2.15-3.42zM10 6.5h3c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-3v-3zm3.5 9H10v-3h3.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5z"/></svg></button>
+              <button type="button" class="composer__icon-btn" aria-label="Italic"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 4v3h2.21l-3.42 8H6v3h8v-3h-2.21l3.42-8H18V4z"/></svg></button>
+              <button type="button" class="composer__icon-btn" aria-label="Underline"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 17c3.31 0 6-2.69 6-6V3h-2.5v8c0 1.93-1.57 3.5-3.5 3.5S8.5 12.93 8.5 11V3H6v8c0 3.31 2.69 6 6 6zm-7 2v2h14v-2H5z"/></svg></button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="8" aria-label="Strikethrough" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 19h4v-3h-4v3zM5 4v3h5v3h4V7h5V4H5zM3 14h18v-2H3v2z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="7" aria-label="Code" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="6" aria-label="Align" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15 15H3v2h12v-2zm0-8H3v2h12V7zM3 13h18v-2H3v2zm0 8h18v-2H3v2zM3 3v2h18V3H3z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="5" aria-label="Insert link" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="4" aria-label="Insert email" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></button>
+              <span class="composer__tb-sep composer__tb-adv" data-tb-order="3"></span>
+              <button type="button" class="composer__tb-btn composer__tb-adv" id="mc-tr-maya-hold-merge-btn" data-tb-order="2" popovertarget="mc-tr-maya-hold-merge-lb" aria-haspopup="listbox">Merge Tags<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <div class="listbox composer__tb-lb" id="mc-tr-maya-hold-merge-lb" data-tb="merge" popover>
                 <ul class="listbox__list" role="listbox" aria-label="Merge Tags">
                   <li><button class="listbox__option" role="option" type="button" data-insert="{{studentName}}">{{studentName}}</button></li>
                   <li><button class="listbox__option" role="option" type="button" data-insert="{{studentFirstName}}">{{studentFirstName}}</button></li>
                   <li><button class="listbox__option" role="option" type="button" data-insert="{{studentLastName}}">{{studentLastName}}</button></li>
                 </ul>
               </div>
-                <button type="button" class="composer__tb-btn composer__tb-adv" id="maya-hold-links-btn" data-tb-order="1" popovertarget="maya-hold-links-lb" aria-haspopup="listbox">Hyperlinks<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
-              <div class="listbox composer__tb-lb" id="maya-hold-links-lb" data-tb="links" popover>
+              <button type="button" class="composer__tb-btn composer__tb-adv" id="mc-tr-maya-hold-links-btn" data-tb-order="1" popovertarget="mc-tr-maya-hold-links-lb" aria-haspopup="listbox">Hyperlinks<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <div class="listbox composer__tb-lb" id="mc-tr-maya-hold-links-lb" data-tb="links" popover>
                 <ul class="listbox__list" role="listbox" aria-label="Hyperlinks">
                   <li><button class="listbox__option" role="option" type="button" data-insert="1098-TConsent">1098-TConsent</button></li>
                   <li><button class="listbox__option" role="option" type="button" data-insert="Accept/DeclineAward">Accept/DeclineAward</button></li>
@@ -1855,10 +1974,13 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
                   <li><button class="listbox__option" role="option" type="button" data-insert="ShoppingCart">ShoppingCart</button></li>
                 </ul>
               </div>
-                <button type="button" class="composer__ai-assist"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
-              </div>
-              <div class="composer__field">
-                <textarea class="composer__input" rows="1" placeholder="Reply to Maya..." aria-label="Reply to Maya"></textarea>
+              <button type="button" class="composer__tb-btn composer__tb-more" id="mc-tr-maya-hold-tb-more" aria-expanded="false" aria-label="More formatting options"><svg class="composer__tb-more-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <button type="button" class="composer__ai-assist" id="mc-tr-maya-hold-ai"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
+              <span class="composer__tb-break" aria-hidden="true"></span>
+            </div>
+                <div class="composer__field">
+                  <textarea class="composer__input" rows="1" placeholder="Reply to Maya..." aria-label="Reply to Maya"></textarea>
+                </div>
               </div>
               <div class="mc-reply-actions">
                 <span class="mc-reply-note">Resolve is available because you have replied in this thread.</span>
@@ -1907,20 +2029,38 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
               <button type="button" class="btn btn--secondary btn--base mc-reopen">Reopen thread</button>
             </div>
             <div class="mc-composer__body" >
-              <div class="composer__toolbar">
-                <button type="button" class="composer__icon-btn" aria-label="Bold"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.6 10.79c.97-.67 1.65-1.77 1.65-2.79 0-2.26-1.75-4-4-4H7v14h7.04c2.09 0 3.71-1.7 3.71-3.79 0-1.52-.86-2.82-2.15-3.42zM10 6.5h3c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-3v-3zm3.5 9H10v-3h3.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5z"/></svg></button>
-                <button type="button" class="composer__icon-btn" aria-label="Italic"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 4v3h2.21l-3.42 8H6v3h8v-3h-2.21l3.42-8H18V4z"/></svg></button>
-                <button type="button" class="composer__icon-btn" aria-label="Underline"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 17c3.31 0 6-2.69 6-6V3h-2.5v8c0 1.93-1.57 3.5-3.5 3.5S8.5 12.93 8.5 11V3H6v8c0 3.31 2.69 6 6 6zm-7 2v2h14v-2H5z"/></svg></button>
-                <button type="button" class="composer__tb-btn composer__tb-adv" id="diego-transcript-merge-btn" data-tb-order="2" popovertarget="diego-transcript-merge-lb" aria-haspopup="listbox">Merge Tags<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
-              <div class="listbox composer__tb-lb" id="diego-transcript-merge-lb" data-tb="merge" popover>
+              <div class="mc-thread__editor">
+                <div class="composer__toolbar">
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="13" aria-label="Undo" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="12" aria-label="Redo" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M18.4 10.6C16.55 8.99 14.15 8 11.5 8c-4.65 0-8.58 3.03-9.96 7.22L3.9 16c1.05-3.19 4.05-5.5 7.6-5.5 1.95 0 3.73.72 5.12 1.88L13 16h9V7l-3.6 3.6z"/></svg>
+</button>
+              <span class="composer__tb-sep composer__tb-adv" data-tb-order="11"></span>
+              <button type="button" class="composer__tb-btn composer__tb-style composer__tb-adv" data-tb-order="9" tabindex="-1">Normal<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <span class="composer__tb-sep composer__tb-adv" data-tb-order="10"></span>
+              <button type="button" class="composer__icon-btn" aria-label="Bold"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.6 10.79c.97-.67 1.65-1.77 1.65-2.79 0-2.26-1.75-4-4-4H7v14h7.04c2.09 0 3.71-1.7 3.71-3.79 0-1.52-.86-2.82-2.15-3.42zM10 6.5h3c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-3v-3zm3.5 9H10v-3h3.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5z"/></svg></button>
+              <button type="button" class="composer__icon-btn" aria-label="Italic"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 4v3h2.21l-3.42 8H6v3h8v-3h-2.21l3.42-8H18V4z"/></svg></button>
+              <button type="button" class="composer__icon-btn" aria-label="Underline"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 17c3.31 0 6-2.69 6-6V3h-2.5v8c0 1.93-1.57 3.5-3.5 3.5S8.5 12.93 8.5 11V3H6v8c0 3.31 2.69 6 6 6zm-7 2v2h14v-2H5z"/></svg></button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="8" aria-label="Strikethrough" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 19h4v-3h-4v3zM5 4v3h5v3h4V7h5V4H5zM3 14h18v-2H3v2z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="7" aria-label="Code" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="6" aria-label="Align" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15 15H3v2h12v-2zm0-8H3v2h12V7zM3 13h18v-2H3v2zm0 8h18v-2H3v2zM3 3v2h18V3H3z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="5" aria-label="Insert link" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="4" aria-label="Insert email" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></button>
+              <span class="composer__tb-sep composer__tb-adv" data-tb-order="3"></span>
+              <button type="button" class="composer__tb-btn composer__tb-adv" id="mc-tr-diego-transcript-merge-btn" data-tb-order="2" popovertarget="mc-tr-diego-transcript-merge-lb" aria-haspopup="listbox">Merge Tags<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <div class="listbox composer__tb-lb" id="mc-tr-diego-transcript-merge-lb" data-tb="merge" popover>
                 <ul class="listbox__list" role="listbox" aria-label="Merge Tags">
                   <li><button class="listbox__option" role="option" type="button" data-insert="{{studentName}}">{{studentName}}</button></li>
                   <li><button class="listbox__option" role="option" type="button" data-insert="{{studentFirstName}}">{{studentFirstName}}</button></li>
                   <li><button class="listbox__option" role="option" type="button" data-insert="{{studentLastName}}">{{studentLastName}}</button></li>
                 </ul>
               </div>
-                <button type="button" class="composer__tb-btn composer__tb-adv" id="diego-transcript-links-btn" data-tb-order="1" popovertarget="diego-transcript-links-lb" aria-haspopup="listbox">Hyperlinks<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
-              <div class="listbox composer__tb-lb" id="diego-transcript-links-lb" data-tb="links" popover>
+              <button type="button" class="composer__tb-btn composer__tb-adv" id="mc-tr-diego-transcript-links-btn" data-tb-order="1" popovertarget="mc-tr-diego-transcript-links-lb" aria-haspopup="listbox">Hyperlinks<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <div class="listbox composer__tb-lb" id="mc-tr-diego-transcript-links-lb" data-tb="links" popover>
                 <ul class="listbox__list" role="listbox" aria-label="Hyperlinks">
                   <li><button class="listbox__option" role="option" type="button" data-insert="1098-TConsent">1098-TConsent</button></li>
                   <li><button class="listbox__option" role="option" type="button" data-insert="Accept/DeclineAward">Accept/DeclineAward</button></li>
@@ -1935,10 +2075,13 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
                   <li><button class="listbox__option" role="option" type="button" data-insert="ShoppingCart">ShoppingCart</button></li>
                 </ul>
               </div>
-                <button type="button" class="composer__ai-assist"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
-              </div>
-              <div class="composer__field">
-                <textarea class="composer__input" rows="1" placeholder="Reply to Diego..." aria-label="Reply to Diego"></textarea>
+              <button type="button" class="composer__tb-btn composer__tb-more" id="mc-tr-diego-transcript-tb-more" aria-expanded="false" aria-label="More formatting options"><svg class="composer__tb-more-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <button type="button" class="composer__ai-assist" id="mc-tr-diego-transcript-ai"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
+              <span class="composer__tb-break" aria-hidden="true"></span>
+            </div>
+                <div class="composer__field">
+                  <textarea class="composer__input" rows="1" placeholder="Reply to Diego..." aria-label="Reply to Diego"></textarea>
+                </div>
               </div>
               <div class="mc-reply-actions">
                 <span class="mc-reply-note">Resolve is available because you have replied in this thread.</span>
@@ -1986,20 +2129,38 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
               <button type="button" class="btn btn--secondary btn--base mc-reopen">Reopen thread</button>
             </div>
             <div class="mc-composer__body" hidden>
-              <div class="composer__toolbar">
-                <button type="button" class="composer__icon-btn" aria-label="Bold"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.6 10.79c.97-.67 1.65-1.77 1.65-2.79 0-2.26-1.75-4-4-4H7v14h7.04c2.09 0 3.71-1.7 3.71-3.79 0-1.52-.86-2.82-2.15-3.42zM10 6.5h3c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-3v-3zm3.5 9H10v-3h3.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5z"/></svg></button>
-                <button type="button" class="composer__icon-btn" aria-label="Italic"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 4v3h2.21l-3.42 8H6v3h8v-3h-2.21l3.42-8H18V4z"/></svg></button>
-                <button type="button" class="composer__icon-btn" aria-label="Underline"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 17c3.31 0 6-2.69 6-6V3h-2.5v8c0 1.93-1.57 3.5-3.5 3.5S8.5 12.93 8.5 11V3H6v8c0 3.31 2.69 6 6 6zm-7 2v2h14v-2H5z"/></svg></button>
-                <button type="button" class="composer__tb-btn composer__tb-adv" id="george-reschedule-merge-btn" data-tb-order="2" popovertarget="george-reschedule-merge-lb" aria-haspopup="listbox">Merge Tags<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
-              <div class="listbox composer__tb-lb" id="george-reschedule-merge-lb" data-tb="merge" popover>
+              <div class="mc-thread__editor">
+                <div class="composer__toolbar">
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="13" aria-label="Undo" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="12" aria-label="Redo" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M18.4 10.6C16.55 8.99 14.15 8 11.5 8c-4.65 0-8.58 3.03-9.96 7.22L3.9 16c1.05-3.19 4.05-5.5 7.6-5.5 1.95 0 3.73.72 5.12 1.88L13 16h9V7l-3.6 3.6z"/></svg>
+</button>
+              <span class="composer__tb-sep composer__tb-adv" data-tb-order="11"></span>
+              <button type="button" class="composer__tb-btn composer__tb-style composer__tb-adv" data-tb-order="9" tabindex="-1">Normal<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <span class="composer__tb-sep composer__tb-adv" data-tb-order="10"></span>
+              <button type="button" class="composer__icon-btn" aria-label="Bold"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.6 10.79c.97-.67 1.65-1.77 1.65-2.79 0-2.26-1.75-4-4-4H7v14h7.04c2.09 0 3.71-1.7 3.71-3.79 0-1.52-.86-2.82-2.15-3.42zM10 6.5h3c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-3v-3zm3.5 9H10v-3h3.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5z"/></svg></button>
+              <button type="button" class="composer__icon-btn" aria-label="Italic"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 4v3h2.21l-3.42 8H6v3h8v-3h-2.21l3.42-8H18V4z"/></svg></button>
+              <button type="button" class="composer__icon-btn" aria-label="Underline"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 17c3.31 0 6-2.69 6-6V3h-2.5v8c0 1.93-1.57 3.5-3.5 3.5S8.5 12.93 8.5 11V3H6v8c0 3.31 2.69 6 6 6zm-7 2v2h14v-2H5z"/></svg></button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="8" aria-label="Strikethrough" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 19h4v-3h-4v3zM5 4v3h5v3h4V7h5V4H5zM3 14h18v-2H3v2z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="7" aria-label="Code" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="6" aria-label="Align" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15 15H3v2h12v-2zm0-8H3v2h12V7zM3 13h18v-2H3v2zm0 8h18v-2H3v2zM3 3v2h18V3H3z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="5" aria-label="Insert link" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="4" aria-label="Insert email" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></button>
+              <span class="composer__tb-sep composer__tb-adv" data-tb-order="3"></span>
+              <button type="button" class="composer__tb-btn composer__tb-adv" id="mc-tr-george-reschedule-merge-btn" data-tb-order="2" popovertarget="mc-tr-george-reschedule-merge-lb" aria-haspopup="listbox">Merge Tags<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <div class="listbox composer__tb-lb" id="mc-tr-george-reschedule-merge-lb" data-tb="merge" popover>
                 <ul class="listbox__list" role="listbox" aria-label="Merge Tags">
                   <li><button class="listbox__option" role="option" type="button" data-insert="{{studentName}}">{{studentName}}</button></li>
                   <li><button class="listbox__option" role="option" type="button" data-insert="{{studentFirstName}}">{{studentFirstName}}</button></li>
                   <li><button class="listbox__option" role="option" type="button" data-insert="{{studentLastName}}">{{studentLastName}}</button></li>
                 </ul>
               </div>
-                <button type="button" class="composer__tb-btn composer__tb-adv" id="george-reschedule-links-btn" data-tb-order="1" popovertarget="george-reschedule-links-lb" aria-haspopup="listbox">Hyperlinks<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
-              <div class="listbox composer__tb-lb" id="george-reschedule-links-lb" data-tb="links" popover>
+              <button type="button" class="composer__tb-btn composer__tb-adv" id="mc-tr-george-reschedule-links-btn" data-tb-order="1" popovertarget="mc-tr-george-reschedule-links-lb" aria-haspopup="listbox">Hyperlinks<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <div class="listbox composer__tb-lb" id="mc-tr-george-reschedule-links-lb" data-tb="links" popover>
                 <ul class="listbox__list" role="listbox" aria-label="Hyperlinks">
                   <li><button class="listbox__option" role="option" type="button" data-insert="1098-TConsent">1098-TConsent</button></li>
                   <li><button class="listbox__option" role="option" type="button" data-insert="Accept/DeclineAward">Accept/DeclineAward</button></li>
@@ -2014,10 +2175,13 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
                   <li><button class="listbox__option" role="option" type="button" data-insert="ShoppingCart">ShoppingCart</button></li>
                 </ul>
               </div>
-                <button type="button" class="composer__ai-assist"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
-              </div>
-              <div class="composer__field">
-                <textarea class="composer__input" rows="1" placeholder="Reply to George..." aria-label="Reply to George"></textarea>
+              <button type="button" class="composer__tb-btn composer__tb-more" id="mc-tr-george-reschedule-tb-more" aria-expanded="false" aria-label="More formatting options"><svg class="composer__tb-more-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <button type="button" class="composer__ai-assist" id="mc-tr-george-reschedule-ai"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
+              <span class="composer__tb-break" aria-hidden="true"></span>
+            </div>
+                <div class="composer__field">
+                  <textarea class="composer__input" rows="1" placeholder="Reply to George..." aria-label="Reply to George"></textarea>
+                </div>
               </div>
               <div class="mc-reply-actions">
                 <span class="mc-reply-note">Resolve is available because you have replied in this thread.</span>
@@ -2060,20 +2224,38 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
               <button type="button" class="btn btn--secondary btn--base mc-reopen">Reopen thread</button>
             </div>
             <div class="mc-composer__body" >
-              <div class="composer__toolbar">
-                <button type="button" class="composer__icon-btn" aria-label="Bold"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.6 10.79c.97-.67 1.65-1.77 1.65-2.79 0-2.26-1.75-4-4-4H7v14h7.04c2.09 0 3.71-1.7 3.71-3.79 0-1.52-.86-2.82-2.15-3.42zM10 6.5h3c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-3v-3zm3.5 9H10v-3h3.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5z"/></svg></button>
-                <button type="button" class="composer__icon-btn" aria-label="Italic"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 4v3h2.21l-3.42 8H6v3h8v-3h-2.21l3.42-8H18V4z"/></svg></button>
-                <button type="button" class="composer__icon-btn" aria-label="Underline"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 17c3.31 0 6-2.69 6-6V3h-2.5v8c0 1.93-1.57 3.5-3.5 3.5S8.5 12.93 8.5 11V3H6v8c0 3.31 2.69 6 6 6zm-7 2v2h14v-2H5z"/></svg></button>
-                <button type="button" class="composer__tb-btn composer__tb-adv" id="priya-override-merge-btn" data-tb-order="2" popovertarget="priya-override-merge-lb" aria-haspopup="listbox">Merge Tags<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
-              <div class="listbox composer__tb-lb" id="priya-override-merge-lb" data-tb="merge" popover>
+              <div class="mc-thread__editor">
+                <div class="composer__toolbar">
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="13" aria-label="Undo" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="12" aria-label="Redo" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M18.4 10.6C16.55 8.99 14.15 8 11.5 8c-4.65 0-8.58 3.03-9.96 7.22L3.9 16c1.05-3.19 4.05-5.5 7.6-5.5 1.95 0 3.73.72 5.12 1.88L13 16h9V7l-3.6 3.6z"/></svg>
+</button>
+              <span class="composer__tb-sep composer__tb-adv" data-tb-order="11"></span>
+              <button type="button" class="composer__tb-btn composer__tb-style composer__tb-adv" data-tb-order="9" tabindex="-1">Normal<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <span class="composer__tb-sep composer__tb-adv" data-tb-order="10"></span>
+              <button type="button" class="composer__icon-btn" aria-label="Bold"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.6 10.79c.97-.67 1.65-1.77 1.65-2.79 0-2.26-1.75-4-4-4H7v14h7.04c2.09 0 3.71-1.7 3.71-3.79 0-1.52-.86-2.82-2.15-3.42zM10 6.5h3c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-3v-3zm3.5 9H10v-3h3.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5z"/></svg></button>
+              <button type="button" class="composer__icon-btn" aria-label="Italic"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 4v3h2.21l-3.42 8H6v3h8v-3h-2.21l3.42-8H18V4z"/></svg></button>
+              <button type="button" class="composer__icon-btn" aria-label="Underline"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 17c3.31 0 6-2.69 6-6V3h-2.5v8c0 1.93-1.57 3.5-3.5 3.5S8.5 12.93 8.5 11V3H6v8c0 3.31 2.69 6 6 6zm-7 2v2h14v-2H5z"/></svg></button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="8" aria-label="Strikethrough" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 19h4v-3h-4v3zM5 4v3h5v3h4V7h5V4H5zM3 14h18v-2H3v2z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="7" aria-label="Code" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="6" aria-label="Align" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15 15H3v2h12v-2zm0-8H3v2h12V7zM3 13h18v-2H3v2zm0 8h18v-2H3v2zM3 3v2h18V3H3z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="5" aria-label="Insert link" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="4" aria-label="Insert email" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></button>
+              <span class="composer__tb-sep composer__tb-adv" data-tb-order="3"></span>
+              <button type="button" class="composer__tb-btn composer__tb-adv" id="mc-tr-priya-override-merge-btn" data-tb-order="2" popovertarget="mc-tr-priya-override-merge-lb" aria-haspopup="listbox">Merge Tags<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <div class="listbox composer__tb-lb" id="mc-tr-priya-override-merge-lb" data-tb="merge" popover>
                 <ul class="listbox__list" role="listbox" aria-label="Merge Tags">
                   <li><button class="listbox__option" role="option" type="button" data-insert="{{studentName}}">{{studentName}}</button></li>
                   <li><button class="listbox__option" role="option" type="button" data-insert="{{studentFirstName}}">{{studentFirstName}}</button></li>
                   <li><button class="listbox__option" role="option" type="button" data-insert="{{studentLastName}}">{{studentLastName}}</button></li>
                 </ul>
               </div>
-                <button type="button" class="composer__tb-btn composer__tb-adv" id="priya-override-links-btn" data-tb-order="1" popovertarget="priya-override-links-lb" aria-haspopup="listbox">Hyperlinks<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
-              <div class="listbox composer__tb-lb" id="priya-override-links-lb" data-tb="links" popover>
+              <button type="button" class="composer__tb-btn composer__tb-adv" id="mc-tr-priya-override-links-btn" data-tb-order="1" popovertarget="mc-tr-priya-override-links-lb" aria-haspopup="listbox">Hyperlinks<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <div class="listbox composer__tb-lb" id="mc-tr-priya-override-links-lb" data-tb="links" popover>
                 <ul class="listbox__list" role="listbox" aria-label="Hyperlinks">
                   <li><button class="listbox__option" role="option" type="button" data-insert="1098-TConsent">1098-TConsent</button></li>
                   <li><button class="listbox__option" role="option" type="button" data-insert="Accept/DeclineAward">Accept/DeclineAward</button></li>
@@ -2088,10 +2270,13 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
                   <li><button class="listbox__option" role="option" type="button" data-insert="ShoppingCart">ShoppingCart</button></li>
                 </ul>
               </div>
-                <button type="button" class="composer__ai-assist"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
-              </div>
-              <div class="composer__field">
-                <textarea class="composer__input" rows="1" placeholder="Reply to Priya..." aria-label="Reply to Priya"></textarea>
+              <button type="button" class="composer__tb-btn composer__tb-more" id="mc-tr-priya-override-tb-more" aria-expanded="false" aria-label="More formatting options"><svg class="composer__tb-more-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <button type="button" class="composer__ai-assist" id="mc-tr-priya-override-ai"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
+              <span class="composer__tb-break" aria-hidden="true"></span>
+            </div>
+                <div class="composer__field">
+                  <textarea class="composer__input" rows="1" placeholder="Reply to Priya..." aria-label="Reply to Priya"></textarea>
+                </div>
               </div>
               <div class="mc-reply-actions">
                 <span class="mc-reply-note">Resolve is available because you have replied in this thread.</span>
@@ -2134,20 +2319,38 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
               <button type="button" class="btn btn--secondary btn--base mc-reopen">Reopen thread</button>
             </div>
             <div class="mc-composer__body" >
-              <div class="composer__toolbar">
-                <button type="button" class="composer__icon-btn" aria-label="Bold"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.6 10.79c.97-.67 1.65-1.77 1.65-2.79 0-2.26-1.75-4-4-4H7v14h7.04c2.09 0 3.71-1.7 3.71-3.79 0-1.52-.86-2.82-2.15-3.42zM10 6.5h3c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-3v-3zm3.5 9H10v-3h3.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5z"/></svg></button>
-                <button type="button" class="composer__icon-btn" aria-label="Italic"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 4v3h2.21l-3.42 8H6v3h8v-3h-2.21l3.42-8H18V4z"/></svg></button>
-                <button type="button" class="composer__icon-btn" aria-label="Underline"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 17c3.31 0 6-2.69 6-6V3h-2.5v8c0 1.93-1.57 3.5-3.5 3.5S8.5 12.93 8.5 11V3H6v8c0 3.31 2.69 6 6 6zm-7 2v2h14v-2H5z"/></svg></button>
-                <button type="button" class="composer__tb-btn composer__tb-adv" id="marcus-audit-merge-btn" data-tb-order="2" popovertarget="marcus-audit-merge-lb" aria-haspopup="listbox">Merge Tags<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
-              <div class="listbox composer__tb-lb" id="marcus-audit-merge-lb" data-tb="merge" popover>
+              <div class="mc-thread__editor">
+                <div class="composer__toolbar">
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="13" aria-label="Undo" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="12" aria-label="Redo" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M18.4 10.6C16.55 8.99 14.15 8 11.5 8c-4.65 0-8.58 3.03-9.96 7.22L3.9 16c1.05-3.19 4.05-5.5 7.6-5.5 1.95 0 3.73.72 5.12 1.88L13 16h9V7l-3.6 3.6z"/></svg>
+</button>
+              <span class="composer__tb-sep composer__tb-adv" data-tb-order="11"></span>
+              <button type="button" class="composer__tb-btn composer__tb-style composer__tb-adv" data-tb-order="9" tabindex="-1">Normal<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <span class="composer__tb-sep composer__tb-adv" data-tb-order="10"></span>
+              <button type="button" class="composer__icon-btn" aria-label="Bold"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.6 10.79c.97-.67 1.65-1.77 1.65-2.79 0-2.26-1.75-4-4-4H7v14h7.04c2.09 0 3.71-1.7 3.71-3.79 0-1.52-.86-2.82-2.15-3.42zM10 6.5h3c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-3v-3zm3.5 9H10v-3h3.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5z"/></svg></button>
+              <button type="button" class="composer__icon-btn" aria-label="Italic"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 4v3h2.21l-3.42 8H6v3h8v-3h-2.21l3.42-8H18V4z"/></svg></button>
+              <button type="button" class="composer__icon-btn" aria-label="Underline"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 17c3.31 0 6-2.69 6-6V3h-2.5v8c0 1.93-1.57 3.5-3.5 3.5S8.5 12.93 8.5 11V3H6v8c0 3.31 2.69 6 6 6zm-7 2v2h14v-2H5z"/></svg></button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="8" aria-label="Strikethrough" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 19h4v-3h-4v3zM5 4v3h5v3h4V7h5V4H5zM3 14h18v-2H3v2z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="7" aria-label="Code" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="6" aria-label="Align" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15 15H3v2h12v-2zm0-8H3v2h12V7zM3 13h18v-2H3v2zm0 8h18v-2H3v2zM3 3v2h18V3H3z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="5" aria-label="Insert link" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="4" aria-label="Insert email" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></button>
+              <span class="composer__tb-sep composer__tb-adv" data-tb-order="3"></span>
+              <button type="button" class="composer__tb-btn composer__tb-adv" id="mc-tr-marcus-audit-merge-btn" data-tb-order="2" popovertarget="mc-tr-marcus-audit-merge-lb" aria-haspopup="listbox">Merge Tags<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <div class="listbox composer__tb-lb" id="mc-tr-marcus-audit-merge-lb" data-tb="merge" popover>
                 <ul class="listbox__list" role="listbox" aria-label="Merge Tags">
                   <li><button class="listbox__option" role="option" type="button" data-insert="{{studentName}}">{{studentName}}</button></li>
                   <li><button class="listbox__option" role="option" type="button" data-insert="{{studentFirstName}}">{{studentFirstName}}</button></li>
                   <li><button class="listbox__option" role="option" type="button" data-insert="{{studentLastName}}">{{studentLastName}}</button></li>
                 </ul>
               </div>
-                <button type="button" class="composer__tb-btn composer__tb-adv" id="marcus-audit-links-btn" data-tb-order="1" popovertarget="marcus-audit-links-lb" aria-haspopup="listbox">Hyperlinks<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
-              <div class="listbox composer__tb-lb" id="marcus-audit-links-lb" data-tb="links" popover>
+              <button type="button" class="composer__tb-btn composer__tb-adv" id="mc-tr-marcus-audit-links-btn" data-tb-order="1" popovertarget="mc-tr-marcus-audit-links-lb" aria-haspopup="listbox">Hyperlinks<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <div class="listbox composer__tb-lb" id="mc-tr-marcus-audit-links-lb" data-tb="links" popover>
                 <ul class="listbox__list" role="listbox" aria-label="Hyperlinks">
                   <li><button class="listbox__option" role="option" type="button" data-insert="1098-TConsent">1098-TConsent</button></li>
                   <li><button class="listbox__option" role="option" type="button" data-insert="Accept/DeclineAward">Accept/DeclineAward</button></li>
@@ -2162,10 +2365,13 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
                   <li><button class="listbox__option" role="option" type="button" data-insert="ShoppingCart">ShoppingCart</button></li>
                 </ul>
               </div>
-                <button type="button" class="composer__ai-assist"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
-              </div>
-              <div class="composer__field">
-                <textarea class="composer__input" rows="1" placeholder="Reply to Marcus..." aria-label="Reply to Marcus"></textarea>
+              <button type="button" class="composer__tb-btn composer__tb-more" id="mc-tr-marcus-audit-tb-more" aria-expanded="false" aria-label="More formatting options"><svg class="composer__tb-more-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <button type="button" class="composer__ai-assist" id="mc-tr-marcus-audit-ai"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
+              <span class="composer__tb-break" aria-hidden="true"></span>
+            </div>
+                <div class="composer__field">
+                  <textarea class="composer__input" rows="1" placeholder="Reply to Marcus..." aria-label="Reply to Marcus"></textarea>
+                </div>
               </div>
               <div class="mc-reply-actions">
                 <span class="mc-reply-note">Resolve is available because you have replied in this thread.</span>
@@ -2208,20 +2414,38 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
               <button type="button" class="btn btn--secondary btn--base mc-reopen">Reopen thread</button>
             </div>
             <div class="mc-composer__body" >
-              <div class="composer__toolbar">
-                <button type="button" class="composer__icon-btn" aria-label="Bold"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.6 10.79c.97-.67 1.65-1.77 1.65-2.79 0-2.26-1.75-4-4-4H7v14h7.04c2.09 0 3.71-1.7 3.71-3.79 0-1.52-.86-2.82-2.15-3.42zM10 6.5h3c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-3v-3zm3.5 9H10v-3h3.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5z"/></svg></button>
-                <button type="button" class="composer__icon-btn" aria-label="Italic"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 4v3h2.21l-3.42 8H6v3h8v-3h-2.21l3.42-8H18V4z"/></svg></button>
-                <button type="button" class="composer__icon-btn" aria-label="Underline"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 17c3.31 0 6-2.69 6-6V3h-2.5v8c0 1.93-1.57 3.5-3.5 3.5S8.5 12.93 8.5 11V3H6v8c0 3.31 2.69 6 6 6zm-7 2v2h14v-2H5z"/></svg></button>
-                <button type="button" class="composer__tb-btn composer__tb-adv" id="ella-thesis-merge-btn" data-tb-order="2" popovertarget="ella-thesis-merge-lb" aria-haspopup="listbox">Merge Tags<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
-              <div class="listbox composer__tb-lb" id="ella-thesis-merge-lb" data-tb="merge" popover>
+              <div class="mc-thread__editor">
+                <div class="composer__toolbar">
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="13" aria-label="Undo" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="12" aria-label="Redo" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M18.4 10.6C16.55 8.99 14.15 8 11.5 8c-4.65 0-8.58 3.03-9.96 7.22L3.9 16c1.05-3.19 4.05-5.5 7.6-5.5 1.95 0 3.73.72 5.12 1.88L13 16h9V7l-3.6 3.6z"/></svg>
+</button>
+              <span class="composer__tb-sep composer__tb-adv" data-tb-order="11"></span>
+              <button type="button" class="composer__tb-btn composer__tb-style composer__tb-adv" data-tb-order="9" tabindex="-1">Normal<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <span class="composer__tb-sep composer__tb-adv" data-tb-order="10"></span>
+              <button type="button" class="composer__icon-btn" aria-label="Bold"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.6 10.79c.97-.67 1.65-1.77 1.65-2.79 0-2.26-1.75-4-4-4H7v14h7.04c2.09 0 3.71-1.7 3.71-3.79 0-1.52-.86-2.82-2.15-3.42zM10 6.5h3c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-3v-3zm3.5 9H10v-3h3.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5z"/></svg></button>
+              <button type="button" class="composer__icon-btn" aria-label="Italic"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 4v3h2.21l-3.42 8H6v3h8v-3h-2.21l3.42-8H18V4z"/></svg></button>
+              <button type="button" class="composer__icon-btn" aria-label="Underline"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 17c3.31 0 6-2.69 6-6V3h-2.5v8c0 1.93-1.57 3.5-3.5 3.5S8.5 12.93 8.5 11V3H6v8c0 3.31 2.69 6 6 6zm-7 2v2h14v-2H5z"/></svg></button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="8" aria-label="Strikethrough" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 19h4v-3h-4v3zM5 4v3h5v3h4V7h5V4H5zM3 14h18v-2H3v2z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="7" aria-label="Code" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="6" aria-label="Align" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15 15H3v2h12v-2zm0-8H3v2h12V7zM3 13h18v-2H3v2zm0 8h18v-2H3v2zM3 3v2h18V3H3z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="5" aria-label="Insert link" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="4" aria-label="Insert email" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></button>
+              <span class="composer__tb-sep composer__tb-adv" data-tb-order="3"></span>
+              <button type="button" class="composer__tb-btn composer__tb-adv" id="mc-tr-ella-thesis-merge-btn" data-tb-order="2" popovertarget="mc-tr-ella-thesis-merge-lb" aria-haspopup="listbox">Merge Tags<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <div class="listbox composer__tb-lb" id="mc-tr-ella-thesis-merge-lb" data-tb="merge" popover>
                 <ul class="listbox__list" role="listbox" aria-label="Merge Tags">
                   <li><button class="listbox__option" role="option" type="button" data-insert="{{studentName}}">{{studentName}}</button></li>
                   <li><button class="listbox__option" role="option" type="button" data-insert="{{studentFirstName}}">{{studentFirstName}}</button></li>
                   <li><button class="listbox__option" role="option" type="button" data-insert="{{studentLastName}}">{{studentLastName}}</button></li>
                 </ul>
               </div>
-                <button type="button" class="composer__tb-btn composer__tb-adv" id="ella-thesis-links-btn" data-tb-order="1" popovertarget="ella-thesis-links-lb" aria-haspopup="listbox">Hyperlinks<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
-              <div class="listbox composer__tb-lb" id="ella-thesis-links-lb" data-tb="links" popover>
+              <button type="button" class="composer__tb-btn composer__tb-adv" id="mc-tr-ella-thesis-links-btn" data-tb-order="1" popovertarget="mc-tr-ella-thesis-links-lb" aria-haspopup="listbox">Hyperlinks<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <div class="listbox composer__tb-lb" id="mc-tr-ella-thesis-links-lb" data-tb="links" popover>
                 <ul class="listbox__list" role="listbox" aria-label="Hyperlinks">
                   <li><button class="listbox__option" role="option" type="button" data-insert="1098-TConsent">1098-TConsent</button></li>
                   <li><button class="listbox__option" role="option" type="button" data-insert="Accept/DeclineAward">Accept/DeclineAward</button></li>
@@ -2236,10 +2460,13 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
                   <li><button class="listbox__option" role="option" type="button" data-insert="ShoppingCart">ShoppingCart</button></li>
                 </ul>
               </div>
-                <button type="button" class="composer__ai-assist"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
-              </div>
-              <div class="composer__field">
-                <textarea class="composer__input" rows="1" placeholder="Reply to Ella..." aria-label="Reply to Ella"></textarea>
+              <button type="button" class="composer__tb-btn composer__tb-more" id="mc-tr-ella-thesis-tb-more" aria-expanded="false" aria-label="More formatting options"><svg class="composer__tb-more-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <button type="button" class="composer__ai-assist" id="mc-tr-ella-thesis-ai"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
+              <span class="composer__tb-break" aria-hidden="true"></span>
+            </div>
+                <div class="composer__field">
+                  <textarea class="composer__input" rows="1" placeholder="Reply to Ella..." aria-label="Reply to Ella"></textarea>
+                </div>
               </div>
               <div class="mc-reply-actions">
                 <span class="mc-reply-note">Resolve is available because you have replied in this thread.</span>
@@ -2287,20 +2514,38 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
               <button type="button" class="btn btn--secondary btn--base mc-reopen">Reopen thread</button>
             </div>
             <div class="mc-composer__body" hidden>
-              <div class="composer__toolbar">
-                <button type="button" class="composer__icon-btn" aria-label="Bold"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.6 10.79c.97-.67 1.65-1.77 1.65-2.79 0-2.26-1.75-4-4-4H7v14h7.04c2.09 0 3.71-1.7 3.71-3.79 0-1.52-.86-2.82-2.15-3.42zM10 6.5h3c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-3v-3zm3.5 9H10v-3h3.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5z"/></svg></button>
-                <button type="button" class="composer__icon-btn" aria-label="Italic"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 4v3h2.21l-3.42 8H6v3h8v-3h-2.21l3.42-8H18V4z"/></svg></button>
-                <button type="button" class="composer__icon-btn" aria-label="Underline"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 17c3.31 0 6-2.69 6-6V3h-2.5v8c0 1.93-1.57 3.5-3.5 3.5S8.5 12.93 8.5 11V3H6v8c0 3.31 2.69 6 6 6zm-7 2v2h14v-2H5z"/></svg></button>
-                <button type="button" class="composer__tb-btn composer__tb-adv" id="noah-loa-merge-btn" data-tb-order="2" popovertarget="noah-loa-merge-lb" aria-haspopup="listbox">Merge Tags<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
-              <div class="listbox composer__tb-lb" id="noah-loa-merge-lb" data-tb="merge" popover>
+              <div class="mc-thread__editor">
+                <div class="composer__toolbar">
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="13" aria-label="Undo" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="12" aria-label="Redo" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M18.4 10.6C16.55 8.99 14.15 8 11.5 8c-4.65 0-8.58 3.03-9.96 7.22L3.9 16c1.05-3.19 4.05-5.5 7.6-5.5 1.95 0 3.73.72 5.12 1.88L13 16h9V7l-3.6 3.6z"/></svg>
+</button>
+              <span class="composer__tb-sep composer__tb-adv" data-tb-order="11"></span>
+              <button type="button" class="composer__tb-btn composer__tb-style composer__tb-adv" data-tb-order="9" tabindex="-1">Normal<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <span class="composer__tb-sep composer__tb-adv" data-tb-order="10"></span>
+              <button type="button" class="composer__icon-btn" aria-label="Bold"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.6 10.79c.97-.67 1.65-1.77 1.65-2.79 0-2.26-1.75-4-4-4H7v14h7.04c2.09 0 3.71-1.7 3.71-3.79 0-1.52-.86-2.82-2.15-3.42zM10 6.5h3c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-3v-3zm3.5 9H10v-3h3.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5z"/></svg></button>
+              <button type="button" class="composer__icon-btn" aria-label="Italic"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 4v3h2.21l-3.42 8H6v3h8v-3h-2.21l3.42-8H18V4z"/></svg></button>
+              <button type="button" class="composer__icon-btn" aria-label="Underline"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 17c3.31 0 6-2.69 6-6V3h-2.5v8c0 1.93-1.57 3.5-3.5 3.5S8.5 12.93 8.5 11V3H6v8c0 3.31 2.69 6 6 6zm-7 2v2h14v-2H5z"/></svg></button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="8" aria-label="Strikethrough" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 19h4v-3h-4v3zM5 4v3h5v3h4V7h5V4H5zM3 14h18v-2H3v2z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="7" aria-label="Code" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="6" aria-label="Align" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15 15H3v2h12v-2zm0-8H3v2h12V7zM3 13h18v-2H3v2zm0 8h18v-2H3v2zM3 3v2h18V3H3z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="5" aria-label="Insert link" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="4" aria-label="Insert email" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></button>
+              <span class="composer__tb-sep composer__tb-adv" data-tb-order="3"></span>
+              <button type="button" class="composer__tb-btn composer__tb-adv" id="mc-tr-noah-loa-merge-btn" data-tb-order="2" popovertarget="mc-tr-noah-loa-merge-lb" aria-haspopup="listbox">Merge Tags<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <div class="listbox composer__tb-lb" id="mc-tr-noah-loa-merge-lb" data-tb="merge" popover>
                 <ul class="listbox__list" role="listbox" aria-label="Merge Tags">
                   <li><button class="listbox__option" role="option" type="button" data-insert="{{studentName}}">{{studentName}}</button></li>
                   <li><button class="listbox__option" role="option" type="button" data-insert="{{studentFirstName}}">{{studentFirstName}}</button></li>
                   <li><button class="listbox__option" role="option" type="button" data-insert="{{studentLastName}}">{{studentLastName}}</button></li>
                 </ul>
               </div>
-                <button type="button" class="composer__tb-btn composer__tb-adv" id="noah-loa-links-btn" data-tb-order="1" popovertarget="noah-loa-links-lb" aria-haspopup="listbox">Hyperlinks<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
-              <div class="listbox composer__tb-lb" id="noah-loa-links-lb" data-tb="links" popover>
+              <button type="button" class="composer__tb-btn composer__tb-adv" id="mc-tr-noah-loa-links-btn" data-tb-order="1" popovertarget="mc-tr-noah-loa-links-lb" aria-haspopup="listbox">Hyperlinks<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <div class="listbox composer__tb-lb" id="mc-tr-noah-loa-links-lb" data-tb="links" popover>
                 <ul class="listbox__list" role="listbox" aria-label="Hyperlinks">
                   <li><button class="listbox__option" role="option" type="button" data-insert="1098-TConsent">1098-TConsent</button></li>
                   <li><button class="listbox__option" role="option" type="button" data-insert="Accept/DeclineAward">Accept/DeclineAward</button></li>
@@ -2315,10 +2560,13 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
                   <li><button class="listbox__option" role="option" type="button" data-insert="ShoppingCart">ShoppingCart</button></li>
                 </ul>
               </div>
-                <button type="button" class="composer__ai-assist"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
-              </div>
-              <div class="composer__field">
-                <textarea class="composer__input" rows="1" placeholder="Reply to Noah..." aria-label="Reply to Noah"></textarea>
+              <button type="button" class="composer__tb-btn composer__tb-more" id="mc-tr-noah-loa-tb-more" aria-expanded="false" aria-label="More formatting options"><svg class="composer__tb-more-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <button type="button" class="composer__ai-assist" id="mc-tr-noah-loa-ai"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
+              <span class="composer__tb-break" aria-hidden="true"></span>
+            </div>
+                <div class="composer__field">
+                  <textarea class="composer__input" rows="1" placeholder="Reply to Noah..." aria-label="Reply to Noah"></textarea>
+                </div>
               </div>
               <div class="mc-reply-actions">
                 <span class="mc-reply-note">Resolve is available because you have replied in this thread.</span>
@@ -2366,20 +2614,38 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
               <button type="button" class="btn btn--secondary btn--base mc-reopen">Reopen thread</button>
             </div>
             <div class="mc-composer__body" >
-              <div class="composer__toolbar">
-                <button type="button" class="composer__icon-btn" aria-label="Bold"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.6 10.79c.97-.67 1.65-1.77 1.65-2.79 0-2.26-1.75-4-4-4H7v14h7.04c2.09 0 3.71-1.7 3.71-3.79 0-1.52-.86-2.82-2.15-3.42zM10 6.5h3c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-3v-3zm3.5 9H10v-3h3.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5z"/></svg></button>
-                <button type="button" class="composer__icon-btn" aria-label="Italic"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 4v3h2.21l-3.42 8H6v3h8v-3h-2.21l3.42-8H18V4z"/></svg></button>
-                <button type="button" class="composer__icon-btn" aria-label="Underline"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 17c3.31 0 6-2.69 6-6V3h-2.5v8c0 1.93-1.57 3.5-3.5 3.5S8.5 12.93 8.5 11V3H6v8c0 3.31 2.69 6 6 6zm-7 2v2h14v-2H5z"/></svg></button>
-                <button type="button" class="composer__tb-btn composer__tb-adv" id="lena-waiver-merge-btn" data-tb-order="2" popovertarget="lena-waiver-merge-lb" aria-haspopup="listbox">Merge Tags<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
-              <div class="listbox composer__tb-lb" id="lena-waiver-merge-lb" data-tb="merge" popover>
+              <div class="mc-thread__editor">
+                <div class="composer__toolbar">
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="13" aria-label="Undo" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="12" aria-label="Redo" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M18.4 10.6C16.55 8.99 14.15 8 11.5 8c-4.65 0-8.58 3.03-9.96 7.22L3.9 16c1.05-3.19 4.05-5.5 7.6-5.5 1.95 0 3.73.72 5.12 1.88L13 16h9V7l-3.6 3.6z"/></svg>
+</button>
+              <span class="composer__tb-sep composer__tb-adv" data-tb-order="11"></span>
+              <button type="button" class="composer__tb-btn composer__tb-style composer__tb-adv" data-tb-order="9" tabindex="-1">Normal<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <span class="composer__tb-sep composer__tb-adv" data-tb-order="10"></span>
+              <button type="button" class="composer__icon-btn" aria-label="Bold"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.6 10.79c.97-.67 1.65-1.77 1.65-2.79 0-2.26-1.75-4-4-4H7v14h7.04c2.09 0 3.71-1.7 3.71-3.79 0-1.52-.86-2.82-2.15-3.42zM10 6.5h3c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-3v-3zm3.5 9H10v-3h3.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5z"/></svg></button>
+              <button type="button" class="composer__icon-btn" aria-label="Italic"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 4v3h2.21l-3.42 8H6v3h8v-3h-2.21l3.42-8H18V4z"/></svg></button>
+              <button type="button" class="composer__icon-btn" aria-label="Underline"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 17c3.31 0 6-2.69 6-6V3h-2.5v8c0 1.93-1.57 3.5-3.5 3.5S8.5 12.93 8.5 11V3H6v8c0 3.31 2.69 6 6 6zm-7 2v2h14v-2H5z"/></svg></button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="8" aria-label="Strikethrough" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 19h4v-3h-4v3zM5 4v3h5v3h4V7h5V4H5zM3 14h18v-2H3v2z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="7" aria-label="Code" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="6" aria-label="Align" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15 15H3v2h12v-2zm0-8H3v2h12V7zM3 13h18v-2H3v2zm0 8h18v-2H3v2zM3 3v2h18V3H3z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="5" aria-label="Insert link" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="4" aria-label="Insert email" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></button>
+              <span class="composer__tb-sep composer__tb-adv" data-tb-order="3"></span>
+              <button type="button" class="composer__tb-btn composer__tb-adv" id="mc-tr-lena-waiver-merge-btn" data-tb-order="2" popovertarget="mc-tr-lena-waiver-merge-lb" aria-haspopup="listbox">Merge Tags<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <div class="listbox composer__tb-lb" id="mc-tr-lena-waiver-merge-lb" data-tb="merge" popover>
                 <ul class="listbox__list" role="listbox" aria-label="Merge Tags">
                   <li><button class="listbox__option" role="option" type="button" data-insert="{{studentName}}">{{studentName}}</button></li>
                   <li><button class="listbox__option" role="option" type="button" data-insert="{{studentFirstName}}">{{studentFirstName}}</button></li>
                   <li><button class="listbox__option" role="option" type="button" data-insert="{{studentLastName}}">{{studentLastName}}</button></li>
                 </ul>
               </div>
-                <button type="button" class="composer__tb-btn composer__tb-adv" id="lena-waiver-links-btn" data-tb-order="1" popovertarget="lena-waiver-links-lb" aria-haspopup="listbox">Hyperlinks<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
-              <div class="listbox composer__tb-lb" id="lena-waiver-links-lb" data-tb="links" popover>
+              <button type="button" class="composer__tb-btn composer__tb-adv" id="mc-tr-lena-waiver-links-btn" data-tb-order="1" popovertarget="mc-tr-lena-waiver-links-lb" aria-haspopup="listbox">Hyperlinks<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <div class="listbox composer__tb-lb" id="mc-tr-lena-waiver-links-lb" data-tb="links" popover>
                 <ul class="listbox__list" role="listbox" aria-label="Hyperlinks">
                   <li><button class="listbox__option" role="option" type="button" data-insert="1098-TConsent">1098-TConsent</button></li>
                   <li><button class="listbox__option" role="option" type="button" data-insert="Accept/DeclineAward">Accept/DeclineAward</button></li>
@@ -2394,10 +2660,13 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
                   <li><button class="listbox__option" role="option" type="button" data-insert="ShoppingCart">ShoppingCart</button></li>
                 </ul>
               </div>
-                <button type="button" class="composer__ai-assist"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
-              </div>
-              <div class="composer__field">
-                <textarea class="composer__input" rows="1" placeholder="Reply to Lena..." aria-label="Reply to Lena"></textarea>
+              <button type="button" class="composer__tb-btn composer__tb-more" id="mc-tr-lena-waiver-tb-more" aria-expanded="false" aria-label="More formatting options"><svg class="composer__tb-more-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <button type="button" class="composer__ai-assist" id="mc-tr-lena-waiver-ai"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
+              <span class="composer__tb-break" aria-hidden="true"></span>
+            </div>
+                <div class="composer__field">
+                  <textarea class="composer__input" rows="1" placeholder="Reply to Lena..." aria-label="Reply to Lena"></textarea>
+                </div>
               </div>
               <div class="mc-reply-actions">
                 <span class="mc-reply-note">Resolve is available because you have replied in this thread.</span>
@@ -2445,20 +2714,38 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
               <button type="button" class="btn btn--secondary btn--base mc-reopen">Reopen thread</button>
             </div>
             <div class="mc-composer__body" >
-              <div class="composer__toolbar">
-                <button type="button" class="composer__icon-btn" aria-label="Bold"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.6 10.79c.97-.67 1.65-1.77 1.65-2.79 0-2.26-1.75-4-4-4H7v14h7.04c2.09 0 3.71-1.7 3.71-3.79 0-1.52-.86-2.82-2.15-3.42zM10 6.5h3c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-3v-3zm3.5 9H10v-3h3.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5z"/></svg></button>
-                <button type="button" class="composer__icon-btn" aria-label="Italic"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 4v3h2.21l-3.42 8H6v3h8v-3h-2.21l3.42-8H18V4z"/></svg></button>
-                <button type="button" class="composer__icon-btn" aria-label="Underline"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 17c3.31 0 6-2.69 6-6V3h-2.5v8c0 1.93-1.57 3.5-3.5 3.5S8.5 12.93 8.5 11V3H6v8c0 3.31 2.69 6 6 6zm-7 2v2h14v-2H5z"/></svg></button>
-                <button type="button" class="composer__tb-btn composer__tb-adv" id="tomas-plan-merge-btn" data-tb-order="2" popovertarget="tomas-plan-merge-lb" aria-haspopup="listbox">Merge Tags<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
-              <div class="listbox composer__tb-lb" id="tomas-plan-merge-lb" data-tb="merge" popover>
+              <div class="mc-thread__editor">
+                <div class="composer__toolbar">
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="13" aria-label="Undo" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="12" aria-label="Redo" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M18.4 10.6C16.55 8.99 14.15 8 11.5 8c-4.65 0-8.58 3.03-9.96 7.22L3.9 16c1.05-3.19 4.05-5.5 7.6-5.5 1.95 0 3.73.72 5.12 1.88L13 16h9V7l-3.6 3.6z"/></svg>
+</button>
+              <span class="composer__tb-sep composer__tb-adv" data-tb-order="11"></span>
+              <button type="button" class="composer__tb-btn composer__tb-style composer__tb-adv" data-tb-order="9" tabindex="-1">Normal<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <span class="composer__tb-sep composer__tb-adv" data-tb-order="10"></span>
+              <button type="button" class="composer__icon-btn" aria-label="Bold"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.6 10.79c.97-.67 1.65-1.77 1.65-2.79 0-2.26-1.75-4-4-4H7v14h7.04c2.09 0 3.71-1.7 3.71-3.79 0-1.52-.86-2.82-2.15-3.42zM10 6.5h3c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-3v-3zm3.5 9H10v-3h3.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5z"/></svg></button>
+              <button type="button" class="composer__icon-btn" aria-label="Italic"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 4v3h2.21l-3.42 8H6v3h8v-3h-2.21l3.42-8H18V4z"/></svg></button>
+              <button type="button" class="composer__icon-btn" aria-label="Underline"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 17c3.31 0 6-2.69 6-6V3h-2.5v8c0 1.93-1.57 3.5-3.5 3.5S8.5 12.93 8.5 11V3H6v8c0 3.31 2.69 6 6 6zm-7 2v2h14v-2H5z"/></svg></button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="8" aria-label="Strikethrough" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 19h4v-3h-4v3zM5 4v3h5v3h4V7h5V4H5zM3 14h18v-2H3v2z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="7" aria-label="Code" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="6" aria-label="Align" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15 15H3v2h12v-2zm0-8H3v2h12V7zM3 13h18v-2H3v2zm0 8h18v-2H3v2zM3 3v2h18V3H3z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="5" aria-label="Insert link" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="4" aria-label="Insert email" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></button>
+              <span class="composer__tb-sep composer__tb-adv" data-tb-order="3"></span>
+              <button type="button" class="composer__tb-btn composer__tb-adv" id="mc-tr-tomas-plan-merge-btn" data-tb-order="2" popovertarget="mc-tr-tomas-plan-merge-lb" aria-haspopup="listbox">Merge Tags<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <div class="listbox composer__tb-lb" id="mc-tr-tomas-plan-merge-lb" data-tb="merge" popover>
                 <ul class="listbox__list" role="listbox" aria-label="Merge Tags">
                   <li><button class="listbox__option" role="option" type="button" data-insert="{{studentName}}">{{studentName}}</button></li>
                   <li><button class="listbox__option" role="option" type="button" data-insert="{{studentFirstName}}">{{studentFirstName}}</button></li>
                   <li><button class="listbox__option" role="option" type="button" data-insert="{{studentLastName}}">{{studentLastName}}</button></li>
                 </ul>
               </div>
-                <button type="button" class="composer__tb-btn composer__tb-adv" id="tomas-plan-links-btn" data-tb-order="1" popovertarget="tomas-plan-links-lb" aria-haspopup="listbox">Hyperlinks<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
-              <div class="listbox composer__tb-lb" id="tomas-plan-links-lb" data-tb="links" popover>
+              <button type="button" class="composer__tb-btn composer__tb-adv" id="mc-tr-tomas-plan-links-btn" data-tb-order="1" popovertarget="mc-tr-tomas-plan-links-lb" aria-haspopup="listbox">Hyperlinks<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <div class="listbox composer__tb-lb" id="mc-tr-tomas-plan-links-lb" data-tb="links" popover>
                 <ul class="listbox__list" role="listbox" aria-label="Hyperlinks">
                   <li><button class="listbox__option" role="option" type="button" data-insert="1098-TConsent">1098-TConsent</button></li>
                   <li><button class="listbox__option" role="option" type="button" data-insert="Accept/DeclineAward">Accept/DeclineAward</button></li>
@@ -2473,10 +2760,13 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
                   <li><button class="listbox__option" role="option" type="button" data-insert="ShoppingCart">ShoppingCart</button></li>
                 </ul>
               </div>
-                <button type="button" class="composer__ai-assist"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
-              </div>
-              <div class="composer__field">
-                <textarea class="composer__input" rows="1" placeholder="Reply to Tomas..." aria-label="Reply to Tomas"></textarea>
+              <button type="button" class="composer__tb-btn composer__tb-more" id="mc-tr-tomas-plan-tb-more" aria-expanded="false" aria-label="More formatting options"><svg class="composer__tb-more-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <button type="button" class="composer__ai-assist" id="mc-tr-tomas-plan-ai"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
+              <span class="composer__tb-break" aria-hidden="true"></span>
+            </div>
+                <div class="composer__field">
+                  <textarea class="composer__input" rows="1" placeholder="Reply to Tomas..." aria-label="Reply to Tomas"></textarea>
+                </div>
               </div>
               <div class="mc-reply-actions">
                 <span class="mc-reply-note">Resolve is available because you have replied in this thread.</span>
@@ -2524,20 +2814,38 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
               <button type="button" class="btn btn--secondary btn--base mc-reopen">Reopen thread</button>
             </div>
             <div class="mc-composer__body" >
-              <div class="composer__toolbar">
-                <button type="button" class="composer__icon-btn" aria-label="Bold"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.6 10.79c.97-.67 1.65-1.77 1.65-2.79 0-2.26-1.75-4-4-4H7v14h7.04c2.09 0 3.71-1.7 3.71-3.79 0-1.52-.86-2.82-2.15-3.42zM10 6.5h3c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-3v-3zm3.5 9H10v-3h3.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5z"/></svg></button>
-                <button type="button" class="composer__icon-btn" aria-label="Italic"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 4v3h2.21l-3.42 8H6v3h8v-3h-2.21l3.42-8H18V4z"/></svg></button>
-                <button type="button" class="composer__icon-btn" aria-label="Underline"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 17c3.31 0 6-2.69 6-6V3h-2.5v8c0 1.93-1.57 3.5-3.5 3.5S8.5 12.93 8.5 11V3H6v8c0 3.31 2.69 6 6 6zm-7 2v2h14v-2H5z"/></svg></button>
-                <button type="button" class="composer__tb-btn composer__tb-adv" id="dana-adddrop-merge-btn" data-tb-order="2" popovertarget="dana-adddrop-merge-lb" aria-haspopup="listbox">Merge Tags<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
-              <div class="listbox composer__tb-lb" id="dana-adddrop-merge-lb" data-tb="merge" popover>
+              <div class="mc-thread__editor">
+                <div class="composer__toolbar">
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="13" aria-label="Undo" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="12" aria-label="Redo" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M18.4 10.6C16.55 8.99 14.15 8 11.5 8c-4.65 0-8.58 3.03-9.96 7.22L3.9 16c1.05-3.19 4.05-5.5 7.6-5.5 1.95 0 3.73.72 5.12 1.88L13 16h9V7l-3.6 3.6z"/></svg>
+</button>
+              <span class="composer__tb-sep composer__tb-adv" data-tb-order="11"></span>
+              <button type="button" class="composer__tb-btn composer__tb-style composer__tb-adv" data-tb-order="9" tabindex="-1">Normal<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <span class="composer__tb-sep composer__tb-adv" data-tb-order="10"></span>
+              <button type="button" class="composer__icon-btn" aria-label="Bold"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.6 10.79c.97-.67 1.65-1.77 1.65-2.79 0-2.26-1.75-4-4-4H7v14h7.04c2.09 0 3.71-1.7 3.71-3.79 0-1.52-.86-2.82-2.15-3.42zM10 6.5h3c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-3v-3zm3.5 9H10v-3h3.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5z"/></svg></button>
+              <button type="button" class="composer__icon-btn" aria-label="Italic"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 4v3h2.21l-3.42 8H6v3h8v-3h-2.21l3.42-8H18V4z"/></svg></button>
+              <button type="button" class="composer__icon-btn" aria-label="Underline"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 17c3.31 0 6-2.69 6-6V3h-2.5v8c0 1.93-1.57 3.5-3.5 3.5S8.5 12.93 8.5 11V3H6v8c0 3.31 2.69 6 6 6zm-7 2v2h14v-2H5z"/></svg></button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="8" aria-label="Strikethrough" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 19h4v-3h-4v3zM5 4v3h5v3h4V7h5V4H5zM3 14h18v-2H3v2z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="7" aria-label="Code" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="6" aria-label="Align" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15 15H3v2h12v-2zm0-8H3v2h12V7zM3 13h18v-2H3v2zm0 8h18v-2H3v2zM3 3v2h18V3H3z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="5" aria-label="Insert link" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="4" aria-label="Insert email" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></button>
+              <span class="composer__tb-sep composer__tb-adv" data-tb-order="3"></span>
+              <button type="button" class="composer__tb-btn composer__tb-adv" id="mc-tr-dana-adddrop-merge-btn" data-tb-order="2" popovertarget="mc-tr-dana-adddrop-merge-lb" aria-haspopup="listbox">Merge Tags<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <div class="listbox composer__tb-lb" id="mc-tr-dana-adddrop-merge-lb" data-tb="merge" popover>
                 <ul class="listbox__list" role="listbox" aria-label="Merge Tags">
                   <li><button class="listbox__option" role="option" type="button" data-insert="{{studentName}}">{{studentName}}</button></li>
                   <li><button class="listbox__option" role="option" type="button" data-insert="{{studentFirstName}}">{{studentFirstName}}</button></li>
                   <li><button class="listbox__option" role="option" type="button" data-insert="{{studentLastName}}">{{studentLastName}}</button></li>
                 </ul>
               </div>
-                <button type="button" class="composer__tb-btn composer__tb-adv" id="dana-adddrop-links-btn" data-tb-order="1" popovertarget="dana-adddrop-links-lb" aria-haspopup="listbox">Hyperlinks<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
-              <div class="listbox composer__tb-lb" id="dana-adddrop-links-lb" data-tb="links" popover>
+              <button type="button" class="composer__tb-btn composer__tb-adv" id="mc-tr-dana-adddrop-links-btn" data-tb-order="1" popovertarget="mc-tr-dana-adddrop-links-lb" aria-haspopup="listbox">Hyperlinks<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <div class="listbox composer__tb-lb" id="mc-tr-dana-adddrop-links-lb" data-tb="links" popover>
                 <ul class="listbox__list" role="listbox" aria-label="Hyperlinks">
                   <li><button class="listbox__option" role="option" type="button" data-insert="1098-TConsent">1098-TConsent</button></li>
                   <li><button class="listbox__option" role="option" type="button" data-insert="Accept/DeclineAward">Accept/DeclineAward</button></li>
@@ -2552,10 +2860,13 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
                   <li><button class="listbox__option" role="option" type="button" data-insert="ShoppingCart">ShoppingCart</button></li>
                 </ul>
               </div>
-                <button type="button" class="composer__ai-assist"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
-              </div>
-              <div class="composer__field">
-                <textarea class="composer__input" rows="1" placeholder="Reply to Dana..." aria-label="Reply to Dana"></textarea>
+              <button type="button" class="composer__tb-btn composer__tb-more" id="mc-tr-dana-adddrop-tb-more" aria-expanded="false" aria-label="More formatting options"><svg class="composer__tb-more-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <button type="button" class="composer__ai-assist" id="mc-tr-dana-adddrop-ai"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
+              <span class="composer__tb-break" aria-hidden="true"></span>
+            </div>
+                <div class="composer__field">
+                  <textarea class="composer__input" rows="1" placeholder="Reply to Dana..." aria-label="Reply to Dana"></textarea>
+                </div>
               </div>
               <div class="mc-reply-actions">
                 <span class="mc-reply-note">Resolve is available because you have replied in this thread.</span>
@@ -2603,20 +2914,38 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
               <button type="button" class="btn btn--secondary btn--base mc-reopen">Reopen thread</button>
             </div>
             <div class="mc-composer__body" >
-              <div class="composer__toolbar">
-                <button type="button" class="composer__icon-btn" aria-label="Bold"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.6 10.79c.97-.67 1.65-1.77 1.65-2.79 0-2.26-1.75-4-4-4H7v14h7.04c2.09 0 3.71-1.7 3.71-3.79 0-1.52-.86-2.82-2.15-3.42zM10 6.5h3c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-3v-3zm3.5 9H10v-3h3.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5z"/></svg></button>
-                <button type="button" class="composer__icon-btn" aria-label="Italic"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 4v3h2.21l-3.42 8H6v3h8v-3h-2.21l3.42-8H18V4z"/></svg></button>
-                <button type="button" class="composer__icon-btn" aria-label="Underline"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 17c3.31 0 6-2.69 6-6V3h-2.5v8c0 1.93-1.57 3.5-3.5 3.5S8.5 12.93 8.5 11V3H6v8c0 3.31 2.69 6 6 6zm-7 2v2h14v-2H5z"/></svg></button>
-                <button type="button" class="composer__tb-btn composer__tb-adv" id="liam-reg-merge-btn" data-tb-order="2" popovertarget="liam-reg-merge-lb" aria-haspopup="listbox">Merge Tags<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
-              <div class="listbox composer__tb-lb" id="liam-reg-merge-lb" data-tb="merge" popover>
+              <div class="mc-thread__editor">
+                <div class="composer__toolbar">
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="13" aria-label="Undo" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="12" aria-label="Redo" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M18.4 10.6C16.55 8.99 14.15 8 11.5 8c-4.65 0-8.58 3.03-9.96 7.22L3.9 16c1.05-3.19 4.05-5.5 7.6-5.5 1.95 0 3.73.72 5.12 1.88L13 16h9V7l-3.6 3.6z"/></svg>
+</button>
+              <span class="composer__tb-sep composer__tb-adv" data-tb-order="11"></span>
+              <button type="button" class="composer__tb-btn composer__tb-style composer__tb-adv" data-tb-order="9" tabindex="-1">Normal<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <span class="composer__tb-sep composer__tb-adv" data-tb-order="10"></span>
+              <button type="button" class="composer__icon-btn" aria-label="Bold"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.6 10.79c.97-.67 1.65-1.77 1.65-2.79 0-2.26-1.75-4-4-4H7v14h7.04c2.09 0 3.71-1.7 3.71-3.79 0-1.52-.86-2.82-2.15-3.42zM10 6.5h3c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-3v-3zm3.5 9H10v-3h3.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5z"/></svg></button>
+              <button type="button" class="composer__icon-btn" aria-label="Italic"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 4v3h2.21l-3.42 8H6v3h8v-3h-2.21l3.42-8H18V4z"/></svg></button>
+              <button type="button" class="composer__icon-btn" aria-label="Underline"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 17c3.31 0 6-2.69 6-6V3h-2.5v8c0 1.93-1.57 3.5-3.5 3.5S8.5 12.93 8.5 11V3H6v8c0 3.31 2.69 6 6 6zm-7 2v2h14v-2H5z"/></svg></button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="8" aria-label="Strikethrough" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 19h4v-3h-4v3zM5 4v3h5v3h4V7h5V4H5zM3 14h18v-2H3v2z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="7" aria-label="Code" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="6" aria-label="Align" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15 15H3v2h12v-2zm0-8H3v2h12V7zM3 13h18v-2H3v2zm0 8h18v-2H3v2zM3 3v2h18V3H3z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="5" aria-label="Insert link" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="4" aria-label="Insert email" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></button>
+              <span class="composer__tb-sep composer__tb-adv" data-tb-order="3"></span>
+              <button type="button" class="composer__tb-btn composer__tb-adv" id="mc-tr-liam-reg-merge-btn" data-tb-order="2" popovertarget="mc-tr-liam-reg-merge-lb" aria-haspopup="listbox">Merge Tags<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <div class="listbox composer__tb-lb" id="mc-tr-liam-reg-merge-lb" data-tb="merge" popover>
                 <ul class="listbox__list" role="listbox" aria-label="Merge Tags">
                   <li><button class="listbox__option" role="option" type="button" data-insert="{{studentName}}">{{studentName}}</button></li>
                   <li><button class="listbox__option" role="option" type="button" data-insert="{{studentFirstName}}">{{studentFirstName}}</button></li>
                   <li><button class="listbox__option" role="option" type="button" data-insert="{{studentLastName}}">{{studentLastName}}</button></li>
                 </ul>
               </div>
-                <button type="button" class="composer__tb-btn composer__tb-adv" id="liam-reg-links-btn" data-tb-order="1" popovertarget="liam-reg-links-lb" aria-haspopup="listbox">Hyperlinks<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
-              <div class="listbox composer__tb-lb" id="liam-reg-links-lb" data-tb="links" popover>
+              <button type="button" class="composer__tb-btn composer__tb-adv" id="mc-tr-liam-reg-links-btn" data-tb-order="1" popovertarget="mc-tr-liam-reg-links-lb" aria-haspopup="listbox">Hyperlinks<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <div class="listbox composer__tb-lb" id="mc-tr-liam-reg-links-lb" data-tb="links" popover>
                 <ul class="listbox__list" role="listbox" aria-label="Hyperlinks">
                   <li><button class="listbox__option" role="option" type="button" data-insert="1098-TConsent">1098-TConsent</button></li>
                   <li><button class="listbox__option" role="option" type="button" data-insert="Accept/DeclineAward">Accept/DeclineAward</button></li>
@@ -2631,10 +2960,13 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
                   <li><button class="listbox__option" role="option" type="button" data-insert="ShoppingCart">ShoppingCart</button></li>
                 </ul>
               </div>
-                <button type="button" class="composer__ai-assist"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
-              </div>
-              <div class="composer__field">
-                <textarea class="composer__input" rows="1" placeholder="Reply to Liam..." aria-label="Reply to Liam"></textarea>
+              <button type="button" class="composer__tb-btn composer__tb-more" id="mc-tr-liam-reg-tb-more" aria-expanded="false" aria-label="More formatting options"><svg class="composer__tb-more-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <button type="button" class="composer__ai-assist" id="mc-tr-liam-reg-ai"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
+              <span class="composer__tb-break" aria-hidden="true"></span>
+            </div>
+                <div class="composer__field">
+                  <textarea class="composer__input" rows="1" placeholder="Reply to Liam..." aria-label="Reply to Liam"></textarea>
+                </div>
               </div>
               <div class="mc-reply-actions">
                 <span class="mc-reply-note">Resolve is available because you have replied in this thread.</span>
@@ -2682,20 +3014,38 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
               <button type="button" class="btn btn--secondary btn--base mc-reopen">Reopen thread</button>
             </div>
             <div class="mc-composer__body" >
-              <div class="composer__toolbar">
-                <button type="button" class="composer__icon-btn" aria-label="Bold"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.6 10.79c.97-.67 1.65-1.77 1.65-2.79 0-2.26-1.75-4-4-4H7v14h7.04c2.09 0 3.71-1.7 3.71-3.79 0-1.52-.86-2.82-2.15-3.42zM10 6.5h3c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-3v-3zm3.5 9H10v-3h3.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5z"/></svg></button>
-                <button type="button" class="composer__icon-btn" aria-label="Italic"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 4v3h2.21l-3.42 8H6v3h8v-3h-2.21l3.42-8H18V4z"/></svg></button>
-                <button type="button" class="composer__icon-btn" aria-label="Underline"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 17c3.31 0 6-2.69 6-6V3h-2.5v8c0 1.93-1.57 3.5-3.5 3.5S8.5 12.93 8.5 11V3H6v8c0 3.31 2.69 6 6 6zm-7 2v2h14v-2H5z"/></svg></button>
-                <button type="button" class="composer__tb-btn composer__tb-adv" id="sofia-notes-merge-btn" data-tb-order="2" popovertarget="sofia-notes-merge-lb" aria-haspopup="listbox">Merge Tags<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
-              <div class="listbox composer__tb-lb" id="sofia-notes-merge-lb" data-tb="merge" popover>
+              <div class="mc-thread__editor">
+                <div class="composer__toolbar">
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="13" aria-label="Undo" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="12" aria-label="Redo" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M18.4 10.6C16.55 8.99 14.15 8 11.5 8c-4.65 0-8.58 3.03-9.96 7.22L3.9 16c1.05-3.19 4.05-5.5 7.6-5.5 1.95 0 3.73.72 5.12 1.88L13 16h9V7l-3.6 3.6z"/></svg>
+</button>
+              <span class="composer__tb-sep composer__tb-adv" data-tb-order="11"></span>
+              <button type="button" class="composer__tb-btn composer__tb-style composer__tb-adv" data-tb-order="9" tabindex="-1">Normal<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <span class="composer__tb-sep composer__tb-adv" data-tb-order="10"></span>
+              <button type="button" class="composer__icon-btn" aria-label="Bold"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.6 10.79c.97-.67 1.65-1.77 1.65-2.79 0-2.26-1.75-4-4-4H7v14h7.04c2.09 0 3.71-1.7 3.71-3.79 0-1.52-.86-2.82-2.15-3.42zM10 6.5h3c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-3v-3zm3.5 9H10v-3h3.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5z"/></svg></button>
+              <button type="button" class="composer__icon-btn" aria-label="Italic"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 4v3h2.21l-3.42 8H6v3h8v-3h-2.21l3.42-8H18V4z"/></svg></button>
+              <button type="button" class="composer__icon-btn" aria-label="Underline"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 17c3.31 0 6-2.69 6-6V3h-2.5v8c0 1.93-1.57 3.5-3.5 3.5S8.5 12.93 8.5 11V3H6v8c0 3.31 2.69 6 6 6zm-7 2v2h14v-2H5z"/></svg></button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="8" aria-label="Strikethrough" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 19h4v-3h-4v3zM5 4v3h5v3h4V7h5V4H5zM3 14h18v-2H3v2z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="7" aria-label="Code" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="6" aria-label="Align" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15 15H3v2h12v-2zm0-8H3v2h12V7zM3 13h18v-2H3v2zm0 8h18v-2H3v2zM3 3v2h18V3H3z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="5" aria-label="Insert link" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="4" aria-label="Insert email" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></button>
+              <span class="composer__tb-sep composer__tb-adv" data-tb-order="3"></span>
+              <button type="button" class="composer__tb-btn composer__tb-adv" id="mc-tr-sofia-notes-merge-btn" data-tb-order="2" popovertarget="mc-tr-sofia-notes-merge-lb" aria-haspopup="listbox">Merge Tags<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <div class="listbox composer__tb-lb" id="mc-tr-sofia-notes-merge-lb" data-tb="merge" popover>
                 <ul class="listbox__list" role="listbox" aria-label="Merge Tags">
                   <li><button class="listbox__option" role="option" type="button" data-insert="{{studentName}}">{{studentName}}</button></li>
                   <li><button class="listbox__option" role="option" type="button" data-insert="{{studentFirstName}}">{{studentFirstName}}</button></li>
                   <li><button class="listbox__option" role="option" type="button" data-insert="{{studentLastName}}">{{studentLastName}}</button></li>
                 </ul>
               </div>
-                <button type="button" class="composer__tb-btn composer__tb-adv" id="sofia-notes-links-btn" data-tb-order="1" popovertarget="sofia-notes-links-lb" aria-haspopup="listbox">Hyperlinks<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
-              <div class="listbox composer__tb-lb" id="sofia-notes-links-lb" data-tb="links" popover>
+              <button type="button" class="composer__tb-btn composer__tb-adv" id="mc-tr-sofia-notes-links-btn" data-tb-order="1" popovertarget="mc-tr-sofia-notes-links-lb" aria-haspopup="listbox">Hyperlinks<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <div class="listbox composer__tb-lb" id="mc-tr-sofia-notes-links-lb" data-tb="links" popover>
                 <ul class="listbox__list" role="listbox" aria-label="Hyperlinks">
                   <li><button class="listbox__option" role="option" type="button" data-insert="1098-TConsent">1098-TConsent</button></li>
                   <li><button class="listbox__option" role="option" type="button" data-insert="Accept/DeclineAward">Accept/DeclineAward</button></li>
@@ -2710,10 +3060,13 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
                   <li><button class="listbox__option" role="option" type="button" data-insert="ShoppingCart">ShoppingCart</button></li>
                 </ul>
               </div>
-                <button type="button" class="composer__ai-assist"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
-              </div>
-              <div class="composer__field">
-                <textarea class="composer__input" rows="1" placeholder="Reply to Sofia..." aria-label="Reply to Sofia"></textarea>
+              <button type="button" class="composer__tb-btn composer__tb-more" id="mc-tr-sofia-notes-tb-more" aria-expanded="false" aria-label="More formatting options"><svg class="composer__tb-more-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <button type="button" class="composer__ai-assist" id="mc-tr-sofia-notes-ai"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
+              <span class="composer__tb-break" aria-hidden="true"></span>
+            </div>
+                <div class="composer__field">
+                  <textarea class="composer__input" rows="1" placeholder="Reply to Sofia..." aria-label="Reply to Sofia"></textarea>
+                </div>
               </div>
               <div class="mc-reply-actions">
                 <span class="mc-reply-note">Resolve is available because you have replied in this thread.</span>
@@ -2761,20 +3114,38 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
               <button type="button" class="btn btn--secondary btn--base mc-reopen">Reopen thread</button>
             </div>
             <div class="mc-composer__body" >
-              <div class="composer__toolbar">
-                <button type="button" class="composer__icon-btn" aria-label="Bold"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.6 10.79c.97-.67 1.65-1.77 1.65-2.79 0-2.26-1.75-4-4-4H7v14h7.04c2.09 0 3.71-1.7 3.71-3.79 0-1.52-.86-2.82-2.15-3.42zM10 6.5h3c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-3v-3zm3.5 9H10v-3h3.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5z"/></svg></button>
-                <button type="button" class="composer__icon-btn" aria-label="Italic"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 4v3h2.21l-3.42 8H6v3h8v-3h-2.21l3.42-8H18V4z"/></svg></button>
-                <button type="button" class="composer__icon-btn" aria-label="Underline"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 17c3.31 0 6-2.69 6-6V3h-2.5v8c0 1.93-1.57 3.5-3.5 3.5S8.5 12.93 8.5 11V3H6v8c0 3.31 2.69 6 6 6zm-7 2v2h14v-2H5z"/></svg></button>
-                <button type="button" class="composer__tb-btn composer__tb-adv" id="owen-transcript-merge-btn" data-tb-order="2" popovertarget="owen-transcript-merge-lb" aria-haspopup="listbox">Merge Tags<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
-              <div class="listbox composer__tb-lb" id="owen-transcript-merge-lb" data-tb="merge" popover>
+              <div class="mc-thread__editor">
+                <div class="composer__toolbar">
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="13" aria-label="Undo" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="12" aria-label="Redo" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M18.4 10.6C16.55 8.99 14.15 8 11.5 8c-4.65 0-8.58 3.03-9.96 7.22L3.9 16c1.05-3.19 4.05-5.5 7.6-5.5 1.95 0 3.73.72 5.12 1.88L13 16h9V7l-3.6 3.6z"/></svg>
+</button>
+              <span class="composer__tb-sep composer__tb-adv" data-tb-order="11"></span>
+              <button type="button" class="composer__tb-btn composer__tb-style composer__tb-adv" data-tb-order="9" tabindex="-1">Normal<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <span class="composer__tb-sep composer__tb-adv" data-tb-order="10"></span>
+              <button type="button" class="composer__icon-btn" aria-label="Bold"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.6 10.79c.97-.67 1.65-1.77 1.65-2.79 0-2.26-1.75-4-4-4H7v14h7.04c2.09 0 3.71-1.7 3.71-3.79 0-1.52-.86-2.82-2.15-3.42zM10 6.5h3c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-3v-3zm3.5 9H10v-3h3.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5z"/></svg></button>
+              <button type="button" class="composer__icon-btn" aria-label="Italic"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 4v3h2.21l-3.42 8H6v3h8v-3h-2.21l3.42-8H18V4z"/></svg></button>
+              <button type="button" class="composer__icon-btn" aria-label="Underline"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 17c3.31 0 6-2.69 6-6V3h-2.5v8c0 1.93-1.57 3.5-3.5 3.5S8.5 12.93 8.5 11V3H6v8c0 3.31 2.69 6 6 6zm-7 2v2h14v-2H5z"/></svg></button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="8" aria-label="Strikethrough" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 19h4v-3h-4v3zM5 4v3h5v3h4V7h5V4H5zM3 14h18v-2H3v2z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="7" aria-label="Code" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="6" aria-label="Align" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15 15H3v2h12v-2zm0-8H3v2h12V7zM3 13h18v-2H3v2zm0 8h18v-2H3v2zM3 3v2h18V3H3z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="5" aria-label="Insert link" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="4" aria-label="Insert email" tabindex="-1"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></button>
+              <span class="composer__tb-sep composer__tb-adv" data-tb-order="3"></span>
+              <button type="button" class="composer__tb-btn composer__tb-adv" id="mc-tr-owen-transcript-merge-btn" data-tb-order="2" popovertarget="mc-tr-owen-transcript-merge-lb" aria-haspopup="listbox">Merge Tags<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <div class="listbox composer__tb-lb" id="mc-tr-owen-transcript-merge-lb" data-tb="merge" popover>
                 <ul class="listbox__list" role="listbox" aria-label="Merge Tags">
                   <li><button class="listbox__option" role="option" type="button" data-insert="{{studentName}}">{{studentName}}</button></li>
                   <li><button class="listbox__option" role="option" type="button" data-insert="{{studentFirstName}}">{{studentFirstName}}</button></li>
                   <li><button class="listbox__option" role="option" type="button" data-insert="{{studentLastName}}">{{studentLastName}}</button></li>
                 </ul>
               </div>
-                <button type="button" class="composer__tb-btn composer__tb-adv" id="owen-transcript-links-btn" data-tb-order="1" popovertarget="owen-transcript-links-lb" aria-haspopup="listbox">Hyperlinks<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
-              <div class="listbox composer__tb-lb" id="owen-transcript-links-lb" data-tb="links" popover>
+              <button type="button" class="composer__tb-btn composer__tb-adv" id="mc-tr-owen-transcript-links-btn" data-tb-order="1" popovertarget="mc-tr-owen-transcript-links-lb" aria-haspopup="listbox">Hyperlinks<svg class="composer__tb-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <div class="listbox composer__tb-lb" id="mc-tr-owen-transcript-links-lb" data-tb="links" popover>
                 <ul class="listbox__list" role="listbox" aria-label="Hyperlinks">
                   <li><button class="listbox__option" role="option" type="button" data-insert="1098-TConsent">1098-TConsent</button></li>
                   <li><button class="listbox__option" role="option" type="button" data-insert="Accept/DeclineAward">Accept/DeclineAward</button></li>
@@ -2789,10 +3160,13 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
                   <li><button class="listbox__option" role="option" type="button" data-insert="ShoppingCart">ShoppingCart</button></li>
                 </ul>
               </div>
-                <button type="button" class="composer__ai-assist"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
-              </div>
-              <div class="composer__field">
-                <textarea class="composer__input" rows="1" placeholder="Reply to Owen..." aria-label="Reply to Owen"></textarea>
+              <button type="button" class="composer__tb-btn composer__tb-more" id="mc-tr-owen-transcript-tb-more" aria-expanded="false" aria-label="More formatting options"><svg class="composer__tb-more-chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <button type="button" class="composer__ai-assist" id="mc-tr-owen-transcript-ai"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
+              <span class="composer__tb-break" aria-hidden="true"></span>
+            </div>
+                <div class="composer__field">
+                  <textarea class="composer__input" rows="1" placeholder="Reply to Owen..." aria-label="Reply to Owen"></textarea>
+                </div>
               </div>
               <div class="mc-reply-actions">
                 <span class="mc-reply-note">Resolve is available because you have replied in this thread.</span>
@@ -3444,6 +3818,15 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     panes().forEach(function (p) { p.hidden = p.dataset.thread !== id; });
     empty.hidden = !!id;
     if (!id) empty.hidden = false;
+    // the reply toolbar was measured while hidden — reflow it now it has a width
+    // (double rAF + a short fallback so the just-revealed layout has settled)
+    if (id) {
+      var shown = document.querySelector('.mc-thread[data-thread="' + id + '"] .composer__toolbar');
+      if (shown && shown._tbReflow) {
+        requestAnimationFrame(function () { requestAnimationFrame(shown._tbReflow); });
+        setTimeout(shown._tbReflow, 60);
+      }
+    }
   }
   function closeThread() {
     mc.classList.remove("mc--thread-open");
@@ -3867,21 +4250,9 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
       var archiveBtn = form.closest(".mc-thread").querySelector(".mc-archive");
       if (archiveBtn) setTimeout(function () { archiveBtn.click(); }, 150);
     });
-    // Merge Tags / Hyperlinks dropdowns insert their token at the caret — the
-    // same real Listbox popovers the compose editor uses
-    form.querySelectorAll(".composer__tb-lb").forEach(function (lb) {
-      lb.querySelectorAll(".listbox__option").forEach(function (opt) {
-        opt.addEventListener("click", function () {
-          var s = input.selectionStart != null ? input.selectionStart : input.value.length;
-          var e = input.selectionEnd != null ? input.selectionEnd : input.value.length;
-          var ins = opt.dataset.insert + " ";
-          input.value = input.value.slice(0, s) + ins + input.value.slice(e);
-          input.selectionStart = input.selectionEnd = s + ins.length;
-          input.focus(); grow();
-          if (lb.hidePopover) lb.hidePopover();
-        });
-      });
-    });
+    // Merge Tags / Hyperlinks insert-at-caret + progressive toolbar overflow —
+    // the exact same wiring the New Message editor uses
+    bindEditorTools(form, input);
     // Reopen an expired thread: swap the danger notice back for the composer
     var reopenBtn = form.querySelector(".mc-reopen");
     if (reopenBtn) reopenBtn.addEventListener("click", function () {
@@ -4091,6 +4462,11 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         tbReflow();
       }).observe(toolbar);
     }
+    // panes that start hidden don't always get a ResizeObserver tick when first
+    // revealed — expose the reflow so showPane can trigger it, and re-run on
+    // viewport resize as a belt-and-suspenders
+    toolbar._tbReflow = function () { lastW = -1; tbReflow(); };
+    window.addEventListener("resize", toolbar._tbReflow);
     requestAnimationFrame(tbReflow);
   }
   bindEditorTools(composeDlg, composeMessage);

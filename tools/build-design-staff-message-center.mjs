@@ -2035,22 +2035,22 @@ function richComposerMarkup(t) {
   // still reopen to continue). Reopen reveals the normal reply composer.
   const expired = !!(t.expires && t.expires.role === "danger");
   const expDate = expired ? t.expires.label.replace(/^Expired\s*/, "") : "";
+  // the reply editor is the SAME rich toolbar the New Message composer uses
+  // (undo/redo · style · B/I/U · strike/code/align/link · Merge Tags · Hyperlinks
+  // · More overflow · AI Assist), scoped to this thread's id so the dropdown
+  // popovers anchor to their own buttons
+  const prefix = "mc-tr-" + t.id;
   return `<form class="composer composer--rich mc-composer${expired ? " mc-composer--expired" : ""}" data-thread="${t.id}">
             <div class="mc-composer__expired" ${expired ? "" : "hidden"}>
               <span class="mc-composer__expired-note">${iconOf("schedule", "mc-composer__expired-icon")}This thread expired ${expDate} — ${first} can no longer reply.</span>
               <button type="button" class="btn btn--secondary btn--base mc-reopen">Reopen thread</button>
             </div>
             <div class="mc-composer__body" ${expired ? "hidden" : ""}>
-              <div class="composer__toolbar">
-                <button type="button" class="composer__icon-btn" aria-label="Bold">${iconBold}</button>
-                <button type="button" class="composer__icon-btn" aria-label="Italic">${iconItalic}</button>
-                <button type="button" class="composer__icon-btn" aria-label="Underline">${iconUnderline}</button>
-                ${composerTbMenu(t.id, "merge", "Merge Tags", MERGE_TAGS, 2)}
-                ${composerTbMenu(t.id, "links", "Hyperlinks", HYPERLINKS, 1)}
-                <button type="button" class="composer__ai-assist">${iconAi}AI Assist</button>
-              </div>
-              <div class="composer__field">
-                <textarea class="composer__input" rows="1" placeholder="Reply to ${first}..." aria-label="Reply to ${first}"></textarea>
+              <div class="mc-thread__editor">
+                ${richToolbarMarkup(prefix, prefix + "-ai")}
+                <div class="composer__field">
+                  <textarea class="composer__input" rows="1" placeholder="Reply to ${first}..." aria-label="Reply to ${first}"></textarea>
+                </div>
               </div>
               <div class="mc-reply-actions">
                 <span class="mc-reply-note">Resolve is available because you have replied in this thread.</span>
@@ -2803,6 +2803,34 @@ const phaseECss = `.mc-reply-actions { display: flex; align-items: center; gap: 
 .mc-composer__body[hidden], .mc-composer__expired[hidden] { display: none; }
 .bubble-receipt { display: inline-flex; align-items: center; gap: ${px(resolve("dim.1"))}; align-self: flex-end; margin: ${px(resolve("dim.0_5"))} ${px(resolve("dim.1"))} 0; color: ${cv("text.success")}; font-weight: 600; ${typoCss(msgMetaType)} }
 .bubble-receipt__icon { flex-shrink: 0; width: 14px; height: 14px; }
+/* reply editor === the New Message rich toolbar in a bordered box (toolbar on
+   top, field below), same recipe as .mc-compose__editor */
+.mc-composer__body { display: flex; flex-direction: column; gap: ${px(resolve("dim.3"))}; }
+.mc-thread__editor { position: relative; display: flex; flex-direction: column; border: 1px solid ${cv("border.default")}; border-radius: ${compRadius}; background: ${cv("surface.default")}; overflow: hidden; }
+.mc-thread__editor:focus-within { border-color: ${cv("border.focus")}; }
+.mc-thread__editor .composer__toolbar { gap: 2px; padding: ${px(resolve("dim.1"))} ${px(resolve("dim.2"))}; border-bottom: 1px solid ${cv("border.default")}; background: ${cv("surface.default")}; }
+.mc-thread__editor .composer__field { align-items: flex-start; border: none; border-radius: 0; background: transparent; padding: ${px(resolve("dim.3"))}; }
+.mc-thread__editor .composer__field:hover { background: transparent; border-color: transparent; }
+.mc-thread__editor .composer__input { display: block; resize: none; min-height: 80px; max-height: 220px; overflow-y: auto; }
+.mc-thread__editor .composer__icon-btn { width: ${px(resolve("dim.6"))}; height: ${px(resolve("dim.6"))}; }
+.mc-thread__editor .composer__icon-btn .composer__icon { width: ${px(resolve("dim.4"))}; height: ${px(resolve("dim.4"))}; }
+/* wide screens: the whole reply floats as a Gmail-style card (elevated, rounded,
+   detached); the editor drops its own border so the card is the one boundary.
+   Narrow / tight screens fall back to the full-width footer bar. */
+@media (min-width: 768px) {
+  .mc-thread__composer { background: transparent; box-shadow: none; padding: ${px(resolve("dim.4"))}; }
+  .mc-composer { border: 1px solid ${cv("border.default")}; border-radius: ${compRadius}; background: ${cv("surface.default")}; box-shadow: ${mdShadowCss}; overflow: hidden; }
+  .mc-composer__body { gap: 0; }
+  .mc-composer .mc-thread__editor { border: none; border-radius: 0; }
+  .mc-composer .mc-reply-actions { padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))}; border-top: 1px solid ${cv("border.default")}; }
+  .mc-composer .mc-composer__expired { padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))}; }
+}
+/* per-thread popover anchors — Merge Tags / Hyperlinks open under their own
+   button (the id-scoped anchors compose/gwiz declare, generated per thread) */
+${threads.map(function (t) { var p = "mc-tr-" + t.id; return `#${p}-merge-btn { anchor-name: --${p}-mt; }
+#${p}-merge-lb { position: fixed; inset: auto; margin: ${px(resolve("dim.1"))} 0 0 0; position-anchor: --${p}-mt; top: anchor(bottom); left: anchor(left); position-try-fallbacks: flip-block; }
+#${p}-links-btn { anchor-name: --${p}-hl; }
+#${p}-links-lb { position: fixed; inset: auto; margin: ${px(resolve("dim.1"))} 0 0 0; position-anchor: --${p}-hl; top: anchor(bottom); left: anchor(left); position-try-fallbacks: flip-block; }`; }).join("\n")}
 .mc-rail__count { display: none; } /* the tab counter already shows the count */
 @media (max-width: 1023px) {
   /* Tablet + mobile: the console reflows into a message card that mirrors the
@@ -2953,6 +2981,15 @@ const appJs = `(function () {
     panes().forEach(function (p) { p.hidden = p.dataset.thread !== id; });
     empty.hidden = !!id;
     if (!id) empty.hidden = false;
+    // the reply toolbar was measured while hidden — reflow it now it has a width
+    // (double rAF + a short fallback so the just-revealed layout has settled)
+    if (id) {
+      var shown = document.querySelector('.mc-thread[data-thread="' + id + '"] .composer__toolbar');
+      if (shown && shown._tbReflow) {
+        requestAnimationFrame(function () { requestAnimationFrame(shown._tbReflow); });
+        setTimeout(shown._tbReflow, 60);
+      }
+    }
   }
   function closeThread() {
     mc.classList.remove("mc--thread-open");
@@ -3376,21 +3413,9 @@ const appJs = `(function () {
       var archiveBtn = form.closest(".mc-thread").querySelector(".mc-archive");
       if (archiveBtn) setTimeout(function () { archiveBtn.click(); }, 150);
     });
-    // Merge Tags / Hyperlinks dropdowns insert their token at the caret — the
-    // same real Listbox popovers the compose editor uses
-    form.querySelectorAll(".composer__tb-lb").forEach(function (lb) {
-      lb.querySelectorAll(".listbox__option").forEach(function (opt) {
-        opt.addEventListener("click", function () {
-          var s = input.selectionStart != null ? input.selectionStart : input.value.length;
-          var e = input.selectionEnd != null ? input.selectionEnd : input.value.length;
-          var ins = opt.dataset.insert + " ";
-          input.value = input.value.slice(0, s) + ins + input.value.slice(e);
-          input.selectionStart = input.selectionEnd = s + ins.length;
-          input.focus(); grow();
-          if (lb.hidePopover) lb.hidePopover();
-        });
-      });
-    });
+    // Merge Tags / Hyperlinks insert-at-caret + progressive toolbar overflow —
+    // the exact same wiring the New Message editor uses
+    bindEditorTools(form, input);
     // Reopen an expired thread: swap the danger notice back for the composer
     var reopenBtn = form.querySelector(".mc-reopen");
     if (reopenBtn) reopenBtn.addEventListener("click", function () {
@@ -3600,6 +3625,11 @@ const appJs = `(function () {
         tbReflow();
       }).observe(toolbar);
     }
+    // panes that start hidden don't always get a ResizeObserver tick when first
+    // revealed — expose the reflow so showPane can trigger it, and re-run on
+    // viewport resize as a belt-and-suspenders
+    toolbar._tbReflow = function () { lastW = -1; tbReflow(); };
+    window.addEventListener("resize", toolbar._tbReflow);
     requestAnimationFrame(tbReflow);
   }
   bindEditorTools(composeDlg, composeMessage);
