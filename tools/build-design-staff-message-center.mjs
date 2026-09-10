@@ -1532,6 +1532,9 @@ const composeAiCss = `.mc-compose__tabs { display: none; flex-shrink: 0; }
    tablet AND desktop; only phones get the full-screen sheet */
 @media (max-width: 767px) {
   .mc-ai-standalone { position: fixed; inset: 0; margin: 0; width: 100vw; max-width: 100vw; height: 100dvh; max-height: 100dvh; border-radius: 0; }
+  /* taller header just for the in-thread AI panel on a phone (a full-screen sheet
+     wants a roomier top bar than the compact 40px used elsewhere) */
+  .mc-ai-standalone .mc-ai__header { height: 64px; }
 }
 @media (min-width: 768px) {
   .mc-ai-standalone { width: min(400px, calc(100vw - ${px(resolve("dim.8"))})); height: 100dvh; max-height: 100dvh; margin: 0 0 0 auto; border-radius: 0; }
