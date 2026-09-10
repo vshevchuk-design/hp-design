@@ -2072,8 +2072,11 @@ function richComposerMarkup(t) {
                 <div class="composer__field">
                   <textarea class="composer__input" rows="1" placeholder="Reply to ${first}..." aria-label="Reply to ${first}"></textarea>
                 </div>
+                <div class="mc-attach-hint" aria-hidden="true">Drop files to attach</div>
               </div>
+              <div class="mc-thread__atts" hidden></div>
               <div class="mc-reply-actions">
+                <button type="button" class="btn btn--ghost btn--sm btn--icon-only mc-reply-attach" aria-label="Attach file">${iconOf("attach_file", "btn__icon")}</button>
                 <span class="mc-reply-note">Resolve is available because you have replied in this thread.</span>
                 <div class="mc-reply-btns">
                   <button type="submit" class="btn btn--secondary btn--base composer__send">Reply</button>
@@ -2838,6 +2841,11 @@ const phaseECss = `.mc-reply-actions { display: flex; align-items: center; gap: 
 .mc-thread__editor .composer__input { display: block; resize: none; min-height: 80px; max-height: 220px; overflow-y: auto; }
 .mc-thread__editor .composer__icon-btn { width: ${px(resolve("dim.6"))}; height: ${px(resolve("dim.6"))}; }
 .mc-thread__editor .composer__icon-btn .composer__icon { width: ${px(resolve("dim.4"))}; height: ${px(resolve("dim.4"))}; }
+.mc-thread__editor.is-dragover .mc-attach-hint { display: flex; }
+/* attached files sit below the field, above the action row */
+.mc-thread__atts { display: flex; flex-wrap: wrap; gap: ${px(resolve("dim.2"))}; }
+.mc-thread__atts[hidden] { display: none; }
+.mc-reply-attach { flex-shrink: 0; }
 /* wide screens: the whole reply floats as a Gmail-style card (elevated, rounded,
    detached); the editor drops its own border so the card is the one boundary.
    Narrow / tight screens fall back to the full-width footer bar. */
@@ -2846,6 +2854,7 @@ const phaseECss = `.mc-reply-actions { display: flex; align-items: center; gap: 
   .mc-composer { border: 1px solid ${cv("border.default")}; border-radius: ${px(resolve("radius.lg"))}; background: ${cv("surface.default")}; box-shadow: ${mdShadowCss}; overflow: hidden; }
   .mc-composer__body { gap: 0; }
   .mc-composer .mc-thread__editor { border: none; border-radius: 0; }
+  .mc-composer .mc-thread__atts:not([hidden]) { padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))} 0; }
   .mc-composer .mc-reply-actions { padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))}; border-top: 1px solid ${cv("border.default")}; }
   .mc-composer .mc-composer__expired { padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))}; }
 }
@@ -3413,17 +3422,53 @@ const appJs = `(function () {
     input.addEventListener("keydown", function (e) {
       if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); form.requestSubmit(); }
     });
+    // ---- attachments: paperclip adds a file chip below the field; drag-drop the
+    // editor also works; on Send they ride along in the sent bubble ----
+    var TR_FILE_ICON = ${JSON.stringify(iconOf("insert_drive_file", "attachment__icon"))};
+    var TR_X_ICON = ${JSON.stringify(iconOf("close", "attachment__action-glyph"))};
+    var TR_MEDIA_ICON = ${JSON.stringify(iconFile)};
+    var TR_FAKE_FILES = [["Reply-attachment.pdf", "PDF · 320 KB"], ["Screenshot.png", "PNG · 88 KB"], ["Advising-notes.docx", "DOCX · 22 KB"], ["Course-plan.xlsx", "XLSX · 54 KB"]];
+    var attsWrap = form.querySelector(".mc-thread__atts");
+    var atts = [];
+    function trFmtSize(b) { if (b < 1024) return b + " B"; if (b < 1048576) return Math.round(b / 1024) + " KB"; return (b / 1048576).toFixed(1) + " MB"; }
+    function renderAtts() {
+      if (!attsWrap) return;
+      attsWrap.innerHTML = "";
+      atts.forEach(function (file, i) {
+        var chip = document.createElement("div");
+        chip.className = "attachment attachment--compact";
+        chip.innerHTML = TR_FILE_ICON
+          + '<span class="attachment__content"><span class="attachment__title"></span><span class="attachment__description"></span></span>'
+          + '<button type="button" class="attachment__action mc-att-remove" aria-label="Remove attachment">' + TR_X_ICON + '</button>';
+        chip.querySelector(".attachment__title").textContent = file[0];
+        chip.querySelector(".attachment__description").textContent = file[1];
+        chip.querySelector(".mc-att-remove").addEventListener("click", function () { atts.splice(i, 1); renderAtts(); });
+        attsWrap.appendChild(chip);
+      });
+      attsWrap.hidden = atts.length === 0;
+    }
     function sendReply() {
       var text = input.value.trim();
-      if (!text) return false;
+      if (!text && !atts.length) return false;
       var scroll = form.closest(".mc-thread").querySelector(".mc-thread__scroll");
       var row = document.createElement("div");
       row.className = "bubble-row bubble-row--self";
       row.innerHTML = SELF_SENDER + '<div class="bubble bubble--self bubble--tint"><p></p></div>';
-      row.querySelector(".bubble p").textContent = text;
+      var bubble = row.querySelector(".bubble");
+      if (text) bubble.querySelector("p").textContent = text; else bubble.querySelector("p").remove();
+      atts.forEach(function (file) {
+        var a = document.createElement("a");
+        a.className = "attachment"; a.href = "#"; a.setAttribute("download", "");
+        a.innerHTML = '<span class="attachment__media">' + TR_MEDIA_ICON + '</span>'
+          + '<span class="attachment__content"><span class="attachment__title"></span><span class="attachment__description"></span></span>';
+        a.querySelector(".attachment__title").textContent = file[0];
+        a.querySelector(".attachment__description").textContent = file[1];
+        bubble.appendChild(a);
+      });
       scroll.appendChild(row);
       scroll.scrollTop = scroll.scrollHeight;
       input.value = "";
+      atts = []; renderAtts();
       grow();
       syncResolveState(form.closest(".mc-thread"));
       return true;
@@ -3440,6 +3485,25 @@ const appJs = `(function () {
     // Merge Tags / Hyperlinks insert-at-caret + progressive toolbar overflow —
     // the exact same wiring the New Message editor uses
     bindEditorTools(form, input);
+    var attachBtn = form.querySelector(".mc-reply-attach");
+    if (attachBtn) attachBtn.addEventListener("click", function () {
+      atts.push(TR_FAKE_FILES[atts.length % TR_FAKE_FILES.length]);
+      renderAtts();
+    });
+    var editorBox = form.querySelector(".mc-thread__editor");
+    if (editorBox) {
+      ["dragenter", "dragover"].forEach(function (ev) {
+        editorBox.addEventListener(ev, function (e) { e.preventDefault(); editorBox.classList.add("is-dragover"); });
+      });
+      editorBox.addEventListener("dragleave", function (e) { if (!editorBox.contains(e.relatedTarget)) editorBox.classList.remove("is-dragover"); });
+      editorBox.addEventListener("drop", function (e) {
+        e.preventDefault(); editorBox.classList.remove("is-dragover");
+        if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length) {
+          Array.prototype.forEach.call(e.dataTransfer.files, function (f) { atts.push([f.name, trFmtSize(f.size)]); });
+          renderAtts();
+        }
+      });
+    }
     // Reopen an expired thread: swap the danger notice back for the composer
     var reopenBtn = form.querySelector(".mc-reopen");
     if (reopenBtn) reopenBtn.addEventListener("click", function () {
