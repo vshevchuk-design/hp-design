@@ -1815,13 +1815,15 @@ const threads = [
     ],
   },
   {
-    id: "priya-override", archived: false, unread: true, awaiting: true, unassigned: true, replies: true,
-    sender: "Priya Nair", studentId: "AA0533", responsibles: [],
-    department: "Academic Advising", date: "09/07/2026", time: "10:22 AM PDT", subject: "Course Override Request",
-    preview: "Can you approve an override for CS 320? It's full but required for my track.",
+    id: "priya-override", archived: false, unread: true, awaiting: true, replies: true,
+    sender: "Priya Nair", studentId: "AA0533", handledBy: "Ava Robinson", responsibles: ["Ava Robinson"],
+    department: "Academic Advising", date: "09/08/2026", time: "9:15 AM PDT", subject: "Course Override Request",
+    preview: "Yes, I passed CS 220 last spring with a B+ — unofficial transcript attached.",
     meta: { Department: "Academic Advising", Status: "Open", Institution: "PeopleSoft University" },
     content: [
       bubbleRow({ role: "other", name: "Priya Nair", meta: "Sep 07, 10:22 AM", text: "Can you approve an override for CS 320? It's full but required for my track." }),
+      bubbleRow({ role: "self", name: "Ava Robinson", meta: "Sep 07, 11:05 AM", seen: "Sep 07, 11:19 AM", text: "Hi Priya — I can request the override, but I first need to confirm you've met the CS 220 prerequisite. Can you send proof you passed it?" }),
+      bubbleRow({ role: "other", name: "Priya Nair", meta: "Sep 08, 9:15 AM", text: "Yes, I passed CS 220 last spring with a B+. Attaching my unofficial transcript for reference.", attachmentHtml: attachmentMarkup("Unofficial-transcript.pdf", "PDF · 180 KB") }),
     ],
   },
   {
