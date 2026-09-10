@@ -2354,12 +2354,12 @@ const gwizCss = `.mc-gwiz { border: none; padding: 0; background: ${cv(mdBg)}; f
 .mc-gwiz__header { flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; padding: ${px(resolve("dim.4"))} ${mdPadding} ${px(resolve("dim.3"))}; border-bottom: 1px solid ${cv(mdDivider)}; }
 .mc-gwiz__title { margin: 0; color: ${cv(mdTitleColor)}; ${typoCss(mdTitleType)} }
 .mc-gwiz__steps { flex-shrink: 0; padding: ${px(resolve("dim.4"))} ${mdPadding}; border-bottom: 1px solid ${cv(mdDivider)}; }
-.mc-gwiz__body { position: relative; flex: 1; min-height: 0; overflow-y: auto; padding: ${mdPadding}; }
-/* AI Writing Assist opens as an overlay INSIDE the wizard body (integrated, with
-   an X to return to the form) — not a detached side dialog */
-.mc-gwiz__aipane { position: absolute; inset: 0; z-index: 5; display: none; background: ${cv("surface.default")}; }
-.mc-gwiz--ai-open .mc-gwiz__aipane { display: flex; flex-direction: column; }
-.mc-gwiz--ai-open .mc-gwiz__body { overflow: hidden; }
+.mc-gwiz__body { flex: 1; min-height: 0; overflow-y: auto; padding: ${mdPadding}; }
+/* step 2 is a row: the message form + (when AI is open) the AI Writing Assist
+   panel beside it. Desktop shows them side by side (modal widens); narrower the
+   AI panel replaces the form. The form column carries the block spacing. */
+.mc-gwiz__form { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: ${px(resolve("dim.3"))}; }
+.mc-gwiz__aipane { display: none; }
 .mc-gwiz__aipane .mc-ai { height: 100%; }
 .mc-gwiz__step[hidden] { display: none; }
 .mc-gwiz__cols { display: grid; grid-template-columns: 1.3fr 1fr; gap: ${px(resolve("dim.4"))}; }
@@ -2415,9 +2415,7 @@ const gwizCss = `.mc-gwiz { border: none; padding: 0; background: ${cv(mdBg)}; f
 .mc-gwiz__chip span { color: ${cv("text.secondary")}; ${typoCss(bodySmType)} flex: 1; min-width: 0; }
 .mc-gwiz__chip button { flex-shrink: 0; border: none; background: none; padding: 0; cursor: pointer; color: ${cv("icon.secondary")}; display: inline-flex; }
 .mc-gwiz__chip button svg { width: 16px; height: 16px; }
-/* step 2 stacks its blocks with an even gap (Department, Subject, editor, attach,
-   attachments, expiration) — the AI overlay is absolute, so it stays out of flow */
-.mc-gwiz__step[data-panel="2"] { display: flex; flex-direction: column; gap: ${px(resolve("dim.3"))}; }
+.mc-gwiz__step[data-panel="2"] { display: flex; }
 .mc-gwiz__footer { flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.4"))} ${mdPadding}; border-top: 1px solid ${cv(mdDivider)}; }
 .mc-gwiz__checks[hidden] { display: none; }
 .mc-gwiz__footer-end { display: flex; gap: ${px(resolve("dim.2"))}; margin-left: auto; }
@@ -2426,8 +2424,24 @@ const gwizCss = `.mc-gwiz { border: none; padding: 0; background: ${cv(mdBg)}; f
 .mc-gwiz__step[hidden] { display: none; }
 @media (min-width: 768px) {
   .mc-gwiz { width: min(760px, calc(100vw - ${px(resolve("dim.8"))})); max-height: calc(100dvh - ${px(resolve("dim.16"))}); border-radius: ${mdRadius}; box-shadow: ${mdShadowCss}; }
-  /* give the modal a real height while the AI overlay is up, so the panel fills it */
+  /* a real height while AI is open, so the panel fills it */
   .mc-gwiz.mc-gwiz--ai-open { height: min(720px, calc(100dvh - ${px(resolve("dim.16"))})); }
+}
+/* desktop: the AI panel sits BESIDE the form (like New Message) — widen the modal,
+   each column scrolls on its own */
+@media (min-width: 1024px) {
+  .mc-gwiz.mc-gwiz--ai-open { width: min(1100px, calc(100vw - ${px(resolve("dim.8"))})); }
+  .mc-gwiz--ai-open .mc-gwiz__body { overflow: hidden; padding: 0; }
+  .mc-gwiz--ai-open .mc-gwiz__step[data-panel="2"] { height: 100%; }
+  .mc-gwiz--ai-open .mc-gwiz__form { overflow-y: auto; padding: ${mdPadding}; }
+  .mc-gwiz--ai-open .mc-gwiz__aipane { display: flex; flex-direction: column; width: 360px; flex-shrink: 0; border-left: 1px solid ${cv(mdDivider)}; }
+}
+/* mobile + tablet: no room for a side panel — the AI panel replaces the form */
+@media (max-width: 1023px) {
+  .mc-gwiz--ai-open .mc-gwiz__body { overflow: hidden; padding: 0; }
+  .mc-gwiz--ai-open .mc-gwiz__step[data-panel="2"] { height: 100%; }
+  .mc-gwiz--ai-open .mc-gwiz__form { display: none; }
+  .mc-gwiz--ai-open .mc-gwiz__aipane { display: flex; flex-direction: column; height: 100%; }
 }
 @media (max-width: 767px) {
   .mc-gwiz { position: fixed; inset: 0; margin: 0; width: 100vw; max-width: 100vw; height: 100dvh; max-height: 100dvh; border-radius: 0; }
@@ -2490,6 +2504,7 @@ const gwizMarkup = `<dialog class="mc-gwiz" id="mc-gwiz" aria-labelledby="mc-gwi
     </div>
     <div class="listbox mc-gwiz__fpop" id="mc-gwiz-fpop" popover></div>
     <div class="mc-gwiz__step" data-panel="2" hidden>
+      <div class="mc-gwiz__form">
       <div class="mc-compose__fld">
         <span class="mc-compose__flabel">Department<span class="mc-req"> *</span></span>
         <button class="select select--base" id="mc-gwiz-dept" type="button" popovertarget="mc-gwiz-dept-lb">
@@ -2547,6 +2562,7 @@ const gwizMarkup = `<dialog class="mc-gwiz" id="mc-gwiz" aria-labelledby="mc-gwi
             <option>Month(s)</option>
           </select>
         </div>
+      </div>
       </div>
       <div class="mc-gwiz__aipane">${aiPanelMarkup("gwiz", gwizCollapseAction)}</div>
     </div>
