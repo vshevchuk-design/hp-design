@@ -1172,13 +1172,13 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .mc-gwiz__reshead .checkbox__label { color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
 .mc-gwiz__clearsel { border: none; background: none; padding: 0; cursor: pointer; color: var(--tok-text-primary); font-weight: 600; font-weight: 400; font-size: 12px; line-height: 1.4; font-family: inherit; }
 .mc-gwiz__list { border: 1px solid var(--tok-border-default); border-radius: 8px; overflow-y: auto; max-height: 264px; }
-.mc-gwiz__srow { display: flex; align-items: center; gap: 12px; padding: 8px 12px; border-bottom: 1px solid var(--tok-border-default); cursor: pointer; }
+.mc-gwiz__srow { box-sizing: border-box; height: 40px; display: flex; align-items: center; gap: 12px; padding: 0 12px; border-bottom: 1px solid var(--tok-border-default); cursor: pointer; }
 .mc-gwiz__srow:last-child { border-bottom: none; }
 .mc-gwiz__srow:hover { background: var(--tok-surface-dim); }
 .mc-gwiz__srow .checkbox { pointer-events: none; }
 /* add (+) / remove (−) toggle instead of a checkbox — the state is immediate, so
    a + to add and a filled − to remove reads clearer than a checkbox awaiting submit */
-.mc-gwiz__toggle { flex-shrink: 0; width: 28px; height: 28px; border-radius: 8px; border: none; background: transparent; display: inline-flex; align-items: center; justify-content: center; color: var(--tok-icon-secondary); }
+.mc-gwiz__toggle { flex-shrink: 0; width: 24px; height: 24px; border-radius: 8px; border: none; background: transparent; display: inline-flex; align-items: center; justify-content: center; color: var(--tok-icon-secondary); }
 .mc-gwiz__toggle-add, .mc-gwiz__toggle-remove { width: 18px; height: 18px; display: block; }
 .mc-gwiz__toggle-remove { display: none; }
 .mc-gwiz__srow:hover .mc-gwiz__toggle { background: var(--tok-fill-neutral-hover); color: var(--tok-icon-default); }
@@ -1217,7 +1217,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .mc-gwiz__sel-empty[hidden] { display: none; }
 /* selected rows mirror the left list: full-width rows, no gaps, bleeding to the
    panel edges (they cancel the panel's side/bottom padding), divided by borders */
-.mc-gwiz__chip { box-sizing: border-box; display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 8px 12px; border-top: 1px solid var(--tok-border-default); background: transparent; }
+.mc-gwiz__chip { box-sizing: border-box; flex-shrink: 0; display: flex; align-items: center; gap: 12px; height: 40px; padding: 0 12px; border-top: 1px solid var(--tok-border-default); background: transparent; }
 .mc-gwiz__chip b { flex-shrink: 0; width: 64px; color: var(--tok-text-default); font-weight: 600; font-weight: 400; font-size: 12px; line-height: 1.4; }
 .mc-gwiz__chip span { flex: 1; min-width: 0; color: var(--tok-text-default); font-weight: 400; font-size: 12px; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .mc-gwiz__chip button { flex-shrink: 0; border: none; background: none; padding: 0; cursor: pointer; color: var(--tok-icon-secondary); display: inline-flex; }

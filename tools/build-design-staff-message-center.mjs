@@ -2403,13 +2403,13 @@ const gwizCss = `.mc-gwiz { border: none; padding: 0; background: ${cv(mdBg)}; f
 .mc-gwiz__reshead .checkbox__label { color: ${cv("text.secondary")}; ${typoCss(bodySmType)} }
 .mc-gwiz__clearsel { border: none; background: none; padding: 0; cursor: pointer; color: ${cv("text.primary")}; font-weight: 600; ${typoCss(bodySmType)} font-family: inherit; }
 .mc-gwiz__list { border: 1px solid ${cv("border.default")}; border-radius: ${px(resolve("radius.default"))}; overflow-y: auto; max-height: 264px; }
-.mc-gwiz__srow { display: flex; align-items: center; gap: ${px(resolve("dim.3"))}; padding: ${px(resolve("dim.2"))} ${px(resolve("dim.3"))}; border-bottom: 1px solid ${cv("border.default")}; cursor: pointer; }
+.mc-gwiz__srow { box-sizing: border-box; height: 40px; display: flex; align-items: center; gap: ${px(resolve("dim.3"))}; padding: 0 ${px(resolve("dim.3"))}; border-bottom: 1px solid ${cv("border.default")}; cursor: pointer; }
 .mc-gwiz__srow:last-child { border-bottom: none; }
 .mc-gwiz__srow:hover { background: ${cv("surface.dim")}; }
 .mc-gwiz__srow .checkbox { pointer-events: none; }
 /* add (+) / remove (−) toggle instead of a checkbox — the state is immediate, so
    a + to add and a filled − to remove reads clearer than a checkbox awaiting submit */
-.mc-gwiz__toggle { flex-shrink: 0; width: 28px; height: 28px; border-radius: ${px(resolve("radius.default"))}; border: none; background: transparent; display: inline-flex; align-items: center; justify-content: center; color: ${cv("icon.secondary")}; }
+.mc-gwiz__toggle { flex-shrink: 0; width: 24px; height: 24px; border-radius: ${px(resolve("radius.default"))}; border: none; background: transparent; display: inline-flex; align-items: center; justify-content: center; color: ${cv("icon.secondary")}; }
 .mc-gwiz__toggle-add, .mc-gwiz__toggle-remove { width: 18px; height: 18px; display: block; }
 .mc-gwiz__toggle-remove { display: none; }
 .mc-gwiz__srow:hover .mc-gwiz__toggle { background: ${cv("fill.neutralHover")}; color: ${cv("icon.default")}; }
@@ -2448,7 +2448,7 @@ const gwizCss = `.mc-gwiz { border: none; padding: 0; background: ${cv(mdBg)}; f
 .mc-gwiz__sel-empty[hidden] { display: none; }
 /* selected rows mirror the left list: full-width rows, no gaps, bleeding to the
    panel edges (they cancel the panel's side/bottom padding), divided by borders */
-.mc-gwiz__chip { box-sizing: border-box; display: flex; align-items: center; gap: ${px(resolve("dim.3"))}; min-height: ${px(resolve("dim.11"))}; padding: ${px(resolve("dim.2"))} ${px(resolve("dim.3"))}; border-top: 1px solid ${cv("border.default")}; background: transparent; }
+.mc-gwiz__chip { box-sizing: border-box; flex-shrink: 0; display: flex; align-items: center; gap: ${px(resolve("dim.3"))}; height: ${px(resolve("dim.10"))}; padding: 0 ${px(resolve("dim.3"))}; border-top: 1px solid ${cv("border.default")}; background: transparent; }
 .mc-gwiz__chip b { flex-shrink: 0; width: 64px; color: ${cv("text.default")}; font-weight: 600; ${typoCss(bodySmType)} }
 .mc-gwiz__chip span { flex: 1; min-width: 0; color: ${cv("text.default")}; ${typoCss(bodySmType)} white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .mc-gwiz__chip button { flex-shrink: 0; border: none; background: none; padding: 0; cursor: pointer; color: ${cv("icon.secondary")}; display: inline-flex; }
