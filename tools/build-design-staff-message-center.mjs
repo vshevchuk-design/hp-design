@@ -1759,8 +1759,8 @@ function bubbleRow({ role, name, meta, text, attachmentHtml = "", seen = "" }) {
 // ---- thread data ----
 const threads = [
   {
-    id: "cait-minor", archived: false, unread: true, awaiting: true, replies: true,
-    sender: "Cait Genatossio", studentId: "CX0001", handledBy: "Alexander Robinson", responsibles: ["Alexander Robinson"],
+    id: "cait-minor", archived: false, unread: true, awaiting: true, unassigned: true, replies: true,
+    sender: "Cait Genatossio", studentId: "CX0001", responsibles: [],
     department: "Academic Advising", date: "08/05/2026", time: "9:12 AM PDT", subject: "Minor Requirements Review",
     preview: "Could we also review the minor requirements before enrollment closes?",
     expires: { label: "Expires 12/12/2026", role: "neutral" },
@@ -1780,7 +1780,7 @@ const threads = [
     ],
   },
   {
-    id: "diego-transcript", archived: false, replies: true,
+    id: "diego-transcript", archived: false, replies: true, replied: true,
     sender: "Diego Fernandez", studentId: "AA0302", handledBy: "Ava Robinson", responsibles: ["Ava Robinson", "Alexander Robinson", "Sarah Nguyen"],
     department: "Academic Advising", date: "08/03/2026", time: "11:20 AM PDT", subject: "Transcript for Internship Application",
     preview: "My internship application needs an official transcript by next Friday.",
@@ -1788,6 +1788,18 @@ const threads = [
     meta: { Department: "Academic Advising", Status: "Open", Institution: "PeopleSoft University" },
     content: [
       bubbleRow({ role: "other", name: "Diego Fernandez", meta: "Aug 03, 11:20 AM", text: "My internship application needs an official transcript by next Friday. Attaching the offer letter for context.", attachmentHtml: attachmentMarkup("Internship-offer.pdf", "PDF · 420 KB") }),
+      bubbleRow({ role: "self", name: "Ava Robinson", meta: "Aug 03, 1:05 PM", seen: "Aug 03, 1:18 PM", text: "Thanks, Diego — I've requested the official transcript on your behalf. It usually takes 2–3 business days to process." }),
+      bubbleRow({ role: "other", name: "Diego Fernandez", meta: "Aug 03, 1:40 PM", text: "Great. Does it get sent directly to the employer, or to me first?" }),
+      bubbleRow({ role: "self", name: "Ava Robinson", meta: "Aug 03, 2:15 PM", seen: "Aug 03, 2:22 PM", text: "You can choose at checkout. For internships I'd send it straight to the employer so nothing gets lost in forwarding — want me to set that up?" }),
+      bubbleRow({ role: "other", name: "Diego Fernandez", meta: "Aug 03, 2:30 PM", text: "Yes please, send it directly to them. Their address is careers@northwind.example." }),
+      bubbleRow({ role: "self", name: "Alexander Robinson", meta: "Aug 04, 8:45 AM", seen: "Aug 04, 9:02 AM", text: "Covering for Ava this morning — the request is queued to careers@northwind.example. You'll get a confirmation email once it ships." }),
+      bubbleRow({ role: "other", name: "Diego Fernandez", meta: "Aug 05, 10:10 AM", text: "Got the confirmation, thanks! It says 'pending registrar approval' — is that normal?" }),
+      bubbleRow({ role: "self", name: "Alexander Robinson", meta: "Aug 05, 10:35 AM", seen: "Aug 05, 10:41 AM", text: "Completely normal — the registrar signs off on every official transcript. It's usually approved within a day." }),
+      bubbleRow({ role: "other", name: "Diego Fernandez", meta: "Aug 06, 4:20 PM", text: "It's approved now. But the employer needs it by Friday and it still shows 'in transit' — cutting it close." }),
+      bubbleRow({ role: "self", name: "Sarah Nguyen", meta: "Aug 07, 9:00 AM", seen: "Aug 07, 9:12 AM", text: "I picked this up from the queue — I've escalated to the registrar's office and requested expedited delivery, no extra charge given the deadline." }),
+      bubbleRow({ role: "other", name: "Diego Fernandez", meta: "Aug 07, 9:15 AM", text: "You're all lifesavers. Any idea when it'll land?" }),
+      bubbleRow({ role: "self", name: "Sarah Nguyen", meta: "Aug 07, 11:30 AM", seen: "Aug 07, 11:44 AM", text: "They confirmed it goes out today by 5 PM, so the employer should have it Thursday morning — a day ahead of your deadline." }),
+      bubbleRow({ role: "other", name: "Diego Fernandez", meta: "Aug 07, 12:05 PM", text: "Amazing — thank you all so much for the help!" }),
     ],
   },
   {
@@ -1803,8 +1815,8 @@ const threads = [
     ],
   },
   {
-    id: "priya-override", archived: false, unread: true, awaiting: true, replies: true,
-    sender: "Priya Nair", studentId: "AA0533", handledBy: "Ava Robinson", responsibles: ["Ava Robinson"],
+    id: "priya-override", archived: false, unread: true, awaiting: true, unassigned: true, replies: true,
+    sender: "Priya Nair", studentId: "AA0533", responsibles: [],
     department: "Academic Advising", date: "09/07/2026", time: "10:22 AM PDT", subject: "Course Override Request",
     preview: "Can you approve an override for CS 320? It's full but required for my track.",
     meta: { Department: "Academic Advising", Status: "Open", Institution: "PeopleSoft University" },
@@ -1821,6 +1833,11 @@ const threads = [
     meta: { Department: "Academic Advising", Status: "Open", Institution: "PeopleSoft University" },
     content: [
       bubbleRow({ role: "other", name: "Marcus Bell", meta: "Sep 02, 1:15 PM", text: "Could we go over my graduation audit before the deadline? I want to be sure I'm on track." }),
+      bubbleRow({ role: "self", name: SELF.name, meta: "Sep 02, 2:40 PM", seen: "Sep 02, 2:52 PM", text: "Happy to help, Marcus. I pulled your audit — you're two credits short in the humanities block. Have you considered ART 210 next term?" }),
+      bubbleRow({ role: "other", name: "Marcus Bell", meta: "Sep 02, 3:10 PM", text: "I didn't realize humanities was still open. Does ART 210 count even though I'm a CS major?" }),
+      bubbleRow({ role: "self", name: "Sarah Nguyen", meta: "Sep 03, 9:05 AM", seen: "Sep 03, 9:20 AM", text: "Jumping in for Alexander — yes, ART 210 satisfies the humanities requirement for every major. I've flagged it on your audit so registration lets you enroll." }),
+      bubbleRow({ role: "other", name: "Marcus Bell", meta: "Sep 03, 9:35 AM", text: "Perfect, thank you! One more — will my transfer credits from summer post before the deadline?" }),
+      bubbleRow({ role: "self", name: SELF.name, meta: "Sep 03, 10:15 AM", seen: "Sep 03, 10:31 AM", text: "They posted this morning, so you're all set. I'll keep an eye on the audit and let you know if anything else comes up." }),
     ],
   },
   {
@@ -1853,29 +1870,30 @@ const threads = [
     meta: { Department: "English Dept", Status: "Resolved", Institution: "PeopleSoft University" },
     content: [
       bubbleRow({ role: "other", name: "Lena Hoffman", meta: "Jul 17, 2:30 PM", text: "I am requesting a prerequisite waiver for ENG 340 based on my transfer credits." }),
-      bubbleRow({ role: "self", name: SELF.name, meta: "Jul 18, 10:05 AM", text: "Waiver approved — you are clear to enroll in ENG 340." }),
+      bubbleRow({ role: "self", name: "Alexander Robinson", meta: "Jul 17, 4:10 PM", seen: "Jul 17, 4:25 PM", text: "Thanks, Lena — I've reviewed your transcript and looped in Ava, who owns waivers for the English Dept." }),
+      bubbleRow({ role: "self", name: "Ava Robinson", meta: "Jul 18, 10:05 AM", seen: "Jul 18, 10:19 AM", text: "Waiver approved — you are clear to enroll in ENG 340." }),
     ],
   },
   {
-    id: "tomas-plan", archived: true, replies: true, replied: true,
+    id: "tomas-plan", archived: true, replies: true,
     sender: "Tomas Novak", studentId: "AA0305", handledBy: "Ava Robinson", responsibles: ["Ava Robinson"],
     department: "Academic Advising", date: "06/30/2026", time: "3:40 PM PDT", subject: "Study Plan Check-in",
     preview: "All set — see you at the fall check-in.",
     meta: { Department: "Academic Advising", Status: "Resolved", Institution: "PeopleSoft University" },
     content: [
       bubbleRow({ role: "other", name: "Tomas Novak", meta: "Jun 30, 3:12 PM", text: "Can we confirm my study plan is still on track after the schedule change?" }),
-      bubbleRow({ role: "self", name: SELF.name, meta: "Jun 30, 3:40 PM", text: "All set — see you at the fall check-in." }),
+      bubbleRow({ role: "self", name: "Ava Robinson", meta: "Jun 30, 3:40 PM", seen: "Jun 30, 3:51 PM", text: "All set — see you at the fall check-in." }),
     ],
   },
   {
-    id: "dana-adddrop", archived: true, replies: true, replied: true,
+    id: "dana-adddrop", archived: true, replies: true,
     sender: "Dana Torres", studentId: "AA0412", handledBy: "Ava Robinson", responsibles: ["Ava Robinson"],
     department: "English Dept", date: "07/12/2026", time: "11:30 AM PDT", subject: "Add/Drop Confirmation",
     preview: "All set — your add/drop changes are confirmed for the fall term.",
     meta: { Department: "English Dept", Status: "Resolved", Institution: "PeopleSoft University" },
     content: [
       bubbleRow({ role: "other", name: "Dana Torres", meta: "Jul 12, 10:50 AM", text: "Can you confirm my add/drop went through?" }),
-      bubbleRow({ role: "self", name: SELF.name, meta: "Jul 12, 11:30 AM", text: "All set — your add/drop changes are confirmed for the fall term." }),
+      bubbleRow({ role: "self", name: "Ava Robinson", meta: "Jul 12, 11:30 AM", seen: "Jul 12, 11:38 AM", text: "All set — your add/drop changes are confirmed for the fall term." }),
     ],
   },
   {
@@ -1886,29 +1904,30 @@ const threads = [
     meta: { Department: "Academic Advising", Status: "Resolved", Institution: "PeopleSoft University" },
     content: [
       bubbleRow({ role: "other", name: "Liam Arcos", meta: "Jul 05, 1:40 PM", text: "Did my registration go through for all my classes?" }),
-      bubbleRow({ role: "self", name: SELF.name, meta: "Jul 05, 2:20 PM", text: "You're fully registered for the fall — nice work." }),
+      bubbleRow({ role: "self", name: SELF.name, meta: "Jul 05, 2:20 PM", seen: "Jul 05, 2:31 PM", text: "You're fully registered for the fall — nice work." }),
     ],
   },
   {
-    id: "sofia-notes", archived: true, replies: true, replied: true,
+    id: "sofia-notes", archived: true, replies: true,
     sender: "Sofia Duarte", studentId: "AA0620", handledBy: "Ava Robinson", responsibles: ["Ava Robinson", "Sarah Nguyen"],
     department: "Academic Advising", date: "06/28/2026", time: "3:10 PM PDT", subject: "Advising Notes Shared",
     preview: "I've shared the advising notes from our meeting with your file.",
     meta: { Department: "Academic Advising", Status: "Resolved", Institution: "PeopleSoft University" },
     content: [
       bubbleRow({ role: "other", name: "Sofia Duarte", meta: "Jun 28, 2:30 PM", text: "Could you send me the notes from our advising meeting?" }),
-      bubbleRow({ role: "self", name: SELF.name, meta: "Jun 28, 3:10 PM", text: "I've shared the advising notes from our meeting with your file." }),
+      bubbleRow({ role: "self", name: "Sarah Nguyen", meta: "Jun 28, 2:52 PM", seen: "Jun 28, 3:04 PM", text: "Hi Sofia — Ava ran your meeting, so I've asked her to attach the notes to your file." }),
+      bubbleRow({ role: "self", name: "Ava Robinson", meta: "Jun 28, 3:10 PM", seen: "Jun 28, 3:26 PM", text: "Done — I've shared the advising notes from our meeting with your file." }),
     ],
   },
   {
-    id: "owen-transcript", archived: true, replies: true, replied: true,
+    id: "owen-transcript", archived: true, replies: true,
     sender: "Owen Pratt", studentId: "AA0159", handledBy: "Sarah Nguyen", responsibles: ["Sarah Nguyen"],
     department: "Academic Advising", date: "06/20/2026", time: "9:05 AM PDT", subject: "Transcript Sent",
     preview: "Your official transcript was sent to the address on file.",
     meta: { Department: "Academic Advising", Status: "Resolved", Institution: "PeopleSoft University" },
     content: [
       bubbleRow({ role: "other", name: "Owen Pratt", meta: "Jun 19, 4:00 PM", text: "Has my official transcript been sent yet?" }),
-      bubbleRow({ role: "self", name: SELF.name, meta: "Jun 20, 9:05 AM", text: "Your official transcript was sent to the address on file." }),
+      bubbleRow({ role: "self", name: "Sarah Nguyen", meta: "Jun 20, 9:05 AM", seen: "Jun 20, 9:17 AM", text: "Your official transcript was sent to the address on file." }),
     ],
   },
 ];
