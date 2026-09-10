@@ -1192,7 +1192,9 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .mc-gwiz__step[data-panel="2"] { display: flex; flex-direction: column; }
 /* mobile/tablet: Edit / AI writing assist tabs (like New Message) switch the form
    and the AI panel; hidden on desktop, where the AI panel is a side split */
-.mc-gwiz__tabs2 { display: none; margin-bottom: 12px; }
+/* Edit/AI tabs as a fixed sub-header under the stepper (so they don't move when
+   the AI panel opens); shown on step 2 at < 1024 only */
+.mc-gwiz__tabs2 { display: none; flex-shrink: 0; padding: 12px 24px 0; }
 .mc-gwiz__tabs2 .tabs--segmented { width: 100%; }
 .mc-gwiz__tabs2 .tab__icon { flex-shrink: 0; width: 16px; height: 16px; }
 .mc-gwiz__footer { flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 16px 24px; border-top: 1px solid var(--tok-border-default); }
@@ -1219,9 +1221,12 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 /* mobile + tablet: no room for a side panel — Edit/AI tabs switch the form and the
    AI panel (which replaces the form); the toolbar AI Assist button + panel X hide */
 @media (max-width: 1023px) {
-  .mc-gwiz__tabs2 { display: block; }
+  .mc-gwiz__tabs2:not([hidden]) { display: block; }
   .mc-gwiz .composer__ai-assist { display: none; }
   .mc-ai__handle--gclose { display: none; }
+  /* the tab already says "AI writing assist" — drop the panel's own title so the
+     header isn't a redundant second bar (keep the download / start-over tools) */
+  .mc-gwiz__aipane .mc-ai__title { display: none; }
   .mc-gwiz--ai-open .mc-gwiz__body { overflow: hidden; padding: 0; }
   .mc-gwiz--ai-open .mc-gwiz__step[data-panel="2"] { height: 100%; }
   .mc-gwiz--ai-open .mc-gwiz__form { display: none; }
@@ -1233,6 +1238,13 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   /* the row's year·major meta is a nicety on desktop; on a phone it just steals
      name width, and the facet filters already cover that need — so drop it */
   .mc-gwiz__smeta { display: none; }
+  /* footer stacks like New Message: checks strip (full-width divider) over
+     full-width 50/50 buttons */
+  .mc-gwiz__footer { flex-direction: column; align-items: stretch; gap: 0; }
+  .mc-gwiz__footer .mc-gwiz__checks { margin: 0 -24px; padding: 0 24px 12px; border-bottom: 1px solid var(--tok-border-default); }
+  .mc-gwiz__footer-end { margin-left: 0; }
+  .mc-gwiz__footer .mc-gwiz__checks:not([hidden]) ~ .mc-gwiz__footer-end { padding-top: 12px; }
+  .mc-gwiz__footer-end .btn { flex: 1; }
 }
 .mc-group__stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
 .mc-group__replies-head { display: flex; align-items: center; justify-content: space-between; margin-top: 16px; margin-bottom: 8px; }
@@ -2606,6 +2618,12 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
       <div class="mc-step__connector" id="mc-gwiz-conn"></div>
       <div class="mc-step__item mc-step__item--inactive" data-step="2"><span class="mc-step__circle"><span class="mc-step__num">2</span><svg class="mc-step__check" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="mc-step__label">Message Details</span></div>
     </div></div>
+  <div class="mc-gwiz__tabs2" hidden>
+    <div class="tabs tabs--segmented tabs--sm" role="tablist" aria-label="Compose mode">
+      <button class="tab tab--sm tab--active" role="tab" aria-selected="true" data-gtab="edit" type="button">Edit message</button>
+      <button class="tab tab--sm" role="tab" aria-selected="false" data-gtab="ai" type="button"><svg class="tab__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI writing assist</button>
+    </div>
+  </div>
   <div class="mc-gwiz__body">
     <div class="mc-gwiz__step" data-panel="1">
       <div class="mc-gwiz__cols">
@@ -2660,12 +2678,6 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     </div>
     <div class="listbox mc-gwiz__fpop" id="mc-gwiz-fpop" popover></div>
     <div class="mc-gwiz__step" data-panel="2" hidden>
-      <div class="mc-gwiz__tabs2">
-        <div class="tabs tabs--segmented tabs--sm" role="tablist" aria-label="Compose mode">
-          <button class="tab tab--sm tab--active" role="tab" aria-selected="true" data-gtab="edit" type="button">Edit message</button>
-          <button class="tab tab--sm" role="tab" aria-selected="false" data-gtab="ai" type="button"><svg class="tab__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI writing assist</button>
-        </div>
-      </div>
       <div class="mc-gwiz__form">
       <div class="mc-compose__fld">
         <span class="mc-compose__flabel">Department<span class="mc-req"> *</span></span>
@@ -4263,6 +4275,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     // the left footer button is Cancel on step 1, Back on step 2; checks show on step 2
     gwizCancel.textContent = n === 2 ? "Back" : "Cancel";
     document.getElementById("mc-gwiz-checks").hidden = n !== 2;
+    gwizDlg.querySelector(".mc-gwiz__tabs2").hidden = n !== 2;
     if (n !== 2) gwizSetAi(false);
   }
   gwizNext.addEventListener("click", function () { if (gwizCount() > 0) gwizStep(2); });

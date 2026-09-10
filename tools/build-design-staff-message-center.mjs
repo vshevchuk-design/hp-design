@@ -2423,7 +2423,9 @@ const gwizCss = `.mc-gwiz { border: none; padding: 0; background: ${cv(mdBg)}; f
 .mc-gwiz__step[data-panel="2"] { display: flex; flex-direction: column; }
 /* mobile/tablet: Edit / AI writing assist tabs (like New Message) switch the form
    and the AI panel; hidden on desktop, where the AI panel is a side split */
-.mc-gwiz__tabs2 { display: none; margin-bottom: ${px(resolve("dim.3"))}; }
+/* Edit/AI tabs as a fixed sub-header under the stepper (so they don't move when
+   the AI panel opens); shown on step 2 at < 1024 only */
+.mc-gwiz__tabs2 { display: none; flex-shrink: 0; padding: ${px(resolve("dim.3"))} ${mdPadding} 0; }
 .mc-gwiz__tabs2 .tabs--segmented { width: 100%; }
 .mc-gwiz__tabs2 .tab__icon { flex-shrink: 0; width: ${px(resolve(tabs.size.sm.iconSize.$value))}; height: ${px(resolve(tabs.size.sm.iconSize.$value))}; }
 .mc-gwiz__footer { flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.4"))} ${mdPadding}; border-top: 1px solid ${cv(mdDivider)}; }
@@ -2450,9 +2452,12 @@ const gwizCss = `.mc-gwiz { border: none; padding: 0; background: ${cv(mdBg)}; f
 /* mobile + tablet: no room for a side panel — Edit/AI tabs switch the form and the
    AI panel (which replaces the form); the toolbar AI Assist button + panel X hide */
 @media (max-width: 1023px) {
-  .mc-gwiz__tabs2 { display: block; }
+  .mc-gwiz__tabs2:not([hidden]) { display: block; }
   .mc-gwiz .composer__ai-assist { display: none; }
   .mc-ai__handle--gclose { display: none; }
+  /* the tab already says "AI writing assist" — drop the panel's own title so the
+     header isn't a redundant second bar (keep the download / start-over tools) */
+  .mc-gwiz__aipane .mc-ai__title { display: none; }
   .mc-gwiz--ai-open .mc-gwiz__body { overflow: hidden; padding: 0; }
   .mc-gwiz--ai-open .mc-gwiz__step[data-panel="2"] { height: 100%; }
   .mc-gwiz--ai-open .mc-gwiz__form { display: none; }
@@ -2464,6 +2469,13 @@ const gwizCss = `.mc-gwiz { border: none; padding: 0; background: ${cv(mdBg)}; f
   /* the row's year·major meta is a nicety on desktop; on a phone it just steals
      name width, and the facet filters already cover that need — so drop it */
   .mc-gwiz__smeta { display: none; }
+  /* footer stacks like New Message: checks strip (full-width divider) over
+     full-width 50/50 buttons */
+  .mc-gwiz__footer { flex-direction: column; align-items: stretch; gap: 0; }
+  .mc-gwiz__footer .mc-gwiz__checks { margin: 0 -${mdPadding}; padding: 0 ${mdPadding} ${px(resolve("dim.3"))}; border-bottom: 1px solid ${cv(mdDivider)}; }
+  .mc-gwiz__footer-end { margin-left: 0; }
+  .mc-gwiz__footer .mc-gwiz__checks:not([hidden]) ~ .mc-gwiz__footer-end { padding-top: ${px(resolve("dim.3"))}; }
+  .mc-gwiz__footer-end .btn { flex: 1; }
 }`;
 
 const gwizStepMarkup = `<div class="mc-step">
@@ -2478,6 +2490,12 @@ const gwizMarkup = `<dialog class="mc-gwiz" id="mc-gwiz" aria-labelledby="mc-gwi
     <button class="btn btn--ghost btn--sm btn--icon-only" id="mc-gwiz-close" type="button" aria-label="Close">${iconCloseBtn}</button>
   </header>
   <div class="mc-gwiz__steps">${gwizStepMarkup}</div>
+  <div class="mc-gwiz__tabs2" hidden>
+    <div class="tabs tabs--segmented tabs--sm" role="tablist" aria-label="Compose mode">
+      <button class="tab tab--sm tab--active" role="tab" aria-selected="true" data-gtab="edit" type="button">Edit message</button>
+      <button class="tab tab--sm" role="tab" aria-selected="false" data-gtab="ai" type="button">${iconAiTabSpark}AI writing assist</button>
+    </div>
+  </div>
   <div class="mc-gwiz__body">
     <div class="mc-gwiz__step" data-panel="1">
       <div class="mc-gwiz__cols">
@@ -2519,12 +2537,6 @@ const gwizMarkup = `<dialog class="mc-gwiz" id="mc-gwiz" aria-labelledby="mc-gwi
     </div>
     <div class="listbox mc-gwiz__fpop" id="mc-gwiz-fpop" popover></div>
     <div class="mc-gwiz__step" data-panel="2" hidden>
-      <div class="mc-gwiz__tabs2">
-        <div class="tabs tabs--segmented tabs--sm" role="tablist" aria-label="Compose mode">
-          <button class="tab tab--sm tab--active" role="tab" aria-selected="true" data-gtab="edit" type="button">Edit message</button>
-          <button class="tab tab--sm" role="tab" aria-selected="false" data-gtab="ai" type="button">${iconAiTabSpark}AI writing assist</button>
-        </div>
-      </div>
       <div class="mc-gwiz__form">
       <div class="mc-compose__fld">
         <span class="mc-compose__flabel">Department<span class="mc-req"> *</span></span>
@@ -4193,6 +4205,7 @@ const appJs = `(function () {
     // the left footer button is Cancel on step 1, Back on step 2; checks show on step 2
     gwizCancel.textContent = n === 2 ? "Back" : "Cancel";
     document.getElementById("mc-gwiz-checks").hidden = n !== 2;
+    gwizDlg.querySelector(".mc-gwiz__tabs2").hidden = n !== 2;
     if (n !== 2) gwizSetAi(false);
   }
   gwizNext.addEventListener("click", function () { if (gwizCount() > 0) gwizStep(2); });
