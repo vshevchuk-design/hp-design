@@ -932,6 +932,8 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
 .mc-compose-student-lb:popover-open { display: flex; flex-direction: column; max-height: 320px; }
 #mc-compose-dept { anchor-name: --mc-cd-anchor; }
 #mc-compose-dept-lb { position: fixed; inset: auto; margin: ${px(resolve("dim.1"))} 0 0 0; position-anchor: --mc-cd-anchor; top: anchor(bottom); left: anchor(left); min-width: anchor-size(width); position-try-fallbacks: flip-block; }
+#mc-gwiz-dept { anchor-name: --mc-gd-anchor; }
+#mc-gwiz-dept-lb { position: fixed; inset: auto; margin: ${px(resolve("dim.1"))} 0 0 0; position-anchor: --mc-gd-anchor; top: anchor(bottom); left: anchor(left); min-width: anchor-size(width); position-try-fallbacks: flip-block; }
 .mc-compose-student-search { flex-shrink: 0; width: 100%; margin-bottom: ${px(resolve("dim.2"))}; }
 .mc-compose-student-lb .listbox__list { overflow-y: auto; min-height: 0; }
 .mc-cs-opt { justify-content: space-between; }
@@ -2413,10 +2415,6 @@ const gwizCss = `.mc-gwiz { border: none; padding: 0; background: ${cv(mdBg)}; f
 .mc-gwiz__chip span { color: ${cv("text.secondary")}; ${typoCss(bodySmType)} flex: 1; min-width: 0; }
 .mc-gwiz__chip button { flex-shrink: 0; border: none; background: none; padding: 0; cursor: pointer; color: ${cv("icon.secondary")}; display: inline-flex; }
 .mc-gwiz__chip button svg { width: 16px; height: 16px; }
-.mc-gwiz__frow { display: flex; align-items: center; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.2_5"))} 0; border-bottom: 1px solid ${cv(mdDivider)}; }
-.mc-gwiz__flabel { color: ${cv("text.muted")}; width: 56px; flex-shrink: 0; ${typoCss(bodySmType)} }
-.mc-gwiz__fval { color: ${cv("text.default")}; ${typoCss(bodySmType)} flex: 1; }
-.mc-gwiz__edit { margin-left: auto; border: none; background: none; padding: 0; cursor: pointer; color: ${cv("text.primary")}; font-weight: 600; ${typoCss(bodySmType)} font-family: inherit; }
 .mc-gwiz__body .mc-field, .mc-gwiz__body .mc-compose__editor, .mc-gwiz__body .mc-compose__exp, .mc-gwiz__body .mc-compose__attach { margin-top: ${px(resolve("dim.3"))}; }
 .mc-gwiz__footer { flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.4"))} ${mdPadding}; border-top: 1px solid ${cv(mdDivider)}; }
 .mc-gwiz__checks[hidden] { display: none; }
@@ -2490,8 +2488,18 @@ const gwizMarkup = `<dialog class="mc-gwiz" id="mc-gwiz" aria-labelledby="mc-gwi
     </div>
     <div class="listbox mc-gwiz__fpop" id="mc-gwiz-fpop" popover></div>
     <div class="mc-gwiz__step" data-panel="2" hidden>
-      <div class="mc-gwiz__frow"><span class="mc-gwiz__flabel">To</span><span class="mc-gwiz__fval" id="mc-gwiz-to">0 students selected</span><button class="mc-gwiz__edit" id="mc-gwiz-edit" type="button">Edit</button></div>
-      <div class="mc-gwiz__frow"><span class="mc-gwiz__flabel">From</span><span class="mc-gwiz__fval">Academic Advising</span></div>
+      <div class="mc-compose__fld">
+        <span class="mc-compose__flabel">Department<span class="mc-req"> *</span></span>
+        <button class="select select--base" id="mc-gwiz-dept" type="button" popovertarget="mc-gwiz-dept-lb">
+          <span class="select__stack"><span class="select__value" id="mc-gwiz-dept-value">Academic Advising</span></span>
+          ${iconChevronSelect}
+        </button>
+      </div>
+      <div class="listbox" id="mc-gwiz-dept-lb" popover>
+        <ul class="listbox__list" role="listbox" aria-label="Department">
+          ${composeDepartments.map((d) => `<li><button class="listbox__option${d === "Academic Advising" ? " listbox__option--selected" : ""}" role="option" aria-selected="${d === "Academic Advising" ? "true" : "false"}" data-dept="${esc(d)}" type="button">${d}${iconCheckmark}</button></li>`).join("\n          ")}
+        </ul>
+      </div>
       <div class="mc-compose__fld">
         <span class="mc-compose__flabel">Subject<span class="mc-req"> *</span></span>
         <label class="mc-field">
@@ -3996,7 +4004,8 @@ const appJs = `(function () {
   }
   function gwizSync() {
     gwizNext.disabled = gwizCount() === 0;
-    document.getElementById("mc-gwiz-to").textContent = gwizCount() + (gwizCount() === 1 ? " student selected" : " students selected");
+    var gwizToEl = document.getElementById("mc-gwiz-to");
+    if (gwizToEl) gwizToEl.textContent = gwizCount() + (gwizCount() === 1 ? " student selected" : " students selected");
   }
   // one entry point so chips, checkboxes, select-all and paste never disagree
   function setSelected(id, on, name) {
@@ -4148,7 +4157,6 @@ const appJs = `(function () {
     if (n !== 2) gwizDlg.classList.remove("mc-gwiz--ai-open");
   }
   gwizNext.addEventListener("click", function () { if (gwizCount() > 0) gwizStep(2); });
-  document.getElementById("mc-gwiz-edit").addEventListener("click", function () { gwizStep(1); });
   gwizMessage.addEventListener("input", function () { gwizMessage.style.height = "auto"; gwizMessage.style.height = Math.min(gwizMessage.scrollHeight, 220) + "px"; });
   // AI Assist opens the AI panel as an overlay inside the wizard (not the
   // detached standalone dialog); the panel's X returns to the form
@@ -4163,6 +4171,22 @@ const appJs = `(function () {
   // wizard step 2 shares the compose editor: Merge Tags / Hyperlinks insert +
   // toolbar overflow, subject counter, and the same sample-attachment chips
   bindEditorTools(gwizDlg, gwizMessage);
+  // From-department: a normal Select (like New Message), pre-set to the staff's dept
+  var gwizDept = "Academic Advising";
+  var gwizDeptTrigger = document.getElementById("mc-gwiz-dept");
+  var gwizDeptValue = document.getElementById("mc-gwiz-dept-value");
+  var gwizDeptLb = document.getElementById("mc-gwiz-dept-lb");
+  gwizDeptLb.querySelectorAll(".listbox__option").forEach(function (opt) {
+    opt.addEventListener("click", function () {
+      gwizDeptLb.querySelectorAll(".listbox__option").forEach(function (o) {
+        o.classList.toggle("listbox__option--selected", o === opt);
+        o.setAttribute("aria-selected", o === opt ? "true" : "false");
+      });
+      gwizDept = opt.dataset.dept;
+      selectPopulate(gwizDeptTrigger, gwizDeptValue, gwizDept);
+      gwizDeptLb.hidePopover();
+    });
+  });
   // Expiration reveal (like New Message): Expire Thread shows the block, the radios
   // swap Fixed Date / Amount of Time
   var gwizExpire = document.getElementById("mc-gwiz-expire");
@@ -4207,6 +4231,12 @@ const appJs = `(function () {
     document.getElementById("mc-gwiz-allow").checked = true;
     gwizExpire.checked = true; gwizExpFixed.checked = true; gwizExpAmount.checked = false;
     gwizExpPanel.hidden = false; syncGwizExpMode();
+    gwizDept = "Academic Advising"; gwizDeptValue.textContent = gwizDept;
+    gwizDeptLb.querySelectorAll(".listbox__option").forEach(function (o) {
+      var on = o.dataset.dept === "Academic Advising";
+      o.classList.toggle("listbox__option--selected", on);
+      o.setAttribute("aria-selected", on ? "true" : "false");
+    });
     gwizDlg.classList.remove("mc-gwiz--ai-open");
     document.getElementById("mc-gwiz-ids").value = "";
     document.getElementById("mc-gwiz-paste-hint").textContent = "Recognized IDs are added to your selection.";
