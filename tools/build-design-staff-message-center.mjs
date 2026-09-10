@@ -805,7 +805,7 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
 .switch { display: inline-flex; align-items: center; cursor: pointer; }
 .switch__input { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 .switch__track { box-sizing: border-box; position: relative; flex-shrink: 0; width: ${px(swTrackWidth)}; height: ${px(swTrackHeight)}; border-radius: ${swRadius}; background: ${cv("border.default")}; }
-.switch__thumb { position: absolute; top: ${px(swInset)}; left: ${px(swInset)}; width: ${px(swThumb)}; height: ${px(swThumb)}; border-radius: ${swRadius}; background: #fff; transform: translateX(0); }
+.switch__thumb { position: absolute; top: ${px(swInset)}; left: ${px(swInset)}; width: ${px(swThumb)}; height: ${px(swThumb)}; border-radius: ${swRadius}; background: ${cv("surface.default")}; transform: translateX(0); }
 .switch__input:checked ~ .switch__track { background: ${cv("fill.primary")}; }
 .switch__input:checked ~ .switch__track .switch__thumb { transform: translateX(${swTravel}px); }
 .switch__input:focus-visible ~ .switch__track { outline: 2px solid ${cv("border.focus")}; outline-offset: 2px; }
