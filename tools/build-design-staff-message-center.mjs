@@ -2819,7 +2819,7 @@ const phaseECss = `.mc-reply-actions { display: flex; align-items: center; gap: 
    Narrow / tight screens fall back to the full-width footer bar. */
 @media (min-width: 768px) {
   .mc-thread__composer { background: transparent; box-shadow: none; padding: ${px(resolve("dim.4"))}; }
-  .mc-composer { border: 1px solid ${cv("border.default")}; border-radius: ${compRadius}; background: ${cv("surface.default")}; box-shadow: ${mdShadowCss}; overflow: hidden; }
+  .mc-composer { border: 1px solid ${cv("border.default")}; border-radius: ${px(resolve("radius.lg"))}; background: ${cv("surface.default")}; box-shadow: ${mdShadowCss}; overflow: hidden; }
   .mc-composer__body { gap: 0; }
   .mc-composer .mc-thread__editor { border: none; border-radius: 0; }
   .mc-composer .mc-reply-actions { padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))}; border-top: 1px solid ${cv("border.default")}; }
