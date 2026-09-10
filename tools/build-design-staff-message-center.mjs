@@ -2749,11 +2749,49 @@ const gwizMarkup = `<dialog class="mc-gwiz" id="mc-gwiz" aria-labelledby="mc-gwi
 // ---- Group detail: a broadcast's grouped card in Resolved opens a full-page
 // group view (sent bubble + delivery Stat tiles + replies list + a recipients
 // Drawer). A seeded group makes it visible without sending one. ----
-const GROUP = {
-  id: "grp-seed", n: 37, subject: "Fall registration opens Monday",
-  body: "Hi {Preferred Name}, registration for the fall term opens on Monday, July 20. Reply here if you would like to review your remaining requirements first.",
-  delivered: 37, seen: 24, replied: 6, date: "Jul 12",
-};
+const GROUPS = [
+  {
+    id: "grp-seed", n: 37, subject: "Fall registration opens Monday", date: "Jul 12",
+    body: "Hi {Preferred Name}, registration for the fall term opens on Monday, July 20. Reply here if you would like to review your remaining requirements first.",
+    delivered: 37, seen: 24, replied: 6,
+    replies: [
+      { id: "CX0001", name: "Cait Adelson", reply: "Yes — can we go over my remaining requirements before Monday?", replyTime: "Jul 12, 2:14 PM", unread: true },
+      { id: "CX0002", name: "Calam Xavier", reply: "Thanks! I already registered for my classes.", replyTime: "Jul 12, 3:02 PM", unread: false },
+    ],
+  },
+  {
+    id: "grp-holds", n: 52, subject: "Action needed: clear your registration hold", date: "Jul 08",
+    body: "Hi {Preferred Name}, our records show a hold on your account that will block fall registration. Reply here and we'll help you clear it before Monday.",
+    delivered: 52, seen: 39, replied: 9,
+    replies: [
+      { id: "AA0533", name: "Priya Nair", reply: "What hold is on my account? I don't see anything in the portal.", replyTime: "Jul 08, 11:40 AM", unread: true },
+      { id: "AA0088", name: "Marcus Bell", reply: "Cleared it, thanks for the heads up!", replyTime: "Jul 08, 4:20 PM", unread: false },
+    ],
+  },
+  {
+    id: "grp-advising", n: 28, subject: "Book your fall advising appointment", date: "Jun 30",
+    body: "Hi {Preferred Name}, fall advising appointments are open. Reply here to grab a time before your registration window opens.",
+    delivered: 28, seen: 21, replied: 5,
+    replies: [
+      { id: "AA0742", name: "Ella Fontaine", reply: "Can I get an evening slot? Afternoons don't work with my job.", replyTime: "Jun 30, 9:12 AM", unread: false },
+      { id: "AA0311", name: "Noah Kim", reply: "Booked for Thursday — thank you!", replyTime: "Jun 30, 1:35 PM", unread: false },
+    ],
+  },
+];
+GROUPS.forEach((g) => g.replies.forEach((r) => { r.threadId = "grpc-" + g.id + "-" + r.id; }));
+const GROUP = GROUPS[0];
+// each group reply "lands in Inbox" as its own child thread — a real openable
+// pane (the group message we sent + the student's reply), reachable from the
+// group detail's "View in Inbox" and returning there on Back
+const GROUP_CHILD_THREADS = GROUPS.flatMap((g) => g.replies.map((r) => ({
+  id: r.threadId, archived: false, unread: r.unread, awaiting: true, replies: true, fromGroup: g.id,
+  sender: r.name, studentId: r.id, handledBy: SELF.name, responsibles: [SELF.name],
+  department: "Academic Advising", date: g.date, time: r.replyTime, subject: g.subject, preview: r.reply,
+  content: [
+    bubbleRow({ role: "self", name: SELF.name, meta: g.date, seen: r.replyTime, text: g.body }),
+    bubbleRow({ role: "other", name: r.name, meta: r.replyTime, text: r.reply }),
+  ],
+})));
 const GROUP_RECIPIENTS = [
   { id: "CX0001", name: "Cait Adelson", status: "replied", reply: "Yes — can we go over my remaining requirements before Monday?" },
   { id: "CX0002", name: "Calam Xavier", status: "replied", reply: "Thanks! I already registered for my classes." },
@@ -2764,15 +2802,23 @@ const GROUP_RECIPIENTS = [
 ];
 const statusBadge = (s) => s === "replied" ? `<span class="badge badge--sm badge--role-success">Replied</span>` : s === "seen" ? `<span class="badge badge--sm badge--role-primary">Seen</span>` : `<span class="badge badge--sm badge--role-neutral">Not seen</span>`;
 
-const groupCss = `.mc-group__stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: ${px(resolve("dim.3"))}; }
+const groupCss = `.mc-group__stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: ${px(resolve("dim.2"))}; }
+/* compact stat tiles (smaller than the standalone Stat component) */
+.mc-group__stats .mc-stat { gap: 0; padding: ${px(resolve("dim.2"))} ${px(resolve("dim.3"))}; }
+.mc-group__stats .mc-stat__value { ${typoCss(headingMdType)} }
 .mc-group__replies-head { display: flex; align-items: center; justify-content: space-between; margin-top: ${px(resolve("dim.4"))}; margin-bottom: ${px(resolve("dim.2"))}; }
 .mc-group__replies-head span { color: ${cv("text.muted")}; ${typoCss(labelSmType)}${labelSmExt.textTransform ? ` text-transform: ${labelSmExt.textTransform};` : ""}${labelSmExt.letterSpacing ? ` letter-spacing: ${labelSmExt.letterSpacing};` : ""} }
 .mc-group__replies { display: flex; flex-direction: column; gap: ${px(resolve("dim.2"))}; }
 .mc-group__reply { display: flex; align-items: center; gap: ${px(resolve("dim.3"))}; padding: ${px(resolve("dim.3"))}; border: 1px solid ${cv("border.default")}; border-radius: ${px(resolve("radius.default"))}; background: ${cv("surface.default")}; }
 .mc-group__reply-stack { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
-.mc-group__reply-name { color: ${cv("text.default")}; font-weight: 600; ${typoCss(bodySmType)} }
+.mc-group__reply-top { display: flex; align-items: center; gap: ${px(resolve("dim.2"))}; min-width: 0; }
+.mc-group__reply-dot { flex-shrink: 0; width: 8px; height: 8px; border-radius: ${px(resolve("radius.full"))}; background: ${cv("fill.primary")}; }
+.mc-group__reply-name { color: ${cv("text.default")}; ${typoCss(bodySmType)} }
+.mc-group__reply--unread .mc-group__reply-name { font-weight: 700; }
+.mc-group__reply-id { flex-shrink: 0; color: ${cv("text.muted")}; ${typoCss(bodySmType)} }
+.mc-group__reply-time { flex-shrink: 0; margin-left: auto; color: ${cv("text.muted")}; ${typoCss(bodySmType)} }
 .mc-group__reply-text { color: ${cv("text.muted")}; ${typoCss(bodySmType)} overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.mc-group__reply-link { color: ${cv("text.primary")}; ${typoCss(bodySmType)} flex-shrink: 0; }
+.mc-group__reply-link { flex-shrink: 0; color: ${cv("text.primary")}; }
 
 /* recipients drawer — right-docked sheet (Modal surface), like the standalone AI */
 .mc-recip { border: none; padding: 0; background: ${cv(mdBg)}; box-shadow: ${mdShadowCss}; font-family: ${cv("family.sans")}; }
@@ -2817,18 +2863,28 @@ function groupCardMarkup(g) {
 }
 function groupPaneMarkup(g) {
   const stat = (v, l, role) => `<div class="mc-stat${role ? ` mc-stat--${role}` : ""}"><span class="mc-stat__value">${v}</span><span class="mc-stat__label">${l}</span></div>`;
-  const replies = GROUP_RECIPIENTS.filter((r) => r.status === "replied").map((r) => `<div class="mc-group__reply">${avatarMarkup(r.name, "sm")}<span class="mc-group__reply-stack"><span class="mc-group__reply-name">${r.name}</span><span class="mc-group__reply-text">${r.reply}</span></span><span class="mc-group__reply-link">In Inbox ›</span></div>`).join("");
+  const replies = g.replies.map((r) => `<div class="mc-group__reply${r.unread ? " mc-group__reply--unread" : ""}">
+              ${avatarMarkup(r.name, "sm")}
+              <span class="mc-group__reply-stack">
+                <span class="mc-group__reply-top">${r.unread ? `<span class="mc-group__reply-dot" aria-label="Unread"></span>` : ""}<span class="mc-group__reply-name">${r.name}</span><span class="mc-group__reply-id">${r.id}</span><span class="mc-group__reply-time">${r.replyTime}</span></span>
+                <span class="mc-group__reply-text">${r.reply}</span>
+              </span>
+              <button class="btn btn--ghost btn--sm mc-group__reply-link" type="button" data-thread="${r.threadId}">View in Inbox ›</button>
+            </div>`).join("\n            ");
   return `<article class="mc-thread mc-group" data-thread="${g.id}" hidden>
         <header class="mc-thread__topbar">
           <button class="btn btn--ghost btn--sm mc-thread__back" type="button">${iconBack}Back</button>
-          <div class="mc-thread__actions"><button class="btn btn--secondary btn--sm" id="mc-recip-open" type="button">See All ${g.n} Recipients</button></div>
+          <div class="mc-thread__actions"><button class="btn btn--secondary btn--sm mc-recip-open" type="button" data-group="${g.id}">See All ${g.n} Recipients</button></div>
         </header>
         <div class="mc-thread__head">
           <h2 class="mc-thread__subject">${g.subject} <span class="badge badge--sm badge--role-neutral">Resolved</span></h2>
           <div class="mc-thread__tags"><span class="mc-thread__meta-line">Group Message · ${g.n} Students · Started by You · ${g.date}</span></div>
         </div>
         <div class="mc-thread__scroll">
-          <div class="bubble-row bubble-row--self"><div class="bubble bubble--self bubble--tint"><p>${g.body}</p></div></div>
+          <div class="bubble-row bubble-row--self">
+            <div class="bubble-sender"><p class="bubble-sender__text"><span class="bubble-sender__name">${SELF.name}</span> <span class="bubble-sender__meta">${g.date}</span></p>${avatarMarkup(SELF.name, "sm")}</div>
+            <div class="bubble bubble--self bubble--tint"><p>${g.body}</p></div>
+          </div>
           <div class="mc-group__stats">${stat(g.delivered, "Delivered")}${stat(g.seen, "Seen")}${stat(g.replied, "Replied", "success")}</div>
           <div>
             <div class="mc-group__replies-head"><span>Replies · ${g.replied}</span></div>
@@ -3086,13 +3142,16 @@ const appJs = `(function () {
       if (hf && rf) hf.setAttribute("aria-pressed", rf.getAttribute("aria-pressed"));
       // open at the latest message (Gmail/messenger) — the subject + meta scroll
       // up out of view, the newest reply sits just above the composer
-      var sc = document.querySelector('.mc-thread[data-thread="' + id + '"] .mc-thread__scroll');
-      if (sc) {
+      var pane = document.querySelector('.mc-thread[data-thread="' + id + '"]');
+      var sc = pane && pane.querySelector(".mc-thread__scroll");
+      // group detail reads top-down (sent message → stats → replies); message
+      // threads open at the newest message
+      if (sc && !pane.classList.contains("mc-group")) {
         var toBottom = function () { sc.scrollTop = sc.scrollHeight; };
         toBottom();
         requestAnimationFrame(function () { requestAnimationFrame(toBottom); });
         setTimeout(toBottom, 80);
-      }
+      } else if (sc) { sc.scrollTop = 0; }
     }
   }
   function closeThread() {
@@ -3138,12 +3197,30 @@ const appJs = `(function () {
   document.querySelectorAll(".thread-item-inbox").forEach(bindRow);
 
 
-  // back — return to the list: closeThread also clears the row's selected
-  // (blue) state and hides the pane, not just the thread-open class
+  // back — return to the list, OR to the group detail when we drilled into a
+  // group reply's thread from there
+  var threadReturnTo = null;
   function bindBack(btn) {
-    btn.addEventListener("click", closeThread);
+    btn.addEventListener("click", function () {
+      if (threadReturnTo) {
+        var back = threadReturnTo; threadReturnTo = null;
+        showPane(back); mc.classList.add("mc--thread-open");
+      } else {
+        closeThread();
+      }
+    });
   }
   document.querySelectorAll(".mc-thread__back").forEach(bindBack);
+  // group detail "View in Inbox" — open the reply's child thread, remembering the
+  // group so Back returns here
+  document.querySelectorAll(".mc-group__reply-link").forEach(function (link) {
+    link.addEventListener("click", function () {
+      var groupPane = link.closest(".mc-thread");
+      threadReturnTo = groupPane ? groupPane.dataset.thread : null;
+      showPane(link.dataset.thread);
+      mc.classList.add("mc--thread-open");
+    });
+  });
 
   // Inbox / Archived tabs — the unread Counter also swaps its onNeutral
   // active/inactive surface with the tab it sits on, same as Tabs' own docs
@@ -4716,8 +4793,9 @@ const appJs = `(function () {
   document.querySelectorAll(".mc-group-row").forEach(bindGroupRow);
 
   var recipDlg = document.getElementById("mc-recip");
-  var recipOpen = document.getElementById("mc-recip-open");
-  if (recipOpen) recipOpen.addEventListener("click", function () { recipDlg.showModal(); });
+  document.querySelectorAll(".mc-recip-open").forEach(function (b) {
+    b.addEventListener("click", function () { recipDlg.showModal(); });
+  });
   document.getElementById("mc-recip-close").addEventListener("click", function () { recipDlg.close(); });
   recipDlg.addEventListener("click", function (e) { if (e.target === recipDlg) recipDlg.close(); });
   var recipStatus = "all";
@@ -4877,7 +4955,7 @@ ${phaseECss}
             ${inboxThreads.map((t, i) => rowMarkup(t, i)).join("\n          ")}
           </div>
           <div class="mc-list" data-list="archived" hidden>
-            ${groupCardMarkup(GROUP)}
+            ${GROUPS.map((g) => groupCardMarkup(g)).join("\n            ")}
             ${archivedThreads.map((t, i) => rowMarkup(t, inboxThreads.length + i)).join("\n          ")}
           </div>
         </div>
@@ -4890,7 +4968,8 @@ ${phaseECss}
     <section class="mc__reading" aria-label="Thread">
       <div class="mc-empty" id="mc-empty"><div class="empty-state"><span class="empty-state__text">Choose a Thread</span></div></div>
       ${threads.map((t) => threadPane(t)).join("\n      ")}
-      ${groupPaneMarkup(GROUP)}
+      ${GROUP_CHILD_THREADS.map((t) => threadPane(t)).join("\n      ")}
+      ${GROUPS.map((g) => groupPaneMarkup(g)).join("\n      ")}
     </section>
   </div>
 </div>
