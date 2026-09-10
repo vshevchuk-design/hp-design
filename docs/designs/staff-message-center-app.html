@@ -1187,9 +1187,8 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .mc-gwiz__fval { color: var(--tok-text-default); font-weight: 400; font-size: 12px; line-height: 1.4; flex: 1; }
 .mc-gwiz__edit { margin-left: auto; border: none; background: none; padding: 0; cursor: pointer; color: var(--tok-text-primary); font-weight: 600; font-weight: 400; font-size: 12px; line-height: 1.4; font-family: inherit; }
 .mc-gwiz__body .mc-field, .mc-gwiz__body .mc-compose__editor { margin-top: 12px; }
-.mc-gwiz__exp { display: flex; align-items: center; gap: 12px; margin-top: 12px; }
-.mc-gwiz__exp-label { color: var(--tok-text-default); font-weight: 400; font-size: 12px; line-height: 1.4; }
-.mc-gwiz__footer { flex-shrink: 0; display: flex; justify-content: space-between; gap: 8px; padding: 16px 24px; border-top: 1px solid var(--tok-border-default); }
+.mc-gwiz__footer { flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 16px 24px; border-top: 1px solid var(--tok-border-default); }
+.mc-gwiz__checks[hidden] { display: none; }
 .mc-gwiz__footer-end { display: flex; gap: 8px; margin-left: auto; }
 /* [hidden] loses to .btn's own display; re-assert it for the footer buttons */
 .mc-gwiz__footer .btn[hidden] { display: none; }
@@ -2700,22 +2699,32 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
       </div>
       <button class="btn btn--ghost btn--sm mc-compose__attach" id="mc-gwiz-attach-btn" type="button"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/></svg>Attach file</button>
       <div class="mc-compose__atts" id="mc-gwiz-atts" hidden></div>
-      <div class="mc-compose__checks">
-        <label class="checkbox"><input type="checkbox" class="checkbox__input" id="mc-gwiz-allow" checked /><span class="checkbox__box"><svg class="checkbox__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="checkbox__label">Allow Replies</span></label>
-        <label class="checkbox"><input type="checkbox" class="checkbox__input" id="mc-gwiz-expire" checked /><span class="checkbox__box"><svg class="checkbox__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="checkbox__label">Expire Thread</span></label>
-      </div>
-      <div class="mc-gwiz__exp">
-        <span class="mc-gwiz__exp-label">Expiration</span>
-        <div class="mc-dp" data-date="2026-08-15" id="mc-gwiz-dp">
-          <button class="mc-dp__trigger" type="button" popovertarget="mc-gwiz-dp-panel" aria-haspopup="dialog"><svg class="mc-dp__cal" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 3h-1V1h-2v2H7V1H5v2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H4V8h16v13z"/></svg><span class="mc-dp__value">Aug 15, 2026</span><svg class="mc-dp__chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
-          <div class="mc-dp__panel" id="mc-gwiz-dp-panel" popover role="dialog" aria-label="Choose a date">
-            <div class="mc-dp__header">
-              <button class="mc-dp__nav mc-dp__nav--prev" type="button" aria-label="Previous month"><svg class="" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg></button>
-              <span class="mc-dp__month">August 2026</span>
-              <button class="mc-dp__nav mc-dp__nav--next" type="button" aria-label="Next month"><svg class="" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button>
+      <div class="mc-compose__exp" id="mc-gwiz-exp">
+        <span class="mc-compose__exp-label">Expiration</span>
+        <div class="mc-compose__exp-modes">
+          <label class="radio"><input type="radio" class="radio__input" name="mc-gexp-mode" id="mc-gexp-fixed" checked /><span class="radio__circle"><span class="radio__dot"></span></span><span class="radio__label">Fixed Date</span></label>
+          <label class="radio"><input type="radio" class="radio__input" name="mc-gexp-mode" id="mc-gexp-amount" /><span class="radio__circle"><span class="radio__dot"></span></span><span class="radio__label">Amount of Time</span></label>
+        </div>
+        <div class="mc-compose__exp-ctl" data-exp="fixed">
+          <div class="mc-dp" data-date="2026-08-15" id="mc-gwiz-dp">
+            <button class="mc-dp__trigger" type="button" popovertarget="mc-gwiz-dp-panel" aria-haspopup="dialog"><svg class="mc-dp__cal" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 3h-1V1h-2v2H7V1H5v2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H4V8h16v13z"/></svg><span class="mc-dp__value">Aug 15, 2026</span><svg class="mc-dp__chev" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+            <div class="mc-dp__panel" id="mc-gwiz-dp-panel" popover role="dialog" aria-label="Choose a date">
+              <div class="mc-dp__header">
+                <button class="mc-dp__nav mc-dp__nav--prev" type="button" aria-label="Previous month"><svg class="" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg></button>
+                <span class="mc-dp__month">August 2026</span>
+                <button class="mc-dp__nav mc-dp__nav--next" type="button" aria-label="Next month"><svg class="" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button>
+              </div>
+              <div class="mc-dp__grid"></div>
             </div>
-            <div class="mc-dp__grid"></div>
           </div>
+        </div>
+        <div class="mc-compose__exp-ctl" data-exp="amount" hidden>
+          <input class="mc-compose__exp-amount" id="mc-gwiz-exp-amount" type="number" min="1" placeholder="Amount" aria-label="Amount" />
+          <select class="mc-compose__exp-unit" id="mc-gwiz-exp-unit" aria-label="Time unit">
+            <option>Day(s)</option>
+            <option>Week(s)</option>
+            <option>Month(s)</option>
+          </select>
         </div>
       </div>
       <div class="mc-gwiz__aipane"><div class="mc-ai" data-ai="gwiz">
@@ -2767,9 +2776,12 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     </div>
   </div>
   <footer class="mc-gwiz__footer">
-    <button class="btn btn--secondary btn--base" id="mc-gwiz-cancel" type="button">Cancel</button>
+    <div class="mc-compose__checks mc-gwiz__checks" id="mc-gwiz-checks" hidden>
+      <label class="checkbox"><input type="checkbox" class="checkbox__input" id="mc-gwiz-allow" checked /><span class="checkbox__box"><svg class="checkbox__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="checkbox__label">Allow Replies</span></label>
+      <label class="checkbox"><input type="checkbox" class="checkbox__input" id="mc-gwiz-expire" checked /><span class="checkbox__box"><svg class="checkbox__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="checkbox__label">Expire Thread</span></label>
+    </div>
     <div class="mc-gwiz__footer-end">
-      <button class="btn btn--secondary btn--base" id="mc-gwiz-back" type="button" hidden>Back</button>
+      <button class="btn btn--secondary btn--base" id="mc-gwiz-cancel" type="button">Cancel</button>
       <button class="btn btn--primary btn--base" id="mc-gwiz-next" type="button" disabled>Next</button>
       <button class="btn btn--primary btn--base" id="mc-gwiz-send" type="button" hidden>Send</button>
     </div>
@@ -4007,8 +4019,9 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   var gwizChips = document.getElementById("mc-gwiz-chips");
   var gwizCountEl = document.getElementById("mc-gwiz-count");
   var gwizNext = document.getElementById("mc-gwiz-next");
-  var gwizBack = document.getElementById("mc-gwiz-back");
+  var gwizCancel = document.getElementById("mc-gwiz-cancel");
   var gwizSend = document.getElementById("mc-gwiz-send");
+  var gwizStepNum = 1;
   var gwizMessage = document.getElementById("mc-gwiz-message");
   var gwizSubject = document.getElementById("mc-gwiz-subject");
   var GWIZ_CLOSE_ICON = "<svg class=\"attachment__action-glyph\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z\"/></svg>";
@@ -4193,11 +4206,14 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
       it.classList.toggle("mc-step__item--inactive", s > n);
     });
     document.getElementById("mc-gwiz-conn").classList.toggle("mc-step__connector--filled", n > 1);
-    gwizNext.hidden = n !== 1; gwizBack.hidden = n !== 2; gwizSend.hidden = n !== 2;
+    gwizStepNum = n;
+    gwizNext.hidden = n !== 1; gwizSend.hidden = n !== 2;
+    // the left footer button is Cancel on step 1, Back on step 2; checks show on step 2
+    gwizCancel.textContent = n === 2 ? "Back" : "Cancel";
+    document.getElementById("mc-gwiz-checks").hidden = n !== 2;
     if (n !== 2) gwizDlg.classList.remove("mc-gwiz--ai-open");
   }
   gwizNext.addEventListener("click", function () { if (gwizCount() > 0) gwizStep(2); });
-  gwizBack.addEventListener("click", function () { gwizStep(1); });
   document.getElementById("mc-gwiz-edit").addEventListener("click", function () { gwizStep(1); });
   gwizMessage.addEventListener("input", function () { gwizMessage.style.height = "auto"; gwizMessage.style.height = Math.min(gwizMessage.scrollHeight, 220) + "px"; });
   // AI Assist opens the AI panel as an overlay inside the wizard (not the
@@ -4213,6 +4229,21 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   // wizard step 2 shares the compose editor: Merge Tags / Hyperlinks insert +
   // toolbar overflow, subject counter, and the same sample-attachment chips
   bindEditorTools(gwizDlg, gwizMessage);
+  // Expiration reveal (like New Message): Expire Thread shows the block, the radios
+  // swap Fixed Date / Amount of Time
+  var gwizExpire = document.getElementById("mc-gwiz-expire");
+  var gwizExpPanel = document.getElementById("mc-gwiz-exp");
+  var gwizExpFixed = document.getElementById("mc-gexp-fixed");
+  var gwizExpAmount = document.getElementById("mc-gexp-amount");
+  function syncGwizExpMode() {
+    var amount = gwizExpAmount.checked;
+    gwizExpPanel.querySelector('.mc-compose__exp-ctl[data-exp="fixed"]').hidden = amount;
+    gwizExpPanel.querySelector('.mc-compose__exp-ctl[data-exp="amount"]').hidden = !amount;
+  }
+  gwizExpire.addEventListener("change", function () { gwizExpPanel.hidden = !gwizExpire.checked; });
+  gwizExpFixed.addEventListener("change", syncGwizExpMode);
+  gwizExpAmount.addEventListener("change", syncGwizExpMode);
+  gwizExpPanel.hidden = !gwizExpire.checked;
   var gwizCounter = document.getElementById("mc-gwiz-counter");
   gwizSubject.addEventListener("input", function () { gwizCounter.textContent = gwizSubject.value.length + "/50"; });
   var gwizAttsWrap = document.getElementById("mc-gwiz-atts");
@@ -4239,6 +4270,9 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   function openGwiz() {
     gwizSel = {}; gwizFilters = {}; gwizSearch.value = ""; gwizSubject.value = ""; gwizMessage.value = ""; gwizMessage.style.height = "auto";
     gwizAtts = []; renderGwizAtts(); gwizCounter.textContent = "0/50";
+    document.getElementById("mc-gwiz-allow").checked = true;
+    gwizExpire.checked = true; gwizExpFixed.checked = true; gwizExpAmount.checked = false;
+    gwizExpPanel.hidden = false; syncGwizExpMode();
     gwizDlg.classList.remove("mc-gwiz--ai-open");
     document.getElementById("mc-gwiz-ids").value = "";
     document.getElementById("mc-gwiz-paste-hint").textContent = "Recognized IDs are added to your selection.";
@@ -4253,7 +4287,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     gwizDlg.showModal();
   }
   document.getElementById("mc-gwiz-close").addEventListener("click", function () { gwizDlg.close(); });
-  document.getElementById("mc-gwiz-cancel").addEventListener("click", function () { gwizDlg.close(); });
+  gwizCancel.addEventListener("click", function () { if (gwizStepNum === 2) gwizStep(1); else gwizDlg.close(); });
   gwizDlg.addEventListener("click", function (e) { if (e.target === gwizDlg) gwizDlg.close(); });
 
   // Send → fan-out: one grouped card in Resolved (a broadcast, not a

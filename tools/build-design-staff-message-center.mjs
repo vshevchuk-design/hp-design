@@ -2418,9 +2418,8 @@ const gwizCss = `.mc-gwiz { border: none; padding: 0; background: ${cv(mdBg)}; f
 .mc-gwiz__fval { color: ${cv("text.default")}; ${typoCss(bodySmType)} flex: 1; }
 .mc-gwiz__edit { margin-left: auto; border: none; background: none; padding: 0; cursor: pointer; color: ${cv("text.primary")}; font-weight: 600; ${typoCss(bodySmType)} font-family: inherit; }
 .mc-gwiz__body .mc-field, .mc-gwiz__body .mc-compose__editor { margin-top: ${px(resolve("dim.3"))}; }
-.mc-gwiz__exp { display: flex; align-items: center; gap: ${px(resolve("dim.3"))}; margin-top: ${px(resolve("dim.3"))}; }
-.mc-gwiz__exp-label { color: ${cv("text.default")}; ${typoCss(bodySmType)} }
-.mc-gwiz__footer { flex-shrink: 0; display: flex; justify-content: space-between; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.4"))} ${mdPadding}; border-top: 1px solid ${cv(mdDivider)}; }
+.mc-gwiz__footer { flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.4"))} ${mdPadding}; border-top: 1px solid ${cv(mdDivider)}; }
+.mc-gwiz__checks[hidden] { display: none; }
 .mc-gwiz__footer-end { display: flex; gap: ${px(resolve("dim.2"))}; margin-left: auto; }
 /* [hidden] loses to .btn's own display; re-assert it for the footer buttons */
 .mc-gwiz__footer .btn[hidden] { display: none; }
@@ -2511,31 +2510,44 @@ const gwizMarkup = `<dialog class="mc-gwiz" id="mc-gwiz" aria-labelledby="mc-gwi
       </div>
       <button class="btn btn--ghost btn--sm mc-compose__attach" id="mc-gwiz-attach-btn" type="button">${iconOf("attach_file", "btn__icon")}Attach file</button>
       <div class="mc-compose__atts" id="mc-gwiz-atts" hidden></div>
-      <div class="mc-compose__checks">
-        ${checkboxMarkup("Allow Replies", { checked: true, id: "mc-gwiz-allow" })}
-        ${checkboxMarkup("Expire Thread", { checked: true, id: "mc-gwiz-expire" })}
-      </div>
-      <div class="mc-gwiz__exp">
-        <span class="mc-gwiz__exp-label">Expiration</span>
-        <div class="mc-dp" data-date="2026-08-15" id="mc-gwiz-dp">
-          <button class="mc-dp__trigger" type="button" popovertarget="mc-gwiz-dp-panel" aria-haspopup="dialog">${iconOf("calendar_today", "mc-dp__cal")}<span class="mc-dp__value">Aug 15, 2026</span>${iconOf("expand_more", "mc-dp__chev")}</button>
-          <div class="mc-dp__panel" id="mc-gwiz-dp-panel" popover role="dialog" aria-label="Choose a date">
-            <div class="mc-dp__header">
-              <button class="mc-dp__nav mc-dp__nav--prev" type="button" aria-label="Previous month">${iconOf("chevron_left", "")}</button>
-              <span class="mc-dp__month">August 2026</span>
-              <button class="mc-dp__nav mc-dp__nav--next" type="button" aria-label="Next month">${iconOf("chevron_right", "")}</button>
+      <div class="mc-compose__exp" id="mc-gwiz-exp">
+        <span class="mc-compose__exp-label">Expiration</span>
+        <div class="mc-compose__exp-modes">
+          ${radioMarkup("mc-gexp-mode", "mc-gexp-fixed", "Fixed Date", true)}
+          ${radioMarkup("mc-gexp-mode", "mc-gexp-amount", "Amount of Time", false)}
+        </div>
+        <div class="mc-compose__exp-ctl" data-exp="fixed">
+          <div class="mc-dp" data-date="2026-08-15" id="mc-gwiz-dp">
+            <button class="mc-dp__trigger" type="button" popovertarget="mc-gwiz-dp-panel" aria-haspopup="dialog">${iconOf("calendar_today", "mc-dp__cal")}<span class="mc-dp__value">Aug 15, 2026</span>${iconOf("expand_more", "mc-dp__chev")}</button>
+            <div class="mc-dp__panel" id="mc-gwiz-dp-panel" popover role="dialog" aria-label="Choose a date">
+              <div class="mc-dp__header">
+                <button class="mc-dp__nav mc-dp__nav--prev" type="button" aria-label="Previous month">${iconOf("chevron_left", "")}</button>
+                <span class="mc-dp__month">August 2026</span>
+                <button class="mc-dp__nav mc-dp__nav--next" type="button" aria-label="Next month">${iconOf("chevron_right", "")}</button>
+              </div>
+              <div class="mc-dp__grid"></div>
             </div>
-            <div class="mc-dp__grid"></div>
           </div>
+        </div>
+        <div class="mc-compose__exp-ctl" data-exp="amount" hidden>
+          <input class="mc-compose__exp-amount" id="mc-gwiz-exp-amount" type="number" min="1" placeholder="Amount" aria-label="Amount" />
+          <select class="mc-compose__exp-unit" id="mc-gwiz-exp-unit" aria-label="Time unit">
+            <option>Day(s)</option>
+            <option>Week(s)</option>
+            <option>Month(s)</option>
+          </select>
         </div>
       </div>
       <div class="mc-gwiz__aipane">${aiPanelMarkup("gwiz", gwizCollapseAction)}</div>
     </div>
   </div>
   <footer class="mc-gwiz__footer">
-    <button class="btn btn--secondary btn--base" id="mc-gwiz-cancel" type="button">Cancel</button>
+    <div class="mc-compose__checks mc-gwiz__checks" id="mc-gwiz-checks" hidden>
+      ${checkboxMarkup("Allow Replies", { checked: true, id: "mc-gwiz-allow" })}
+      ${checkboxMarkup("Expire Thread", { checked: true, id: "mc-gwiz-expire" })}
+    </div>
     <div class="mc-gwiz__footer-end">
-      <button class="btn btn--secondary btn--base" id="mc-gwiz-back" type="button" hidden>Back</button>
+      <button class="btn btn--secondary btn--base" id="mc-gwiz-cancel" type="button">Cancel</button>
       <button class="btn btn--primary btn--base" id="mc-gwiz-next" type="button" disabled>Next</button>
       <button class="btn btn--primary btn--base" id="mc-gwiz-send" type="button" hidden>Send</button>
     </div>
@@ -3941,8 +3953,9 @@ const appJs = `(function () {
   var gwizChips = document.getElementById("mc-gwiz-chips");
   var gwizCountEl = document.getElementById("mc-gwiz-count");
   var gwizNext = document.getElementById("mc-gwiz-next");
-  var gwizBack = document.getElementById("mc-gwiz-back");
+  var gwizCancel = document.getElementById("mc-gwiz-cancel");
   var gwizSend = document.getElementById("mc-gwiz-send");
+  var gwizStepNum = 1;
   var gwizMessage = document.getElementById("mc-gwiz-message");
   var gwizSubject = document.getElementById("mc-gwiz-subject");
   var GWIZ_CLOSE_ICON = ${JSON.stringify(iconCloseAtt)};
@@ -4127,11 +4140,14 @@ const appJs = `(function () {
       it.classList.toggle("mc-step__item--inactive", s > n);
     });
     document.getElementById("mc-gwiz-conn").classList.toggle("mc-step__connector--filled", n > 1);
-    gwizNext.hidden = n !== 1; gwizBack.hidden = n !== 2; gwizSend.hidden = n !== 2;
+    gwizStepNum = n;
+    gwizNext.hidden = n !== 1; gwizSend.hidden = n !== 2;
+    // the left footer button is Cancel on step 1, Back on step 2; checks show on step 2
+    gwizCancel.textContent = n === 2 ? "Back" : "Cancel";
+    document.getElementById("mc-gwiz-checks").hidden = n !== 2;
     if (n !== 2) gwizDlg.classList.remove("mc-gwiz--ai-open");
   }
   gwizNext.addEventListener("click", function () { if (gwizCount() > 0) gwizStep(2); });
-  gwizBack.addEventListener("click", function () { gwizStep(1); });
   document.getElementById("mc-gwiz-edit").addEventListener("click", function () { gwizStep(1); });
   gwizMessage.addEventListener("input", function () { gwizMessage.style.height = "auto"; gwizMessage.style.height = Math.min(gwizMessage.scrollHeight, 220) + "px"; });
   // AI Assist opens the AI panel as an overlay inside the wizard (not the
@@ -4147,6 +4163,21 @@ const appJs = `(function () {
   // wizard step 2 shares the compose editor: Merge Tags / Hyperlinks insert +
   // toolbar overflow, subject counter, and the same sample-attachment chips
   bindEditorTools(gwizDlg, gwizMessage);
+  // Expiration reveal (like New Message): Expire Thread shows the block, the radios
+  // swap Fixed Date / Amount of Time
+  var gwizExpire = document.getElementById("mc-gwiz-expire");
+  var gwizExpPanel = document.getElementById("mc-gwiz-exp");
+  var gwizExpFixed = document.getElementById("mc-gexp-fixed");
+  var gwizExpAmount = document.getElementById("mc-gexp-amount");
+  function syncGwizExpMode() {
+    var amount = gwizExpAmount.checked;
+    gwizExpPanel.querySelector('.mc-compose__exp-ctl[data-exp="fixed"]').hidden = amount;
+    gwizExpPanel.querySelector('.mc-compose__exp-ctl[data-exp="amount"]').hidden = !amount;
+  }
+  gwizExpire.addEventListener("change", function () { gwizExpPanel.hidden = !gwizExpire.checked; });
+  gwizExpFixed.addEventListener("change", syncGwizExpMode);
+  gwizExpAmount.addEventListener("change", syncGwizExpMode);
+  gwizExpPanel.hidden = !gwizExpire.checked;
   var gwizCounter = document.getElementById("mc-gwiz-counter");
   gwizSubject.addEventListener("input", function () { gwizCounter.textContent = gwizSubject.value.length + "/50"; });
   var gwizAttsWrap = document.getElementById("mc-gwiz-atts");
@@ -4173,6 +4204,9 @@ const appJs = `(function () {
   function openGwiz() {
     gwizSel = {}; gwizFilters = {}; gwizSearch.value = ""; gwizSubject.value = ""; gwizMessage.value = ""; gwizMessage.style.height = "auto";
     gwizAtts = []; renderGwizAtts(); gwizCounter.textContent = "0/50";
+    document.getElementById("mc-gwiz-allow").checked = true;
+    gwizExpire.checked = true; gwizExpFixed.checked = true; gwizExpAmount.checked = false;
+    gwizExpPanel.hidden = false; syncGwizExpMode();
     gwizDlg.classList.remove("mc-gwiz--ai-open");
     document.getElementById("mc-gwiz-ids").value = "";
     document.getElementById("mc-gwiz-paste-hint").textContent = "Recognized IDs are added to your selection.";
@@ -4187,7 +4221,7 @@ const appJs = `(function () {
     gwizDlg.showModal();
   }
   document.getElementById("mc-gwiz-close").addEventListener("click", function () { gwizDlg.close(); });
-  document.getElementById("mc-gwiz-cancel").addEventListener("click", function () { gwizDlg.close(); });
+  gwizCancel.addEventListener("click", function () { if (gwizStepNum === 2) gwizStep(1); else gwizDlg.close(); });
   gwizDlg.addEventListener("click", function (e) { if (e.target === gwizDlg) gwizDlg.close(); });
 
   // Send → fan-out: one grouped card in Resolved (a broadcast, not a
