@@ -893,12 +893,11 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .mc-thread__student-name { color: var(--tok-text-default); font-weight: 600; font-weight: 400; font-size: 12px; line-height: 1.4; white-space: nowrap; }
 .mc-thread__student-id { color: var(--tok-text-muted); font-weight: 400; font-size: 12px; line-height: 1.4; white-space: nowrap; }
 .mc-thread__student-id::before { content: "· "; }
-.mc-thread__dept { display: inline-flex; align-items: center; gap: 4px; min-width: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
-.mc-thread__dept-icon { flex-shrink: 0; width: 16px; height: 16px; color: var(--tok-icon-secondary); }
-.mc-thread__dept span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mc-thread__dept { min-width: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; white-space: nowrap; }
 .mc-thread__involved { min-width: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
-.mc-thread__involved-label { color: var(--tok-text-muted); }
+.mc-thread__meta-label { color: var(--tok-text-muted); }
 .mc-thread__metasep { flex-shrink: 0; width: 1px; height: 16px; background: var(--tok-border-default); }
+.mc-thread__metasep:last-child { display: none; }
 /* flag toggle by Resolve — marks the thread important (syncs the list row's flag) */
 .mc-thread__flag svg { width: 18px; height: 18px; display: block; }
 .mc-thread__flag .thread-item-inbox__flag-filled { display: none; color: var(--tok-icon-warning); }
@@ -1851,9 +1850,10 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <div class="mc-thread__tags">
             <span class="mc-thread__student"><span class="avatar avatar--orange avatar--sm" role="img" aria-label="Cait Genatossio"><span class="avatar__initials">CG</span></span><span class="mc-thread__student-name">Cait Genatossio</span><span class="mc-thread__student-id">CX0001</span></span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
-            <span class="mc-thread__dept"><svg class="mc-thread__dept-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"><g><rect fill="none" height="24" width="24"/></g><g><g><rect height="7" width="3" x="4" y="10"/><rect height="7" width="3" x="10.5" y="10"/><rect height="3" width="20" x="2" y="19"/><rect height="7" width="3" x="17" y="10"/><polygon points="12,1 2,6 2,8 22,8 22,6"/></g></g></svg><span>Academic Advising</span></span>
+            <span class="mc-thread__dept"><span class="mc-thread__meta-label">Department ·</span> Academic Advising</span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
-            <span class="mc-thread__involved"><span class="mc-thread__involved-label">Involved ·</span> –</span>
+            <span class="mc-thread__involved"><span class="mc-thread__meta-label">Involved ·</span> –</span>
+            <span class="mc-thread__metasep" aria-hidden="true"></span>
             <span class="badge badge--sm badge--role-primary">Awaiting reply</span>
             <span class="badge badge--sm badge--role-neutral">Expires 12/12/2026</span>
             
@@ -1954,9 +1954,10 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <div class="mc-thread__tags">
             <span class="mc-thread__student"><span class="avatar avatar--violet avatar--sm" role="img" aria-label="Maya Patel"><span class="avatar__initials">MP</span></span><span class="mc-thread__student-name">Maya Patel</span><span class="mc-thread__student-id">AA0301</span></span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
-            <span class="mc-thread__dept"><svg class="mc-thread__dept-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"><g><rect fill="none" height="24" width="24"/></g><g><g><rect height="7" width="3" x="4" y="10"/><rect height="7" width="3" x="10.5" y="10"/><rect height="3" width="20" x="2" y="19"/><rect height="7" width="3" x="17" y="10"/><polygon points="12,1 2,6 2,8 22,8 22,6"/></g></g></svg><span>Academic Advising</span></span>
+            <span class="mc-thread__dept"><span class="mc-thread__meta-label">Department ·</span> Academic Advising</span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
-            <span class="mc-thread__involved"><span class="mc-thread__involved-label">Involved ·</span> –</span>
+            <span class="mc-thread__involved"><span class="mc-thread__meta-label">Involved ·</span> –</span>
+            <span class="mc-thread__metasep" aria-hidden="true"></span>
             <span class="badge badge--sm badge--role-primary">Awaiting reply</span>
             
             
@@ -2057,9 +2058,10 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <div class="mc-thread__tags">
             <span class="mc-thread__student"><span class="avatar avatar--orange avatar--sm" role="img" aria-label="Diego Fernandez"><span class="avatar__initials">DF</span></span><span class="mc-thread__student-name">Diego Fernandez</span><span class="mc-thread__student-id">AA0302</span></span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
-            <span class="mc-thread__dept"><svg class="mc-thread__dept-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"><g><rect fill="none" height="24" width="24"/></g><g><g><rect height="7" width="3" x="4" y="10"/><rect height="7" width="3" x="10.5" y="10"/><rect height="3" width="20" x="2" y="19"/><rect height="7" width="3" x="17" y="10"/><polygon points="12,1 2,6 2,8 22,8 22,6"/></g></g></svg><span>Academic Advising</span></span>
+            <span class="mc-thread__dept"><span class="mc-thread__meta-label">Department ·</span> Academic Advising</span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
-            <span class="mc-thread__involved"><span class="mc-thread__involved-label">Involved ·</span> Ava Robinson, Alexander Robinson, Sarah Nguyen</span>
+            <span class="mc-thread__involved"><span class="mc-thread__meta-label">Involved ·</span> Ava Robinson, Alexander Robinson, Sarah Nguyen</span>
+            <span class="mc-thread__metasep" aria-hidden="true"></span>
             
             <span class="badge badge--sm badge--role-warning">Expires 09/15/2026</span>
             
@@ -2226,9 +2228,10 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <div class="mc-thread__tags">
             <span class="mc-thread__student"><span class="avatar avatar--orange avatar--sm" role="img" aria-label="George Amalor"><span class="avatar__initials">GA</span></span><span class="mc-thread__student-name">George Amalor</span><span class="mc-thread__student-id">AA0303</span></span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
-            <span class="mc-thread__dept"><svg class="mc-thread__dept-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"><g><rect fill="none" height="24" width="24"/></g><g><g><rect height="7" width="3" x="4" y="10"/><rect height="7" width="3" x="10.5" y="10"/><rect height="3" width="20" x="2" y="19"/><rect height="7" width="3" x="17" y="10"/><polygon points="12,1 2,6 2,8 22,8 22,6"/></g></g></svg><span>Academic Advising</span></span>
+            <span class="mc-thread__dept"><span class="mc-thread__meta-label">Department ·</span> Academic Advising</span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
-            <span class="mc-thread__involved"><span class="mc-thread__involved-label">Involved ·</span> Alexander Robinson</span>
+            <span class="mc-thread__involved"><span class="mc-thread__meta-label">Involved ·</span> Alexander Robinson</span>
+            <span class="mc-thread__metasep" aria-hidden="true"></span>
             
             <span class="badge badge--sm badge--role-danger">Expired 08/28/2026</span>
             
@@ -2334,9 +2337,10 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <div class="mc-thread__tags">
             <span class="mc-thread__student"><span class="avatar avatar--red avatar--sm" role="img" aria-label="Priya Nair"><span class="avatar__initials">PN</span></span><span class="mc-thread__student-name">Priya Nair</span><span class="mc-thread__student-id">AA0533</span></span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
-            <span class="mc-thread__dept"><svg class="mc-thread__dept-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"><g><rect fill="none" height="24" width="24"/></g><g><g><rect height="7" width="3" x="4" y="10"/><rect height="7" width="3" x="10.5" y="10"/><rect height="3" width="20" x="2" y="19"/><rect height="7" width="3" x="17" y="10"/><polygon points="12,1 2,6 2,8 22,8 22,6"/></g></g></svg><span>Academic Advising</span></span>
+            <span class="mc-thread__dept"><span class="mc-thread__meta-label">Department ·</span> Academic Advising</span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
-            <span class="mc-thread__involved"><span class="mc-thread__involved-label">Involved ·</span> Ava Robinson</span>
+            <span class="mc-thread__involved"><span class="mc-thread__meta-label">Involved ·</span> Ava Robinson</span>
+            <span class="mc-thread__metasep" aria-hidden="true"></span>
             <span class="badge badge--sm badge--role-primary">Awaiting reply</span>
             
             
@@ -2453,9 +2457,10 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <div class="mc-thread__tags">
             <span class="mc-thread__student"><span class="avatar avatar--magenta avatar--sm" role="img" aria-label="Marcus Bell"><span class="avatar__initials">MB</span></span><span class="mc-thread__student-name">Marcus Bell</span><span class="mc-thread__student-id">AA0088</span></span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
-            <span class="mc-thread__dept"><svg class="mc-thread__dept-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"><g><rect fill="none" height="24" width="24"/></g><g><g><rect height="7" width="3" x="4" y="10"/><rect height="7" width="3" x="10.5" y="10"/><rect height="3" width="20" x="2" y="19"/><rect height="7" width="3" x="17" y="10"/><polygon points="12,1 2,6 2,8 22,8 22,6"/></g></g></svg><span>Academic Advising</span></span>
+            <span class="mc-thread__dept"><span class="mc-thread__meta-label">Department ·</span> Academic Advising</span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
-            <span class="mc-thread__involved"><span class="mc-thread__involved-label">Involved ·</span> Alexander Robinson, Sarah Nguyen</span>
+            <span class="mc-thread__involved"><span class="mc-thread__meta-label">Involved ·</span> Alexander Robinson, Sarah Nguyen</span>
+            <span class="mc-thread__metasep" aria-hidden="true"></span>
             
             <span class="badge badge--sm badge--role-warning">Expires 09/20/2026</span>
             
@@ -2581,9 +2586,10 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <div class="mc-thread__tags">
             <span class="mc-thread__student"><span class="avatar avatar--magenta avatar--sm" role="img" aria-label="Ella Fontaine"><span class="avatar__initials">EF</span></span><span class="mc-thread__student-name">Ella Fontaine</span><span class="mc-thread__student-id">AA0742</span></span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
-            <span class="mc-thread__dept"><svg class="mc-thread__dept-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"><g><rect fill="none" height="24" width="24"/></g><g><g><rect height="7" width="3" x="4" y="10"/><rect height="7" width="3" x="10.5" y="10"/><rect height="3" width="20" x="2" y="19"/><rect height="7" width="3" x="17" y="10"/><polygon points="12,1 2,6 2,8 22,8 22,6"/></g></g></svg><span>English Dept</span></span>
+            <span class="mc-thread__dept"><span class="mc-thread__meta-label">Department ·</span> English Dept</span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
-            <span class="mc-thread__involved"><span class="mc-thread__involved-label">Involved ·</span> –</span>
+            <span class="mc-thread__involved"><span class="mc-thread__meta-label">Involved ·</span> –</span>
+            <span class="mc-thread__metasep" aria-hidden="true"></span>
             <span class="badge badge--sm badge--role-primary">Awaiting reply</span>
             
             
@@ -2684,9 +2690,10 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <div class="mc-thread__tags">
             <span class="mc-thread__student"><span class="avatar avatar--red avatar--sm" role="img" aria-label="Noah Kim"><span class="avatar__initials">NK</span></span><span class="mc-thread__student-name">Noah Kim</span><span class="mc-thread__student-id">AA0311</span></span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
-            <span class="mc-thread__dept"><svg class="mc-thread__dept-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"><g><rect fill="none" height="24" width="24"/></g><g><g><rect height="7" width="3" x="4" y="10"/><rect height="7" width="3" x="10.5" y="10"/><rect height="3" width="20" x="2" y="19"/><rect height="7" width="3" x="17" y="10"/><polygon points="12,1 2,6 2,8 22,8 22,6"/></g></g></svg><span>Academic Advising</span></span>
+            <span class="mc-thread__dept"><span class="mc-thread__meta-label">Department ·</span> Academic Advising</span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
-            <span class="mc-thread__involved"><span class="mc-thread__involved-label">Involved ·</span> Alexander Robinson</span>
+            <span class="mc-thread__involved"><span class="mc-thread__meta-label">Involved ·</span> Alexander Robinson</span>
+            <span class="mc-thread__metasep" aria-hidden="true"></span>
             
             <span class="badge badge--sm badge--role-danger">Expired 08/30/2026</span>
             
@@ -2792,9 +2799,10 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <div class="mc-thread__tags">
             <span class="mc-thread__student"><span class="avatar avatar--red avatar--sm" role="img" aria-label="Lena Hoffman"><span class="avatar__initials">LH</span></span><span class="mc-thread__student-name">Lena Hoffman</span><span class="mc-thread__student-id">AA0304</span></span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
-            <span class="mc-thread__dept"><svg class="mc-thread__dept-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"><g><rect fill="none" height="24" width="24"/></g><g><g><rect height="7" width="3" x="4" y="10"/><rect height="7" width="3" x="10.5" y="10"/><rect height="3" width="20" x="2" y="19"/><rect height="7" width="3" x="17" y="10"/><polygon points="12,1 2,6 2,8 22,8 22,6"/></g></g></svg><span>English Dept</span></span>
+            <span class="mc-thread__dept"><span class="mc-thread__meta-label">Department ·</span> English Dept</span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
-            <span class="mc-thread__involved"><span class="mc-thread__involved-label">Involved ·</span> Alexander Robinson, Ava Robinson</span>
+            <span class="mc-thread__involved"><span class="mc-thread__meta-label">Involved ·</span> Alexander Robinson, Ava Robinson</span>
+            <span class="mc-thread__metasep" aria-hidden="true"></span>
             
             
             <span class="badge badge--sm badge--role-neutral">Resolved</span>
@@ -2905,9 +2913,10 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <div class="mc-thread__tags">
             <span class="mc-thread__student"><span class="avatar avatar--amber avatar--sm" role="img" aria-label="Tomas Novak"><span class="avatar__initials">TN</span></span><span class="mc-thread__student-name">Tomas Novak</span><span class="mc-thread__student-id">AA0305</span></span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
-            <span class="mc-thread__dept"><svg class="mc-thread__dept-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"><g><rect fill="none" height="24" width="24"/></g><g><g><rect height="7" width="3" x="4" y="10"/><rect height="7" width="3" x="10.5" y="10"/><rect height="3" width="20" x="2" y="19"/><rect height="7" width="3" x="17" y="10"/><polygon points="12,1 2,6 2,8 22,8 22,6"/></g></g></svg><span>Academic Advising</span></span>
+            <span class="mc-thread__dept"><span class="mc-thread__meta-label">Department ·</span> Academic Advising</span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
-            <span class="mc-thread__involved"><span class="mc-thread__involved-label">Involved ·</span> Ava Robinson</span>
+            <span class="mc-thread__involved"><span class="mc-thread__meta-label">Involved ·</span> Ava Robinson</span>
+            <span class="mc-thread__metasep" aria-hidden="true"></span>
             
             
             <span class="badge badge--sm badge--role-neutral">Resolved</span>
@@ -3013,9 +3022,10 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <div class="mc-thread__tags">
             <span class="mc-thread__student"><span class="avatar avatar--amber avatar--sm" role="img" aria-label="Dana Torres"><span class="avatar__initials">DT</span></span><span class="mc-thread__student-name">Dana Torres</span><span class="mc-thread__student-id">AA0412</span></span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
-            <span class="mc-thread__dept"><svg class="mc-thread__dept-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"><g><rect fill="none" height="24" width="24"/></g><g><g><rect height="7" width="3" x="4" y="10"/><rect height="7" width="3" x="10.5" y="10"/><rect height="3" width="20" x="2" y="19"/><rect height="7" width="3" x="17" y="10"/><polygon points="12,1 2,6 2,8 22,8 22,6"/></g></g></svg><span>English Dept</span></span>
+            <span class="mc-thread__dept"><span class="mc-thread__meta-label">Department ·</span> English Dept</span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
-            <span class="mc-thread__involved"><span class="mc-thread__involved-label">Involved ·</span> Ava Robinson</span>
+            <span class="mc-thread__involved"><span class="mc-thread__meta-label">Involved ·</span> Ava Robinson</span>
+            <span class="mc-thread__metasep" aria-hidden="true"></span>
             
             
             <span class="badge badge--sm badge--role-neutral">Resolved</span>
@@ -3121,9 +3131,10 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <div class="mc-thread__tags">
             <span class="mc-thread__student"><span class="avatar avatar--amber avatar--sm" role="img" aria-label="Liam Arcos"><span class="avatar__initials">LA</span></span><span class="mc-thread__student-name">Liam Arcos</span><span class="mc-thread__student-id">AA0007</span></span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
-            <span class="mc-thread__dept"><svg class="mc-thread__dept-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"><g><rect fill="none" height="24" width="24"/></g><g><g><rect height="7" width="3" x="4" y="10"/><rect height="7" width="3" x="10.5" y="10"/><rect height="3" width="20" x="2" y="19"/><rect height="7" width="3" x="17" y="10"/><polygon points="12,1 2,6 2,8 22,8 22,6"/></g></g></svg><span>Academic Advising</span></span>
+            <span class="mc-thread__dept"><span class="mc-thread__meta-label">Department ·</span> Academic Advising</span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
-            <span class="mc-thread__involved"><span class="mc-thread__involved-label">Involved ·</span> Alexander Robinson</span>
+            <span class="mc-thread__involved"><span class="mc-thread__meta-label">Involved ·</span> Alexander Robinson</span>
+            <span class="mc-thread__metasep" aria-hidden="true"></span>
             
             
             <span class="badge badge--sm badge--role-neutral">Resolved</span>
@@ -3229,9 +3240,10 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <div class="mc-thread__tags">
             <span class="mc-thread__student"><span class="avatar avatar--red avatar--sm" role="img" aria-label="Sofia Duarte"><span class="avatar__initials">SD</span></span><span class="mc-thread__student-name">Sofia Duarte</span><span class="mc-thread__student-id">AA0620</span></span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
-            <span class="mc-thread__dept"><svg class="mc-thread__dept-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"><g><rect fill="none" height="24" width="24"/></g><g><g><rect height="7" width="3" x="4" y="10"/><rect height="7" width="3" x="10.5" y="10"/><rect height="3" width="20" x="2" y="19"/><rect height="7" width="3" x="17" y="10"/><polygon points="12,1 2,6 2,8 22,8 22,6"/></g></g></svg><span>Academic Advising</span></span>
+            <span class="mc-thread__dept"><span class="mc-thread__meta-label">Department ·</span> Academic Advising</span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
-            <span class="mc-thread__involved"><span class="mc-thread__involved-label">Involved ·</span> Ava Robinson, Sarah Nguyen</span>
+            <span class="mc-thread__involved"><span class="mc-thread__meta-label">Involved ·</span> Ava Robinson, Sarah Nguyen</span>
+            <span class="mc-thread__metasep" aria-hidden="true"></span>
             
             
             <span class="badge badge--sm badge--role-neutral">Resolved</span>
@@ -3342,9 +3354,10 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <div class="mc-thread__tags">
             <span class="mc-thread__student"><span class="avatar avatar--teal avatar--sm" role="img" aria-label="Owen Pratt"><span class="avatar__initials">OP</span></span><span class="mc-thread__student-name">Owen Pratt</span><span class="mc-thread__student-id">AA0159</span></span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
-            <span class="mc-thread__dept"><svg class="mc-thread__dept-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"><g><rect fill="none" height="24" width="24"/></g><g><g><rect height="7" width="3" x="4" y="10"/><rect height="7" width="3" x="10.5" y="10"/><rect height="3" width="20" x="2" y="19"/><rect height="7" width="3" x="17" y="10"/><polygon points="12,1 2,6 2,8 22,8 22,6"/></g></g></svg><span>Academic Advising</span></span>
+            <span class="mc-thread__dept"><span class="mc-thread__meta-label">Department ·</span> Academic Advising</span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
-            <span class="mc-thread__involved"><span class="mc-thread__involved-label">Involved ·</span> Sarah Nguyen</span>
+            <span class="mc-thread__involved"><span class="mc-thread__meta-label">Involved ·</span> Sarah Nguyen</span>
+            <span class="mc-thread__metasep" aria-hidden="true"></span>
             
             
             <span class="badge badge--sm badge--role-neutral">Resolved</span>

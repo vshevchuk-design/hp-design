@@ -1291,12 +1291,11 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .mc-thread__student-name { color: ${cv("text.default")}; font-weight: 600; ${typoCss(bodySmType)} white-space: nowrap; }
 .mc-thread__student-id { color: ${cv("text.muted")}; ${typoCss(bodySmType)} white-space: nowrap; }
 .mc-thread__student-id::before { content: "· "; }
-.mc-thread__dept { display: inline-flex; align-items: center; gap: ${px(resolve("dim.1"))}; min-width: 0; color: ${cv("text.secondary")}; ${typoCss(bodySmType)} }
-.mc-thread__dept-icon { flex-shrink: 0; width: 16px; height: 16px; color: ${cv("icon.secondary")}; }
-.mc-thread__dept span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mc-thread__dept { min-width: 0; color: ${cv("text.secondary")}; ${typoCss(bodySmType)} white-space: nowrap; }
 .mc-thread__involved { min-width: 0; color: ${cv("text.secondary")}; ${typoCss(bodySmType)} }
-.mc-thread__involved-label { color: ${cv("text.muted")}; }
+.mc-thread__meta-label { color: ${cv("text.muted")}; }
 .mc-thread__metasep { flex-shrink: 0; width: 1px; height: ${px(resolve("dim.4"))}; background: ${cv("border.default")}; }
+.mc-thread__metasep:last-child { display: none; }
 /* flag toggle by Resolve — marks the thread important (syncs the list row's flag) */
 .mc-thread__flag svg { width: 18px; height: 18px; display: block; }
 .mc-thread__flag .thread-item-inbox__flag-filled { display: none; color: ${cv(refPath(inbox.flag.flaggedColor.$value))}; }
@@ -2130,9 +2129,10 @@ function threadPane(t) {
           <div class="mc-thread__tags">
             <span class="mc-thread__student">${avatarMarkup(t.sender, "sm")}<span class="mc-thread__student-name">${t.sender}</span><span class="mc-thread__student-id">${t.studentId || "–"}</span></span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
-            <span class="mc-thread__dept">${iconOf("account_balance", "mc-thread__dept-icon")}<span>${t.department}</span></span>
+            <span class="mc-thread__dept"><span class="mc-thread__meta-label">Department ·</span> ${t.department}</span>
             <span class="mc-thread__metasep" aria-hidden="true"></span>
-            <span class="mc-thread__involved"><span class="mc-thread__involved-label">Involved ·</span> ${involved}</span>
+            <span class="mc-thread__involved"><span class="mc-thread__meta-label">Involved ·</span> ${involved}</span>
+            <span class="mc-thread__metasep" aria-hidden="true"></span>
             ${t.awaiting ? `<span class="badge badge--sm badge--role-primary">Awaiting reply</span>` : ""}
             ${t.expires ? `<span class="badge badge--sm badge--role-${t.expires.role}">${t.expires.label}</span>` : ""}
             ${t.archived ? `<span class="badge badge--sm badge--role-neutral">Resolved</span>` : ""}
