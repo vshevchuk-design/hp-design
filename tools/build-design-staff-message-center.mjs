@@ -2406,6 +2406,15 @@ const gwizCss = `.mc-gwiz { border: none; padding: 0; background: ${cv(mdBg)}; f
 .mc-gwiz__srow:last-child { border-bottom: none; }
 .mc-gwiz__srow:hover { background: ${cv("surface.dim")}; }
 .mc-gwiz__srow .checkbox { pointer-events: none; }
+/* add (+) / remove (−) toggle instead of a checkbox — the state is immediate, so
+   a + to add and a filled − to remove reads clearer than a checkbox awaiting submit */
+.mc-gwiz__toggle { flex-shrink: 0; width: 28px; height: 28px; border-radius: ${px(resolve("radius.full"))}; border: 1px solid ${cv("border.default")}; background: ${cv("surface.default")}; display: inline-flex; align-items: center; justify-content: center; color: ${cv("icon.secondary")}; }
+.mc-gwiz__toggle-add, .mc-gwiz__toggle-remove { width: 18px; height: 18px; display: block; }
+.mc-gwiz__toggle-remove { display: none; }
+.mc-gwiz__srow:hover .mc-gwiz__toggle { border-color: ${cv("border.strong")}; color: ${cv("icon.default")}; }
+.mc-gwiz__srow.is-selected .mc-gwiz__toggle { background: ${cv("fill.primary")}; border-color: ${cv("fill.primary")}; color: ${cv("icon.onFill")}; }
+.mc-gwiz__srow.is-selected .mc-gwiz__toggle-add { display: none; }
+.mc-gwiz__srow.is-selected .mc-gwiz__toggle-remove { display: block; }
 .mc-gwiz__sid { color: ${cv("text.default")}; font-weight: 600; ${typoCss(bodySmType)} width: 64px; flex-shrink: 0; }
 .mc-gwiz__sname { flex: 1 1 auto; color: ${cv("text.default")}; ${typoCss(bodySmType)} min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .mc-gwiz__smeta { margin-left: auto; flex-shrink: 1; max-width: 46%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: ${cv("text.muted")}; ${typoCss(bodySmType)} }
@@ -2537,7 +2546,7 @@ const gwizMarkup = `<dialog class="mc-gwiz" id="mc-gwiz" aria-labelledby="mc-gwi
               <button class="mc-gwiz__clearsel" id="mc-gwiz-clearsel" type="button" hidden>Clear selection</button>
             </div>
             <div class="mc-gwiz__list" id="mc-gwiz-list" hidden>
-              ${gwizStudents.map((s) => `<div class="mc-gwiz__srow" data-id="${s.id}" data-name="${esc(s.name)}" data-year="${s.year}" data-status="${esc(s.status)}" data-major="${esc(s.major)}" data-advisor="${esc(s.advisor)}">${checkboxMarkup("", { id: "gcb-" + s.id })}<span class="mc-gwiz__sid">${s.id}</span><span class="mc-gwiz__sname">${s.name}</span><span class="mc-gwiz__smeta">${s.year} · ${s.major}</span></div>`).join("\n              ")}
+              ${gwizStudents.map((s) => `<div class="mc-gwiz__srow" data-id="${s.id}" data-name="${esc(s.name)}" data-year="${s.year}" data-status="${esc(s.status)}" data-major="${esc(s.major)}" data-advisor="${esc(s.advisor)}"><span class="mc-gwiz__toggle" aria-hidden="true">${iconOf("add", "mc-gwiz__toggle-add")}${iconOf("remove", "mc-gwiz__toggle-remove")}</span><span class="mc-gwiz__sid">${s.id}</span><span class="mc-gwiz__sname">${s.name}</span><span class="mc-gwiz__smeta">${s.year} · ${s.major}</span></div>`).join("\n              ")}
             </div>
             <p class="mc-gwiz__empty" id="mc-gwiz-empty" hidden>No students match these filters.</p>
             <div class="mc-gwiz__prompt empty-state" id="mc-gwiz-prompt"><span class="empty-state__text">Search or apply filters to find students</span></div>
@@ -4072,8 +4081,7 @@ const appJs = `(function () {
   // reflect the selection back into row checkboxes + Clear button + select-all
   function syncGwizList() {
     document.querySelectorAll("#mc-gwiz-list .mc-gwiz__srow").forEach(function (row) {
-      var cb = row.querySelector(".checkbox__input");
-      if (cb) cb.checked = !!gwizSel[row.dataset.id];
+      row.classList.toggle("is-selected", !!gwizSel[row.dataset.id]);
     });
     clearSelBtn.hidden = gwizCount() === 0;
     syncSelAll();
