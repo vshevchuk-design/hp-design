@@ -2844,6 +2844,12 @@ const groupCss = `.mc-group__stats { display: grid; grid-template-columns: repea
 .mc-group__reply-time { flex-shrink: 0; margin-left: auto; color: ${cv("text.muted")}; ${typoCss(bodySmType)} }
 .mc-group__reply-text { color: ${cv("text.muted")}; ${typoCss(bodySmType)} overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .mc-group__reply-link { flex-shrink: 0; color: ${cv("text.primary")}; }
+/* tablet + desktop: the time follows the ID inline, joined by a centred middot
+   (not floated to the far right, which read as disconnected) */
+@media (min-width: 768px) {
+  .mc-group__reply-time { margin-left: 0; }
+  .mc-group__reply-time::before { content: "·"; margin-right: ${px(resolve("dim.2"))}; }
+}
 /* phone: the View-in-Inbox drops to its own row at the bottom of the card */
 @media (max-width: 767px) {
   .mc-group__reply { flex-wrap: wrap; align-items: flex-start; }

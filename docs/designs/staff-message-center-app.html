@@ -1346,6 +1346,12 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .mc-group__reply-time { flex-shrink: 0; margin-left: auto; color: var(--tok-text-muted); font-weight: 400; font-size: 12px; line-height: 1.4; }
 .mc-group__reply-text { color: var(--tok-text-muted); font-weight: 400; font-size: 12px; line-height: 1.4; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .mc-group__reply-link { flex-shrink: 0; color: var(--tok-text-primary); }
+/* tablet + desktop: the time follows the ID inline, joined by a centred middot
+   (not floated to the far right, which read as disconnected) */
+@media (min-width: 768px) {
+  .mc-group__reply-time { margin-left: 0; }
+  .mc-group__reply-time::before { content: "·"; margin-right: 8px; }
+}
 /* phone: the View-in-Inbox drops to its own row at the bottom of the card */
 @media (max-width: 767px) {
   .mc-group__reply { flex-wrap: wrap; align-items: flex-start; }
