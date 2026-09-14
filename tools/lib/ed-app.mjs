@@ -51,7 +51,7 @@ export function edAppJs(h) {
   return `(function () {
   var D = ${DATA};
   var I = ${ICONS};
-  var S = { step: 1, program: null, focus: null, combo: [], term: null, credits: null,
+  var S = { step: 1, program: null, focus: null, combo: [], pickerMode: "primary", term: null, credits: null,
             schools: [], sid: 0, captcha: false, planner: true, tab: "credits", online: true };
 
   var $ = function (sel, root) { return (root || document).querySelector(sel); };
@@ -106,72 +106,112 @@ export function edAppJs(h) {
   }
 
   /* ---------- step 1 · programs ---------- */
-  function edPickProgram(name) {
-    S.program = name;
-    S.focus = null;
-    S.combo = [{ name: name, kind: programOf(name).kind, primary: true }];
-    var p = programOf(name);
-    show($("#ed-pick-section"), true);
-    $("#ed-pick-tile").innerHTML =
-      '<span class="choice-tile__box" style="border-color: var(--tok-fill-primary); background: var(--tok-bg-primary)">' +
-        '<span class="choice-tile__marker ed-hue--' + edHue(name) + '">' + edInitials(name) + "</span>" +
-        '<span class="choice-tile__text"><span class="choice-tile__label">' + esc(name) + "</span>" +
-        '<span class="choice-tile__description">Your primary pick</span></span></span>';
-    show($("#ed-focus-block"), !!p.focus);
-    if (p.focus) {
-      $("#ed-focus-grid").innerHTML = p.focus.map(function (f) {
-        return '<label class="choice-tile"><input class="choice-tile__input" type="radio" name="ed-focus" value="' + esc(f) + '" />' +
-          '<span class="choice-tile__box"><span class="choice-tile__marker ed-hue--' + edHue(f) + '">' + edInitials(f) + "</span>" +
-          '<span class="choice-tile__text"><span class="choice-tile__label">' + esc(f) + "</span></span></span></label>";
-      }).join("") +
-        '<label class="choice-tile"><input class="choice-tile__input" type="radio" name="ed-focus" value="__skip__" />' +
-        '<span class="choice-tile__box"><span class="choice-tile__text"><span class="choice-tile__label">Not sure yet — skip focus areas</span></span></span></label>';
-      $$('#ed-focus-grid input').forEach(function (r) {
-        r.addEventListener("change", function () { S.focus = r.value === "__skip__" ? null : r.value; });
-      });
-    }
-    edCombo();
-    edComboList();
-    edValidate();
-  }
-
-  function edCombo() {
-    $("#ed-combo-chips").innerHTML = S.combo.map(function (c, i) {
-      var badge = '<span class="badge badge--neutral">' + (c.primary ? "Primary · " : "") + c.kind + "</span>";
-      var action = c.primary
-        ? '<button class="chip__meta-action" type="button" data-change-primary="1">Change</button>'
-        : '<button class="chip__remove" type="button" data-drop="' + i + '" aria-label="Remove ' + esc(c.name) + '">' + I.close + "</button>";
-      return '<span class="chip">' + esc(c.name) + badge + action + "</span>";
-    }).join("");
-    $$("#ed-combo-chips [data-drop]").forEach(function (b) {
-      b.addEventListener("click", function () { S.combo.splice(+b.dataset.drop, 1); edCombo(); edComboList(); });
-    });
-    var change = $("#ed-combo-chips [data-change-primary]");
-    if (change) change.addEventListener("click", function () { edGoto(1); $("#ed-program-search").focus(); });
-  }
-
-  function edComboList() {
-    var q = ($("#ed-combo-search").value || "").toLowerCase();
+  /* ---------- step 1: one picker, two states ---------- */
+  /* The step shows either the picker or the chosen list, never both. mode is
+     "primary" when the pick replaces the primary programme and "add" when it
+     appends one; null means we are looking at the chosen list. */
+  function edShowPicker(mode) {
+    S.pickerMode = mode;
+    var adding = mode === "add";
+    $("#ed-s1-title").textContent = adding ? "Add a major or minor" : "What do you want to study?";
+    $("#ed-s1-sub").textContent = adding
+      ? "We'll check every programme you stack here against the same credits."
+      : "Pick anything — you can change it later. Not sure? Browse by what sounds interesting.";
+    show($("#ed-picker"), true);
+    show($("#ed-chosen"), false);
+    /* Already-chosen programmes stay visible but are not pickable again. */
     var taken = S.combo.map(function (c) { return c.name; });
-    $("#ed-combo-list").innerHTML = D.programs
-      .filter(function (p) { return p.name.toLowerCase().indexOf(q) > -1; })
-      .map(function (p) {
-        var on = taken.indexOf(p.name) > -1;
-        return '<li><button class="listbox__option" type="button" role="option" aria-selected="' + on + '" data-add="' + esc(p.name) + '"' + (on ? " disabled" : "") + ">" +
-          '<span class="listbox__stack"><span>' + esc(p.name) + "</span>" +
-          '<span class="listbox__desc">' + esc(p.degree) + "</span></span>" +
-          '<span class="listbox__trailing badge badge--neutral">' + p.kind + "</span></button></li>";
-      }).join("");
-    $$("#ed-combo-list [data-add]").forEach(function (b) {
-      b.addEventListener("click", function () {
-        var p = programOf(b.dataset.add);
-        S.combo.push({ name: p.name, kind: p.kind });
-        edCombo(); edComboList();
-      });
+    $$("#ed-program-grid .choice-tile").forEach(function (t) {
+      var on = taken.indexOf(t.dataset.program) > -1;
+      t.querySelector(".choice-tile__input").disabled = on;
+      t.querySelector(".choice-tile__input").checked = false;
     });
+    edFilterPrograms();
+    /* Cancel only exists when there is a chosen list to go back to. */
+    show($("#ed-picker-back"), !!S.program);
+    show($("#ed-next-1"), false);
+    $("#ed-s1-footer").hidden = true;
+    window.scrollTo(0, 0);
+    $("#ed-program-search").focus();
   }
 
-  /* ---------- step 3 · schools ---------- */
+  function edShowChosen() {
+    S.pickerMode = null;
+    $("#ed-s1-title").textContent = "What do you want to study?";
+    $("#ed-s1-sub").textContent = "Pick anything — you can change it later. Not sure? Browse by what sounds interesting.";
+    show($("#ed-picker"), false);
+    show($("#ed-chosen"), true);
+    show($("#ed-picker-back"), false);
+    show($("#ed-next-1"), true);
+    $("#ed-s1-footer").hidden = false;
+    edRenderChosen();
+    edValidate();
+    window.scrollTo(0, 0);
+  }
+
+  /* Each chosen programme is the same choice-tile box, static: what you picked
+     keeps looking like what you picked, with Change on the primary and Remove
+     on the rest. */
+  function edRenderChosen() {
+    $("#ed-chosen-list").innerHTML = S.combo.map(function (c, i) {
+      var action = c.primary
+        ? '<button class="btn btn--ghost btn--sm ed-chosen__action" type="button" data-change-primary="1">Change</button>'
+        : '<button class="btn btn--ghost btn--sm btn--icon-only ed-chosen__action" type="button" data-drop="' + i +
+          '" aria-label="Remove ' + esc(c.name) + '">' + I.close + "</button>";
+      return '<div class="choice-tile__box choice-tile__box--static">' +
+        '<span class="choice-tile__marker ed-hue--' + edHue(c.name) + '">' + edInitials(c.name) + "</span>" +
+        '<span class="choice-tile__text"><span class="choice-tile__label">' + esc(c.name) + "</span>" +
+        '<span class="choice-tile__description">' + (c.primary ? "Your primary pick" : c.kind) + "</span></span>" +
+        action + "</div>";
+    }).join("");
+    $$("#ed-chosen-list [data-drop]").forEach(function (b) {
+      b.addEventListener("click", function () { S.combo.splice(+b.dataset.drop, 1); edRenderChosen(); });
+    });
+    var change = $("#ed-chosen-list [data-change-primary]");
+    if (change) change.addEventListener("click", function () { edShowPicker("primary"); });
+  }
+
+  function edFilterPrograms() {
+    var q = ($("#ed-program-search").value || "").trim().toLowerCase();
+    var any = false;
+    $$("#ed-program-grid .choice-tile").forEach(function (t) {
+      var hit = t.dataset.program.toLowerCase().indexOf(q) > -1;
+      t.classList.toggle("is-hidden", !hit);
+      if (hit) any = true;
+    });
+    show($("#ed-program-empty"), !any);
+  }
+
+  function edPickProgram(name) {
+    var p = programOf(name);
+    if (S.pickerMode === "add") {
+      S.combo.push({ name: p.name, kind: p.kind });
+    } else {
+      /* Changing the primary keeps whatever else was stacked; if the new
+         primary was one of those extras, it moves up rather than doubling. */
+      var extras = S.combo.filter(function (c) { return !c.primary && c.name !== p.name; });
+      S.program = p.name;
+      S.focus = null;
+      S.combo = [{ name: p.name, kind: p.kind, primary: true }].concat(extras);
+      edFocusBlock(p);
+    }
+    edShowChosen();
+  }
+
+  function edFocusBlock(p) {
+    show($("#ed-focus-block"), !!p.focus);
+    if (!p.focus) return;
+    $("#ed-focus-grid").innerHTML = p.focus.map(function (f) {
+      return '<label class="choice-tile"><input class="choice-tile__input" type="radio" name="ed-focus" value="' + esc(f) + '" />' +
+        '<span class="choice-tile__box"><span class="choice-tile__marker ed-hue--' + edHue(f) + '">' + edInitials(f) + "</span>" +
+        '<span class="choice-tile__text"><span class="choice-tile__label">' + esc(f) + "</span></span></span></label>";
+    }).join("") +
+      '<label class="choice-tile"><input class="choice-tile__input" type="radio" name="ed-focus" value="__skip__" />' +
+      '<span class="choice-tile__box"><span class="choice-tile__text"><span class="choice-tile__label">Not sure yet — skip focus areas</span></span></span></label>';
+    $$("#ed-focus-grid input").forEach(function (r) {
+      r.addEventListener("change", function () { S.focus = r.value === "__skip__" ? null : r.value; });
+    });
+  }
   function edAddSchool() {
     var id = ++S.sid;
     S.schools.push({ id: id, name: null, scan: "idle", file: null, captcha: false, attempts: 0, classes: [] });
@@ -505,18 +545,9 @@ export function edAppJs(h) {
   $$('#ed-program-grid input').forEach(function (r) {
     r.addEventListener("change", function () { edPickProgram(r.value); });
   });
-  $("#ed-program-search").addEventListener("input", function () {
-    var q = this.value.trim().toLowerCase();
-    var any = false;
-    $$("#ed-program-grid .choice-tile").forEach(function (t) {
-      var hit = t.dataset.program.toLowerCase().indexOf(q) > -1;
-      t.classList.toggle("is-hidden", !hit);
-      if (hit) any = true;
-    });
-    show($("#ed-program-empty"), !any);
-  });
-  $("#ed-combo-search").addEventListener("input", edComboList);
-  edAnchor($("#ed-combo-lb"), $("#ed-combo-trigger"));
+  $("#ed-program-search").addEventListener("input", edFilterPrograms);
+  $("#ed-add-program").addEventListener("click", function () { edShowPicker("add"); });
+  $("#ed-picker-back").addEventListener("click", edShowChosen);
 
   $$('input[name="ed-term"]').forEach(function (r) {
     r.addEventListener("change", function () { S.term = r.value; edValidate(); });
@@ -557,10 +588,12 @@ export function edAppJs(h) {
   $("#ed-planner-toggle").addEventListener("change", function () { S.planner = this.checked; edResults(); });
   $("#ed-try-another").addEventListener("click", function () {
     S.program = null; S.focus = null; S.combo = [];
-    $$('#ed-program-grid input').forEach(function (r) { r.checked = false; });
-    show($("#ed-pick-section"), false);
-    edValidate();
+    $$('#ed-program-grid input').forEach(function (r) { r.checked = false; r.disabled = false; });
+    $("#ed-program-search").value = "";
+    show($("#ed-focus-block"), false);
     edGoto(1);
+    edShowPicker("primary");
+    edValidate();
   });
 
   edStepper();

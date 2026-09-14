@@ -102,6 +102,9 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .ed__main { flex: 1; width: 100%; max-width: 880px; margin: 0 auto; padding: ${px(resolve("dim.6"))} ${px(resolve("dim.4"))} ${px(resolve("dim.10"))}; display: flex; flex-direction: column; gap: ${px(resolve("dim.6"))}; }
 @media (min-width: 768px) { .ed__main { padding: ${px(resolve("dim.8"))} ${px(resolve("dim.6"))} ${px(resolve("dim.12"))}; } }
 .ed__head { display: flex; flex-direction: column; gap: ${px(resolve("dim.1_5"))}; }
+/* The way out of the picker lives at the top, next to where the picker
+   opens — a Cancel in the footer would sit below all 29 programmes. */
+.ed__back { align-self: flex-start; }
 .ed__title { margin: 0; color: ${cv("text.default")}; ${typoCss(h.resolveToken(h.get("text-style.title-2xl")))} }
 .ed__sub { margin: 0; color: ${cv("text.secondary")}; ${typoCss(h.resolveToken(h.get("text-style.body-base")))} }
 .ed__step { display: none; flex-direction: column; gap: ${px(resolve("dim.6"))}; }
@@ -122,7 +125,6 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 @media (min-width: 880px) { .ed-grid { grid-template-columns: repeat(3, 1fr); } }
 .ed-row { display: flex; flex-wrap: wrap; gap: ${px(resolve("dim.2"))}; align-items: center; }
 .ed-stack { display: flex; flex-direction: column; gap: ${px(resolve("dim.2"))}; }
-.ed-scroll { max-height: 420px; overflow-y: auto; padding-right: ${px(resolve("dim.1"))}; }
 /* Prototype-only scaffolding, marked as such — the same treatment the Message
    Center's fake keyboard gets. */
 .ed-scaffold { display: flex; align-items: center; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.2"))} ${px(resolve("dim.3"))}; border: 1px dashed ${cv("border.strong")}; border-radius: ${px(resolve(card.radius.$value))}; color: ${cv("text.secondary")}; ${typoCss(h.resolveToken(h.get("text-style.body-sm")))} }
@@ -165,6 +167,12 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .choice-tile__input:focus-visible ~ .choice-tile__box { outline: ${px(resolve(ctSt.focused.ringWidth.$value))} solid ${cv(refPath(ctSt.focused.ringColor.$value))}; outline-offset: ${px(resolve(ctSt.focused.ringOffset.$value))}; }
 .choice-tile__input:disabled ~ .choice-tile__box { background: ${cv(refPath(ctSt.disabled.bg.$value))}; cursor: default; }
 .choice-tile__input:disabled ~ .choice-tile__box .choice-tile__label { color: ${cv(refPath(ctSt.disabled.label.$value))}; }
+/* A programme you have already chosen: the choice-tile box reused as a static
+   row — same shape and the same selected fill, so the thing you picked looks
+   like the thing you picked — with a trailing Change/Remove action. */
+.choice-tile__box--static { background: ${cv(refPath(ctSt.selected.bg.$value))}; border-color: ${cv(refPath(ctSt.selected.border.$value))}; }
+.ed-chosen { display: grid; gap: ${px(resolve("dim.2"))}; }
+.ed-chosen__action { margin-left: auto; flex-shrink: 0; }
 
 /* ============ Alert ============ */
 .alert { display: flex; align-items: flex-start; gap: ${px(resolve(alert.gap.$value))}; padding: ${px(resolve(alert.paddingY.$value))} ${px(resolve(alert.paddingX.$value))}; border-radius: ${px(resolve(alert.radius.$value))}; border: 1px solid transparent; }

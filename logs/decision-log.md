@@ -1203,3 +1203,29 @@ Console headers (Student / Responsible / Subject / Date) are now sortable: a dow
 ## 2026-09-06 (cont. 11) — Date-range reworked: single range block + dual-month calendar
 
 Per user (with refs): the period navigator lost its 3-block middle (start · label · end). Now it's `‹ [📅 Aug 08, 2026 – Sep 08, 2026] ↻ ›` — arrows step the whole window by a month, one range block opens the calendar, and a **reset** icon (between the block and the next arrow) restores the default. Default is **a month back from today** (Aug 8 → Sep 8; today is Sep 8). On open, a **dual-month calendar** shows two consecutive months, each with a **month + year `<select>`** for quick jumping (per the ref) and paging arrows flanking the pair; pick a start then end across either month, range washed. Date filter stays inactive until the user applies/steps (so the default window doesn't hide older threads). Both widget instances (row-1 desktop + Filters-panel mobile) share one committed range; on mobile the two calendars stack. Verified: default range, pick Aug 3–5 → filters cait/maya/diego, arrow → Jul 3–5, reset → default, month select jumps, mobile stacks in-viewport. (The standalone DateRangePicker component page still shows the old single-month design — mirror pending.)
+
+## 2026-09-14 — Explore Degrees step 1: one picker, two states
+
+The user caught step 1 stacking two views in one panel, and it was worst exactly where it mattered. Measured at 375×760 before touching anything: after picking a programme the revealed section started at **y=739** — one pixel above the fold — and the thing you needed was behind a **420px inner scroll box holding 2138px** of programmes. The box ate 55% of the viewport, so a swipe that started inside it burned ~1700px of inner scrolling before the page moved. Tapping a programme looked like it did nothing.
+
+The deeper fault was not the position. **Step 1 had two pickers for the same 29 programmes** — the tile grid and the combo listbox popover, both reading `D.programs`, one showing tiles with initials and the other rows with a degree and a kind badge. Same data, same screen, two UIs. That is why it read as two views glued together.
+
+What the step actually is: build a list of programmes whose first entry is primary — an n-item selection where n is almost always 1. The pattern for that is *your list, plus one Add affordance that opens the picker*, not a permanent grid beside a second picker.
+
+So step 1 now has **two states and one picker**:
+- nothing chosen → the picker owns the step (search + grid, page-scrolled);
+- chosen → the list of what you picked, primary first, with the focus areas and Add another;
+- "Add another" and "Change" reopen the **same** picker; the listbox popover, `edCombo` and `edComboList` are gone.
+
+Consequences worth recording: the picker state needs no Continue (picking *is* the transition, so that's one tap less); `.ed-scroll` was deleted outright, so nothing on the page nests a scroll region any more; already-chosen programmes stay visible in the picker but are disabled rather than hidden, so the list doesn't reflow under you; and changing the primary keeps whatever extras were stacked, promoting the new pick if it was already one of them. Each chosen row is the choice-tile box reused statically with the selected fill, so what you picked keeps looking like what you picked — instead of the old tile-plus-chips pair, which was the same two-UIs-for-one-thing mistake in miniature.
+
+The way out of the picker sits **above the title**, not in the footer: a footer Cancel would have been below all 29 programmes, i.e. the same reach-it-by-scrolling problem I had just removed. The footer is right-aligned with Continue, matching every other step.
+
+Rejected: splitting step 1 into two stepper steps. The combo is optional and rare, so everyone would pay a Continue tap for it, and a 5-dot stepper makes a no-account explorer look longer than it is.
+
+Three process notes from this round, each of which cost real time:
+1. **`String.prototype.replace` reads `$$` in the replacement string as an escaped `$`.** Generating JS that uses a `$$` query helper through `.replace(a, b)` silently produced `$(...)`, which killed the whole IIFE at load. Pass a function as the replacement when writing generated code.
+2. **`node --check` passes on a file with that bug** — it is a syntax check, not a load check. The page must also be opened and its console read before a change counts as verified.
+3. Slicing a source file between two function names deletes everything in between. The edit from `edPickProgram` to `edValidate` silently took `edAddSchool`, `edSchool`, `edWireSchool`, `edClasses` and `edClassesReady` with it; the console caught it, not the build. Restored from HEAD and re-verified the credits branch.
+
+Unrelated and pre-existing: `check-grid` and `check-states` both fail at HEAD on `staff-message-center-app.html` (20 off-grid declarations, 3 hovers that render as nothing), from the Staff MC rounds of 9–11 Sep. Explore Degrees is clean under both.
