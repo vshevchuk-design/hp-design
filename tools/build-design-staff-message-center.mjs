@@ -51,6 +51,7 @@ const message = load("tokens/components/message.tokens.json").component.message;
 const attachment = load("tokens/components/attachment.tokens.json").component.attachment;
 const bubble = load("tokens/components/bubble.tokens.json").component.bubble;
 const composer = load("tokens/components/composer.tokens.json").component.composer;
+const drp = load("tokens/components/date-range-picker.tokens.json").component.dateRangePicker;
 const button = load("tokens/components/button.tokens.json").component.button;
 const swtch = load("tokens/components/switch.tokens.json").component.switch;
 const separator = load("tokens/components/separator.tokens.json").component.separator;
@@ -238,6 +239,12 @@ const segPillRadiusApp = px(resolve(tabs.segmented.pillRadius.$value));
 // match the sm tabs (2026-07-24: tab item 32px + 4px track padding = the
 // requested 40px total track height) ----
 const counterRadius = px(resolve(counter.radius.$value));
+const counterBase = {
+  height: px(resolve(counter.size.base.height.$value)),
+  minWidth: px(resolve(counter.size.base.minWidth.$value)),
+  paddingX: px(resolve(counter.size.base.paddingX.$value)),
+  label: resolveToken(counter.size.base.label),
+};
 const counterSm = {
   height: px(resolve(counter.size.sm.height.$value)),
   minWidth: px(resolve(counter.size.sm.minWidth.$value)),
@@ -579,6 +586,11 @@ const btnGhostSm = button.ghost.size.sm;
 const btnGhostSmHeight = px(resolve(btnGhostSm.height.$value));
 const btnGhostSmPaddingX = px(resolve(btnGhostSm.paddingX.$value));
 const btnGhostSmGap = px(resolve(btnGhostSm.gap.$value));
+const btnGhostSmIcon = px(resolve(btnGhostSm.iconSize.$value));
+// The date-range popover had hand-typed 30/34px cells; its own component
+// file says 32/36 and the Date Range Picker doc page renders those.
+const drpNavSize = px(resolve(drp.header.navSize.$value));
+const drpDaySize = px(resolve(drp.day.size.$value));
 const btnGhostSmIconSize = px(resolve(btnGhostSm.iconSize.$value));
 const btnGhostSmLabelType = resolveToken(get(btnGhostSm.label.$value));
 const btnRingWidth = px(resolve(button.primary.state.focused.ringWidth.$value));
@@ -748,7 +760,10 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
 
 .composer { display: flex; flex-direction: column; gap: ${compFieldGap}; font-family: ${cv("family.sans")}; }
 .composer__field { display: flex; align-items: center; gap: ${compFieldGap}; padding: ${compFieldPadding}; border-radius: ${compRadius}; background: ${cv("surface.dim")}; border: 1px solid ${cv("border.default")}; }
-.composer__field:hover { background: ${cv(fieldHoverBg)}; border-color: ${cv("border.strong")}; }
+/* --flush is the full-pane editor variant (compose pane, thread editor):
+   no border, no background, so no hover either — excluded here rather
+   than overridden back to transparent further down. */
+.composer__field:not(.composer__field--flush):hover { background: ${cv(fieldHoverBg)}; border-color: ${cv("border.strong")}; }
 .composer__field:focus-within { border-color: ${cv("border.focus")}; }
 .composer__input { flex: 1; min-width: 0; border: none; outline: none; background: transparent; color: ${cv("text.default")}; ${typoCss(compInputType)} font-family: ${cv("family.sans")}; }
 .composer__input::placeholder { color: ${cv("text.muted")}; }
@@ -759,7 +774,7 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
 /* rich variant (staff side) — toolbar + AI Assist + settings rows + labeled
    Send, all straight from Composer's own docs recipe */
 .composer__toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: ${px(resolve("dim.1"))}; }
-.composer__tb-sep { flex-shrink: 0; width: 1px; align-self: stretch; margin: 3px ${px(resolve("dim.1"))}; background: ${cv("border.default")}; }
+.composer__tb-sep { flex-shrink: 0; width: 1px; align-self: stretch; margin: ${px(resolve("dim.0_5"))} ${px(resolve("dim.1"))}; background: ${cv("border.default")}; }
 /* Merge Tags / Hyperlinks — ghost triggers opening a listbox of insertable tokens */
 .composer__tb-btn { flex-shrink: 0; display: inline-flex; align-items: center; gap: ${px(resolve("dim.1"))}; height: ${btnGhostSmHeight}; padding: 0 ${px(resolve("dim.2"))}; border: none; border-radius: ${px(resolve("radius.default"))}; background: transparent; cursor: pointer; color: ${cv("text.secondary")}; font-family: ${cv("family.sans")}; ${typoCss(btnGhostSmLabelType)} }
 .composer__tb-btn:hover { background: ${cv("fill.neutralHover")}; }
@@ -782,8 +797,10 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
 .composer__toolbar.is-measuring { flex-wrap: nowrap; overflow: hidden; }
 .composer__tb-more { display: none; background: ${cv("surface.sunken")}; }
 .composer__toolbar.has-overflow .composer__tb-more { display: inline-flex; }
-.composer__tb-more:hover { background: ${cv("fill.neutralHover")}; }
-.composer__tb-more-chev { width: 18px; height: 18px; color: ${cv("icon.secondary")}; flex-shrink: 0; transition: transform 0.15s ease; }
+/* Rests on surface.sunken (gray.100), so the wash tier would be invisible
+   against it — the Strong tier is what a control on gray.100 hovers to. */
+.composer__tb-more:hover { background: ${cv("fill.neutralHoverStrong")}; }
+.composer__tb-more-chev { width: ${btnGhostSmIcon}; height: ${btnGhostSmIcon}; color: ${cv("icon.secondary")}; flex-shrink: 0; transition: transform 0.15s ease; }
 .composer__toolbar.is-expanded .composer__tb-more-chev { transform: rotate(180deg); }
 #mc-compose-merge-btn { anchor-name: --mc-mt-anchor; }
 #mc-compose-merge-lb { position: fixed; inset: auto; margin: ${px(resolve("dim.1"))} 0 0 0; position-anchor: --mc-mt-anchor; top: anchor(bottom); left: anchor(left); position-try-fallbacks: flip-block; }
@@ -1200,7 +1217,7 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .daterange__arrow, .daterange__field { border: none; background: none; cursor: pointer; display: inline-flex; align-items: center; font-family: ${cv("family.sans")}; color: ${cv("text.default")}; }
 .daterange__arrow { width: 32px; flex-shrink: 0; justify-content: center; color: ${cv("icon.default")}; }
 .daterange__arrow:hover { background: ${cv("fill.neutralHover")}; }
-.daterange__arrow-icon { width: 18px; height: 18px; }
+.daterange__arrow-icon { width: ${px(resolve("dim.5"))}; height: ${px(resolve("dim.5"))}; }
 .daterange__field { gap: ${px(resolve("dim.2"))}; padding: 0 ${px(resolve("dim.3"))}; ${typoCss(bodySmType)} white-space: nowrap; border-left: 1px solid ${cv("border.default")}; }
 .daterange__field:hover { background: ${cv("fill.neutralHover")}; }
 .daterange__cal-icon { width: 16px; height: 16px; flex-shrink: 0; color: ${cv("icon.default")}; }
@@ -1210,15 +1227,15 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .daterange__cals { display: flex; gap: ${px(resolve("dim.5"))}; }
 .daterange__chead { display: flex; align-items: center; justify-content: space-between; gap: ${px(resolve("dim.2"))}; margin-bottom: ${px(resolve("dim.2"))}; }
 .daterange__mrow { display: flex; align-items: center; gap: ${px(resolve("dim.1"))}; }
-.daterange__month, .daterange__year { appearance: none; -webkit-appearance: none; height: 30px; border: 1px solid ${cv("border.default")}; border-radius: ${px(resolve("radius.default"))}; background-color: ${cv("surface.default")}; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 6px center; color: ${cv("text.default")}; font-family: inherit; ${typoCss(bodySmType)} padding: 0 24px 0 8px; cursor: pointer; }
+.daterange__month, .daterange__year { appearance: none; -webkit-appearance: none; height: ${drpNavSize}; border: 1px solid ${cv("border.default")}; border-radius: ${px(resolve("radius.default"))}; background-color: ${cv("surface.default")}; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 6px center; color: ${cv("text.default")}; font-family: inherit; ${typoCss(bodySmType)} padding: 0 24px 0 8px; cursor: pointer; }
 .daterange__month:hover, .daterange__year:hover { border-color: ${cv("border.strong")}; }
-.daterange__pnav { width: 30px; height: 30px; display: inline-flex; align-items: center; justify-content: center; border: none; background: none; border-radius: ${px(resolve("radius.default"))}; cursor: pointer; color: ${cv("icon.default")}; flex-shrink: 0; }
+.daterange__pnav { width: ${drpNavSize}; height: ${drpNavSize}; display: inline-flex; align-items: center; justify-content: center; border: none; background: none; border-radius: ${px(resolve("radius.default"))}; cursor: pointer; color: ${cv("icon.default")}; flex-shrink: 0; }
 .daterange__pnav:hover { background: ${cv("fill.neutralHover")}; }
 .daterange__pnav-icon { width: 20px; height: 20px; }
-.daterange__pnav-sp { width: 30px; flex-shrink: 0; }
-.daterange__grid { display: grid; grid-template-columns: repeat(7, 34px); gap: 2px 0; }
-.daterange__weekday { width: 34px; height: 28px; display: inline-flex; align-items: center; justify-content: center; color: ${cv("text.muted")}; ${typoCss(labelSmType)} }
-.daterange__day { width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid transparent; background: none; cursor: pointer; color: ${cv("text.default")}; ${typoCss(bodySmType)} font-family: inherit; border-radius: ${px(resolve("radius.default"))}; }
+.daterange__pnav-sp { width: ${drpNavSize}; flex-shrink: 0; }
+.daterange__grid { display: grid; grid-template-columns: repeat(7, ${drpDaySize}); gap: 2px 0; }
+.daterange__weekday { width: ${drpDaySize}; height: 28px; display: inline-flex; align-items: center; justify-content: center; color: ${cv("text.muted")}; ${typoCss(labelSmType)} }
+.daterange__day { width: ${drpDaySize}; height: ${drpDaySize}; display: inline-flex; align-items: center; justify-content: center; border: 1px solid transparent; background: none; cursor: pointer; color: ${cv("text.default")}; ${typoCss(bodySmType)} font-family: inherit; border-radius: ${px(resolve("radius.default"))}; }
 .daterange__day:hover { background: ${cv("fill.neutralHover")}; }
 .daterange__day--outside { color: ${cv("text.muted")}; pointer-events: none; }
 .daterange__day--today { border-color: ${cv("border.strong")}; }
@@ -1304,7 +1321,7 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .mc-thread__metasep { flex-shrink: 0; width: 1px; height: ${px(resolve("dim.4"))}; background: ${cv("border.default")}; }
 .mc-thread__metasep:last-child { display: none; }
 /* flag toggle by Resolve — marks the thread important (syncs the list row's flag) */
-.mc-thread__flag svg { width: 18px; height: 18px; display: block; }
+.mc-thread__flag svg { width: ${px(resolve(inbox.flag.iconSize.$value))}; height: ${px(resolve(inbox.flag.iconSize.$value))}; display: block; }
 .mc-thread__flag .thread-item-inbox__flag-filled { display: none; color: ${cv(refPath(inbox.flag.flaggedColor.$value))}; }
 .mc-thread__flag[aria-pressed="true"] .thread-item-inbox__flag-outlined { display: none; }
 .mc-thread__flag[aria-pressed="true"] .thread-item-inbox__flag-filled { display: block; }
@@ -1414,7 +1431,6 @@ const composeAiCss = `.mc-compose__tabs { display: none; flex-shrink: 0; }
 .mc-compose__editor .composer { gap: 0; }
 .mc-compose__editor .composer__toolbar { gap: 2px; padding: ${px(resolve("dim.1"))} ${px(resolve("dim.2"))}; border-bottom: 1px solid ${cv("border.default")}; background: ${cv("surface.default")}; }
 .mc-compose__editor .composer__field { align-items: flex-start; border: none; border-radius: 0; background: transparent; padding: ${px(resolve("dim.3"))}; }
-.mc-compose__editor .composer__field:hover { background: transparent; border-color: transparent; }
 .mc-compose__editor .composer__input { display: block; resize: none; min-height: 132px; max-height: 300px; overflow-y: auto; }
 .mc-compose__editor .composer__icon-btn { width: ${px(resolve("dim.6"))}; height: ${px(resolve("dim.6"))}; }
 .mc-compose__editor .composer__icon-btn .composer__icon { width: ${px(resolve("dim.4"))}; height: ${px(resolve("dim.4"))}; }
@@ -1445,7 +1461,7 @@ const composeAiCss = `.mc-compose__tabs { display: none; flex-shrink: 0; }
 .mc-compose__exp-ctl .mc-dp__trigger { width: 100%; background: ${cv("surface.default")}; }
 .mc-compose__exp-amount { flex: 1; min-width: 0; box-sizing: border-box; height: 40px; border: 1px solid ${cv("border.default")}; border-radius: ${px(resolve("radius.default"))}; background: ${cv("surface.default")}; padding: 0 ${px(resolve("dim.3"))}; font-family: ${cv("family.sans")}; ${typoCss(bodyBaseType)} color: ${cv("text.default")}; }
 .mc-compose__exp-amount:focus-visible { outline: none; border-color: ${cv("border.focus")}; }
-.mc-compose__exp-unit { flex-shrink: 0; appearance: none; -webkit-appearance: none; height: 40px; border: 1px solid ${cv("border.default")}; border-radius: ${px(resolve("radius.default"))}; background-color: ${cv("surface.default")}; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; color: ${cv("text.default")}; font-family: inherit; ${typoCss(bodyBaseType)} padding: 0 30px 0 12px; cursor: pointer; }
+.mc-compose__exp-unit { flex-shrink: 0; appearance: none; -webkit-appearance: none; height: 40px; border: 1px solid ${cv("border.default")}; border-radius: ${px(resolve("radius.default"))}; background-color: ${cv("surface.default")}; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; color: ${cv("text.default")}; font-family: inherit; ${typoCss(bodyBaseType)} padding: 0 ${px(resolve("dim.8"))} 0 ${px(resolve("dim.3"))}; cursor: pointer; }
 /* the compose DatePicker panel is anchored (getBoundingClientRect placement is
    unreliable inside the transformed dialog) */
 #mc-compose-dp .mc-dp__trigger { anchor-name: --mc-cdp-anchor; }
@@ -2101,7 +2117,7 @@ function richComposerMarkup(t) {
             <div class="mc-composer__body" ${expired ? "hidden" : ""}>
               <div class="mc-thread__editor">
                 ${richToolbarMarkup(prefix, prefix + "-ai")}
-                <div class="composer__field">
+                <div class="composer__field composer__field--flush">
                   <textarea class="composer__input" rows="1" placeholder="Reply to ${first}..." aria-label="Reply to ${first}"></textarea>
                 </div>
                 <div class="mc-attach-hint" aria-hidden="true">Drop files to attach</div>
@@ -2348,7 +2364,7 @@ const composeMarkup = `<dialog class="mc-compose" id="mc-compose" aria-labelledb
         <div class="mc-compose__editor" id="mc-compose-editor">
           <form class="composer composer--rich" onsubmit="return false">
             ${richToolbarMarkup("mc-compose", "mc-compose-ai-assist")}
-            <div class="composer__field">
+            <div class="composer__field composer__field--flush">
               <textarea class="composer__input" id="mc-compose-message" rows="1" placeholder="Write your message..." aria-label="Message"></textarea>
             </div>
             <div class="mc-attach-hint" aria-hidden="true">Drop files to attach</div>
@@ -2489,7 +2505,7 @@ const gwizCss = `.mc-gwiz { border: none; padding: 0; background: ${cv(mdBg)}; f
 /* add (+) / remove (−) toggle instead of a checkbox — the state is immediate, so
    a + to add and a filled − to remove reads clearer than a checkbox awaiting submit */
 .mc-gwiz__toggle { flex-shrink: 0; width: 24px; height: 24px; border-radius: ${px(resolve("radius.default"))}; border: none; background: transparent; display: inline-flex; align-items: center; justify-content: center; color: ${cv("icon.secondary")}; }
-.mc-gwiz__toggle-add, .mc-gwiz__toggle-remove { width: 18px; height: 18px; display: block; }
+.mc-gwiz__toggle-add, .mc-gwiz__toggle-remove { width: ${px(resolve("dim.4"))}; height: ${px(resolve("dim.4"))}; display: block; }
 .mc-gwiz__toggle-remove { display: none; }
 .mc-gwiz__srow:hover .mc-gwiz__toggle { background: ${cv("fill.neutralHover")}; color: ${cv("icon.default")}; }
 .mc-gwiz__srow.is-selected .mc-gwiz__toggle { color: ${cv("text.primary")}; }
@@ -2521,7 +2537,7 @@ const gwizCss = `.mc-gwiz { border: none; padding: 0; background: ${cv(mdBg)}; f
    a placeholder pill when empty) */
 .mc-gwiz__selected { display: flex; flex-direction: column; min-height: 0; background: ${cv("surface.dim")}; border: 1px solid ${cv("border.default")}; border-radius: ${px(resolve("radius.default"))}; padding: ${px(resolve("dim.3"))}; }
 .mc-gwiz__sel-head { flex-shrink: 0; margin: 0 0 ${px(resolve("dim.3"))}; display: flex; align-items: center; gap: ${px(resolve("dim.2"))}; color: ${cv("text.default")}; ${typoCss(bodyBaseType)} font-weight: 700; }
-.mc-gwiz__sel-count { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; min-width: 22px; height: 22px; padding: 0 ${px(resolve("dim.1_5"))}; border-radius: ${px(resolve("radius.full"))}; background: ${cv("fill.neutral")}; color: ${cv("text.secondary")}; font-size: 12px; font-weight: 600; }
+.mc-gwiz__sel-count { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; min-width: ${counterBase.minWidth}; height: ${counterBase.height}; padding: 0 ${counterBase.paddingX}; border-radius: ${px(resolve("radius.full"))}; background: ${cv("fill.neutral")}; color: ${cv("text.secondary")}; ${typoCss(counterBase.label)} }
 .mc-gwiz__sel-count.is-active { background: ${cv("bg.primary")}; color: ${cv("text.primary")}; }
 /* accordion chevron: only surfaced on mobile, where the panel is a bottom sheet */
 .mc-gwiz__sel-chev { display: none; flex-shrink: 0; width: ${px(resolve("dim.5"))}; height: ${px(resolve("dim.5"))}; color: ${cv("icon.secondary")}; transition: transform .2s ease; }
@@ -2697,7 +2713,7 @@ const gwizMarkup = `<dialog class="mc-gwiz" id="mc-gwiz" aria-labelledby="mc-gwi
       <div class="mc-compose__editor" id="mc-gwiz-editor">
         <form class="composer composer--rich" onsubmit="return false">
           ${richToolbarMarkup("mc-gwiz", "mc-gwiz-ai")}
-          <div class="composer__field">
+          <div class="composer__field composer__field--flush">
             <textarea class="composer__input" id="mc-gwiz-message" rows="1" placeholder="Write your message..." aria-label="Message"></textarea>
           </div>
           <div class="mc-attach-hint" aria-hidden="true">Drop files to attach</div>
@@ -2958,7 +2974,7 @@ const phaseECss = `.mc-reply-actions { display: flex; align-items: center; gap: 
 /* expired reply window: the composer is replaced by a danger notice + Reopen */
 .mc-composer__expired { display: flex; align-items: center; justify-content: space-between; gap: ${px(resolve("dim.3"))}; flex-wrap: wrap; }
 .mc-composer__expired-note { display: inline-flex; align-items: center; gap: ${px(resolve("dim.2"))}; color: ${cv("text.danger")}; ${typoCss(bodySmType)} }
-.mc-composer__expired-icon { flex-shrink: 0; width: 18px; height: 18px; color: ${cv("text.danger")}; }
+.mc-composer__expired-icon { flex-shrink: 0; width: ${px(resolve("dim.4"))}; height: ${px(resolve("dim.4"))}; color: ${cv("text.danger")}; }
 .mc-composer__body[hidden], .mc-composer__expired[hidden] { display: none; }
 .bubble-receipt { display: inline-flex; align-items: center; gap: ${px(resolve("dim.1"))}; align-self: flex-end; margin: ${px(resolve("dim.0_5"))} ${px(resolve("dim.1"))} 0; color: ${cv("text.success")}; font-weight: 600; ${typoCss(msgMetaType)} }
 .bubble-receipt__icon { flex-shrink: 0; width: 14px; height: 14px; }
@@ -2972,7 +2988,6 @@ const phaseECss = `.mc-reply-actions { display: flex; align-items: center; gap: 
    of the card's 16px corner so the rounding never clips it */
 .mc-thread__editor .composer__ai-assist { margin-left: auto; }
 .mc-thread__editor .composer__field { align-items: flex-start; border: none; border-radius: 0; background: transparent; padding: ${px(resolve("dim.3"))}; }
-.mc-thread__editor .composer__field:hover { background: transparent; border-color: transparent; }
 .mc-thread__editor .composer__input { display: block; resize: none; min-height: 80px; max-height: 220px; overflow-y: auto; }
 .mc-thread__editor .composer__icon-btn { width: ${px(resolve("dim.6"))}; height: ${px(resolve("dim.6"))}; }
 .mc-thread__editor .composer__icon-btn .composer__icon { width: ${px(resolve("dim.4"))}; height: ${px(resolve("dim.4"))}; }

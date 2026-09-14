@@ -232,7 +232,10 @@
 
 .composer { display: flex; flex-direction: column; gap: 8px; font-family: var(--tok-family-sans); }
 .composer__field { display: flex; align-items: center; gap: 8px; padding: 12px; border-radius: 8px; background: var(--tok-surface-dim); border: 1px solid var(--tok-border-default); }
-.composer__field:hover { background: var(--tok-surface-dim-hover); border-color: var(--tok-border-strong); }
+/* --flush is the full-pane editor variant (compose pane, thread editor):
+   no border, no background, so no hover either — excluded here rather
+   than overridden back to transparent further down. */
+.composer__field:not(.composer__field--flush):hover { background: var(--tok-surface-dim-hover); border-color: var(--tok-border-strong); }
 .composer__field:focus-within { border-color: var(--tok-border-focus); }
 .composer__input { flex: 1; min-width: 0; border: none; outline: none; background: transparent; color: var(--tok-text-default); font-weight: 400; font-size: 16px; line-height: 1.4; font-family: var(--tok-family-sans); }
 .composer__input::placeholder { color: var(--tok-text-muted); }
@@ -243,7 +246,7 @@
 /* rich variant (staff side) — toolbar + AI Assist + settings rows + labeled
    Send, all straight from Composer's own docs recipe */
 .composer__toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; }
-.composer__tb-sep { flex-shrink: 0; width: 1px; align-self: stretch; margin: 3px 4px; background: var(--tok-border-default); }
+.composer__tb-sep { flex-shrink: 0; width: 1px; align-self: stretch; margin: 2px 4px; background: var(--tok-border-default); }
 /* Merge Tags / Hyperlinks — ghost triggers opening a listbox of insertable tokens */
 .composer__tb-btn { flex-shrink: 0; display: inline-flex; align-items: center; gap: 4px; height: 32px; padding: 0 8px; border: none; border-radius: 8px; background: transparent; cursor: pointer; color: var(--tok-text-secondary); font-family: var(--tok-family-sans); font-weight: 600; font-size: 12px; line-height: 1.4; }
 .composer__tb-btn:hover { background: var(--tok-fill-neutral-hover); }
@@ -266,8 +269,10 @@
 .composer__toolbar.is-measuring { flex-wrap: nowrap; overflow: hidden; }
 .composer__tb-more { display: none; background: var(--tok-surface-sunken); }
 .composer__toolbar.has-overflow .composer__tb-more { display: inline-flex; }
-.composer__tb-more:hover { background: var(--tok-fill-neutral-hover); }
-.composer__tb-more-chev { width: 18px; height: 18px; color: var(--tok-icon-secondary); flex-shrink: 0; transition: transform 0.15s ease; }
+/* Rests on surface.sunken (gray.100), so the wash tier would be invisible
+   against it — the Strong tier is what a control on gray.100 hovers to. */
+.composer__tb-more:hover { background: var(--tok-fill-neutral-hover-strong); }
+.composer__tb-more-chev { width: 16px; height: 16px; color: var(--tok-icon-secondary); flex-shrink: 0; transition: transform 0.15s ease; }
 .composer__toolbar.is-expanded .composer__tb-more-chev { transform: rotate(180deg); }
 #mc-compose-merge-btn { anchor-name: --mc-mt-anchor; }
 #mc-compose-merge-lb { position: fixed; inset: auto; margin: 4px 0 0 0; position-anchor: --mc-mt-anchor; top: anchor(bottom); left: anchor(left); position-try-fallbacks: flip-block; }
@@ -802,7 +807,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .daterange__arrow, .daterange__field { border: none; background: none; cursor: pointer; display: inline-flex; align-items: center; font-family: var(--tok-family-sans); color: var(--tok-text-default); }
 .daterange__arrow { width: 32px; flex-shrink: 0; justify-content: center; color: var(--tok-icon-default); }
 .daterange__arrow:hover { background: var(--tok-fill-neutral-hover); }
-.daterange__arrow-icon { width: 18px; height: 18px; }
+.daterange__arrow-icon { width: 20px; height: 20px; }
 .daterange__field { gap: 8px; padding: 0 12px; font-weight: 400; font-size: 12px; line-height: 1.4; white-space: nowrap; border-left: 1px solid var(--tok-border-default); }
 .daterange__field:hover { background: var(--tok-fill-neutral-hover); }
 .daterange__cal-icon { width: 16px; height: 16px; flex-shrink: 0; color: var(--tok-icon-default); }
@@ -812,15 +817,15 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .daterange__cals { display: flex; gap: 20px; }
 .daterange__chead { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
 .daterange__mrow { display: flex; align-items: center; gap: 4px; }
-.daterange__month, .daterange__year { appearance: none; -webkit-appearance: none; height: 30px; border: 1px solid var(--tok-border-default); border-radius: 8px; background-color: var(--tok-surface-default); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 6px center; color: var(--tok-text-default); font-family: inherit; font-weight: 400; font-size: 12px; line-height: 1.4; padding: 0 24px 0 8px; cursor: pointer; }
+.daterange__month, .daterange__year { appearance: none; -webkit-appearance: none; height: 32px; border: 1px solid var(--tok-border-default); border-radius: 8px; background-color: var(--tok-surface-default); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 6px center; color: var(--tok-text-default); font-family: inherit; font-weight: 400; font-size: 12px; line-height: 1.4; padding: 0 24px 0 8px; cursor: pointer; }
 .daterange__month:hover, .daterange__year:hover { border-color: var(--tok-border-strong); }
-.daterange__pnav { width: 30px; height: 30px; display: inline-flex; align-items: center; justify-content: center; border: none; background: none; border-radius: 8px; cursor: pointer; color: var(--tok-icon-default); flex-shrink: 0; }
+.daterange__pnav { width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border: none; background: none; border-radius: 8px; cursor: pointer; color: var(--tok-icon-default); flex-shrink: 0; }
 .daterange__pnav:hover { background: var(--tok-fill-neutral-hover); }
 .daterange__pnav-icon { width: 20px; height: 20px; }
-.daterange__pnav-sp { width: 30px; flex-shrink: 0; }
-.daterange__grid { display: grid; grid-template-columns: repeat(7, 34px); gap: 2px 0; }
-.daterange__weekday { width: 34px; height: 28px; display: inline-flex; align-items: center; justify-content: center; color: var(--tok-text-muted); font-weight: 700; font-size: 12px; line-height: 1.4; }
-.daterange__day { width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid transparent; background: none; cursor: pointer; color: var(--tok-text-default); font-weight: 400; font-size: 12px; line-height: 1.4; font-family: inherit; border-radius: 8px; }
+.daterange__pnav-sp { width: 32px; flex-shrink: 0; }
+.daterange__grid { display: grid; grid-template-columns: repeat(7, 36px); gap: 2px 0; }
+.daterange__weekday { width: 36px; height: 28px; display: inline-flex; align-items: center; justify-content: center; color: var(--tok-text-muted); font-weight: 700; font-size: 12px; line-height: 1.4; }
+.daterange__day { width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid transparent; background: none; cursor: pointer; color: var(--tok-text-default); font-weight: 400; font-size: 12px; line-height: 1.4; font-family: inherit; border-radius: 8px; }
 .daterange__day:hover { background: var(--tok-fill-neutral-hover); }
 .daterange__day--outside { color: var(--tok-text-muted); pointer-events: none; }
 .daterange__day--today { border-color: var(--tok-border-strong); }
@@ -906,7 +911,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .mc-thread__metasep { flex-shrink: 0; width: 1px; height: 16px; background: var(--tok-border-default); }
 .mc-thread__metasep:last-child { display: none; }
 /* flag toggle by Resolve — marks the thread important (syncs the list row's flag) */
-.mc-thread__flag svg { width: 18px; height: 18px; display: block; }
+.mc-thread__flag svg { width: 20px; height: 20px; display: block; }
 .mc-thread__flag .thread-item-inbox__flag-filled { display: none; color: var(--tok-icon-warning); }
 .mc-thread__flag[aria-pressed="true"] .thread-item-inbox__flag-outlined { display: none; }
 .mc-thread__flag[aria-pressed="true"] .thread-item-inbox__flag-filled { display: block; }
@@ -1010,7 +1015,6 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .mc-compose__editor .composer { gap: 0; }
 .mc-compose__editor .composer__toolbar { gap: 2px; padding: 4px 8px; border-bottom: 1px solid var(--tok-border-default); background: var(--tok-surface-default); }
 .mc-compose__editor .composer__field { align-items: flex-start; border: none; border-radius: 0; background: transparent; padding: 12px; }
-.mc-compose__editor .composer__field:hover { background: transparent; border-color: transparent; }
 .mc-compose__editor .composer__input { display: block; resize: none; min-height: 132px; max-height: 300px; overflow-y: auto; }
 .mc-compose__editor .composer__icon-btn { width: 24px; height: 24px; }
 .mc-compose__editor .composer__icon-btn .composer__icon { width: 16px; height: 16px; }
@@ -1041,7 +1045,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .mc-compose__exp-ctl .mc-dp__trigger { width: 100%; background: var(--tok-surface-default); }
 .mc-compose__exp-amount { flex: 1; min-width: 0; box-sizing: border-box; height: 40px; border: 1px solid var(--tok-border-default); border-radius: 8px; background: var(--tok-surface-default); padding: 0 12px; font-family: var(--tok-family-sans); font-weight: 400; font-size: 14px; line-height: 1.4; color: var(--tok-text-default); }
 .mc-compose__exp-amount:focus-visible { outline: none; border-color: var(--tok-border-focus); }
-.mc-compose__exp-unit { flex-shrink: 0; appearance: none; -webkit-appearance: none; height: 40px; border: 1px solid var(--tok-border-default); border-radius: 8px; background-color: var(--tok-surface-default); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; color: var(--tok-text-default); font-family: inherit; font-weight: 400; font-size: 14px; line-height: 1.4; padding: 0 30px 0 12px; cursor: pointer; }
+.mc-compose__exp-unit { flex-shrink: 0; appearance: none; -webkit-appearance: none; height: 40px; border: 1px solid var(--tok-border-default); border-radius: 8px; background-color: var(--tok-surface-default); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; color: var(--tok-text-default); font-family: inherit; font-weight: 400; font-size: 14px; line-height: 1.4; padding: 0 32px 0 12px; cursor: pointer; }
 /* the compose DatePicker panel is anchored (getBoundingClientRect placement is
    unreliable inside the transformed dialog) */
 #mc-compose-dp .mc-dp__trigger { anchor-name: --mc-cdp-anchor; }
@@ -1211,7 +1215,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 /* add (+) / remove (−) toggle instead of a checkbox — the state is immediate, so
    a + to add and a filled − to remove reads clearer than a checkbox awaiting submit */
 .mc-gwiz__toggle { flex-shrink: 0; width: 24px; height: 24px; border-radius: 8px; border: none; background: transparent; display: inline-flex; align-items: center; justify-content: center; color: var(--tok-icon-secondary); }
-.mc-gwiz__toggle-add, .mc-gwiz__toggle-remove { width: 18px; height: 18px; display: block; }
+.mc-gwiz__toggle-add, .mc-gwiz__toggle-remove { width: 16px; height: 16px; display: block; }
 .mc-gwiz__toggle-remove { display: none; }
 .mc-gwiz__srow:hover .mc-gwiz__toggle { background: var(--tok-fill-neutral-hover); color: var(--tok-icon-default); }
 .mc-gwiz__srow.is-selected .mc-gwiz__toggle { color: var(--tok-text-primary); }
@@ -1243,7 +1247,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
    a placeholder pill when empty) */
 .mc-gwiz__selected { display: flex; flex-direction: column; min-height: 0; background: var(--tok-surface-dim); border: 1px solid var(--tok-border-default); border-radius: 8px; padding: 12px; }
 .mc-gwiz__sel-head { flex-shrink: 0; margin: 0 0 12px; display: flex; align-items: center; gap: 8px; color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; font-weight: 700; }
-.mc-gwiz__sel-count { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 999px; background: var(--tok-fill-neutral); color: var(--tok-text-secondary); font-size: 12px; font-weight: 600; }
+.mc-gwiz__sel-count { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 999px; background: var(--tok-fill-neutral); color: var(--tok-text-secondary); font-weight: 700; font-size: 12px; line-height: 1; }
 .mc-gwiz__sel-count.is-active { background: var(--tok-bg-primary); color: var(--tok-text-primary); }
 /* accordion chevron: only surfaced on mobile, where the panel is a bottom sheet */
 .mc-gwiz__sel-chev { display: none; flex-shrink: 0; width: 20px; height: 20px; color: var(--tok-icon-secondary); transition: transform .2s ease; }
@@ -1391,7 +1395,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 /* expired reply window: the composer is replaced by a danger notice + Reopen */
 .mc-composer__expired { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 .mc-composer__expired-note { display: inline-flex; align-items: center; gap: 8px; color: var(--tok-text-danger); font-weight: 400; font-size: 12px; line-height: 1.4; }
-.mc-composer__expired-icon { flex-shrink: 0; width: 18px; height: 18px; color: var(--tok-text-danger); }
+.mc-composer__expired-icon { flex-shrink: 0; width: 16px; height: 16px; color: var(--tok-text-danger); }
 .mc-composer__body[hidden], .mc-composer__expired[hidden] { display: none; }
 .bubble-receipt { display: inline-flex; align-items: center; gap: 4px; align-self: flex-end; margin: 2px 4px 0; color: var(--tok-text-success); font-weight: 600; font-weight: 400; font-size: 12px; line-height: 1.2; }
 .bubble-receipt__icon { flex-shrink: 0; width: 14px; height: 14px; }
@@ -1405,7 +1409,6 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
    of the card's 16px corner so the rounding never clips it */
 .mc-thread__editor .composer__ai-assist { margin-left: auto; }
 .mc-thread__editor .composer__field { align-items: flex-start; border: none; border-radius: 0; background: transparent; padding: 12px; }
-.mc-thread__editor .composer__field:hover { background: transparent; border-color: transparent; }
 .mc-thread__editor .composer__input { display: block; resize: none; min-height: 80px; max-height: 220px; overflow-y: auto; }
 .mc-thread__editor .composer__icon-btn { width: 24px; height: 24px; }
 .mc-thread__editor .composer__icon-btn .composer__icon { width: 16px; height: 16px; }
@@ -2047,7 +2050,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
               <button type="button" class="composer__ai-assist" id="mc-tr-cait-minor-ai"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
               <span class="composer__tb-break" aria-hidden="true"></span>
             </div>
-                <div class="composer__field">
+                <div class="composer__field composer__field--flush">
                   <textarea class="composer__input" rows="1" placeholder="Reply to Cait..." aria-label="Reply to Cait"></textarea>
                 </div>
                 <div class="mc-attach-hint" aria-hidden="true">Drop files to attach</div>
@@ -2153,7 +2156,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
               <button type="button" class="composer__ai-assist" id="mc-tr-maya-hold-ai"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
               <span class="composer__tb-break" aria-hidden="true"></span>
             </div>
-                <div class="composer__field">
+                <div class="composer__field composer__field--flush">
                   <textarea class="composer__input" rows="1" placeholder="Reply to Maya..." aria-label="Reply to Maya"></textarea>
                 </div>
                 <div class="mc-attach-hint" aria-hidden="true">Drop files to attach</div>
@@ -2325,7 +2328,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
               <button type="button" class="composer__ai-assist" id="mc-tr-diego-transcript-ai"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
               <span class="composer__tb-break" aria-hidden="true"></span>
             </div>
-                <div class="composer__field">
+                <div class="composer__field composer__field--flush">
                   <textarea class="composer__input" rows="1" placeholder="Reply to Diego..." aria-label="Reply to Diego"></textarea>
                 </div>
                 <div class="mc-attach-hint" aria-hidden="true">Drop files to attach</div>
@@ -2436,7 +2439,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
               <button type="button" class="composer__ai-assist" id="mc-tr-george-reschedule-ai"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
               <span class="composer__tb-break" aria-hidden="true"></span>
             </div>
-                <div class="composer__field">
+                <div class="composer__field composer__field--flush">
                   <textarea class="composer__input" rows="1" placeholder="Reply to George..." aria-label="Reply to George"></textarea>
                 </div>
                 <div class="mc-attach-hint" aria-hidden="true">Drop files to attach</div>
@@ -2558,7 +2561,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
               <button type="button" class="composer__ai-assist" id="mc-tr-priya-override-ai"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
               <span class="composer__tb-break" aria-hidden="true"></span>
             </div>
-                <div class="composer__field">
+                <div class="composer__field composer__field--flush">
                   <textarea class="composer__input" rows="1" placeholder="Reply to Priya..." aria-label="Reply to Priya"></textarea>
                 </div>
                 <div class="mc-attach-hint" aria-hidden="true">Drop files to attach</div>
@@ -2689,7 +2692,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
               <button type="button" class="composer__ai-assist" id="mc-tr-marcus-audit-ai"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
               <span class="composer__tb-break" aria-hidden="true"></span>
             </div>
-                <div class="composer__field">
+                <div class="composer__field composer__field--flush">
                   <textarea class="composer__input" rows="1" placeholder="Reply to Marcus..." aria-label="Reply to Marcus"></textarea>
                 </div>
                 <div class="mc-attach-hint" aria-hidden="true">Drop files to attach</div>
@@ -2795,7 +2798,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
               <button type="button" class="composer__ai-assist" id="mc-tr-ella-thesis-ai"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
               <span class="composer__tb-break" aria-hidden="true"></span>
             </div>
-                <div class="composer__field">
+                <div class="composer__field composer__field--flush">
                   <textarea class="composer__input" rows="1" placeholder="Reply to Ella..." aria-label="Reply to Ella"></textarea>
                 </div>
                 <div class="mc-attach-hint" aria-hidden="true">Drop files to attach</div>
@@ -2906,7 +2909,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
               <button type="button" class="composer__ai-assist" id="mc-tr-noah-loa-ai"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
               <span class="composer__tb-break" aria-hidden="true"></span>
             </div>
-                <div class="composer__field">
+                <div class="composer__field composer__field--flush">
                   <textarea class="composer__input" rows="1" placeholder="Reply to Noah..." aria-label="Reply to Noah"></textarea>
                 </div>
                 <div class="mc-attach-hint" aria-hidden="true">Drop files to attach</div>
@@ -3022,7 +3025,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
               <button type="button" class="composer__ai-assist" id="mc-tr-lena-waiver-ai"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
               <span class="composer__tb-break" aria-hidden="true"></span>
             </div>
-                <div class="composer__field">
+                <div class="composer__field composer__field--flush">
                   <textarea class="composer__input" rows="1" placeholder="Reply to Lena..." aria-label="Reply to Lena"></textarea>
                 </div>
                 <div class="mc-attach-hint" aria-hidden="true">Drop files to attach</div>
@@ -3133,7 +3136,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
               <button type="button" class="composer__ai-assist" id="mc-tr-tomas-plan-ai"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
               <span class="composer__tb-break" aria-hidden="true"></span>
             </div>
-                <div class="composer__field">
+                <div class="composer__field composer__field--flush">
                   <textarea class="composer__input" rows="1" placeholder="Reply to Tomas..." aria-label="Reply to Tomas"></textarea>
                 </div>
                 <div class="mc-attach-hint" aria-hidden="true">Drop files to attach</div>
@@ -3244,7 +3247,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
               <button type="button" class="composer__ai-assist" id="mc-tr-dana-adddrop-ai"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
               <span class="composer__tb-break" aria-hidden="true"></span>
             </div>
-                <div class="composer__field">
+                <div class="composer__field composer__field--flush">
                   <textarea class="composer__input" rows="1" placeholder="Reply to Dana..." aria-label="Reply to Dana"></textarea>
                 </div>
                 <div class="mc-attach-hint" aria-hidden="true">Drop files to attach</div>
@@ -3355,7 +3358,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
               <button type="button" class="composer__ai-assist" id="mc-tr-liam-reg-ai"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
               <span class="composer__tb-break" aria-hidden="true"></span>
             </div>
-                <div class="composer__field">
+                <div class="composer__field composer__field--flush">
                   <textarea class="composer__input" rows="1" placeholder="Reply to Liam..." aria-label="Reply to Liam"></textarea>
                 </div>
                 <div class="mc-attach-hint" aria-hidden="true">Drop files to attach</div>
@@ -3471,7 +3474,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
               <button type="button" class="composer__ai-assist" id="mc-tr-sofia-notes-ai"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
               <span class="composer__tb-break" aria-hidden="true"></span>
             </div>
-                <div class="composer__field">
+                <div class="composer__field composer__field--flush">
                   <textarea class="composer__input" rows="1" placeholder="Reply to Sofia..." aria-label="Reply to Sofia"></textarea>
                 </div>
                 <div class="mc-attach-hint" aria-hidden="true">Drop files to attach</div>
@@ -3582,7 +3585,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
               <button type="button" class="composer__ai-assist" id="mc-tr-owen-transcript-ai"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
               <span class="composer__tb-break" aria-hidden="true"></span>
             </div>
-                <div class="composer__field">
+                <div class="composer__field composer__field--flush">
                   <textarea class="composer__input" rows="1" placeholder="Reply to Owen..." aria-label="Reply to Owen"></textarea>
                 </div>
                 <div class="mc-attach-hint" aria-hidden="true">Drop files to attach</div>
@@ -3693,7 +3696,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
               <button type="button" class="composer__ai-assist" id="mc-tr-grpc-grp-seed-CX0001-ai"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
               <span class="composer__tb-break" aria-hidden="true"></span>
             </div>
-                <div class="composer__field">
+                <div class="composer__field composer__field--flush">
                   <textarea class="composer__input" rows="1" placeholder="Reply to Cait..." aria-label="Reply to Cait"></textarea>
                 </div>
                 <div class="mc-attach-hint" aria-hidden="true">Drop files to attach</div>
@@ -3804,7 +3807,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
               <button type="button" class="composer__ai-assist" id="mc-tr-grpc-grp-seed-CX0002-ai"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
               <span class="composer__tb-break" aria-hidden="true"></span>
             </div>
-                <div class="composer__field">
+                <div class="composer__field composer__field--flush">
                   <textarea class="composer__input" rows="1" placeholder="Reply to Calam..." aria-label="Reply to Calam"></textarea>
                 </div>
                 <div class="mc-attach-hint" aria-hidden="true">Drop files to attach</div>
@@ -3915,7 +3918,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
               <button type="button" class="composer__ai-assist" id="mc-tr-grpc-grp-seed-AA0311-ai"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
               <span class="composer__tb-break" aria-hidden="true"></span>
             </div>
-                <div class="composer__field">
+                <div class="composer__field composer__field--flush">
                   <textarea class="composer__input" rows="1" placeholder="Reply to Noah..." aria-label="Reply to Noah"></textarea>
                 </div>
                 <div class="mc-attach-hint" aria-hidden="true">Drop files to attach</div>
@@ -4026,7 +4029,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
               <button type="button" class="composer__ai-assist" id="mc-tr-grpc-grp-seed-AA0742-ai"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
               <span class="composer__tb-break" aria-hidden="true"></span>
             </div>
-                <div class="composer__field">
+                <div class="composer__field composer__field--flush">
                   <textarea class="composer__input" rows="1" placeholder="Reply to Ella..." aria-label="Reply to Ella"></textarea>
                 </div>
                 <div class="mc-attach-hint" aria-hidden="true">Drop files to attach</div>
@@ -4137,7 +4140,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
               <button type="button" class="composer__ai-assist" id="mc-tr-grpc-grp-seed-AA0159-ai"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
               <span class="composer__tb-break" aria-hidden="true"></span>
             </div>
-                <div class="composer__field">
+                <div class="composer__field composer__field--flush">
                   <textarea class="composer__input" rows="1" placeholder="Reply to Owen..." aria-label="Reply to Owen"></textarea>
                 </div>
                 <div class="mc-attach-hint" aria-hidden="true">Drop files to attach</div>
@@ -4248,7 +4251,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
               <button type="button" class="composer__ai-assist" id="mc-tr-grpc-grp-seed-AA0466-ai"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
               <span class="composer__tb-break" aria-hidden="true"></span>
             </div>
-                <div class="composer__field">
+                <div class="composer__field composer__field--flush">
                   <textarea class="composer__input" rows="1" placeholder="Reply to Zara..." aria-label="Reply to Zara"></textarea>
                 </div>
                 <div class="mc-attach-hint" aria-hidden="true">Drop files to attach</div>
@@ -4359,7 +4362,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
               <button type="button" class="composer__ai-assist" id="mc-tr-grpc-grp-holds-AA0533-ai"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
               <span class="composer__tb-break" aria-hidden="true"></span>
             </div>
-                <div class="composer__field">
+                <div class="composer__field composer__field--flush">
                   <textarea class="composer__input" rows="1" placeholder="Reply to Priya..." aria-label="Reply to Priya"></textarea>
                 </div>
                 <div class="mc-attach-hint" aria-hidden="true">Drop files to attach</div>
@@ -4470,7 +4473,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
               <button type="button" class="composer__ai-assist" id="mc-tr-grpc-grp-holds-AA0088-ai"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
               <span class="composer__tb-break" aria-hidden="true"></span>
             </div>
-                <div class="composer__field">
+                <div class="composer__field composer__field--flush">
                   <textarea class="composer__input" rows="1" placeholder="Reply to Marcus..." aria-label="Reply to Marcus"></textarea>
                 </div>
                 <div class="mc-attach-hint" aria-hidden="true">Drop files to attach</div>
@@ -4581,7 +4584,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
               <button type="button" class="composer__ai-assist" id="mc-tr-grpc-grp-holds-AA0742-ai"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
               <span class="composer__tb-break" aria-hidden="true"></span>
             </div>
-                <div class="composer__field">
+                <div class="composer__field composer__field--flush">
                   <textarea class="composer__input" rows="1" placeholder="Reply to Ella..." aria-label="Reply to Ella"></textarea>
                 </div>
                 <div class="mc-attach-hint" aria-hidden="true">Drop files to attach</div>
@@ -4692,7 +4695,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
               <button type="button" class="composer__ai-assist" id="mc-tr-grpc-grp-holds-AA0159-ai"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
               <span class="composer__tb-break" aria-hidden="true"></span>
             </div>
-                <div class="composer__field">
+                <div class="composer__field composer__field--flush">
                   <textarea class="composer__input" rows="1" placeholder="Reply to Owen..." aria-label="Reply to Owen"></textarea>
                 </div>
                 <div class="mc-attach-hint" aria-hidden="true">Drop files to attach</div>
@@ -4803,7 +4806,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
               <button type="button" class="composer__ai-assist" id="mc-tr-grpc-grp-holds-AA0466-ai"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
               <span class="composer__tb-break" aria-hidden="true"></span>
             </div>
-                <div class="composer__field">
+                <div class="composer__field composer__field--flush">
                   <textarea class="composer__input" rows="1" placeholder="Reply to Zara..." aria-label="Reply to Zara"></textarea>
                 </div>
                 <div class="mc-attach-hint" aria-hidden="true">Drop files to attach</div>
@@ -4914,7 +4917,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
               <button type="button" class="composer__ai-assist" id="mc-tr-grpc-grp-holds-AA0203-ai"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
               <span class="composer__tb-break" aria-hidden="true"></span>
             </div>
-                <div class="composer__field">
+                <div class="composer__field composer__field--flush">
                   <textarea class="composer__input" rows="1" placeholder="Reply to Ben..." aria-label="Reply to Ben"></textarea>
                 </div>
                 <div class="mc-attach-hint" aria-hidden="true">Drop files to attach</div>
@@ -5025,7 +5028,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
               <button type="button" class="composer__ai-assist" id="mc-tr-grpc-grp-holds-CX0001-ai"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
               <span class="composer__tb-break" aria-hidden="true"></span>
             </div>
-                <div class="composer__field">
+                <div class="composer__field composer__field--flush">
                   <textarea class="composer__input" rows="1" placeholder="Reply to Cait..." aria-label="Reply to Cait"></textarea>
                 </div>
                 <div class="mc-attach-hint" aria-hidden="true">Drop files to attach</div>
@@ -5136,7 +5139,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
               <button type="button" class="composer__ai-assist" id="mc-tr-grpc-grp-holds-CX0002-ai"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
               <span class="composer__tb-break" aria-hidden="true"></span>
             </div>
-                <div class="composer__field">
+                <div class="composer__field composer__field--flush">
                   <textarea class="composer__input" rows="1" placeholder="Reply to Calam..." aria-label="Reply to Calam"></textarea>
                 </div>
                 <div class="mc-attach-hint" aria-hidden="true">Drop files to attach</div>
@@ -5247,7 +5250,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
               <button type="button" class="composer__ai-assist" id="mc-tr-grpc-grp-holds-AA0367-ai"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
               <span class="composer__tb-break" aria-hidden="true"></span>
             </div>
-                <div class="composer__field">
+                <div class="composer__field composer__field--flush">
                   <textarea class="composer__input" rows="1" placeholder="Reply to Allison..." aria-label="Reply to Allison"></textarea>
                 </div>
                 <div class="mc-attach-hint" aria-hidden="true">Drop files to attach</div>
@@ -5358,7 +5361,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
               <button type="button" class="composer__ai-assist" id="mc-tr-grpc-grp-advising-AA0742-ai"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
               <span class="composer__tb-break" aria-hidden="true"></span>
             </div>
-                <div class="composer__field">
+                <div class="composer__field composer__field--flush">
                   <textarea class="composer__input" rows="1" placeholder="Reply to Ella..." aria-label="Reply to Ella"></textarea>
                 </div>
                 <div class="mc-attach-hint" aria-hidden="true">Drop files to attach</div>
@@ -5469,7 +5472,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
               <button type="button" class="composer__ai-assist" id="mc-tr-grpc-grp-advising-AA0311-ai"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
               <span class="composer__tb-break" aria-hidden="true"></span>
             </div>
-                <div class="composer__field">
+                <div class="composer__field composer__field--flush">
                   <textarea class="composer__input" rows="1" placeholder="Reply to Noah..." aria-label="Reply to Noah"></textarea>
                 </div>
                 <div class="mc-attach-hint" aria-hidden="true">Drop files to attach</div>
@@ -5580,7 +5583,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
               <button type="button" class="composer__ai-assist" id="mc-tr-grpc-grp-advising-CX0001-ai"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
               <span class="composer__tb-break" aria-hidden="true"></span>
             </div>
-                <div class="composer__field">
+                <div class="composer__field composer__field--flush">
                   <textarea class="composer__input" rows="1" placeholder="Reply to Cait..." aria-label="Reply to Cait"></textarea>
                 </div>
                 <div class="mc-attach-hint" aria-hidden="true">Drop files to attach</div>
@@ -5691,7 +5694,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
               <button type="button" class="composer__ai-assist" id="mc-tr-grpc-grp-advising-CX0002-ai"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
               <span class="composer__tb-break" aria-hidden="true"></span>
             </div>
-                <div class="composer__field">
+                <div class="composer__field composer__field--flush">
                   <textarea class="composer__input" rows="1" placeholder="Reply to Calam..." aria-label="Reply to Calam"></textarea>
                 </div>
                 <div class="mc-attach-hint" aria-hidden="true">Drop files to attach</div>
@@ -5802,7 +5805,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
               <button type="button" class="composer__ai-assist" id="mc-tr-grpc-grp-advising-AA0367-ai"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
               <span class="composer__tb-break" aria-hidden="true"></span>
             </div>
-                <div class="composer__field">
+                <div class="composer__field composer__field--flush">
                   <textarea class="composer__input" rows="1" placeholder="Reply to Allison..." aria-label="Reply to Allison"></textarea>
                 </div>
                 <div class="mc-attach-hint" aria-hidden="true">Drop files to attach</div>
@@ -6161,7 +6164,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
               <button type="button" class="composer__ai-assist" id="mc-compose-ai-assist"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
               <span class="composer__tb-break" aria-hidden="true"></span>
             </div>
-            <div class="composer__field">
+            <div class="composer__field composer__field--flush">
               <textarea class="composer__input" id="mc-compose-message" rows="1" placeholder="Write your message..." aria-label="Message"></textarea>
             </div>
             <div class="mc-attach-hint" aria-hidden="true">Drop files to attach</div>
@@ -6465,7 +6468,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
               <button type="button" class="composer__ai-assist" id="mc-gwiz-ai"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
               <span class="composer__tb-break" aria-hidden="true"></span>
             </div>
-          <div class="composer__field">
+          <div class="composer__field composer__field--flush">
             <textarea class="composer__input" id="mc-gwiz-message" rows="1" placeholder="Write your message..." aria-label="Message"></textarea>
           </div>
           <div class="mc-attach-hint" aria-hidden="true">Drop files to attach</div>
