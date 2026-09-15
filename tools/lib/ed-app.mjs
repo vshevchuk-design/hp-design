@@ -39,6 +39,7 @@ export function edAppJs(h) {
     circle: icon("radio_button_unchecked", "accordion__status accordion__status--todo"),
     chevron: icon("expand_more", "accordion__chevron"),
     close: icon("close", ""),
+    add: icon("add", ""),
     print: icon("print", "btn__icon"),
     launch: icon("launch", "btn__icon"),
     tick: icon("check", "listbox__checkmark"),
@@ -106,69 +107,65 @@ export function edAppJs(h) {
   }
 
   /* ---------- step 1 · programs ---------- */
-  /* ---------- step 1: one picker, two states ---------- */
-  /* The step shows either the picker or the chosen list, never both. mode is
-     "primary" when the pick replaces the primary programme and "add" when it
-     appends one; null means we are looking at the chosen list. */
-  function edShowPicker(mode) {
+  /* ---------- step 1: the answer sheet, and a dialog to fill it ----------
+     The step always shows what you have chosen — an empty slot shaped like a
+     chosen row when that is nothing yet. The 29 programmes live in a modal
+     dialog the slot opens. mode is "primary" when the pick replaces the
+     primary programme and "add" when it appends one. */
+  function edOpenPicker(mode) {
     S.pickerMode = mode;
     var adding = mode === "add";
-    $("#ed-s1-title").textContent = adding ? "Add a major or minor" : "What do you want to study?";
-    $("#ed-s1-sub").textContent = adding
-      ? "We'll check every programme you stack here against the same credits."
-      : "Pick anything — you can change it later. Not sure? Browse by what sounds interesting.";
-    show($("#ed-picker"), true);
-    show($("#ed-chosen"), false);
+    $("#ed-picker-title").textContent = adding ? "Add a major or minor" : S.program ? "Change your major" : "Choose your major";
     /* Already-chosen programmes stay visible but are not pickable again. */
     var taken = S.combo.map(function (c) { return c.name; });
     $$("#ed-program-grid .choice-tile").forEach(function (t) {
-      var on = taken.indexOf(t.dataset.program) > -1;
-      t.querySelector(".choice-tile__input").disabled = on;
-      t.querySelector(".choice-tile__input").checked = false;
+      var input = t.querySelector(".choice-tile__input");
+      input.disabled = taken.indexOf(t.dataset.program) > -1;
+      input.checked = false;
     });
+    $("#ed-program-search").value = "";
     edFilterPrograms();
-    /* Cancel only exists when there is a chosen list to go back to. */
-    show($("#ed-picker-back"), !!S.program);
-    show($("#ed-next-1"), false);
-    $("#ed-s1-footer").hidden = true;
-    window.scrollTo(0, 0);
+    $("#ed-picker").showModal();
+    $(".ed-picker__body").scrollTop = 0;
     $("#ed-program-search").focus();
   }
 
-  function edShowChosen() {
-    S.pickerMode = null;
-    $("#ed-s1-title").textContent = "What do you want to study?";
-    $("#ed-s1-sub").textContent = "Pick anything — you can change it later. Not sure? Browse by what sounds interesting.";
-    show($("#ed-picker"), false);
-    show($("#ed-chosen"), true);
-    show($("#ed-picker-back"), false);
-    show($("#ed-next-1"), true);
-    $("#ed-s1-footer").hidden = false;
-    edRenderChosen();
-    edValidate();
-    window.scrollTo(0, 0);
-  }
+  function edClosePicker() { $("#ed-picker").close(); }
 
   /* Each chosen programme is the same choice-tile box, static: what you picked
      keeps looking like what you picked, with Change on the primary and Remove
-     on the rest. */
+     on the rest. Nothing chosen yet renders the same box as a dashed slot, so
+     the pick lands exactly where the slot was. */
   function edRenderChosen() {
-    $("#ed-chosen-list").innerHTML = S.combo.map(function (c, i) {
-      var action = c.primary
-        ? '<button class="btn btn--ghost btn--sm ed-chosen__action" type="button" data-change-primary="1">Change</button>'
-        : '<button class="btn btn--ghost btn--sm btn--icon-only ed-chosen__action" type="button" data-drop="' + i +
-          '" aria-label="Remove ' + esc(c.name) + '">' + I.close + "</button>";
-      return '<div class="choice-tile__box choice-tile__box--static">' +
-        '<span class="choice-tile__marker ed-hue--' + edHue(c.name) + '">' + edInitials(c.name) + "</span>" +
-        '<span class="choice-tile__text"><span class="choice-tile__label">' + esc(c.name) + "</span>" +
-        '<span class="choice-tile__description">' + (c.primary ? "Your primary pick" : c.kind) + "</span></span>" +
-        action + "</div>";
-    }).join("");
-    $$("#ed-chosen-list [data-drop]").forEach(function (b) {
-      b.addEventListener("click", function () { S.combo.splice(+b.dataset.drop, 1); edRenderChosen(); });
-    });
-    var change = $("#ed-chosen-list [data-change-primary]");
-    if (change) change.addEventListener("click", function () { edShowPicker("primary"); });
+    var list = $("#ed-chosen-list");
+    if (!S.combo.length) {
+      list.innerHTML =
+        '<button class="ed-choose" id="ed-choose-program" type="button">' +
+          '<span class="ed-choose__marker">' + I.add + "</span>" +
+          '<span class="ed-choose__text"><span class="ed-choose__label">Choose your major</span>' +
+          '<span class="ed-choose__hint">Search ' + D.programs.length + ' programmes</span></span></button>';
+      $("#ed-choose-program").addEventListener("click", function () { edOpenPicker("primary"); });
+    } else {
+      list.innerHTML = S.combo.map(function (c, i) {
+        var action = c.primary
+          ? '<button class="btn btn--ghost btn--sm ed-chosen__action" type="button" data-change-primary="1">Change</button>'
+          : '<button class="btn btn--ghost btn--sm btn--icon-only ed-chosen__action" type="button" data-drop="' + i +
+            '" aria-label="Remove ' + esc(c.name) + '">' + I.close + "</button>";
+        return '<div class="choice-tile__box choice-tile__box--static">' +
+          '<span class="choice-tile__marker ed-hue--' + edHue(c.name) + '">' + edInitials(c.name) + "</span>" +
+          '<span class="choice-tile__text"><span class="choice-tile__label">' + esc(c.name) + "</span>" +
+          '<span class="choice-tile__description">' + (c.primary ? "Your primary pick" : c.kind) + "</span></span>" +
+          action + "</div>";
+      }).join("");
+      $$("#ed-chosen-list [data-drop]").forEach(function (b) {
+        b.addEventListener("click", function () { S.combo.splice(+b.dataset.drop, 1); edRenderChosen(); });
+      });
+      var change = $("#ed-chosen-list [data-change-primary]");
+      if (change) change.addEventListener("click", function () { edOpenPicker("primary"); });
+    }
+    /* Adding a second programme only makes sense once there is a first. */
+    show($("#ed-add-block"), !!S.combo.length);
+    edValidate();
   }
 
   function edFilterPrograms() {
@@ -195,9 +192,9 @@ export function edAppJs(h) {
       S.combo = [{ name: p.name, kind: p.kind, primary: true }].concat(extras);
       edFocusBlock(p);
     }
-    edShowChosen();
+    edClosePicker();
+    edRenderChosen();
   }
-
   function edFocusBlock(p) {
     show($("#ed-focus-block"), !!p.focus);
     if (!p.focus) return;
@@ -546,8 +543,11 @@ export function edAppJs(h) {
     r.addEventListener("change", function () { edPickProgram(r.value); });
   });
   $("#ed-program-search").addEventListener("input", edFilterPrograms);
-  $("#ed-add-program").addEventListener("click", function () { edShowPicker("add"); });
-  $("#ed-picker-back").addEventListener("click", edShowChosen);
+  $("#ed-add-program").addEventListener("click", function () { edOpenPicker("add"); });
+  $("#ed-picker-close").addEventListener("click", edClosePicker);
+  /* Click the backdrop to dismiss — <dialog> gives Escape for free but not
+     this, and the backdrop is part of the dialog element's own box. */
+  $("#ed-picker").addEventListener("click", function (e) { if (e.target === this) edClosePicker(); });
 
   $$('input[name="ed-term"]').forEach(function (r) {
     r.addEventListener("change", function () { S.term = r.value; edValidate(); });
@@ -592,11 +592,12 @@ export function edAppJs(h) {
     $("#ed-program-search").value = "";
     show($("#ed-focus-block"), false);
     edGoto(1);
-    edShowPicker("primary");
+    edRenderChosen();
     edValidate();
   });
 
   edStepper();
+  edRenderChosen();
   edValidate();
 })();`;
 }

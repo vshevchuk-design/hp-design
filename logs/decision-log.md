@@ -1241,3 +1241,19 @@ Unrelated and pre-existing: `check-grid` and `check-states` both fail at HEAD on
 Verified: all three checkers green (4 pages grid, 58 states, vars), the date popover measures 32px nav, 32px month selects, 36px day cells, a 559×383 panel that still fits, and the group wizard's count pill is 20px tall with room for three digits.
 
 The wider lesson is the one this repo keeps relearning: **every one of the token-sourced fixes was a value someone retyped instead of resolving.** The two checkers only found them because the numbers happened to land off a 4px multiple — a hand-typed value that lands on 32 would still be drift, just invisible drift.
+
+## 2026-09-15 — Explore Degrees step 1: the screen opens on the answer, the catalogue opens on demand
+
+Third and last shape for this step. Yesterday's cut swapped two states in place — picker when nothing is chosen, your programmes once something is — which fixed the phone but still meant the first thing in the flow was a wall of 29 programmes. The user's call: start on the main screen, press to choose, pick in a drawer or on a page, "але шоб красіво а не з дропдауна".
+
+**Drawer/dialog, not a route.** A separate page is the right answer when choosing is itself a task with browsing, filters and comparison; this is a searchable list of 29, i.e. a picker. And a route inside a wizard step fights the stepper, which would still be showing step 1 while the screen is somewhere else. A dropdown is worse again — it puts a 29-item scroll inside a popup anchored to a trigger. The convention for a picker is a modal dialog sized to the window: Material's full-screen dialog on compact widths and basic dialog above, Apple's sheet. **This repo already does exactly that** — the Message Center's group wizard is a native `<dialog>`, full-bleed by default, `width: min(760px, …)` with radius and shadow from `modal.tokens.json` at ≥768px — so the pattern question had already been answered here once and the new picker follows it: full-screen on a phone, a centred 560×640 panel on desktop.
+
+**The empty slot is the shape of the answer, not a call to action.** Rather than a bare button, the step renders a dashed row with the same geometry, marker box and hover as a chosen programme — so picking replaces the slot in place instead of swapping one layout for another. Its label carries the size of the thing behind it ("Search 29 programmes") so pressing it is not a leap in the dark. "Add another major or minor" is hidden until there is a first programme, since stacking has no meaning before then.
+
+One dialog does all three jobs and retitles itself: *Choose your major* / *Change your major* / *Add a major or minor*. Already-chosen programmes stay visible but disabled, the search clears and refocuses on every open, and the body scrolls under a pinned search bar.
+
+Native `<dialog>` gives Escape and the top layer for free; the backdrop click is four lines (the backdrop is the dialog element's own box, so `e.target === this`). The page behind is locked with **`html:has(.ed-picker[open]) { overflow: hidden }`** — as a `:has()` rule it tracks the dialog's own `[open]` state, so Escape, the backdrop and the close button all release it and no JS keeps score.
+
+Two verification notes worth keeping:
+- **`window.scrollBy()` ignores `overflow: hidden`.** My first scroll-lock test "failed" because a programmatic scroll is not a user scroll; the honest check is the computed `overflow-y` on the scroller, which goes visible → hidden → visible with the dialog.
+- A CSS block appended to `ed-css.mjs` landed *after* the module's returned template literal and became raw JS. The module now fails to parse loudly, which is the good case — but the build ran green right up to the import, so "the builder didn't complain yet" proves nothing.

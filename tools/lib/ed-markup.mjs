@@ -61,33 +61,19 @@ ${shellTopbar({ title: "Explore your degree", meta: "No account needed" })}
     ${stepper}
 
     <!-- ============ step 1 · what do you want to study ============
-         Two states, never both at once: the picker (nothing chosen yet, or you
-         asked to change/add) and the chosen list. Stacking them was the old
-         shape and it was unusable on a phone — the reveal landed at y=739 in a
-         760px viewport, behind a 420px inner scroll box holding 2138px of
-         programmes, so the pick appeared to do nothing. There is also only one
-         picker now: "Add another" reopens this same search + grid instead of a
-         second listbox over the same 29 programmes. ============ -->
+         The step itself is the answer sheet — your programmes, or an empty
+         slot shaped like one. The list of 29 lives in a modal dialog that the
+         slot opens: full-screen on a phone, a centred panel from 768px, which
+         is what this repo already does for the group wizard. Opening on the
+         list was the previous cut and the user's call is that the screen
+         should start with the choice, not the catalogue. ============ -->
     <section class="ed__step is-active" data-panel="1">
       <div class="ed__head">
-        <button class="btn btn--ghost btn--sm ed__back is-hidden" id="ed-picker-back" type="button">${icon("arrow_back", "btn__icon")}Back to your programmes</button>
-        <h2 class="ed__title" id="ed-s1-title">What do you want to study?</h2>
-        <p class="ed__sub" id="ed-s1-sub">Pick anything — you can change it later. Not sure? Browse by what sounds interesting.</p>
+        <h2 class="ed__title">What do you want to study?</h2>
+        <p class="ed__sub">Pick anything — you can change it later. Not sure? Browse by what sounds interesting.</p>
       </div>
 
-      <!-- state A · the picker -->
-      <div class="card" id="ed-picker"><div class="card__body">
-        <div class="ed-section">
-          <div class="search">${icon("search", "search__icon")}<input class="search__input" id="ed-program-search" type="search" placeholder="Search majors: try &ldquo;computer&rdquo; or &ldquo;bio&rdquo;" aria-label="Search majors" /></div>
-          <div class="ed-grid" id="ed-program-grid">
-      ${PROGRAMS.map(programTile).join("\n      ")}
-          </div>
-          <div class="empty-state is-hidden" id="ed-program-empty"><span class="empty-state__text">No majors match that search</span></div>
-        </div>
-      </div></div>
-
-      <!-- state B · what you have chosen -->
-      <div class="card is-hidden" id="ed-chosen"><div class="card__body">
+      <div class="card"><div class="card__body">
         <div class="ed-section">
           <div class="ed-chosen" id="ed-chosen-list"></div>
         </div>
@@ -96,14 +82,14 @@ ${shellTopbar({ title: "Explore your degree", meta: "No account needed" })}
           <p class="ed-section__hint">This major offers focus areas. Pick one if you already know, or skip and decide later.</p>
           <div class="ed-grid" id="ed-focus-grid"></div>
         </div>
-        <div class="ed-section">
+        <div class="ed-section is-hidden" id="ed-add-block">
           <button class="btn btn--secondary btn--base btn--block" id="ed-add-program" type="button">${icon("add", "btn__icon")}Add another major or minor</button>
           <p class="ed-section__hint">Optional — stack majors and minors and we'll check them all in one go.</p>
         </div>
       </div></div>
 
-      <div class="ed__footer ed__footer--end" id="ed-s1-footer" hidden>
-        <button class="btn btn--primary btn--base is-hidden" id="ed-next-1" type="button" disabled>Continue</button>
+      <div class="ed__footer ed__footer--end">
+        <button class="btn btn--primary btn--base" id="ed-next-1" type="button" disabled>Continue</button>
       </div>
     </section>
 
@@ -219,6 +205,24 @@ ${TERM_YEARS.map(
       </div>
     </section>
   </main>
+
+  <!-- the programme picker, shared by "choose", "change" and "add another" -->
+  <dialog class="ed-picker" id="ed-picker" aria-labelledby="ed-picker-title">
+    <div class="ed-picker__head">
+      <h2 class="ed-picker__title" id="ed-picker-title">Choose your major</h2>
+      <button class="btn btn--ghost btn--base btn--icon-only" id="ed-picker-close" type="button" aria-label="Close">${icon("close", "btn__icon")}</button>
+    </div>
+    <div class="ed-picker__searchbar">
+      <div class="search">${icon("search", "search__icon")}<input class="search__input" id="ed-program-search" type="search" placeholder="Search majors: try &ldquo;computer&rdquo; or &ldquo;bio&rdquo;" aria-label="Search majors" /></div>
+    </div>
+    <div class="ed-picker__body">
+      <div class="ed-grid" id="ed-program-grid">
+      ${PROGRAMS.map(programTile).join("\n      ")}
+      </div>
+      <div class="empty-state is-hidden" id="ed-program-empty"><span class="empty-state__text">No majors match that search</span></div>
+    </div>
+  </dialog>
+
 
   <div class="ed-veil" id="ed-veil" role="status" aria-live="polite">
     <span class="spinner spinner--lg"></span>

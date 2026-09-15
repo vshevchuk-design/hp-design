@@ -30,7 +30,9 @@ export function edCss(h) {
   const card = t.card, alert = t.alert, acc = t.accordion, pg = t.progress, sp = t.spinner;
   const badge = t.badge, chip = t.chip, lb = t.listbox, table = t.table;
   const button = t.button, input = t.input, select = t.select, search = t.search;
-  const es = t.emptyState, avatar = t.avatar;
+  const es = t.emptyState, avatar = t.avatar, modal = t.modal;
+  const mdShadow = h.resolveToken(modal.shadow);
+  const mdShadowCss = `${px(mdShadow.offsetX)} ${px(mdShadow.offsetY)} ${px(mdShadow.blur)} ${px(mdShadow.spread)} ${mdShadow.color}`;
 
   function resolveTypo(node) { return h.resolveToken(node); }
 
@@ -349,10 +351,46 @@ ${["neutral", "primary", "success", "warning"].map((r) => `.badge--${r} { backgr
 .empty-state__text { background: ${cv(refPath(es.pill.bg.$value))}; color: ${cv(refPath(es.textColor.$value))}; border-radius: ${px(resolve(es.pill.radius.$value))}; padding: ${px(resolve(es.pill.paddingY.$value))} ${px(resolve(es.pill.paddingX.$value))}; ${typoCss(h.resolveToken(es.text))} text-align: center; }
 .ed-link { background: none; border: none; padding: 0; cursor: pointer; font-family: inherit; color: ${cv("text.primary")}; ${typoCss(h.resolveToken(h.get("text-style.link-sm")))} text-decoration: none; }
 .ed-link:hover { text-decoration: ${linkSmDeco}; }
+/* ---- step 1: the empty slot, and the picker dialog ----
+   The programme list is a modal dialog, not a dropdown and not an inline
+   panel: full-screen on a phone, a centred panel from 768px. That is the shape
+   this repo already uses for the Message Center's group wizard, and the one
+   Material specifies for a picker (full-screen dialog on compact windows,
+   basic dialog above) — a dropdown would put a 29-item scroll inside a popup,
+   and a separate route would contradict the stepper, which still says step 1. */
+.ed-choose { width: 100%; display: flex; align-items: center; gap: ${px(resolve(ct.gap.$value))}; padding: ${px(resolve(ct.paddingY.$value))} ${px(resolve(ct.paddingX.$value))}; border-radius: ${px(resolve(ct.radius.$value))}; background: ${cv(refPath(ctSt.default.bg.$value))}; border: 1px dashed ${cv("border.strong")}; cursor: pointer; font-family: inherit; text-align: left; }
+/* Same hover as a real tile — the slot is the tile that is not there yet. */
+.ed-choose:hover { background: ${cv(refPath(ctSt.hover.bg.$value))}; border-color: ${cv(refPath(ctSt.hover.border.$value))}; }
+.ed-choose:focus-visible { outline: ${px(resolve(ctSt.focused.ringWidth.$value))} solid ${cv(refPath(ctSt.focused.ringColor.$value))}; outline-offset: ${px(resolve(ctSt.focused.ringOffset.$value))}; }
+.ed-choose__marker { flex-shrink: 0; width: ${px(resolve(ct.marker.size.$value))}; height: ${px(resolve(ct.marker.size.$value))}; border-radius: ${px(resolve(avatar.squareRadius.$value))}; display: inline-flex; align-items: center; justify-content: center; background: ${cv("fill.neutral")}; color: ${cv("icon.default")}; }
+.ed-choose__marker svg { width: ${px(resolve(ct.marker.iconSize.$value))}; height: ${px(resolve(ct.marker.iconSize.$value))}; }
+.ed-choose__text { display: flex; flex-direction: column; gap: ${px(resolve(ct.textGap.$value))}; min-width: 0; }
+.ed-choose__label { color: ${cv(refPath(ct.labelColor.$value))}; ${typoCss(h.resolveToken(ct.label))} }
+.ed-choose__hint { color: ${cv(refPath(ct.descriptionColor.$value))}; ${typoCss(h.resolveToken(ct.description))} }
+
+.ed-picker { border: none; padding: 0; margin: 0; position: fixed; inset: 0; width: 100vw; max-width: 100vw; height: 100dvh; max-height: 100dvh; background: ${cv(refPath(modal.bg.$value))}; font-family: ${cv("family.sans")}; }
+.ed-picker:focus, .ed-picker:focus-visible { outline: none; }
+.ed-picker[open] { display: flex; flex-direction: column; }
+/* Lock the page while the dialog is up. As a :has() rule it follows the
+   dialog's own [open] state, so Escape, the backdrop and the close button all
+   release it without a line of JS keeping score. */
+html:has(.ed-picker[open]) { overflow: hidden; }
+.ed-picker::backdrop { background: ${cv(refPath(modal.overlay.$value))}; }
+.ed-picker__head { flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: ${px(resolve("dim.3"))}; padding: ${px(resolve("dim.4"))} ${px(resolve(modal.padding.$value))}; border-bottom: 1px solid ${cv(refPath(modal.divider.$value))}; }
+.ed-picker__title { margin: 0; color: ${cv(refPath(modal.titleColor.$value))}; ${typoCss(h.resolveToken(modal.title))} }
+/* Search sits outside the scroll area so it stays put while the list moves. */
+.ed-picker__searchbar { flex-shrink: 0; padding: ${px(resolve("dim.3"))} ${px(resolve(modal.padding.$value))}; border-bottom: 1px solid ${cv(refPath(modal.divider.$value))}; }
+.ed-picker__body { flex: 1; min-height: 0; overflow-y: auto; padding: ${px(resolve(modal.padding.$value))}; }
+/* One column: this is a list picker, not the tile wall it used to be. */
+.ed-picker .ed-grid { grid-template-columns: 1fr; }
+@media (min-width: 768px) {
+  .ed-picker { margin: auto; width: min(560px, calc(100vw - ${px(resolve("dim.8"))})); height: min(640px, calc(100dvh - ${px(resolve("dim.16"))})); border-radius: ${px(resolve(modal.radius.$value))}; box-shadow: ${mdShadowCss}; }
+}
 .is-hidden { display: none !important; }`;
 }
 
 /** Token paths the CSS above references, for the page's :root block. */
+
 export const ED_COLOR_PATHS = [
   "surface.page", "surface.default", "surface.dim", "surface.dimHover", "surface.sunken", "surface.disabled",
   "border.default", "border.strong", "border.focus",
@@ -364,5 +402,6 @@ export const ED_COLOR_PATHS = [
   "bg.primary", "bg.primaryHover", "bg.neutral", "bg.success", "bg.warning", "bg.danger",
   "border.primary", "border.success", "border.warning", "border.danger",
   "status.success", "status.warning", "status.danger",
+  "surface.overlay",
   "text.success", "text.warning", "text.danger",
 ];

@@ -50,6 +50,7 @@
   --tok-status-success: #0a994e;
   --tok-status-warning: #b26f07;
   --tok-status-danger: #de394b;
+  --tok-surface-overlay: rgba(21, 25, 30, 0.5);
   --tok-text-success: #057e3f;
   --tok-text-warning: #935a03;
   --tok-text-danger: #c11435;
@@ -369,6 +370,41 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .empty-state__text { background: var(--tok-bg-neutral); color: var(--tok-text-secondary); border-radius: 999px; padding: 8px 16px; font-weight: 400; font-size: 14px; line-height: 1.4; text-align: center; }
 .ed-link { background: none; border: none; padding: 0; cursor: pointer; font-family: inherit; color: var(--tok-text-primary); font-weight: 400; font-size: 12px; line-height: 1.4; text-decoration: none; }
 .ed-link:hover { text-decoration: underline; }
+/* ---- step 1: the empty slot, and the picker dialog ----
+   The programme list is a modal dialog, not a dropdown and not an inline
+   panel: full-screen on a phone, a centred panel from 768px. That is the shape
+   this repo already uses for the Message Center's group wizard, and the one
+   Material specifies for a picker (full-screen dialog on compact windows,
+   basic dialog above) — a dropdown would put a 29-item scroll inside a popup,
+   and a separate route would contradict the stepper, which still says step 1. */
+.ed-choose { width: 100%; display: flex; align-items: center; gap: 12px; padding: 12px 12px; border-radius: 8px; background: var(--tok-surface-default); border: 1px dashed var(--tok-border-strong); cursor: pointer; font-family: inherit; text-align: left; }
+/* Same hover as a real tile — the slot is the tile that is not there yet. */
+.ed-choose:hover { background: var(--tok-bg-primary-hover); border-color: var(--tok-fill-primary); }
+.ed-choose:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
+.ed-choose__marker { flex-shrink: 0; width: 40px; height: 40px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; background: var(--tok-fill-neutral); color: var(--tok-icon-default); }
+.ed-choose__marker svg { width: 24px; height: 24px; }
+.ed-choose__text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.ed-choose__label { color: var(--tok-text-default); font-weight: 600; font-size: 14px; line-height: 1.4; }
+.ed-choose__hint { color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
+
+.ed-picker { border: none; padding: 0; margin: 0; position: fixed; inset: 0; width: 100vw; max-width: 100vw; height: 100dvh; max-height: 100dvh; background: var(--tok-surface-default); font-family: var(--tok-family-sans); }
+.ed-picker:focus, .ed-picker:focus-visible { outline: none; }
+.ed-picker[open] { display: flex; flex-direction: column; }
+/* Lock the page while the dialog is up. As a :has() rule it follows the
+   dialog's own [open] state, so Escape, the backdrop and the close button all
+   release it without a line of JS keeping score. */
+html:has(.ed-picker[open]) { overflow: hidden; }
+.ed-picker::backdrop { background: var(--tok-surface-overlay); }
+.ed-picker__head { flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 24px; border-bottom: 1px solid var(--tok-border-default); }
+.ed-picker__title { margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 18px; line-height: 1.4; }
+/* Search sits outside the scroll area so it stays put while the list moves. */
+.ed-picker__searchbar { flex-shrink: 0; padding: 12px 24px; border-bottom: 1px solid var(--tok-border-default); }
+.ed-picker__body { flex: 1; min-height: 0; overflow-y: auto; padding: 24px; }
+/* One column: this is a list picker, not the tile wall it used to be. */
+.ed-picker .ed-grid { grid-template-columns: 1fr; }
+@media (min-width: 768px) {
+  .ed-picker { margin: auto; width: min(560px, calc(100vw - 32px)); height: min(640px, calc(100dvh - 64px)); border-radius: 24px; box-shadow: 0px 8px 24px -2px rgba(21, 25, 30, 0.16); }
+}
 .is-hidden { display: none !important; }
 .ed-hue--blue { background: var(--tok-avatar-blue-bg); color: var(--tok-avatar-blue-text); }
 .ed-hue--green { background: var(--tok-avatar-green-bg); color: var(--tok-avatar-green-text); }
@@ -412,235 +448,19 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     </div>
 
     <!-- ============ step 1 · what do you want to study ============
-         Two states, never both at once: the picker (nothing chosen yet, or you
-         asked to change/add) and the chosen list. Stacking them was the old
-         shape and it was unusable on a phone — the reveal landed at y=739 in a
-         760px viewport, behind a 420px inner scroll box holding 2138px of
-         programmes, so the pick appeared to do nothing. There is also only one
-         picker now: "Add another" reopens this same search + grid instead of a
-         second listbox over the same 29 programmes. ============ -->
+         The step itself is the answer sheet — your programmes, or an empty
+         slot shaped like one. The list of 29 lives in a modal dialog that the
+         slot opens: full-screen on a phone, a centred panel from 768px, which
+         is what this repo already does for the group wizard. Opening on the
+         list was the previous cut and the user's call is that the screen
+         should start with the choice, not the catalogue. ============ -->
     <section class="ed__step is-active" data-panel="1">
       <div class="ed__head">
-        <button class="btn btn--ghost btn--sm ed__back is-hidden" id="ed-picker-back" type="button"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>Back to your programmes</button>
-        <h2 class="ed__title" id="ed-s1-title">What do you want to study?</h2>
-        <p class="ed__sub" id="ed-s1-sub">Pick anything — you can change it later. Not sure? Browse by what sounds interesting.</p>
+        <h2 class="ed__title">What do you want to study?</h2>
+        <p class="ed__sub">Pick anything — you can change it later. Not sure? Browse by what sounds interesting.</p>
       </div>
 
-      <!-- state A · the picker -->
-      <div class="card" id="ed-picker"><div class="card__body">
-        <div class="ed-section">
-          <div class="search"><svg class="search__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg><input class="search__input" id="ed-program-search" type="search" placeholder="Search majors: try &ldquo;computer&rdquo; or &ldquo;bio&rdquo;" aria-label="Search majors" /></div>
-          <div class="ed-grid" id="ed-program-grid">
-      <label class="choice-tile" data-program="A B C">
-        <input class="choice-tile__input" type="radio" name="ed-program" value="A B C" />
-        <span class="choice-tile__box">
-          <span class="choice-tile__marker ed-hue--violet">AC</span>
-          <span class="choice-tile__text"><span class="choice-tile__label">A B C</span></span>
-        </span>
-      </label>
-      <label class="choice-tile" data-program="Accounting">
-        <input class="choice-tile__input" type="radio" name="ed-program" value="Accounting" />
-        <span class="choice-tile__box">
-          <span class="choice-tile__marker ed-hue--amber">AC</span>
-          <span class="choice-tile__text"><span class="choice-tile__label">Accounting</span></span>
-        </span>
-      </label>
-      <label class="choice-tile" data-program="Accounting AA">
-        <input class="choice-tile__input" type="radio" name="ed-program" value="Accounting AA" />
-        <span class="choice-tile__box">
-          <span class="choice-tile__marker ed-hue--orange">AA</span>
-          <span class="choice-tile__text"><span class="choice-tile__label">Accounting AA</span></span>
-        </span>
-      </label>
-      <label class="choice-tile" data-program="Accounting AB">
-        <input class="choice-tile__input" type="radio" name="ed-program" value="Accounting AB" />
-        <span class="choice-tile__box">
-          <span class="choice-tile__marker ed-hue--violet">AA</span>
-          <span class="choice-tile__text"><span class="choice-tile__label">Accounting AB</span></span>
-        </span>
-      </label>
-      <label class="choice-tile" data-program="Art (BFA)">
-        <input class="choice-tile__input" type="radio" name="ed-program" value="Art (BFA)" />
-        <span class="choice-tile__box">
-          <span class="choice-tile__marker ed-hue--green">AR</span>
-          <span class="choice-tile__text"><span class="choice-tile__label">Art (BFA)</span></span>
-        </span>
-      </label>
-      <label class="choice-tile" data-program="Art History (BFA)">
-        <input class="choice-tile__input" type="radio" name="ed-program" value="Art History (BFA)" />
-        <span class="choice-tile__box">
-          <span class="choice-tile__marker ed-hue--amber">AH</span>
-          <span class="choice-tile__text"><span class="choice-tile__label">Art History (BFA)</span></span>
-        </span>
-      </label>
-      <label class="choice-tile" data-program="Art History Minor">
-        <input class="choice-tile__input" type="radio" name="ed-program" value="Art History Minor" />
-        <span class="choice-tile__box">
-          <span class="choice-tile__marker ed-hue--violet">AM</span>
-          <span class="choice-tile__text"><span class="choice-tile__label">Art History Minor</span></span>
-        </span>
-      </label>
-      <label class="choice-tile" data-program="Auto Technology">
-        <input class="choice-tile__input" type="radio" name="ed-program" value="Auto Technology" />
-        <span class="choice-tile__box">
-          <span class="choice-tile__marker ed-hue--orange">AT</span>
-          <span class="choice-tile__text"><span class="choice-tile__label">Auto Technology</span></span>
-        </span>
-      </label>
-      <label class="choice-tile" data-program="Baking and Pastry Arts">
-        <input class="choice-tile__input" type="radio" name="ed-program" value="Baking and Pastry Arts" />
-        <span class="choice-tile__box">
-          <span class="choice-tile__marker ed-hue--teal">BA</span>
-          <span class="choice-tile__text"><span class="choice-tile__label">Baking and Pastry Arts</span></span>
-        </span>
-      </label>
-      <label class="choice-tile" data-program="Biology (BS)">
-        <input class="choice-tile__input" type="radio" name="ed-program" value="Biology (BS)" />
-        <span class="choice-tile__box">
-          <span class="choice-tile__marker ed-hue--amber">BI</span>
-          <span class="choice-tile__text"><span class="choice-tile__label">Biology (BS)</span></span>
-        </span>
-      </label>
-      <label class="choice-tile" data-program="Business Administration">
-        <input class="choice-tile__input" type="radio" name="ed-program" value="Business Administration" />
-        <span class="choice-tile__box">
-          <span class="choice-tile__marker ed-hue--magenta">BA</span>
-          <span class="choice-tile__text"><span class="choice-tile__label">Business Administration</span></span>
-        </span>
-      </label>
-      <label class="choice-tile" data-program="Business Management">
-        <input class="choice-tile__input" type="radio" name="ed-program" value="Business Management" />
-        <span class="choice-tile__box">
-          <span class="choice-tile__marker ed-hue--green">BM</span>
-          <span class="choice-tile__text"><span class="choice-tile__label">Business Management</span></span>
-        </span>
-      </label>
-      <label class="choice-tile" data-program="Chemical Engineering (BE)">
-        <input class="choice-tile__input" type="radio" name="ed-program" value="Chemical Engineering (BE)" />
-        <span class="choice-tile__box">
-          <span class="choice-tile__marker ed-hue--green">CE</span>
-          <span class="choice-tile__text"><span class="choice-tile__label">Chemical Engineering (BE)</span></span>
-        </span>
-      </label>
-      <label class="choice-tile" data-program="Chemistry (BS)">
-        <input class="choice-tile__input" type="radio" name="ed-program" value="Chemistry (BS)" />
-        <span class="choice-tile__box">
-          <span class="choice-tile__marker ed-hue--violet">CH</span>
-          <span class="choice-tile__text"><span class="choice-tile__label">Chemistry (BS)</span></span>
-        </span>
-      </label>
-      <label class="choice-tile" data-program="Classics Minor">
-        <input class="choice-tile__input" type="radio" name="ed-program" value="Classics Minor" />
-        <span class="choice-tile__box">
-          <span class="choice-tile__marker ed-hue--magenta">CM</span>
-          <span class="choice-tile__text"><span class="choice-tile__label">Classics Minor</span></span>
-        </span>
-      </label>
-      <label class="choice-tile" data-program="Communication Technology">
-        <input class="choice-tile__input" type="radio" name="ed-program" value="Communication Technology" />
-        <span class="choice-tile__box">
-          <span class="choice-tile__marker ed-hue--magenta">CT</span>
-          <span class="choice-tile__text"><span class="choice-tile__label">Communication Technology</span></span>
-        </span>
-      </label>
-      <label class="choice-tile" data-program="Computer Science">
-        <input class="choice-tile__input" type="radio" name="ed-program" value="Computer Science" />
-        <span class="choice-tile__box">
-          <span class="choice-tile__marker ed-hue--green">CS</span>
-          <span class="choice-tile__text"><span class="choice-tile__label">Computer Science</span></span>
-        </span>
-      </label>
-      <label class="choice-tile" data-program="Computer Science Minor">
-        <input class="choice-tile__input" type="radio" name="ed-program" value="Computer Science Minor" />
-        <span class="choice-tile__box">
-          <span class="choice-tile__marker ed-hue--violet">CM</span>
-          <span class="choice-tile__text"><span class="choice-tile__label">Computer Science Minor</span></span>
-        </span>
-      </label>
-      <label class="choice-tile" data-program="Economics">
-        <input class="choice-tile__input" type="radio" name="ed-program" value="Economics" />
-        <span class="choice-tile__box">
-          <span class="choice-tile__marker ed-hue--blue">EC</span>
-          <span class="choice-tile__text"><span class="choice-tile__label">Economics</span></span>
-        </span>
-      </label>
-      <label class="choice-tile" data-program="English (BA)">
-        <input class="choice-tile__input" type="radio" name="ed-program" value="English (BA)" />
-        <span class="choice-tile__box">
-          <span class="choice-tile__marker ed-hue--violet">EN</span>
-          <span class="choice-tile__text"><span class="choice-tile__label">English (BA)</span></span>
-        </span>
-      </label>
-      <label class="choice-tile" data-program="English Minor">
-        <input class="choice-tile__input" type="radio" name="ed-program" value="English Minor" />
-        <span class="choice-tile__box">
-          <span class="choice-tile__marker ed-hue--red">EM</span>
-          <span class="choice-tile__text"><span class="choice-tile__label">English Minor</span></span>
-        </span>
-      </label>
-      <label class="choice-tile" data-program="Journalism BA">
-        <input class="choice-tile__input" type="radio" name="ed-program" value="Journalism BA" />
-        <span class="choice-tile__box">
-          <span class="choice-tile__marker ed-hue--red">JB</span>
-          <span class="choice-tile__text"><span class="choice-tile__label">Journalism BA</span></span>
-        </span>
-      </label>
-      <label class="choice-tile" data-program="Mathematics (BA)">
-        <input class="choice-tile__input" type="radio" name="ed-program" value="Mathematics (BA)" />
-        <span class="choice-tile__box">
-          <span class="choice-tile__marker ed-hue--teal">MA</span>
-          <span class="choice-tile__text"><span class="choice-tile__label">Mathematics (BA)</span></span>
-        </span>
-      </label>
-      <label class="choice-tile" data-program="Physics">
-        <input class="choice-tile__input" type="radio" name="ed-program" value="Physics" />
-        <span class="choice-tile__box">
-          <span class="choice-tile__marker ed-hue--amber">PH</span>
-          <span class="choice-tile__text"><span class="choice-tile__label">Physics</span></span>
-        </span>
-      </label>
-      <label class="choice-tile" data-program="Political Science">
-        <input class="choice-tile__input" type="radio" name="ed-program" value="Political Science" />
-        <span class="choice-tile__box">
-          <span class="choice-tile__marker ed-hue--amber">PS</span>
-          <span class="choice-tile__text"><span class="choice-tile__label">Political Science</span></span>
-        </span>
-      </label>
-      <label class="choice-tile" data-program="Psychology">
-        <input class="choice-tile__input" type="radio" name="ed-program" value="Psychology" />
-        <span class="choice-tile__box">
-          <span class="choice-tile__marker ed-hue--green">PS</span>
-          <span class="choice-tile__text"><span class="choice-tile__label">Psychology</span></span>
-        </span>
-      </label>
-      <label class="choice-tile" data-program="Sociology">
-        <input class="choice-tile__input" type="radio" name="ed-program" value="Sociology" />
-        <span class="choice-tile__box">
-          <span class="choice-tile__marker ed-hue--blue">SO</span>
-          <span class="choice-tile__text"><span class="choice-tile__label">Sociology</span></span>
-        </span>
-      </label>
-      <label class="choice-tile" data-program="Statistics">
-        <input class="choice-tile__input" type="radio" name="ed-program" value="Statistics" />
-        <span class="choice-tile__box">
-          <span class="choice-tile__marker ed-hue--amber">ST</span>
-          <span class="choice-tile__text"><span class="choice-tile__label">Statistics</span></span>
-        </span>
-      </label>
-      <label class="choice-tile" data-program="Undeclared Undergraduate">
-        <input class="choice-tile__input" type="radio" name="ed-program" value="Undeclared Undergraduate" />
-        <span class="choice-tile__box">
-          <span class="choice-tile__marker ed-hue--magenta">UU</span>
-          <span class="choice-tile__text"><span class="choice-tile__label">Undeclared Undergraduate</span></span>
-        </span>
-      </label>
-          </div>
-          <div class="empty-state is-hidden" id="ed-program-empty"><span class="empty-state__text">No majors match that search</span></div>
-        </div>
-      </div></div>
-
-      <!-- state B · what you have chosen -->
-      <div class="card is-hidden" id="ed-chosen"><div class="card__body">
+      <div class="card"><div class="card__body">
         <div class="ed-section">
           <div class="ed-chosen" id="ed-chosen-list"></div>
         </div>
@@ -649,14 +469,14 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <p class="ed-section__hint">This major offers focus areas. Pick one if you already know, or skip and decide later.</p>
           <div class="ed-grid" id="ed-focus-grid"></div>
         </div>
-        <div class="ed-section">
+        <div class="ed-section is-hidden" id="ed-add-block">
           <button class="btn btn--secondary btn--base btn--block" id="ed-add-program" type="button"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>Add another major or minor</button>
           <p class="ed-section__hint">Optional — stack majors and minors and we'll check them all in one go.</p>
         </div>
       </div></div>
 
-      <div class="ed__footer ed__footer--end" id="ed-s1-footer" hidden>
-        <button class="btn btn--primary btn--base is-hidden" id="ed-next-1" type="button" disabled>Continue</button>
+      <div class="ed__footer ed__footer--end">
+        <button class="btn btn--primary btn--base" id="ed-next-1" type="button" disabled>Continue</button>
       </div>
     </section>
 
@@ -893,6 +713,226 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     </section>
   </main>
 
+  <!-- the programme picker, shared by "choose", "change" and "add another" -->
+  <dialog class="ed-picker" id="ed-picker" aria-labelledby="ed-picker-title">
+    <div class="ed-picker__head">
+      <h2 class="ed-picker__title" id="ed-picker-title">Choose your major</h2>
+      <button class="btn btn--ghost btn--base btn--icon-only" id="ed-picker-close" type="button" aria-label="Close"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
+    </div>
+    <div class="ed-picker__searchbar">
+      <div class="search"><svg class="search__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg><input class="search__input" id="ed-program-search" type="search" placeholder="Search majors: try &ldquo;computer&rdquo; or &ldquo;bio&rdquo;" aria-label="Search majors" /></div>
+    </div>
+    <div class="ed-picker__body">
+      <div class="ed-grid" id="ed-program-grid">
+      <label class="choice-tile" data-program="A B C">
+        <input class="choice-tile__input" type="radio" name="ed-program" value="A B C" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--violet">AC</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">A B C</span></span>
+        </span>
+      </label>
+      <label class="choice-tile" data-program="Accounting">
+        <input class="choice-tile__input" type="radio" name="ed-program" value="Accounting" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--amber">AC</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">Accounting</span></span>
+        </span>
+      </label>
+      <label class="choice-tile" data-program="Accounting AA">
+        <input class="choice-tile__input" type="radio" name="ed-program" value="Accounting AA" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--orange">AA</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">Accounting AA</span></span>
+        </span>
+      </label>
+      <label class="choice-tile" data-program="Accounting AB">
+        <input class="choice-tile__input" type="radio" name="ed-program" value="Accounting AB" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--violet">AA</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">Accounting AB</span></span>
+        </span>
+      </label>
+      <label class="choice-tile" data-program="Art (BFA)">
+        <input class="choice-tile__input" type="radio" name="ed-program" value="Art (BFA)" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--green">AR</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">Art (BFA)</span></span>
+        </span>
+      </label>
+      <label class="choice-tile" data-program="Art History (BFA)">
+        <input class="choice-tile__input" type="radio" name="ed-program" value="Art History (BFA)" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--amber">AH</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">Art History (BFA)</span></span>
+        </span>
+      </label>
+      <label class="choice-tile" data-program="Art History Minor">
+        <input class="choice-tile__input" type="radio" name="ed-program" value="Art History Minor" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--violet">AM</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">Art History Minor</span></span>
+        </span>
+      </label>
+      <label class="choice-tile" data-program="Auto Technology">
+        <input class="choice-tile__input" type="radio" name="ed-program" value="Auto Technology" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--orange">AT</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">Auto Technology</span></span>
+        </span>
+      </label>
+      <label class="choice-tile" data-program="Baking and Pastry Arts">
+        <input class="choice-tile__input" type="radio" name="ed-program" value="Baking and Pastry Arts" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--teal">BA</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">Baking and Pastry Arts</span></span>
+        </span>
+      </label>
+      <label class="choice-tile" data-program="Biology (BS)">
+        <input class="choice-tile__input" type="radio" name="ed-program" value="Biology (BS)" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--amber">BI</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">Biology (BS)</span></span>
+        </span>
+      </label>
+      <label class="choice-tile" data-program="Business Administration">
+        <input class="choice-tile__input" type="radio" name="ed-program" value="Business Administration" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--magenta">BA</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">Business Administration</span></span>
+        </span>
+      </label>
+      <label class="choice-tile" data-program="Business Management">
+        <input class="choice-tile__input" type="radio" name="ed-program" value="Business Management" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--green">BM</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">Business Management</span></span>
+        </span>
+      </label>
+      <label class="choice-tile" data-program="Chemical Engineering (BE)">
+        <input class="choice-tile__input" type="radio" name="ed-program" value="Chemical Engineering (BE)" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--green">CE</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">Chemical Engineering (BE)</span></span>
+        </span>
+      </label>
+      <label class="choice-tile" data-program="Chemistry (BS)">
+        <input class="choice-tile__input" type="radio" name="ed-program" value="Chemistry (BS)" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--violet">CH</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">Chemistry (BS)</span></span>
+        </span>
+      </label>
+      <label class="choice-tile" data-program="Classics Minor">
+        <input class="choice-tile__input" type="radio" name="ed-program" value="Classics Minor" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--magenta">CM</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">Classics Minor</span></span>
+        </span>
+      </label>
+      <label class="choice-tile" data-program="Communication Technology">
+        <input class="choice-tile__input" type="radio" name="ed-program" value="Communication Technology" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--magenta">CT</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">Communication Technology</span></span>
+        </span>
+      </label>
+      <label class="choice-tile" data-program="Computer Science">
+        <input class="choice-tile__input" type="radio" name="ed-program" value="Computer Science" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--green">CS</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">Computer Science</span></span>
+        </span>
+      </label>
+      <label class="choice-tile" data-program="Computer Science Minor">
+        <input class="choice-tile__input" type="radio" name="ed-program" value="Computer Science Minor" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--violet">CM</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">Computer Science Minor</span></span>
+        </span>
+      </label>
+      <label class="choice-tile" data-program="Economics">
+        <input class="choice-tile__input" type="radio" name="ed-program" value="Economics" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--blue">EC</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">Economics</span></span>
+        </span>
+      </label>
+      <label class="choice-tile" data-program="English (BA)">
+        <input class="choice-tile__input" type="radio" name="ed-program" value="English (BA)" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--violet">EN</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">English (BA)</span></span>
+        </span>
+      </label>
+      <label class="choice-tile" data-program="English Minor">
+        <input class="choice-tile__input" type="radio" name="ed-program" value="English Minor" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--red">EM</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">English Minor</span></span>
+        </span>
+      </label>
+      <label class="choice-tile" data-program="Journalism BA">
+        <input class="choice-tile__input" type="radio" name="ed-program" value="Journalism BA" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--red">JB</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">Journalism BA</span></span>
+        </span>
+      </label>
+      <label class="choice-tile" data-program="Mathematics (BA)">
+        <input class="choice-tile__input" type="radio" name="ed-program" value="Mathematics (BA)" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--teal">MA</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">Mathematics (BA)</span></span>
+        </span>
+      </label>
+      <label class="choice-tile" data-program="Physics">
+        <input class="choice-tile__input" type="radio" name="ed-program" value="Physics" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--amber">PH</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">Physics</span></span>
+        </span>
+      </label>
+      <label class="choice-tile" data-program="Political Science">
+        <input class="choice-tile__input" type="radio" name="ed-program" value="Political Science" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--amber">PS</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">Political Science</span></span>
+        </span>
+      </label>
+      <label class="choice-tile" data-program="Psychology">
+        <input class="choice-tile__input" type="radio" name="ed-program" value="Psychology" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--green">PS</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">Psychology</span></span>
+        </span>
+      </label>
+      <label class="choice-tile" data-program="Sociology">
+        <input class="choice-tile__input" type="radio" name="ed-program" value="Sociology" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--blue">SO</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">Sociology</span></span>
+        </span>
+      </label>
+      <label class="choice-tile" data-program="Statistics">
+        <input class="choice-tile__input" type="radio" name="ed-program" value="Statistics" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--amber">ST</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">Statistics</span></span>
+        </span>
+      </label>
+      <label class="choice-tile" data-program="Undeclared Undergraduate">
+        <input class="choice-tile__input" type="radio" name="ed-program" value="Undeclared Undergraduate" />
+        <span class="choice-tile__box">
+          <span class="choice-tile__marker ed-hue--magenta">UU</span>
+          <span class="choice-tile__text"><span class="choice-tile__label">Undeclared Undergraduate</span></span>
+        </span>
+      </label>
+      </div>
+      <div class="empty-state is-hidden" id="ed-program-empty"><span class="empty-state__text">No majors match that search</span></div>
+    </div>
+  </dialog>
+
+
   <div class="ed-veil" id="ed-veil" role="status" aria-live="polite">
     <span class="spinner spinner--lg"></span>
     <span class="ed-veil__title">Checking your classes…</span>
@@ -903,7 +943,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 <script>
 (function () {
   var D = {"programs":[{"name":"A B C","degree":"Liberal Arts Undergraduate","kind":"Major"},{"name":"Accounting","degree":"Liberal Arts Undergraduate","kind":"Major"},{"name":"Accounting AA","degree":"Associate of Arts","kind":"Major"},{"name":"Accounting AB","degree":"Liberal Arts Undergraduate","kind":"Major"},{"name":"Art (BFA)","degree":"Fine Arts Undergraduate","kind":"Major"},{"name":"Art History (BFA)","degree":"Fine Arts Undergraduate","kind":"Major"},{"name":"Art History Minor","degree":"Liberal Arts Undergraduate","kind":"Minor"},{"name":"Auto Technology","degree":"Associate of Science","kind":"Major"},{"name":"Baking and Pastry Arts","degree":"Associate of Arts","kind":"Major"},{"name":"Biology (BS)","degree":"Liberal Arts Undergraduate","kind":"Major"},{"name":"Business Administration","degree":"Associate of Arts","kind":"Major"},{"name":"Business Management","degree":"Liberal Arts Undergraduate","kind":"Major"},{"name":"Chemical Engineering (BE)","degree":"Engineering Undergraduate","kind":"Major"},{"name":"Chemistry (BS)","degree":"Liberal Arts Undergraduate","kind":"Major"},{"name":"Classics Minor","degree":"Liberal Arts Undergraduate","kind":"Minor"},{"name":"Communication Technology","degree":"Associate of Science","kind":"Major"},{"name":"Computer Science","degree":"Liberal Arts Undergraduate","kind":"Major"},{"name":"Computer Science Minor","degree":"Liberal Arts Undergraduate","kind":"Minor"},{"name":"Economics","degree":"Liberal Arts Undergraduate","kind":"Major"},{"name":"English (BA)","degree":"Liberal Arts Undergraduate","kind":"Major"},{"name":"English Minor","degree":"Liberal Arts Undergraduate","kind":"Minor"},{"name":"Journalism BA","degree":"Liberal Arts Undergraduate","kind":"Major"},{"name":"Mathematics (BA)","degree":"Liberal Arts Undergraduate","kind":"Major"},{"name":"Physics","degree":"Liberal Arts Undergraduate","kind":"Major"},{"name":"Political Science","degree":"Liberal Arts Undergraduate","kind":"Major"},{"name":"Psychology","degree":"Liberal Arts Undergraduate","focus":["Bio-Psychology","Developmental Psychology"],"kind":"Major"},{"name":"Sociology","degree":"Liberal Arts Undergraduate","kind":"Major"},{"name":"Statistics","degree":"Liberal Arts Undergraduate","kind":"Major"},{"name":"Undeclared Undergraduate","degree":"Liberal Arts Undergraduate","kind":"Major"}],"schools":["Bainbridge Junior College","Long Beach City College","Riverside Community College"],"catalog":[{"code":"ENGL 1101","title":"English Composition I","units":3},{"code":"ENGL 1102","title":"English Composition II","units":3},{"code":"MATH 1111","title":"College Algebra","units":3},{"code":"PSYC 1101","title":"Introduction to Psychology","units":3},{"code":"PSYC 1500","title":"Theory of Personality","units":3},{"code":"HIST 2111","title":"US History I","units":3},{"code":"COMM 1100","title":"Human Communication","units":3},{"code":"BIOL 1107","title":"Principles of Biology I","units":3},{"code":"BIOL 1107L","title":"Biology Lab I","units":1},{"code":"ECON 2105","title":"Macroeconomics","units":3},{"code":"CSCI 1301","title":"Computer Science I","units":4},{"code":"SOCI 1101","title":"Introduction to Sociology","units":3},{"code":"PHED 1010","title":"Basketball","units":1}],"scanned":[{"code":"ENGL 1101","term":"Fall","year":2025,"units":3,"grade":"A"},{"code":"MATH 1111","term":"Fall","year":2025,"units":3,"grade":"B"},{"code":"PSYC 1101","term":"Fall","year":2025,"units":3,"grade":"A"},{"code":"HIST 2111","term":"Fall","year":2025,"units":3,"grade":"B"},{"code":"COMM 1100","term":"Fall","year":2025,"units":3,"grade":"A"},{"code":"ENGL 1102","term":"Spring","year":2026,"units":3,"grade":"A"},{"code":"BIOL 1107","term":"Spring","year":2026,"units":3,"grade":"B"},{"code":"BIOL 1107L","term":"Spring","year":2026,"units":1,"grade":"A"},{"code":"ECON 2105","term":"Spring","year":2026,"units":3,"grade":"B"},{"code":"CSCI 1301","term":"Spring","year":2026,"units":4,"grade":"A"}],"terms":["Fall","Spring","Summer"],"grades":["A","B","C","D","P"],"scanError":"This is a photograph of a house and pool, not a transcript — it contains no coursework, grades, or academic information. Please upload an official or unofficial transcript from your student portal.","transfer":[{"status":"accepted","took":[{"code":"HIST 10","units":3,"grade":"B"},{"code":"HIST 11","units":3,"grade":"A"}],"equates":{"code":"HISTORY 120","title":"American History","units":3}},{"status":"accepted","took":[{"code":"PSYC 15","units":3,"grade":"B"}],"equates":{"code":"PSYCH 120","title":"Psychopathology","units":3}},{"status":"accepted","took":[{"code":"PSYC 11","units":3,"grade":"A"}],"equates":{"code":"PSYCH 210","title":"Theories of Personality","units":3}},{"status":"accepted","took":[{"code":"MATH 15","units":4,"grade":"A"}],"equates":{"code":"MATH 111","title":"Calculus I for Engineers","units":3}},{"status":"accepted","took":[{"code":"ENGL 14","units":3,"grade":"B"}],"equates":{"code":"ENGLCOMP 200","title":"English Composition II (C1)","units":3}},{"status":"accepted","took":[{"code":"ENGL 12","units":3,"grade":"A"}],"equates":{"code":"ENGLCOMP 100","title":"English Composition I","units":3}},{"status":"accepted","took":[{"code":"ECON 10","units":3,"grade":"B"}],"equates":{"code":"ECON 140","title":"Principles of Economics","units":3}},{"status":"accepted","took":[{"code":"BIOL 11","units":4,"grade":"B"}],"equates":{"code":"BIOLOGY 100","title":"General Biology I","units":3.5}},{"status":"accepted","took":[{"code":"PSYC 10","units":3,"grade":"A"}],"equates":{"code":"PSYCH 100","title":"Intro to Psychology","units":3}},{"status":"review","took":[{"code":"SOC 10","units":3,"grade":"B"}],"equates":{"code":"SOC 100","title":"Introduction to Sociology","units":3}},{"status":"review","took":[{"code":"PSYC 12","units":3,"grade":"B"}],"equates":{"code":"PSYCH 205","title":"Developmental Psychology","units":3}},{"status":"review","took":[{"code":"MATH 11","units":3,"grade":"C"}],"equates":{"code":"MATH 105","title":"Quantitative Reasoning","units":3}},{"status":"review","took":[{"code":"HIST 12","units":3,"grade":"B"}],"equates":{"code":"HISTORY 121","title":"American History II","units":3}},{"status":"evaluate","took":[{"code":"COUNS 1","units":1,"grade":"A"}],"equates":null},{"status":"evaluate","took":[{"code":"ETHST 1","units":3,"grade":"A"}],"equates":null},{"status":"evaluate","took":[{"code":"PHIL 6","units":3,"grade":"A"}],"equates":null},{"status":"evaluate","took":[{"code":"STAT C1000","units":4,"grade":"A"}],"equates":null},{"status":"evaluate","took":[{"code":"PSYCH 11","units":3,"grade":"A"}],"equates":null},{"status":"evaluate","took":[{"code":"PHED 23","units":4.5,"grade":"B"}],"equates":null}],"statusCopy":{"accepted":{"label":"Accepted","role":"success","note":"These classes transfer."},"review":{"label":"Needs a quick review","role":"warning","note":"Good news: this class should transfer. It just needs a quick review by an advisor to confirm."},"evaluate":{"label":"We'll evaluate it","role":"info","note":"We don't have an automatic rule for this class yet, so an advisor will evaluate it for you."}},"groups":[{"title":"Limits (TXFRP and PE)","code":"1900 #149","rows":[],"count":{"covered":0,"total":0}},{"title":"LAU GE Distribution","code":"F25 000115","rows":[{"title":"Social Science Courses","covered":true},{"title":"Life Science","covered":true,"classes":[{"code":"BIOLOGY 100","title":"General Biology I","units":3.5,"from":"Long Beach City College"}]},{"title":"Physical Science","covered":false},{"title":"Lab Requirements","covered":false},{"title":"Lit and Arts","covered":false},{"title":"Non-western Culture","covered":false},{"title":"American Life","covered":false},{"title":"LAU Math Requirement","covered":true,"classes":[{"code":"MATH 111","title":"Calculus I for Engineers","units":3,"from":"Long Beach City College"}]}],"count":{"covered":3,"total":8}},{"title":"Undergraduate Requirements","rows":[{"title":"Minimum Credit Required for Graduation","covered":true},{"title":"Minimum GPA of 2.00","covered":true},{"title":"Diversity","covered":false},{"title":"Expository Writing","covered":true,"classes":[{"code":"ENGLCOMP 100","title":"English Composition I","units":3,"from":"Long Beach City College"}]},{"title":"Verify Writing Portfolio","covered":false},{"title":"First Year Experience","covered":false},{"title":"US History — HISTORY 120","covered":true,"classes":[{"code":"HISTORY 120","title":"American History","units":3,"from":"Long Beach City College"}]},{"title":"US Constitution — POL SCI 1","covered":false},{"title":"Second Language (2 proficiencies required)","covered":false}],"count":{"covered":4,"total":9}},{"title":"Psychology Requirements","code":"2015 #116","rows":[{"title":"Psych Stats","covered":false},{"title":"PSYCH 101 Introduction to Psychology","covered":false},{"title":"PSY 190 — Introduction to Research and Statistics in Psychology","covered":false},{"title":"PSY 393 Introduction to Development Psychology","covered":false},{"title":"PSY 390 Intermediate Research Methods and Biobehavioral Statistics"},{"title":"Psych 100 Level Elective"},{"title":"Psych electives","covered":false}],"count":{"covered":0,"total":5}},{"title":"BS in Psychology — UMiami","code":"Fall 2024 – Summer 2025","rows":[{"title":"Expository Writing","covered":true},{"title":"PSYCH 101 Introduction to Psychology","covered":false}],"count":{"covered":1,"total":2}},{"title":"Unused Courses","rows":[{"title":"Free Electives"}],"count":{"covered":0,"total":0}}],"nextIntake":"2027 Spring"};
-  var I = {"check":"<svg class=\"accordion__status accordion__status--done\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z\"/></svg>","circle":"<svg class=\"accordion__status accordion__status--todo\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z\"/></svg>","chevron":"<svg class=\"accordion__chevron\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z\"/></svg>","close":"<svg class=\"\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z\"/></svg>","print":"<svg class=\"btn__icon\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z\"/></svg>","launch":"<svg class=\"btn__icon\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z\"/></svg>","tick":"<svg class=\"listbox__checkmark\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z\"/></svg>","info":"<svg class=\"alert__icon\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z\"/></svg>","ok":"<svg class=\"alert__icon\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z\"/></svg>","warn":"<svg class=\"alert__icon\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z\"/></svg>","err":"<svg class=\"alert__icon\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z\"/></svg>"};
+  var I = {"check":"<svg class=\"accordion__status accordion__status--done\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z\"/></svg>","circle":"<svg class=\"accordion__status accordion__status--todo\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z\"/></svg>","chevron":"<svg class=\"accordion__chevron\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z\"/></svg>","close":"<svg class=\"\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z\"/></svg>","add":"<svg class=\"\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z\"/></svg>","print":"<svg class=\"btn__icon\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z\"/></svg>","launch":"<svg class=\"btn__icon\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z\"/></svg>","tick":"<svg class=\"listbox__checkmark\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z\"/></svg>","info":"<svg class=\"alert__icon\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z\"/></svg>","ok":"<svg class=\"alert__icon\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z\"/></svg>","warn":"<svg class=\"alert__icon\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z\"/></svg>","err":"<svg class=\"alert__icon\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z\"/></svg>"};
   var S = { step: 1, program: null, focus: null, combo: [], pickerMode: "primary", term: null, credits: null,
             schools: [], sid: 0, captcha: false, planner: true, tab: "credits", online: true };
 
@@ -959,69 +999,65 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   }
 
   /* ---------- step 1 · programs ---------- */
-  /* ---------- step 1: one picker, two states ---------- */
-  /* The step shows either the picker or the chosen list, never both. mode is
-     "primary" when the pick replaces the primary programme and "add" when it
-     appends one; null means we are looking at the chosen list. */
-  function edShowPicker(mode) {
+  /* ---------- step 1: the answer sheet, and a dialog to fill it ----------
+     The step always shows what you have chosen — an empty slot shaped like a
+     chosen row when that is nothing yet. The 29 programmes live in a modal
+     dialog the slot opens. mode is "primary" when the pick replaces the
+     primary programme and "add" when it appends one. */
+  function edOpenPicker(mode) {
     S.pickerMode = mode;
     var adding = mode === "add";
-    $("#ed-s1-title").textContent = adding ? "Add a major or minor" : "What do you want to study?";
-    $("#ed-s1-sub").textContent = adding
-      ? "We'll check every programme you stack here against the same credits."
-      : "Pick anything — you can change it later. Not sure? Browse by what sounds interesting.";
-    show($("#ed-picker"), true);
-    show($("#ed-chosen"), false);
+    $("#ed-picker-title").textContent = adding ? "Add a major or minor" : S.program ? "Change your major" : "Choose your major";
     /* Already-chosen programmes stay visible but are not pickable again. */
     var taken = S.combo.map(function (c) { return c.name; });
     $$("#ed-program-grid .choice-tile").forEach(function (t) {
-      var on = taken.indexOf(t.dataset.program) > -1;
-      t.querySelector(".choice-tile__input").disabled = on;
-      t.querySelector(".choice-tile__input").checked = false;
+      var input = t.querySelector(".choice-tile__input");
+      input.disabled = taken.indexOf(t.dataset.program) > -1;
+      input.checked = false;
     });
+    $("#ed-program-search").value = "";
     edFilterPrograms();
-    /* Cancel only exists when there is a chosen list to go back to. */
-    show($("#ed-picker-back"), !!S.program);
-    show($("#ed-next-1"), false);
-    $("#ed-s1-footer").hidden = true;
-    window.scrollTo(0, 0);
+    $("#ed-picker").showModal();
+    $(".ed-picker__body").scrollTop = 0;
     $("#ed-program-search").focus();
   }
 
-  function edShowChosen() {
-    S.pickerMode = null;
-    $("#ed-s1-title").textContent = "What do you want to study?";
-    $("#ed-s1-sub").textContent = "Pick anything — you can change it later. Not sure? Browse by what sounds interesting.";
-    show($("#ed-picker"), false);
-    show($("#ed-chosen"), true);
-    show($("#ed-picker-back"), false);
-    show($("#ed-next-1"), true);
-    $("#ed-s1-footer").hidden = false;
-    edRenderChosen();
-    edValidate();
-    window.scrollTo(0, 0);
-  }
+  function edClosePicker() { $("#ed-picker").close(); }
 
   /* Each chosen programme is the same choice-tile box, static: what you picked
      keeps looking like what you picked, with Change on the primary and Remove
-     on the rest. */
+     on the rest. Nothing chosen yet renders the same box as a dashed slot, so
+     the pick lands exactly where the slot was. */
   function edRenderChosen() {
-    $("#ed-chosen-list").innerHTML = S.combo.map(function (c, i) {
-      var action = c.primary
-        ? '<button class="btn btn--ghost btn--sm ed-chosen__action" type="button" data-change-primary="1">Change</button>'
-        : '<button class="btn btn--ghost btn--sm btn--icon-only ed-chosen__action" type="button" data-drop="' + i +
-          '" aria-label="Remove ' + esc(c.name) + '">' + I.close + "</button>";
-      return '<div class="choice-tile__box choice-tile__box--static">' +
-        '<span class="choice-tile__marker ed-hue--' + edHue(c.name) + '">' + edInitials(c.name) + "</span>" +
-        '<span class="choice-tile__text"><span class="choice-tile__label">' + esc(c.name) + "</span>" +
-        '<span class="choice-tile__description">' + (c.primary ? "Your primary pick" : c.kind) + "</span></span>" +
-        action + "</div>";
-    }).join("");
-    $$("#ed-chosen-list [data-drop]").forEach(function (b) {
-      b.addEventListener("click", function () { S.combo.splice(+b.dataset.drop, 1); edRenderChosen(); });
-    });
-    var change = $("#ed-chosen-list [data-change-primary]");
-    if (change) change.addEventListener("click", function () { edShowPicker("primary"); });
+    var list = $("#ed-chosen-list");
+    if (!S.combo.length) {
+      list.innerHTML =
+        '<button class="ed-choose" id="ed-choose-program" type="button">' +
+          '<span class="ed-choose__marker">' + I.add + "</span>" +
+          '<span class="ed-choose__text"><span class="ed-choose__label">Choose your major</span>' +
+          '<span class="ed-choose__hint">Search ' + D.programs.length + ' programmes</span></span></button>';
+      $("#ed-choose-program").addEventListener("click", function () { edOpenPicker("primary"); });
+    } else {
+      list.innerHTML = S.combo.map(function (c, i) {
+        var action = c.primary
+          ? '<button class="btn btn--ghost btn--sm ed-chosen__action" type="button" data-change-primary="1">Change</button>'
+          : '<button class="btn btn--ghost btn--sm btn--icon-only ed-chosen__action" type="button" data-drop="' + i +
+            '" aria-label="Remove ' + esc(c.name) + '">' + I.close + "</button>";
+        return '<div class="choice-tile__box choice-tile__box--static">' +
+          '<span class="choice-tile__marker ed-hue--' + edHue(c.name) + '">' + edInitials(c.name) + "</span>" +
+          '<span class="choice-tile__text"><span class="choice-tile__label">' + esc(c.name) + "</span>" +
+          '<span class="choice-tile__description">' + (c.primary ? "Your primary pick" : c.kind) + "</span></span>" +
+          action + "</div>";
+      }).join("");
+      $$("#ed-chosen-list [data-drop]").forEach(function (b) {
+        b.addEventListener("click", function () { S.combo.splice(+b.dataset.drop, 1); edRenderChosen(); });
+      });
+      var change = $("#ed-chosen-list [data-change-primary]");
+      if (change) change.addEventListener("click", function () { edOpenPicker("primary"); });
+    }
+    /* Adding a second programme only makes sense once there is a first. */
+    show($("#ed-add-block"), !!S.combo.length);
+    edValidate();
   }
 
   function edFilterPrograms() {
@@ -1048,9 +1084,9 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
       S.combo = [{ name: p.name, kind: p.kind, primary: true }].concat(extras);
       edFocusBlock(p);
     }
-    edShowChosen();
+    edClosePicker();
+    edRenderChosen();
   }
-
   function edFocusBlock(p) {
     show($("#ed-focus-block"), !!p.focus);
     if (!p.focus) return;
@@ -1399,8 +1435,11 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     r.addEventListener("change", function () { edPickProgram(r.value); });
   });
   $("#ed-program-search").addEventListener("input", edFilterPrograms);
-  $("#ed-add-program").addEventListener("click", function () { edShowPicker("add"); });
-  $("#ed-picker-back").addEventListener("click", edShowChosen);
+  $("#ed-add-program").addEventListener("click", function () { edOpenPicker("add"); });
+  $("#ed-picker-close").addEventListener("click", edClosePicker);
+  /* Click the backdrop to dismiss — <dialog> gives Escape for free but not
+     this, and the backdrop is part of the dialog element's own box. */
+  $("#ed-picker").addEventListener("click", function (e) { if (e.target === this) edClosePicker(); });
 
   $$('input[name="ed-term"]').forEach(function (r) {
     r.addEventListener("change", function () { S.term = r.value; edValidate(); });
@@ -1445,11 +1484,12 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     $("#ed-program-search").value = "";
     show($("#ed-focus-block"), false);
     edGoto(1);
-    edShowPicker("primary");
+    edRenderChosen();
     edValidate();
   });
 
   edStepper();
+  edRenderChosen();
   edValidate();
 })();
 </script>
