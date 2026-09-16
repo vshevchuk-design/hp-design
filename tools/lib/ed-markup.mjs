@@ -86,8 +86,9 @@ ${shellTopbar({ title: "Explore your degree", meta: "No account needed" })}
           <div class="ed-grid" id="ed-focus-grid"></div>
         </div>
         <div class="ed-section is-hidden" id="ed-add-block">
+          <div class="ed-section__title">Build your program combo (optional)</div>
+          <p class="ed-section__hint">Stack more majors or minors and we'll check them all in one go.</p>
           <button class="btn btn--secondary btn--base btn--block" id="ed-add-program" type="button">${icon("add", "btn__icon")}Add another major or minor</button>
-          <p class="ed-section__hint">Optional — stack majors and minors and we'll check them all in one go.</p>
         </div>
       </div></div>
 
