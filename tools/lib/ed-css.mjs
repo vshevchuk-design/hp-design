@@ -411,7 +411,7 @@ html:has(.ed-picker[open]) { overflow: hidden; }
 /* One column: this is a list picker, not the tile wall it used to be. */
 .ed-picker .ed-grid { grid-template-columns: 1fr; }
 @media (min-width: 768px) {
-  .ed-picker { margin: auto; width: min(560px, calc(100vw - ${px(resolve("dim.8"))})); height: min(640px, calc(100dvh - ${px(resolve("dim.16"))})); border-radius: ${px(resolve(modal.radius.$value))}; box-shadow: ${mdShadowCss}; }
+  .ed-picker { margin: auto; width: min(760px, calc(100vw - ${px(resolve("dim.8"))})); height: min(720px, calc(100dvh - ${px(resolve("dim.16"))})); border-radius: ${px(resolve(modal.radius.$value))}; box-shadow: ${mdShadowCss}; }
 }
 .is-hidden { display: none !important; }`;
 }
