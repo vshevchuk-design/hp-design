@@ -380,6 +380,17 @@ html:has(.ed-picker[open]) { overflow: hidden; }
 .ed-picker__title { margin: 0; color: ${cv(refPath(modal.titleColor.$value))}; ${typoCss(h.resolveToken(modal.title))} }
 /* Search sits outside the scroll area so it stays put while the list moves. */
 .ed-picker__searchbar { flex-shrink: 0; padding: ${px(resolve("dim.3"))} ${px(resolve(modal.padding.$value))}; border-bottom: 1px solid ${cv(refPath(modal.divider.$value))}; }
+/* Two facets, one row each, each single-select and ANDed with the search:
+   what the programme is (Major/Minor) and what it leads to (Associate or
+   Bachelor's). Filter chips rather than tabs — tabs switch views, chips narrow
+   a set. Resting shape is Chip's own; selected is a solid primary fill, which
+   is the one treatment that survives being read at a glance in a list. */
+.ed-picker__filters { flex-shrink: 0; display: flex; flex-direction: column; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.3"))} ${px(resolve(modal.padding.$value))}; border-bottom: 1px solid ${cv(refPath(modal.divider.$value))}; }
+.ed-filters { display: flex; flex-wrap: wrap; gap: ${px(resolve("dim.2"))}; }
+.ed-filter { cursor: pointer; font-family: inherit; display: inline-flex; align-items: center; height: ${px(resolve(chip.size.base.height.$value))}; padding: 0 ${px(resolve(chip.size.base.paddingX.$value))}; border-radius: ${px(resolve(chip.radius.$value))}; border: 1px solid ${cv("border.default")}; background: ${cv("surface.default")}; color: ${cv("text.secondary")}; ${typoCss(h.resolveToken(chip.size.base.label))} }
+.ed-filter:hover { background: ${cv("fill.neutralHover")}; color: ${cv("text.default")}; }
+.ed-filter.is-on { background: ${cv("fill.primary")}; border-color: ${cv("fill.primary")}; color: ${cv("text.onFill")}; }
+.ed-filter:focus-visible { outline: ${px(resolve(ctSt.focused.ringWidth.$value))} solid ${cv(refPath(ctSt.focused.ringColor.$value))}; outline-offset: ${px(resolve(ctSt.focused.ringOffset.$value))}; }
 .ed-picker__body { flex: 1; min-height: 0; overflow-y: auto; padding: ${px(resolve(modal.padding.$value))}; }
 /* One column: this is a list picker, not the tile wall it used to be. */
 .ed-picker .ed-grid { grid-template-columns: 1fr; }

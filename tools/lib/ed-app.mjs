@@ -52,7 +52,7 @@ export function edAppJs(h) {
   return `(function () {
   var D = ${DATA};
   var I = ${ICONS};
-  var S = { step: 1, program: null, focus: null, combo: [], pickerMode: "primary", term: null, credits: null,
+  var S = { step: 1, program: null, focus: null, combo: [], pickerMode: "primary", fKind: "", fLevel: "", term: null, credits: null,
             schools: [], sid: 0, captcha: false, planner: true, tab: "credits", online: true };
 
   var $ = function (sel, root) { return (root || document).querySelector(sel); };
@@ -115,7 +115,9 @@ export function edAppJs(h) {
   function edOpenPicker(mode) {
     S.pickerMode = mode;
     var adding = mode === "add";
-    $("#ed-picker-title").textContent = adding ? "Add a major or minor" : S.program ? "Change your major" : "Choose your major";
+    /* Not "major": the primary pick can be a minor, and the reference lets it be
+       — the chosen row has always called it your primary pick. */
+    $("#ed-picker-title").textContent = adding ? "Add a major or minor" : S.program ? "Change your primary pick" : "Choose your primary pick";
     /* Already-chosen programmes stay visible but are not pickable again. */
     var taken = S.combo.map(function (c) { return c.name; });
     $$("#ed-program-grid .choice-tile").forEach(function (t) {
@@ -124,6 +126,8 @@ export function edAppJs(h) {
       input.checked = false;
     });
     $("#ed-program-search").value = "";
+    S.fKind = ""; S.fLevel = "";
+    $$(".ed-filter").forEach(function (b) { b.classList.toggle("is-on", b.dataset.value === ""); });
     edFilterPrograms();
     $("#ed-picker").showModal();
     $(".ed-picker__body").scrollTop = 0;
@@ -142,8 +146,8 @@ export function edAppJs(h) {
       list.innerHTML =
         '<button class="ed-choose" id="ed-choose-program" type="button">' +
           '<span class="ed-choose__marker">' + I.add + "</span>" +
-          '<span class="ed-choose__text"><span class="ed-choose__label">Choose your major</span>' +
-          '<span class="ed-choose__hint">Search ' + D.programs.length + ' programmes</span></span></button>';
+          '<span class="ed-choose__text"><span class="ed-choose__label">Choose your primary pick</span>' +
+          '<span class="ed-choose__hint">Search ' + D.programs.length + ' majors and minors</span></span></button>';
       $("#ed-choose-program").addEventListener("click", function () { edOpenPicker("primary"); });
     } else {
       list.innerHTML = S.combo.map(function (c, i) {
@@ -172,7 +176,9 @@ export function edAppJs(h) {
     var q = ($("#ed-program-search").value || "").trim().toLowerCase();
     var any = false;
     $$("#ed-program-grid .choice-tile").forEach(function (t) {
-      var hit = t.dataset.program.toLowerCase().indexOf(q) > -1;
+      var hit = t.dataset.program.toLowerCase().indexOf(q) > -1 &&
+        (!S.fKind || t.dataset.kind === S.fKind) &&
+        (!S.fLevel || t.dataset.level === S.fLevel);
       t.classList.toggle("is-hidden", !hit);
       if (hit) any = true;
     });
@@ -383,7 +389,10 @@ export function edAppJs(h) {
     // school picker exists in their demo and never will in the product.
     rows.push(["Academic level", "Undergraduate"]);
     var extras = S.combo.filter(function (c) { return !c.primary; });
-    rows.push([extras.length ? "Majors &amp; minors" : "Major",
+    /* The key can't say "Major": the primary pick may be a minor, in which case
+       the old label produced "Major — Classics Minor · Minor". "Program" for one
+       and "Programs" for a stack; each row's own badge says which kind it is. */
+    rows.push([S.combo.length > 1 ? "Programs" : "Program",
       S.combo.map(function (c) {
         return esc(c.name) + ' <span class="badge badge--neutral">' + (c.primary && extras.length ? "Primary · " : "") + c.kind + "</span>";
       }).join("<br />")]);
@@ -545,6 +554,14 @@ export function edAppJs(h) {
   $("#ed-program-search").addEventListener("input", edFilterPrograms);
   $("#ed-add-program").addEventListener("click", function () { edOpenPicker("add"); });
   $("#ed-picker-close").addEventListener("click", edClosePicker);
+  $$(".ed-filter").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var facet = b.dataset.filter;
+      S[facet === "kind" ? "fKind" : "fLevel"] = b.dataset.value;
+      $$('.ed-filter[data-filter="' + facet + '"]').forEach(function (o) { o.classList.toggle("is-on", o === b); });
+      edFilterPrograms();
+    });
+  });
   /* Click the backdrop to dismiss — <dialog> gives Escape for free but not
      this, and the backdrop is part of the dialog element's own box. */
   $("#ed-picker").addEventListener("click", function (e) { if (e.target === this) edClosePicker(); });

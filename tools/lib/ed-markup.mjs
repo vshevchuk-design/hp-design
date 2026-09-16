@@ -2,7 +2,7 @@
 // screens. Anything that depends on what the user picked (combo chips, school
 // blocks, the class table, both result tabs) is rendered by ed-app.mjs into the
 // containers this file lays out.
-import { PROGRAMS, TERM_YEARS, NEXT_INTAKE } from "./ed-data.mjs";
+import { PROGRAMS, TERM_YEARS, NEXT_INTAKE, kindOf, levelOf } from "./ed-data.mjs";
 import { shellTopbar } from "./app-shell.mjs";
 
 // Step labels name the thing being chosen, not a one-word category — the
@@ -28,11 +28,14 @@ ${STEPS.map(
 ).join("\n")}
     </div>`;
 
-  const programTile = (p) => `<label class="choice-tile" data-program="${esc(p.name)}">
+  // The name alone doesn't say what a programme *is* — "Accounting AA" and
+  // "Accounting AB" differ only by degree. Kind and degree ride along as one
+  // muted line, and the filter chips above work the same two axes.
+  const programTile = (p) => `<label class="choice-tile" data-program="${esc(p.name)}" data-kind="${kindOf(p.name)}" data-level="${esc(levelOf(p.degree))}">
         <input class="choice-tile__input" type="radio" name="ed-program" value="${esc(p.name)}" />
         <span class="choice-tile__box">
           <span class="choice-tile__marker ed-hue--${hueOf(p.name)}">${initialsOf(p.name)}</span>
-          <span class="choice-tile__text"><span class="choice-tile__label">${esc(p.name)}</span></span>
+          <span class="choice-tile__text"><span class="choice-tile__label">${esc(p.name)}</span><span class="choice-tile__description">${kindOf(p.name)} &middot; ${esc(p.degree)}</span></span>
         </span>
       </label>`;
 
@@ -79,7 +82,7 @@ ${shellTopbar({ title: "Explore your degree", meta: "No account needed" })}
         </div>
         <div class="ed-section is-hidden" id="ed-focus-block">
           <div class="ed-section__title">Want to focus it? (optional)</div>
-          <p class="ed-section__hint">This major offers focus areas. Pick one if you already know, or skip and decide later.</p>
+          <p class="ed-section__hint">This program offers focus areas. Pick one if you already know, or skip and decide later.</p>
           <div class="ed-grid" id="ed-focus-grid"></div>
         </div>
         <div class="ed-section is-hidden" id="ed-add-block">
@@ -214,6 +217,18 @@ ${TERM_YEARS.map(
     </div>
     <div class="ed-picker__searchbar">
       <div class="search">${icon("search", "search__icon")}<input class="search__input" id="ed-program-search" type="search" placeholder="Search majors: try &ldquo;computer&rdquo; or &ldquo;bio&rdquo;" aria-label="Search majors" /></div>
+    </div>
+    <div class="ed-picker__filters">
+      <div class="ed-filters" role="group" aria-label="Filter by type">
+        <button class="ed-filter is-on" type="button" data-filter="kind" data-value="">All types</button>
+        <button class="ed-filter" type="button" data-filter="kind" data-value="Major">Majors</button>
+        <button class="ed-filter" type="button" data-filter="kind" data-value="Minor">Minors</button>
+      </div>
+      <div class="ed-filters" role="group" aria-label="Filter by level">
+        <button class="ed-filter is-on" type="button" data-filter="level" data-value="">All levels</button>
+        <button class="ed-filter" type="button" data-filter="level" data-value="Associate">Associate</button>
+        <button class="ed-filter" type="button" data-filter="level" data-value="Bachelor's">Bachelor&rsquo;s</button>
+      </div>
     </div>
     <div class="ed-picker__body">
       <div class="ed-grid" id="ed-program-grid">

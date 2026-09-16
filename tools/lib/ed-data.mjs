@@ -15,10 +15,16 @@
 
 /** A program's kind is derivable from its name — no need to store it twice. */
 export const kindOf = (name) => (/minor/i.test(name) ? "Minor" : "Major");
+// The second axis a student actually chooses along. The degree strings carry
+// it already ("Associate of Arts" vs "… Undergraduate"), so it is derived
+// rather than stored — one place to be wrong instead of 29.
+export const levelOf = (degree) => (/^Associate/.test(degree) ? "Associate" : "Bachelor's");
 
-// Step 1. ~27 programs, the reference's own list. `focus` exists on exactly one
-// (Psychology) because that's the branch the video demonstrates: focus areas
-// appear only for majors that have them.
+// Step 1. ~27 programs, the reference's own list. `focus` is on the two the
+// reference actually shows focus areas for — Psychology in the video and
+// Biology (BS) in the screens — and nothing else: focus areas appear only for
+// majors that have them, and inventing areas for the other 27 would be making
+// up curriculum.
 export const PROGRAMS = [
   { name: "A B C", degree: "Liberal Arts Undergraduate" },
   { name: "Accounting", degree: "Liberal Arts Undergraduate" },
@@ -29,7 +35,7 @@ export const PROGRAMS = [
   { name: "Art History Minor", degree: "Liberal Arts Undergraduate" },
   { name: "Auto Technology", degree: "Associate of Science" },
   { name: "Baking and Pastry Arts", degree: "Associate of Arts" },
-  { name: "Biology (BS)", degree: "Liberal Arts Undergraduate" },
+  { name: "Biology (BS)", degree: "Liberal Arts Undergraduate", focus: ["Animal Science", "Photo Biology"] },
   { name: "Business Administration", degree: "Associate of Arts" },
   { name: "Business Management", degree: "Liberal Arts Undergraduate" },
   { name: "Chemical Engineering (BE)", degree: "Engineering Undergraduate" },
