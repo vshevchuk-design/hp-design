@@ -1353,3 +1353,15 @@ Three things this exposed, each caught in the browser rather than by the build:
 - **Wrapping the row on mobile made it worse before it made it better.** `flex-wrap` alone pushed the text under the marker, three lines instead of two; the text needed `flex: 1` to shrink beside the marker rather than wrap below it.
 
 And the slicing trap for the third time: replacing everything between two function names silently took `edSetFacet` with it. The page still built and `node --check` still passed — the console is what caught it. Bounded edits, or check the function inventory afterwards.
+
+## 2026-09-17 (cont. 2) — the two sections come back, and Primary gets a badge
+
+Two corrections in one round, the first of them mine to own.
+
+**I deleted the two section headings without being asked.** "Make your primary pick" and "Build your program combo (optional)" were both things the user had specifically asked for, and I removed them while building the one-ordered-list model, treating "one list" as licence to flatten the page. "One array" and "one section" are not the same claim: the primary is still the first element of a single array — which is what makes promotion a splice rather than a transfer between two data structures — but the screen says out loud which part is the decision and which part is optional. Both sections are back, the primary section holds one card, the combo section holds the rest plus Add, and promoting an extra moves the card between them.
+
+**And Primary is a Badge now, not a grey prefix.** It had been the first segment of the muted meta line ("Primary · Major · Liberal Arts Undergraduate"), which put the single most consequential fact on this screen in the same colour and size as the degree code. It is a real Badge in the primary tint (`bg.primary` / `text.primary`) sitting beside the name, with `.ed-pick__name` wrapping the pair so a long name pushes the badge to the next line rather than off the row. The meta line keeps `kind · degree` only, so nothing is said twice.
+
+`edMeta()` went with it: the card composes its own meta line, and leaving a second function that also knew how to spell that string was an invitation to drift.
+
+The function-inventory check after a bulk edit paid for itself immediately — this round's slice was clean, but only because I looked.

@@ -81,11 +81,18 @@ ${shellTopbar({ title: "Explore your degree", meta: "No account needed" })}
       <div class="card"><div class="card__body">
         <div class="ed-section">
           <div class="ed-section__head">
-            <div class="ed-section__title">Your picks</div>
-            <p class="ed-section__hint" id="ed-picks-hint">Add as many as you like. The first one is your primary pick — your results are built around it, and any focus areas come from it.</p>
+            <div class="ed-section__title">Make your primary pick</div>
+            <p class="ed-section__hint">What your results are built around. Focus areas, if it has any, come with it.</p>
           </div>
-          <div class="ed-chosen" id="ed-chosen-list"></div>
-          <button class="btn btn--secondary btn--base btn--block is-hidden" id="ed-add-program" type="button">${icon("add", "btn__icon")}Add another</button>
+          <div id="ed-primary"></div>
+        </div>
+        <div class="ed-section is-hidden" id="ed-add-block">
+          <div class="ed-section__head">
+            <div class="ed-section__title">Build your program combo (optional)</div>
+            <p class="ed-section__hint">Stack as many as you like and we'll check them all in one go. Any of them can take the primary spot.</p>
+          </div>
+          <div class="ed-chosen is-hidden" id="ed-extras-list"></div>
+          <button class="btn btn--secondary btn--base btn--block" id="ed-add-program" type="button">${icon("add", "btn__icon")}Add another</button>
         </div>
       </div></div>
 

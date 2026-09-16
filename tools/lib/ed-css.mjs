@@ -189,6 +189,9 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
    surface its contents were designed to sit on. */
 .ed-pick { border-radius: ${px(resolve(ct.radius.$value))}; border: 1px solid ${cv(refPath(ctSt.selected.border.$value))}; background: ${cv("surface.default")}; overflow: hidden; }
 .ed-pick__row { display: flex; align-items: center; gap: ${px(resolve(ct.gap.$value))}; padding: ${px(resolve(ct.paddingY.$value))} ${px(resolve(ct.paddingX.$value))}; }
+/* Name and its Primary badge share a line and wrap together when the name is
+   long — the badge must never be the thing that falls off a narrow row. */
+.ed-pick__name { display: flex; align-items: center; gap: ${px(resolve("dim.2"))}; flex-wrap: wrap; min-width: 0; }
 .ed-pick__actions { margin-left: auto; flex-shrink: 0; display: flex; align-items: center; gap: ${px(resolve("dim.1"))}; }
 /* On a phone the actions and a two-line name fight over 375px, and the name
    loses twice — it wraps AND the buttons crowd it. Drop the actions onto their

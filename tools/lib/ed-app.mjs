@@ -160,7 +160,6 @@ export function edAppJs(h) {
      and carries the focus areas. Order is the user's to set — nothing is ever
      promoted on their behalf — so deleting the first just leaves the next one
      first, a position they chose rather than a decision made for them. */
-  function edMeta(c, primary) { var p = programOf(c.name); return (primary ? "Primary · " : "") + c.kind + " · " + p.degree; }
 
   function edPickCard(c, i) {
     var p = programOf(c.name);
@@ -173,52 +172,51 @@ export function edAppJs(h) {
       : '<button class="btn btn--ghost btn--sm" type="button" data-make-primary="' + i + '">Make primary</button>') +
       '<button class="btn btn--ghost btn--sm btn--icon-only" type="button" data-drop="' + i +
       '" aria-label="Remove ' + esc(c.name) + '">' + I.close + "</button>";
+    /* The primary is the one decision on this screen that changes what the
+       results are, so it is badged rather than mentioned in the grey meta line
+       — a real Badge in the primary tint, on the name row where it is read. */
+    var badge = primary ? ' <span class="badge badge--info">Primary</span>' : "";
     return '<div class="ed-pick" data-row="' + i + '"><div class="ed-pick__row">' +
       '<span class="choice-tile__marker ed-hue--' + edHue(c.name) + '">' + edInitials(c.name) + "</span>" +
-      '<span class="choice-tile__text"><span class="choice-tile__label">' + esc(c.name) + "</span>" +
-      '<span class="choice-tile__description">' + esc(edMeta(c, primary)) + "</span></span>" +
+      '<span class="choice-tile__text"><span class="ed-pick__name"><span class="choice-tile__label">' + esc(c.name) + "</span>" + badge + "</span>" +
+      '<span class="choice-tile__description">' + esc(c.kind + " · " + p.degree) + "</span></span>" +
       '<span class="ed-pick__actions">' + actions + "</span></div>" +
       (primary && p.focus ? edFocusMarkup(p) : "") + "</div>";
   }
 
   function edRenderChosen() {
-    var list = $("#ed-chosen-list");
-    var hint = $("#ed-picks-hint");
     /* Derived, never assigned by the callers: the primary is simply whatever is
        first, and the multi-add path proved that assigning it in each mutation
        is one place too many to remember. */
     S.program = S.combo.length ? S.combo[0].name : null;
+
     if (!S.combo.length) {
-      list.innerHTML =
+      $("#ed-primary").innerHTML =
         '<button class="ed-choose" id="ed-choose-program" type="button">' +
           '<span class="ed-choose__marker">' + I.add + "</span>" +
           '<span class="ed-choose__text"><span class="ed-choose__label">Choose what to study</span>' +
           '<span class="ed-choose__hint">Search ' + D.programs.length + ' majors, minors and more</span></span></button>';
       $("#ed-choose-program").addEventListener("click", function () { edOpenPicker("add"); });
-      show($("#ed-add-program"), false);
-      hint.textContent = "Add as many as you like. The first one is your primary pick — your results are built around it, and any focus areas come from it.";
-      edValidate();
-      return;
+    } else {
+      $("#ed-primary").innerHTML = edPickCard(S.combo[0], 0);
+      $("#ed-primary [data-change-primary]").addEventListener("click", function () { edOpenPicker("primary"); });
+      edWireFocus();
     }
 
-    list.innerHTML = S.combo.map(edPickCard).join("");
-    show($("#ed-add-program"), true);
-    hint.textContent = S.combo.length > 1
-      ? "Your first pick is the primary one — your results are built around it, and any focus areas come from it. Any other pick can take its place."
-      : "Add as many as you like. The first one is your primary pick — your results are built around it, and any focus areas come from it.";
+    var extras = S.combo.slice(1);
+    $("#ed-extras-list").innerHTML = extras.map(function (c, k) { return edPickCard(c, k + 1); }).join("");
+    show($("#ed-extras-list"), !!extras.length);
+    /* Stacking only makes sense once there is something to stack onto. */
+    show($("#ed-add-block"), !!S.combo.length);
 
-    var change = $("#ed-chosen-list [data-change-primary]");
-    if (change) change.addEventListener("click", function () { edOpenPicker("primary"); });
-    $$("#ed-chosen-list [data-make-primary]").forEach(function (b) {
+    $$("#ed-extras-list [data-make-primary]").forEach(function (b) {
       b.addEventListener("click", function () { edMakePrimary(+b.dataset.makePrimary); });
     });
-    $$("#ed-chosen-list [data-drop]").forEach(function (b) {
+    $$("#ed-primary [data-drop], #ed-extras-list [data-drop]").forEach(function (b) {
       b.addEventListener("click", function () { edDrop(+b.dataset.drop); });
     });
-    edWireFocus();
     edValidate();
   }
-
   /* The focus answer belongs to whichever programme is primary, so it clears
      every time the first row changes — by promotion, replacement or deletion. */
   function edResetFocus() { S.focus = null; S.focusSkipped = false; }
