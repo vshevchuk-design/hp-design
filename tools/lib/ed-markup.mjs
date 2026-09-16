@@ -80,7 +80,7 @@ ${shellTopbar({ title: "Explore your degree", meta: "No account needed" })}
         <div class="ed-section">
           <div class="ed-section__head">
             <div class="ed-section__title">Make your primary pick</div>
-            <p class="ed-section__hint">The program your results are built around. Focus areas, if it has any, come with it.</p>
+            <p class="ed-section__hint">The major or minor your results are built around. Focus areas, if it has any, come with it.</p>
           </div>
           <div id="ed-primary"></div>
         </div>
@@ -218,19 +218,31 @@ ${TERM_YEARS.map(
       <h2 class="ed-picker__title" id="ed-picker-title">Choose your major</h2>
       <button class="btn btn--ghost btn--base btn--icon-only" id="ed-picker-close" type="button" aria-label="Close">${icon("close", "btn__icon")}</button>
     </div>
-    <div class="ed-picker__searchbar">
+    <div class="ed-picker__tools">
       <div class="search">${icon("search", "search__icon")}<input class="search__input" id="ed-program-search" type="search" placeholder="Search majors: try &ldquo;computer&rdquo; or &ldquo;bio&rdquo;" aria-label="Search majors" /></div>
-    </div>
-    <div class="ed-picker__filters">
-      <div class="ed-filters" role="group" aria-label="Filter by type">
-        <button class="ed-filter is-on" type="button" data-filter="kind" data-value="">All types</button>
-        <button class="ed-filter" type="button" data-filter="kind" data-value="Major">Majors</button>
-        <button class="ed-filter" type="button" data-filter="kind" data-value="Minor">Minors</button>
+      <div class="ed-picker__filters">
+      <button class="select select--base" id="ed-filter-kind" type="button" popovertarget="ed-lb-kind" aria-haspopup="listbox">
+        <span class="select__value">All types</span>
+        ${icon("expand_more", "select__chevron")}
+      </button>
+      <div class="listbox" id="ed-lb-kind" popover>
+        <ul class="listbox__list" role="listbox" aria-label="Filter by type">
+          <li><button class="listbox__option" role="option" type="button" data-facet="kind" data-value="">All types</button></li>
+          <li><button class="listbox__option" role="option" type="button" data-facet="kind" data-value="Major">Majors</button></li>
+          <li><button class="listbox__option" role="option" type="button" data-facet="kind" data-value="Minor">Minors</button></li>
+        </ul>
       </div>
-      <div class="ed-filters" role="group" aria-label="Filter by level">
-        <button class="ed-filter is-on" type="button" data-filter="level" data-value="">All levels</button>
-        <button class="ed-filter" type="button" data-filter="level" data-value="Associate">Associate</button>
-        <button class="ed-filter" type="button" data-filter="level" data-value="Bachelor's">Bachelor&rsquo;s</button>
+      <button class="select select--base" id="ed-filter-level" type="button" popovertarget="ed-lb-level" aria-haspopup="listbox">
+        <span class="select__value">All levels</span>
+        ${icon("expand_more", "select__chevron")}
+      </button>
+      <div class="listbox" id="ed-lb-level" popover>
+        <ul class="listbox__list" role="listbox" aria-label="Filter by level">
+          <li><button class="listbox__option" role="option" type="button" data-facet="level" data-value="">All levels</button></li>
+          <li><button class="listbox__option" role="option" type="button" data-facet="level" data-value="Associate">Associate</button></li>
+          <li><button class="listbox__option" role="option" type="button" data-facet="level" data-value="Bachelor's">Bachelor&rsquo;s</button></li>
+        </ul>
+      </div>
       </div>
     </div>
     <div class="ed-picker__body">

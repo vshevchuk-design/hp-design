@@ -127,7 +127,7 @@ export function edAppJs(h) {
     });
     $("#ed-program-search").value = "";
     S.fKind = ""; S.fLevel = "";
-    $$(".ed-filter").forEach(function (b) { b.classList.toggle("is-on", b.dataset.value === ""); });
+    ["kind", "level"].forEach(function (f) { edSetFacet(f, "", $('#ed-lb-' + f + " [data-value='']").textContent); });
     edFilterPrograms();
     $("#ed-picker").showModal();
     $(".ed-picker__body").scrollTop = 0;
@@ -165,7 +165,7 @@ export function edAppJs(h) {
       $("#ed-primary").innerHTML =
         '<button class="ed-choose" id="ed-choose-program" type="button">' +
           '<span class="ed-choose__marker">' + I.add + "</span>" +
-          '<span class="ed-choose__text"><span class="ed-choose__label">Choose a program</span>' +
+          '<span class="ed-choose__text"><span class="ed-choose__label">Choose a major or minor</span>' +
           '<span class="ed-choose__hint">Search ' + D.programs.length + ' majors and minors</span></span></button>';
       $("#ed-choose-program").addEventListener("click", function () { edOpenPicker("primary"); });
     } else {
@@ -199,6 +199,14 @@ export function edAppJs(h) {
     }
     edRenderChosen();
   }
+  function edSetFacet(facet, value, label) {
+    S[facet === "kind" ? "fKind" : "fLevel"] = value;
+    $("#ed-filter-" + facet + " .select__value").textContent = label;
+    $$("#ed-lb-" + facet + " [data-value]").forEach(function (o) {
+      o.setAttribute("aria-selected", String(o.dataset.value === value));
+    });
+  }
+
   function edFilterPrograms() {
     var q = ($("#ed-program-search").value || "").trim().toLowerCase();
     var any = false;
@@ -241,7 +249,7 @@ export function edAppJs(h) {
     };
     return '<div class="ed-pick__focus">' +
       '<div class="ed-section__head"><div class="ed-section__title">Want to focus it? (optional)</div>' +
-      '<p class="ed-section__hint">This program offers focus areas. Pick one if you already know, or skip and decide later.</p></div>' +
+      '<p class="ed-section__hint">This major or minor offers focus areas. Pick one if you already know, or skip and decide later.</p></div>' +
       '<div class="ed-grid" id="ed-focus-grid">' +
       p.focus.map(function (f) { return tile(f, f); }).join("") +
       tile("__skip__", "Not sure yet — skip focus areas") +
@@ -429,10 +437,11 @@ export function edAppJs(h) {
     // school picker exists in their demo and never will in the product.
     rows.push(["Academic level", "Undergraduate"]);
     var extras = S.combo.filter(function (c) { return !c.primary; });
-    /* The key can't say "Major": the primary pick may be a minor, in which case
-       the old label produced "Major — Classics Minor · Minor". "Program" for one
-       and "Programs" for a stack; each row's own badge says which kind it is. */
-    rows.push([S.combo.length > 1 ? "Programs" : "Program",
+    /* The key can't say "Major" alone: the primary pick may be a minor, and
+       that produced "Major — Classics Minor · Minor". PeopleSoft would call
+       these plans, but this screen speaks to prospective students and every
+       other control on it says major/minor — so the key does too. */
+    rows.push([S.combo.length > 1 ? "Majors &amp; minors" : "Major or minor",
       S.combo.map(function (c) {
         return esc(c.name) + ' <span class="badge badge--neutral">' + (c.primary && extras.length ? "Primary · " : "") + c.kind + "</span>";
       }).join("<br />")]);
@@ -594,12 +603,15 @@ export function edAppJs(h) {
   $("#ed-program-search").addEventListener("input", edFilterPrograms);
   $("#ed-add-program").addEventListener("click", function () { edOpenPicker("add"); });
   $("#ed-picker-close").addEventListener("click", edClosePicker);
-  $$(".ed-filter").forEach(function (b) {
-    b.addEventListener("click", function () {
-      var facet = b.dataset.filter;
-      S[facet === "kind" ? "fKind" : "fLevel"] = b.dataset.value;
-      $$('.ed-filter[data-filter="' + facet + '"]').forEach(function (o) { o.classList.toggle("is-on", o === b); });
-      edFilterPrograms();
+  ["kind", "level"].forEach(function (facet) {
+    var panel = $("#ed-lb-" + facet), trigger = $("#ed-filter-" + facet);
+    edAnchor(panel, trigger);
+    $$("[data-value]", panel).forEach(function (b) {
+      b.addEventListener("click", function () {
+        edSetFacet(facet, b.dataset.value, b.textContent);
+        panel.hidePopover();
+        edFilterPrograms();
+      });
     });
   });
   /* Click the backdrop to dismiss — <dialog> gives Escape for free but not
