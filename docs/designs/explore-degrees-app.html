@@ -186,14 +186,24 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .choice-tile__input:disabled ~ .choice-tile__box .choice-tile__label { color: var(--tok-text-disabled); }
 /* A chosen programme is its own little card, not a choice-tile box with extra
    classes: the primary one carries a second compartment for focus areas, so it
-   has to be a container with a header row rather than a single flex row. Same
-   geometry and the same selected fill as the tile it came from. */
-.ed-pick { border-radius: 8px; border: 1px solid var(--tok-fill-primary); background: var(--tok-bg-primary); overflow: hidden; }
+   has to be a container with a header row rather than a single flex row.
+   It borrows choice-tile's selected BORDER but not its fill. The fill was the
+   first cut and it caused three separate problems at once: a card with focus
+   areas had a blue header over a white body, i.e. a colour seam inside one
+   card; a card without them was a lone blue bar, so the two never matched; and
+   the ghost Change button laid its neutral hover wash (gray.100) on top of a
+   blue field, where it was designed for white. The blue belongs on the frame —
+   a chosen programme is an answer already given, not an option being selected
+   among others, and framing says "this is yours" without recolouring the
+   surface its contents were designed to sit on. */
+.ed-pick { border-radius: 8px; border: 1px solid var(--tok-fill-primary); background: var(--tok-surface-default); overflow: hidden; }
 .ed-pick__row { display: flex; align-items: center; gap: 12px; padding: 12px 12px; }
 .ed-pick__actions { margin-left: auto; flex-shrink: 0; display: flex; align-items: center; gap: 4px; }
 /* Focus areas belong to the programme, so they live inside its card — divided
    from the header row, not floating below as a separate section. */
-.ed-pick__focus { border-top: 1px solid var(--tok-fill-primary); padding: 12px; background: var(--tok-surface-default); display: flex; flex-direction: column; gap: 12px; }
+/* A neutral hairline, not the frame's blue: this divides content inside one
+   card, and repeating the frame colour made it read as two stacked cards. */
+.ed-pick__focus { border-top: 1px solid var(--tok-border-default); padding: 12px; display: flex; flex-direction: column; gap: 12px; }
 .ed-chosen { display: grid; gap: 8px; }
 
 /* ============ Alert ============ */

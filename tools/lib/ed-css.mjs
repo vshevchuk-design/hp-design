@@ -176,14 +176,24 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .choice-tile__input:disabled ~ .choice-tile__box .choice-tile__label { color: ${cv(refPath(ctSt.disabled.label.$value))}; }
 /* A chosen programme is its own little card, not a choice-tile box with extra
    classes: the primary one carries a second compartment for focus areas, so it
-   has to be a container with a header row rather than a single flex row. Same
-   geometry and the same selected fill as the tile it came from. */
-.ed-pick { border-radius: ${px(resolve(ct.radius.$value))}; border: 1px solid ${cv(refPath(ctSt.selected.border.$value))}; background: ${cv(refPath(ctSt.selected.bg.$value))}; overflow: hidden; }
+   has to be a container with a header row rather than a single flex row.
+   It borrows choice-tile's selected BORDER but not its fill. The fill was the
+   first cut and it caused three separate problems at once: a card with focus
+   areas had a blue header over a white body, i.e. a colour seam inside one
+   card; a card without them was a lone blue bar, so the two never matched; and
+   the ghost Change button laid its neutral hover wash (gray.100) on top of a
+   blue field, where it was designed for white. The blue belongs on the frame —
+   a chosen programme is an answer already given, not an option being selected
+   among others, and framing says "this is yours" without recolouring the
+   surface its contents were designed to sit on. */
+.ed-pick { border-radius: ${px(resolve(ct.radius.$value))}; border: 1px solid ${cv(refPath(ctSt.selected.border.$value))}; background: ${cv("surface.default")}; overflow: hidden; }
 .ed-pick__row { display: flex; align-items: center; gap: ${px(resolve(ct.gap.$value))}; padding: ${px(resolve(ct.paddingY.$value))} ${px(resolve(ct.paddingX.$value))}; }
 .ed-pick__actions { margin-left: auto; flex-shrink: 0; display: flex; align-items: center; gap: ${px(resolve("dim.1"))}; }
 /* Focus areas belong to the programme, so they live inside its card — divided
    from the header row, not floating below as a separate section. */
-.ed-pick__focus { border-top: 1px solid ${cv(refPath(ctSt.selected.border.$value))}; padding: ${px(resolve(ct.paddingX.$value))}; background: ${cv("surface.default")}; display: flex; flex-direction: column; gap: ${px(resolve("dim.3"))}; }
+/* A neutral hairline, not the frame's blue: this divides content inside one
+   card, and repeating the frame colour made it read as two stacked cards. */
+.ed-pick__focus { border-top: 1px solid ${cv("border.default")}; padding: ${px(resolve(ct.paddingX.$value))}; display: flex; flex-direction: column; gap: ${px(resolve("dim.3"))}; }
 .ed-chosen { display: grid; gap: ${px(resolve("dim.2"))}; }
 
 /* ============ Alert ============ */

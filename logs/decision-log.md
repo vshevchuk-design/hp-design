@@ -1308,3 +1308,22 @@ Two behaviours worth stating because they are easy to get wrong:
 - **Closing without pressing Add discards the staging**, and re-opening clears every tick, because commitment is what the button means.
 
 Verified end to end: three at once land as three extras in the combo section; on reopen they are disabled and the button is back to a disabled "Add"; Change returns to radio; and a six-programme combo reaches the review as "Majors & minors" with each row's own kind badge. Footer pins to the bottom of the full-screen dialog at 375px with the list scrolling above it.
+
+## 2026-09-16 (cont. 4) — the chosen card: blue moves from the fill to the frame
+
+The user listed three complaints and asked what to do about them: the card looks wrong, the Change button's hover looks wrong, and the card with focus areas has to match the card without them — but the blue is what keeps a list of several picks from looking like a wireframe.
+
+They are one cause, not three. The card was wearing choice-tile's **selected fill** (`bg.primary`), and a chosen programme is not an option being selected among others — it is an answer already given. Everything downstream of that mistake:
+
+- with focus areas, a blue header sat over a white body, a colour seam inside a single card;
+- without them, the card was a lone blue bar, so the two versions never matched;
+- the ghost Change button painted its neutral hover wash (`fill.neutralHover`, gray.100) on top of a blue field, when that wash exists to sit on white — hence "a grey pill on blue".
+
+**The blue belongs on the frame.** The card is now `surface.default` with choice-tile's selected *border* (`fill.primary`) around it, and the internal divider is a neutral `border.default` hairline rather than the frame colour — repeating the frame colour inside made one card read as two stacked ones. That single change answers all three:
+
+- one white surface from top to bottom, so focus areas are a compartment of the card rather than a different-coloured block;
+- the no-focus card is the same card with one row — matching by construction, not by coincidence;
+- the ghost buttons are back on white, which is what their hover was designed against;
+- and the selected focus tile keeps reading as selected, because a light-blue tile against white siblings is the contrast that works (this was already fixed once by whitening the body; framing makes it structural).
+
+On the wireframe worry: the signal that these are *yours* is now the blue frame plus each programme's own hue marker, which is more vivid on white than it was on blue. The progression from empty to filled is also clearer — a dashed grey slot becomes a solid blue frame.
