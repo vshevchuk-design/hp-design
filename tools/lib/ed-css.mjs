@@ -118,9 +118,14 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
    reference read as a pile. */
 .ed-section { display: flex; flex-direction: column; gap: ${px(resolve("dim.3"))}; padding: ${px(resolve(card.padding.$value))} 0 0; border-top: 1px solid ${cv(refPath(card.divider.$value))}; }
 .ed-section:first-child { padding-top: 0; border-top: none; }
-.ed-section__title { color: ${cv(refPath(card.titleColor.$value))}; ${typoCss(h.resolveToken(card.title))} }
-.ed-section__hint { color: ${cv("text.secondary")}; ${typoCss(h.resolveToken(h.get("text-style.body-sm")))} }
-.ed-note { color: ${cv("text.muted")}; ${typoCss(h.resolveToken(h.get("text-style.body-sm")))} }
+/* One step above the labels inside the section (heading-base, 14px) — a
+   heading the same size as its own contents reads as another item. */
+.ed-section__title { color: ${cv(refPath(card.titleColor.$value))}; ${typoCss(h.resolveToken(h.get("text-style.heading-md")))} }
+/* Title and hint are one block: the section gap (dim.3) belongs between the
+   block and the controls under it, not between a heading and its own line. */
+.ed-section__head { display: flex; flex-direction: column; gap: ${px(resolve("dim.1"))}; }
+.ed-section__hint { margin: 0; color: ${cv("text.secondary")}; ${typoCss(h.resolveToken(h.get("text-style.body-sm")))} }
+.ed-note { margin: 0; color: ${cv("text.muted")}; ${typoCss(h.resolveToken(h.get("text-style.body-sm")))} }
 .ed-eyebrow { color: ${cv("text.secondary")}; ${typoCss(labelSm)} text-transform: ${labelSmCase}; letter-spacing: ${labelSm.letterSpacing}; }
 .ed-grid { display: grid; gap: ${px(resolve("dim.2"))}; grid-template-columns: 1fr; }
 @media (min-width: 560px) { .ed-grid { grid-template-columns: repeat(2, 1fr); } }

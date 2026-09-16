@@ -240,8 +240,8 @@ export function edAppJs(h) {
         '<span class="choice-tile__text"><span class="choice-tile__label">' + esc(label) + "</span></span></span></label>";
     };
     return '<div class="ed-pick__focus">' +
-      '<div class="ed-section__title">Want to focus it? (optional)</div>' +
-      '<p class="ed-section__hint">This program offers focus areas. Pick one if you already know, or skip and decide later.</p>' +
+      '<div class="ed-section__head"><div class="ed-section__title">Want to focus it? (optional)</div>' +
+      '<p class="ed-section__hint">This program offers focus areas. Pick one if you already know, or skip and decide later.</p></div>' +
       '<div class="ed-grid" id="ed-focus-grid">' +
       p.focus.map(function (f) { return tile(f, f); }).join("") +
       tile("__skip__", "Not sure yet — skip focus areas") +

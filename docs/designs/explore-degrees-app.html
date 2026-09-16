@@ -128,9 +128,14 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
    reference read as a pile. */
 .ed-section { display: flex; flex-direction: column; gap: 12px; padding: 16px 0 0; border-top: 1px solid var(--tok-border-default); }
 .ed-section:first-child { padding-top: 0; border-top: none; }
-.ed-section__title { color: var(--tok-text-default); font-weight: 600; font-size: 14px; line-height: 1.4; }
-.ed-section__hint { color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
-.ed-note { color: var(--tok-text-muted); font-weight: 400; font-size: 12px; line-height: 1.4; }
+/* One step above the labels inside the section (heading-base, 14px) — a
+   heading the same size as its own contents reads as another item. */
+.ed-section__title { color: var(--tok-text-default); font-weight: 600; font-size: 16px; line-height: 1.4; }
+/* Title and hint are one block: the section gap (dim.3) belongs between the
+   block and the controls under it, not between a heading and its own line. */
+.ed-section__head { display: flex; flex-direction: column; gap: 4px; }
+.ed-section__hint { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.ed-note { margin: 0; color: var(--tok-text-muted); font-weight: 400; font-size: 12px; line-height: 1.4; }
 .ed-eyebrow { color: var(--tok-text-secondary); font-weight: 700; font-size: 12px; line-height: 1.4; text-transform: uppercase; letter-spacing: [object Object]; }
 .ed-grid { display: grid; gap: 8px; grid-template-columns: 1fr; }
 @media (min-width: 560px) { .ed-grid { grid-template-columns: repeat(2, 1fr); } }
@@ -478,13 +483,17 @@ html:has(.ed-picker[open]) { overflow: hidden; }
 
       <div class="card"><div class="card__body">
         <div class="ed-section">
-          <div class="ed-section__title">Make your primary pick</div>
-          <p class="ed-section__hint">The program your results are built around. Focus areas, if it has any, come with it.</p>
+          <div class="ed-section__head">
+            <div class="ed-section__title">Make your primary pick</div>
+            <p class="ed-section__hint">The program your results are built around. Focus areas, if it has any, come with it.</p>
+          </div>
           <div id="ed-primary"></div>
         </div>
         <div class="ed-section is-hidden" id="ed-add-block">
-          <div class="ed-section__title">Build your program combo (optional)</div>
-          <p class="ed-section__hint">Stack more majors or minors and we'll check them all in one go.</p>
+          <div class="ed-section__head">
+            <div class="ed-section__title">Build your program combo (optional)</div>
+            <p class="ed-section__hint">Stack more majors or minors and we'll check them all in one go.</p>
+          </div>
           <div class="ed-chosen is-hidden" id="ed-extras-list"></div>
           <button class="btn btn--secondary btn--base btn--block" id="ed-add-program" type="button"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>Add another major or minor</button>
         </div>
@@ -1159,8 +1168,8 @@ html:has(.ed-picker[open]) { overflow: hidden; }
         '<span class="choice-tile__text"><span class="choice-tile__label">' + esc(label) + "</span></span></span></label>";
     };
     return '<div class="ed-pick__focus">' +
-      '<div class="ed-section__title">Want to focus it? (optional)</div>' +
-      '<p class="ed-section__hint">This program offers focus areas. Pick one if you already know, or skip and decide later.</p>' +
+      '<div class="ed-section__head"><div class="ed-section__title">Want to focus it? (optional)</div>' +
+      '<p class="ed-section__hint">This program offers focus areas. Pick one if you already know, or skip and decide later.</p></div>' +
       '<div class="ed-grid" id="ed-focus-grid">' +
       p.focus.map(function (f) { return tile(f, f); }).join("") +
       tile("__skip__", "Not sure yet — skip focus areas") +
