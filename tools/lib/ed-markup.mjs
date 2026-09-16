@@ -78,16 +78,14 @@ ${shellTopbar({ title: "Explore your degree", meta: "No account needed" })}
 
       <div class="card"><div class="card__body">
         <div class="ed-section">
-          <div class="ed-chosen" id="ed-chosen-list"></div>
-        </div>
-        <div class="ed-section is-hidden" id="ed-focus-block">
-          <div class="ed-section__title">Want to focus it? (optional)</div>
-          <p class="ed-section__hint">This program offers focus areas. Pick one if you already know, or skip and decide later.</p>
-          <div class="ed-grid" id="ed-focus-grid"></div>
+          <div class="ed-section__title">Make your primary pick</div>
+          <p class="ed-section__hint">The program your results are built around. Focus areas, if it has any, come with it.</p>
+          <div id="ed-primary"></div>
         </div>
         <div class="ed-section is-hidden" id="ed-add-block">
           <div class="ed-section__title">Build your program combo (optional)</div>
           <p class="ed-section__hint">Stack more majors or minors and we'll check them all in one go.</p>
+          <div class="ed-chosen is-hidden" id="ed-extras-list"></div>
           <button class="btn btn--secondary btn--base btn--block" id="ed-add-program" type="button">${icon("add", "btn__icon")}Add another major or minor</button>
         </div>
       </div></div>

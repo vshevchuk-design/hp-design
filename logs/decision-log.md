@@ -1269,3 +1269,18 @@ The user pointed at the reference: a **minor can be the primary pick** (their sc
 **Focus areas gained a second programme.** The reference's own screens show Biology (BS) offering Animal Science and Photo Biology, so the data now says that too — the "picked a BS, now pick a focus" path the user was pointing at is real rather than reachable only through Psychology. Nothing else was given focus areas: for the other 27 I would have been inventing curriculum.
 
 One trap caught before it shipped: the level filter button was written `data-value="Bachelor&rsquo;s"` while `levelOf()` returns a straight apostrophe, so the comparison would have silently matched nothing. **The value and the label are different strings** — typographic punctuation belongs only in the label. Verified by counting: 4 minors, 5 associates, 24 bachelor's (5 + 24 = 29), Minors ∩ Associate = 0 with the empty state shown, and Bachelor's + "bio" = Biology (BS) alone.
+
+## 2026-09-16 (cont.) — the chosen programme becomes a card that owns its focus areas
+
+Step 1's answer sheet got the structure it was missing. Both sections now open with a title: **"Make your primary pick"** over the primary, **"Build your program combo (optional)"** over the extras and the Add button. The extras moved out of the primary's list into the combo section, where they belong — previously everything landed in one undifferentiated stack.
+
+**The chosen card is labelled like the search result it came from** — `Major · Liberal Arts Undergraduate` instead of "Your primary pick". The role no longer needs stating on the row, because the section heading above it says which list you are looking at. And it gained a **✕ beside Change**: dropping the primary promotes the next programme in the combo rather than discarding the stack, and clears the focus answer with it; dropping the last one returns the empty slot.
+
+**Focus areas moved inside the primary's card.** They belong to that programme, so they are a second compartment under the header row rather than a section floating below — which required replacing the `.choice-tile__box--static` hack with a real `.ed-pick` recipe: a container with a header row and an optional focus body, same geometry and selected fill as the tile it came from. Extras use the same card with only the ✕, so there is one recipe rather than two.
+
+Two things that only showed up once it was on screen:
+
+- The focus compartment first inherited the card's selected blue, which put **blue-on-blue selected tiles against white unselected ones** — selection reading as *less* prominent than non-selection, exactly backwards. The compartment now takes `surface.default`, so the tiles inside keep their normal contrast and the card reads as header plus body.
+- Rendering the focus radios from state re-checked "Not sure yet — skip focus areas" whenever nothing was chosen, i.e. the UI answered a question the user had not. **"Not answered" and "chose to skip" are different states**, so `S.focusSkipped` now carries the second one. Verified all three: fresh → nothing checked, a chosen area survives a re-render, and skip survives a re-render as skip.
+
+Also renamed the empty slot to "Choose a program": with "Make your primary pick" now sitting directly above it, "Choose your primary pick" said the same sentence twice in two centimetres. The phrase still does its work in the dialog title and the section heading, which is where the user's original correction was aimed.

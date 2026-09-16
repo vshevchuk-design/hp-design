@@ -169,12 +169,17 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .choice-tile__input:focus-visible ~ .choice-tile__box { outline: ${px(resolve(ctSt.focused.ringWidth.$value))} solid ${cv(refPath(ctSt.focused.ringColor.$value))}; outline-offset: ${px(resolve(ctSt.focused.ringOffset.$value))}; }
 .choice-tile__input:disabled ~ .choice-tile__box { background: ${cv(refPath(ctSt.disabled.bg.$value))}; cursor: default; }
 .choice-tile__input:disabled ~ .choice-tile__box .choice-tile__label { color: ${cv(refPath(ctSt.disabled.label.$value))}; }
-/* A programme you have already chosen: the choice-tile box reused as a static
-   row — same shape and the same selected fill, so the thing you picked looks
-   like the thing you picked — with a trailing Change/Remove action. */
-.choice-tile__box--static { background: ${cv(refPath(ctSt.selected.bg.$value))}; border-color: ${cv(refPath(ctSt.selected.border.$value))}; }
+/* A chosen programme is its own little card, not a choice-tile box with extra
+   classes: the primary one carries a second compartment for focus areas, so it
+   has to be a container with a header row rather than a single flex row. Same
+   geometry and the same selected fill as the tile it came from. */
+.ed-pick { border-radius: ${px(resolve(ct.radius.$value))}; border: 1px solid ${cv(refPath(ctSt.selected.border.$value))}; background: ${cv(refPath(ctSt.selected.bg.$value))}; overflow: hidden; }
+.ed-pick__row { display: flex; align-items: center; gap: ${px(resolve(ct.gap.$value))}; padding: ${px(resolve(ct.paddingY.$value))} ${px(resolve(ct.paddingX.$value))}; }
+.ed-pick__actions { margin-left: auto; flex-shrink: 0; display: flex; align-items: center; gap: ${px(resolve("dim.1"))}; }
+/* Focus areas belong to the programme, so they live inside its card — divided
+   from the header row, not floating below as a separate section. */
+.ed-pick__focus { border-top: 1px solid ${cv(refPath(ctSt.selected.border.$value))}; padding: ${px(resolve(ct.paddingX.$value))}; background: ${cv("surface.default")}; display: flex; flex-direction: column; gap: ${px(resolve("dim.3"))}; }
 .ed-chosen { display: grid; gap: ${px(resolve("dim.2"))}; }
-.ed-chosen__action { margin-left: auto; flex-shrink: 0; }
 
 /* ============ Alert ============ */
 .alert { display: flex; align-items: flex-start; gap: ${px(resolve(alert.gap.$value))}; padding: ${px(resolve(alert.paddingY.$value))} ${px(resolve(alert.paddingX.$value))}; border-radius: ${px(resolve(alert.radius.$value))}; border: 1px solid transparent; }

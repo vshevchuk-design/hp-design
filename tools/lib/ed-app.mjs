@@ -52,7 +52,7 @@ export function edAppJs(h) {
   return `(function () {
   var D = ${DATA};
   var I = ${ICONS};
-  var S = { step: 1, program: null, focus: null, combo: [], pickerMode: "primary", fKind: "", fLevel: "", term: null, credits: null,
+  var S = { step: 1, program: null, focus: null, combo: [], pickerMode: "primary", fKind: "", fLevel: "", focusSkipped: false, term: null, credits: null,
             schools: [], sid: 0, captcha: false, planner: true, tab: "credits", online: true };
 
   var $ = function (sel, root) { return (root || document).querySelector(sel); };
@@ -136,42 +136,69 @@ export function edAppJs(h) {
 
   function edClosePicker() { $("#ed-picker").close(); }
 
-  /* Each chosen programme is the same choice-tile box, static: what you picked
-     keeps looking like what you picked, with Change on the primary and Remove
-     on the rest. Nothing chosen yet renders the same box as a dashed slot, so
-     the pick lands exactly where the slot was. */
+  /* What you have chosen. The primary sits under its own heading and carries
+     its focus areas inside its own card; the extras live in the combo section
+     below. Both are the same .ed-pick card — the primary just has more in it. */
+  function edMeta(c) { var p = programOf(c.name); return c.kind + " · " + p.degree; }
+
+  function edPickCard(c, i) {
+    var p = programOf(c.name);
+    var actions = c.primary
+      ? '<button class="btn btn--ghost btn--sm" type="button" data-change-primary="1">Change</button>' +
+        '<button class="btn btn--ghost btn--sm btn--icon-only" type="button" data-drop="' + i +
+        '" aria-label="Remove ' + esc(c.name) + '">' + I.close + "</button>"
+      : '<button class="btn btn--ghost btn--sm btn--icon-only" type="button" data-drop="' + i +
+        '" aria-label="Remove ' + esc(c.name) + '">' + I.close + "</button>";
+    return '<div class="ed-pick"><div class="ed-pick__row">' +
+      '<span class="choice-tile__marker ed-hue--' + edHue(c.name) + '">' + edInitials(c.name) + "</span>" +
+      '<span class="choice-tile__text"><span class="choice-tile__label">' + esc(c.name) + "</span>" +
+      '<span class="choice-tile__description">' + esc(edMeta(c)) + "</span></span>" +
+      '<span class="ed-pick__actions">' + actions + "</span></div>" +
+      (c.primary && p.focus ? edFocusMarkup(p) : "") + "</div>";
+  }
+
   function edRenderChosen() {
-    var list = $("#ed-chosen-list");
-    if (!S.combo.length) {
-      list.innerHTML =
+    var primary = null, extras = [];
+    S.combo.forEach(function (c, i) { if (c.primary) primary = { c: c, i: i }; else extras.push({ c: c, i: i }); });
+
+    if (!primary) {
+      $("#ed-primary").innerHTML =
         '<button class="ed-choose" id="ed-choose-program" type="button">' +
           '<span class="ed-choose__marker">' + I.add + "</span>" +
-          '<span class="ed-choose__text"><span class="ed-choose__label">Choose your primary pick</span>' +
+          '<span class="ed-choose__text"><span class="ed-choose__label">Choose a program</span>' +
           '<span class="ed-choose__hint">Search ' + D.programs.length + ' majors and minors</span></span></button>';
       $("#ed-choose-program").addEventListener("click", function () { edOpenPicker("primary"); });
     } else {
-      list.innerHTML = S.combo.map(function (c, i) {
-        var action = c.primary
-          ? '<button class="btn btn--ghost btn--sm ed-chosen__action" type="button" data-change-primary="1">Change</button>'
-          : '<button class="btn btn--ghost btn--sm btn--icon-only ed-chosen__action" type="button" data-drop="' + i +
-            '" aria-label="Remove ' + esc(c.name) + '">' + I.close + "</button>";
-        return '<div class="choice-tile__box choice-tile__box--static">' +
-          '<span class="choice-tile__marker ed-hue--' + edHue(c.name) + '">' + edInitials(c.name) + "</span>" +
-          '<span class="choice-tile__text"><span class="choice-tile__label">' + esc(c.name) + "</span>" +
-          '<span class="choice-tile__description">' + (c.primary ? "Your primary pick" : c.kind) + "</span></span>" +
-          action + "</div>";
-      }).join("");
-      $$("#ed-chosen-list [data-drop]").forEach(function (b) {
-        b.addEventListener("click", function () { S.combo.splice(+b.dataset.drop, 1); edRenderChosen(); });
-      });
-      var change = $("#ed-chosen-list [data-change-primary]");
-      if (change) change.addEventListener("click", function () { edOpenPicker("primary"); });
+      $("#ed-primary").innerHTML = edPickCard(primary.c, primary.i);
+      $("#ed-primary [data-change-primary]").addEventListener("click", function () { edOpenPicker("primary"); });
+      edWireFocus();
     }
+
+    $("#ed-extras-list").innerHTML = extras.map(function (e) { return edPickCard(e.c, e.i); }).join("");
+    show($("#ed-extras-list"), !!extras.length);
     /* Adding a second programme only makes sense once there is a first. */
-    show($("#ed-add-block"), !!S.combo.length);
+    show($("#ed-add-block"), !!primary);
+
+    $$("#ed-primary [data-drop], #ed-extras-list [data-drop]").forEach(function (b) {
+      b.addEventListener("click", function () { edDrop(+b.dataset.drop); });
+    });
     edValidate();
   }
 
+  /* Dropping the primary promotes the next programme rather than throwing the
+     whole combo away; with nothing left it goes back to the empty slot. Focus
+     belongs to the programme, so it clears with it. */
+  function edDrop(i) {
+    var wasPrimary = S.combo[i].primary;
+    S.combo.splice(i, 1);
+    if (wasPrimary) {
+      S.focus = null;
+      S.focusSkipped = false;
+      if (S.combo.length) { S.combo[0].primary = true; S.program = S.combo[0].name; }
+      else S.program = null;
+    }
+    edRenderChosen();
+  }
   function edFilterPrograms() {
     var q = ($("#ed-program-search").value || "").trim().toLowerCase();
     var any = false;
@@ -195,24 +222,37 @@ export function edAppJs(h) {
       var extras = S.combo.filter(function (c) { return !c.primary && c.name !== p.name; });
       S.program = p.name;
       S.focus = null;
+      S.focusSkipped = false;
       S.combo = [{ name: p.name, kind: p.kind, primary: true }].concat(extras);
-      edFocusBlock(p);
     }
     edClosePicker();
     edRenderChosen();
   }
-  function edFocusBlock(p) {
-    show($("#ed-focus-block"), !!p.focus);
-    if (!p.focus) return;
-    $("#ed-focus-grid").innerHTML = p.focus.map(function (f) {
-      return '<label class="choice-tile"><input class="choice-tile__input" type="radio" name="ed-focus" value="' + esc(f) + '" />' +
-        '<span class="choice-tile__box"><span class="choice-tile__marker ed-hue--' + edHue(f) + '">' + edInitials(f) + "</span>" +
-        '<span class="choice-tile__text"><span class="choice-tile__label">' + esc(f) + "</span></span></span></label>";
-    }).join("") +
-      '<label class="choice-tile"><input class="choice-tile__input" type="radio" name="ed-focus" value="__skip__" />' +
-      '<span class="choice-tile__box"><span class="choice-tile__text"><span class="choice-tile__label">Not sure yet — skip focus areas</span></span></span></label>';
+  /* Rendered into the primary's own card. Split from the wiring because the
+     card is rebuilt whenever the combo changes, and S.focus has to survive it. */
+  function edFocusMarkup(p) {
+    var tile = function (value, label) {
+      var mark = value === "__skip__" ? "" :
+        '<span class="choice-tile__marker ed-hue--' + edHue(value) + '">' + edInitials(value) + "</span>";
+      return '<label class="choice-tile"><input class="choice-tile__input" type="radio" name="ed-focus" value="' + esc(value) + '"' +
+        ((value === "__skip__" ? S.focusSkipped : S.focus === value) ? " checked" : "") + " />" +
+        '<span class="choice-tile__box">' + mark +
+        '<span class="choice-tile__text"><span class="choice-tile__label">' + esc(label) + "</span></span></span></label>";
+    };
+    return '<div class="ed-pick__focus">' +
+      '<div class="ed-section__title">Want to focus it? (optional)</div>' +
+      '<p class="ed-section__hint">This program offers focus areas. Pick one if you already know, or skip and decide later.</p>' +
+      '<div class="ed-grid" id="ed-focus-grid">' +
+      p.focus.map(function (f) { return tile(f, f); }).join("") +
+      tile("__skip__", "Not sure yet — skip focus areas") +
+      "</div></div>";
+  }
+  function edWireFocus() {
     $$("#ed-focus-grid input").forEach(function (r) {
-      r.addEventListener("change", function () { S.focus = r.value === "__skip__" ? null : r.value; });
+      r.addEventListener("change", function () {
+        S.focusSkipped = r.value === "__skip__";
+        S.focus = S.focusSkipped ? null : r.value;
+      });
     });
   }
   function edAddSchool() {
@@ -604,10 +644,9 @@ export function edAppJs(h) {
   $$(".ed-tab").forEach(function (t) { t.addEventListener("click", function () { edTab(t.dataset.tab); }); });
   $("#ed-planner-toggle").addEventListener("change", function () { S.planner = this.checked; edResults(); });
   $("#ed-try-another").addEventListener("click", function () {
-    S.program = null; S.focus = null; S.combo = [];
+    S.program = null; S.focus = null; S.focusSkipped = false; S.combo = [];
     $$('#ed-program-grid input').forEach(function (r) { r.checked = false; r.disabled = false; });
     $("#ed-program-search").value = "";
-    show($("#ed-focus-block"), false);
     edGoto(1);
     edRenderChosen();
     edValidate();
