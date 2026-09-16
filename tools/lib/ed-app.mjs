@@ -52,7 +52,7 @@ export function edAppJs(h) {
   return `(function () {
   var D = ${DATA};
   var I = ${ICONS};
-  var S = { step: 1, program: null, focus: null, combo: [], pickerMode: "primary", fKind: "", fLevel: "", focusSkipped: false, term: null, credits: null,
+  var S = { step: 1, program: null, focus: null, combo: [], pickerMode: "primary", fKind: "", fLevel: "", focusSkipped: false, staged: [], term: null, credits: null,
             schools: [], sid: 0, captcha: false, planner: true, tab: "credits", online: true };
 
   var $ = function (sel, root) { return (root || document).querySelector(sel); };
@@ -133,6 +133,7 @@ export function edAppJs(h) {
       input.disabled = adding && taken.indexOf(t.dataset.program) > -1;
       input.checked = false;
     });
+    S.staged = [];
     edStaged();
     $("#ed-program-search").value = "";
     S.fKind = ""; S.fLevel = "";
@@ -148,76 +149,96 @@ export function edAppJs(h) {
   /* The footer button says how many are ticked, so the count is never a
      surprise when the dialog closes. */
   function edStaged() {
-    var n = $$("#ed-program-grid .choice-tile__input:checked").length;
+    var n = S.staged.length;
     var add = $("#ed-picker-add");
     add.disabled = !n;
     add.textContent = n ? "Add " + n : "Add";
     return n;
   }
 
-  /* What you have chosen. The primary sits under its own heading and carries
-     its focus areas inside its own card; the extras live in the combo section
-     below. Both are the same .ed-pick card — the primary just has more in it. */
-  function edMeta(c) { var p = programOf(c.name); return c.kind + " · " + p.degree; }
+  /* What you have chosen, as one ordered list: the first entry is the primary
+     and carries the focus areas. Order is the user's to set — nothing is ever
+     promoted on their behalf — so deleting the first just leaves the next one
+     first, a position they chose rather than a decision made for them. */
+  function edMeta(c, primary) { var p = programOf(c.name); return (primary ? "Primary · " : "") + c.kind + " · " + p.degree; }
 
   function edPickCard(c, i) {
     var p = programOf(c.name);
-    var actions = c.primary
-      ? '<button class="btn btn--ghost btn--sm" type="button" data-change-primary="1">Change</button>' +
-        '<button class="btn btn--ghost btn--sm btn--icon-only" type="button" data-drop="' + i +
-        '" aria-label="Remove ' + esc(c.name) + '">' + I.close + "</button>"
-      : '<button class="btn btn--ghost btn--sm btn--icon-only" type="button" data-drop="' + i +
-        '" aria-label="Remove ' + esc(c.name) + '">' + I.close + "</button>";
-    return '<div class="ed-pick"><div class="ed-pick__row">' +
+    var primary = i === 0;
+    /* Only the first position means anything, so the control is one button that
+       says exactly that — not a drag grip, which would imply that 2 versus 3 is
+       also a decision. */
+    var actions = (primary
+      ? '<button class="btn btn--ghost btn--sm" type="button" data-change-primary="1">Change</button>'
+      : '<button class="btn btn--ghost btn--sm" type="button" data-make-primary="' + i + '">Make primary</button>') +
+      '<button class="btn btn--ghost btn--sm btn--icon-only" type="button" data-drop="' + i +
+      '" aria-label="Remove ' + esc(c.name) + '">' + I.close + "</button>";
+    return '<div class="ed-pick" data-row="' + i + '"><div class="ed-pick__row">' +
       '<span class="choice-tile__marker ed-hue--' + edHue(c.name) + '">' + edInitials(c.name) + "</span>" +
       '<span class="choice-tile__text"><span class="choice-tile__label">' + esc(c.name) + "</span>" +
-      '<span class="choice-tile__description">' + esc(edMeta(c)) + "</span></span>" +
+      '<span class="choice-tile__description">' + esc(edMeta(c, primary)) + "</span></span>" +
       '<span class="ed-pick__actions">' + actions + "</span></div>" +
-      (c.primary && p.focus ? edFocusMarkup(p) : "") + "</div>";
+      (primary && p.focus ? edFocusMarkup(p) : "") + "</div>";
   }
 
   function edRenderChosen() {
-    var primary = null, extras = [];
-    S.combo.forEach(function (c, i) { if (c.primary) primary = { c: c, i: i }; else extras.push({ c: c, i: i }); });
-
-    if (!primary) {
-      $("#ed-primary").innerHTML =
+    var list = $("#ed-chosen-list");
+    var hint = $("#ed-picks-hint");
+    /* Derived, never assigned by the callers: the primary is simply whatever is
+       first, and the multi-add path proved that assigning it in each mutation
+       is one place too many to remember. */
+    S.program = S.combo.length ? S.combo[0].name : null;
+    if (!S.combo.length) {
+      list.innerHTML =
         '<button class="ed-choose" id="ed-choose-program" type="button">' +
           '<span class="ed-choose__marker">' + I.add + "</span>" +
           '<span class="ed-choose__text"><span class="ed-choose__label">Choose what to study</span>' +
           '<span class="ed-choose__hint">Search ' + D.programs.length + ' majors, minors and more</span></span></button>';
-      $("#ed-choose-program").addEventListener("click", function () { edOpenPicker("primary"); });
-    } else {
-      $("#ed-primary").innerHTML = edPickCard(primary.c, primary.i);
-      $("#ed-primary [data-change-primary]").addEventListener("click", function () { edOpenPicker("primary"); });
-      edWireFocus();
+      $("#ed-choose-program").addEventListener("click", function () { edOpenPicker("add"); });
+      show($("#ed-add-program"), false);
+      hint.textContent = "Add as many as you like. The first one is your primary pick — your results are built around it, and any focus areas come from it.";
+      edValidate();
+      return;
     }
 
-    $("#ed-extras-list").innerHTML = extras.map(function (e) { return edPickCard(e.c, e.i); }).join("");
-    show($("#ed-extras-list"), !!extras.length);
-    /* Adding a second programme only makes sense once there is a first. */
-    show($("#ed-add-block"), !!primary);
+    list.innerHTML = S.combo.map(edPickCard).join("");
+    show($("#ed-add-program"), true);
+    hint.textContent = S.combo.length > 1
+      ? "Your first pick is the primary one — your results are built around it, and any focus areas come from it. Any other pick can take its place."
+      : "Add as many as you like. The first one is your primary pick — your results are built around it, and any focus areas come from it.";
 
-    $$("#ed-primary [data-drop], #ed-extras-list [data-drop]").forEach(function (b) {
+    var change = $("#ed-chosen-list [data-change-primary]");
+    if (change) change.addEventListener("click", function () { edOpenPicker("primary"); });
+    $$("#ed-chosen-list [data-make-primary]").forEach(function (b) {
+      b.addEventListener("click", function () { edMakePrimary(+b.dataset.makePrimary); });
+    });
+    $$("#ed-chosen-list [data-drop]").forEach(function (b) {
       b.addEventListener("click", function () { edDrop(+b.dataset.drop); });
     });
+    edWireFocus();
     edValidate();
   }
 
-  /* Dropping the primary promotes the next programme rather than throwing the
-     whole combo away; with nothing left it goes back to the empty slot. Focus
-     belongs to the programme, so it clears with it. */
-  function edDrop(i) {
-    var wasPrimary = S.combo[i].primary;
-    S.combo.splice(i, 1);
-    if (wasPrimary) {
-      S.focus = null;
-      S.focusSkipped = false;
-      if (S.combo.length) { S.combo[0].primary = true; S.program = S.combo[0].name; }
-      else S.program = null;
-    }
+  /* The focus answer belongs to whichever programme is primary, so it clears
+     every time the first row changes — by promotion, replacement or deletion. */
+  function edResetFocus() { S.focus = null; S.focusSkipped = false; }
+
+  function edMakePrimary(i) {
+    S.combo.unshift(S.combo.splice(i, 1)[0]);
+    edResetFocus();
     edRenderChosen();
   }
+
+  /* Deleting the first one does leave the next one primary, but that is now a
+     one-click decision to undo rather than something the app decided quietly:
+     every other row carries "Make primary". */
+  function edDrop(i) {
+    var wasFirst = i === 0;
+    S.combo.splice(i, 1);
+    if (wasFirst) edResetFocus();
+    edRenderChosen();
+  }
+  /* One place that knows how a facet is stored and shown. */
   function edSetFacet(facet, value, label) {
     S[facet === "kind" ? "fKind" : "fLevel"] = value;
     $("#ed-filter-" + facet + " .select__value").textContent = label;
@@ -242,26 +263,29 @@ export function edAppJs(h) {
   function edPickProgram(name) {
     var p = programOf(name);
     if (S.pickerMode === "add") {
-      /* multi-pick: ticking only stages, Add commits */
+      /* Multi-pick: ticking only stages, Add commits — and the stage keeps tick
+         order, not list order. The first pick becomes the primary, and someone
+         who ticks Physics then English Minor means Physics, not whichever of
+         the two the alphabet puts first. */
+      var at = S.staged.indexOf(name);
+      var on = $('#ed-program-grid .choice-tile[data-program="' + name.replace(/"/g, '\\"') + '"] .choice-tile__input').checked;
+      if (on && at < 0) S.staged.push(name);
+      else if (!on && at > -1) S.staged.splice(at, 1);
       edStaged();
       return;
     }
-    {
-      /* Changing the primary keeps whatever else was stacked; if the new
-         primary was one of those extras, it moves up rather than doubling. */
-      var extras = S.combo.filter(function (c) { return !c.primary && c.name !== p.name; });
-      S.program = p.name;
-      S.focus = null;
-      S.focusSkipped = false;
-      S.combo = [{ name: p.name, kind: p.kind, primary: true }].concat(extras);
-    }
+    /* Replacing the first pick keeps the rest of the list; if the replacement
+       was already further down, it moves up instead of doubling. */
+    var rest = S.combo.slice(1).filter(function (c) { return c.name !== p.name; });
+    S.combo = [{ name: p.name, kind: p.kind }].concat(rest);
+    edResetFocus();
     edClosePicker();
     edRenderChosen();
   }
 
   function edCommitAdd() {
-    $$("#ed-program-grid .choice-tile__input:checked").forEach(function (i) {
-      var p = programOf(i.value);
+    S.staged.forEach(function (name) {
+      var p = programOf(name);
       S.combo.push({ name: p.name, kind: p.kind });
     });
     edClosePicker();
@@ -467,14 +491,14 @@ export function edAppJs(h) {
     // No School row: there is only ever one, and the user's call is that the
     // school picker exists in their demo and never will in the product.
     rows.push(["Academic level", "Undergraduate"]);
-    var extras = S.combo.filter(function (c) { return !c.primary; });
-    /* The key can't say "Major" alone: the primary pick may be a minor, and
-       that produced "Major — Classics Minor · Minor". PeopleSoft would call
-       these plans, but this screen speaks to prospective students and every
-       other control on it says major/minor — so the key does too. */
+    /* No collective noun in the key: with five kinds, "major or minor" is not
+       exhaustive and "program" collides with a kind. Each row's badge carries
+       the precision, and only the first is marked primary — and only when
+       there is more than one, since with one pick the word says nothing. */
+    var many = S.combo.length > 1;
     rows.push(["Studying",
-      S.combo.map(function (c) {
-        return esc(c.name) + ' <span class="badge badge--neutral">' + (c.primary && extras.length ? "Primary · " : "") + c.kind + "</span>";
+      S.combo.map(function (c, i) {
+        return esc(c.name) + ' <span class="badge badge--neutral">' + (i === 0 && many ? "Primary · " : "") + c.kind + "</span>";
       }).join("<br />")]);
     if (S.focus) rows.push(["Focus area", esc(S.focus)]);
     rows.push(["Starting term", esc(S.term)]);
@@ -688,7 +712,7 @@ export function edAppJs(h) {
   $$(".ed-tab").forEach(function (t) { t.addEventListener("click", function () { edTab(t.dataset.tab); }); });
   $("#ed-planner-toggle").addEventListener("change", function () { S.planner = this.checked; edResults(); });
   $("#ed-try-another").addEventListener("click", function () {
-    S.program = null; S.focus = null; S.focusSkipped = false; S.combo = [];
+    S.combo = []; edResetFocus();
     $$('#ed-program-grid input').forEach(function (r) { r.checked = false; r.disabled = false; });
     $("#ed-program-search").value = "";
     edGoto(1);

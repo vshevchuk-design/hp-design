@@ -190,6 +190,14 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .ed-pick { border-radius: ${px(resolve(ct.radius.$value))}; border: 1px solid ${cv(refPath(ctSt.selected.border.$value))}; background: ${cv("surface.default")}; overflow: hidden; }
 .ed-pick__row { display: flex; align-items: center; gap: ${px(resolve(ct.gap.$value))}; padding: ${px(resolve(ct.paddingY.$value))} ${px(resolve(ct.paddingX.$value))}; }
 .ed-pick__actions { margin-left: auto; flex-shrink: 0; display: flex; align-items: center; gap: ${px(resolve("dim.1"))}; }
+/* On a phone the actions and a two-line name fight over 375px, and the name
+   loses twice — it wraps AND the buttons crowd it. Drop the actions onto their
+   own line instead; the name gets the full width and stays one line. */
+@media (max-width: 559px) {
+  .ed-pick__row { flex-wrap: wrap; }
+  .ed-pick__row .choice-tile__text { flex: 1; }
+  .ed-pick__actions { width: 100%; margin-left: 0; justify-content: flex-end; }
+}
 /* Focus areas belong to the programme, so they live inside its card — divided
    from the header row, not floating below as a separate section. */
 /* A neutral hairline, not the frame's blue: this divides content inside one

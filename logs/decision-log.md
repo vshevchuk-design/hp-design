@@ -1337,3 +1337,19 @@ On the wireframe worry: the signal that these are *yours* is now the blue frame 
 **Change can promote an extra.** Already-chosen entries were disabled in both picker modes, so the only way to make a stacked minor your primary was to delete it first and re-add it. Disabling now applies **only when adding** — where a duplicate is genuinely meaningless. In primary mode the pick handler already removed the new primary from the extras, so promotion works with no further change: verified that promoting Classics Minor from the combo left Economics in place, with no duplicate and nothing lost.
 
 Also corrected a premise while checking: the user thought changing the primary discarded the rest of the combo. It does not, and did not — extras survived a Physics → Sociology swap in the test before any change was made.
+
+## 2026-09-17 (cont.) — one ordered list, and "Make primary" instead of drag
+
+The user's objection to auto-promotion was exactly right: when you delete the primary, silently crowning whatever was next is the app deciding something on the user's behalf. Their proposed remedy was drag-and-drop, and they added the better half of the idea — that you should be able to pick several things straight from step 1.
+
+So step 1 is now **one ordered list** rather than a primary plus a combo section. The first entry is the primary: results are built around it, focus areas come from it, and the review and results screens read it from position rather than a flag (`c.primary` is gone). The dialog opens **multi-pick** from the empty slot as well as from "Add another"; only "Change" on the first row is single-pick.
+
+**But drag is the wrong control here, and the user confirmed why.** I asked whether order matters below the first position — "ну по суті тіки перша да". If only the first position means anything, a drag grip advertises a ranking that does not exist. So every non-first row carries a **"Make primary"** button: one click, keyboard and touch for free, and it promises exactly the one bit of state it changes. Deleting the first still leaves the next one first, but that is now a position the user can correct in one click rather than a decision made quietly.
+
+Three things this exposed, each caught in the browser rather than by the build:
+
+- **The stage kept list order, not tick order.** Ticking Physics then English Minor made English Minor primary, because the commit iterated `:checked` in DOM order and the alphabet put E first. `S.staged` now records the order things were ticked.
+- **`S.program` drifted.** It was assigned in each mutation path, and the new multi-add path forgot it, so Continue stayed disabled after picking three things. It is derived from `S.combo[0]` on every render now — one place instead of five.
+- **Wrapping the row on mobile made it worse before it made it better.** `flex-wrap` alone pushed the text under the marker, three lines instead of two; the text needed `flex: 1` to shrink beside the marker rather than wrap below it.
+
+And the slicing trap for the third time: replacing everything between two function names silently took `edSetFacet` with it. The page still built and `node --check` still passed — the console is what caught it. Bounded edits, or check the function inventory afterwards.

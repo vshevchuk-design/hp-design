@@ -200,6 +200,14 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .ed-pick { border-radius: 8px; border: 1px solid var(--tok-fill-primary); background: var(--tok-surface-default); overflow: hidden; }
 .ed-pick__row { display: flex; align-items: center; gap: 12px; padding: 12px 12px; }
 .ed-pick__actions { margin-left: auto; flex-shrink: 0; display: flex; align-items: center; gap: 4px; }
+/* On a phone the actions and a two-line name fight over 375px, and the name
+   loses twice — it wraps AND the buttons crowd it. Drop the actions onto their
+   own line instead; the name gets the full width and stays one line. */
+@media (max-width: 559px) {
+  .ed-pick__row { flex-wrap: wrap; }
+  .ed-pick__row .choice-tile__text { flex: 1; }
+  .ed-pick__actions { width: 100%; margin-left: 0; justify-content: flex-end; }
+}
 /* Focus areas belong to the programme, so they live inside its card — divided
    from the header row, not floating below as a separate section. */
 /* A neutral hairline, not the frame's blue: this divides content inside one
@@ -486,12 +494,13 @@ html:has(.ed-picker[open]) { overflow: hidden; }
     </div>
 
     <!-- ============ step 1 · what do you want to study ============
-         The step itself is the answer sheet — your programmes, or an empty
-         slot shaped like one. The list of 29 lives in a modal dialog that the
-         slot opens: full-screen on a phone, a centred panel from 768px, which
-         is what this repo already does for the group wizard. Opening on the
-         list was the previous cut and the user's call is that the screen
-         should start with the choice, not the catalogue. ============ -->
+         One ordered list, not a primary plus a combo. The first entry is the
+         primary — what the results are built around and where focus areas come
+         from — and you say which one that is by dragging, so the app never
+         promotes something on your behalf. Deleting the first simply leaves the
+         next one first, which is now a position you control rather than a
+         decision made for you. The catalogue lives in the modal dialog.
+         ============ -->
     <section class="ed__step is-active" data-panel="1">
       <div class="ed__head">
         <h2 class="ed__title">What do you want to study?</h2>
@@ -501,18 +510,11 @@ html:has(.ed-picker[open]) { overflow: hidden; }
       <div class="card"><div class="card__body">
         <div class="ed-section">
           <div class="ed-section__head">
-            <div class="ed-section__title">Make your primary pick</div>
-            <p class="ed-section__hint">What your results are built around. Focus areas, if it has any, come with it.</p>
+            <div class="ed-section__title">Your picks</div>
+            <p class="ed-section__hint" id="ed-picks-hint">Add as many as you like. The first one is your primary pick — your results are built around it, and any focus areas come from it.</p>
           </div>
-          <div id="ed-primary"></div>
-        </div>
-        <div class="ed-section is-hidden" id="ed-add-block">
-          <div class="ed-section__head">
-            <div class="ed-section__title">Build your program combo (optional)</div>
-            <p class="ed-section__hint">Stack as many as you like and we'll check them all in one go.</p>
-          </div>
-          <div class="ed-chosen is-hidden" id="ed-extras-list"></div>
-          <button class="btn btn--secondary btn--base btn--block" id="ed-add-program" type="button"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>Add another</button>
+          <div class="ed-chosen" id="ed-chosen-list"></div>
+          <button class="btn btn--secondary btn--base btn--block is-hidden" id="ed-add-program" type="button"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>Add another</button>
         </div>
       </div></div>
 
@@ -1068,7 +1070,7 @@ html:has(.ed-picker[open]) { overflow: hidden; }
 (function () {
   var D = {"programs":[{"name":"A B C","kind":"Major","degree":"Liberal Arts Undergraduate"},{"name":"Accounting","kind":"Major","degree":"Liberal Arts Undergraduate"},{"name":"Accounting AA","kind":"Major","degree":"Associate of Arts"},{"name":"Accounting AB","kind":"Major","degree":"Liberal Arts Undergraduate"},{"name":"Art (BFA)","kind":"Major","degree":"Fine Arts Undergraduate"},{"name":"Art History (BFA)","kind":"Major","degree":"Fine Arts Undergraduate"},{"name":"Art History Minor","kind":"Minor","degree":"Liberal Arts Undergraduate"},{"name":"Auto Technology","kind":"Major","degree":"Associate of Science"},{"name":"Baking and Pastry Arts","kind":"Major","degree":"Associate of Arts"},{"name":"Biology (BS)","kind":"Major","degree":"Liberal Arts Undergraduate","focus":["Animal Science","Photo Biology"]},{"name":"Business Administration","kind":"Major","degree":"Associate of Arts"},{"name":"Business Management","kind":"Concentration","degree":"Liberal Arts Undergraduate"},{"name":"Chemical Engineering (BE)","kind":"Major","degree":"Engineering Undergraduate"},{"name":"Chemistry (BS)","kind":"Major","degree":"Liberal Arts Undergraduate"},{"name":"Classics Minor","kind":"Minor","degree":"Liberal Arts Undergraduate"},{"name":"Communication Technology","kind":"Major","degree":"Associate of Science"},{"name":"Computer Science","kind":"Major","degree":"Liberal Arts Undergraduate"},{"name":"Computer Science Minor","kind":"Minor","degree":"Liberal Arts Undergraduate"},{"name":"Economics","kind":"Concentration","degree":"Liberal Arts Undergraduate"},{"name":"English (BA)","kind":"Major","degree":"Liberal Arts Undergraduate"},{"name":"English Minor","kind":"Minor","degree":"Liberal Arts Undergraduate"},{"name":"Journalism BA","kind":"Major","degree":"Liberal Arts Undergraduate"},{"name":"Mathematics (BA)","kind":"Major","degree":"Liberal Arts Undergraduate"},{"name":"Physics","kind":"Major","degree":"Liberal Arts Undergraduate"},{"name":"Political Science","kind":"Major","degree":"Liberal Arts Undergraduate"},{"name":"Psychology","kind":"Major","degree":"Liberal Arts Undergraduate","focus":["Bio-Psychology","Developmental Psychology"]},{"name":"Sociology","kind":"Major","degree":"Liberal Arts Undergraduate"},{"name":"Statistics","kind":"Major","degree":"Liberal Arts Undergraduate"},{"name":"Undeclared Undergraduate","kind":"Major","degree":"Liberal Arts Undergraduate"},{"name":"Business Pre-Major","kind":"Program","degree":"Associate of Arts"},{"name":"CSU Breadth","kind":"Program","degree":"Associate of Arts"},{"name":"Undergraduate Honors","kind":"Honors","degree":"Liberal Arts Undergraduate"}],"schools":["Bainbridge Junior College","Long Beach City College","Riverside Community College"],"catalog":[{"code":"ENGL 1101","title":"English Composition I","units":3},{"code":"ENGL 1102","title":"English Composition II","units":3},{"code":"MATH 1111","title":"College Algebra","units":3},{"code":"PSYC 1101","title":"Introduction to Psychology","units":3},{"code":"PSYC 1500","title":"Theory of Personality","units":3},{"code":"HIST 2111","title":"US History I","units":3},{"code":"COMM 1100","title":"Human Communication","units":3},{"code":"BIOL 1107","title":"Principles of Biology I","units":3},{"code":"BIOL 1107L","title":"Biology Lab I","units":1},{"code":"ECON 2105","title":"Macroeconomics","units":3},{"code":"CSCI 1301","title":"Computer Science I","units":4},{"code":"SOCI 1101","title":"Introduction to Sociology","units":3},{"code":"PHED 1010","title":"Basketball","units":1}],"scanned":[{"code":"ENGL 1101","term":"Fall","year":2025,"units":3,"grade":"A"},{"code":"MATH 1111","term":"Fall","year":2025,"units":3,"grade":"B"},{"code":"PSYC 1101","term":"Fall","year":2025,"units":3,"grade":"A"},{"code":"HIST 2111","term":"Fall","year":2025,"units":3,"grade":"B"},{"code":"COMM 1100","term":"Fall","year":2025,"units":3,"grade":"A"},{"code":"ENGL 1102","term":"Spring","year":2026,"units":3,"grade":"A"},{"code":"BIOL 1107","term":"Spring","year":2026,"units":3,"grade":"B"},{"code":"BIOL 1107L","term":"Spring","year":2026,"units":1,"grade":"A"},{"code":"ECON 2105","term":"Spring","year":2026,"units":3,"grade":"B"},{"code":"CSCI 1301","term":"Spring","year":2026,"units":4,"grade":"A"}],"terms":["Fall","Spring","Summer"],"grades":["A","B","C","D","P"],"scanError":"This is a photograph of a house and pool, not a transcript — it contains no coursework, grades, or academic information. Please upload an official or unofficial transcript from your student portal.","transfer":[{"status":"accepted","took":[{"code":"HIST 10","units":3,"grade":"B"},{"code":"HIST 11","units":3,"grade":"A"}],"equates":{"code":"HISTORY 120","title":"American History","units":3}},{"status":"accepted","took":[{"code":"PSYC 15","units":3,"grade":"B"}],"equates":{"code":"PSYCH 120","title":"Psychopathology","units":3}},{"status":"accepted","took":[{"code":"PSYC 11","units":3,"grade":"A"}],"equates":{"code":"PSYCH 210","title":"Theories of Personality","units":3}},{"status":"accepted","took":[{"code":"MATH 15","units":4,"grade":"A"}],"equates":{"code":"MATH 111","title":"Calculus I for Engineers","units":3}},{"status":"accepted","took":[{"code":"ENGL 14","units":3,"grade":"B"}],"equates":{"code":"ENGLCOMP 200","title":"English Composition II (C1)","units":3}},{"status":"accepted","took":[{"code":"ENGL 12","units":3,"grade":"A"}],"equates":{"code":"ENGLCOMP 100","title":"English Composition I","units":3}},{"status":"accepted","took":[{"code":"ECON 10","units":3,"grade":"B"}],"equates":{"code":"ECON 140","title":"Principles of Economics","units":3}},{"status":"accepted","took":[{"code":"BIOL 11","units":4,"grade":"B"}],"equates":{"code":"BIOLOGY 100","title":"General Biology I","units":3.5}},{"status":"accepted","took":[{"code":"PSYC 10","units":3,"grade":"A"}],"equates":{"code":"PSYCH 100","title":"Intro to Psychology","units":3}},{"status":"review","took":[{"code":"SOC 10","units":3,"grade":"B"}],"equates":{"code":"SOC 100","title":"Introduction to Sociology","units":3}},{"status":"review","took":[{"code":"PSYC 12","units":3,"grade":"B"}],"equates":{"code":"PSYCH 205","title":"Developmental Psychology","units":3}},{"status":"review","took":[{"code":"MATH 11","units":3,"grade":"C"}],"equates":{"code":"MATH 105","title":"Quantitative Reasoning","units":3}},{"status":"review","took":[{"code":"HIST 12","units":3,"grade":"B"}],"equates":{"code":"HISTORY 121","title":"American History II","units":3}},{"status":"evaluate","took":[{"code":"COUNS 1","units":1,"grade":"A"}],"equates":null},{"status":"evaluate","took":[{"code":"ETHST 1","units":3,"grade":"A"}],"equates":null},{"status":"evaluate","took":[{"code":"PHIL 6","units":3,"grade":"A"}],"equates":null},{"status":"evaluate","took":[{"code":"STAT C1000","units":4,"grade":"A"}],"equates":null},{"status":"evaluate","took":[{"code":"PSYCH 11","units":3,"grade":"A"}],"equates":null},{"status":"evaluate","took":[{"code":"PHED 23","units":4.5,"grade":"B"}],"equates":null}],"statusCopy":{"accepted":{"label":"Accepted","role":"success","note":"These classes transfer."},"review":{"label":"Needs a quick review","role":"warning","note":"Good news: this class should transfer. It just needs a quick review by an advisor to confirm."},"evaluate":{"label":"We'll evaluate it","role":"info","note":"We don't have an automatic rule for this class yet, so an advisor will evaluate it for you."}},"groups":[{"title":"Limits (TXFRP and PE)","code":"1900 #149","rows":[],"count":{"covered":0,"total":0}},{"title":"LAU GE Distribution","code":"F25 000115","rows":[{"title":"Social Science Courses","covered":true},{"title":"Life Science","covered":true,"classes":[{"code":"BIOLOGY 100","title":"General Biology I","units":3.5,"from":"Long Beach City College"}]},{"title":"Physical Science","covered":false},{"title":"Lab Requirements","covered":false},{"title":"Lit and Arts","covered":false},{"title":"Non-western Culture","covered":false},{"title":"American Life","covered":false},{"title":"LAU Math Requirement","covered":true,"classes":[{"code":"MATH 111","title":"Calculus I for Engineers","units":3,"from":"Long Beach City College"}]}],"count":{"covered":3,"total":8}},{"title":"Undergraduate Requirements","rows":[{"title":"Minimum Credit Required for Graduation","covered":true},{"title":"Minimum GPA of 2.00","covered":true},{"title":"Diversity","covered":false},{"title":"Expository Writing","covered":true,"classes":[{"code":"ENGLCOMP 100","title":"English Composition I","units":3,"from":"Long Beach City College"}]},{"title":"Verify Writing Portfolio","covered":false},{"title":"First Year Experience","covered":false},{"title":"US History — HISTORY 120","covered":true,"classes":[{"code":"HISTORY 120","title":"American History","units":3,"from":"Long Beach City College"}]},{"title":"US Constitution — POL SCI 1","covered":false},{"title":"Second Language (2 proficiencies required)","covered":false}],"count":{"covered":4,"total":9}},{"title":"Psychology Requirements","code":"2015 #116","rows":[{"title":"Psych Stats","covered":false},{"title":"PSYCH 101 Introduction to Psychology","covered":false},{"title":"PSY 190 — Introduction to Research and Statistics in Psychology","covered":false},{"title":"PSY 393 Introduction to Development Psychology","covered":false},{"title":"PSY 390 Intermediate Research Methods and Biobehavioral Statistics"},{"title":"Psych 100 Level Elective"},{"title":"Psych electives","covered":false}],"count":{"covered":0,"total":5}},{"title":"BS in Psychology — UMiami","code":"Fall 2024 – Summer 2025","rows":[{"title":"Expository Writing","covered":true},{"title":"PSYCH 101 Introduction to Psychology","covered":false}],"count":{"covered":1,"total":2}},{"title":"Unused Courses","rows":[{"title":"Free Electives"}],"count":{"covered":0,"total":0}}],"nextIntake":"2027 Spring"};
   var I = {"check":"<svg class=\"accordion__status accordion__status--done\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z\"/></svg>","circle":"<svg class=\"accordion__status accordion__status--todo\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z\"/></svg>","chevron":"<svg class=\"accordion__chevron\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z\"/></svg>","close":"<svg class=\"\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z\"/></svg>","add":"<svg class=\"\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z\"/></svg>","print":"<svg class=\"btn__icon\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z\"/></svg>","launch":"<svg class=\"btn__icon\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z\"/></svg>","tick":"<svg class=\"listbox__checkmark\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z\"/></svg>","info":"<svg class=\"alert__icon\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z\"/></svg>","ok":"<svg class=\"alert__icon\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z\"/></svg>","warn":"<svg class=\"alert__icon\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z\"/></svg>","err":"<svg class=\"alert__icon\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z\"/></svg>"};
-  var S = { step: 1, program: null, focus: null, combo: [], pickerMode: "primary", fKind: "", fLevel: "", focusSkipped: false, term: null, credits: null,
+  var S = { step: 1, program: null, focus: null, combo: [], pickerMode: "primary", fKind: "", fLevel: "", focusSkipped: false, staged: [], term: null, credits: null,
             schools: [], sid: 0, captcha: false, planner: true, tab: "credits", online: true };
 
   var $ = function (sel, root) { return (root || document).querySelector(sel); };
@@ -1149,6 +1151,7 @@ html:has(.ed-picker[open]) { overflow: hidden; }
       input.disabled = adding && taken.indexOf(t.dataset.program) > -1;
       input.checked = false;
     });
+    S.staged = [];
     edStaged();
     $("#ed-program-search").value = "";
     S.fKind = ""; S.fLevel = "";
@@ -1164,76 +1167,96 @@ html:has(.ed-picker[open]) { overflow: hidden; }
   /* The footer button says how many are ticked, so the count is never a
      surprise when the dialog closes. */
   function edStaged() {
-    var n = $$("#ed-program-grid .choice-tile__input:checked").length;
+    var n = S.staged.length;
     var add = $("#ed-picker-add");
     add.disabled = !n;
     add.textContent = n ? "Add " + n : "Add";
     return n;
   }
 
-  /* What you have chosen. The primary sits under its own heading and carries
-     its focus areas inside its own card; the extras live in the combo section
-     below. Both are the same .ed-pick card — the primary just has more in it. */
-  function edMeta(c) { var p = programOf(c.name); return c.kind + " · " + p.degree; }
+  /* What you have chosen, as one ordered list: the first entry is the primary
+     and carries the focus areas. Order is the user's to set — nothing is ever
+     promoted on their behalf — so deleting the first just leaves the next one
+     first, a position they chose rather than a decision made for them. */
+  function edMeta(c, primary) { var p = programOf(c.name); return (primary ? "Primary · " : "") + c.kind + " · " + p.degree; }
 
   function edPickCard(c, i) {
     var p = programOf(c.name);
-    var actions = c.primary
-      ? '<button class="btn btn--ghost btn--sm" type="button" data-change-primary="1">Change</button>' +
-        '<button class="btn btn--ghost btn--sm btn--icon-only" type="button" data-drop="' + i +
-        '" aria-label="Remove ' + esc(c.name) + '">' + I.close + "</button>"
-      : '<button class="btn btn--ghost btn--sm btn--icon-only" type="button" data-drop="' + i +
-        '" aria-label="Remove ' + esc(c.name) + '">' + I.close + "</button>";
-    return '<div class="ed-pick"><div class="ed-pick__row">' +
+    var primary = i === 0;
+    /* Only the first position means anything, so the control is one button that
+       says exactly that — not a drag grip, which would imply that 2 versus 3 is
+       also a decision. */
+    var actions = (primary
+      ? '<button class="btn btn--ghost btn--sm" type="button" data-change-primary="1">Change</button>'
+      : '<button class="btn btn--ghost btn--sm" type="button" data-make-primary="' + i + '">Make primary</button>') +
+      '<button class="btn btn--ghost btn--sm btn--icon-only" type="button" data-drop="' + i +
+      '" aria-label="Remove ' + esc(c.name) + '">' + I.close + "</button>";
+    return '<div class="ed-pick" data-row="' + i + '"><div class="ed-pick__row">' +
       '<span class="choice-tile__marker ed-hue--' + edHue(c.name) + '">' + edInitials(c.name) + "</span>" +
       '<span class="choice-tile__text"><span class="choice-tile__label">' + esc(c.name) + "</span>" +
-      '<span class="choice-tile__description">' + esc(edMeta(c)) + "</span></span>" +
+      '<span class="choice-tile__description">' + esc(edMeta(c, primary)) + "</span></span>" +
       '<span class="ed-pick__actions">' + actions + "</span></div>" +
-      (c.primary && p.focus ? edFocusMarkup(p) : "") + "</div>";
+      (primary && p.focus ? edFocusMarkup(p) : "") + "</div>";
   }
 
   function edRenderChosen() {
-    var primary = null, extras = [];
-    S.combo.forEach(function (c, i) { if (c.primary) primary = { c: c, i: i }; else extras.push({ c: c, i: i }); });
-
-    if (!primary) {
-      $("#ed-primary").innerHTML =
+    var list = $("#ed-chosen-list");
+    var hint = $("#ed-picks-hint");
+    /* Derived, never assigned by the callers: the primary is simply whatever is
+       first, and the multi-add path proved that assigning it in each mutation
+       is one place too many to remember. */
+    S.program = S.combo.length ? S.combo[0].name : null;
+    if (!S.combo.length) {
+      list.innerHTML =
         '<button class="ed-choose" id="ed-choose-program" type="button">' +
           '<span class="ed-choose__marker">' + I.add + "</span>" +
           '<span class="ed-choose__text"><span class="ed-choose__label">Choose what to study</span>' +
           '<span class="ed-choose__hint">Search ' + D.programs.length + ' majors, minors and more</span></span></button>';
-      $("#ed-choose-program").addEventListener("click", function () { edOpenPicker("primary"); });
-    } else {
-      $("#ed-primary").innerHTML = edPickCard(primary.c, primary.i);
-      $("#ed-primary [data-change-primary]").addEventListener("click", function () { edOpenPicker("primary"); });
-      edWireFocus();
+      $("#ed-choose-program").addEventListener("click", function () { edOpenPicker("add"); });
+      show($("#ed-add-program"), false);
+      hint.textContent = "Add as many as you like. The first one is your primary pick — your results are built around it, and any focus areas come from it.";
+      edValidate();
+      return;
     }
 
-    $("#ed-extras-list").innerHTML = extras.map(function (e) { return edPickCard(e.c, e.i); }).join("");
-    show($("#ed-extras-list"), !!extras.length);
-    /* Adding a second programme only makes sense once there is a first. */
-    show($("#ed-add-block"), !!primary);
+    list.innerHTML = S.combo.map(edPickCard).join("");
+    show($("#ed-add-program"), true);
+    hint.textContent = S.combo.length > 1
+      ? "Your first pick is the primary one — your results are built around it, and any focus areas come from it. Any other pick can take its place."
+      : "Add as many as you like. The first one is your primary pick — your results are built around it, and any focus areas come from it.";
 
-    $$("#ed-primary [data-drop], #ed-extras-list [data-drop]").forEach(function (b) {
+    var change = $("#ed-chosen-list [data-change-primary]");
+    if (change) change.addEventListener("click", function () { edOpenPicker("primary"); });
+    $$("#ed-chosen-list [data-make-primary]").forEach(function (b) {
+      b.addEventListener("click", function () { edMakePrimary(+b.dataset.makePrimary); });
+    });
+    $$("#ed-chosen-list [data-drop]").forEach(function (b) {
       b.addEventListener("click", function () { edDrop(+b.dataset.drop); });
     });
+    edWireFocus();
     edValidate();
   }
 
-  /* Dropping the primary promotes the next programme rather than throwing the
-     whole combo away; with nothing left it goes back to the empty slot. Focus
-     belongs to the programme, so it clears with it. */
-  function edDrop(i) {
-    var wasPrimary = S.combo[i].primary;
-    S.combo.splice(i, 1);
-    if (wasPrimary) {
-      S.focus = null;
-      S.focusSkipped = false;
-      if (S.combo.length) { S.combo[0].primary = true; S.program = S.combo[0].name; }
-      else S.program = null;
-    }
+  /* The focus answer belongs to whichever programme is primary, so it clears
+     every time the first row changes — by promotion, replacement or deletion. */
+  function edResetFocus() { S.focus = null; S.focusSkipped = false; }
+
+  function edMakePrimary(i) {
+    S.combo.unshift(S.combo.splice(i, 1)[0]);
+    edResetFocus();
     edRenderChosen();
   }
+
+  /* Deleting the first one does leave the next one primary, but that is now a
+     one-click decision to undo rather than something the app decided quietly:
+     every other row carries "Make primary". */
+  function edDrop(i) {
+    var wasFirst = i === 0;
+    S.combo.splice(i, 1);
+    if (wasFirst) edResetFocus();
+    edRenderChosen();
+  }
+  /* One place that knows how a facet is stored and shown. */
   function edSetFacet(facet, value, label) {
     S[facet === "kind" ? "fKind" : "fLevel"] = value;
     $("#ed-filter-" + facet + " .select__value").textContent = label;
@@ -1258,26 +1281,29 @@ html:has(.ed-picker[open]) { overflow: hidden; }
   function edPickProgram(name) {
     var p = programOf(name);
     if (S.pickerMode === "add") {
-      /* multi-pick: ticking only stages, Add commits */
+      /* Multi-pick: ticking only stages, Add commits — and the stage keeps tick
+         order, not list order. The first pick becomes the primary, and someone
+         who ticks Physics then English Minor means Physics, not whichever of
+         the two the alphabet puts first. */
+      var at = S.staged.indexOf(name);
+      var on = $('#ed-program-grid .choice-tile[data-program="' + name.replace(/"/g, '\"') + '"] .choice-tile__input').checked;
+      if (on && at < 0) S.staged.push(name);
+      else if (!on && at > -1) S.staged.splice(at, 1);
       edStaged();
       return;
     }
-    {
-      /* Changing the primary keeps whatever else was stacked; if the new
-         primary was one of those extras, it moves up rather than doubling. */
-      var extras = S.combo.filter(function (c) { return !c.primary && c.name !== p.name; });
-      S.program = p.name;
-      S.focus = null;
-      S.focusSkipped = false;
-      S.combo = [{ name: p.name, kind: p.kind, primary: true }].concat(extras);
-    }
+    /* Replacing the first pick keeps the rest of the list; if the replacement
+       was already further down, it moves up instead of doubling. */
+    var rest = S.combo.slice(1).filter(function (c) { return c.name !== p.name; });
+    S.combo = [{ name: p.name, kind: p.kind }].concat(rest);
+    edResetFocus();
     edClosePicker();
     edRenderChosen();
   }
 
   function edCommitAdd() {
-    $$("#ed-program-grid .choice-tile__input:checked").forEach(function (i) {
-      var p = programOf(i.value);
+    S.staged.forEach(function (name) {
+      var p = programOf(name);
       S.combo.push({ name: p.name, kind: p.kind });
     });
     edClosePicker();
@@ -1483,14 +1509,14 @@ html:has(.ed-picker[open]) { overflow: hidden; }
     // No School row: there is only ever one, and the user's call is that the
     // school picker exists in their demo and never will in the product.
     rows.push(["Academic level", "Undergraduate"]);
-    var extras = S.combo.filter(function (c) { return !c.primary; });
-    /* The key can't say "Major" alone: the primary pick may be a minor, and
-       that produced "Major — Classics Minor · Minor". PeopleSoft would call
-       these plans, but this screen speaks to prospective students and every
-       other control on it says major/minor — so the key does too. */
+    /* No collective noun in the key: with five kinds, "major or minor" is not
+       exhaustive and "program" collides with a kind. Each row's badge carries
+       the precision, and only the first is marked primary — and only when
+       there is more than one, since with one pick the word says nothing. */
+    var many = S.combo.length > 1;
     rows.push(["Studying",
-      S.combo.map(function (c) {
-        return esc(c.name) + ' <span class="badge badge--neutral">' + (c.primary && extras.length ? "Primary · " : "") + c.kind + "</span>";
+      S.combo.map(function (c, i) {
+        return esc(c.name) + ' <span class="badge badge--neutral">' + (i === 0 && many ? "Primary · " : "") + c.kind + "</span>";
       }).join("<br />")]);
     if (S.focus) rows.push(["Focus area", esc(S.focus)]);
     rows.push(["Starting term", esc(S.term)]);
@@ -1704,7 +1730,7 @@ html:has(.ed-picker[open]) { overflow: hidden; }
   $$(".ed-tab").forEach(function (t) { t.addEventListener("click", function () { edTab(t.dataset.tab); }); });
   $("#ed-planner-toggle").addEventListener("change", function () { S.planner = this.checked; edResults(); });
   $("#ed-try-another").addEventListener("click", function () {
-    S.program = null; S.focus = null; S.focusSkipped = false; S.combo = [];
+    S.combo = []; edResetFocus();
     $$('#ed-program-grid input').forEach(function (r) { r.checked = false; r.disabled = false; });
     $("#ed-program-search").value = "";
     edGoto(1);
