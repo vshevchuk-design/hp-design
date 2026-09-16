@@ -36,6 +36,7 @@ ${STEPS.map(
         <span class="choice-tile__box">
           <span class="choice-tile__marker ed-hue--${hueOf(p.name)}">${initialsOf(p.name)}</span>
           <span class="choice-tile__text"><span class="choice-tile__label">${esc(p.name)}</span><span class="choice-tile__description">${kindOf(p.name)} &middot; ${esc(p.degree)}</span></span>
+          <span class="choice-tile__check">${icon("check", "")}</span>
         </span>
       </label>`;
 
@@ -250,6 +251,9 @@ ${TERM_YEARS.map(
       ${PROGRAMS.map(programTile).join("\n      ")}
       </div>
       <div class="empty-state is-hidden" id="ed-program-empty"><span class="empty-state__text">No majors match that search</span></div>
+    </div>
+    <div class="ed-picker__foot">
+      <button class="btn btn--primary btn--base" id="ed-picker-add" type="button" disabled>Add</button>
     </div>
   </dialog>
 

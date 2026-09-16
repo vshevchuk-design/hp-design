@@ -120,11 +120,17 @@ export function edAppJs(h) {
     $("#ed-picker-title").textContent = adding ? "Add a major or minor" : S.program ? "Change your primary pick" : "Choose your primary pick";
     /* Already-chosen programmes stay visible but are not pickable again. */
     var taken = S.combo.map(function (c) { return c.name; });
+    /* Adding is a multi-pick, so the same tiles become checkboxes and nothing
+       happens until Add; choosing the primary is one answer, so the pick is
+       the transition. Switching .type keeps one set of markup for both. */
+    $("#ed-picker").classList.toggle("is-multi", adding);
     $$("#ed-program-grid .choice-tile").forEach(function (t) {
       var input = t.querySelector(".choice-tile__input");
+      input.type = adding ? "checkbox" : "radio";
       input.disabled = taken.indexOf(t.dataset.program) > -1;
       input.checked = false;
     });
+    edStaged();
     $("#ed-program-search").value = "";
     S.fKind = ""; S.fLevel = "";
     ["kind", "level"].forEach(function (f) { edSetFacet(f, "", $('#ed-lb-' + f + " [data-value='']").textContent); });
@@ -135,6 +141,16 @@ export function edAppJs(h) {
   }
 
   function edClosePicker() { $("#ed-picker").close(); }
+
+  /* The footer button says how many are ticked, so the count is never a
+     surprise when the dialog closes. */
+  function edStaged() {
+    var n = $$("#ed-program-grid .choice-tile__input:checked").length;
+    var add = $("#ed-picker-add");
+    add.disabled = !n;
+    add.textContent = n ? "Add " + n + (n === 1 ? " program" : " programs") : "Add";
+    return n;
+  }
 
   /* What you have chosen. The primary sits under its own heading and carries
      its focus areas inside its own card; the extras live in the combo section
@@ -223,8 +239,11 @@ export function edAppJs(h) {
   function edPickProgram(name) {
     var p = programOf(name);
     if (S.pickerMode === "add") {
-      S.combo.push({ name: p.name, kind: p.kind });
-    } else {
+      /* multi-pick: ticking only stages, Add commits */
+      edStaged();
+      return;
+    }
+    {
       /* Changing the primary keeps whatever else was stacked; if the new
          primary was one of those extras, it moves up rather than doubling. */
       var extras = S.combo.filter(function (c) { return !c.primary && c.name !== p.name; });
@@ -233,6 +252,15 @@ export function edAppJs(h) {
       S.focusSkipped = false;
       S.combo = [{ name: p.name, kind: p.kind, primary: true }].concat(extras);
     }
+    edClosePicker();
+    edRenderChosen();
+  }
+
+  function edCommitAdd() {
+    $$("#ed-program-grid .choice-tile__input:checked").forEach(function (i) {
+      var p = programOf(i.value);
+      S.combo.push({ name: p.name, kind: p.kind });
+    });
     edClosePicker();
     edRenderChosen();
   }
@@ -603,6 +631,7 @@ export function edAppJs(h) {
   $("#ed-program-search").addEventListener("input", edFilterPrograms);
   $("#ed-add-program").addEventListener("click", function () { edOpenPicker("add"); });
   $("#ed-picker-close").addEventListener("click", edClosePicker);
+  $("#ed-picker-add").addEventListener("click", edCommitAdd);
   ["kind", "level"].forEach(function (facet) {
     var panel = $("#ed-lb-" + facet), trigger = $("#ed-filter-" + facet);
     edAnchor(panel, trigger);

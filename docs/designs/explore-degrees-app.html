@@ -413,6 +413,19 @@ html:has(.ed-picker[open]) { overflow: hidden; }
 .ed-picker__tools { flex-shrink: 0; display: flex; flex-direction: column; gap: 8px; padding: 12px 24px; border-bottom: 1px solid var(--tok-border-default); }
 .ed-picker__filters { display: flex; gap: 8px; }
 .ed-picker__filters .select { flex: 1; min-width: 0; }
+/* Adding to the combo is a multi-pick: the tiles grow a trailing Checkbox and
+   the dialog grows a footer, because picking one must not close it. Choosing
+   the primary stays single-pick — one answer, so the pick itself is the
+   transition. The box is drawn from checkbox.tokens.json, not re-invented. */
+.choice-tile__check { display: none; flex-shrink: 0; margin-left: auto; width: 20px; height: 20px; border-radius: 4px; border: 2px solid var(--tok-border-default); background: var(--tok-surface-default); align-items: center; justify-content: center; color: var(--tok-icon-on-fill); }
+.ed-picker.is-multi .choice-tile__check { display: inline-flex; }
+.choice-tile__check svg { width: 16px; height: 16px; opacity: 0; }
+.choice-tile__input:checked ~ .choice-tile__box .choice-tile__check { background: var(--tok-fill-primary); border-color: var(--tok-fill-primary); }
+.choice-tile__input:checked ~ .choice-tile__box .choice-tile__check svg { opacity: 1; }
+.choice-tile__input:disabled ~ .choice-tile__box .choice-tile__check { background: var(--tok-surface-disabled); border-color: var(--tok-border-default); }
+/* Only in multi-pick: with one answer there is nothing to confirm. */
+.ed-picker__foot { display: none; flex-shrink: 0; align-items: center; justify-content: flex-end; gap: 8px; padding: 12px 24px; border-top: 1px solid var(--tok-border-default); }
+.ed-picker.is-multi .ed-picker__foot { display: flex; }
 .ed-picker__body { flex: 1; min-height: 0; overflow-y: auto; padding: 24px; }
 /* One column: this is a list picker, not the tile wall it used to be. */
 .ed-picker .ed-grid { grid-template-columns: 1fr; }
@@ -770,6 +783,7 @@ html:has(.ed-picker[open]) { overflow: hidden; }
         <span class="choice-tile__box">
           <span class="choice-tile__marker ed-hue--violet">AC</span>
           <span class="choice-tile__text"><span class="choice-tile__label">A B C</span><span class="choice-tile__description">Major &middot; Liberal Arts Undergraduate</span></span>
+          <span class="choice-tile__check"><svg class="" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
         </span>
       </label>
       <label class="choice-tile" data-program="Accounting" data-kind="Major" data-level="Bachelor's">
@@ -777,6 +791,7 @@ html:has(.ed-picker[open]) { overflow: hidden; }
         <span class="choice-tile__box">
           <span class="choice-tile__marker ed-hue--amber">AC</span>
           <span class="choice-tile__text"><span class="choice-tile__label">Accounting</span><span class="choice-tile__description">Major &middot; Liberal Arts Undergraduate</span></span>
+          <span class="choice-tile__check"><svg class="" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
         </span>
       </label>
       <label class="choice-tile" data-program="Accounting AA" data-kind="Major" data-level="Associate">
@@ -784,6 +799,7 @@ html:has(.ed-picker[open]) { overflow: hidden; }
         <span class="choice-tile__box">
           <span class="choice-tile__marker ed-hue--orange">AA</span>
           <span class="choice-tile__text"><span class="choice-tile__label">Accounting AA</span><span class="choice-tile__description">Major &middot; Associate of Arts</span></span>
+          <span class="choice-tile__check"><svg class="" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
         </span>
       </label>
       <label class="choice-tile" data-program="Accounting AB" data-kind="Major" data-level="Bachelor's">
@@ -791,6 +807,7 @@ html:has(.ed-picker[open]) { overflow: hidden; }
         <span class="choice-tile__box">
           <span class="choice-tile__marker ed-hue--violet">AA</span>
           <span class="choice-tile__text"><span class="choice-tile__label">Accounting AB</span><span class="choice-tile__description">Major &middot; Liberal Arts Undergraduate</span></span>
+          <span class="choice-tile__check"><svg class="" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
         </span>
       </label>
       <label class="choice-tile" data-program="Art (BFA)" data-kind="Major" data-level="Bachelor's">
@@ -798,6 +815,7 @@ html:has(.ed-picker[open]) { overflow: hidden; }
         <span class="choice-tile__box">
           <span class="choice-tile__marker ed-hue--green">AR</span>
           <span class="choice-tile__text"><span class="choice-tile__label">Art (BFA)</span><span class="choice-tile__description">Major &middot; Fine Arts Undergraduate</span></span>
+          <span class="choice-tile__check"><svg class="" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
         </span>
       </label>
       <label class="choice-tile" data-program="Art History (BFA)" data-kind="Major" data-level="Bachelor's">
@@ -805,6 +823,7 @@ html:has(.ed-picker[open]) { overflow: hidden; }
         <span class="choice-tile__box">
           <span class="choice-tile__marker ed-hue--amber">AH</span>
           <span class="choice-tile__text"><span class="choice-tile__label">Art History (BFA)</span><span class="choice-tile__description">Major &middot; Fine Arts Undergraduate</span></span>
+          <span class="choice-tile__check"><svg class="" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
         </span>
       </label>
       <label class="choice-tile" data-program="Art History Minor" data-kind="Minor" data-level="Bachelor's">
@@ -812,6 +831,7 @@ html:has(.ed-picker[open]) { overflow: hidden; }
         <span class="choice-tile__box">
           <span class="choice-tile__marker ed-hue--violet">AM</span>
           <span class="choice-tile__text"><span class="choice-tile__label">Art History Minor</span><span class="choice-tile__description">Minor &middot; Liberal Arts Undergraduate</span></span>
+          <span class="choice-tile__check"><svg class="" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
         </span>
       </label>
       <label class="choice-tile" data-program="Auto Technology" data-kind="Major" data-level="Associate">
@@ -819,6 +839,7 @@ html:has(.ed-picker[open]) { overflow: hidden; }
         <span class="choice-tile__box">
           <span class="choice-tile__marker ed-hue--orange">AT</span>
           <span class="choice-tile__text"><span class="choice-tile__label">Auto Technology</span><span class="choice-tile__description">Major &middot; Associate of Science</span></span>
+          <span class="choice-tile__check"><svg class="" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
         </span>
       </label>
       <label class="choice-tile" data-program="Baking and Pastry Arts" data-kind="Major" data-level="Associate">
@@ -826,6 +847,7 @@ html:has(.ed-picker[open]) { overflow: hidden; }
         <span class="choice-tile__box">
           <span class="choice-tile__marker ed-hue--teal">BA</span>
           <span class="choice-tile__text"><span class="choice-tile__label">Baking and Pastry Arts</span><span class="choice-tile__description">Major &middot; Associate of Arts</span></span>
+          <span class="choice-tile__check"><svg class="" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
         </span>
       </label>
       <label class="choice-tile" data-program="Biology (BS)" data-kind="Major" data-level="Bachelor's">
@@ -833,6 +855,7 @@ html:has(.ed-picker[open]) { overflow: hidden; }
         <span class="choice-tile__box">
           <span class="choice-tile__marker ed-hue--amber">BI</span>
           <span class="choice-tile__text"><span class="choice-tile__label">Biology (BS)</span><span class="choice-tile__description">Major &middot; Liberal Arts Undergraduate</span></span>
+          <span class="choice-tile__check"><svg class="" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
         </span>
       </label>
       <label class="choice-tile" data-program="Business Administration" data-kind="Major" data-level="Associate">
@@ -840,6 +863,7 @@ html:has(.ed-picker[open]) { overflow: hidden; }
         <span class="choice-tile__box">
           <span class="choice-tile__marker ed-hue--magenta">BA</span>
           <span class="choice-tile__text"><span class="choice-tile__label">Business Administration</span><span class="choice-tile__description">Major &middot; Associate of Arts</span></span>
+          <span class="choice-tile__check"><svg class="" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
         </span>
       </label>
       <label class="choice-tile" data-program="Business Management" data-kind="Major" data-level="Bachelor's">
@@ -847,6 +871,7 @@ html:has(.ed-picker[open]) { overflow: hidden; }
         <span class="choice-tile__box">
           <span class="choice-tile__marker ed-hue--green">BM</span>
           <span class="choice-tile__text"><span class="choice-tile__label">Business Management</span><span class="choice-tile__description">Major &middot; Liberal Arts Undergraduate</span></span>
+          <span class="choice-tile__check"><svg class="" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
         </span>
       </label>
       <label class="choice-tile" data-program="Chemical Engineering (BE)" data-kind="Major" data-level="Bachelor's">
@@ -854,6 +879,7 @@ html:has(.ed-picker[open]) { overflow: hidden; }
         <span class="choice-tile__box">
           <span class="choice-tile__marker ed-hue--green">CE</span>
           <span class="choice-tile__text"><span class="choice-tile__label">Chemical Engineering (BE)</span><span class="choice-tile__description">Major &middot; Engineering Undergraduate</span></span>
+          <span class="choice-tile__check"><svg class="" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
         </span>
       </label>
       <label class="choice-tile" data-program="Chemistry (BS)" data-kind="Major" data-level="Bachelor's">
@@ -861,6 +887,7 @@ html:has(.ed-picker[open]) { overflow: hidden; }
         <span class="choice-tile__box">
           <span class="choice-tile__marker ed-hue--violet">CH</span>
           <span class="choice-tile__text"><span class="choice-tile__label">Chemistry (BS)</span><span class="choice-tile__description">Major &middot; Liberal Arts Undergraduate</span></span>
+          <span class="choice-tile__check"><svg class="" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
         </span>
       </label>
       <label class="choice-tile" data-program="Classics Minor" data-kind="Minor" data-level="Bachelor's">
@@ -868,6 +895,7 @@ html:has(.ed-picker[open]) { overflow: hidden; }
         <span class="choice-tile__box">
           <span class="choice-tile__marker ed-hue--magenta">CM</span>
           <span class="choice-tile__text"><span class="choice-tile__label">Classics Minor</span><span class="choice-tile__description">Minor &middot; Liberal Arts Undergraduate</span></span>
+          <span class="choice-tile__check"><svg class="" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
         </span>
       </label>
       <label class="choice-tile" data-program="Communication Technology" data-kind="Major" data-level="Associate">
@@ -875,6 +903,7 @@ html:has(.ed-picker[open]) { overflow: hidden; }
         <span class="choice-tile__box">
           <span class="choice-tile__marker ed-hue--magenta">CT</span>
           <span class="choice-tile__text"><span class="choice-tile__label">Communication Technology</span><span class="choice-tile__description">Major &middot; Associate of Science</span></span>
+          <span class="choice-tile__check"><svg class="" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
         </span>
       </label>
       <label class="choice-tile" data-program="Computer Science" data-kind="Major" data-level="Bachelor's">
@@ -882,6 +911,7 @@ html:has(.ed-picker[open]) { overflow: hidden; }
         <span class="choice-tile__box">
           <span class="choice-tile__marker ed-hue--green">CS</span>
           <span class="choice-tile__text"><span class="choice-tile__label">Computer Science</span><span class="choice-tile__description">Major &middot; Liberal Arts Undergraduate</span></span>
+          <span class="choice-tile__check"><svg class="" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
         </span>
       </label>
       <label class="choice-tile" data-program="Computer Science Minor" data-kind="Minor" data-level="Bachelor's">
@@ -889,6 +919,7 @@ html:has(.ed-picker[open]) { overflow: hidden; }
         <span class="choice-tile__box">
           <span class="choice-tile__marker ed-hue--violet">CM</span>
           <span class="choice-tile__text"><span class="choice-tile__label">Computer Science Minor</span><span class="choice-tile__description">Minor &middot; Liberal Arts Undergraduate</span></span>
+          <span class="choice-tile__check"><svg class="" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
         </span>
       </label>
       <label class="choice-tile" data-program="Economics" data-kind="Major" data-level="Bachelor's">
@@ -896,6 +927,7 @@ html:has(.ed-picker[open]) { overflow: hidden; }
         <span class="choice-tile__box">
           <span class="choice-tile__marker ed-hue--blue">EC</span>
           <span class="choice-tile__text"><span class="choice-tile__label">Economics</span><span class="choice-tile__description">Major &middot; Liberal Arts Undergraduate</span></span>
+          <span class="choice-tile__check"><svg class="" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
         </span>
       </label>
       <label class="choice-tile" data-program="English (BA)" data-kind="Major" data-level="Bachelor's">
@@ -903,6 +935,7 @@ html:has(.ed-picker[open]) { overflow: hidden; }
         <span class="choice-tile__box">
           <span class="choice-tile__marker ed-hue--violet">EN</span>
           <span class="choice-tile__text"><span class="choice-tile__label">English (BA)</span><span class="choice-tile__description">Major &middot; Liberal Arts Undergraduate</span></span>
+          <span class="choice-tile__check"><svg class="" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
         </span>
       </label>
       <label class="choice-tile" data-program="English Minor" data-kind="Minor" data-level="Bachelor's">
@@ -910,6 +943,7 @@ html:has(.ed-picker[open]) { overflow: hidden; }
         <span class="choice-tile__box">
           <span class="choice-tile__marker ed-hue--red">EM</span>
           <span class="choice-tile__text"><span class="choice-tile__label">English Minor</span><span class="choice-tile__description">Minor &middot; Liberal Arts Undergraduate</span></span>
+          <span class="choice-tile__check"><svg class="" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
         </span>
       </label>
       <label class="choice-tile" data-program="Journalism BA" data-kind="Major" data-level="Bachelor's">
@@ -917,6 +951,7 @@ html:has(.ed-picker[open]) { overflow: hidden; }
         <span class="choice-tile__box">
           <span class="choice-tile__marker ed-hue--red">JB</span>
           <span class="choice-tile__text"><span class="choice-tile__label">Journalism BA</span><span class="choice-tile__description">Major &middot; Liberal Arts Undergraduate</span></span>
+          <span class="choice-tile__check"><svg class="" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
         </span>
       </label>
       <label class="choice-tile" data-program="Mathematics (BA)" data-kind="Major" data-level="Bachelor's">
@@ -924,6 +959,7 @@ html:has(.ed-picker[open]) { overflow: hidden; }
         <span class="choice-tile__box">
           <span class="choice-tile__marker ed-hue--teal">MA</span>
           <span class="choice-tile__text"><span class="choice-tile__label">Mathematics (BA)</span><span class="choice-tile__description">Major &middot; Liberal Arts Undergraduate</span></span>
+          <span class="choice-tile__check"><svg class="" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
         </span>
       </label>
       <label class="choice-tile" data-program="Physics" data-kind="Major" data-level="Bachelor's">
@@ -931,6 +967,7 @@ html:has(.ed-picker[open]) { overflow: hidden; }
         <span class="choice-tile__box">
           <span class="choice-tile__marker ed-hue--amber">PH</span>
           <span class="choice-tile__text"><span class="choice-tile__label">Physics</span><span class="choice-tile__description">Major &middot; Liberal Arts Undergraduate</span></span>
+          <span class="choice-tile__check"><svg class="" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
         </span>
       </label>
       <label class="choice-tile" data-program="Political Science" data-kind="Major" data-level="Bachelor's">
@@ -938,6 +975,7 @@ html:has(.ed-picker[open]) { overflow: hidden; }
         <span class="choice-tile__box">
           <span class="choice-tile__marker ed-hue--amber">PS</span>
           <span class="choice-tile__text"><span class="choice-tile__label">Political Science</span><span class="choice-tile__description">Major &middot; Liberal Arts Undergraduate</span></span>
+          <span class="choice-tile__check"><svg class="" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
         </span>
       </label>
       <label class="choice-tile" data-program="Psychology" data-kind="Major" data-level="Bachelor's">
@@ -945,6 +983,7 @@ html:has(.ed-picker[open]) { overflow: hidden; }
         <span class="choice-tile__box">
           <span class="choice-tile__marker ed-hue--green">PS</span>
           <span class="choice-tile__text"><span class="choice-tile__label">Psychology</span><span class="choice-tile__description">Major &middot; Liberal Arts Undergraduate</span></span>
+          <span class="choice-tile__check"><svg class="" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
         </span>
       </label>
       <label class="choice-tile" data-program="Sociology" data-kind="Major" data-level="Bachelor's">
@@ -952,6 +991,7 @@ html:has(.ed-picker[open]) { overflow: hidden; }
         <span class="choice-tile__box">
           <span class="choice-tile__marker ed-hue--blue">SO</span>
           <span class="choice-tile__text"><span class="choice-tile__label">Sociology</span><span class="choice-tile__description">Major &middot; Liberal Arts Undergraduate</span></span>
+          <span class="choice-tile__check"><svg class="" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
         </span>
       </label>
       <label class="choice-tile" data-program="Statistics" data-kind="Major" data-level="Bachelor's">
@@ -959,6 +999,7 @@ html:has(.ed-picker[open]) { overflow: hidden; }
         <span class="choice-tile__box">
           <span class="choice-tile__marker ed-hue--amber">ST</span>
           <span class="choice-tile__text"><span class="choice-tile__label">Statistics</span><span class="choice-tile__description">Major &middot; Liberal Arts Undergraduate</span></span>
+          <span class="choice-tile__check"><svg class="" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
         </span>
       </label>
       <label class="choice-tile" data-program="Undeclared Undergraduate" data-kind="Major" data-level="Bachelor's">
@@ -966,10 +1007,14 @@ html:has(.ed-picker[open]) { overflow: hidden; }
         <span class="choice-tile__box">
           <span class="choice-tile__marker ed-hue--magenta">UU</span>
           <span class="choice-tile__text"><span class="choice-tile__label">Undeclared Undergraduate</span><span class="choice-tile__description">Major &middot; Liberal Arts Undergraduate</span></span>
+          <span class="choice-tile__check"><svg class="" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
         </span>
       </label>
       </div>
       <div class="empty-state is-hidden" id="ed-program-empty"><span class="empty-state__text">No majors match that search</span></div>
+    </div>
+    <div class="ed-picker__foot">
+      <button class="btn btn--primary btn--base" id="ed-picker-add" type="button" disabled>Add</button>
     </div>
   </dialog>
 
@@ -1053,11 +1098,17 @@ html:has(.ed-picker[open]) { overflow: hidden; }
     $("#ed-picker-title").textContent = adding ? "Add a major or minor" : S.program ? "Change your primary pick" : "Choose your primary pick";
     /* Already-chosen programmes stay visible but are not pickable again. */
     var taken = S.combo.map(function (c) { return c.name; });
+    /* Adding is a multi-pick, so the same tiles become checkboxes and nothing
+       happens until Add; choosing the primary is one answer, so the pick is
+       the transition. Switching .type keeps one set of markup for both. */
+    $("#ed-picker").classList.toggle("is-multi", adding);
     $$("#ed-program-grid .choice-tile").forEach(function (t) {
       var input = t.querySelector(".choice-tile__input");
+      input.type = adding ? "checkbox" : "radio";
       input.disabled = taken.indexOf(t.dataset.program) > -1;
       input.checked = false;
     });
+    edStaged();
     $("#ed-program-search").value = "";
     S.fKind = ""; S.fLevel = "";
     ["kind", "level"].forEach(function (f) { edSetFacet(f, "", $('#ed-lb-' + f + " [data-value='']").textContent); });
@@ -1068,6 +1119,16 @@ html:has(.ed-picker[open]) { overflow: hidden; }
   }
 
   function edClosePicker() { $("#ed-picker").close(); }
+
+  /* The footer button says how many are ticked, so the count is never a
+     surprise when the dialog closes. */
+  function edStaged() {
+    var n = $$("#ed-program-grid .choice-tile__input:checked").length;
+    var add = $("#ed-picker-add");
+    add.disabled = !n;
+    add.textContent = n ? "Add " + n + (n === 1 ? " program" : " programs") : "Add";
+    return n;
+  }
 
   /* What you have chosen. The primary sits under its own heading and carries
      its focus areas inside its own card; the extras live in the combo section
@@ -1156,8 +1217,11 @@ html:has(.ed-picker[open]) { overflow: hidden; }
   function edPickProgram(name) {
     var p = programOf(name);
     if (S.pickerMode === "add") {
-      S.combo.push({ name: p.name, kind: p.kind });
-    } else {
+      /* multi-pick: ticking only stages, Add commits */
+      edStaged();
+      return;
+    }
+    {
       /* Changing the primary keeps whatever else was stacked; if the new
          primary was one of those extras, it moves up rather than doubling. */
       var extras = S.combo.filter(function (c) { return !c.primary && c.name !== p.name; });
@@ -1166,6 +1230,15 @@ html:has(.ed-picker[open]) { overflow: hidden; }
       S.focusSkipped = false;
       S.combo = [{ name: p.name, kind: p.kind, primary: true }].concat(extras);
     }
+    edClosePicker();
+    edRenderChosen();
+  }
+
+  function edCommitAdd() {
+    $$("#ed-program-grid .choice-tile__input:checked").forEach(function (i) {
+      var p = programOf(i.value);
+      S.combo.push({ name: p.name, kind: p.kind });
+    });
     edClosePicker();
     edRenderChosen();
   }
@@ -1536,6 +1609,7 @@ html:has(.ed-picker[open]) { overflow: hidden; }
   $("#ed-program-search").addEventListener("input", edFilterPrograms);
   $("#ed-add-program").addEventListener("click", function () { edOpenPicker("add"); });
   $("#ed-picker-close").addEventListener("click", edClosePicker);
+  $("#ed-picker-add").addEventListener("click", edCommitAdd);
   ["kind", "level"].forEach(function (facet) {
     var panel = $("#ed-lb-" + facet), trigger = $("#ed-filter-" + facet);
     edAnchor(panel, trigger);

@@ -30,7 +30,7 @@ export function edCss(h) {
   const card = t.card, alert = t.alert, acc = t.accordion, pg = t.progress, sp = t.spinner;
   const badge = t.badge, chip = t.chip, lb = t.listbox, table = t.table;
   const button = t.button, input = t.input, select = t.select, search = t.search;
-  const es = t.emptyState, avatar = t.avatar, modal = t.modal;
+  const es = t.emptyState, avatar = t.avatar, modal = t.modal, cb = t.checkbox;
   const mdShadow = h.resolveToken(modal.shadow);
   const mdShadowCss = `${px(mdShadow.offsetX)} ${px(mdShadow.offsetY)} ${px(mdShadow.blur)} ${px(mdShadow.spread)} ${mdShadow.color}`;
 
@@ -394,6 +394,19 @@ html:has(.ed-picker[open]) { overflow: hidden; }
 .ed-picker__tools { flex-shrink: 0; display: flex; flex-direction: column; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.3"))} ${px(resolve(modal.padding.$value))}; border-bottom: 1px solid ${cv(refPath(modal.divider.$value))}; }
 .ed-picker__filters { display: flex; gap: ${px(resolve("dim.2"))}; }
 .ed-picker__filters .select { flex: 1; min-width: 0; }
+/* Adding to the combo is a multi-pick: the tiles grow a trailing Checkbox and
+   the dialog grows a footer, because picking one must not close it. Choosing
+   the primary stays single-pick — one answer, so the pick itself is the
+   transition. The box is drawn from checkbox.tokens.json, not re-invented. */
+.choice-tile__check { display: none; flex-shrink: 0; margin-left: auto; width: ${px(resolve(cb.size.box.$value))}; height: ${px(resolve(cb.size.box.$value))}; border-radius: ${px(resolve(cb.radius.$value))}; border: ${px(resolve(cb.size.borderWidth.$value))} solid ${cv(refPath(cb.state.default.border.$value))}; background: ${cv(refPath(cb.state.default.bg.$value))}; align-items: center; justify-content: center; color: ${cv(refPath(cb.state.checked.icon.$value))}; }
+.ed-picker.is-multi .choice-tile__check { display: inline-flex; }
+.choice-tile__check svg { width: ${px(resolve(cb.size.iconSize.$value))}; height: ${px(resolve(cb.size.iconSize.$value))}; opacity: 0; }
+.choice-tile__input:checked ~ .choice-tile__box .choice-tile__check { background: ${cv(refPath(cb.state.checked.bg.$value))}; border-color: ${cv(refPath(cb.state.checked.border.$value))}; }
+.choice-tile__input:checked ~ .choice-tile__box .choice-tile__check svg { opacity: 1; }
+.choice-tile__input:disabled ~ .choice-tile__box .choice-tile__check { background: ${cv(refPath(cb.state.disabled.bg.$value))}; border-color: ${cv(refPath(cb.state.disabled.border.$value))}; }
+/* Only in multi-pick: with one answer there is nothing to confirm. */
+.ed-picker__foot { display: none; flex-shrink: 0; align-items: center; justify-content: flex-end; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.3"))} ${px(resolve(modal.padding.$value))}; border-top: 1px solid ${cv(refPath(modal.divider.$value))}; }
+.ed-picker.is-multi .ed-picker__foot { display: flex; }
 .ed-picker__body { flex: 1; min-height: 0; overflow-y: auto; padding: ${px(resolve(modal.padding.$value))}; }
 /* One column: this is a list picker, not the tile wall it used to be. */
 .ed-picker .ed-grid { grid-template-columns: 1fr; }

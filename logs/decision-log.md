@@ -1294,3 +1294,17 @@ One correction to my own proposal while applying it: I had written the review ke
 **The filter chips became two dropdowns**, per the user, and the rule between the search and the filters is gone. They are the page's existing Select pattern — a `.select` trigger plus a `.listbox` popover positioned by `edAnchor()`, exactly what the step-3 school picker uses — so there is one dropdown idiom in this prototype, not two. Search and filters now sit in one `.ed-picker__tools` band with a single hairline under the pair: they are the same control surface, so the only divider is where the list actually starts.
 
 Worth noting because it could have gone wrong: these popovers open from **inside a modal `<dialog>`**. Both live in the top layer and `edAnchor` positions with `position: fixed` against the viewport rather than CSS anchor positioning, so it works unchanged — verified at 900px and at 375px that the panel opens, lands fully on screen, closes on pick, and that both triggers keep their labels on one row (160px each at 375px) without overflowing.
+
+## 2026-09-16 (cont. 3) — the picker is single-pick or multi-pick depending on why it opened
+
+"Add another major or minor" now opens the same dialog in **multi-pick**: every row grows a trailing Checkbox, nothing happens until a footer button commits, and that button carries the count — "Add 3 programs" — so the number is never a surprise when the dialog closes. Choosing or changing the **primary** stays single-pick: one answer, so the pick itself is the transition and there is nothing to confirm. The footer only exists in multi-pick, for the same reason.
+
+The two modes share one set of markup. The tiles' hidden inputs simply switch `.type` between `radio` and `checkbox` on open, and `.ed-picker.is-multi` reveals the boxes and the footer. That is cheaper and less error-prone than rendering two lists, and it means the search, the filters, the disabled-already-chosen rule and the empty state are written once.
+
+The checkbox is drawn from `checkbox.tokens.json` — box, radius, border width, icon size and the checked fill and icon colour — rather than a square invented here. It is a visual on top of the tile's own hidden input, so there is still exactly one control per row.
+
+Two behaviours worth stating because they are easy to get wrong:
+- **A ticked row stays ticked when the search or a filter hides it.** Verified: tick Sociology, search "zzz" so nothing is visible, press Add — Sociology is added. Hiding is a view, not an un-pick.
+- **Closing without pressing Add discards the staging**, and re-opening clears every tick, because commitment is what the button means.
+
+Verified end to end: three at once land as three extras in the combo section; on reopen they are disabled and the button is back to a disabled "Add"; Change returns to radio; and a six-programme combo reaches the review as "Majors & minors" with each row's own kind badge. Footer pins to the bottom of the full-screen dialog at 375px with the list scrolling above it.
