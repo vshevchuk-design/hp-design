@@ -14,7 +14,12 @@
 //     contradict itself.
 
 /** A program's kind is derivable from its name — no need to store it twice. */
-export const kindOf = (name) => (/minor/i.test(name) ? "Minor" : "Major");
+// Kind is stored, not derived. It used to be read off the name ("…minor" →
+// Minor), which cannot produce the reference's other three kinds and is wrong
+// even for names it can parse: the reference tags "Biology Minor!" as a
+// Program. Five kinds appear in their screens — Major, Minor, Concentration,
+// Honors, Program — so it is data.
+export const KINDS = ["Major", "Minor", "Concentration", "Honors", "Program"];
 // The second axis a student actually chooses along. The degree strings carry
 // it already ("Associate of Arts" vs "… Undergraduate"), so it is derived
 // rather than stored — one place to be wrong instead of 29.
@@ -26,39 +31,43 @@ export const levelOf = (degree) => (/^Associate/.test(degree) ? "Associate" : "B
 // majors that have them, and inventing areas for the other 27 would be making
 // up curriculum.
 export const PROGRAMS = [
-  { name: "A B C", degree: "Liberal Arts Undergraduate" },
-  { name: "Accounting", degree: "Liberal Arts Undergraduate" },
-  { name: "Accounting AA", degree: "Associate of Arts" },
-  { name: "Accounting AB", degree: "Liberal Arts Undergraduate" },
-  { name: "Art (BFA)", degree: "Fine Arts Undergraduate" },
-  { name: "Art History (BFA)", degree: "Fine Arts Undergraduate" },
-  { name: "Art History Minor", degree: "Liberal Arts Undergraduate" },
-  { name: "Auto Technology", degree: "Associate of Science" },
-  { name: "Baking and Pastry Arts", degree: "Associate of Arts" },
-  { name: "Biology (BS)", degree: "Liberal Arts Undergraduate", focus: ["Animal Science", "Photo Biology"] },
-  { name: "Business Administration", degree: "Associate of Arts" },
-  { name: "Business Management", degree: "Liberal Arts Undergraduate" },
-  { name: "Chemical Engineering (BE)", degree: "Engineering Undergraduate" },
-  { name: "Chemistry (BS)", degree: "Liberal Arts Undergraduate" },
-  { name: "Classics Minor", degree: "Liberal Arts Undergraduate" },
-  { name: "Communication Technology", degree: "Associate of Science" },
-  { name: "Computer Science", degree: "Liberal Arts Undergraduate" },
-  { name: "Computer Science Minor", degree: "Liberal Arts Undergraduate" },
-  { name: "Economics", degree: "Liberal Arts Undergraduate" },
-  { name: "English (BA)", degree: "Liberal Arts Undergraduate" },
-  { name: "English Minor", degree: "Liberal Arts Undergraduate" },
-  { name: "Journalism BA", degree: "Liberal Arts Undergraduate" },
-  { name: "Mathematics (BA)", degree: "Liberal Arts Undergraduate" },
-  { name: "Physics", degree: "Liberal Arts Undergraduate" },
-  { name: "Political Science", degree: "Liberal Arts Undergraduate" },
+  { name: "A B C", kind: "Major", degree: "Liberal Arts Undergraduate" },
+  { name: "Accounting", kind: "Major", degree: "Liberal Arts Undergraduate" },
+  { name: "Accounting AA", kind: "Major", degree: "Associate of Arts" },
+  { name: "Accounting AB", kind: "Major", degree: "Liberal Arts Undergraduate" },
+  { name: "Art (BFA)", kind: "Major", degree: "Fine Arts Undergraduate" },
+  { name: "Art History (BFA)", kind: "Major", degree: "Fine Arts Undergraduate" },
+  { name: "Art History Minor", kind: "Minor", degree: "Liberal Arts Undergraduate" },
+  { name: "Auto Technology", kind: "Major", degree: "Associate of Science" },
+  { name: "Baking and Pastry Arts", kind: "Major", degree: "Associate of Arts" },
+  { name: "Biology (BS)", kind: "Major", degree: "Liberal Arts Undergraduate", focus: ["Animal Science", "Photo Biology"] },
+  { name: "Business Administration", kind: "Major", degree: "Associate of Arts" },
+  { name: "Business Management", kind: "Concentration", degree: "Liberal Arts Undergraduate" },
+  { name: "Chemical Engineering (BE)", kind: "Major", degree: "Engineering Undergraduate" },
+  { name: "Chemistry (BS)", kind: "Major", degree: "Liberal Arts Undergraduate" },
+  { name: "Classics Minor", kind: "Minor", degree: "Liberal Arts Undergraduate" },
+  { name: "Communication Technology", kind: "Major", degree: "Associate of Science" },
+  { name: "Computer Science", kind: "Major", degree: "Liberal Arts Undergraduate" },
+  { name: "Computer Science Minor", kind: "Minor", degree: "Liberal Arts Undergraduate" },
+  { name: "Economics", kind: "Concentration", degree: "Liberal Arts Undergraduate" },
+  { name: "English (BA)", kind: "Major", degree: "Liberal Arts Undergraduate" },
+  { name: "English Minor", kind: "Minor", degree: "Liberal Arts Undergraduate" },
+  { name: "Journalism BA", kind: "Major", degree: "Liberal Arts Undergraduate" },
+  { name: "Mathematics (BA)", kind: "Major", degree: "Liberal Arts Undergraduate" },
+  { name: "Physics", kind: "Major", degree: "Liberal Arts Undergraduate" },
+  { name: "Political Science", kind: "Major", degree: "Liberal Arts Undergraduate" },
   {
     name: "Psychology",
+    kind: "Major",
     degree: "Liberal Arts Undergraduate",
     focus: ["Bio-Psychology", "Developmental Psychology"],
   },
-  { name: "Sociology", degree: "Liberal Arts Undergraduate" },
-  { name: "Statistics", degree: "Liberal Arts Undergraduate" },
-  { name: "Undeclared Undergraduate", degree: "Liberal Arts Undergraduate" },
+  { name: "Sociology", kind: "Major", degree: "Liberal Arts Undergraduate" },
+  { name: "Statistics", kind: "Major", degree: "Liberal Arts Undergraduate" },
+  { name: "Undeclared Undergraduate", kind: "Major", degree: "Liberal Arts Undergraduate" },
+  { name: "Business Pre-Major", kind: "Program", degree: "Associate of Arts" },
+  { name: "CSU Breadth", kind: "Program", degree: "Associate of Arts" },
+  { name: "Undergraduate Honors", kind: "Honors", degree: "Liberal Arts Undergraduate" },
 ];
 
 // Step 2. Years carry their own hue so thirteen tiles don't read as thirteen

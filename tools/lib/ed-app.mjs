@@ -11,14 +11,14 @@
 import {
   PROGRAMS, PREV_SCHOOLS, CATALOG, SCANNED_CLASSES, TERM_OPTIONS, GRADE_OPTIONS,
   SCAN_ERROR, TRANSFER_RESULTS, STATUS_COPY, REQUIREMENT_GROUPS, NEXT_INTAKE,
-  kindOf, coveredOf,
+  coveredOf,
 } from "./ed-data.mjs";
 
 /** @param h { icon } — icons are inlined SVG strings, so they cross into JS as data */
 export function edAppJs(h) {
   const { icon } = h;
   const groups = REQUIREMENT_GROUPS.map((g) => ({ ...g, count: coveredOf(g) }));
-  const programs = PROGRAMS.map((p) => ({ ...p, kind: kindOf(p.name) }));
+  const programs = PROGRAMS;
 
   const DATA = JSON.stringify({
     programs,
@@ -117,7 +117,7 @@ export function edAppJs(h) {
     var adding = mode === "add";
     /* Not "major": the primary pick can be a minor, and the reference lets it be
        — the chosen row has always called it your primary pick. */
-    $("#ed-picker-title").textContent = adding ? "Add a major or minor" : S.program ? "Change your primary pick" : "Choose your primary pick";
+    $("#ed-picker-title").textContent = adding ? "Add to your combo" : S.program ? "Change your primary pick" : "Choose your primary pick";
     /* Already-chosen programmes stay visible but are not pickable again. */
     var taken = S.combo.map(function (c) { return c.name; });
     /* Adding is a multi-pick, so the same tiles become checkboxes and nothing
@@ -127,7 +127,10 @@ export function edAppJs(h) {
     $$("#ed-program-grid .choice-tile").forEach(function (t) {
       var input = t.querySelector(".choice-tile__input");
       input.type = adding ? "checkbox" : "radio";
-      input.disabled = taken.indexOf(t.dataset.program) > -1;
+      /* Only adding forbids a duplicate. When choosing the primary, the ones
+         already in the combo must stay pickable — that is how you promote an
+         extra, and the pick handler moves it up instead of doubling it. */
+      input.disabled = adding && taken.indexOf(t.dataset.program) > -1;
       input.checked = false;
     });
     edStaged();
@@ -148,7 +151,7 @@ export function edAppJs(h) {
     var n = $$("#ed-program-grid .choice-tile__input:checked").length;
     var add = $("#ed-picker-add");
     add.disabled = !n;
-    add.textContent = n ? "Add " + n + (n === 1 ? " program" : " programs") : "Add";
+    add.textContent = n ? "Add " + n : "Add";
     return n;
   }
 
@@ -181,8 +184,8 @@ export function edAppJs(h) {
       $("#ed-primary").innerHTML =
         '<button class="ed-choose" id="ed-choose-program" type="button">' +
           '<span class="ed-choose__marker">' + I.add + "</span>" +
-          '<span class="ed-choose__text"><span class="ed-choose__label">Choose a major or minor</span>' +
-          '<span class="ed-choose__hint">Search ' + D.programs.length + ' majors and minors</span></span></button>';
+          '<span class="ed-choose__text"><span class="ed-choose__label">Choose what to study</span>' +
+          '<span class="ed-choose__hint">Search ' + D.programs.length + ' majors, minors and more</span></span></button>';
       $("#ed-choose-program").addEventListener("click", function () { edOpenPicker("primary"); });
     } else {
       $("#ed-primary").innerHTML = edPickCard(primary.c, primary.i);
@@ -277,7 +280,7 @@ export function edAppJs(h) {
     };
     return '<div class="ed-pick__focus">' +
       '<div class="ed-section__head"><div class="ed-section__title">Want to focus it? (optional)</div>' +
-      '<p class="ed-section__hint">This major or minor offers focus areas. Pick one if you already know, or skip and decide later.</p></div>' +
+      '<p class="ed-section__hint">Pick a focus area if you already know, or skip and decide later.</p></div>' +
       '<div class="ed-grid" id="ed-focus-grid">' +
       p.focus.map(function (f) { return tile(f, f); }).join("") +
       tile("__skip__", "Not sure yet — skip focus areas") +
@@ -469,7 +472,7 @@ export function edAppJs(h) {
        that produced "Major — Classics Minor · Minor". PeopleSoft would call
        these plans, but this screen speaks to prospective students and every
        other control on it says major/minor — so the key does too. */
-    rows.push([S.combo.length > 1 ? "Majors &amp; minors" : "Major or minor",
+    rows.push(["Studying",
       S.combo.map(function (c) {
         return esc(c.name) + ' <span class="badge badge--neutral">' + (c.primary && extras.length ? "Primary · " : "") + c.kind + "</span>";
       }).join("<br />")]);

@@ -2,7 +2,7 @@
 // screens. Anything that depends on what the user picked (combo chips, school
 // blocks, the class table, both result tabs) is rendered by ed-app.mjs into the
 // containers this file lays out.
-import { PROGRAMS, TERM_YEARS, NEXT_INTAKE, kindOf, levelOf } from "./ed-data.mjs";
+import { PROGRAMS, TERM_YEARS, NEXT_INTAKE, KINDS, levelOf } from "./ed-data.mjs";
 import { shellTopbar } from "./app-shell.mjs";
 
 // Step labels name the thing being chosen, not a one-word category — the
@@ -31,11 +31,11 @@ ${STEPS.map(
   // The name alone doesn't say what a programme *is* — "Accounting AA" and
   // "Accounting AB" differ only by degree. Kind and degree ride along as one
   // muted line, and the filter chips above work the same two axes.
-  const programTile = (p) => `<label class="choice-tile" data-program="${esc(p.name)}" data-kind="${kindOf(p.name)}" data-level="${esc(levelOf(p.degree))}">
+  const programTile = (p) => `<label class="choice-tile" data-program="${esc(p.name)}" data-kind="${esc(p.kind)}" data-level="${esc(levelOf(p.degree))}">
         <input class="choice-tile__input" type="radio" name="ed-program" value="${esc(p.name)}" />
         <span class="choice-tile__box">
           <span class="choice-tile__marker ed-hue--${hueOf(p.name)}">${initialsOf(p.name)}</span>
-          <span class="choice-tile__text"><span class="choice-tile__label">${esc(p.name)}</span><span class="choice-tile__description">${kindOf(p.name)} &middot; ${esc(p.degree)}</span></span>
+          <span class="choice-tile__text"><span class="choice-tile__label">${esc(p.name)}</span><span class="choice-tile__description">${esc(p.kind)} &middot; ${esc(p.degree)}</span></span>
           <span class="choice-tile__check">${icon("check", "")}</span>
         </span>
       </label>`;
@@ -81,17 +81,17 @@ ${shellTopbar({ title: "Explore your degree", meta: "No account needed" })}
         <div class="ed-section">
           <div class="ed-section__head">
             <div class="ed-section__title">Make your primary pick</div>
-            <p class="ed-section__hint">The major or minor your results are built around. Focus areas, if it has any, come with it.</p>
+            <p class="ed-section__hint">What your results are built around. Focus areas, if it has any, come with it.</p>
           </div>
           <div id="ed-primary"></div>
         </div>
         <div class="ed-section is-hidden" id="ed-add-block">
           <div class="ed-section__head">
             <div class="ed-section__title">Build your program combo (optional)</div>
-            <p class="ed-section__hint">Stack more majors or minors and we'll check them all in one go.</p>
+            <p class="ed-section__hint">Stack as many as you like and we'll check them all in one go.</p>
           </div>
           <div class="ed-chosen is-hidden" id="ed-extras-list"></div>
-          <button class="btn btn--secondary btn--base btn--block" id="ed-add-program" type="button">${icon("add", "btn__icon")}Add another major or minor</button>
+          <button class="btn btn--secondary btn--base btn--block" id="ed-add-program" type="button">${icon("add", "btn__icon")}Add another</button>
         </div>
       </div></div>
 
@@ -220,7 +220,7 @@ ${TERM_YEARS.map(
       <button class="btn btn--ghost btn--base btn--icon-only" id="ed-picker-close" type="button" aria-label="Close">${icon("close", "btn__icon")}</button>
     </div>
     <div class="ed-picker__tools">
-      <div class="search">${icon("search", "search__icon")}<input class="search__input" id="ed-program-search" type="search" placeholder="Search majors: try &ldquo;computer&rdquo; or &ldquo;bio&rdquo;" aria-label="Search majors" /></div>
+      <div class="search">${icon("search", "search__icon")}<input class="search__input" id="ed-program-search" type="search" placeholder="Search: try &ldquo;computer&rdquo; or &ldquo;bio&rdquo;" aria-label="Search what to study" /></div>
       <div class="ed-picker__filters">
       <button class="select select--base" id="ed-filter-kind" type="button" popovertarget="ed-lb-kind" aria-haspopup="listbox">
         <span class="select__value">All types</span>
@@ -231,6 +231,9 @@ ${TERM_YEARS.map(
           <li><button class="listbox__option" role="option" type="button" data-facet="kind" data-value="">All types</button></li>
           <li><button class="listbox__option" role="option" type="button" data-facet="kind" data-value="Major">Majors</button></li>
           <li><button class="listbox__option" role="option" type="button" data-facet="kind" data-value="Minor">Minors</button></li>
+          <li><button class="listbox__option" role="option" type="button" data-facet="kind" data-value="Concentration">Concentrations</button></li>
+          <li><button class="listbox__option" role="option" type="button" data-facet="kind" data-value="Honors">Honors</button></li>
+          <li><button class="listbox__option" role="option" type="button" data-facet="kind" data-value="Program">Programs</button></li>
         </ul>
       </div>
       <button class="select select--base" id="ed-filter-level" type="button" popovertarget="ed-lb-level" aria-haspopup="listbox">
@@ -250,7 +253,7 @@ ${TERM_YEARS.map(
       <div class="ed-grid" id="ed-program-grid">
       ${PROGRAMS.map(programTile).join("\n      ")}
       </div>
-      <div class="empty-state is-hidden" id="ed-program-empty"><span class="empty-state__text">No majors match that search</span></div>
+      <div class="empty-state is-hidden" id="ed-program-empty"><span class="empty-state__text">Nothing matches that search</span></div>
     </div>
     <div class="ed-picker__foot">
       <button class="btn btn--primary btn--base" id="ed-picker-add" type="button" disabled>Add</button>
