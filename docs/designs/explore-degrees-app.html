@@ -182,8 +182,9 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .choice-tile:hover .choice-tile__input:not(:checked):not(:disabled) ~ .choice-tile__box { background: var(--tok-bg-primary-hover); border-color: var(--tok-fill-primary); }
 .choice-tile__input:checked ~ .choice-tile__box { background: var(--tok-bg-primary); border-color: var(--tok-fill-primary); }
 .choice-tile__input:focus-visible ~ .choice-tile__box { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
-.choice-tile__input:disabled ~ .choice-tile__box { background: var(--tok-surface-disabled); cursor: default; }
+.choice-tile__input:disabled ~ .choice-tile__box { background: var(--tok-surface-disabled); border-color: var(--tok-border-default); cursor: default; }
 .choice-tile__input:disabled ~ .choice-tile__box .choice-tile__label { color: var(--tok-text-disabled); }
+.choice-tile__input:disabled ~ .choice-tile__box .choice-tile__description { color: var(--tok-text-disabled); }
 /* A chosen programme is its own little card, not a choice-tile box with extra
    classes: the primary one carries a second compartment for focus areas, so it
    has to be a container with a header row rather than a single flex row.

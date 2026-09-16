@@ -172,8 +172,9 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .choice-tile:hover .choice-tile__input:not(:checked):not(:disabled) ~ .choice-tile__box { background: ${cv(refPath(ctSt.hover.bg.$value))}; border-color: ${cv(refPath(ctSt.hover.border.$value))}; }
 .choice-tile__input:checked ~ .choice-tile__box { background: ${cv(refPath(ctSt.selected.bg.$value))}; border-color: ${cv(refPath(ctSt.selected.border.$value))}; }
 .choice-tile__input:focus-visible ~ .choice-tile__box { outline: ${px(resolve(ctSt.focused.ringWidth.$value))} solid ${cv(refPath(ctSt.focused.ringColor.$value))}; outline-offset: ${px(resolve(ctSt.focused.ringOffset.$value))}; }
-.choice-tile__input:disabled ~ .choice-tile__box { background: ${cv(refPath(ctSt.disabled.bg.$value))}; cursor: default; }
+.choice-tile__input:disabled ~ .choice-tile__box { background: ${cv(refPath(ctSt.disabled.bg.$value))}; border-color: ${cv(refPath(ctSt.disabled.border.$value))}; cursor: default; }
 .choice-tile__input:disabled ~ .choice-tile__box .choice-tile__label { color: ${cv(refPath(ctSt.disabled.label.$value))}; }
+.choice-tile__input:disabled ~ .choice-tile__box .choice-tile__description { color: ${cv(refPath(ctSt.disabled.description.$value))}; }
 /* A chosen programme is its own little card, not a choice-tile box with extra
    classes: the primary one carries a second compartment for focus areas, so it
    has to be a container with a header row rather than a single flex row.
