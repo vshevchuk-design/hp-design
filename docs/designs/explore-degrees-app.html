@@ -121,7 +121,8 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .ed__sub { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 14px; line-height: 1.4; }
 .ed__step { display: none; flex-direction: column; gap: 24px; }
 .ed__step.is-active { display: flex; }
-.ed__footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.ed__footer { position: sticky; bottom: 0; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-block: 16px; margin-block-end: -40px; background: var(--tok-surface-page); }
+.ed__footer::before { content: ""; position: absolute; left: 0; right: 0; bottom: 100%; height: 16px; background: linear-gradient(to top, var(--tok-surface-page), transparent); pointer-events: none; }
 .ed__footer--end { justify-content: flex-end; }
 /* One card per screen; inside it, sections are separated by a divider and a
    heading — never by another nested card. That stacking is what made the
@@ -232,7 +233,8 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
    the focus tiles — both are secondary to the primary card. */
 .ed-pick--compact .ed-pick__row { padding: 8px 12px; }
 .ed-pick--compact .choice-tile__marker, .ed-pick__focus .choice-tile__marker, .ed-picker .choice-tile__marker { width: 32px; height: 32px; font-weight: 600; font-size: 12px; line-height: 1; }
-.ed-pick__focus .choice-tile__box, .ed-picker .choice-tile__box { padding: 8px 12px; }
+.ed-pick__focus .choice-tile__box { min-height: 48px; padding: 6px 12px; }
+.ed-picker .choice-tile__box { padding: 8px 12px; }
 
 /* ============ Alert ============ */
 .alert { display: flex; align-items: flex-start; gap: 8px; padding: 12px 16px; border-radius: 8px; border: 1px solid transparent; }

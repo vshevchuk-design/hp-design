@@ -111,7 +111,8 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .ed__sub { margin: 0; color: ${cv("text.secondary")}; ${typoCss(h.resolveToken(h.get("text-style.body-base")))} }
 .ed__step { display: none; flex-direction: column; gap: ${px(resolve("dim.6"))}; }
 .ed__step.is-active { display: flex; }
-.ed__footer { display: flex; align-items: center; justify-content: space-between; gap: ${px(resolve("dim.3"))}; }
+.ed__footer { position: sticky; bottom: 0; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: ${px(resolve("dim.3"))}; padding-block: ${px(resolve("dim.4"))}; margin-block-end: -${px(resolve("dim.10"))}; background: ${cv("surface.page")}; }
+.ed__footer::before { content: ""; position: absolute; left: 0; right: 0; bottom: 100%; height: ${px(resolve("dim.4"))}; background: linear-gradient(to top, ${cv("surface.page")}, transparent); pointer-events: none; }
 .ed__footer--end { justify-content: flex-end; }
 /* One card per screen; inside it, sections are separated by a divider and a
    heading — never by another nested card. That stacking is what made the
@@ -222,7 +223,8 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
    the focus tiles — both are secondary to the primary card. */
 .ed-pick--compact .ed-pick__row { padding: ${px(resolve("dim.2"))} ${px(resolve(ct.paddingX.$value))}; }
 .ed-pick--compact .choice-tile__marker, .ed-pick__focus .choice-tile__marker, .ed-picker .choice-tile__marker { width: ${px(resolve("dim.8"))}; height: ${px(resolve("dim.8"))}; ${typoCss(h.resolveToken(avatar.size.sm.initials))} }
-.ed-pick__focus .choice-tile__box, .ed-picker .choice-tile__box { padding: ${px(resolve("dim.2"))} ${px(resolve(ct.paddingX.$value))}; }
+.ed-pick__focus .choice-tile__box { min-height: ${px(resolve("dim.12"))}; padding: ${px(resolve("dim.1_5"))} ${px(resolve(ct.paddingX.$value))}; }
+.ed-picker .choice-tile__box { padding: ${px(resolve("dim.2"))} ${px(resolve(ct.paddingX.$value))}; }
 
 /* ============ Alert ============ */
 .alert { display: flex; align-items: flex-start; gap: ${px(resolve(alert.gap.$value))}; padding: ${px(resolve(alert.paddingY.$value))} ${px(resolve(alert.paddingX.$value))}; border-radius: ${px(resolve(alert.radius.$value))}; border: 1px solid transparent; }
