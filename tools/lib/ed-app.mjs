@@ -178,7 +178,7 @@ export function edAppJs(h) {
        results are, so it is badged rather than mentioned in the grey meta line
        — a real Badge in the primary tint, on the name row where it is read. */
     var badge = primary ? ' <span class="badge badge--info">Primary</span>' : "";
-    return '<div class="ed-pick" data-row="' + i + '"><div class="ed-pick__row">' +
+    return '<div class="ed-pick' + (primary ? "" : " ed-pick--compact") + '" data-row="' + i + '"><div class="ed-pick__row">' +
       '<span class="choice-tile__marker ed-hue--' + edHue(c.name) + '">' + edInitials(c.name) + "</span>" +
       '<span class="choice-tile__text"><span class="ed-pick__name"><span class="choice-tile__label">' + esc(c.name) + "</span>" + badge + "</span>" +
       '<span class="choice-tile__description">' + esc(c.kind + " · " + p.degree) + "</span></span>" +

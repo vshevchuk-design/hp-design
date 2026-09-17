@@ -1377,3 +1377,16 @@ That last pair is what makes the model coherent. The stacked picks were chosen *
 One mobile refinement: the row-wrapping rule that gives the actions their own line is now scoped with `:has(.btn:not(.btn--icon-only))`. With "Make primary" gone the extras carry only a ✕, and an icon-only row was getting a blank strip under it for no reason.
 
 Verified: first open is a radio list titled "Choose your primary pick" with no footer; Add opens checkboxes with the primary disabled; Change disables nothing and clears the combo; ✕ on the primary returns the empty slot with Continue off; the whole flow still reaches results with "What it takes to finish Biology (BS)" and a review reading "Studying: Biology (BS) [Primary · Major], Classics Minor [Minor]" plus "Focus area: Animal Science".
+
+## 2026-09-17 (cont. 4) — the secondary things look secondary
+
+Focus tiles and combo entries are both subordinate to the primary card, and both were wearing its full size. They are compact now: a 32px marker instead of 40, in a `dim.2` band instead of `dim.3`, with **Avatar's own sm initials** rather than the base mark shrunk by hand — the marker is Avatar's logic, so its smaller size should be Avatar's smaller size. Focus tile: 64px → 50px. Combo entry: 64px → 56px.
+
+The combo also **flows** instead of stacking one bar per line. Two attempts before it was right:
+
+- `flex-wrap` gave each row's last card the leftover width, so three entries rendered as two half-width cards and one full-width orphan underneath — an accidental hierarchy where none exists.
+- A 260px basis let the meta line wrap to two lines, which made the "smaller" card taller than the full-width bar it replaced. "Major · Liberal Arts Undergraduate" beside a 32px marker and a remove button needs ~320.
+
+It is `repeat(auto-fill, minmax(min(320px, 100%), 1fr))`: equal columns, an orphan stays one column because `auto-fill` keeps the empty track, and `min(…, 100%)` stops a 320px track from overflowing a 311px card body at 375px. The compact meta line also takes `nowrap` + ellipsis as a safety valve — the programme name is the part that must never be cut, the degree is not.
+
+Verified at 1100px (three entries at 395×56, orphan one column) and at 375px (one column, 309px wide, no horizontal overflow, ellipsis doing its job).

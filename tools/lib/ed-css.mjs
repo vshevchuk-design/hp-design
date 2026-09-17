@@ -206,7 +206,20 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 /* A neutral hairline, not the frame's blue: this divides content inside one
    card, and repeating the frame colour made it read as two stacked cards. */
 .ed-pick__focus { border-top: 1px solid ${cv("border.default")}; padding: ${px(resolve(ct.paddingX.$value))}; display: flex; flex-direction: column; gap: ${px(resolve("dim.3"))}; }
-.ed-chosen { display: grid; gap: ${px(resolve("dim.2"))}; }
+/* The combo entries sit side by side while they fit and wrap when they don't,
+   each taking an equal share of its row — a stack of full-width bars gave a
+   secondary, optional list the same weight as the primary card above it. */
+.ed-chosen { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(${px(resolve("dim.80"))}, 100%), 1fr)); gap: ${px(resolve("dim.2"))}; }
+.ed-chosen > .ed-pick { min-width: 0; }
+/* Safety valve for a longer degree name: one line, then an ellipsis — the
+   programme name above it is the part that must never be cut. */
+.ed-pick--compact .choice-tile__description { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* Compact: a smaller marker in a tighter band, with Avatar's own sm initials
+   rather than a base mark shrunk by hand. Used for the combo entries and for
+   the focus tiles — both are secondary to the primary card. */
+.ed-pick--compact .ed-pick__row { padding: ${px(resolve("dim.2"))} ${px(resolve(ct.paddingX.$value))}; }
+.ed-pick--compact .choice-tile__marker, .ed-pick__focus .choice-tile__marker { width: ${px(resolve("dim.8"))}; height: ${px(resolve("dim.8"))}; ${typoCss(h.resolveToken(avatar.size.sm.initials))} }
+.ed-pick__focus .choice-tile__box { padding: ${px(resolve("dim.2"))} ${px(resolve(ct.paddingX.$value))}; }
 
 /* ============ Alert ============ */
 .alert { display: flex; align-items: flex-start; gap: ${px(resolve(alert.gap.$value))}; padding: ${px(resolve(alert.paddingY.$value))} ${px(resolve(alert.paddingX.$value))}; border-radius: ${px(resolve(alert.radius.$value))}; border: 1px solid transparent; }

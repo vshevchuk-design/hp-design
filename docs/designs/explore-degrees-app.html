@@ -216,7 +216,20 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 /* A neutral hairline, not the frame's blue: this divides content inside one
    card, and repeating the frame colour made it read as two stacked cards. */
 .ed-pick__focus { border-top: 1px solid var(--tok-border-default); padding: 12px; display: flex; flex-direction: column; gap: 12px; }
-.ed-chosen { display: grid; gap: 8px; }
+/* The combo entries sit side by side while they fit and wrap when they don't,
+   each taking an equal share of its row — a stack of full-width bars gave a
+   secondary, optional list the same weight as the primary card above it. */
+.ed-chosen { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr)); gap: 8px; }
+.ed-chosen > .ed-pick { min-width: 0; }
+/* Safety valve for a longer degree name: one line, then an ellipsis — the
+   programme name above it is the part that must never be cut. */
+.ed-pick--compact .choice-tile__description { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* Compact: a smaller marker in a tighter band, with Avatar's own sm initials
+   rather than a base mark shrunk by hand. Used for the combo entries and for
+   the focus tiles — both are secondary to the primary card. */
+.ed-pick--compact .ed-pick__row { padding: 8px 12px; }
+.ed-pick--compact .choice-tile__marker, .ed-pick__focus .choice-tile__marker { width: 32px; height: 32px; font-weight: 600; font-size: 12px; line-height: 1; }
+.ed-pick__focus .choice-tile__box { padding: 8px 12px; }
 
 /* ============ Alert ============ */
 .alert { display: flex; align-items: flex-start; gap: 8px; padding: 12px 16px; border-radius: 8px; border: 1px solid transparent; }
@@ -1208,7 +1221,7 @@ html:has(.ed-picker[open]) { overflow: hidden; }
        results are, so it is badged rather than mentioned in the grey meta line
        — a real Badge in the primary tint, on the name row where it is read. */
     var badge = primary ? ' <span class="badge badge--info">Primary</span>' : "";
-    return '<div class="ed-pick" data-row="' + i + '"><div class="ed-pick__row">' +
+    return '<div class="ed-pick' + (primary ? "" : " ed-pick--compact") + '" data-row="' + i + '"><div class="ed-pick__row">' +
       '<span class="choice-tile__marker ed-hue--' + edHue(c.name) + '">' + edInitials(c.name) + "</span>" +
       '<span class="choice-tile__text"><span class="ed-pick__name"><span class="choice-tile__label">' + esc(c.name) + "</span>" + badge + "</span>" +
       '<span class="choice-tile__description">' + esc(c.kind + " · " + p.degree) + "</span></span>" +
