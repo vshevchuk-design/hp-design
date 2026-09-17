@@ -1408,3 +1408,13 @@ From 768px the picker's search and its two filters sit on one row: the filters a
 **The verification note matters more than the change.** For several minutes the browser reported `flex-direction: column` and 352px filters while the built file plainly had the rule — the page was being served from cache, and `matchMedia` agreed the query matched while the stylesheet simply did not contain the block. The tell was enumerating `document.styleSheets`: four media blocks present, mine absent. A cache-busting query string fixed it instantly.
 
 This also revises the previous entry: I put a screenshot-versus-measurement disagreement down to a stale frame. Same root cause is far more likely — a stale *document*. From now on every verification navigate carries a cache buster.
+
+## 2026-09-17 (cont. 7) — fill means finished, and skip is the default answer
+
+The user named a rule worth keeping: **a fill marks a finished choice**. So a combo entry is filled, a primary with no focus areas is filled, and a primary that still carries focus areas is a plain frame — because it is not the answer, it is the container of one, and the filled thing inside it is the selected focus tile. The class is decided by exactly the condition that draws the compartment (`primary && p.focus`), so the two can never disagree.
+
+**Skip is now pre-selected wherever focus areas exist.** The question is optional, which means its unanswered state and its "no thanks" answer are the same thing to the results — leaving it blank only made the card look like an unfinished task. It is still a real answer in the model: `S.focusSkipped` is what gets set, so the review shows no "Focus area" row until an actual area is chosen, and choosing one replaces the default.
+
+Note the rule does not collapse into "filled = has an answer": a primary with focus areas stays unfilled even though skip is selected by default. Fill tracks *structure* — is this card the leaf? — not state. That is what keeps it readable at a glance rather than something that flickers as you answer.
+
+Verified: with Biology (BS) the card is `#ffffff` with skip checked and nothing else; swapping to Physics fills it `#d9eaff` and drops the compartment; all three combo entries are filled; the review reads without a Focus area row by default and gains "Focus area Photo Biology" once one is picked.

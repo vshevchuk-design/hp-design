@@ -203,6 +203,9 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 }
 /* Focus areas belong to the programme, so they live inside its card — divided
    from the header row, not floating below as a separate section. */
+/* Filled = finished. The same selected fill the focus tiles use, so a settled
+   choice looks the same wherever it appears. */
+.ed-pick--filled { background: ${cv(refPath(ctSt.selected.bg.$value))}; }
 /* A neutral hairline, not the frame's blue: this divides content inside one
    card, and repeating the frame colour made it read as two stacked cards. */
 .ed-pick__focus { border-top: 1px solid ${cv("border.default")}; padding: ${px(resolve(ct.paddingX.$value))}; display: flex; flex-direction: column; gap: ${px(resolve("dim.3"))}; }

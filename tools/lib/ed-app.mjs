@@ -178,7 +178,13 @@ export function edAppJs(h) {
        results are, so it is badged rather than mentioned in the grey meta line
        — a real Badge in the primary tint, on the name row where it is read. */
     var badge = primary ? ' <span class="badge badge--info">Primary</span>' : "";
-    return '<div class="ed-pick' + (primary ? "" : " ed-pick--compact") + '" data-row="' + i + '"><div class="ed-pick__row">' +
+    /* Fill means "this is a finished choice". A primary with focus areas still
+       holds a question, so it stays a plain frame and the filled thing is the
+       focus tile inside it; everything else — a primary with no focus areas,
+       and every combo entry — is a leaf answer and is filled. */
+    var open = primary && p.focus;
+    return '<div class="ed-pick' + (primary ? "" : " ed-pick--compact") + (open ? "" : " ed-pick--filled") +
+      '" data-row="' + i + '"><div class="ed-pick__row">' +
       '<span class="choice-tile__marker ed-hue--' + edHue(c.name) + '">' + edInitials(c.name) + "</span>" +
       '<span class="choice-tile__text"><span class="ed-pick__name"><span class="choice-tile__label">' + esc(c.name) + "</span>" + badge + "</span>" +
       '<span class="choice-tile__description">' + esc(c.kind + " · " + p.degree) + "</span></span>" +
@@ -218,7 +224,14 @@ export function edAppJs(h) {
   }
   /* The focus answer belongs to whichever programme is primary, so it clears
      every time the first row changes — by promotion, replacement or deletion. */
-  function edResetFocus() { S.focus = null; S.focusSkipped = false; }
+  function edResetFocus() {
+    S.focus = null;
+    /* Skip is pre-selected wherever focus areas exist: the question is optional,
+       so its unanswered state and its "no thanks" answer are the same thing to
+       the results, and leaving it blank only looks like an unfinished task. */
+    var p = S.combo.length ? programOf(S.combo[0].name) : null;
+    S.focusSkipped = !!(p && p.focus);
+  }
 
   /* The combo is built on top of the primary, so it does not outlive it:
      removing the primary empties the whole list rather than promoting whatever
