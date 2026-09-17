@@ -65,13 +65,15 @@ ${shellTopbar({ title: "Explore your degree", meta: "No account needed" })}
     ${stepper}
 
     <!-- ============ step 1 · what do you want to study ============
-         One ordered list, not a primary plus a combo. The first entry is the
-         primary — what the results are built around and where focus areas come
-         from — and you say which one that is by dragging, so the app never
-         promotes something on your behalf. Deleting the first simply leaves the
-         next one first, which is now a position you control rather than a
-         decision made for you. The catalogue lives in the modal dialog.
-         ============ -->
+         The primary pick first, then anything stacked on top of it. Both live
+         in one array whose head is the primary, but they are two sections
+         because they are two different commitments: the first drives the
+         results and the focus areas, the second is optional. The combo does not
+         outlive the primary — clearing or replacing it empties the list, since
+         those picks were chosen to go with the old one — so nothing is ever
+         promoted on the user's behalf and no extra carries a promote button.
+         The catalogue lives in the modal dialog: one pick for the primary,
+         checkboxes when adding to the combo. ============ -->
     <section class="ed__step is-active" data-panel="1">
       <div class="ed__head">
         <h2 class="ed__title">What do you want to study?</h2>
@@ -89,7 +91,7 @@ ${shellTopbar({ title: "Explore your degree", meta: "No account needed" })}
         <div class="ed-section is-hidden" id="ed-add-block">
           <div class="ed-section__head">
             <div class="ed-section__title">Build your program combo (optional)</div>
-            <p class="ed-section__hint">Stack as many as you like and we'll check them all in one go. Any of them can take the primary spot.</p>
+            <p class="ed-section__hint">Stack as many as you like and we'll check them all in one go. Changing your primary pick starts this list over.</p>
           </div>
           <div class="ed-chosen is-hidden" id="ed-extras-list"></div>
           <button class="btn btn--secondary btn--base btn--block" id="ed-add-program" type="button">${icon("add", "btn__icon")}Add another</button>

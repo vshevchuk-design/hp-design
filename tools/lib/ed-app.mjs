@@ -167,9 +167,11 @@ export function edAppJs(h) {
     /* Only the first position means anything, so the control is one button that
        says exactly that — not a drag grip, which would imply that 2 versus 3 is
        also a decision. */
-    var actions = (primary
-      ? '<button class="btn btn--ghost btn--sm" type="button" data-change-primary="1">Change</button>'
-      : '<button class="btn btn--ghost btn--sm" type="button" data-make-primary="' + i + '">Make primary</button>') +
+    /* No "Make primary" on the extras: the combo is built on top of the primary
+       and does not survive it changing, so a promote button would quietly take
+       the others with it. Changing the primary is the Change button, which says
+       what it costs in the section hint. */
+    var actions = (primary ? '<button class="btn btn--ghost btn--sm" type="button" data-change-primary="1">Change</button>' : "") +
       '<button class="btn btn--ghost btn--sm btn--icon-only" type="button" data-drop="' + i +
       '" aria-label="Remove ' + esc(c.name) + '">' + I.close + "</button>";
     /* The primary is the one decision on this screen that changes what the
@@ -196,7 +198,7 @@ export function edAppJs(h) {
           '<span class="ed-choose__marker">' + I.add + "</span>" +
           '<span class="ed-choose__text"><span class="ed-choose__label">Choose what to study</span>' +
           '<span class="ed-choose__hint">Search ' + D.programs.length + ' majors, minors and more</span></span></button>';
-      $("#ed-choose-program").addEventListener("click", function () { edOpenPicker("add"); });
+      $("#ed-choose-program").addEventListener("click", function () { edOpenPicker("primary"); });
     } else {
       $("#ed-primary").innerHTML = edPickCard(S.combo[0], 0);
       $("#ed-primary [data-change-primary]").addEventListener("click", function () { edOpenPicker("primary"); });
@@ -209,9 +211,6 @@ export function edAppJs(h) {
     /* Stacking only makes sense once there is something to stack onto. */
     show($("#ed-add-block"), !!S.combo.length);
 
-    $$("#ed-extras-list [data-make-primary]").forEach(function (b) {
-      b.addEventListener("click", function () { edMakePrimary(+b.dataset.makePrimary); });
-    });
     $$("#ed-primary [data-drop], #ed-extras-list [data-drop]").forEach(function (b) {
       b.addEventListener("click", function () { edDrop(+b.dataset.drop); });
     });
@@ -221,19 +220,12 @@ export function edAppJs(h) {
      every time the first row changes — by promotion, replacement or deletion. */
   function edResetFocus() { S.focus = null; S.focusSkipped = false; }
 
-  function edMakePrimary(i) {
-    S.combo.unshift(S.combo.splice(i, 1)[0]);
-    edResetFocus();
-    edRenderChosen();
-  }
-
-  /* Deleting the first one does leave the next one primary, but that is now a
-     one-click decision to undo rather than something the app decided quietly:
-     every other row carries "Make primary". */
+  /* The combo is built on top of the primary, so it does not outlive it:
+     removing the primary empties the whole list rather than promoting whatever
+     happened to be next, which was the app deciding on the user's behalf. */
   function edDrop(i) {
-    var wasFirst = i === 0;
-    S.combo.splice(i, 1);
-    if (wasFirst) edResetFocus();
+    if (i === 0) { S.combo = []; edResetFocus(); }
+    else S.combo.splice(i, 1);
     edRenderChosen();
   }
   /* One place that knows how a facet is stored and shown. */
@@ -272,10 +264,10 @@ export function edAppJs(h) {
       edStaged();
       return;
     }
-    /* Replacing the first pick keeps the rest of the list; if the replacement
-       was already further down, it moves up instead of doubling. */
-    var rest = S.combo.slice(1).filter(function (c) { return c.name !== p.name; });
-    S.combo = [{ name: p.name, kind: p.kind }].concat(rest);
+    /* Replacing the primary starts the combo over — the stacked picks were
+       chosen to go with the old one. Nothing is disabled in this mode, so any
+       programme can be picked, including one already in the list. */
+    S.combo = [{ name: p.name, kind: p.kind }];
     edResetFocus();
     edClosePicker();
     edRenderChosen();

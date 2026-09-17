@@ -1365,3 +1365,15 @@ Two corrections in one round, the first of them mine to own.
 `edMeta()` went with it: the card composes its own meta line, and leaving a second function that also knew how to spell that string was an invitation to drift.
 
 The function-inventory check after a bulk edit paid for itself immediately — this round's slice was clean, but only because I looked.
+
+## 2026-09-17 (cont. 3) — the combo depends on the primary, and says so
+
+The user reversed the multi-pick-from-step-one idea: the primary comes first on its own, the combo is built afterwards, replacing or clearing the primary empties the combo, and nothing is disabled while choosing the primary.
+
+That last pair is what makes the model coherent. The stacked picks were chosen *to go with* a particular primary, so they have no meaning once it changes — which also means the picker has nothing to forbid when you are choosing the primary: any programme is fair game, including one currently in the combo and including the current primary itself. Disabling survives only in add mode, where a duplicate genuinely means nothing.
+
+**"Make primary" had to go, and that follows from the rule rather than from taste.** A button on one of three extras that silently deletes the other two is a trap, however accurate its label. Changing the primary is now exactly one affordance — the Change button on the primary card — and the combo section's hint states the cost before it is paid: "Changing your primary pick starts this list over." Removing the primary with its ✕ empties everything and returns the dashed slot.
+
+One mobile refinement: the row-wrapping rule that gives the actions their own line is now scoped with `:has(.btn:not(.btn--icon-only))`. With "Make primary" gone the extras carry only a ✕, and an icon-only row was getting a blank strip under it for no reason.
+
+Verified: first open is a radio list titled "Choose your primary pick" with no footer; Add opens checkboxes with the primary disabled; Change disables nothing and clears the combo; ✕ on the primary returns the empty slot with Continue off; the whole flow still reaches results with "What it takes to finish Biology (BS)" and a review reading "Studying: Biology (BS) [Primary · Major], Classics Minor [Minor]" plus "Focus area: Animal Science".

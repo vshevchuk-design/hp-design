@@ -197,9 +197,9 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
    loses twice — it wraps AND the buttons crowd it. Drop the actions onto their
    own line instead; the name gets the full width and stays one line. */
 @media (max-width: 559px) {
-  .ed-pick__row { flex-wrap: wrap; }
-  .ed-pick__row .choice-tile__text { flex: 1; }
-  .ed-pick__actions { width: 100%; margin-left: 0; justify-content: flex-end; }
+  .ed-pick__row:has(.ed-pick__actions .btn:not(.btn--icon-only)) { flex-wrap: wrap; }
+  .ed-pick__row:has(.ed-pick__actions .btn:not(.btn--icon-only)) .choice-tile__text { flex: 1; }
+  .ed-pick__row:has(.ed-pick__actions .btn:not(.btn--icon-only)) .ed-pick__actions { width: 100%; margin-left: 0; justify-content: flex-end; }
 }
 /* Focus areas belong to the programme, so they live inside its card — divided
    from the header row, not floating below as a separate section. */
