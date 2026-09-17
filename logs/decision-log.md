@@ -1398,3 +1398,13 @@ Same change as the combo and focus tiles, applied where the list actually is: th
 Measured: 352×56 tiles two-up at 1100 (twelve rows visible in the body instead of seven), 340px two-up at exactly 768 with the meta line still on one line, one column at 375 with 56px rows and no horizontal overflow. Checkboxes in multi-pick sit on the right of each tile at both column counts.
 
 One verification note: a screenshot disagreed with the measurements — it showed the primary picker while the DOM said multi-pick was open. The measurements were right and the frame was stale; re-running the sequence from a fresh load agreed with the numbers. When a picture and a measurement disagree, re-run deterministically rather than believing either.
+
+## 2026-09-17 (cont. 6) — search and filters on one row, and a cache that lied
+
+From 768px the picker's search and its two filters sit on one row: the filters at fixed widths, the search taking whatever is left. The widths are **measured, not guessed** — rendering each option label in the trigger's own computed font gives "Concentrations" at 128px and "Bachelor's" at 84px, plus 12+12 padding, an 8px gap and a 20px chevron: 180 and 136, rounded up the scale to `dim.48` (192) and `dim.36` (144). Each filter is sized to its own content rather than both to the larger, which is what "fixed width that fits the longest value" actually means.
+
+**On a phone they stack.** Two tries at keeping them side by side failed for the same arithmetic: 180 + 136 + 8 = 324 against 319 available at 375px. Giving the kind filter a larger share (`flex: 1.4`) just moved the truncation onto "Bachelor's". A truncated *selected* value is the one thing a filter must not do — it is the state you are reading — so they take a row each. Forty-eight extra pixels is cheaper than an unreadable state.
+
+**The verification note matters more than the change.** For several minutes the browser reported `flex-direction: column` and 352px filters while the built file plainly had the rule — the page was being served from cache, and `matchMedia` agreed the query matched while the stylesheet simply did not contain the block. The tell was enumerating `document.styleSheets`: four media blocks present, mine absent. A cache-busting query string fixed it instantly.
+
+This also revises the previous entry: I put a screenshot-versus-measurement disagreement down to a stale frame. Same root cause is far more likely — a stale *document*. From now on every verification navigate carries a cache buster.

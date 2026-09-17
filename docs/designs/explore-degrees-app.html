@@ -446,8 +446,16 @@ html:has(.ed-picker[open]) { overflow: hidden; }
    stay put while the list moves. No rule between them — they are the same
    control surface; the only hairline is under the pair, where the list starts. */
 .ed-picker__tools { flex-shrink: 0; display: flex; flex-direction: column; gap: 8px; padding: 12px 24px; border-bottom: 1px solid var(--tok-border-default); }
-.ed-picker__filters { display: flex; gap: 8px; }
-.ed-picker__filters .select { flex: 1; min-width: 0; }
+.ed-picker__filters { display: flex; flex-direction: column; gap: 8px; }
+.ed-picker__filters .select { flex: none; width: 100%; }
+@media (min-width: 768px) {
+  .ed-picker__tools { flex-direction: row; align-items: center; }
+  .ed-picker__tools .search { flex: 1; min-width: 0; }
+  .ed-picker__filters { flex-shrink: 0; flex-direction: row; }
+  .ed-picker__filters .select { flex: none; width: auto; }
+  #ed-filter-kind { width: 192px; }
+  #ed-filter-level { width: 144px; }
+}
 /* Adding to the combo is a multi-pick: the tiles grow a trailing Checkbox and
    the dialog grows a footer, because picking one must not close it. Choosing
    the primary stays single-pick — one answer, so the pick itself is the

@@ -427,8 +427,16 @@ html:has(.ed-picker[open]) { overflow: hidden; }
    stay put while the list moves. No rule between them — they are the same
    control surface; the only hairline is under the pair, where the list starts. */
 .ed-picker__tools { flex-shrink: 0; display: flex; flex-direction: column; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.3"))} ${px(resolve(modal.padding.$value))}; border-bottom: 1px solid ${cv(refPath(modal.divider.$value))}; }
-.ed-picker__filters { display: flex; gap: ${px(resolve("dim.2"))}; }
-.ed-picker__filters .select { flex: 1; min-width: 0; }
+.ed-picker__filters { display: flex; flex-direction: column; gap: ${px(resolve("dim.2"))}; }
+.ed-picker__filters .select { flex: none; width: 100%; }
+@media (min-width: 768px) {
+  .ed-picker__tools { flex-direction: row; align-items: center; }
+  .ed-picker__tools .search { flex: 1; min-width: 0; }
+  .ed-picker__filters { flex-shrink: 0; flex-direction: row; }
+  .ed-picker__filters .select { flex: none; width: auto; }
+  #ed-filter-kind { width: ${px(resolve("dim.48"))}; }
+  #ed-filter-level { width: ${px(resolve("dim.36"))}; }
+}
 /* Adding to the combo is a multi-pick: the tiles grow a trailing Checkbox and
    the dialog grows a footer, because picking one must not close it. Choosing
    the primary stays single-pick — one answer, so the pick itself is the
