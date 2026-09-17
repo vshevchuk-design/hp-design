@@ -218,8 +218,8 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
    rather than a base mark shrunk by hand. Used for the combo entries and for
    the focus tiles — both are secondary to the primary card. */
 .ed-pick--compact .ed-pick__row { padding: ${px(resolve("dim.2"))} ${px(resolve(ct.paddingX.$value))}; }
-.ed-pick--compact .choice-tile__marker, .ed-pick__focus .choice-tile__marker { width: ${px(resolve("dim.8"))}; height: ${px(resolve("dim.8"))}; ${typoCss(h.resolveToken(avatar.size.sm.initials))} }
-.ed-pick__focus .choice-tile__box { padding: ${px(resolve("dim.2"))} ${px(resolve(ct.paddingX.$value))}; }
+.ed-pick--compact .choice-tile__marker, .ed-pick__focus .choice-tile__marker, .ed-picker .choice-tile__marker { width: ${px(resolve("dim.8"))}; height: ${px(resolve("dim.8"))}; ${typoCss(h.resolveToken(avatar.size.sm.initials))} }
+.ed-pick__focus .choice-tile__box, .ed-picker .choice-tile__box { padding: ${px(resolve("dim.2"))} ${px(resolve(ct.paddingX.$value))}; }
 
 /* ============ Alert ============ */
 .alert { display: flex; align-items: flex-start; gap: ${px(resolve(alert.gap.$value))}; padding: ${px(resolve(alert.paddingY.$value))} ${px(resolve(alert.paddingX.$value))}; border-radius: ${px(resolve(alert.radius.$value))}; border: 1px solid transparent; }
@@ -443,8 +443,14 @@ html:has(.ed-picker[open]) { overflow: hidden; }
 .ed-picker__foot { display: none; flex-shrink: 0; align-items: center; justify-content: flex-end; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.3"))} ${px(resolve(modal.padding.$value))}; border-top: 1px solid ${cv(refPath(modal.divider.$value))}; }
 .ed-picker.is-multi .ed-picker__foot { display: flex; }
 .ed-picker__body { flex: 1; min-height: 0; overflow-y: auto; padding: ${px(resolve(modal.padding.$value))}; }
-/* One column: this is a list picker, not the tile wall it used to be. */
+/* One column while the dialog is full-screen, two once it is a panel — the
+   same 768 breakpoint the dialog itself uses, so the column count changes when
+   the shape does. Compact rows plus two columns roughly triples what is on
+   screen at once without the tile wall this list started as. */
 .ed-picker .ed-grid { grid-template-columns: 1fr; }
+@media (min-width: 768px) {
+  .ed-picker .ed-grid { grid-template-columns: repeat(2, 1fr); }
+}
 @media (min-width: 768px) {
   .ed-picker { margin: auto; width: min(760px, calc(100vw - ${px(resolve("dim.8"))})); height: min(720px, calc(100dvh - ${px(resolve("dim.16"))})); border-radius: ${px(resolve(modal.radius.$value))}; box-shadow: ${mdShadowCss}; }
 }

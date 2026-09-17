@@ -1390,3 +1390,11 @@ The combo also **flows** instead of stacking one bar per line. Two attempts befo
 It is `repeat(auto-fill, minmax(min(320px, 100%), 1fr))`: equal columns, an orphan stays one column because `auto-fill` keeps the empty track, and `min(…, 100%)` stops a 320px track from overflowing a 311px card body at 375px. The compact meta line also takes `nowrap` + ellipsis as a safety valve — the programme name is the part that must never be cut, the degree is not.
 
 Verified at 1100px (three entries at 395×56, orphan one column) and at 375px (one column, 309px wide, no horizontal overflow, ellipsis doing its job).
+
+## 2026-09-17 (cont. 5) — the picker list gets the compact treatment too
+
+Same change as the combo and focus tiles, applied where the list actually is: the picker's rows take the 32px marker and the tighter band, and the list runs **two columns from 768px** — the same breakpoint at which the dialog stops being full-screen and becomes a panel, so the column count changes when the shape changes rather than at some second, unrelated width.
+
+Measured: 352×56 tiles two-up at 1100 (twelve rows visible in the body instead of seven), 340px two-up at exactly 768 with the meta line still on one line, one column at 375 with 56px rows and no horizontal overflow. Checkboxes in multi-pick sit on the right of each tile at both column counts.
+
+One verification note: a screenshot disagreed with the measurements — it showed the primary picker while the DOM said multi-pick was open. The measurements were right and the frame was stale; re-running the sequence from a fresh load agreed with the numbers. When a picture and a measurement disagree, re-run deterministically rather than believing either.

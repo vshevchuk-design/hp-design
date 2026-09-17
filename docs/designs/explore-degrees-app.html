@@ -228,8 +228,8 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
    rather than a base mark shrunk by hand. Used for the combo entries and for
    the focus tiles — both are secondary to the primary card. */
 .ed-pick--compact .ed-pick__row { padding: 8px 12px; }
-.ed-pick--compact .choice-tile__marker, .ed-pick__focus .choice-tile__marker { width: 32px; height: 32px; font-weight: 600; font-size: 12px; line-height: 1; }
-.ed-pick__focus .choice-tile__box { padding: 8px 12px; }
+.ed-pick--compact .choice-tile__marker, .ed-pick__focus .choice-tile__marker, .ed-picker .choice-tile__marker { width: 32px; height: 32px; font-weight: 600; font-size: 12px; line-height: 1; }
+.ed-pick__focus .choice-tile__box, .ed-picker .choice-tile__box { padding: 8px 12px; }
 
 /* ============ Alert ============ */
 .alert { display: flex; align-items: flex-start; gap: 8px; padding: 12px 16px; border-radius: 8px; border: 1px solid transparent; }
@@ -462,8 +462,14 @@ html:has(.ed-picker[open]) { overflow: hidden; }
 .ed-picker__foot { display: none; flex-shrink: 0; align-items: center; justify-content: flex-end; gap: 8px; padding: 12px 24px; border-top: 1px solid var(--tok-border-default); }
 .ed-picker.is-multi .ed-picker__foot { display: flex; }
 .ed-picker__body { flex: 1; min-height: 0; overflow-y: auto; padding: 24px; }
-/* One column: this is a list picker, not the tile wall it used to be. */
+/* One column while the dialog is full-screen, two once it is a panel — the
+   same 768 breakpoint the dialog itself uses, so the column count changes when
+   the shape does. Compact rows plus two columns roughly triples what is on
+   screen at once without the tile wall this list started as. */
 .ed-picker .ed-grid { grid-template-columns: 1fr; }
+@media (min-width: 768px) {
+  .ed-picker .ed-grid { grid-template-columns: repeat(2, 1fr); }
+}
 @media (min-width: 768px) {
   .ed-picker { margin: auto; width: min(760px, calc(100vw - 32px)); height: min(720px, calc(100dvh - 64px)); border-radius: 24px; box-shadow: 0px 8px 24px -2px rgba(21, 25, 30, 0.16); }
 }
