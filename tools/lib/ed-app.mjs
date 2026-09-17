@@ -164,9 +164,6 @@ export function edAppJs(h) {
   function edPickCard(c, i) {
     var p = programOf(c.name);
     var primary = i === 0;
-    /* Only the first position means anything, so the control is one button that
-       says exactly that — not a drag grip, which would imply that 2 versus 3 is
-       also a decision. */
     /* No "Make primary" on the extras: the combo is built on top of the primary
        and does not survive it changing, so a promote button would quietly take
        the others with it. Changing the primary is the Change button, which says
@@ -176,15 +173,9 @@ export function edAppJs(h) {
       '" aria-label="Remove ' + esc(c.name) + '">' + I.close + "</button>";
     /* The primary is the one decision on this screen that changes what the
        results are, so it is badged rather than mentioned in the grey meta line
-       — a real Badge in the primary tint, on the name row where it is read. */
-    var badge = primary ? ' <span class="badge badge--info">Primary</span>' : "";
-    /* Fill means "this is a finished choice". A primary with focus areas still
-       holds a question, so it stays a plain frame and the filled thing is the
-       focus tile inside it; everything else — a primary with no focus areas,
-       and every combo entry — is a leaf answer and is filled. */
-    var open = primary && p.focus;
-    return '<div class="ed-pick' + (primary ? "" : " ed-pick--compact") + (open ? "" : " ed-pick--filled") +
-      '" data-row="' + i + '"><div class="ed-pick__row">' +
+       — Badge's solid primary role, white on blue, on the name row. */
+    var badge = primary ? ' <span class="badge badge--solid">Primary</span>' : "";
+    return '<div class="ed-pick' + (primary ? "" : " ed-pick--compact") + '" data-row="' + i + '"><div class="ed-pick__row">' +
       '<span class="choice-tile__marker ed-hue--' + edHue(c.name) + '">' + edInitials(c.name) + "</span>" +
       '<span class="choice-tile__text"><span class="ed-pick__name"><span class="choice-tile__label">' + esc(c.name) + "</span>" + badge + "</span>" +
       '<span class="choice-tile__description">' + esc(c.kind + " · " + p.degree) + "</span></span>" +

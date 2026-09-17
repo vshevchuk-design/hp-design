@@ -131,6 +131,10 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .ed-grid { display: grid; gap: ${px(resolve("dim.2"))}; grid-template-columns: 1fr; }
 @media (min-width: 560px) { .ed-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (min-width: 880px) { .ed-grid { grid-template-columns: repeat(3, 1fr); } }
+/* A year is exactly three terms, so they take one row from tablet up rather
+   than wrapping into two-and-an-orphan. Scoped to step 2: step 3 has two
+   answers and would only get narrower in a three-column track. */
+@media (min-width: 768px) { [data-panel="2"] .ed-grid { grid-template-columns: repeat(3, 1fr); } }
 .ed-row { display: flex; flex-wrap: wrap; gap: ${px(resolve("dim.2"))}; align-items: center; }
 .ed-stack { display: flex; flex-direction: column; gap: ${px(resolve("dim.2"))}; }
 /* Prototype-only scaffolding, marked as such — the same treatment the Message
@@ -194,19 +198,8 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
    long — the badge must never be the thing that falls off a narrow row. */
 .ed-pick__name { display: flex; align-items: center; gap: ${px(resolve("dim.2"))}; flex-wrap: wrap; min-width: 0; }
 .ed-pick__actions { margin-left: auto; flex-shrink: 0; display: flex; align-items: center; gap: ${px(resolve("dim.1"))}; }
-/* On a phone the actions and a two-line name fight over 375px, and the name
-   loses twice — it wraps AND the buttons crowd it. Drop the actions onto their
-   own line instead; the name gets the full width and stays one line. */
-@media (max-width: 559px) {
-  .ed-pick__row:has(.ed-pick__actions .btn:not(.btn--icon-only)) { flex-wrap: wrap; }
-  .ed-pick__row:has(.ed-pick__actions .btn:not(.btn--icon-only)) .choice-tile__text { flex: 1; }
-  .ed-pick__row:has(.ed-pick__actions .btn:not(.btn--icon-only)) .ed-pick__actions { width: 100%; margin-left: 0; justify-content: flex-end; }
-}
 /* Focus areas belong to the programme, so they live inside its card — divided
    from the header row, not floating below as a separate section. */
-/* Filled = finished. The same selected fill the focus tiles use, so a settled
-   choice looks the same wherever it appears. */
-.ed-pick--filled { background: ${cv(refPath(ctSt.selected.bg.$value))}; }
 /* A neutral hairline, not the frame's blue: this divides content inside one
    card, and repeating the frame colour made it read as two stacked cards. */
 .ed-pick__focus { border-top: 1px solid ${cv("border.default")}; padding: ${px(resolve(ct.paddingX.$value))}; display: flex; flex-direction: column; gap: ${px(resolve("dim.3"))}; }
@@ -222,8 +215,8 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
    rather than a base mark shrunk by hand. Used for the combo entries and for
    the focus tiles — both are secondary to the primary card. */
 .ed-pick--compact .ed-pick__row { padding: ${px(resolve("dim.2"))} ${px(resolve(ct.paddingX.$value))}; }
-.ed-pick--compact .choice-tile__marker, .ed-pick__focus .choice-tile__marker, .ed-picker .choice-tile__marker { width: ${px(resolve("dim.8"))}; height: ${px(resolve("dim.8"))}; ${typoCss(h.resolveToken(avatar.size.sm.initials))} }
-.ed-pick__focus .choice-tile__box { min-height: ${px(resolve("dim.12"))}; padding: ${px(resolve("dim.1_5"))} ${px(resolve(ct.paddingX.$value))}; }
+.ed-pick--compact .choice-tile__marker, .ed-pick__focus .choice-tile__marker, .ed-picker .choice-tile__marker, [data-panel="2"] .choice-tile__marker { width: ${px(resolve("dim.8"))}; height: ${px(resolve("dim.8"))}; ${typoCss(h.resolveToken(avatar.size.sm.initials))} }
+.ed-pick__focus .choice-tile__box, [data-panel="2"] .choice-tile__box { min-height: ${px(resolve("dim.12"))}; padding: ${px(resolve("dim.1_5"))} ${px(resolve(ct.paddingX.$value))}; }
 .ed-picker .choice-tile__box { padding: ${px(resolve("dim.2"))} ${px(resolve(ct.paddingX.$value))}; }
 
 /* ============ Alert ============ */
@@ -275,6 +268,10 @@ ${["info", "success", "warning", "danger"].map((r) => `.alert--${r} { background
 .badge { display: inline-flex; align-items: center; flex-shrink: 0; height: ${badgeSm.height}; padding: 0 ${badgeSm.paddingX}; border-radius: ${badgeSm.radius}; ${typoCss(badgeSm.label)} }
 ${["neutral", "primary", "success", "warning"].map((r) => `.badge--${r} { background: ${cv(refPath(badge.role[r].tint.bg.$value))}; color: ${cv(refPath(badge.role[r].tint.text.$value))}; }`).join("\n")}
 .badge--info { background: ${cv(refPath(badge.role.primary.tint.bg.$value))}; color: ${cv(refPath(badge.role.primary.tint.text.$value))}; }
+/* Primary is the one label on this screen that decides what the results are,
+   so it takes Badge's SOLID primary role — white on blue — rather than the
+   tint, which sat at the same weight as everything around it. */
+.badge--solid { background: ${cv(refPath(badge.role.primary.solid.bg.$value))}; color: ${cv(refPath(badge.role.primary.solid.text.$value))}; }
 
 /* ============ Chip (meta variant) ============ */
 .chip { display: inline-flex; align-items: center; border-radius: ${px(resolve(chip.radius.$value))}; border: 1px solid ${cv("border.default")}; background: ${cv("surface.default")}; height: ${px(resolve(chip.size.base.height.$value))}; padding: 0 ${px(resolve(chip.size.base.paddingX.$value))}; gap: ${px(resolve(chip.meta.gap.$value))}; color: ${cv("text.default")}; ${typoCss(h.resolveToken(chip.size.base.label))} }

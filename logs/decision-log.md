@@ -1428,3 +1428,17 @@ Verified: with Biology (BS) the card is `#ffffff` with skip checked and nothing 
 Two details make it read as a bar rather than a cut: the page background behind it, so content disappears *behind* it, and a `dim.4` gradient above it fading to `surface.page`. A hairline would have needed to know whether the bar is stuck, which CSS cannot tell it; the gradient needs no such knowledge, because on a short step it fades page into page and is invisible. The negative bottom margin cancels the main's own bottom padding so the stuck bar sits flush with the window.
 
 Verification note, twice over: `window.scrollTo()` immediately followed by a screenshot caught the compositor mid-scroll and produced two nonsense frames (a blank strip, the topbar floating at y=373). Taking the screenshot in a separate call showed the real thing. Scroll, then capture — not in the same batch.
+
+## 2026-09-18 — a palette step tried and withdrawn, and the fill withdrawn with it
+
+"Lighter fill, still blue" turned out not to be a one-line change. The fill is `bg.primary` = blue.100, a semantic role **eleven components** share, and the step below it (blue.50) is already `bg.primaryHover` — so simply lightening selected would have made choice-tile's hover and selected identical, borders included. The system-correct answer was a new step, and the precedent existed: STEP_150 was added for exactly this reason one rung down ("100→200 is a harsh jump"). So STEP_75 went in the same way — L 0.95 between 50's 0.97 and 100's 0.93, chroma the geometric mean, generated across all ten ramps, `bg.primary` pointed at it.
+
+**The user then said no: no 75, put 100 back.** Removed — the generator note, the config, the interpolation loop, the ten `75` entries (the generator only ever adds steps, so those had to be deleted from the token file directly) and the semantic re-point. Then, seeing the ghost buttons sitting on a blue field, they went further: **drop the card fill altogether — blue border, white background.** Which is where the cards were two days ago, and for the reason they were there: a neutral hover wash on a blue tint is muddy, and framing avoids the problem instead of fighting it. `.ed-pick--filled` is gone again.
+
+Two other calls in the same round:
+- **The Primary label is Badge's solid primary role** — white on `fill.primary` — not the tint, which sat at the same weight as everything around it. Resolved from `badge.role.primary.solid`, which already existed; nothing was hand-mixed.
+- **The card's actions stay on the row with the name at every width.** The `:has()` rule that dropped them onto their own line below 560 is removed: the user's read is that Change and ✕ belong beside the content, and the description wrapping to two lines is the cheaper cost.
+
+And step 2's term tiles took the compact treatment — 32px marker, declared 48 minimum — and **three to a row from 768px**, scoped to that panel: a year is exactly three terms, so they now read as one row per year instead of two-and-an-orphan, and the whole step fits one screen at 800×900 where it used to be a scrolling wall. Step 3 was deliberately left out of that rule: it has two answers and would only get narrower in a three-column track.
+
+**Process note that cost a rebuild.** I ran all 53 builders while the palette carried blue.75, then reverted the tokens and rebuilt only the page I was looking at — leaving sixteen docs pages carrying a colour that no longer existed. `git status` caught it. A token-level revert needs the same full rebuild the token-level change did.
