@@ -227,7 +227,10 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 @media (max-width: 559px) {
   .ed-pick__row:has(.ed-pick__actions .btn:not(.btn--icon-only)) { flex-wrap: wrap; }
   .ed-pick__row:has(.ed-pick__actions .btn:not(.btn--icon-only)) .choice-tile__text { flex: 1; }
-  .ed-pick__row:has(.ed-pick__actions .btn:not(.btn--icon-only)) .ed-pick__actions { width: 100%; margin-left: 0; justify-content: flex-end; }
+  .ed-pick__row:has(.ed-pick__actions .btn:not(.btn--icon-only)) .ed-pick__actions { display: contents; }
+  .ed-pick__row [data-drop] { order: 0; margin-left: auto; }
+  .ed-pick__row [data-change-primary] { order: 1; width: 100%; height: 40px; padding: 0 12px; gap: 8px; font-weight: 600; font-size: 14px; line-height: 1.4; background: var(--tok-fill-neutral); color: var(--tok-text-default); }
+  .ed-pick__row [data-change-primary]:not(:disabled):hover { background: var(--tok-fill-neutral-hover-strong); }
 }
 /* Focus areas belong to the programme, so they live inside its card — divided
    from the header row, not floating below as a separate section. */
@@ -241,7 +244,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .ed-chosen > .ed-pick { min-width: 0; }
 /* Safety valve for a longer degree name: one line, then an ellipsis — the
    programme name above it is the part that must never be cut. */
-.ed-pick--compact .choice-tile__description { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ed-pick .choice-tile__description { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 /* Compact: a smaller marker in a tighter band, with Avatar's own sm initials
    rather than a base mark shrunk by hand. Used for the combo entries and for
    the focus tiles — both are secondary to the primary card. */

@@ -1473,3 +1473,15 @@ The gradient under Continue went. It existed to solve a problem that only existe
 Two misses worth recording, both mine and both the same shape as earlier ones:
 - The 768 overrides for the footer were written in the *earlier* of the two media blocks, where the footer's own later `padding` shorthand overwrote them — the identical trap the picker's gutters hit an hour before. The fix is positional: a longhand override has to come after the shorthand it is refining, media query or not.
 - Backticks inside a CSS comment closed the template literal. Twice today.
+
+## 2026-09-24 (cont. 3) — the primary card takes the combo card's anatomy on a phone
+
+Two options were on the table for the cramped mobile card. I argued for the second — replace the ✕ with a labelled Remove, both buttons secondary and half-width each — on the grounds that option A truncated the programme name, and "Accounting", "Accounting AA" and "Accounting AB" differ only at the end, so an ellipsis could leave the card unable to say what you picked.
+
+**The user's counter changed the answer, and it was the stronger argument:** the combo cards directly below already have exactly option A's shape. And looking at what they actually truncate settles my objection — they ellipsise the **meta line** ("Liberal Arts Undergrad…"), never the name. So the hazard I raised is not in the pattern being matched, and three cards sitting in adjacent sections should share one anatomy rather than two.
+
+So: option A, with the name kept whole and the meta line ellipsised — which is now the rule for every `.ed-pick`, compact or not. Change becomes a full-width secondary button on its own row beneath the header row, and the ✕ stays inline at the right, where the combo cards keep theirs.
+
+**The Primary badge stays**, and that resolves the one part of A I did not take. It was to be dropped for space — but the space is exactly what moving Change out of the row frees, so the badge costs nothing and the most consequential fact on the screen keeps its marker.
+
+Implemented with `display: contents` on `.ed-pick__actions` below 560, which lifts the two buttons into the row as direct flex items so `order` can put the icon on line one and Change on its own line. No duplicated markup and no second Change button to hide — a hidden duplicate would have been two controls with one label. Desktop is untouched: both actions inline, ghost, row height still 64.
