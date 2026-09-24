@@ -224,6 +224,11 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
    long — the badge must never be the thing that falls off a narrow row. */
 .ed-pick__name { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; min-width: 0; }
 .ed-pick__actions { margin-left: auto; flex-shrink: 0; display: flex; align-items: center; gap: 4px; }
+@media (max-width: 559px) {
+  .ed-pick__row:has(.ed-pick__actions .btn:not(.btn--icon-only)) { flex-wrap: wrap; }
+  .ed-pick__row:has(.ed-pick__actions .btn:not(.btn--icon-only)) .choice-tile__text { flex: 1; }
+  .ed-pick__row:has(.ed-pick__actions .btn:not(.btn--icon-only)) .ed-pick__actions { width: 100%; margin-left: 0; justify-content: flex-end; }
+}
 /* Focus areas belong to the programme, so they live inside its card — divided
    from the header row, not floating below as a separate section. */
 /* A neutral hairline, not the frame's blue: this divides content inside one
