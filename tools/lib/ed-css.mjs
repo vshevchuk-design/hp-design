@@ -212,9 +212,6 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
    surface its contents were designed to sit on. */
 .ed-pick { border-radius: ${px(resolve(ct.radius.$value))}; border: 1px solid ${cv(refPath(ctSt.selected.border.$value))}; background: ${cv("surface.default")}; overflow: hidden; }
 .ed-pick__row { display: flex; align-items: center; gap: ${px(resolve(ct.gap.$value))}; padding: ${px(resolve(ct.paddingY.$value))} ${px(resolve(ct.paddingX.$value))}; }
-/* Name and its Primary badge share a line and wrap together when the name is
-   long — the badge must never be the thing that falls off a narrow row. */
-.ed-pick__name { display: flex; align-items: center; gap: ${px(resolve("dim.2"))}; flex-wrap: wrap; min-width: 0; }
 .ed-pick__actions { margin-left: auto; flex-shrink: 0; display: flex; align-items: center; gap: ${px(resolve("dim.1"))}; }
 @media (max-width: 559px) {
   .ed-pick__row:has(.ed-pick__actions .btn:not(.btn--icon-only)) { flex-wrap: wrap; }
@@ -294,10 +291,6 @@ ${["info", "success", "warning", "danger"].map((r) => `.alert--${r} { background
 .badge { display: inline-flex; align-items: center; flex-shrink: 0; height: ${badgeSm.height}; padding: 0 ${badgeSm.paddingX}; border-radius: ${badgeSm.radius}; ${typoCss(badgeSm.label)} }
 ${["neutral", "primary", "success", "warning"].map((r) => `.badge--${r} { background: ${cv(refPath(badge.role[r].tint.bg.$value))}; color: ${cv(refPath(badge.role[r].tint.text.$value))}; }`).join("\n")}
 .badge--info { background: ${cv(refPath(badge.role.primary.tint.bg.$value))}; color: ${cv(refPath(badge.role.primary.tint.text.$value))}; }
-/* Primary is the one label on this screen that decides what the results are,
-   so it takes Badge's SOLID primary role — white on blue — rather than the
-   tint, which sat at the same weight as everything around it. */
-.badge--solid { background: ${cv(refPath(badge.role.primary.solid.bg.$value))}; color: ${cv(refPath(badge.role.primary.solid.text.$value))}; }
 
 /* ============ Chip (meta variant) ============ */
 .chip { display: inline-flex; align-items: center; border-radius: ${px(resolve(chip.radius.$value))}; border: 1px solid ${cv("border.default")}; background: ${cv("surface.default")}; height: ${px(resolve(chip.size.base.height.$value))}; padding: 0 ${px(resolve(chip.size.base.paddingX.$value))}; gap: ${px(resolve(chip.meta.gap.$value))}; color: ${cv("text.default")}; ${typoCss(h.resolveToken(chip.size.base.label))} }
@@ -410,7 +403,7 @@ ${["neutral", "primary", "success", "warning"].map((r) => `.badge--${r} { backgr
 .ed-summary:last-child { border-bottom: none; }
 @media (min-width: 560px) { .ed-summary { grid-template-columns: 180px 1fr; gap: ${px(resolve("dim.4"))}; } }
 .ed-summary__key { color: ${cv("text.secondary")}; ${typoCss(h.resolveToken(h.get("text-style.heading-base")))} }
-.ed-summary__val { display: flex; flex-direction: column; gap: ${px(resolve("dim.1"))}; color: ${cv("text.default")}; ${typoCss(h.resolveToken(h.get("text-style.body-base")))} }
+.ed-summary__val { display: flex; flex-direction: column; align-items: flex-start; gap: ${px(resolve("dim.1"))}; color: ${cv("text.default")}; ${typoCss(h.resolveToken(h.get("text-style.body-base")))} }
 
 /* ============ captcha stand-in ============ */
 /* A third-party embed, not a DS component — a bordered box that behaves like

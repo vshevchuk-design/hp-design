@@ -171,13 +171,12 @@ export function edAppJs(h) {
     var actions = (primary ? '<button class="btn btn--ghost btn--sm" type="button" data-change-primary="1">Change</button>' : "") +
       '<button class="btn btn--ghost btn--sm btn--icon-only" type="button" data-drop="' + i +
       '" aria-label="Remove ' + esc(c.name) + '">' + I.close + "</button>";
-    /* The primary is the one decision on this screen that changes what the
-       results are, so it is badged rather than mentioned in the grey meta line
-       — Badge's solid primary role, white on blue, on the name row. */
-    var badge = primary ? ' <span class="badge badge--solid">Primary</span>' : "";
+    /* No Primary badge: the section heading above this card already says
+       which list you are looking at, and repeating it on the card was the same
+       fact stated twice within a centimetre. */
     return '<div class="ed-pick' + (primary ? "" : " ed-pick--compact") + '" data-row="' + i + '"><div class="ed-pick__row">' +
       '<span class="choice-tile__marker ed-hue--' + edHue(c.name) + '">' + edInitials(c.name) + "</span>" +
-      '<span class="choice-tile__text"><span class="ed-pick__name"><span class="choice-tile__label">' + esc(c.name) + "</span>" + badge + "</span>" +
+      '<span class="choice-tile__text"><span class="choice-tile__label">' + esc(c.name) + "</span>" +
       '<span class="choice-tile__description">' + esc(c.kind + " · " + p.degree) + "</span></span>" +
       '<span class="ed-pick__actions">' + actions + "</span></div>" +
       (primary && p.focus ? edFocusMarkup(p) : "") + "</div>";

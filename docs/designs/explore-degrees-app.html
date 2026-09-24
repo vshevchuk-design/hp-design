@@ -220,9 +220,6 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
    surface its contents were designed to sit on. */
 .ed-pick { border-radius: 8px; border: 1px solid var(--tok-fill-primary); background: var(--tok-surface-default); overflow: hidden; }
 .ed-pick__row { display: flex; align-items: center; gap: 12px; padding: 12px 12px; }
-/* Name and its Primary badge share a line and wrap together when the name is
-   long — the badge must never be the thing that falls off a narrow row. */
-.ed-pick__name { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; min-width: 0; }
 .ed-pick__actions { margin-left: auto; flex-shrink: 0; display: flex; align-items: center; gap: 4px; }
 @media (max-width: 559px) {
   .ed-pick__row:has(.ed-pick__actions .btn:not(.btn--icon-only)) { flex-wrap: wrap; }
@@ -311,10 +308,6 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .badge--success { background: var(--tok-bg-success); color: var(--tok-text-success); }
 .badge--warning { background: var(--tok-bg-warning); color: var(--tok-text-warning); }
 .badge--info { background: var(--tok-bg-primary); color: var(--tok-text-primary); }
-/* Primary is the one label on this screen that decides what the results are,
-   so it takes Badge's SOLID primary role — white on blue — rather than the
-   tint, which sat at the same weight as everything around it. */
-.badge--solid { background: var(--tok-fill-primary); color: var(--tok-text-on-fill); }
 
 /* ============ Chip (meta variant) ============ */
 .chip { display: inline-flex; align-items: center; border-radius: 999px; border: 1px solid var(--tok-border-default); background: var(--tok-surface-default); height: 32px; padding: 0 12px; gap: 6px; color: var(--tok-text-default); font-weight: 600; font-size: 14px; line-height: 1; }
@@ -427,7 +420,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .ed-summary:last-child { border-bottom: none; }
 @media (min-width: 560px) { .ed-summary { grid-template-columns: 180px 1fr; gap: 16px; } }
 .ed-summary__key { color: var(--tok-text-secondary); font-weight: 600; font-size: 14px; line-height: 1.4; }
-.ed-summary__val { display: flex; flex-direction: column; gap: 4px; color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; }
+.ed-summary__val { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; }
 
 /* ============ captcha stand-in ============ */
 /* A third-party embed, not a DS component — a bordered box that behaves like
@@ -1280,13 +1273,12 @@ html:has(.ed-picker[open]) { overflow: hidden; }
     var actions = (primary ? '<button class="btn btn--ghost btn--sm" type="button" data-change-primary="1">Change</button>' : "") +
       '<button class="btn btn--ghost btn--sm btn--icon-only" type="button" data-drop="' + i +
       '" aria-label="Remove ' + esc(c.name) + '">' + I.close + "</button>";
-    /* The primary is the one decision on this screen that changes what the
-       results are, so it is badged rather than mentioned in the grey meta line
-       — Badge's solid primary role, white on blue, on the name row. */
-    var badge = primary ? ' <span class="badge badge--solid">Primary</span>' : "";
+    /* No Primary badge: the section heading above this card already says
+       which list you are looking at, and repeating it on the card was the same
+       fact stated twice within a centimetre. */
     return '<div class="ed-pick' + (primary ? "" : " ed-pick--compact") + '" data-row="' + i + '"><div class="ed-pick__row">' +
       '<span class="choice-tile__marker ed-hue--' + edHue(c.name) + '">' + edInitials(c.name) + "</span>" +
-      '<span class="choice-tile__text"><span class="ed-pick__name"><span class="choice-tile__label">' + esc(c.name) + "</span>" + badge + "</span>" +
+      '<span class="choice-tile__text"><span class="choice-tile__label">' + esc(c.name) + "</span>" +
       '<span class="choice-tile__description">' + esc(c.kind + " · " + p.degree) + "</span></span>" +
       '<span class="ed-pick__actions">' + actions + "</span></div>" +
       (primary && p.focus ? edFocusMarkup(p) : "") + "</div>";
