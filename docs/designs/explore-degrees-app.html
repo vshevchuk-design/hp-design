@@ -113,7 +113,9 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
    the shell gets its second consumer, and the school is gone from the header,
    from step 1 and from the review. */
 .ed__main { flex: 1; width: 100%; max-width: 880px; margin: 0 auto; padding: 24px 16px 40px; display: flex; flex-direction: column; gap: 24px; }
-@media (min-width: 768px) { .ed__main { padding: 32px 24px 48px; } }
+@media (min-width: 768px) {
+  .ed__main { padding: 32px 24px 48px; }
+}
 .ed__head { display: flex; flex-direction: column; gap: 6px; }
 /* The way out of the picker lives at the top, next to where the picker
    opens — a Cancel in the footer would sit below all 29 programmes. */
@@ -121,10 +123,23 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .ed__title { margin: 0; color: var(--tok-text-default); font-weight: 700; font-size: 24px; line-height: 1.2; }
 .ed__sub { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 14px; line-height: 1.4; }
 .ed__step { display: none; flex-direction: column; gap: 24px; }
-.ed__step.is-active { display: flex; }
-.ed__footer { position: sticky; bottom: 0; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-block: 16px; margin-block-end: -40px; background: var(--tok-surface-page); }
-.ed__footer::before { content: ""; position: absolute; left: 0; right: 0; bottom: 100%; height: 16px; background: linear-gradient(to top, var(--tok-surface-page), transparent); pointer-events: none; }
+.ed__step.is-active { display: flex; flex: 1; }
+/* The step's action bar, built like the topbar it mirrors: white, one hairline,
+   edge to edge. margin-top:auto pins it to the bottom of the window whenever the
+   step is short, so the hairline always divides content from the bar rather than
+   floating mid-page — which is why this used to need a self-hiding gradient
+   instead. Sticky keeps it there once the content does overflow. The 100vw plus
+   the negative half-margin breaks it out of the 880px column; the padding puts
+   its contents back on the column's own gutters. */
+.ed__footer { position: sticky; bottom: 0; z-index: 1; margin-top: auto; width: 100vw; margin-left: calc(50% - 50vw); display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px max(16px, calc(50vw - 440px + 16px)); margin-block-end: -40px; background: var(--tok-surface-default); border-top: 1px solid var(--tok-border-default); }
 .ed__footer--end { justify-content: flex-end; }
+/* After the base rule, not with the other 768 overrides further up: the base
+   sets padding as a shorthand, which would overwrite a padding-inline
+   declared earlier no matter the media query. Same trap the picker's gutters
+   hit. */
+@media (min-width: 768px) {
+  .ed__footer { padding-inline: max(24px, calc(50vw - 440px + 24px)); margin-block-end: -48px; }
+}
 /* One card per screen; inside it, sections are separated by a divider and a
    heading — never by another nested card. That stacking is what made the
    reference read as a pile. */

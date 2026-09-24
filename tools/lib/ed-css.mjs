@@ -105,7 +105,9 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
    the shell gets its second consumer, and the school is gone from the header,
    from step 1 and from the review. */
 .ed__main { flex: 1; width: 100%; max-width: 880px; margin: 0 auto; padding: ${px(resolve("dim.6"))} ${px(resolve("dim.4"))} ${px(resolve("dim.10"))}; display: flex; flex-direction: column; gap: ${px(resolve("dim.6"))}; }
-@media (min-width: 768px) { .ed__main { padding: ${px(resolve("dim.8"))} ${px(resolve("dim.6"))} ${px(resolve("dim.12"))}; } }
+@media (min-width: 768px) {
+  .ed__main { padding: ${px(resolve("dim.8"))} ${px(resolve("dim.6"))} ${px(resolve("dim.12"))}; }
+}
 .ed__head { display: flex; flex-direction: column; gap: ${px(resolve("dim.1_5"))}; }
 /* The way out of the picker lives at the top, next to where the picker
    opens — a Cancel in the footer would sit below all 29 programmes. */
@@ -113,10 +115,23 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .ed__title { margin: 0; color: ${cv("text.default")}; ${typoCss(h.resolveToken(h.get("text-style.title-2xl")))} }
 .ed__sub { margin: 0; color: ${cv("text.secondary")}; ${typoCss(h.resolveToken(h.get("text-style.body-base")))} }
 .ed__step { display: none; flex-direction: column; gap: ${px(resolve("dim.6"))}; }
-.ed__step.is-active { display: flex; }
-.ed__footer { position: sticky; bottom: 0; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: ${px(resolve("dim.3"))}; padding-block: ${px(resolve("dim.4"))}; margin-block-end: -${px(resolve("dim.10"))}; background: ${cv("surface.page")}; }
-.ed__footer::before { content: ""; position: absolute; left: 0; right: 0; bottom: 100%; height: ${px(resolve("dim.4"))}; background: linear-gradient(to top, ${cv("surface.page")}, transparent); pointer-events: none; }
+.ed__step.is-active { display: flex; flex: 1; }
+/* The step's action bar, built like the topbar it mirrors: white, one hairline,
+   edge to edge. margin-top:auto pins it to the bottom of the window whenever the
+   step is short, so the hairline always divides content from the bar rather than
+   floating mid-page — which is why this used to need a self-hiding gradient
+   instead. Sticky keeps it there once the content does overflow. The 100vw plus
+   the negative half-margin breaks it out of the 880px column; the padding puts
+   its contents back on the column's own gutters. */
+.ed__footer { position: sticky; bottom: 0; z-index: 1; margin-top: auto; width: 100vw; margin-left: calc(50% - 50vw); display: flex; align-items: center; justify-content: space-between; gap: ${px(resolve("dim.3"))}; padding: ${px(resolve("dim.4"))} max(${px(resolve("dim.4"))}, calc(50vw - 440px + ${px(resolve("dim.4"))})); margin-block-end: -${px(resolve("dim.10"))}; background: ${cv("surface.default")}; border-top: 1px solid ${cv("border.default")}; }
 .ed__footer--end { justify-content: flex-end; }
+/* After the base rule, not with the other 768 overrides further up: the base
+   sets padding as a shorthand, which would overwrite a padding-inline
+   declared earlier no matter the media query. Same trap the picker's gutters
+   hit. */
+@media (min-width: 768px) {
+  .ed__footer { padding-inline: max(${px(resolve("dim.6"))}, calc(50vw - 440px + ${px(resolve("dim.6"))})); margin-block-end: -${px(resolve("dim.12"))}; }
+}
 /* One card per screen; inside it, sections are separated by a divider and a
    heading — never by another nested card. That stacking is what made the
    reference read as a pile. */
