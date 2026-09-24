@@ -434,7 +434,15 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .ed-choose__label { color: var(--tok-text-default); font-weight: 600; font-size: 14px; line-height: 1.4; }
 .ed-choose__hint { color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
 
-.ed-picker { border: none; padding: 0; margin: 0; position: fixed; inset: 0; width: 100vw; max-width: 100vw; height: 100dvh; max-height: 100dvh; background: var(--tok-surface-default); font-family: var(--tok-family-sans); }
+/* On a phone this is Drawer, bottom placement — its own recipe, not a modal
+   made to look like one: edge-attached, 0px radius (three edges sit flush
+   against the viewport, which is why the component has none), Drawer's shadow,
+   and its 250ms slide. @starting-style plus allow-discrete gives the entry
+   animation natively, so it arrives from the bottom instead of appearing. From
+   768 the 768-block below turns it back into a centred Modal. */
+.ed-picker { border: none; padding: 0; margin: 0; position: fixed; inset: auto 0 0 0; width: 100%; max-width: 100%; height: auto; max-height: 80dvh; border-radius: 0px; background: var(--tok-surface-default); box-shadow: 0px 4px 16px 0px rgba(21, 25, 30, 0.12); font-family: var(--tok-family-sans); transform: translateY(100%); transition: transform 250ms ease, overlay 250ms allow-discrete, display 250ms allow-discrete; }
+.ed-picker[open] { transform: translateY(0); }
+@starting-style { .ed-picker[open] { transform: translateY(100%); } }
 .ed-picker:focus, .ed-picker:focus-visible { outline: none; }
 .ed-picker[open] { display: flex; flex-direction: column; }
 /* Lock the page while the dialog is up. As a :has() rule it follows the
@@ -442,19 +450,21 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
    release it without a line of JS keeping score. */
 html:has(.ed-picker[open]) { overflow: hidden; }
 .ed-picker::backdrop { background: var(--tok-surface-overlay); }
-.ed-picker__head { flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 24px; border-bottom: 1px solid var(--tok-border-default); }
+.ed-picker__head { flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 16px; border-bottom: 1px solid var(--tok-border-default); }
 .ed-picker__title { margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 18px; line-height: 1.4; }
 /* Search and its two filters are one band, outside the scroll area so they
    stay put while the list moves. No rule between them — they are the same
    control surface; the only hairline is under the pair, where the list starts. */
-.ed-picker__tools { flex-shrink: 0; display: flex; flex-direction: column; gap: 8px; padding: 12px 24px; border-bottom: 1px solid var(--tok-border-default); }
-.ed-picker__filters { display: flex; flex-direction: column; gap: 8px; }
-.ed-picker__filters .select { flex: none; width: 100%; }
+.ed-picker__tools { flex-shrink: 0; display: flex; flex-direction: column; gap: 8px; padding: 12px 16px; border-bottom: 1px solid var(--tok-border-default); }
+.ed-picker__filters { display: flex; gap: 8px; }
+.ed-picker__filters .select { flex: 1 1 auto; min-width: 0; }
+#ed-filter-kind { flex-basis: 192px; }
+#ed-filter-level { flex-basis: 144px; }
 @media (min-width: 768px) {
   .ed-picker__tools { flex-direction: row; align-items: center; }
   .ed-picker__tools .search { flex: 1; min-width: 0; }
-  .ed-picker__filters { flex-shrink: 0; flex-direction: row; }
-  .ed-picker__filters .select { flex: none; width: auto; }
+  .ed-picker__filters { flex-shrink: 0; }
+  .ed-picker__filters .select { flex: none; }
   #ed-filter-kind { width: 192px; }
   #ed-filter-level { width: 144px; }
 }
@@ -469,9 +479,9 @@ html:has(.ed-picker[open]) { overflow: hidden; }
 .choice-tile__input:checked ~ .choice-tile__box .choice-tile__check svg { opacity: 1; }
 .choice-tile__input:disabled ~ .choice-tile__box .choice-tile__check { background: var(--tok-surface-disabled); border-color: var(--tok-border-default); }
 /* Only in multi-pick: with one answer there is nothing to confirm. */
-.ed-picker__foot { display: none; flex-shrink: 0; align-items: center; justify-content: flex-end; gap: 8px; padding: 12px 24px; border-top: 1px solid var(--tok-border-default); }
+.ed-picker__foot { display: none; flex-shrink: 0; align-items: center; justify-content: flex-end; gap: 8px; padding: 12px 16px; border-top: 1px solid var(--tok-border-default); }
 .ed-picker.is-multi .ed-picker__foot { display: flex; }
-.ed-picker__body { flex: 1; min-height: 0; overflow-y: auto; padding: 24px; }
+.ed-picker__body { flex: 1; min-height: 0; overflow-y: auto; padding: 16px; }
 /* One column while the dialog is full-screen, two once it is a panel — the
    same 768 breakpoint the dialog itself uses, so the column count changes when
    the shape does. Compact rows plus two columns roughly triples what is on
@@ -481,7 +491,16 @@ html:has(.ed-picker[open]) { overflow: hidden; }
   .ed-picker .ed-grid { grid-template-columns: repeat(2, 1fr); }
 }
 @media (min-width: 768px) {
-  .ed-picker { margin: auto; width: min(760px, calc(100vw - 32px)); height: min(720px, calc(100dvh - 64px)); border-radius: 24px; box-shadow: 0px 8px 24px -2px rgba(21, 25, 30, 0.16); }
+  /* Modal's own padding, once it is a modal again. On a phone the drawer uses
+     16px gutters — 24 left the two filters one pixel short of their longest
+     values, and 16 is the ordinary phone gutter anyway. Declared here rather
+     than in the earlier 768 block because .ed-picker__body's own padding
+     shorthand is defined between them and would overwrite a longhand set first. */
+  .ed-picker__head, .ed-picker__tools, .ed-picker__foot, .ed-picker__body { padding-left: 24px; padding-right: 24px; }
+  /* Back to Modal: free-floating and centred, so it takes Modal's radius and
+     shadow and drops the drawer's edge attachment and slide. */
+  .ed-picker { inset: 0; margin: auto; width: min(760px, calc(100vw - 32px)); height: min(720px, calc(100dvh - 64px)); max-height: calc(100dvh - 64px); border-radius: 24px; background: var(--tok-surface-default); box-shadow: 0px 8px 24px -2px rgba(21, 25, 30, 0.16); transform: none; transition: none; }
+  .ed-picker::backdrop { background: var(--tok-surface-overlay); }
 }
 .is-hidden { display: none !important; }
 .ed-hue--blue { background: var(--tok-avatar-blue-bg); color: var(--tok-avatar-blue-text); }

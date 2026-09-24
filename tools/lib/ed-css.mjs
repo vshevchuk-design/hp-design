@@ -30,7 +30,10 @@ export function edCss(h) {
   const card = t.card, alert = t.alert, acc = t.accordion, pg = t.progress, sp = t.spinner;
   const badge = t.badge, chip = t.chip, lb = t.listbox, table = t.table;
   const button = t.button, input = t.input, select = t.select, search = t.search;
-  const es = t.emptyState, avatar = t.avatar, modal = t.modal, cb = t.checkbox;
+  const es = t.emptyState, avatar = t.avatar, modal = t.modal, cb = t.checkbox, drawer = t.drawer;
+  const drShadow = h.resolveToken(drawer.shadow);
+  const drShadowCss = `${px(drShadow.offsetX)} ${px(drShadow.offsetY)} ${px(drShadow.blur)} ${px(drShadow.spread)} ${drShadow.color}`;
+  const drMs = px(h.resolveToken(drawer.transitionDuration));
   const mdShadow = h.resolveToken(modal.shadow);
   const mdShadowCss = `${px(mdShadow.offsetX)} ${px(mdShadow.offsetY)} ${px(mdShadow.blur)} ${px(mdShadow.spread)} ${mdShadow.color}`;
 
@@ -415,27 +418,37 @@ ${["neutral", "primary", "success", "warning"].map((r) => `.badge--${r} { backgr
 .ed-choose__label { color: ${cv(refPath(ct.labelColor.$value))}; ${typoCss(h.resolveToken(ct.label))} }
 .ed-choose__hint { color: ${cv(refPath(ct.descriptionColor.$value))}; ${typoCss(h.resolveToken(ct.description))} }
 
-.ed-picker { border: none; padding: 0; margin: 0; position: fixed; inset: 0; width: 100vw; max-width: 100vw; height: 100dvh; max-height: 100dvh; background: ${cv(refPath(modal.bg.$value))}; font-family: ${cv("family.sans")}; }
+/* On a phone this is Drawer, bottom placement — its own recipe, not a modal
+   made to look like one: edge-attached, ${px(resolve(drawer.radius.$value))} radius (three edges sit flush
+   against the viewport, which is why the component has none), Drawer's shadow,
+   and its 250ms slide. @starting-style plus allow-discrete gives the entry
+   animation natively, so it arrives from the bottom instead of appearing. From
+   768 the 768-block below turns it back into a centred Modal. */
+.ed-picker { border: none; padding: 0; margin: 0; position: fixed; inset: auto 0 0 0; width: 100%; max-width: 100%; height: auto; max-height: 80dvh; border-radius: ${px(resolve(drawer.radius.$value))}; background: ${cv(refPath(drawer.bg.$value))}; box-shadow: ${drShadowCss}; font-family: ${cv("family.sans")}; transform: translateY(100%); transition: transform ${drMs} ease, overlay ${drMs} allow-discrete, display ${drMs} allow-discrete; }
+.ed-picker[open] { transform: translateY(0); }
+@starting-style { .ed-picker[open] { transform: translateY(100%); } }
 .ed-picker:focus, .ed-picker:focus-visible { outline: none; }
 .ed-picker[open] { display: flex; flex-direction: column; }
 /* Lock the page while the dialog is up. As a :has() rule it follows the
    dialog's own [open] state, so Escape, the backdrop and the close button all
    release it without a line of JS keeping score. */
 html:has(.ed-picker[open]) { overflow: hidden; }
-.ed-picker::backdrop { background: ${cv(refPath(modal.overlay.$value))}; }
-.ed-picker__head { flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: ${px(resolve("dim.3"))}; padding: ${px(resolve("dim.4"))} ${px(resolve(modal.padding.$value))}; border-bottom: 1px solid ${cv(refPath(modal.divider.$value))}; }
+.ed-picker::backdrop { background: ${cv(refPath(drawer.overlay.$value))}; }
+.ed-picker__head { flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: ${px(resolve("dim.3"))}; padding: ${px(resolve("dim.4"))} ${px(resolve("dim.4"))}; border-bottom: 1px solid ${cv(refPath(modal.divider.$value))}; }
 .ed-picker__title { margin: 0; color: ${cv(refPath(modal.titleColor.$value))}; ${typoCss(h.resolveToken(modal.title))} }
 /* Search and its two filters are one band, outside the scroll area so they
    stay put while the list moves. No rule between them — they are the same
    control surface; the only hairline is under the pair, where the list starts. */
-.ed-picker__tools { flex-shrink: 0; display: flex; flex-direction: column; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.3"))} ${px(resolve(modal.padding.$value))}; border-bottom: 1px solid ${cv(refPath(modal.divider.$value))}; }
-.ed-picker__filters { display: flex; flex-direction: column; gap: ${px(resolve("dim.2"))}; }
-.ed-picker__filters .select { flex: none; width: 100%; }
+.ed-picker__tools { flex-shrink: 0; display: flex; flex-direction: column; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))}; border-bottom: 1px solid ${cv(refPath(modal.divider.$value))}; }
+.ed-picker__filters { display: flex; gap: ${px(resolve("dim.2"))}; }
+.ed-picker__filters .select { flex: 1 1 auto; min-width: 0; }
+#ed-filter-kind { flex-basis: ${px(resolve("dim.48"))}; }
+#ed-filter-level { flex-basis: ${px(resolve("dim.36"))}; }
 @media (min-width: 768px) {
   .ed-picker__tools { flex-direction: row; align-items: center; }
   .ed-picker__tools .search { flex: 1; min-width: 0; }
-  .ed-picker__filters { flex-shrink: 0; flex-direction: row; }
-  .ed-picker__filters .select { flex: none; width: auto; }
+  .ed-picker__filters { flex-shrink: 0; }
+  .ed-picker__filters .select { flex: none; }
   #ed-filter-kind { width: ${px(resolve("dim.48"))}; }
   #ed-filter-level { width: ${px(resolve("dim.36"))}; }
 }
@@ -450,9 +463,9 @@ html:has(.ed-picker[open]) { overflow: hidden; }
 .choice-tile__input:checked ~ .choice-tile__box .choice-tile__check svg { opacity: 1; }
 .choice-tile__input:disabled ~ .choice-tile__box .choice-tile__check { background: ${cv(refPath(cb.state.disabled.bg.$value))}; border-color: ${cv(refPath(cb.state.disabled.border.$value))}; }
 /* Only in multi-pick: with one answer there is nothing to confirm. */
-.ed-picker__foot { display: none; flex-shrink: 0; align-items: center; justify-content: flex-end; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.3"))} ${px(resolve(modal.padding.$value))}; border-top: 1px solid ${cv(refPath(modal.divider.$value))}; }
+.ed-picker__foot { display: none; flex-shrink: 0; align-items: center; justify-content: flex-end; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.3"))} ${px(resolve("dim.4"))}; border-top: 1px solid ${cv(refPath(modal.divider.$value))}; }
 .ed-picker.is-multi .ed-picker__foot { display: flex; }
-.ed-picker__body { flex: 1; min-height: 0; overflow-y: auto; padding: ${px(resolve(modal.padding.$value))}; }
+.ed-picker__body { flex: 1; min-height: 0; overflow-y: auto; padding: ${px(resolve("dim.4"))}; }
 /* One column while the dialog is full-screen, two once it is a panel — the
    same 768 breakpoint the dialog itself uses, so the column count changes when
    the shape does. Compact rows plus two columns roughly triples what is on
@@ -462,7 +475,16 @@ html:has(.ed-picker[open]) { overflow: hidden; }
   .ed-picker .ed-grid { grid-template-columns: repeat(2, 1fr); }
 }
 @media (min-width: 768px) {
-  .ed-picker { margin: auto; width: min(760px, calc(100vw - ${px(resolve("dim.8"))})); height: min(720px, calc(100dvh - ${px(resolve("dim.16"))})); border-radius: ${px(resolve(modal.radius.$value))}; box-shadow: ${mdShadowCss}; }
+  /* Modal's own padding, once it is a modal again. On a phone the drawer uses
+     16px gutters — 24 left the two filters one pixel short of their longest
+     values, and 16 is the ordinary phone gutter anyway. Declared here rather
+     than in the earlier 768 block because .ed-picker__body's own padding
+     shorthand is defined between them and would overwrite a longhand set first. */
+  .ed-picker__head, .ed-picker__tools, .ed-picker__foot, .ed-picker__body { padding-left: ${px(resolve(modal.padding.$value))}; padding-right: ${px(resolve(modal.padding.$value))}; }
+  /* Back to Modal: free-floating and centred, so it takes Modal's radius and
+     shadow and drops the drawer's edge attachment and slide. */
+  .ed-picker { inset: 0; margin: auto; width: min(760px, calc(100vw - ${px(resolve("dim.8"))})); height: min(720px, calc(100dvh - ${px(resolve("dim.16"))})); max-height: calc(100dvh - ${px(resolve("dim.16"))}); border-radius: ${px(resolve(modal.radius.$value))}; background: ${cv(refPath(modal.bg.$value))}; box-shadow: ${mdShadowCss}; transform: none; transition: none; }
+  .ed-picker::backdrop { background: ${cv(refPath(modal.overlay.$value))}; }
 }
 .is-hidden { display: none !important; }`;
 }

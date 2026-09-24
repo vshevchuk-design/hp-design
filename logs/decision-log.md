@@ -1442,3 +1442,16 @@ Two other calls in the same round:
 And step 2's term tiles took the compact treatment — 32px marker, declared 48 minimum — and **three to a row from 768px**, scoped to that panel: a year is exactly three terms, so they now read as one row per year instead of two-and-an-orphan, and the whole step fits one screen at 800×900 where it used to be a scrolling wall. Step 3 was deliberately left out of that rule: it has two answers and would only get narrower in a three-column track.
 
 **Process note that cost a rebuild.** I ran all 53 builders while the palette carried blue.75, then reverted the tokens and rebuilt only the page I was looking at — leaving sixteen docs pages carrying a colour that no longer existed. `git status` caught it. A token-level revert needs the same full rebuild the token-level change did.
+
+## 2026-09-24 — the picker is a Drawer on a phone, and the filters fit after all
+
+**One dialog, two components' recipes.** Below 768 the picker is Drawer in its bottom placement — not a modal dressed up as one. It takes the component's own numbers: edge-attached, full width, `max-height: 80dvh`, `radius.none` (Drawer has none because three of its four edges sit flush against the viewport), Drawer's shadow, Drawer's overlay, and its 250ms slide. The animation is native: `transform: translateY(100%)` with `@starting-style` and `allow-discrete` on `overlay`/`display`, which is how the Message Center's own compose sheet does it. From 768 the media block turns all of that off again and it is a centred Modal.
+
+**The two filters do fit on one row.** I had stacked them on the grounds that "Concentrations" (180px of trigger) and "Bachelor's" (136) need 324 of 319 — true, but the fix was not stacking. Two changes made it fit with room to spare:
+
+- They now share the row **in proportion to what each needs**, using the same `dim.48`/`dim.36` widths the desktop row already uses, as flex *bases* that shrink together. Splitting it evenly was what starved the longer one.
+- The drawer's gutters are `dim.4` on a phone rather than Modal's `dim.6`. That is the ordinary phone gutter anyway, and it freed the 16px that turned a one-pixel shortfall into slack. Measured after: both longest values render with zero overflow.
+
+Two things worth remembering from the build:
+- `drawer.transitionDuration` is a literal `{value, unit}`, not a `{ref}` — `resolve()` takes reference strings and threw on it. `resolveToken` + `px` is the pair for a literal dimension.
+- The desktop padding override had to move *after* `.ed-picker__body`'s own `padding` shorthand. Written in the earlier of the two 768 blocks it was silently overwritten by a shorthand declared between them, and only the body was wrong — the kind of thing that looks like the rule "didn't apply".
