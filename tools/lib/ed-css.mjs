@@ -307,7 +307,9 @@ ${["neutral", "primary", "success", "warning"].map((r) => `.badge--${r} { backgr
 /* the shell's settings action is icon-only at base */
 .btn--base.btn--icon-only { width: ${primaryBase.height}; padding: 0; }
 .btn--block { width: 100%; }
-.btn--primary .btn__icon, .btn--secondary .btn__icon { color: currentColor; }
+.btn--primary .btn__icon { color: ${cv(refPath(button.primary.state.default.icon.$value))}; }
+.btn--secondary .btn__icon { color: ${cv(refPath(button.secondary.state.default.icon.$value))}; }
+.btn:disabled .btn__icon { color: ${cv(refPath(button.secondary.state.disabled.icon.$value))}; }
 .btn:focus-visible { outline: ${ringW} solid ${cv("border.focus")}; outline-offset: ${ringO}; }
 
 /* ============ fields: Input / Select / Search ============ */
@@ -419,13 +421,18 @@ ${["neutral", "primary", "success", "warning"].map((r) => `.badge--${r} { backgr
 .ed-choose__hint { color: ${cv(refPath(ct.descriptionColor.$value))}; ${typoCss(h.resolveToken(ct.description))} }
 
 /* On a phone this is Drawer, bottom placement — its own recipe, not a modal
-   made to look like one: edge-attached, ${px(resolve(drawer.radius.$value))} radius (three edges sit flush
-   against the viewport, which is why the component has none), Drawer's shadow,
+   made to look like one: edge-attached, ${px(resolve(drawer.radius.$value))} radius (all four edges sit
+   flush, which is why the component has none), Drawer's shadow and overlay,
    and its 250ms slide. @starting-style plus allow-discrete gives the entry
-   animation natively, so it arrives from the bottom instead of appearing. From
-   768 the 768-block below turns it back into a centred Modal. */
-.ed-picker { border: none; padding: 0; margin: 0; position: fixed; inset: auto 0 0 0; width: 100%; max-width: 100%; height: auto; max-height: 80dvh; border-radius: ${px(resolve(drawer.radius.$value))}; background: ${cv(refPath(drawer.bg.$value))}; box-shadow: ${drShadowCss}; font-family: ${cv("family.sans")}; transform: translateY(100%); transition: transform ${drMs} ease, overlay ${drMs} allow-discrete, display ${drMs} allow-discrete; }
-.ed-picker[open] { transform: translateY(0); }
+   animation natively, so it arrives from the bottom instead of appearing.
+   Full height, not the 80dvh the Drawer doc page shows: that is the doc's own
+   demo value — the token file has no height at all — and it suits a short
+   sheet, not a searchable catalogue of thirty-odd programmes with a search, two filters and a footer. Leaving a fifth of
+   the screen to a scrim over a page you cannot touch costs list, which is the
+   whole task here; the Message Center's compose sheet is full-screen for the
+   same reason. From 768 the block below turns it back into a centred Modal. */
+.ed-picker { border: none; padding: 0; margin: 0; position: fixed; inset: auto 0 0 0; width: 100%; max-width: 100%; height: 100dvh; max-height: 100dvh; border-radius: ${px(resolve(drawer.radius.$value))}; background: ${cv(refPath(drawer.bg.$value))}; box-shadow: ${drShadowCss}; font-family: ${cv("family.sans")}; }
+.ed-picker[open] { transform: translateY(0); transition: transform ${drMs} ease; }
 @starting-style { .ed-picker[open] { transform: translateY(100%); } }
 .ed-picker:focus, .ed-picker:focus-visible { outline: none; }
 .ed-picker[open] { display: flex; flex-direction: column; }
@@ -495,7 +502,7 @@ export const ED_COLOR_PATHS = [
   "surface.page", "surface.default", "surface.dim", "surface.dimHover", "surface.sunken", "surface.disabled",
   "border.default", "border.strong", "border.focus",
   "text.default", "text.secondary", "text.muted", "text.primary", "text.onFill", "text.disabled",
-  "icon.default", "icon.secondary", "icon.muted", "icon.onFill", "icon.primary",
+  "icon.default", "icon.secondary", "icon.muted", "icon.onFill", "icon.primary", "icon.disabled",
   "fill.primary", "fill.primaryHover", "fill.primaryActive", "fill.disabled",
   "fill.neutral", "fill.neutralHover", "fill.neutralActive", "fill.neutralHoverStrong", "fill.neutralActiveStrong",
   "fill.success",
