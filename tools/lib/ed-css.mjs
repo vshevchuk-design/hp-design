@@ -112,7 +112,7 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 /* The way out of the picker lives at the top, next to where the picker
    opens — a Cancel in the footer would sit below all 29 programmes. */
 .ed__back { align-self: flex-start; }
-.ed__title { margin: 0; color: ${cv("text.default")}; ${typoCss(h.resolveToken(h.get("text-style.title-2xl")))} }
+.ed__title { margin: 0; color: ${cv("text.default")}; ${typoCss(h.resolveToken(h.get("text-style.title-xl")))} }
 .ed__sub { margin: 0; color: ${cv("text.secondary")}; ${typoCss(h.resolveToken(h.get("text-style.body-base")))} }
 .ed__step { display: none; flex-direction: column; gap: ${px(resolve("dim.6"))}; }
 .ed__step.is-active { display: flex; flex: 1; }

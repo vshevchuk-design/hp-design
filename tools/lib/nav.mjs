@@ -93,6 +93,12 @@ export const DESIGN_PRODUCTS = {
       "explore-degrees": { label: "Explore Degrees", href: "designs/explore-degrees.html" },
     },
   },
+  academics: {
+    label: "Academics",
+    items: {
+      "degree-progress": { label: "Degree Progress", href: "designs/degree-progress.html" },
+    },
+  },
 };
 
 const NAV_CHROME = `<style>

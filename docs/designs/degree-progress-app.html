@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Degree Progress</title>
+<link rel="stylesheet" href="../../assets/fonts/sora/sora.css" />
+<style>
+:root {
+  --tok-surface-page: #f9fafb;
+  --tok-surface-default: #ffffff;
+  --tok-border-default: #dadde0;
+  --tok-border-focus: #0468c4;
+  --tok-text-default: #121921;
+  --tok-text-muted: #758191;
+  --tok-fill-neutral: #e6e8eb;
+  --tok-icon-default: #485462;
+  --tok-fill-neutral-hover-strong: #cdd1d6;
+  --tok-fill-neutral-active-strong: #adb5be;
+  --tok-text-secondary: #5d6a7a;
+  --tok-bg-neutral: #e6e8eb;
+  --tok-family-sans: 'Sora', sans-serif;
+}
+
+/* ---- portal app shell (tools/lib/app-shell.mjs) ---- */
+.app { min-height: 100%; display: flex; flex-direction: column; }
+/* Exactly dim.16 (64px) tall, border included: everything lands on the 4px
+   grid, and vertical padding + a 1px border can never total a multiple of 4
+   (dim.3 + 40 + dim.3 + 1 = 65). So the height is declared and the hairline
+   sits inside it (border-box), leaving a 63px content band with the 40px
+   control optically centred. */
+.app__topbar { position: sticky; top: 0; z-index: 1; height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 16px; background: var(--tok-surface-default); border-bottom: 1px solid var(--tok-border-default); }
+.app__logo { display: flex; align-items: center; color: var(--tok-text-default); }
+.app__logo svg { display: block; height: 24px; width: auto; }
+/* The other left slot: a page title instead of the wordmark, same as the
+   Message Center's topbar — heading-lg, with a muted meta note beside it. The
+   note is plain text, not a Badge: a Badge labels or categorises (MC's is a
+   department), and "No account needed" is reassurance about this screen. */
+.app__brand { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+.app__title { margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 18px; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.app__meta { color: var(--tok-text-muted); font-weight: 400; font-size: 12px; line-height: 1.4; white-space: nowrap; }
+@media (max-width: 559px) {
+  /* the note is a nicety — the title keeps the room on a phone */
+  .app__meta { display: none; }
+}
+@media (min-width: 768px) {
+  /* match the content padding so the wordmark lines up with what's under it */
+  .app__topbar { padding: 0 24px; }
+}
+
+
+/* Button secondary — the shell's actions, resolved from button.tokens.json.
+   Its icon colour is set explicitly: secondary's label (text.default) and icon
+   (icon.default) are different values, so currentColor would be wrong. */
+.btn { display: inline-flex; align-items: center; justify-content: center; border: none; cursor: pointer; font-family: inherit; border-radius: 8px; }
+.btn--secondary { background: var(--tok-fill-neutral); }
+.btn--secondary.btn--base.btn--icon-only { width: 40px; height: 40px; padding: 0; }
+.btn--secondary.btn--sm { height: 32px; padding: 0 8px; gap: 8px; color: var(--tok-text-default); font-weight: 600; font-size: 12px; line-height: 1.4; }
+.btn--secondary .btn__icon { width: 20px; height: 20px; color: var(--tok-icon-default); }
+.btn--secondary:hover { background: var(--tok-fill-neutral-hover-strong); }
+.btn--secondary:active { background: var(--tok-fill-neutral-active-strong); }
+.btn--secondary:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-family-sans); }
+
+/* dp-* composition layer — just the body slot until the screen is designed */
+.dp__main { flex: 1; width: 100%; max-width: 1400px; margin: 0 auto; display: flex; padding: 16px; }
+@media (min-width: 768px) { .dp__main { padding: 24px; } }
+
+.empty-state { box-sizing: border-box; width: 100%; display: flex; align-items: center; justify-content: center; padding: 24px; font-family: var(--tok-family-sans); }
+.empty-state__text { background: var(--tok-bg-neutral); color: var(--tok-text-secondary); border-radius: 999px; padding: 8px 16px; font-weight: 400; font-size: 14px; line-height: 1.4; text-align: center; }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="app__topbar">
+    <div class="app__brand"><h1 class="app__title">Degree Progress</h1></div>
+    <button class="btn btn--secondary btn--base btn--icon-only" type="button" aria-label="Settings"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"><g><path d="M0,0h24v24H0V0z" fill="none"/><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></g></svg></button>
+  </header>
+  <main class="dp__main">
+    <div class="empty-state"><span class="empty-state__text">Degree Progress — layout not designed yet</span></div>
+  </main>
+</div>
+</body>
+</html>

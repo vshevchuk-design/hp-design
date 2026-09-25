@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>hp-design — Explore Degrees</title>
+<title>hp-design — Degree Progress</title>
 <link rel="stylesheet" href="../../assets/fonts/sora/sora.css" />
 <style>
   :root {
@@ -199,11 +199,11 @@
     <details class="nav-acc" open>
       <summary>Student Portal</summary>
       <a class="navlink" href="../designs/springboard.html">Springboard</a>
-      <a class="navlink active" href="../designs/explore-degrees.html">Explore Degrees</a>
+      <a class="navlink" href="../designs/explore-degrees.html">Explore Degrees</a>
     </details>
     <details class="nav-acc" open>
       <summary>Academics</summary>
-      <a class="navlink" href="../designs/degree-progress.html">Degree Progress</a>
+      <a class="navlink active" href="../designs/degree-progress.html">Degree Progress</a>
     </details>
     </div>
     <script>
@@ -216,8 +216,8 @@
 </script>
   </nav>
   <main>
-    <h1>Explore Degrees</h1>
-    <p class="sub">The public <b>Explore Your Degree</b> wizard behind the Springboard's own tile — a no-login estimator: pick a programme, a start term and any prior college credits, and it reports what transfers and what's left. Four steps plus results, everything interactive. <b>All the branches are real:</b> focus areas appear only for majors that have them (try Psychology), Yes/No on prior credits, N previous schools, and the AI transcript reader runs its full path — the first file is rejected with the reference's own message ("a photograph of a house and pool"), the second imports ten classes. Two endings too: pick <b>Riverside Community College</b> to get the "we couldn't check your credits online" fallback, and answer <b>No, starting fresh</b> to see the results with no transfer tab at all. The header is the standard portal bar in its titled mode — the same 64px white bar and heading as the Message Center, with the page's name where the wordmark sits on the Springboard, the &ldquo;No account needed&rdquo; note beside it and settings on the right. The school switcher in the reference only exists in a demo environment and is gone here. A prototype switch on the results screen turns the school's Degree Planner on and off; results are always rendered and the planner is a button, never a redirect, since a redirect would discard both the estimate and the print path. Built from 32 programmes and 3 previous schools of sample data.</p>
+    <h1>Degree Progress</h1>
+    <p class="sub">The student's degree progress screen — a scaffold for now. It already carries the portal's real app shell (<code>tools/lib/app-shell.mjs</code>, titled mode: the page name in the same 64px topbar the other portal screens use); the screen's own layout is waiting on reference screens. Everything built here will follow the same discipline as the other prototypes: strictly hp-design components, every recipe resolved from its own token file, with a small <code>dp-</code> composition layer as the only bespoke CSS.</p>
 
     <div class="device-bar">
       <div class="device-bar__group">
@@ -233,17 +233,17 @@
         </button>
         <div class="listbox" id="viewer-version-lb" popover>
           <ul class="listbox__list" role="listbox" aria-label="Prototype version">
-        <li role="none"><button type="button" class="listbox__option listbox__option--selected" role="option" aria-selected="true" data-version-file="explore-degrees-app.html" data-version-label="v1 · current">
+        <li role="none"><button type="button" class="listbox__option listbox__option--selected" role="option" aria-selected="true" data-version-file="degree-progress-app.html" data-version-label="v1 · current">
           <span>v1 <span class="listbox__note">· current</span></span><svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
         </button></li>
           </ul>
         </div>
       </div>
-      <a class="open-standalone" id="viewer-standalone" href="explore-degrees-app.html" target="_blank" rel="noopener">Open standalone ↗</a>
+      <a class="open-standalone" id="viewer-standalone" href="degree-progress-app.html" target="_blank" rel="noopener">Open standalone ↗</a>
     </div>
     <div class="frame-wrap">
       <div class="device device--mobile" id="device">
-        <iframe id="device-frame" src="explore-degrees-app.html" title="Explore Degrees prototype"></iframe>
+        <iframe id="device-frame" src="degree-progress-app.html" title="Degree Progress prototype"></iframe>
       </div>
     </div>
   </main>
