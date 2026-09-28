@@ -72,7 +72,8 @@
   :root {
   --tok-bg-neutral: #e6e8eb;
   --tok-text-default: #121921;
-  --tok-fill-neutral: #e6e8eb;
+  --tok-tag-gray-solid-bg: #758191;
+  --tok-tag-gray-solid-text: #ffffff;
   --tok-bg-primary: #d9eaff;
   --tok-text-primary: #0468c4;
   --tok-fill-primary: #077fec;
@@ -88,8 +89,6 @@
   --tok-fill-danger: #de394b;
   --tok-tag-gray-tint-bg: #e6e8eb;
   --tok-tag-gray-tint-text: #121921;
-  --tok-tag-gray-solid-bg: #758191;
-  --tok-tag-gray-solid-text: #ffffff;
   --tok-tag-blue-tint-bg: #d9eaff;
   --tok-tag-blue-tint-text: #0468c4;
   --tok-tag-blue-solid-bg: #077fec;
@@ -135,7 +134,7 @@
 .badge--base { height: 20px; padding: 0 8px; font-weight: 600; font-size: 12px; line-height: 1; }
 .badge--lg { height: 24px; padding: 0 8px; font-weight: 600; font-size: 14px; line-height: 1; }
 .badge--role-neutral.badge--tint { background: var(--tok-bg-neutral); color: var(--tok-text-default); }
-.badge--role-neutral.badge--solid { background: var(--tok-fill-neutral); color: var(--tok-text-default); }
+.badge--role-neutral.badge--solid { background: var(--tok-tag-gray-solid-bg); color: var(--tok-tag-gray-solid-text); }
 .badge--role-primary.badge--tint { background: var(--tok-bg-primary); color: var(--tok-text-primary); }
 .badge--role-primary.badge--solid { background: var(--tok-fill-primary); color: var(--tok-text-on-fill); }
 .badge--role-success.badge--tint { background: var(--tok-bg-success); color: var(--tok-text-success); }
@@ -293,7 +292,8 @@
     <pre class="code"><code>:root {
   --tok-bg-neutral: #e6e8eb;
   --tok-text-default: #121921;
-  --tok-fill-neutral: #e6e8eb;
+  --tok-tag-gray-solid-bg: #758191;
+  --tok-tag-gray-solid-text: #ffffff;
   --tok-bg-primary: #d9eaff;
   --tok-text-primary: #0468c4;
   --tok-fill-primary: #077fec;
@@ -309,8 +309,6 @@
   --tok-fill-danger: #de394b;
   --tok-tag-gray-tint-bg: #e6e8eb;
   --tok-tag-gray-tint-text: #121921;
-  --tok-tag-gray-solid-bg: #758191;
-  --tok-tag-gray-solid-text: #ffffff;
   --tok-tag-blue-tint-bg: #d9eaff;
   --tok-tag-blue-tint-text: #0468c4;
   --tok-tag-blue-solid-bg: #077fec;
@@ -356,7 +354,7 @@
 .badge--base { height: 20px; padding: 0 8px; font-weight: 600; font-size: 12px; line-height: 1; }
 .badge--lg { height: 24px; padding: 0 8px; font-weight: 600; font-size: 14px; line-height: 1; }
 .badge--role-neutral.badge--tint { background: var(--tok-bg-neutral); color: var(--tok-text-default); }
-.badge--role-neutral.badge--solid { background: var(--tok-fill-neutral); color: var(--tok-text-default); }
+.badge--role-neutral.badge--solid { background: var(--tok-tag-gray-solid-bg); color: var(--tok-tag-gray-solid-text); }
 .badge--role-primary.badge--tint { background: var(--tok-bg-primary); color: var(--tok-text-primary); }
 .badge--role-primary.badge--solid { background: var(--tok-fill-primary); color: var(--tok-text-on-fill); }
 .badge--role-success.badge--tint { background: var(--tok-bg-success); color: var(--tok-text-success); }
@@ -421,7 +419,7 @@
         <div class="story-preview"><div style="display:flex; gap:10px; align-items:center;"><span class="badge badge--base badge--tint badge--role-neutral">Label</span><span class="badge badge--base badge--solid badge--role-neutral">Label</span></div></div>
         <pre class="code"><code>&lt;span class="badge badge--base badge--tint badge--role-neutral"&gt;Label&lt;/span&gt;
 &lt;span class="badge badge--base badge--solid badge--role-neutral"&gt;Label&lt;/span&gt;</code></pre>
-        <p class="story-note">bg.neutral/fill.neutral + text.default — the one role without a colored text counterpart.</p>
+        <p class="story-note">Tint: bg.neutral + text.default — the one role without a colored text counterpart. Solid: the same gray.500 + white as color=gray solid.</p>
       </div>
 
       <div class="story">
@@ -466,7 +464,7 @@
         <div class="story-preview"><div style="display:flex; gap:10px; align-items:center;"><span class="badge badge--base badge--tint badge--color-gray">Label</span><span class="badge badge--base badge--solid badge--color-gray">Label</span></div></div>
         <pre class="code"><code>&lt;span class="badge badge--base badge--tint badge--color-gray"&gt;Label&lt;/span&gt;
 &lt;span class="badge badge--base badge--solid badge--color-gray"&gt;Label&lt;/span&gt;</code></pre>
-        <p class="story-note">Tint aliases role="neutral". Solid does not — fill.neutral is the same pale value as its own tint, so solid uses a real filled color.gray.500 + white instead.</p>
+        <p class="story-note">Tint aliases role="neutral". Solid is color.gray.500 + white, and role="neutral" solid now points here too — renders identically.</p>
       </div>
 
       <div class="story">

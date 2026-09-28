@@ -147,7 +147,7 @@ function sizeStories() {
 
 // ---- Role x fill ----
 const roleNotes = {
-  neutral: "bg.neutral/fill.neutral + text.default — the one role without a colored text counterpart.",
+  neutral: "Tint: bg.neutral + text.default — the one role without a colored text counterpart. Solid: the same gray.500 + white as color=gray solid.",
   primary: "bg.primary/fill.primary + text.primary/text.onFill — an open/active thread, or any 'in progress' status.",
   success: "bg.success/fill.success + text.success/text.onFill.",
   warning: "bg.warning/fill.warning + text.warning/text.onFill — an upcoming expiry, not yet expired.",
@@ -170,7 +170,7 @@ function colorStories() {
     const roleAlias = { gray: "neutral", blue: "primary", red: "danger", green: "success", amber: "warning" }[c];
     const note =
       c === "gray"
-        ? `Tint aliases role="neutral". Solid does not — fill.neutral is the same pale value as its own tint, so solid uses a real filled color.gray.500 + white instead.`
+        ? `Tint aliases role="neutral". Solid is color.gray.500 + white, and role="neutral" solid now points here too — renders identically.`
         : roleAlias
         ? `Alias of role="${roleAlias}" — same tokens, renders identically.`
         : "New leaf color — not tied to any status role.";

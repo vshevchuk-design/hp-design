@@ -83,13 +83,14 @@
             }
           },
           "solid": {
+            "$description": "Same as color=gray solid (tag.gray.solid — gray.500 + text.onFill). Was fill.neutral + text.default until 2026-09-28, which resolved to the exact gray.100 of the neutral tint, so Neutral had no visible solid variant.",
             "bg": {
               "$type": "color",
-              "$value": "{fill.neutral}"
+              "$value": "{tag.gray.solid.bg}"
             },
             "text": {
               "$type": "color",
-              "$value": "{text.default}"
+              "$value": "{tag.gray.solid.text}"
             }
           }
         },
