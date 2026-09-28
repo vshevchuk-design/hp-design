@@ -1198,6 +1198,7 @@ html:has(.ed-picker[open]) { overflow: hidden; }
   function edGoto(step) {
     S.step = step;
     $$(".ed__step").forEach(function (el) { el.classList.toggle("is-active", +el.dataset.panel === step); });
+    show($("#ed-stepper"), step <= 4);
     edStepper();
     window.scrollTo(0, 0);
   }
@@ -1638,12 +1639,34 @@ html:has(.ed-picker[open]) { overflow: hidden; }
     }, 1800);
   }
 
+  /* Starting fresh means nothing is covered yet — the fixture's covered rows and
+     their "covered by your credit from …" classes describe transfer credit that
+     this user never entered, naming a school they never picked. Derived here
+     rather than filtered at each render, so the counts, the headline and the
+     accordion cannot disagree. */
+  function edGroups() {
+    if (S.credits !== "no") return D.groups;
+    return D.groups.map(function (g) {
+      return {
+        title: g.title,
+        code: g.code,
+        count: { covered: 0, total: g.count.total },
+        rows: g.rows.map(function (r) {
+          var out = { title: r.title };
+          if (typeof r.covered === "boolean") out.covered = false;
+          return out;
+        }),
+      };
+    });
+  }
+
   function edResults() {
     var hasCredits = S.credits === "yes";
     var applied = D.transfer.filter(function (t) { return t.status === "accepted"; }).length;
     var total = D.transfer.length;
-    var cov = D.groups.reduce(function (a, g) { return a + g.count.covered; }, 0);
-    var reqTotal = D.groups.reduce(function (a, g) { return a + g.count.total; }, 0);
+    var groups = edGroups();
+    var cov = groups.reduce(function (a, g) { return a + g.count.covered; }, 0);
+    var reqTotal = groups.reduce(function (a, g) { return a + g.count.total; }, 0);
 
     $("#ed-res-headline").textContent = hasCredits
       ? "Your credits already cover " + cov + " of " + reqTotal + " requirement areas"
@@ -1733,7 +1756,7 @@ html:has(.ed-picker[open]) { overflow: hidden; }
   }
 
   function edReqsPanel() {
-    $("#ed-panel-reqs").innerHTML = D.groups.map(function (g) {
+    $("#ed-panel-reqs").innerHTML = edGroups().map(function (g) {
       var count = g.count.total ? '<span class="badge badge--neutral">' + g.count.covered + " of " + g.count.total + " covered</span>" : "";
       var rows = g.rows.map(function (r) {
         var stateful = typeof r.covered === "boolean";
