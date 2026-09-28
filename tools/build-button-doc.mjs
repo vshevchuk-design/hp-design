@@ -124,10 +124,18 @@ const counterSizes = ["sm", "base", "lg"].map((key) => {
 // near-white gray button: the white pill barely shows and the navy reads as loud
 // rather than quiet, so each button variant needs its matching counter surface.
 const counterSurfaceFor = { primary: "onPrimary", secondary: "onNeutral", ghost: "onNeutral" };
-const counterSurfaces = {
-  onPrimary: { inactiveBg: "fill.primaryActive", inactiveLabel: "text.onFill" },
-  onNeutral: { inactiveBg: "fill.neutralActive", inactiveLabel: "text.default" },
-};
+// Read from counter.tokens.json, never retyped: onNeutral's inactive bg moved to
+// fill.neutralActiveStrong and a hand-typed "fill.neutralActive" here kept
+// painting the old gray.200 pill on this page until 2026-09-28.
+const counterRole = (surface, key) => counter[surface].state.inactive[key].$value.replace(/[{}]/g, "");
+const counterSurfaces = Object.fromEntries(
+  ["onPrimary", "onNeutral"].map((s) => [s, { inactiveBg: counterRole(s, "bg"), inactiveLabel: counterRole(s, "label") }]),
+);
+for (const s of Object.values(counterSurfaces)) {
+  for (const role of [s.inactiveBg, s.inactiveLabel]) {
+    if (!colorPaths.includes(role)) throw new Error(`counter.tokens.json references ${role}, missing from colorPaths`);
+  }
+}
 
 // ---- icons (placeholders for the preview only) ----
 const iconAdd = fs.readFileSync(path.join(root, "assets/icons/material-filled/add.svg"), "utf8").replace("<svg ", '<svg class="btn__icon" ');

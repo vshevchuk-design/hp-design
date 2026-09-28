@@ -263,25 +263,30 @@ function varScript(collection, entries, label) {
     `const VARS = ${JSON.stringify(entries)};\n` + VAR_RUNTIME.trimStart();
 }
 
-// Text styles: name "body-xs" → "body/xs" so Figma groups them.
+// Text styles: name "body-xs" → "body/xs" so Figma groups them. Component
+// tokens that spell out their own typography (Counter's bold digits, Badge's
+// label…) instead of aliasing a text-style also become styles, under their
+// variable-style path ("counter/size/sm/label") so they sit apart from the
+// shared ramp.
 const WEIGHT_STYLE = { 400: 'Regular', 500: 'Medium', 600: 'SemiBold', 700: 'Bold' };
 const textStyles = [];
 const effectStyles = [];
 for (const [p, t] of tokens) {
-  if (t.layer !== 'Primitives') continue;
+  const inlineType = t.layer === 'Components' && t.type === 'typography' && !isAlias(t.value);
+  if (t.layer !== 'Primitives' && !inlineType) continue;
   if (t.type === 'typography') {
     const v = t.value; const ref = k => (isAlias(v[k]) ? aliasPath(v[k]) : null);
     const lit = k => (isAlias(v[k]) ? resolve(aliasPath(v[k])).value : v[k]);
     const bind = k => (ref(k) && varByPath.get(ref(k)) ? varByPath.get(ref(k)).name : null);
     const family = lit('fontFamily'); const weight = lit('fontWeight');
     textStyles.push({
-      name: p.split('.').pop().replace('-', '/'),
+      name: inlineType ? varName(p, t.layer) : p.split('.').pop().replace('-', '/'),
       desc: t.desc || '',
       family: Array.isArray(family) ? family[0] : family,
       style: WEIGHT_STYLE[weight] ?? (() => { throw new Error(`no font style for weight ${weight}`); })(),
       size: lit('fontSize').value,
-      lineHeight: lit('lineHeight') * 100,
-      letterSpacing: (lit('letterSpacing')?.value ?? 0) * 100,
+      lineHeight: +(lit('lineHeight') * 100).toFixed(2),
+      letterSpacing: +((lit('letterSpacing')?.value ?? 0) * 100).toFixed(2),
       decoration: t.ext?.['hp.design/text']?.textDecoration === 'underline' ? 'UNDERLINE' : 'NONE',
       bind: { fontFamily: bind('fontFamily'), fontWeight: bind('fontWeight'), fontSize: bind('fontSize') },
     });

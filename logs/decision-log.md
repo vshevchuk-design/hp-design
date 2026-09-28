@@ -1566,3 +1566,11 @@ Calls worth remembering:
 Button and Icon Button are separate component sets, matching MUI's Button/IconButton split rather than a boolean: icon-only is a different shape (width = height, no paddingX), not a toggle on the same one. Variant stays a variant *axis* inside one set (45 variants) instead of three sets, even though Figma's own guidance caps matrices at 30 — a designer switching Primary→Secondary in the properties panel is exactly the `variant` prop in code, and three sets would break that swap.
 
 Icons are INSTANCE_SWAP properties (leading/trailing), never variants; a 15-icon starter set lives on its own Icons page. Two first-pass bugs caught from screenshots: `resize()` reset the text buttons to fixed 40px width (label overflowed), and the focus ring as two spread drop-shadows rendered nothing until clip-content was on — and still nothing on Ghost, which has no fill to cast from. Replaced with a stroke layer that stretches with the button; checked on an instance with a long label (button 219px, ring 231px = +6 each side).
+
+## 2026-09-28 — Counter in Figma, and a stale counter color in the Button docs
+
+Counter's label typography is spelled out inline in its tokens (bold, leading.none — deliberately not a text-style alias), so there was no Figma style to apply. Rather than one-off text settings, the exporter now turns every component token with inline typography into a Text Style named by its variable path (35 of them across Badge, Chip, Avatar, Input, …) — they'll be needed for those components anyway.
+
+Counter lives inside Button as an exposed nested instance, not as a Button variant axis: surface and size are fully determined by the button (onPrimary on Primary, onNeutral on Secondary/Ghost; size = button size), so the only free choices — State and Count — surface in the Button's own properties panel.
+
+Building it against the tokens exposed a real bug in `docs/button.html`: `build-button-doc.mjs` hand-typed `fill.neutralActive` for the onNeutral counter's inactive fill, while counter.tokens.json says `fill.neutralActiveStrong` (moved there on 2026-09-07). The Secondary/Ghost counter on the Button page was one gray step too light. Now read from the token file with an assertion — the "never retype a role name" rule, violated a third time.
