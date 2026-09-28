@@ -183,10 +183,16 @@ export const STATUS_COPY = {
    a decision they have not made. Rows with no `classes` render as plain rows
    with no disclosure at all (see edReqsPanel). */
 export const REQUIREMENT_GROUPS = [
-  { title: "Limits (TXFRP and PE)", code: "1900 #149", rows: [] },
+  /* Not requirements to complete but caps on what counts, so these rows carry
+     no state and no units: "Still to do" on a limit would be nonsense, and a
+     cap is not something you accumulate toward. They were an empty card until
+     2026-09-28 — a heading promising rows that never came. */
+  { title: "Limits (TXFRP and PE)", rows: [
+    { title: "No more than 70 transfer units count toward the degree" },
+    { title: "No more than 4 PE activity units count toward the degree" },
+  ] },
   {
     title: "LAU GE Distribution",
-    code: "F25 000115",
     rows: [
       { title: "Social Science Courses", covered: true, units: 6 },
       { title: "Life Science", covered: true, units: 3.5, classes: [{ code: "BIOLOGY 100", title: "General Biology I", units: 3.5, from: "Long Beach City College" }] },
@@ -214,7 +220,6 @@ export const REQUIREMENT_GROUPS = [
   },
   {
     title: "Psychology Requirements",
-    code: "2015 #116",
     rows: [
       { title: "Psych Stats", covered: false, units: 4 },
       { title: "PSYCH 101 Introduction to Psychology", covered: false, units: 3 },
@@ -227,7 +232,6 @@ export const REQUIREMENT_GROUPS = [
   },
   {
     title: "BS in Psychology — UMiami",
-    code: "Fall 2024 – Summer 2025",
     rows: [
       { title: "Expository Writing", covered: true, units: 3 },
       { title: "PSYCH 101 Introduction to Psychology", covered: false, units: 3 },
@@ -235,6 +239,13 @@ export const REQUIREMENT_GROUPS = [
   },
   { title: "Unused Courses", rows: [{ title: "Free Electives" }] },
 ];
+
+/** What the degree adds up to. Not a sum of the rows above: most of them ask
+ *  for units, but "Minimum Credit Required for Graduation" IS this number, so
+ *  adding them together would count the whole degree twice. A bachelor's-shaped
+ *  audit, like the rest of this fixture — the groups do not vary by programme
+ *  yet (see the fixture limit in logs/status.md). */
+export const DEGREE_UNITS = 120;
 
 /** Covered / total for a group, counting only rows that HAVE a state. */
 export const coveredOf = (group) => {

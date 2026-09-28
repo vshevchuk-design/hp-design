@@ -11,7 +11,7 @@
 import {
   PROGRAMS, PREV_SCHOOLS, CATALOG, SCANNED_CLASSES, TERM_OPTIONS, GRADE_OPTIONS,
   SCAN_ERROR, TRANSFER_RESULTS, STATUS_COPY, REQUIREMENT_GROUPS, NEXT_INTAKE,
-  coveredOf,
+  DEGREE_UNITS, coveredOf,
 } from "./ed-data.mjs";
 
 /** @param h { icon } — icons are inlined SVG strings, so they cross into JS as data */
@@ -31,6 +31,7 @@ export function edAppJs(h) {
     transfer: TRANSFER_RESULTS,
     statusCopy: STATUS_COPY,
     groups,
+    degreeUnits: DEGREE_UNITS,
     nextIntake: NEXT_INTAKE,
   });
 
@@ -539,15 +540,19 @@ export function edAppJs(h) {
      because it is a property of the requirement, not of anyone's transcript.
      Derived here rather than filtered at each render, so the counts, the
      headline and the rows cannot disagree. */
+  function edIsReq(r) { return r.req === true || typeof r.covered === "boolean"; }
+
   function edGroups() {
     if (S.credits !== "no") return D.groups;
     return D.groups.map(function (g) {
       return {
         title: g.title,
-        code: g.code,
         count: { covered: 0, total: g.count.total },
         rows: g.rows.map(function (r) {
-          var out = { title: r.title };
+          // The flag carries what stripping the covered state would otherwise
+          // destroy: whether this row is something to complete at all. A cap on
+          // transfer units is not, and must not be counted as one in either branch.
+          var out = { title: r.title, req: edIsReq(r) };
           if (r.units) out.units = r.units;
           return out;
         }),
@@ -577,14 +582,17 @@ export function edAppJs(h) {
 
     var plan = edPlanLabel();
     $("#ed-res-headline").textContent = hasCredits
-      ? "Your credits already cover " + cov + " of " + reqTotal + " requirement areas"
+      ? "Your credits already cover " + cov + " of " + reqTotal + " requirements"
       : "What it takes to finish " + plan;
     $("#ed-res-subline").textContent = hasCredits
       ? "What it takes to finish " + plan + ", and where you already stand."
       : "You're starting fresh, so everything below is still ahead of you.";
 
-    var pills = [["Start " + S.term, "primary"], [reqTotal + " requirement areas", "primary"]];
-    if (hasCredits) pills.push([cov + " already covered", "primary"], [applied + " classes applied", "primary"]);
+    // Only what is not already written above. The headline states the coverage
+    // and the summary above the groups states the totals, so pills repeating
+    // either would be the same fact in three places, kept in step by hand.
+    var pills = [["Start " + S.term, "primary"]];
+    if (hasCredits) pills.push([applied + " classes applied", "primary"]);
     $("#ed-res-pills").innerHTML = pills.map(function (p) { return '<span class="badge badge--' + p[1] + '">' + esc(p[0]) + "</span>"; }).join("");
 
     // A bar reading 0% is not information, it is a bar — hidden when there is
@@ -676,7 +684,19 @@ export function edAppJs(h) {
      there is no progress to report, only what the degree asks for. */
   function edReqsPanel() {
     var fresh = S.credits === "no";
-    $("#ed-panel-reqs").innerHTML = edGroups().map(function (g) {
+    var groups = edGroups().filter(function (g) { return g.rows.length; });
+    // What the degree asks for, before anything is applied to it — the same in
+    // both branches, because it describes the degree and not the student. The
+    // requirement count is the rows that are something to complete: a cap on
+    // transfer units is not one, which is why those rows carry no state.
+    var reqs = groups.reduce(function (a, g) {
+      return a + g.rows.filter(edIsReq).length;
+    }, 0);
+    var stats = [[groups.length, "requirement areas"], [reqs, "requirements"], [D.degreeUnits, "units to graduate"]];
+    var head = '<div class="ed-stats">' + stats.map(function (st) {
+      return '<div class="ed-stat"><span class="ed-stat__num">' + st[0] + '</span><span class="ed-stat__label">' + st[1] + "</span></div>";
+    }).join("") + "</div>";
+    $("#ed-panel-reqs").innerHTML = head + groups.map(function (g) {
       var count = !fresh && g.count.total
         ? '<span class="badge badge--neutral">' + g.count.covered + " of " + g.count.total + " covered</span>"
         : "";
@@ -700,9 +720,8 @@ export function edAppJs(h) {
         return '<details class="accordion__item"><summary class="accordion__summary">' + marker + title + meta + I.chevron +
           '</summary><div class="accordion__body">' + body + "</div></details>";
       }).join("");
-      return '<div class="card"><div class="card__head"><span class="card__title">' + esc(g.title) +
-        (g.code ? ' <span class="ed-tcredit__meta">' + esc(g.code) + "</span>" : "") + "</span>" + count + "</div>" +
-        (rows ? '<div class="card__body" style="padding:0;gap:0">' + rows + "</div>" : "") + "</div>";
+      return '<div class="card"><div class="card__head"><span class="card__title">' + esc(g.title) + "</span>" + count + "</div>" +
+        '<div class="card__body" style="padding:0;gap:0">' + rows + "</div></div>";
     }).join("");
   }
 

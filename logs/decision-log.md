@@ -1532,3 +1532,19 @@ Three self-inflicted breakages in one round, all from bulk edits by string surge
 2. Slicing `s[index(A):index(B)]` where B lands *before* A gives an empty string, and `replace("", new, 1)` prepends — so a rewritten `edReqsPanel` was inserted at the top of the module while the old one stayed below it and won by hoisting. The page ran, the checkers passed, and the panel simply rendered the old markup.
 3. Fixing that by slicing to "the next `  function`" swallowed the entire event-wiring block, because the next top-level function after `edReqsPanel` was one I had just created *below* the wiring. Restored from HEAD and re-applied.
 The check that caught all three is now worth keeping as a habit: after any bulk edit to the app module, diff the built page's function inventory (defined, duplicated, called-but-missing) and its `addEventListener` count against HEAD. `node --check` passes on every one of these.
+
+## 2026-09-28 — what the degree asks for, stated once
+
+Five things on the results screen, all of them about the same question: does this number mean anything to the person reading it?
+
+**The grey codes are gone.** "1900 #149", "F25 000115", "2015 #116" — audit identifiers carried over from the reference, sitting beside the group names where they read as part of the heading. Nothing on the screen explains them, and a student has no use for the audit's internal numbering. The user's read was exactly right ("це можливо тягнеться з транскрипта… давай уберем краще взагалі"). Removed from the fixture, not just from the render, so nothing can put them back.
+
+**The empty first group.** "Limits (TXFRP and PE)" shipped with `rows: []` — a card with a heading and nothing under it, which is worse than no card. It now carries the two caps it was always about: no more than 70 transfer units, no more than 4 PE activity units. Those rows carry **no state and no units**: "Still to do" on a cap is nonsense, and a limit is not something you accumulate toward. Groups with no rows are also skipped outright now, so this cannot reappear from a data edit.
+
+**Units for outstanding requirements: yes, and the user's own reason is the right one** — in a degree planner the student picks classes whose units have to add up to the requirement, so the number is what tells them how much picking is left. It is a property of the requirement, true with or without a transcript, which is why it survives the fresh-start strip.
+
+**A summary above the groups**: areas, requirements, units to graduate. Two things kept it honest. First, "requirements" counts rows that are something to complete — the limits rows are not, and the fresh-start branch strips the `covered` flag that would otherwise say so, hence the `req` flag that survives the strip and makes both branches count the identical set. Second, the units figure is a **constant, never a sum**: "Minimum Credit Required for Graduation — 120 units" *is* the degree total, so adding the rows would have counted the whole degree twice and printed 202.5. The header pills then had to give something up: they were repeating the headline and the new summary word for word ("24 requirements" three times on one screen, kept in step by hand forever), so they are down to the start term and the classes applied.
+
+**A divider in the closing card**, full width like every other section divider on this screen rather than only under the text column — the advice and the button are two different things, one about this plan and one that starts another, and the rule says so without a second card.
+
+Checked both branches after all of it: fresh start reads 6 / 24 / 120 with no covered counts anywhere, and the credits branch reads "8 of 24 requirements" in the headline with the same 24 in the summary. The function inventory and listener count matched HEAD this time before I opened the browser — the check added to the memory checklist last round earned itself immediately.

@@ -216,7 +216,7 @@ const html = `<!doctype html>
     <p class="section-desc">A requirement group from the Explore Degrees results: Card header with the group name and a Badge count, then the rows. Only the second one opens — it is the only one with a class matched to it. The others carry their state in the icon and the label and have nothing underneath, so they are plain rows.</p>
     <div class="story-grid">
       ${storyCard("Requirement group", `<div class="acc-card">
-        <div class="acc-card__head"><span class="acc-card__title">LAU GE Distribution F25 000115</span><span class="badge">2 of 6 covered</span></div>
+        <div class="acc-card__head"><span class="acc-card__title">LAU GE Distribution</span><span class="badge">2 of 6 covered</span></div>
         ${group([
           row({ title: "Social Science Courses", status: "done", meta: "Covered", quiet: true }),
           item({ title: "Life Science", status: "done", meta: "Covered", open: true, quiet: true, body: requirementBody }),

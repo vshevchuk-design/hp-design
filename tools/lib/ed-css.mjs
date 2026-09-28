@@ -408,10 +408,18 @@ ${["neutral", "primary", "success", "warning"].map((r) => `.badge--${r} { backgr
 /* The icon is what makes the sentence the loudest thing on the card. Tinted,
    not solid: the pair is Badge's own primary tint (bg.primary), which this
    page already wears on the pills above, with icon.primary on top. */
-.ed-next { flex-direction: row; align-items: flex-start; gap: ${px(resolve("dim.4"))}; }
+.ed-next { display: flex; align-items: flex-start; gap: ${px(resolve("dim.4"))}; }
 .ed-next__icon { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; width: ${px(resolve("dim.10"))}; height: ${px(resolve("dim.10"))}; border-radius: ${px(resolve("radius.full"))}; background: ${cv("bg.primary")}; color: ${cv("icon.primary")}; }
 .ed-next__icon svg { width: ${px(resolve("dim.6"))}; height: ${px(resolve("dim.6"))}; }
 .ed-next__text { display: flex; flex-direction: column; gap: ${px(resolve("dim.2"))}; min-width: 0; }
+.ed-next__rule { height: 1px; background: ${cv(refPath(card.divider.$value))}; }
+/* What the degree asks for, above the groups that spell it out. Figures first
+   because they are the answer; the labels are what the figures are OF. Not a
+   card: six cards follow it and a seventh would read as another group. */
+.ed-stats { display: flex; flex-wrap: wrap; gap: ${px(resolve("dim.3"))} ${px(resolve("dim.8"))}; padding: 0 ${px(resolve("dim.1"))}; }
+.ed-stat { display: flex; flex-direction: column; gap: ${px(resolve("dim.1"))}; }
+.ed-stat__num { color: ${cv("text.default")}; ${typoCss(h.resolveToken(h.get("text-style.heading-lg")))} }
+.ed-stat__label { color: ${cv("text.secondary")}; ${typoCss(h.resolveToken(h.get("text-style.body-sm")))} }
 .ed-res__pills { display: flex; flex-wrap: wrap; gap: ${px(resolve("dim.2"))}; }
 .ed-res__actions { display: flex; flex-wrap: wrap; gap: ${px(resolve("dim.2"))}; }
 .ed-tabs { display: flex; gap: ${px(resolve("dim.4"))}; border-bottom: 1px solid ${cv("border.default")}; }
