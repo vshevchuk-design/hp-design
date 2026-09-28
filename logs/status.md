@@ -64,7 +64,11 @@ Target file: https://www.figma.com/design/GFFpQBFDyynmoJrWE6qz4j/HighPoint-Desig
 - Not variables, on purpose: typography/shadow composites (→ styles; component-level `…/label` typography and `…/shadow` tokens just alias those styles), durations, `%` widths, `object-fit` — 134 tokens.
 - Line height and tracking are set on text styles as **percent literals**, not bound: Figma reads a bound lineHeight/letterSpacing number as px, and ours are a multiplier / em. The `leading/*` and `tracking/*` variables exist but are unscoped.
 - Scopes are always explicit (0 vars on ALL_SCOPES). Primitive colors are hidden from pickers (scopes `[]`, still aliasable) so designers pick semantic roles. Semantic/component scopes are inferred from the name (`…Bg`/`fill` → fills, `border`/`ring`/`divider` → stroke, text-ish → TEXT_FILL, `icon` → shape+stroke, radius/gap/padding/size → matching float scopes); an ambiguous `…Color` leaf defers to the semantic role it aliases (`icon/*` vs `border/*`).
-- Components (Figma components/variants) are **not** exported yet — next step when asked.
+- **Components in Figma so far** (built directly with `use_figma`, not yet by a repo generator — rebuild by asking, the scripts are idempotent by name on their page):
+  - **Icons** page — 15 Material filled icons as `Icon/<name>` components (glyph fill bound to `icon/default`, overridden per use).
+  - **Button** page — `Button` (Variant Primary/Secondary/Ghost × Size sm/base/lg × State Default/Hover/Pressed/Focused/Disabled = 45) and `Icon Button` (same 45, square). Props: Label (text), Show leading/trailing icon (bool) + Leading/Trailing icon (instance swap, preferred = the Icons page). Every fill, height, paddingX, gap, radius, icon size and label color is bound to `button/*`; label uses the `heading/sm|base|md` text style. Plus a `Button / Examples` frame of instances.
+  - Focus ring = a locked, absolutely-positioned `focus-ring` child (stroke bound to `ringColor`, weight to `ringWidth`, 2px offset, STRETCH constraints) — **not** drop-shadow effects: Figma won't render a spread shadow on a fill-less frame, so Ghost's ring vanished that way.
+  - Counter-in-button variant not built yet (needs the Counter component first).
 
 ## Components built (42, + 1 behavioral variant)
 
