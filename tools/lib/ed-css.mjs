@@ -404,6 +404,10 @@ ${["neutral", "primary", "success", "warning"].map((r) => `.badge--${r} { backgr
 @media (min-width: 560px) { .ed-summary { grid-template-columns: 180px 1fr; gap: ${px(resolve("dim.4"))}; } }
 .ed-summary__key { color: ${cv("text.secondary")}; ${typoCss(h.resolveToken(h.get("text-style.heading-base")))} }
 .ed-summary__val { display: flex; flex-direction: column; align-items: flex-start; gap: ${px(resolve("dim.1"))}; color: ${cv("text.default")}; ${typoCss(h.resolveToken(h.get("text-style.body-base")))} }
+.ed-review-picks { width: 100%; display: grid; gap: ${px(resolve("dim.2"))}; }
+.ed-review-pick { display: flex; align-items: center; flex-wrap: wrap; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.2"))} ${px(resolve("dim.3"))}; border-radius: ${px(resolve("radius.default"))}; background: ${cv("surface.dim")}; }
+.ed-review-pick__name { color: ${cv("text.default")}; ${typoCss(h.resolveToken(h.get("text-style.heading-base")))} }
+.badge--solid { background: ${cv(refPath(badge.role.primary.solid.bg.$value))}; color: ${cv(refPath(badge.role.primary.solid.text.$value))}; }
 
 /* ============ captcha stand-in ============ */
 /* A third-party embed, not a DS component — a bordered box that behaves like

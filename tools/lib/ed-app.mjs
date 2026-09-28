@@ -488,11 +488,17 @@ export function edAppJs(h) {
        exhaustive and "program" collides with a kind. Each row's badge carries
        the precision, and only the first is marked primary — and only when
        there is more than one, since with one pick the word says nothing. */
-    var many = S.combo.length > 1;
-    rows.push(["Studying",
-      S.combo.map(function (c, i) {
-        return esc(c.name) + ' <span class="badge badge--neutral">' + (i === 0 && many ? "Primary · " : "") + c.kind + "</span>";
-      }).join("<br />")]);
+    /* Each pick gets its own backing rather than sitting as a run of text with a
+       badge after it: the review is the last read before the results are built,
+       and a list of things should look like a list of things. The primary keeps
+       a solid blue marker here even though step 1 dropped its badge — this list
+       is flat, with no section heading to say which one it is. */
+    rows.push(["Majors and minors",
+      '<div class="ed-review-picks">' + S.combo.map(function (c, i) {
+        return '<div class="ed-review-pick"><span class="ed-review-pick__name">' + esc(c.name) + "</span>" +
+          (i === 0 ? ' <span class="badge badge--solid">Primary</span>' : "") +
+          ' <span class="badge badge--neutral">' + c.kind + "</span></div>";
+      }).join("") + "</div>"]);
     if (S.focus) rows.push(["Focus area", esc(S.focus)]);
     rows.push(["Starting term", esc(S.term)]);
     if (S.credits === "no") {
