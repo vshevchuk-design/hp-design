@@ -81,6 +81,7 @@
   --tok-text-default: #121921;
   --tok-text-disabled: #adb5be;
   --tok-text-secondary: #5d6a7a;
+  --tok-icon-disabled: #adb5be;
   --tok-family-sans: 'Sora', sans-serif;
 }
 
@@ -99,7 +100,7 @@
 .radio:hover .radio__input:checked:not(:disabled) ~ .radio__circle .radio__dot { background: var(--tok-fill-primary-hover); }
 .radio__input:disabled ~ .radio__circle { background: var(--tok-surface-disabled); border-color: var(--tok-border-default); cursor: not-allowed; }
 .radio__input:disabled ~ .radio__label { color: var(--tok-text-disabled); }
-.radio__input:disabled:checked ~ .radio__circle .radio__dot { background: var(--tok-fill-disabled); }
+.radio__input:disabled:checked ~ .radio__circle .radio__dot { background: var(--tok-icon-disabled); }
 .radio:has(.radio__input:disabled) { cursor: not-allowed; }
 
 .radio-group { display: flex; flex-direction: column; gap: 8px; }
@@ -244,6 +245,7 @@
   --tok-text-default: #121921;
   --tok-text-disabled: #adb5be;
   --tok-text-secondary: #5d6a7a;
+  --tok-icon-disabled: #adb5be;
   --tok-family-sans: 'Sora', sans-serif;
 }
 
@@ -262,7 +264,7 @@
 .radio:hover .radio__input:checked:not(:disabled) ~ .radio__circle .radio__dot { background: var(--tok-fill-primary-hover); }
 .radio__input:disabled ~ .radio__circle { background: var(--tok-surface-disabled); border-color: var(--tok-border-default); cursor: not-allowed; }
 .radio__input:disabled ~ .radio__label { color: var(--tok-text-disabled); }
-.radio__input:disabled:checked ~ .radio__circle .radio__dot { background: var(--tok-fill-disabled); }
+.radio__input:disabled:checked ~ .radio__circle .radio__dot { background: var(--tok-icon-disabled); }
 .radio:has(.radio__input:disabled) { cursor: not-allowed; }
 
 .radio-group { display: flex; flex-direction: column; gap: 8px; }
@@ -377,7 +379,7 @@
     &lt;span class="radio__circle"&gt;&lt;span class="radio__dot"&gt;&lt;/span&gt;&lt;/span&gt;
     &lt;span class="radio__label"&gt;Label&lt;/span&gt;
   &lt;/label&gt;</code></pre>
-        <p class="story-note">Border stays border.default (never fill.primary) while disabled — brand blue never shows on an inert control; dot is fill.disabled.</p>
+        <p class="story-note">Border stays border.default (never fill.primary) while disabled — brand blue never shows on an inert control; dot is icon.disabled (gray.300), same as Checkbox's disabled glyph — a gray.100 dot would vanish on the gray.100 disabled bg.</p>
       </div>
     </div>
 

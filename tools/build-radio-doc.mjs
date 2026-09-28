@@ -66,12 +66,16 @@ const cv = (tokenPath) => `var(${cssVarName(tokenPath)})`;
 // The hover surface role is READ from the token file, not retyped — same rule
 // that caught build-button-doc.mjs painting a stale role earlier today.
 const hoverBg = radio.state.hover.bg.$value.replace(/[{}]/g, "");
+// Same for the disabled-checked dot: it moved fill.disabled → icon.disabled on
+// 2026-09-28 (fill.disabled matched the disabled bg exactly, so the dot vanished).
+const disabledDot = radio.state.disabledChecked.dot.$value.replace(/[{}]/g, "");
 const colorPaths = [
   "bg.primaryHover",
   "surface.default", "surface.disabled",
   "border.default", "border.focus",
   "fill.primary", "fill.primaryHover", "fill.disabled",
   "text.default", "text.disabled", "text.secondary",
+  disabledDot,
 ];
 const colorValue = Object.fromEntries(colorPaths.map((p) => [p, resolve(p)]));
 const fontSans = resolve("family.sans");
@@ -114,7 +118,7 @@ const css = `${rootVars}
 .radio:hover .radio__input:checked:not(:disabled) ~ .radio__circle .radio__dot { background: ${cv("fill.primaryHover")}; }
 .radio__input:disabled ~ .radio__circle { background: ${cv("surface.disabled")}; border-color: ${cv("border.default")}; cursor: not-allowed; }
 .radio__input:disabled ~ .radio__label { color: ${cv("text.disabled")}; }
-.radio__input:disabled:checked ~ .radio__circle .radio__dot { background: ${cv("fill.disabled")}; }
+.radio__input:disabled:checked ~ .radio__circle .radio__dot { background: ${cv(disabledDot)}; }
 .radio:has(.radio__input:disabled) { cursor: not-allowed; }
 
 .radio-group { display: flex; flex-direction: column; gap: ${groupLabelGap}; }
@@ -159,7 +163,7 @@ const stateDefs = [
   { key: "checked", label: "checked", opts: { checked: true }, note: "Outline and inner dot both resolve to fill.primary — the circle itself never fills, unlike Checkbox's box." },
   { key: "checked-hover", label: "checked + hover", opts: { checked: true, hover: true }, note: "fill.primaryHover (blue.600) on both outline and dot — same darken-on-hover Button primary already uses for its own filled background." },
   { key: "disabled", label: "disabled", opts: { disabled: true }, note: "surface.disabled, unlike default which uses surface.default." },
-  { key: "disabled-checked", label: "disabled + checked", opts: { disabled: true, checked: true }, note: "Border stays border.default (never fill.primary) while disabled — brand blue never shows on an inert control; dot is fill.disabled." },
+  { key: "disabled-checked", label: "disabled + checked", opts: { disabled: true, checked: true }, note: "Border stays border.default (never fill.primary) while disabled — brand blue never shows on an inert control; dot is icon.disabled (gray.300), same as Checkbox's disabled glyph — a gray.100 dot would vanish on the gray.100 disabled bg." },
 ];
 function stateStories() {
   return stateDefs.map((s, i) => storyCard(s.label, markup(`r-state-${i}`, `state-demo-${i}`, s.opts), markup(`r-state-${i}`, `state-demo-${i}`, s.opts), s.note)).join("\n");

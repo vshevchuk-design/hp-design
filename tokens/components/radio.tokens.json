@@ -128,7 +128,8 @@
           },
           "dot": {
             "$type": "color",
-            "$value": "{fill.disabled}"
+            "$value": "{icon.disabled}",
+            "$description": "icon.disabled (gray.300), same as Checkbox's disabledChecked glyph. Was fill.disabled until 2026-09-28 — identical to this state's bg (surface.disabled, both gray.100), so a disabled checked radio read as unchecked."
           },
           "label": {
             "$type": "color",

@@ -5,8 +5,13 @@
 // Every script is idempotent: variables/styles are matched by name and updated
 // in place, so re-running after a token edit never duplicates anything.
 //
-// Collections mirror the token layering: Primitives → Semantic → Components.
-// Aliases stay aliases (createVariableAlias), never flattened to hex.
+// Collections: Primitives (the palette things are built from) → Semantic (what
+// a value means). Aliases stay aliases (createVariableAlias), never flattened.
+// Component tokens become variables ONLY when they carry their own value —
+// one that isn't just a pointer at a semantic/primitive token. Today none do,
+// so there is no Components collection: Figma components bind straight to the
+// semantic/primitive variable their component token resolves to (a 900-var
+// mirror of pure aliases only cluttered every picker — decided 2026-09-28).
 //
 // Not variables (Figma has no composite variable type):
 //   typography composites → Text Styles (only text-style.* in primitives;
@@ -167,6 +172,7 @@ const varByPath = new Map();
 for (const [p, t] of tokens) {
   const ft = figmaType(t);
   if (!ft) { skipped[t.type] = (skipped[t.type] || 0) + 1; continue; }
+  if (t.layer === 'Components' && isAlias(t.value)) { skipped['component alias'] = (skipped['component alias'] || 0) + 1; continue; }
   varByPath.set(p, { layer: t.layer, name: varName(p, t.layer), type: ft });
 }
 
@@ -361,13 +367,27 @@ const emit = (slug, body) => {
   files.push([f, body.length]);
 };
 for (const [, layer] of LAYERS) {
-  const cs = chunks(vars[layer], layer === 'Components');
+  const cs = vars[layer].length ? chunks(vars[layer], layer === 'Components') : [];
   cs.forEach((c, i) => emit(
     cs.length > 1 ? `${layer.toLowerCase()}-${i + 1}` : layer.toLowerCase(),
     varScript(layer, c, `${layer} variables${cs.length > 1 ? ` (part ${i + 1}/${cs.length})` : ''}`),
   ));
   if (layer === 'Primitives') emit('styles', stylesScript());
 }
+
+// Where a Figma component should bind each of its tokens: component token path
+// (variable-style name) → "Collection|variable" it finally resolves to. Component
+// build scripts read this instead of creating component-level variables.
+const bindings = {};
+for (const [p, t] of tokens) {
+  if (t.layer !== 'Components' || !isAlias(t.value)) continue;
+  let q = aliasPath(t.value);
+  while (tokens.get(q)?.layer === 'Components' && isAlias(tokens.get(q).value)) q = aliasPath(tokens.get(q).value);
+  const target = varByPath.get(q);
+  if (target) bindings[varName(p, 'Components')] = `${target.layer}|${target.name}`;
+}
+fs.writeFileSync(path.join(OUT, 'component-bindings.json'), JSON.stringify(bindings, null, 1));
+files.push(['component-bindings.json', JSON.stringify(bindings).length]);
 
 for (const [f, len] of files) console.log(`${f.padEnd(28)} ${(len / 1024).toFixed(1)} KB`);
 console.log('variables:', Object.fromEntries(Object.entries(vars).map(([k, v]) => [k, v.length])),
