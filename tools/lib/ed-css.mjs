@@ -290,6 +290,17 @@ ${["info", "success", "warning", "danger"].map((r) => `.alert--${r} { background
 .accordion__status--done { color: ${cv("status.success")}; }
 .accordion__status--todo { color: ${cv("icon.muted")}; }
 .accordion__title { flex: 1; min-width: 0; color: ${cv(refPath(acc.titleColor.$value))}; ${typoCss(h.resolveToken(acc.title))} }
+/* Every requirement row takes the quiet title: the Card head names the group
+   and is bold, so bold rows under it would set two levels identically. */
+.accordion__title--quiet { ${typoCss(h.resolveToken(acc.titleQuiet))} }
+/* A requirement with no class matched to it has nothing to open — same row
+   metrics, no chevron, no hover, no pointer. */
+.accordion__row { display: flex; align-items: center; gap: ${px(resolve(acc.item.gap.$value))}; padding: ${px(resolve(acc.item.paddingY.$value))} ${px(resolve(acc.item.paddingX.$value))}; }
+/* …and with no transcript, no state to report either: the empty circle said
+   "not done yet" about a plan that has not started. A list marker instead,
+   sized to the icon slot it replaces so the titles stay in one column. */
+.ed-bullet { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; width: ${px(resolve("dim.5"))}; height: ${px(resolve("dim.5"))}; }
+.ed-bullet::before { content: ""; width: ${px(resolve("dim.1"))}; height: ${px(resolve("dim.1"))}; border-radius: ${px(resolve("radius.full"))}; background: ${cv("icon.muted")}; }
 .accordion__meta { flex-shrink: 0; color: ${cv(refPath(acc.metaColor.$value))}; ${typoCss(h.resolveToken(acc.meta))} }
 .accordion__chevron { flex-shrink: 0; width: ${px(resolve(acc.chevron.size.$value))}; height: ${px(resolve(acc.chevron.size.$value))}; color: ${cv(refPath(acc.chevron.color.$value))}; transition: transform 0.12s ease; }
 .accordion__item[open] > .accordion__summary .accordion__chevron { transform: rotate(180deg); }
@@ -394,6 +405,13 @@ ${["neutral", "primary", "success", "warning"].map((r) => `.badge--${r} { backgr
    and it used to be the lightest text on a card whose button was the heaviest
    element on it. */
 .ed-next__lead { margin: 0; color: ${cv("text.secondary")}; ${typoCss(h.resolveToken(h.get("text-style.body-base")))} }
+/* The icon is what makes the sentence the loudest thing on the card. Tinted,
+   not solid: the pair is Badge's own primary tint (bg.primary), which this
+   page already wears on the pills above, with icon.primary on top. */
+.ed-next { flex-direction: row; align-items: flex-start; gap: ${px(resolve("dim.4"))}; }
+.ed-next__icon { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; width: ${px(resolve("dim.10"))}; height: ${px(resolve("dim.10"))}; border-radius: ${px(resolve("radius.full"))}; background: ${cv("bg.primary")}; color: ${cv("icon.primary")}; }
+.ed-next__icon svg { width: ${px(resolve("dim.6"))}; height: ${px(resolve("dim.6"))}; }
+.ed-next__text { display: flex; flex-direction: column; gap: ${px(resolve("dim.2"))}; min-width: 0; }
 .ed-res__pills { display: flex; flex-wrap: wrap; gap: ${px(resolve("dim.2"))}; }
 .ed-res__actions { display: flex; flex-wrap: wrap; gap: ${px(resolve("dim.2"))}; }
 .ed-tabs { display: flex; gap: ${px(resolve("dim.4"))}; border-bottom: 1px solid ${cv("border.default")}; }

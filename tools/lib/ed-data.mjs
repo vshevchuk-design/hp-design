@@ -173,55 +173,64 @@ export const STATUS_COPY = {
 // group's count, so the two can't disagree. Rows without `covered` are
 // sub-options inside a requirement — the reference has those, and they show
 // neither a status icon nor a state label.
+/* One row per requirement, not per class. `units` is what the requirement asks
+   FOR — the number is a property of the requirement, so it is true whether or
+   not anything has been applied to it yet. `classes` is the opposite: it only
+   exists once a class has actually been matched to the row, which today means
+   transfer credit (hence `from`). An outstanding requirement deliberately has
+   no class list — the classes that could satisfy it are a catalogue of
+   options the student has not chosen from, and listing them here would invent
+   a decision they have not made. Rows with no `classes` render as plain rows
+   with no disclosure at all (see edReqsPanel). */
 export const REQUIREMENT_GROUPS = [
   { title: "Limits (TXFRP and PE)", code: "1900 #149", rows: [] },
   {
     title: "LAU GE Distribution",
     code: "F25 000115",
     rows: [
-      { title: "Social Science Courses", covered: true },
-      { title: "Life Science", covered: true, classes: [{ code: "BIOLOGY 100", title: "General Biology I", units: 3.5, from: "Long Beach City College" }] },
-      { title: "Physical Science", covered: false },
-      { title: "Lab Requirements", covered: false },
-      { title: "Lit and Arts", covered: false },
-      { title: "Non-western Culture", covered: false },
-      { title: "American Life", covered: false },
-      { title: "LAU Math Requirement", covered: true, classes: [{ code: "MATH 111", title: "Calculus I for Engineers", units: 3, from: "Long Beach City College" }] },
+      { title: "Social Science Courses", covered: true, units: 6 },
+      { title: "Life Science", covered: true, units: 3.5, classes: [{ code: "BIOLOGY 100", title: "General Biology I", units: 3.5, from: "Long Beach City College" }] },
+      { title: "Physical Science", covered: false, units: 3 },
+      { title: "Lab Requirements", covered: false, units: 1 },
+      { title: "Lit and Arts", covered: false, units: 3 },
+      { title: "Non-western Culture", covered: false, units: 3 },
+      { title: "American Life", covered: false, units: 3 },
+      { title: "LAU Math Requirement", covered: true, units: 3, classes: [{ code: "MATH 111", title: "Calculus I for Engineers", units: 3, from: "Long Beach City College" }] },
     ],
   },
   {
     title: "Undergraduate Requirements",
     rows: [
-      { title: "Minimum Credit Required for Graduation", covered: true },
+      { title: "Minimum Credit Required for Graduation", covered: true, units: 120 },
       { title: "Minimum GPA of 2.00", covered: true },
-      { title: "Diversity", covered: false },
-      { title: "Expository Writing", covered: true, classes: [{ code: "ENGLCOMP 100", title: "English Composition I", units: 3, from: "Long Beach City College" }] },
+      { title: "Diversity", covered: false, units: 3 },
+      { title: "Expository Writing", covered: true, units: 3, classes: [{ code: "ENGLCOMP 100", title: "English Composition I", units: 3, from: "Long Beach City College" }] },
       { title: "Verify Writing Portfolio", covered: false },
-      { title: "First Year Experience", covered: false },
-      { title: "US History — HISTORY 120", covered: true, classes: [{ code: "HISTORY 120", title: "American History", units: 3, from: "Long Beach City College" }] },
-      { title: "US Constitution — POL SCI 1", covered: false },
-      { title: "Second Language (2 proficiencies required)", covered: false },
+      { title: "First Year Experience", covered: false, units: 1 },
+      { title: "US History — HISTORY 120", covered: true, units: 3, classes: [{ code: "HISTORY 120", title: "American History", units: 3, from: "Long Beach City College" }] },
+      { title: "US Constitution — POL SCI 1", covered: false, units: 3 },
+      { title: "Second Language (2 proficiencies required)", covered: false, units: 8 },
     ],
   },
   {
     title: "Psychology Requirements",
     code: "2015 #116",
     rows: [
-      { title: "Psych Stats", covered: false },
-      { title: "PSYCH 101 Introduction to Psychology", covered: false },
-      { title: "PSY 190 — Introduction to Research and Statistics in Psychology", covered: false },
-      { title: "PSY 393 Introduction to Development Psychology", covered: false },
-      { title: "PSY 390 Intermediate Research Methods and Biobehavioral Statistics" },
-      { title: "Psych 100 Level Elective" },
-      { title: "Psych electives", covered: false },
+      { title: "Psych Stats", covered: false, units: 4 },
+      { title: "PSYCH 101 Introduction to Psychology", covered: false, units: 3 },
+      { title: "PSY 190 — Introduction to Research and Statistics in Psychology", covered: false, units: 4 },
+      { title: "PSY 393 Introduction to Development Psychology", covered: false, units: 3 },
+      { title: "PSY 390 Intermediate Research Methods and Biobehavioral Statistics", units: 4 },
+      { title: "Psych 100 Level Elective", units: 3 },
+      { title: "Psych electives", covered: false, units: 9 },
     ],
   },
   {
     title: "BS in Psychology — UMiami",
     code: "Fall 2024 – Summer 2025",
     rows: [
-      { title: "Expository Writing", covered: true },
-      { title: "PSYCH 101 Introduction to Psychology", covered: false },
+      { title: "Expository Writing", covered: true, units: 3 },
+      { title: "PSYCH 101 Introduction to Psychology", covered: false, units: 3 },
     ],
   },
   { title: "Unused Courses", rows: [{ title: "Free Electives" }] },

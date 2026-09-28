@@ -38,6 +38,7 @@ const gap = px(resolve(it.gap.$value));
 const dividerRole = refPath(it.divider.$value);
 const titleType = resolveToken(acc.title);
 const metaType = resolveToken(acc.meta);
+const titleQuietType = resolveToken(acc.titleQuiet);
 const chevronSize = px(resolve(acc.chevron.size.$value));
 const bodyPad = px(resolve(acc.body.paddingBottom.$value));
 const bodyGap = px(resolve(acc.body.gap.$value));
@@ -74,9 +75,18 @@ const css = `${rootVars}
 .accordion__summary { list-style: none; display: flex; align-items: center; gap: ${gap}; padding: ${paddingY} ${paddingX}; cursor: pointer; }
 .accordion__summary::-webkit-details-marker { display: none; }
 .accordion__summary:hover { background: ${cv(hoverRole)}; }
+/* A row with nothing to expand. Same metrics, so it lines up with the rows
+   around it, but no chevron, no pointer and no hover — a disclosure control
+   that opens an empty region is a lie, and this list has rows that genuinely
+   have nothing underneath (a requirement the student has not chosen classes
+   for yet: the options are a whole catalogue, not a list this row can hold). */
+.accordion__row { display: flex; align-items: center; gap: ${gap}; padding: ${paddingY} ${paddingX}; }
 .accordion__summary:focus-visible { outline: ${ringWidth} solid ${cv(ringRole)}; outline-offset: calc(-1 * ${ringWidth}); }
 .accordion__status { flex-shrink: 0; width: ${chevronSize}; height: ${chevronSize}; }
 .accordion__title { flex: 1; min-width: 0; color: ${cv(refPath(acc.titleColor.$value))}; ${typoCss(titleType)} }
+/* Rows inside a group that already has a heading: same size, normal weight, so
+   the Card title stays the heading and the rows read as its contents. */
+.accordion__title--quiet { ${typoCss(titleQuietType)} }
 .accordion__meta { flex-shrink: 0; color: ${cv(refPath(acc.metaColor.$value))}; ${typoCss(metaType)} }
 .accordion__chevron { flex-shrink: 0; width: ${chevronSize}; height: ${chevronSize}; color: ${cv(refPath(acc.chevron.color.$value))}; transition: transform 0.12s ease; }
 .accordion__item[open] > .accordion__summary .accordion__chevron { transform: rotate(180deg); }
@@ -100,17 +110,27 @@ const iconChevron = icon("expand_more", "accordion__chevron");
 const iconCheck = icon("check", "accordion__status acc-status--done");
 const iconCircle = icon("radio_button_unchecked", "accordion__status acc-status--todo");
 
-function item({ title, meta = "", status = null, body = "", open = false }) {
+function item({ title, meta = "", status = null, body = "", open = false, quiet = false }) {
   const statusIcon = status === "done" ? iconCheck : status === "todo" ? iconCircle : "";
   return `  <details class="accordion__item"${open ? " open" : ""}>
     <summary class="accordion__summary">
       ${statusIcon}
-      <span class="accordion__title">${esc(title)}</span>
+      <span class="accordion__title${quiet ? " accordion__title--quiet" : ""}">${esc(title)}</span>
       ${meta ? `<span class="accordion__meta">${esc(meta)}</span>` : ""}
       ${iconChevron}
     </summary>
     <div class="accordion__body">${body}</div>
   </details>`;
+}
+function row({ title, meta = "", status = null, quiet = false }) {
+  const statusIcon = status === "done" ? iconCheck : status === "todo" ? iconCircle : "";
+  return `  <div class="accordion__item">
+    <div class="accordion__row">
+      ${statusIcon}
+      <span class="accordion__title${quiet ? " accordion__title--quiet" : ""}">${esc(title)}</span>
+      ${meta ? `<span class="accordion__meta">${esc(meta)}</span>` : ""}
+    </div>
+  </div>`;
 }
 const group = (items) => `<div class="accordion">\n${items.join("\n")}\n</div>`;
 
@@ -171,6 +191,7 @@ const html = `<!doctype html>
       <div class="row"><b>Rows, not boxes</b><span>An accordion is a <b>flush divided list</b>; the consumer wraps it in a Card if it needs an edge. Deliberate: the reference design stacks bordered boxes and it reads as a pile — the same content as divided rows reads as a list.</span></div>
       <div class="row"><b>Optional slots</b><span>The status icon and the trailing meta label are both optional, because real data has rows with neither — sub-options inside a requirement.</span></div>
       <div class="row"><b>Hover</b><span>The summary rests on a white surface, so it takes the wash tier <code class="tok">fill.neutralHover</code> (gray.100), not the Strong pair. See the two-tier rule in status.md.</span></div>
+      <div class="row"><b>Rows that don't open</b><span>A row with nothing underneath uses <code class="tok">.accordion__row</code> — same metrics, no chevron, no hover, no pointer. A chevron that opens an empty region is a lie, and real lists mix the two: a requirement covered by a named class expands to show it, one the student has not picked classes for yet has nothing to show.</span></div>
       <div class="row"><b>Deferred</b><span>Single-open groups (the <code class="tok">name</code> attribute on <code class="tok">&lt;details&gt;</code> does this natively — adopt it when a consumer wants only one row open) and a nested second level.</span></div>
     </div>
 
@@ -180,6 +201,11 @@ const html = `<!doctype html>
         item({ title: "Free Electives", body: `<span class="acc-sub">Anything not applied elsewhere counts here.</span>` }),
         item({ title: "Psych 100 Level Elective", body: `<span class="acc-sub">Any 100-level psychology course.</span>` }),
       ]), "No status, no meta — the minimal shape.")}
+      ${storyCard("Quiet titles, and rows that do not open", group([
+        row({ title: "Physical Science", meta: "3 units", quiet: true }),
+        row({ title: "Lab Requirements", meta: "1 unit", quiet: true }),
+        item({ title: "Life Science", meta: "3.5 units", quiet: true, body: requirementBody }),
+      ]), "accordion.titleQuiet — normal weight at the same size, for rows under a heading that is already bold (compare the bold rows beside this). The first two are .accordion__row: nothing to disclose, so no chevron and no hover.")}
       ${storyCard("Status and state label", group([
         item({ title: "Social Science Courses", status: "done", meta: "Covered", body: `<span class="acc-sub">Satisfied by your transferred credit.</span>` }),
         item({ title: "Physical Science", status: "todo", meta: "Still to do", body: `<span class="acc-sub">No class applied to this yet.</span>` }),
@@ -187,16 +213,16 @@ const html = `<!doctype html>
     </div>
 
     <h2 class="big-section">In context</h2>
-    <p class="section-desc">A requirement group from the Explore Degrees results: Card header with the group name and a Badge count, then the rows. The second one is open, showing the class that covers it.</p>
+    <p class="section-desc">A requirement group from the Explore Degrees results: Card header with the group name and a Badge count, then the rows. Only the second one opens — it is the only one with a class matched to it. The others carry their state in the icon and the label and have nothing underneath, so they are plain rows.</p>
     <div class="story-grid">
       ${storyCard("Requirement group", `<div class="acc-card">
         <div class="acc-card__head"><span class="acc-card__title">LAU GE Distribution F25 000115</span><span class="badge">2 of 6 covered</span></div>
         ${group([
-          item({ title: "Social Science Courses", status: "done", meta: "Covered", body: `<span class="acc-sub">Satisfied by your transferred credit.</span>` }),
-          item({ title: "Life Science", status: "done", meta: "Covered", open: true, body: requirementBody }),
-          item({ title: "Physical Science", status: "todo", meta: "Still to do", body: `<span class="acc-sub">No class applied to this yet.</span>` }),
-          item({ title: "Lab Requirements", status: "todo", meta: "Still to do", body: `<span class="acc-sub">No class applied to this yet.</span>` }),
-          item({ title: "LAU Math Requirement", status: "done", meta: "Covered", body: `<span class="acc-sub">Satisfied by your transferred credit.</span>` }),
+          row({ title: "Social Science Courses", status: "done", meta: "Covered", quiet: true }),
+          item({ title: "Life Science", status: "done", meta: "Covered", open: true, quiet: true, body: requirementBody }),
+          row({ title: "Physical Science", status: "todo", meta: "Still to do", quiet: true }),
+          row({ title: "Lab Requirements", status: "todo", meta: "Still to do", quiet: true }),
+          row({ title: "LAU Math Requirement", status: "done", meta: "Covered", quiet: true }),
         ])}
       </div>`, "", true)}
     </div>

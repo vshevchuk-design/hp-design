@@ -17,6 +17,11 @@
         }
       },
       "title": { "$type": "typography", "$value": "{text-style.heading-base}" },
+      "titleQuiet": {
+        "$type": "typography",
+        "$value": "{text-style.body-base}",
+        "$description": "Optional title style for rows that live inside a group with its own heading — Explore Degrees' requirement lists, where a Card title names the group and every row under it is one requirement. Bold rows under a bold heading flatten the hierarchy: two levels set identically read as one level. The default stays heading-base, which is right for a standalone FAQ-style list where each row IS the heading of its own answer. Same size either way, so the row height does not change."
+      },
       "titleColor": { "$type": "color", "$value": "{text.default}" },
       "meta": {
         "$type": "typography",

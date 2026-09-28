@@ -194,7 +194,7 @@ ${TERM_YEARS.map(
       <button class="btn btn--ghost btn--sm ed__back" data-back="4" type="button">${icon("arrow_back", "btn__icon")}Back</button>
       <div class="ed__head ed__head--row">
         <h2 class="ed__title">Your results</h2>
-        <button class="btn btn--secondary btn--sm" id="ed-try-another" type="button">Explore something else</button>
+        <button class="btn btn--secondary btn--sm" data-explore-again type="button">Explore something else</button>
       </div>
       <div class="card"><div class="card__body">
         <div class="ed-row" style="justify-content: space-between; align-items: flex-start">
@@ -221,10 +221,17 @@ ${TERM_YEARS.map(
       <!-- The card's own sentence is the advice; its button used to be the
            sideways move (explore another), which is the heavier element
            saying the lighter thing. The button now matches the sentence. -->
-      <div class="card"><div class="card__body">
-        <span class="card__title">Ready for the next step?</span>
-        <p class="ed-next__lead">Take this to the school's admissions team when you're ready to apply — they can confirm what transfers and what a full plan looks like for you.</p>
-        <div class="ed-res__actions"><button class="btn btn--primary btn--base" type="button">Talk to admissions</button></div>
+      <!-- The advice is the point of this card, so it gets the weight: a tinted
+           icon to catch the eye and body-base text, with the action left as the
+           secondary it is. A primary button here would put the emphasis back on
+           the one thing the card is NOT telling you to do. -->
+      <div class="card"><div class="card__body ed-next">
+        <span class="ed-next__icon">${icon("school", "")}</span>
+        <div class="ed-next__text">
+          <span class="card__title">Ready for the next step?</span>
+          <p class="ed-next__lead">Take this to the school's admissions team when you're ready to apply — they can confirm what transfers and what a full plan looks like for you.</p>
+          <div class="ed-res__actions"><button class="btn btn--secondary btn--base" data-explore-again type="button">Explore something else</button></div>
+        </div>
       </div></div>
     </section>
   </main>

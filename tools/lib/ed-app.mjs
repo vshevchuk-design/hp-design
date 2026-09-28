@@ -535,9 +535,10 @@ export function edAppJs(h) {
 
   /* Starting fresh means nothing is covered yet — the fixture's covered rows and
      their "covered by your credit from …" classes describe transfer credit that
-     this user never entered, naming a school they never picked. Derived here
-     rather than filtered at each render, so the counts, the headline and the
-     accordion cannot disagree. */
+     this user never entered, naming a school they never picked. The unit count survives
+     because it is a property of the requirement, not of anyone's transcript.
+     Derived here rather than filtered at each render, so the counts, the
+     headline and the rows cannot disagree. */
   function edGroups() {
     if (S.credits !== "no") return D.groups;
     return D.groups.map(function (g) {
@@ -547,7 +548,7 @@ export function edAppJs(h) {
         count: { covered: 0, total: g.count.total },
         rows: g.rows.map(function (r) {
           var out = { title: r.title };
-          if (typeof r.covered === "boolean") out.covered = false;
+          if (r.units) out.units = r.units;
           return out;
         }),
       };
@@ -586,8 +587,11 @@ export function edAppJs(h) {
     if (hasCredits) pills.push([cov + " already covered", "primary"], [applied + " classes applied", "primary"]);
     $("#ed-res-pills").innerHTML = pills.map(function (p) { return '<span class="badge badge--' + p[1] + '">' + esc(p[0]) + "</span>"; }).join("");
 
+    // A bar reading 0% is not information, it is a bar — hidden when there is
+    // no transcript to measure against.
     var pct = hasCredits ? Math.round((cov / reqTotal) * 100) : 0;
     var bar = $("#ed-res-progress");
+    show(bar, hasCredits);
     bar.setAttribute("aria-valuenow", pct);
     $(".progress__bar", bar).style.width = pct + "%";
 
@@ -663,22 +667,37 @@ export function edAppJs(h) {
     }).join("");
   }
 
+  /* A row discloses only when it HAS something to disclose — a class matched to
+     it. An outstanding requirement has no class list on purpose (the classes
+     that could satisfy it are a catalogue of options, not a decision the
+     student has made), so it renders as a plain row: no chevron, nothing to
+     open. Starting fresh that is every row, which is why this branch also
+     drops the covered counts and the "Still to do" labels — with no transcript
+     there is no progress to report, only what the degree asks for. */
   function edReqsPanel() {
+    var fresh = S.credits === "no";
     $("#ed-panel-reqs").innerHTML = edGroups().map(function (g) {
-      var count = g.count.total ? '<span class="badge badge--neutral">' + g.count.covered + " of " + g.count.total + " covered</span>" : "";
+      var count = !fresh && g.count.total
+        ? '<span class="badge badge--neutral">' + g.count.covered + " of " + g.count.total + " covered</span>"
+        : "";
       var rows = g.rows.map(function (r) {
         var stateful = typeof r.covered === "boolean";
-        var status = stateful ? (r.covered ? I.check : I.circle) : "";
-        var meta = stateful ? '<span class="accordion__meta">' + (r.covered ? "Covered" : "Still to do") + "</span>" : "";
-        var body = (r.classes || []).length
-          ? '<span class="ed-eyebrow">Classes that count toward this</span>' +
-            r.classes.map(function (c) {
-              return '<span class="ed-course"><b>' + esc(c.code) + "</b> " + esc(c.title) + " · " + c.units +
-                ' units <span class="badge badge--success">Covered by your credit from ' + esc(c.from) + "</span></span>";
-            }).join("")
-          : '<span class="ed-section__hint">' + (stateful && r.covered ? "Satisfied by your transferred credit." : "No class applied to this yet.") + "</span>";
-        return '<details class="accordion__item"><summary class="accordion__summary">' + status +
-          '<span class="accordion__title">' + esc(r.title) + "</span>" + meta + I.chevron +
+        var marker = fresh ? '<span class="ed-bullet"></span>' : (stateful ? (r.covered ? I.check : I.circle) : "");
+        var units = r.units ? esc(r.units + (r.units === 1 ? " unit" : " units")) : "";
+        // One meta slot: starting fresh it carries what the requirement asks
+        // for, with credits it carries where you stand on it.
+        var metaText = fresh ? units : (stateful ? (r.covered ? "Covered" : "Still to do") : "");
+        var meta = metaText ? '<span class="accordion__meta">' + metaText + "</span>" : "";
+        var title = '<span class="accordion__title accordion__title--quiet">' + esc(r.title) + "</span>";
+        if (!(r.classes || []).length) {
+          return '<div class="accordion__item"><div class="accordion__row">' + marker + title + meta + "</div></div>";
+        }
+        var body = '<span class="ed-eyebrow">Classes that count toward this</span>' +
+          r.classes.map(function (c) {
+            return '<span class="ed-course"><b>' + esc(c.code) + "</b> " + esc(c.title) + " · " + c.units +
+              ' units <span class="badge badge--success">Covered by your credit from ' + esc(c.from) + "</span></span>";
+          }).join("");
+        return '<details class="accordion__item"><summary class="accordion__summary">' + marker + title + meta + I.chevron +
           '</summary><div class="accordion__body">' + body + "</div></details>";
       }).join("");
       return '<div class="card"><div class="card__head"><span class="card__title">' + esc(g.title) +
@@ -686,6 +705,7 @@ export function edAppJs(h) {
         (rows ? '<div class="card__body" style="padding:0;gap:0">' + rows + "</div>" : "") + "</div>";
     }).join("");
   }
+
 
   /* ---------- wiring ---------- */
   $$('#ed-program-grid input').forEach(function (r) {
@@ -747,14 +767,17 @@ export function edAppJs(h) {
   });
   $$(".ed-tab").forEach(function (t) { t.addEventListener("click", function () { edTab(t.dataset.tab); }); });
   $("#ed-planner-toggle").addEventListener("change", function () { S.planner = this.checked; edResults(); });
-  $("#ed-try-another").addEventListener("click", function () {
+  // The same action sits beside the results heading and in the closing card.
+  $$("[data-explore-again]").forEach(function (el) { el.addEventListener("click", edExploreAgain); });
+
+  function edExploreAgain() {
     S.combo = []; edResetFocus();
     $$('#ed-program-grid input').forEach(function (r) { r.checked = false; r.disabled = false; });
     $("#ed-program-search").value = "";
     edGoto(1);
     edRenderChosen();
     edValidate();
-  });
+  }
 
   edStepper();
   edRenderChosen();
