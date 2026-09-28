@@ -110,7 +110,8 @@ ${surfaceCss("onPrimary")}
 ${surfaceCss("onNeutral")}`;
 
 function markup(size, surface, state) {
-  return `<span class="counter counter--${size} counter--${surface} counter--${state}">3</span>`;
+  // Inactive = nothing new, so it shows 0; only an active counter carries a real number.
+  return `<span class="counter counter--${size} counter--${surface} counter--${state}">${state === "inactive" ? 0 : 3}</span>`;
 }
 
 function storyCard(title, liveHtml, codeHtml, note = "") {
@@ -224,8 +225,8 @@ const html = `<!doctype html>
     <div class="legend">
       <div class="row"><b>Scope</b><span>Two surface variants exist so far — one per <a href="button.html">button</a> variant's fill. A standalone counter for plain page surfaces (nav badges, list rows) is deferred until a real use case needs it.</span></div>
       <div class="row"><b>Sizing</b><span>Shared by both surfaces — mirrors button's sm/base/lg 1:1, height = the same dim step as that size's iconSize (16/20/24px), so the pill lines up with the icon beside it.</span></div>
-      <div class="row"><b>On Primary</b><span>inactive → fill.primaryActive bg + text.onFill label. active → white bg + text.primary label. Both chosen to pop or blend against a saturated blue fill.</span></div>
-      <div class="row"><b>On Neutral</b><span>inactive → fill.neutralActive bg + text.default label. active → fill.primary bg + text.onFill label. Neither of onPrimary's colors work here — gray.100 is too pale for a white "active" pill to show, and the dark navy "inactive" reads as loud rather than quiet against gray.</span></div>
+      <div class="row"><b>On Primary</b><span>inactive → ${surfaces.onPrimary.inactiveBg} bg + ${surfaces.onPrimary.inactiveLabel} label. active → ${surfaces.onPrimary.activeBg} bg + ${surfaces.onPrimary.activeLabel} label. Both chosen to pop or blend against a saturated blue fill.</span></div>
+      <div class="row"><b>On Neutral</b><span>inactive → ${surfaces.onNeutral.inactiveBg} bg + ${surfaces.onNeutral.inactiveLabel} label. active → ${surfaces.onNeutral.activeBg} bg + ${surfaces.onNeutral.activeLabel} label. Neither of onPrimary's colors work here — gray.100 is too pale for a white "active" pill to show, and the dark navy "inactive" reads as loud rather than quiet against gray.</span></div>
     </div>
 
     <h2 class="big-section">CSS</h2>

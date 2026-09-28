@@ -244,7 +244,7 @@ function content(variant, kind, live) {
       return `${ic(iconAdd, "add")}\n  Label\n  ${ic(iconArrow, "arrow_forward")}`;
     case "counter": {
       const surface = counterSurfaceFor[variant];
-      return `${ic(iconAdd, "add")}\n  Label\n  <span class="counter counter--${"__SIZE__"} counter--${surface} counter--inactive">3</span>`;
+      return `${ic(iconAdd, "add")}\n  Label\n  <span class="counter counter--${"__SIZE__"} counter--${surface} counter--inactive">0</span>`;
     }
   }
 }

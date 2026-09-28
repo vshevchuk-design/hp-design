@@ -85,7 +85,7 @@
         "$description": "For use on top of fill.primary (button.primary's blue fill).",
         "state": {
           "inactive": {
-            "$description": "Seen/zero count — reads as quiet, close to the button's own fill so it doesn't compete for attention. Deliberately fill.primaryActive, NOT fill.primaryHover, so it stays visible instead of disappearing when the parent button is hovered.",
+            "$description": "Nothing new — shows 0 (the only meaningful number for an inactive counter; any real count uses Active). Reads as quiet, close to the button's own fill so it doesn't compete for attention. Deliberately fill.primaryActive, NOT fill.primaryHover, so it stays visible instead of disappearing when the parent button is hovered.",
             "bg": {
               "$type": "color",
               "$value": "{fill.primaryActive}"

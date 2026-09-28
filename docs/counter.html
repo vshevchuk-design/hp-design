@@ -219,8 +219,8 @@
     <div class="legend">
       <div class="row"><b>Scope</b><span>Two surface variants exist so far — one per <a href="button.html">button</a> variant's fill. A standalone counter for plain page surfaces (nav badges, list rows) is deferred until a real use case needs it.</span></div>
       <div class="row"><b>Sizing</b><span>Shared by both surfaces — mirrors button's sm/base/lg 1:1, height = the same dim step as that size's iconSize (16/20/24px), so the pill lines up with the icon beside it.</span></div>
-      <div class="row"><b>On Primary</b><span>inactive → fill.primaryActive bg + text.onFill label. active → white bg + text.primary label. Both chosen to pop or blend against a saturated blue fill.</span></div>
-      <div class="row"><b>On Neutral</b><span>inactive → fill.neutralActive bg + text.default label. active → fill.primary bg + text.onFill label. Neither of onPrimary's colors work here — gray.100 is too pale for a white "active" pill to show, and the dark navy "inactive" reads as loud rather than quiet against gray.</span></div>
+      <div class="row"><b>On Primary</b><span>inactive → fill.primaryActive bg + text.onFill label. active → surface.default bg + text.primary label. Both chosen to pop or blend against a saturated blue fill.</span></div>
+      <div class="row"><b>On Neutral</b><span>inactive → fill.neutralActiveStrong bg + text.default label. active → fill.primary bg + text.onFill label. Neither of onPrimary's colors work here — gray.100 is too pale for a white "active" pill to show, and the dark navy "inactive" reads as loud rather than quiet against gray.</span></div>
     </div>
 
     <h2 class="big-section">CSS</h2>
@@ -261,22 +261,22 @@
       
       <div class="story">
         <h3>sm — 16px</h3>
-        <div class="story-preview"><div class="demo-box"><span class="counter counter--sm counter--onPrimary counter--inactive">3</span></div></div>
-        <pre class="code"><code>&lt;span class="counter counter--sm counter--onPrimary counter--inactive"&gt;3&lt;/span&gt;</code></pre>
+        <div class="story-preview"><div class="demo-box"><span class="counter counter--sm counter--onPrimary counter--inactive">0</span></div></div>
+        <pre class="code"><code>&lt;span class="counter counter--sm counter--onPrimary counter--inactive"&gt;0&lt;/span&gt;</code></pre>
         
       </div>
 
       <div class="story">
         <h3>base — 20px</h3>
-        <div class="story-preview"><div class="demo-box"><span class="counter counter--base counter--onPrimary counter--inactive">3</span></div></div>
-        <pre class="code"><code>&lt;span class="counter counter--base counter--onPrimary counter--inactive"&gt;3&lt;/span&gt;</code></pre>
+        <div class="story-preview"><div class="demo-box"><span class="counter counter--base counter--onPrimary counter--inactive">0</span></div></div>
+        <pre class="code"><code>&lt;span class="counter counter--base counter--onPrimary counter--inactive"&gt;0&lt;/span&gt;</code></pre>
         
       </div>
 
       <div class="story">
         <h3>lg — 24px</h3>
-        <div class="story-preview"><div class="demo-box"><span class="counter counter--lg counter--onPrimary counter--inactive">3</span></div></div>
-        <pre class="code"><code>&lt;span class="counter counter--lg counter--onPrimary counter--inactive"&gt;3&lt;/span&gt;</code></pre>
+        <div class="story-preview"><div class="demo-box"><span class="counter counter--lg counter--onPrimary counter--inactive">0</span></div></div>
+        <pre class="code"><code>&lt;span class="counter counter--lg counter--onPrimary counter--inactive"&gt;0&lt;/span&gt;</code></pre>
         
       </div>
     </div>
@@ -288,8 +288,8 @@
       
       <div class="story">
         <h3>inactive</h3>
-        <div class="story-preview"><div class="demo-box"><span class="counter counter--base counter--onPrimary counter--inactive">3</span></div></div>
-        <pre class="code"><code>&lt;span class="counter counter--base counter--onPrimary counter--inactive"&gt;3&lt;/span&gt;</code></pre>
+        <div class="story-preview"><div class="demo-box"><span class="counter counter--base counter--onPrimary counter--inactive">0</span></div></div>
+        <pre class="code"><code>&lt;span class="counter counter--base counter--onPrimary counter--inactive"&gt;0&lt;/span&gt;</code></pre>
         <p class="story-note">Seen/zero count — close to the button's own blue fill so it reads as quiet.</p>
       </div>
       
@@ -307,8 +307,8 @@
       
       <div class="story">
         <h3>inactive</h3>
-        <div class="story-preview"><div class="demo-box"><span class="counter counter--base counter--onNeutral counter--inactive">3</span></div></div>
-        <pre class="code"><code>&lt;span class="counter counter--base counter--onNeutral counter--inactive"&gt;3&lt;/span&gt;</code></pre>
+        <div class="story-preview"><div class="demo-box"><span class="counter counter--base counter--onNeutral counter--inactive">0</span></div></div>
+        <pre class="code"><code>&lt;span class="counter counter--base counter--onNeutral counter--inactive"&gt;0&lt;/span&gt;</code></pre>
         <p class="story-note">Mirrors onPrimary's logic in the gray family — one step past the button's own hover shade, dark label since the gray steps here are light.</p>
       </div>
       
