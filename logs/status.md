@@ -2,7 +2,7 @@
 
 Update this file whenever component inventory or conventions change. For chronological history and the reasoning behind each decision, see `decision-log.md` — this file is the fast-load summary, that one is the archive.
 
-Last updated: 2026-09-07.
+Last updated: 2026-09-28.
 
 ## Designs layer (prototype explorer) — added 2026-07-24
 
@@ -54,6 +54,17 @@ First entry: **Student Message Center** (`tools/build-design-student-message-cen
 - **Attachment compact density 2026-08-03** (research-backed, user call): pre-send files in BOTH composers render as **`attachment--compact` chips** — a real token subtree (`attachment.compact`: taller-but-narrow — the component's own two-line title/10px-size stack at 160px maxWidth, inline 16px icon, ~38px tall; reshaped same day per user review from the first 32px single-line cut) — sitting in ONE nowrap row with horizontal overflow (`rowGap`), per the Gmail-attachment-chip / messenger-thumbnail-row convention (pre-send files are transient dismissible input). The SENT message keeps the full base done row inside the Bubble — informative content, not dismissible input. Chip's remove × is Attachment's own `attachment__action` recipe (24px in compact). Documented on `attachment.html` (new Density section + row demo); the row container stays a composition, not a component (AttachmentGroup precedent).
 - **In-thread composer pass 2026-08-03**: the reply composer's attach button WORKS — it stacks Attachment idle-shape rows (real remove ×) above the field inside the form, and on Send they ride into the self Bubble as the done shape (shared FAKE_FILES/ATT templates with the compose dialog). The field is a **1-row textarea auto-growing to ~5 lines** (JS caps at 120px; Enter sends, Shift+Enter breaks — `.bubble p` got `white-space: pre-wrap` so the breaks survive), icons pinned to the bottom edge as it grows. Focusing the field docks the **fake keyboard** under the composer on the mobile takeover (same scaffolding as the compose dialog, `mc-thread--kbd`).
 - Icons still missing from the set for this area (non-blocking, text used instead): `archive`, `inbox`, `smartphone`, `tablet`.
+
+## Figma export (tokens only) — added 2026-09-28
+
+Target file: https://www.figma.com/design/GFFpQBFDyynmoJrWE6qz4j/HighPoint-Design-System-by-Claude (written through the Figma MCP `use_figma` tool; needs the Figma connector on the session).
+
+- `node tools/export-figma.mjs` → `figma-export/NN-*.js` (gitignored). Each file is a self-contained Plugin API script; run them **in filename order**, one `use_figma` call each (each is < 50 KB, the tool's code limit). All are idempotent — matched by name, updated in place — so after a token edit just regenerate and re-run.
+- Result: 3 variable collections mirroring the layering — **Primitives** (221) → **Semantic** (119) → **Components** (900, `component.` prefix dropped) — one mode `Light`; every alias stays a Figma alias. Plus 17 Text Styles (`body/xs` …, fontFamily/weight/size bound to Primitives vars) and 3 Effect Styles (`shadow/sm|md|lg`).
+- Not variables, on purpose: typography/shadow composites (→ styles; component-level `…/label` typography and `…/shadow` tokens just alias those styles), durations, `%` widths, `object-fit` — 134 tokens.
+- Line height and tracking are set on text styles as **percent literals**, not bound: Figma reads a bound lineHeight/letterSpacing number as px, and ours are a multiplier / em. The `leading/*` and `tracking/*` variables exist but are unscoped.
+- Scopes are always explicit (0 vars on ALL_SCOPES). Primitive colors are hidden from pickers (scopes `[]`, still aliasable) so designers pick semantic roles. Semantic/component scopes are inferred from the name (`…Bg`/`fill` → fills, `border`/`ring`/`divider` → stroke, text-ish → TEXT_FILL, `icon` → shape+stroke, radius/gap/padding/size → matching float scopes); an ambiguous `…Color` leaf defers to the semantic role it aliases (`icon/*` vs `border/*`).
+- Components (Figma components/variants) are **not** exported yet — next step when asked.
 
 ## Components built (42, + 1 behavioral variant)
 

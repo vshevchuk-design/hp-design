@@ -1548,3 +1548,15 @@ Five things on the results screen, all of them about the same question: does thi
 **A divider in the closing card**, full width like every other section divider on this screen rather than only under the text column — the advice and the button are two different things, one about this plan and one that starts another, and the rule says so without a second card.
 
 Checked both branches after all of it: fresh start reads 6 / 24 / 120 with no covered counts anywhere, and the credits branch reads "8 of 24 requirements" in the headline with the same 24 in the summary. The function inventory and listener count matched HEAD this time before I opened the browser — the check added to the memory checklist last round earned itself immediately.
+
+## 2026-09-28 — tokens exported to Figma as variables
+
+Asked how to get the system into Figma "colors, fonts and all tokens as variables, components as components", then to do it over MCP, tokens first. Went with the Figma MCP's `use_figma` (Plugin API code run inside the file) over Tokens Studio: no plugin for the designer to install, works on any plan (the REST variables write API is Enterprise-only), and naming/scopes stay under our control.
+
+`tools/export-figma.mjs` emits the scripts rather than me hand-writing Figma code, so the export is reproducible and re-runnable after token edits. Idempotent by name, split into < 50 KB chunks (tool limit), Component files topologically ordered so a chunk only aliases variables an earlier chunk created (inside a chunk, pass 1 creates every variable, pass 2 sets values, so forward refs are fine).
+
+Calls worth remembering:
+- **Aliases are kept, never flattened** — the whole point of the three layers.
+- **Line height / tracking as percent literals on text styles, not bound variables.** A bound number is px in Figma; ours are 1.4 and 0.04em. Binding would have made every style 1.4px tall.
+- **Scopes are always explicit.** Figma's own guidance: ALL_SCOPES floods every picker (1240 variables here). Name-based inference got several wrong on the first pass (box/padding → size, iconButton/hoverBg → icon, focus/label → stroke, sortIcon/activeColor → text, focus ringColor briefly → fills after a rule reorder). Each fix was diffed against what was already written to Figma before continuing, so no already-applied part needed a re-run.
+- Verified from the Figma side after writing: 221/119/900 variables, 0 broken aliases, 0 ALL_SCOPES, 17 text + 3 effect styles, and spot-checked resolved values against the JSON (button primary fill #077fec, surface.page #f9fafb, overlay rgba 0.5, tag red solid #de394b, etc.).
