@@ -109,9 +109,17 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
   .ed__main { padding: ${px(resolve("dim.8"))} ${px(resolve("dim.6"))} ${px(resolve("dim.12"))}; }
 }
 .ed__head { display: flex; flex-direction: column; gap: ${px(resolve("dim.1_5"))}; }
-/* The way out of the picker lives at the top, next to where the picker
-   opens — a Cancel in the footer would sit below all 29 programmes. */
-.ed__back { align-self: flex-start; }
+/* The results head carries an action beside its heading. It wraps rather than
+   shrinking the title: at 375px "Your results" plus the button is wider than
+   the column, and a heading clipped to make room for a secondary action has
+   the priority backwards. */
+.ed__head--row { flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: ${px(resolve("dim.3"))}; }
+/* Back sits above the heading on the results screen — the one screen with no
+   step bar, since it is where the flow ends rather than a fifth step. Pulled
+   tight to the heading (the column gap between steps is dim.6, far too much
+   between a link and the thing it goes back from) and un-indented so the word
+   lines up with the heading, not with the ghost button's padding box. */
+.ed__back { align-self: flex-start; margin-inline-start: -${px(resolve("dim.2"))}; margin-block-end: -${px(resolve("dim.4"))}; }
 .ed__title { margin: 0; color: ${cv("text.default")}; ${typoCss(h.resolveToken(h.get("text-style.title-xl")))} }
 .ed__sub { margin: 0; color: ${cv("text.secondary")}; ${typoCss(h.resolveToken(h.get("text-style.body-base")))} }
 .ed__step { display: none; flex-direction: column; gap: ${px(resolve("dim.6"))}; }
@@ -378,6 +386,14 @@ ${["neutral", "primary", "success", "warning"].map((r) => `.badge--${r} { backgr
 }
 
 /* ============ results ============ */
+/* The single-view heading that replaces the tab strip when there is no
+   transfer credit: same type as a tab label, so the requirement list is
+   introduced identically whether or not the tabs exist. */
+.ed-reqs__title { margin: 0 0 -${px(resolve("dim.3"))}; color: ${cv("text.default")}; ${typoCss(h.resolveToken(h.get("text-style.heading-base")))} }
+/* The closing card's message, one size up from a hint: it is the instruction,
+   and it used to be the lightest text on a card whose button was the heaviest
+   element on it. */
+.ed-next__lead { margin: 0; color: ${cv("text.secondary")}; ${typoCss(h.resolveToken(h.get("text-style.body-base")))} }
 .ed-res__pills { display: flex; flex-wrap: wrap; gap: ${px(resolve("dim.2"))}; }
 .ed-res__actions { display: flex; flex-wrap: wrap; gap: ${px(resolve("dim.2"))}; }
 .ed-tabs { display: flex; gap: ${px(resolve("dim.4"))}; border-bottom: 1px solid ${cv("border.default")}; }

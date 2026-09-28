@@ -554,6 +554,18 @@ export function edAppJs(h) {
     });
   }
 
+  /* Every pick, not just the primary: the results named S.program alone, so a
+     plan with a minor beside the major lost the minor on the one screen that
+     is supposed to BE the answer — the review two steps earlier listed all of
+     them, and then this screen quietly dropped back to one. Serial commas and
+     "and" rather than a count ("+2 more"), because the names are the point. */
+  function edPlanLabel() {
+    var names = S.combo.map(function (c) { return c.name; });
+    if (!names.length) return S.program || "";
+    if (names.length === 1) return names[0];
+    return names.slice(0, -1).join(", ") + " and " + names[names.length - 1];
+  }
+
   function edResults() {
     var hasCredits = S.credits === "yes";
     var applied = D.transfer.filter(function (t) { return t.status === "accepted"; }).length;
@@ -562,11 +574,12 @@ export function edAppJs(h) {
     var cov = groups.reduce(function (a, g) { return a + g.count.covered; }, 0);
     var reqTotal = groups.reduce(function (a, g) { return a + g.count.total; }, 0);
 
+    var plan = edPlanLabel();
     $("#ed-res-headline").textContent = hasCredits
       ? "Your credits already cover " + cov + " of " + reqTotal + " requirement areas"
-      : "What it takes to finish " + S.program;
+      : "What it takes to finish " + plan;
     $("#ed-res-subline").textContent = hasCredits
-      ? "What it takes to finish " + S.program + ", and where you already stand."
+      ? "What it takes to finish " + plan + ", and where you already stand."
       : "You're starting fresh, so everything below is still ahead of you.";
 
     var pills = [["Start " + S.term, "primary"], [reqTotal + " requirement areas", "primary"]];
@@ -589,6 +602,7 @@ export function edAppJs(h) {
     // With no credits there is nothing to say in the transfer tab, so it
     // doesn't exist and requirements becomes the only view.
     show($("#ed-res-tabs"), hasCredits);
+    show($("#ed-reqs-heading"), !hasCredits);
     if (!hasCredits) { S.tab = "reqs"; }
     edTab(S.tab);
     edCreditsPanel(hasCredits);

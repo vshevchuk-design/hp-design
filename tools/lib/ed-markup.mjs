@@ -184,8 +184,17 @@ ${TERM_YEARS.map(
         <input type="checkbox" id="ed-planner-toggle" checked />
         <span>Prototype switch: this school has a Degree Planner product</span>
       </label>
-      <div class="ed__head">
+      <!-- Results are a destination, not step 5, so the way back is a link at
+           the top rather than a step bar at the bottom: the footer here only
+           ever held Back, and a whole sticky bar for one backwards link says
+           "you are mid-flow" on the screen that ends the flow. The action
+           that IS forward-looking — exploring another plan — sits opposite
+           the heading, where it is visible without scrolling past the whole
+           requirement list. -->
+      <button class="btn btn--ghost btn--sm ed__back" data-back="4" type="button">${icon("arrow_back", "btn__icon")}Back</button>
+      <div class="ed__head ed__head--row">
         <h2 class="ed__title">Your results</h2>
+        <button class="btn btn--secondary btn--sm" id="ed-try-another" type="button">Explore something else</button>
       </div>
       <div class="card"><div class="card__body">
         <div class="ed-row" style="justify-content: space-between; align-items: flex-start">
@@ -203,16 +212,20 @@ ${TERM_YEARS.map(
         <button class="ed-tab is-active" data-tab="credits" role="tab" aria-selected="true" type="button">Your transfer credits</button>
         <button class="ed-tab" data-tab="reqs" role="tab" aria-selected="false" type="button">Degree requirements</button>
       </div>
+      <!-- Without transfer credit the tabs collapse to a single view, and a
+           lone tab is not a tab — it becomes this heading, so the list below
+           is still labelled instead of starting out of nowhere. -->
+      <h3 class="ed-reqs__title is-hidden" id="ed-reqs-heading">Degree requirements</h3>
       <div class="ed-tabpanel is-active" data-tabpanel="credits" id="ed-panel-credits"></div>
       <div class="ed-tabpanel" data-tabpanel="reqs" id="ed-panel-reqs"></div>
+      <!-- The card's own sentence is the advice; its button used to be the
+           sideways move (explore another), which is the heavier element
+           saying the lighter thing. The button now matches the sentence. -->
       <div class="card"><div class="card__body">
-        <div class="ed-section__title">Ready for the next step?</div>
-        <p class="ed-section__hint">Talk it through with the school's admissions team when you're ready to apply, or explore another area of study to compare first.</p>
-        <div class="ed-res__actions"><button class="btn btn--secondary btn--base" id="ed-try-another" type="button">Try another major</button></div>
+        <span class="card__title">Ready for the next step?</span>
+        <p class="ed-next__lead">Take this to the school's admissions team when you're ready to apply — they can confirm what transfers and what a full plan looks like for you.</p>
+        <div class="ed-res__actions"><button class="btn btn--primary btn--base" type="button">Talk to admissions</button></div>
       </div></div>
-      <div class="ed__footer">
-        <button class="btn btn--secondary btn--base" data-back="4" type="button">Back</button>
-      </div>
     </section>
   </main>
 

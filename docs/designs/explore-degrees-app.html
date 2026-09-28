@@ -117,9 +117,17 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   .ed__main { padding: 32px 24px 48px; }
 }
 .ed__head { display: flex; flex-direction: column; gap: 6px; }
-/* The way out of the picker lives at the top, next to where the picker
-   opens — a Cancel in the footer would sit below all 29 programmes. */
-.ed__back { align-self: flex-start; }
+/* The results head carries an action beside its heading. It wraps rather than
+   shrinking the title: at 375px "Your results" plus the button is wider than
+   the column, and a heading clipped to make room for a secondary action has
+   the priority backwards. */
+.ed__head--row { flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+/* Back sits above the heading on the results screen — the one screen with no
+   step bar, since it is where the flow ends rather than a fifth step. Pulled
+   tight to the heading (the column gap between steps is dim.6, far too much
+   between a link and the thing it goes back from) and un-indented so the word
+   lines up with the heading, not with the ghost button's padding box. */
+.ed__back { align-self: flex-start; margin-inline-start: -8px; margin-block-end: -16px; }
 .ed__title { margin: 0; color: var(--tok-text-default); font-weight: 700; font-size: 20px; line-height: 1.2; }
 .ed__sub { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 14px; line-height: 1.4; }
 .ed__step { display: none; flex-direction: column; gap: 24px; }
@@ -395,6 +403,14 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 }
 
 /* ============ results ============ */
+/* The single-view heading that replaces the tab strip when there is no
+   transfer credit: same type as a tab label, so the requirement list is
+   introduced identically whether or not the tabs exist. */
+.ed-reqs__title { margin: 0 0 -12px; color: var(--tok-text-default); font-weight: 600; font-size: 14px; line-height: 1.4; }
+/* The closing card's message, one size up from a hint: it is the instruction,
+   and it used to be the lightest text on a card whose button was the heaviest
+   element on it. */
+.ed-next__lead { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 14px; line-height: 1.4; }
 .ed-res__pills { display: flex; flex-wrap: wrap; gap: 8px; }
 .ed-res__actions { display: flex; flex-wrap: wrap; gap: 8px; }
 .ed-tabs { display: flex; gap: 16px; border-bottom: 1px solid var(--tok-border-default); }
@@ -812,8 +828,17 @@ html:has(.ed-picker[open]) { overflow: hidden; }
         <input type="checkbox" id="ed-planner-toggle" checked />
         <span>Prototype switch: this school has a Degree Planner product</span>
       </label>
-      <div class="ed__head">
+      <!-- Results are a destination, not step 5, so the way back is a link at
+           the top rather than a step bar at the bottom: the footer here only
+           ever held Back, and a whole sticky bar for one backwards link says
+           "you are mid-flow" on the screen that ends the flow. The action
+           that IS forward-looking — exploring another plan — sits opposite
+           the heading, where it is visible without scrolling past the whole
+           requirement list. -->
+      <button class="btn btn--ghost btn--sm ed__back" data-back="4" type="button"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>Back</button>
+      <div class="ed__head ed__head--row">
         <h2 class="ed__title">Your results</h2>
+        <button class="btn btn--secondary btn--sm" id="ed-try-another" type="button">Explore something else</button>
       </div>
       <div class="card"><div class="card__body">
         <div class="ed-row" style="justify-content: space-between; align-items: flex-start">
@@ -831,16 +856,20 @@ html:has(.ed-picker[open]) { overflow: hidden; }
         <button class="ed-tab is-active" data-tab="credits" role="tab" aria-selected="true" type="button">Your transfer credits</button>
         <button class="ed-tab" data-tab="reqs" role="tab" aria-selected="false" type="button">Degree requirements</button>
       </div>
+      <!-- Without transfer credit the tabs collapse to a single view, and a
+           lone tab is not a tab — it becomes this heading, so the list below
+           is still labelled instead of starting out of nowhere. -->
+      <h3 class="ed-reqs__title is-hidden" id="ed-reqs-heading">Degree requirements</h3>
       <div class="ed-tabpanel is-active" data-tabpanel="credits" id="ed-panel-credits"></div>
       <div class="ed-tabpanel" data-tabpanel="reqs" id="ed-panel-reqs"></div>
+      <!-- The card's own sentence is the advice; its button used to be the
+           sideways move (explore another), which is the heavier element
+           saying the lighter thing. The button now matches the sentence. -->
       <div class="card"><div class="card__body">
-        <div class="ed-section__title">Ready for the next step?</div>
-        <p class="ed-section__hint">Talk it through with the school's admissions team when you're ready to apply, or explore another area of study to compare first.</p>
-        <div class="ed-res__actions"><button class="btn btn--secondary btn--base" id="ed-try-another" type="button">Try another major</button></div>
+        <span class="card__title">Ready for the next step?</span>
+        <p class="ed-next__lead">Take this to the school's admissions team when you're ready to apply — they can confirm what transfers and what a full plan looks like for you.</p>
+        <div class="ed-res__actions"><button class="btn btn--primary btn--base" type="button">Talk to admissions</button></div>
       </div></div>
-      <div class="ed__footer">
-        <button class="btn btn--secondary btn--base" data-back="4" type="button">Back</button>
-      </div>
     </section>
   </main>
 
@@ -1660,6 +1689,18 @@ html:has(.ed-picker[open]) { overflow: hidden; }
     });
   }
 
+  /* Every pick, not just the primary: the results named S.program alone, so a
+     plan with a minor beside the major lost the minor on the one screen that
+     is supposed to BE the answer — the review two steps earlier listed all of
+     them, and then this screen quietly dropped back to one. Serial commas and
+     "and" rather than a count ("+2 more"), because the names are the point. */
+  function edPlanLabel() {
+    var names = S.combo.map(function (c) { return c.name; });
+    if (!names.length) return S.program || "";
+    if (names.length === 1) return names[0];
+    return names.slice(0, -1).join(", ") + " and " + names[names.length - 1];
+  }
+
   function edResults() {
     var hasCredits = S.credits === "yes";
     var applied = D.transfer.filter(function (t) { return t.status === "accepted"; }).length;
@@ -1668,11 +1709,12 @@ html:has(.ed-picker[open]) { overflow: hidden; }
     var cov = groups.reduce(function (a, g) { return a + g.count.covered; }, 0);
     var reqTotal = groups.reduce(function (a, g) { return a + g.count.total; }, 0);
 
+    var plan = edPlanLabel();
     $("#ed-res-headline").textContent = hasCredits
       ? "Your credits already cover " + cov + " of " + reqTotal + " requirement areas"
-      : "What it takes to finish " + S.program;
+      : "What it takes to finish " + plan;
     $("#ed-res-subline").textContent = hasCredits
-      ? "What it takes to finish " + S.program + ", and where you already stand."
+      ? "What it takes to finish " + plan + ", and where you already stand."
       : "You're starting fresh, so everything below is still ahead of you.";
 
     var pills = [["Start " + S.term, "primary"], [reqTotal + " requirement areas", "primary"]];
@@ -1695,6 +1737,7 @@ html:has(.ed-picker[open]) { overflow: hidden; }
     // With no credits there is nothing to say in the transfer tab, so it
     // doesn't exist and requirements becomes the only view.
     show($("#ed-res-tabs"), hasCredits);
+    show($("#ed-reqs-heading"), !hasCredits);
     if (!hasCredits) { S.tab = "reqs"; }
     edTab(S.tab);
     edCreditsPanel(hasCredits);
