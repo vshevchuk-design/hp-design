@@ -157,7 +157,9 @@
 .counter--base { height: 20px; min-width: 20px; padding: 0 6px; font-weight: 700; font-size: 12px; line-height: 1; }
 .counter--lg { height: 24px; min-width: 24px; padding: 0 6px; font-weight: 700; font-size: 14px; line-height: 1; }
 .counter--onPrimary.counter--inactive { background: var(--tok-fill-primary-active); color: var(--tok-text-on-fill); }
+.counter--onPrimary.counter--active { background: var(--tok-surface-default); color: var(--tok-text-primary); }
 .counter--onNeutral.counter--inactive { background: var(--tok-fill-neutral-active-strong); color: var(--tok-text-default); }
+.counter--onNeutral.counter--active { background: var(--tok-fill-primary); color: var(--tok-text-on-fill); }
 </style>
 </head>
 <body>
@@ -373,7 +375,9 @@
 .counter--base { height: 20px; min-width: 20px; padding: 0 6px; font-weight: 700; font-size: 12px; line-height: 1; }
 .counter--lg { height: 24px; min-width: 24px; padding: 0 6px; font-weight: 700; font-size: 14px; line-height: 1; }
 .counter--onPrimary.counter--inactive { background: var(--tok-fill-primary-active); color: var(--tok-text-on-fill); }
-.counter--onNeutral.counter--inactive { background: var(--tok-fill-neutral-active-strong); color: var(--tok-text-default); }</code></pre>
+.counter--onPrimary.counter--active { background: var(--tok-surface-default); color: var(--tok-text-primary); }
+.counter--onNeutral.counter--inactive { background: var(--tok-fill-neutral-active-strong); color: var(--tok-text-default); }
+.counter--onNeutral.counter--active { background: var(--tok-fill-primary); color: var(--tok-text-on-fill); }</code></pre>
 
     <h2 class="big-section">JS</h2>
     <p class="section-desc">The only script this page needs — a click listener flipping <code class="tok">aria-pressed</code>, which the CSS above already keys off of. Every toggle chip on this page uses it, not a forced screenshot state.</p>
@@ -484,16 +488,16 @@
 
       <div class="story">
         <h3>Text + counter</h3>
-        <div class="story-preview"><button class="chip chip--base chip--toggle" aria-pressed="false"><span class="chip__label">Recent</span><span class="counter counter--base counter--onNeutral counter--inactive">3</span></button></div>
-        <pre class="code"><code>&lt;button class="chip chip--base chip--toggle" aria-pressed="false"&gt;&lt;span class="chip__label"&gt;Recent&lt;/span&gt;&lt;span class="counter counter--base counter--onNeutral counter--inactive"&gt;3&lt;/span&gt;&lt;/button&gt;</code></pre>
+        <div class="story-preview"><button class="chip chip--base chip--toggle" aria-pressed="false"><span class="chip__label">Recent</span><span class="counter counter--base counter--onNeutral counter--inactive">0</span></button></div>
+        <pre class="code"><code>&lt;button class="chip chip--base chip--toggle" aria-pressed="false"&gt;&lt;span class="chip__label"&gt;Recent&lt;/span&gt;&lt;span class="counter counter--base counter--onNeutral counter--inactive"&gt;0&lt;/span&gt;&lt;/button&gt;</code></pre>
         <p class="story-note">Unchecked/light bg pairs with counter.onNeutral — click to check it and the counter switches to onPrimary automatically via CSS, no JS.</p>
       </div>
 
       <div class="story">
         <h3>Icon + text + counter</h3>
-        <div class="story-preview"><button class="chip chip--base chip--toggle chip--outline" aria-pressed="true"><svg class="chip__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"/></svg><span class="chip__label">Filters</span><span class="counter counter--base counter--onNeutral counter--inactive">3</span></button></div>
-        <pre class="code"><code>&lt;button class="chip chip--base chip--toggle chip--outline" aria-pressed="true"&gt;&lt;svg class="chip__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"&gt;&lt;path d="M0 0h24v24H0z" fill="none"/&gt;&lt;path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"/&gt;&lt;/svg&gt;&lt;span class="chip__label"&gt;Filters&lt;/span&gt;&lt;span class="counter counter--base counter--onNeutral counter--inactive"&gt;3&lt;/span&gt;&lt;/button&gt;</code></pre>
-        <p class="story-note">Shown pre-checked with the outline treatment — a 'Filters' trigger chip summarizing N active filters is an aggregate/trigger, not a single boolean, so it uses checkedOutline (bg.primary tint + border) instead of a full solid fill. Still real — click it.</p>
+        <div class="story-preview"><button class="chip chip--base chip--toggle chip--outline" aria-pressed="true"><svg class="chip__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"/></svg><span class="chip__label">Filters</span><span class="counter counter--base counter--onNeutral counter--active">3</span></button></div>
+        <pre class="code"><code>&lt;button class="chip chip--base chip--toggle chip--outline" aria-pressed="true"&gt;&lt;svg class="chip__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"&gt;&lt;path d="M0 0h24v24H0z" fill="none"/&gt;&lt;path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"/&gt;&lt;/svg&gt;&lt;span class="chip__label"&gt;Filters&lt;/span&gt;&lt;span class="counter counter--base counter--onNeutral counter--active"&gt;3&lt;/span&gt;&lt;/button&gt;</code></pre>
+        <p class="story-note">Counter is Active — 3 filters are on, a real number (an inactive counter only ever shows 0). Shown pre-checked with the outline treatment — a 'Filters' trigger chip summarizing N active filters is an aggregate/trigger, not a single boolean, so it uses checkedOutline (bg.primary tint + border) instead of a full solid fill. Still real — click it.</p>
       </div>
     </div>
 

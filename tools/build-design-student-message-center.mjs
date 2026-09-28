@@ -2028,7 +2028,7 @@ ${appCss}
         <button class="mc-search-close" id="mc-search-close" type="button">Close</button>
       </div>
       <div class="mc-rail__chips">
-        <button class="chip chip--base mc-filters-chip" id="mc-filters-chip" type="button" popovertarget="mc-filters-listbox" aria-haspopup="listbox">${iconFilter}<span>Filters</span><span class="counter counter--sm counter--onNeutral counter--inactive" id="mc-filters-count" hidden>0</span>${iconChevronDown}</button>
+        <button class="chip chip--base mc-filters-chip" id="mc-filters-chip" type="button" popovertarget="mc-filters-listbox" aria-haspopup="listbox">${iconFilter}<span>Filters</span><span class="counter counter--sm counter--onNeutral counter--active" id="mc-filters-count" hidden>0</span>${iconChevronDown}</button>
         <div class="listbox" id="mc-filters-listbox" popover>
           <ul class="listbox__list" aria-label="Filters">
             <li data-filter-option="unread"><label class="listbox__cb-option" for="mc-fopt-unread"><input type="checkbox" class="listbox__cb-input" id="mc-fopt-unread" data-filter-key="unread" />

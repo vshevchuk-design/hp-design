@@ -85,6 +85,11 @@ const chipBadge = {
   label: resolveToken(badge.size.sm.label),
 };
 
+const counterSurfaces = Object.fromEntries(["onPrimary", "onNeutral"].map((k) => [k, {
+  inactiveBg: refPath(counter[k].state.inactive.bg.$value), inactiveLabel: refPath(counter[k].state.inactive.label.$value),
+  activeBg: refPath(counter[k].state.active.bg.$value), activeLabel: refPath(counter[k].state.active.label.$value),
+}]));
+
 const colorPaths = [
   "bg.primaryHover", metaActionColor, metaActionHover, chipBadge.bg, chipBadge.text,
   "surface.default", "border.default", "border.strong", "border.focus", "text.default", "icon.default",
@@ -93,6 +98,7 @@ const colorPaths = [
   "text.disabled", "icon.disabled",
   "icon.secondary", "fill.neutralHover", "fill.neutralActive", "fill.neutralActiveStrong", "fill.primaryActive",
 ];
+for (const v of Object.values(counterSurfaces)) for (const r of Object.values(v)) if (!colorPaths.includes(r)) colorPaths.push(r);
 const colorValue = Object.fromEntries(colorPaths.map((p) => [p, resolve(p)]));
 const fontSans = resolve("family.sans");
 const rootVars = renderRootVars([...colorPaths.map((p) => [p, colorValue[p]]), ["family.sans", `'${fontSans}', sans-serif`]]);
@@ -126,10 +132,7 @@ const counterSizes = ["sm", "base", "lg"].map((key) => {
   const s = counter.size[key];
   return { key, height: resolve(s.height.$value), minWidth: resolve(s.minWidth.$value), paddingX: resolve(s.paddingX.$value), label: resolveToken(s.label) };
 });
-const counterSurfaces = {
-  onPrimary: { inactiveBg: refPath(counter.onPrimary.state.inactive.bg.$value), inactiveLabel: refPath(counter.onPrimary.state.inactive.label.$value) },
-  onNeutral: { inactiveBg: refPath(counter.onNeutral.state.inactive.bg.$value), inactiveLabel: refPath(counter.onNeutral.state.inactive.label.$value) },
-};
+
 
 // ---- icons ----
 const iconOf = (name, cls) => fs.readFileSync(path.join(root, `assets/icons/material-filled/${name}.svg`), "utf8").replace("<svg ", `<svg class="${cls}" `);
@@ -193,7 +196,8 @@ ${sizeDefs
 
 .counter { box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; border-radius: ${counterRadius}; flex-shrink: 0; }
 ${counterSizes.map((s) => `.counter--${s.key} { height: ${px(s.height)}; min-width: ${px(s.minWidth)}; padding: 0 ${px(s.paddingX)}; font-weight: ${s.label.fontWeight}; font-size: ${px(s.label.fontSize)}; line-height: ${s.label.lineHeight}; }`).join("\n")}
-${Object.entries(counterSurfaces).map(([k, v]) => `.counter--${k}.counter--inactive { background: ${cv(v.inactiveBg)}; color: ${cv(v.inactiveLabel)}; }`).join("\n")}`;
+${Object.entries(counterSurfaces).map(([k, v]) => `.counter--${k}.counter--inactive { background: ${cv(v.inactiveBg)}; color: ${cv(v.inactiveLabel)}; }
+.counter--${k}.counter--active { background: ${cv(v.activeBg)}; color: ${cv(v.activeLabel)}; }`).join("\n")}`;
 
 const js = `document.querySelectorAll(".chip--toggle").forEach((btn) => {
   btn.addEventListener("click", () => {
@@ -202,16 +206,17 @@ const js = `document.querySelectorAll(".chip--toggle").forEach((btn) => {
   });
 });`;
 
-function counterMarkup(sizeKey, surface) {
-  return `<span class="counter counter--${sizeKey} counter--${surface} counter--inactive">3</span>`;
+// Inactive = nothing new → 0; a real number (e.g. how many filters are on) is Active.
+function counterMarkup(sizeKey, surface, state = "inactive", count = state === "inactive" ? 0 : 3) {
+  return `<span class="counter counter--${sizeKey} counter--${surface} counter--${state}">${count}</span>`;
 }
 
-function toggleChipMarkup(sizeKey, { label = "Label", icon = null, counterSurface = null, outline = false, pressed = false, disabled = false, forceHoverStyle = null } = {}) {
+function toggleChipMarkup(sizeKey, { label = "Label", icon = null, counterSurface = null, counterState = "inactive", outline = false, pressed = false, disabled = false, forceHoverStyle = null } = {}) {
   const classes = ["chip", `chip--${sizeKey}`, "chip--toggle"];
   if (outline) classes.push("chip--outline");
   const attrs = [` aria-pressed="${pressed}"`, disabled ? " disabled" : "", forceHoverStyle ? ` style="${forceHoverStyle}"` : ""].join("");
   const iconHtml = icon ? icon : "";
-  const counterHtml = counterSurface ? counterMarkup(sizeKey, counterSurface) : "";
+  const counterHtml = counterSurface ? counterMarkup(sizeKey, counterSurface, counterState) : "";
   return `<button class="${classes.join(" ")}"${attrs}>${iconHtml}<span class="chip__label">${label}</span>${counterHtml}</button>`;
 }
 function removableChipMarkup(sizeKey, { label = "Label", icon = null, disabled = false } = {}) {
@@ -281,7 +286,7 @@ function contentStories() {
     { title: "Text only", html: toggleChipMarkup("base", { label: "Flagged" }) },
     { title: "Icon + text", html: toggleChipMarkup("base", { label: "Flagged", icon: iconFlag }) },
     { title: "Text + counter", html: toggleChipMarkup("base", { label: "Recent", counterSurface: "onNeutral" }), note: "Unchecked/light bg pairs with counter.onNeutral — click to check it and the counter switches to onPrimary automatically via CSS, no JS." },
-    { title: "Icon + text + counter", html: toggleChipMarkup("base", { label: "Filters", icon: iconTune, counterSurface: "onNeutral", outline: true, pressed: true }), note: "Shown pre-checked with the outline treatment — a 'Filters' trigger chip summarizing N active filters is an aggregate/trigger, not a single boolean, so it uses checkedOutline (bg.primary tint + border) instead of a full solid fill. Still real — click it." },
+    { title: "Icon + text + counter", html: toggleChipMarkup("base", { label: "Filters", icon: iconTune, counterSurface: "onNeutral", counterState: "active", outline: true, pressed: true }), note: "Counter is Active — 3 filters are on, a real number (an inactive counter only ever shows 0). Shown pre-checked with the outline treatment — a 'Filters' trigger chip summarizing N active filters is an aggregate/trigger, not a single boolean, so it uses checkedOutline (bg.primary tint + border) instead of a full solid fill. Still real — click it." },
   ];
   return defs.map((d) => storyCard(d.title, d.html, d.html, d.note || "")).join("\n");
 }
