@@ -61,7 +61,17 @@ const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, 
 // ---- color tokens this page uses, as CSS custom properties ----
 // (`cv` = "css var" — returns var(--x); shares the exact same name-mangling
 // as the :root block below, via cssVarName, so they can't drift apart.)
-const colorPaths = ["fill.primaryActive", "text.onFill", "color.white", "text.primary", "fill.neutralActive", "text.default", "fill.primary"];
+// Roles READ from counter.tokens.json, never retyped: the hand-typed copy
+// here still said fill.neutralActive for onNeutral's inactive pill (the token
+// moved to fill.neutralActiveStrong on 2026-09-07) and color.white for
+// onPrimary's active pill — both stale until 2026-09-28.
+const role = (node) => node.$value.replace(/[{}]/g, "");
+const surfaces = Object.fromEntries(["onPrimary", "onNeutral"].map((k) => [k, {
+  label: k === "onPrimary" ? "On Primary" : "On Neutral",
+  inactiveBg: role(counter[k].state.inactive.bg), inactiveLabel: role(counter[k].state.inactive.label),
+  activeBg: role(counter[k].state.active.bg), activeLabel: role(counter[k].state.active.label),
+}]));
+const colorPaths = [...new Set(Object.values(surfaces).flatMap((s) => [s.inactiveBg, s.inactiveLabel, s.activeBg, s.activeLabel]))];
 const colorValue = Object.fromEntries(colorPaths.map((p) => [p, resolve(p)]));
 const fontSans = resolve("family.sans");
 const cv = (tokenPath) => `var(${cssVarName(tokenPath)})`;
@@ -73,10 +83,7 @@ const sizes = ["sm", "base", "lg"].map((key) => {
   return { key, height: resolve(s.height.$value), minWidth: resolve(s.minWidth.$value), paddingX: resolve(s.paddingX.$value), label: resolveToken(s.label) };
 });
 
-const surfaces = {
-  onPrimary: { label: "On Primary", inactiveBg: "fill.primaryActive", inactiveLabel: "text.onFill", activeBg: "color.white", activeLabel: "text.primary" },
-  onNeutral: { label: "On Neutral", inactiveBg: "fill.neutralActive", inactiveLabel: "text.default", activeBg: "fill.primary", activeLabel: "text.onFill" },
-};
+
 function surfaceCss(key) {
   const s = surfaces[key];
   return `.counter--${key}.counter--inactive { background: ${cv(s.inactiveBg)}; color: ${cv(s.inactiveLabel)}; }

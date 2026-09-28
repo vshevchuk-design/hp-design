@@ -99,7 +99,8 @@
             "$description": "Has a new/meaningful count — inverted to white so it pops off the button's blue fill instead of blending into it.",
             "bg": {
               "$type": "color",
-              "$value": "{color.white}"
+              "$value": "{surface.default}",
+              "$description": "surface.default (white) — was the primitive color.white until 2026-09-28; a component token should reach for a semantic role, and a white pill cut out of the button's fill reads as surface."
             },
             "label": {
               "$type": "color",
