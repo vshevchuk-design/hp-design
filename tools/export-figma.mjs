@@ -294,6 +294,7 @@ for (const [p, t] of tokens) {
       lineHeight: +(lit('lineHeight') * 100).toFixed(2),
       letterSpacing: +((lit('letterSpacing')?.value ?? 0) * 100).toFixed(2),
       decoration: t.ext?.['hp.design/text']?.textDecoration === 'underline' ? 'UNDERLINE' : 'NONE',
+      textCase: t.ext?.['hp.design/text']?.textTransform === 'uppercase' ? 'UPPER' : 'ORIGINAL',
       bind: { fontFamily: bind('fontFamily'), fontWeight: bind('fontWeight'), fontSize: bind('fontSize') },
     });
   }
@@ -337,6 +338,7 @@ for (const t of TEXT) {
   s.lineHeight = { unit: 'PERCENT', value: t.lineHeight };
   s.letterSpacing = { unit: 'PERCENT', value: t.letterSpacing };
   s.textDecoration = t.decoration;
+  s.textCase = t.textCase;
   for (const [field, name] of Object.entries(t.bind)) {
     const v = name && pv.get(name);
     if (v) s.setBoundVariable(field, v); else unbound.push(t.name + '.' + field);
