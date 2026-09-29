@@ -61,10 +61,15 @@ const px = (d) => `${d.value}${d.unit}`;
 const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
 // ---- color tokens this page uses, as CSS custom properties ----
+// Read from the token, never retyped: this rule said fill.neutralHover (gray.100)
+// — invisible on the gray.100 track — while the token has said
+// fill.neutralHoverStrong since 2026-09-07. Fixed 2026-09-29.
+const segHoverBg = tabs.segmented.state.hover.bg.$value.replace(/[{}]/g, "");
 const colorPaths = [
   "text.secondary", "text.default", "text.disabled", "fill.neutralHover", "fill.neutralActive", "fill.neutralHoverStrong", "fill.neutralActiveStrong", "surface.sunken", "surface.default",
   "border.default", "border.focus", "text.onFill", "fill.primary", "icon.default", "icon.disabled",
 ];
+if (!colorPaths.includes(segHoverBg)) colorPaths.push(segHoverBg);
 const colorValue = Object.fromEntries(colorPaths.map((p) => [p, resolve(p)]));
 const fontSans = resolve("family.sans");
 const cv = (tokenPath) => `var(${cssVarName(tokenPath)})`;
@@ -125,7 +130,7 @@ ${sizes
 
 .tabs--segmented { display: inline-flex; align-items: center; gap: ${seg.trackPadding}; background: ${cv("surface.sunken")}; border-radius: ${seg.trackRadius}; padding: ${seg.trackPadding}; max-width: 100%; overflow-x: auto; }
 .tabs--segmented .tab { border-radius: ${seg.pillRadius}; }
-.tabs--segmented .tab:not(.tab--active):not(.tab--disabled):hover { background: ${cv("fill.neutralHover")}; color: ${cv("text.default")}; }
+.tabs--segmented .tab:not(.tab--active):not(.tab--disabled):hover { background: ${cv(segHoverBg)}; color: ${cv("text.default")}; }
 .tabs--segmented .tab--active { background: ${cv("surface.default")}; color: ${cv("text.default")}; font-weight: ${activeWeightSegmented}; }
 .tabs--segmented .tab--disabled { color: ${cv("text.disabled")}; cursor: not-allowed; }
 .tabs--segmented .tab--disabled .tab__icon, .tabs--underline .tab--disabled .tab__icon { color: ${cv("icon.disabled")}; }

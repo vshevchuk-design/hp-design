@@ -1590,3 +1590,9 @@ Badge `role.neutral.solid` now aliases `tag.gray.solid.bg/text` (gray.500 + text
 Follow-through on "inactive shows 0": a Filters chip's count (how many filters are on) is a real number, so its counter is **Active** — Chip docs example, Figma `Chip / Examples`, and the student Message Center prototype's Filters chip (staff MC's Filters button already used Active). Chip docs now emit active counter CSS from counter.tokens.json. Still open, asked: the MC Inbox tab's unread counter goes Inactive on an unselected tab while still showing the unread number.
 
 Refined (2026-09-29): "inactive shows 0" is the common case, not the rule. The MC Inbox tab keeps its unread number on an Inactive counter while another tab is selected (Gmail/Slack pattern) — user: keep it. Inactive = a quiet count (zero, or a real count out of focus); Active = a count meant to draw the eye. Token description, docs comments and the Figma Counter description say so; sample data still defaults to 0.
+
+## 2026-09-29 — Input, Select, Search, Tabs in Figma; segmented-tab hover was invisible in docs
+
+Built straight on semantic/primitive variables via component-bindings.json (first components built that way from the start). Select is a clone of Input plus a chevron because every select token resolves to the same semantic role as its input twin.
+
+Found while reading the Tabs docs builder: the segmented hover rule hand-typed `fill.neutralHover` (gray.100) — the same gray.100 as the track, so hovering an inactive segmented tab did nothing on docs/tabs.html and in the Designs-pane device tabs (`tools/lib/design-viewer.mjs`, same hand-typed role). The token has said `fill.neutralHoverStrong` since 2026-09-07; both now read it. The MC prototypes already read the token. Fifth instance of the retyped-role bug this week — a sweep of every doc builder for remaining hand-typed roles is worth doing on its own.

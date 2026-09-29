@@ -117,11 +117,15 @@ const lb = {
 const shadowCss = (s) => `${px(s.offsetX)} ${px(s.offsetY)} ${px(s.blur)} ${px(s.spread)} ${s.color}`;
 const lbShadowCss = Array.isArray(lb.shadow) ? lb.shadow.map(shadowCss).join(", ") : shadowCss(lb.shadow);
 
+// Segmented hover role read from the token (was a hand-typed fill.neutralHover,
+// invisible on the gray.100 track; fixed 2026-09-29).
+const segHoverBg = tabs.segmented.state.hover.bg.$value.replace(/[{}]/g, "");
 const colorPaths = [
   "surface.sunken", "surface.dim", "surface.default", "fill.neutralHover", "fill.primary",
   "text.secondary", "text.default", "icon.default", "border.default", "border.strong", "border.focus",
 ];
 const fontSans = resolve("family.sans");
+if (!colorPaths.includes(segHoverBg)) colorPaths.push(segHoverBg);
 const rootVars = renderRootVars([...colorPaths.map((p) => [p, resolve(p)]), ["family.sans", `'${fontSans}', sans-serif`]]);
 
 const iconOf = (name, cls) =>
@@ -135,7 +139,7 @@ const viewerCss = `${rootVars}
 .tab { display: inline-flex; align-items: center; justify-content: center; gap: ${tabItemGap}; border: none; background: transparent; cursor: pointer; white-space: nowrap; color: ${cv("text.secondary")}; font-family: ${cv("family.sans")}; ${typoCss(tabItemLabel)} }
 .tab--base { height: ${tabBase.height}; padding: 0 ${tabBase.paddingX}; }
 .tabs--segmented .tab { border-radius: ${segPillRadius}; }
-.tabs--segmented .tab:not(.tab--active):hover { background: ${cv("fill.neutralHover")}; color: ${cv("text.default")}; }
+.tabs--segmented .tab:not(.tab--active):hover { background: ${cv(segHoverBg)}; color: ${cv("text.default")}; }
 .tabs--segmented .tab--active { background: ${cv("surface.default")}; color: ${cv("text.default")}; font-weight: ${tabActiveWeight}; }
 
 /* Versions — Select's closed trigger + Listbox's single-select popover, the
