@@ -110,7 +110,8 @@ ${surfaceCss("onPrimary")}
 ${surfaceCss("onNeutral")}`;
 
 function markup(size, surface, state) {
-  // Inactive = nothing new, so it shows 0; only an active counter carries a real number.
+  // Sample data: 0 for inactive (its most common case — nothing new). Inactive can
+  // also carry a real count that isn't in focus (an unselected tab's unread number).
   return `<span class="counter counter--${size} counter--${surface} counter--${state}">${state === "inactive" ? 0 : 3}</span>`;
 }
 

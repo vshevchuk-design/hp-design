@@ -206,7 +206,8 @@ const js = `document.querySelectorAll(".chip--toggle").forEach((btn) => {
   });
 });`;
 
-// Inactive = nothing new → 0; a real number (e.g. how many filters are on) is Active.
+// Sample data: inactive → 0 (nothing new); a count meant to draw the eye (how
+// many filters are on) is Active. Inactive may also hold an out-of-focus count.
 function counterMarkup(sizeKey, surface, state = "inactive", count = state === "inactive" ? 0 : 3) {
   return `<span class="counter counter--${sizeKey} counter--${surface} counter--${state}">${count}</span>`;
 }
@@ -286,7 +287,7 @@ function contentStories() {
     { title: "Text only", html: toggleChipMarkup("base", { label: "Flagged" }) },
     { title: "Icon + text", html: toggleChipMarkup("base", { label: "Flagged", icon: iconFlag }) },
     { title: "Text + counter", html: toggleChipMarkup("base", { label: "Recent", counterSurface: "onNeutral" }), note: "Unchecked/light bg pairs with counter.onNeutral — click to check it and the counter switches to onPrimary automatically via CSS, no JS." },
-    { title: "Icon + text + counter", html: toggleChipMarkup("base", { label: "Filters", icon: iconTune, counterSurface: "onNeutral", counterState: "active", outline: true, pressed: true }), note: "Counter is Active — 3 filters are on, a real number (an inactive counter only ever shows 0). Shown pre-checked with the outline treatment — a 'Filters' trigger chip summarizing N active filters is an aggregate/trigger, not a single boolean, so it uses checkedOutline (bg.primary tint + border) instead of a full solid fill. Still real — click it." },
+    { title: "Icon + text + counter", html: toggleChipMarkup("base", { label: "Filters", icon: iconTune, counterSurface: "onNeutral", counterState: "active", outline: true, pressed: true }), note: "Counter is Active — 3 filters are on, a count meant to draw the eye. Shown pre-checked with the outline treatment — a 'Filters' trigger chip summarizing N active filters is an aggregate/trigger, not a single boolean, so it uses checkedOutline (bg.primary tint + border) instead of a full solid fill. Still real — click it." },
   ];
   return defs.map((d) => storyCard(d.title, d.html, d.html, d.note || "")).join("\n");
 }
