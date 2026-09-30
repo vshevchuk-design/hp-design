@@ -1620,3 +1620,7 @@ The feed-header icon square was 28px (dim.7) with a 16px glyph — an odd step n
 ## 2026-09-30 — Figma Separator properties fixed; library-wide property audit
 
 Separator had a TEXT property and a VARIANT axis both named "Label", and no Vertical + Label=Yes variant (a hole in the matrix). Now: one axis, Orientation (Horizontal/Vertical), plus a `Show label` BOOLEAN on the Horizontal variant that toggles the label and the second line (the first line FILLs the width when the label is off). No instances existed, so nothing was relinked. Audit of all 61 component sets afterwards: no other duplicate property names and no unlinked properties. Sparse variant matrices remain in Attachment, Bubble, Card, Accordion Item, Avatar, Page Item and Menu Item — listed to the user for a decision, not changed.
+
+## 2026-09-30 — App Topbar: one component, no Mobile variant
+
+User: a separate mobile topbar is pointless when the height is the same — and its Settings button had lost its right alignment (the Mobile variants' primary-axis alignment had fallen back to MIN). Removed the Viewport axis; `App Topbar` is now Left=Logo|Title, SPACE_BETWEEN so Settings stays pinned right at any width. The one real difference (16 vs 24px side padding, meta note hidden below 560) is an instance override on phone frames, not a variant. Rule for the Figma library: a viewport variant earns its place only when anatomy or height changes (e.g. the Springboard tile's vertical launcher shape), never for padding alone.
