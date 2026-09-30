@@ -273,7 +273,14 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
    (the ICS "09/08/26, 12:00 AM – 03/07/27, 12:00 AM" range at 12px) still fits
    without clipping. Same gap as the desktop pair so the rhythm doesn't shift. */
 .sb__feeds { display: grid; gap: ${gridGapSm}; grid-template-columns: 1fr; align-items: start; }
-@media (min-width: 768px) { .sb__feeds { gap: ${gridGapMd}; grid-template-columns: repeat(2, 1fr); } }
+/* The RSS card spans both rows, so the X feed tucks under ICS at the normal
+   16px gap instead of waiting for the taller RSS card to end (a plain 2×2
+   grid left a ~60px hole under ICS at 768). DOM order stays ICS, RSS, X —
+   the one-column phone order — and auto-placement does the rest. */
+@media (min-width: 768px) {
+  .sb__feeds { gap: ${gridGapMd}; grid-template-columns: repeat(2, 1fr); }
+  .sb__feed--tall { grid-row: span 2; }
+}
 
 /* The tinted icon square: Attachment's "icon in a soft square" pattern with
    a tag.* tint instead of a raised white square — decorative hue, no status
@@ -427,7 +434,7 @@ ${TILES.map(tileMarkup).join("\n")}
 ${feedHeader("today", "orange", "Demo ICS Feed", true)}
 ${EVENTS.map(eventMarkup).join("\n")}
       </section>
-      <section class="card" aria-label="Demo RSS Feed">
+      <section class="card sb__feed--tall" aria-label="Demo RSS Feed">
 ${feedHeader("rss_feed", "amber", "Demo RSS Feed", true)}
 ${ARTICLES.map(articleMarkup).join("\n")}
       </section>

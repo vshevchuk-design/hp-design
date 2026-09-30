@@ -139,7 +139,14 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
    (the ICS "09/08/26, 12:00 AM – 03/07/27, 12:00 AM" range at 12px) still fits
    without clipping. Same gap as the desktop pair so the rhythm doesn't shift. */
 .sb__feeds { display: grid; gap: 12px; grid-template-columns: 1fr; align-items: start; }
-@media (min-width: 768px) { .sb__feeds { gap: 16px; grid-template-columns: repeat(2, 1fr); } }
+/* The RSS card spans both rows, so the X feed tucks under ICS at the normal
+   16px gap instead of waiting for the taller RSS card to end (a plain 2×2
+   grid left a ~60px hole under ICS at 768). DOM order stays ICS, RSS, X —
+   the one-column phone order — and auto-placement does the rest. */
+@media (min-width: 768px) {
+  .sb__feeds { gap: 16px; grid-template-columns: repeat(2, 1fr); }
+  .sb__feed--tall { grid-row: span 2; }
+}
 
 /* The tinted icon square: Attachment's "icon in a soft square" pattern with
    a tag.* tint instead of a raised white square — decorative hue, no status
@@ -313,7 +320,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           </span>
         </a>
       </section>
-      <section class="card" aria-label="Demo RSS Feed">
+      <section class="card sb__feed--tall" aria-label="Demo RSS Feed">
         <div class="card__header">
           <span class="sb-ibox sb-ibox--sm sb-ibox--amber"><svg class="" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><circle cx="6.18" cy="17.82" r="2.18"/><path d="M4 4.44v2.83c7.03 0 12.73 5.7 12.73 12.73h2.83c0-8.59-6.97-15.56-15.56-15.56zm0 5.66v2.83c3.9 0 7.07 3.17 7.07 7.07h2.83c0-5.47-4.43-9.9-9.9-9.9z"/></svg></span>
           <h2 class="card__title">Demo RSS Feed</h2>
