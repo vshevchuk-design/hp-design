@@ -1648,3 +1648,9 @@ Before rebuilding the student MC as its own Figma file (Springboard scheme), the
 - **Bubble Row** (new set, Sender=Self|Other): sender row (Avatar sm + name + '-- date') over a Bubble — the bubble-row composition Bubble's docs already define; the Figma Bubble had no sender at all.
 - **Thread List Item**: `Badges` SLOT (up to three Badge sm) and a `Flagged` variant axis (filled flag in icon/warning) — 16 variants now.
 - **Chip/Toggle**: `Show chevron` BOOLEAN — trailing expand_more for dropdown chips (MC's Filters · N / Department).
+
+## 2026-09-30 — Student Message Center rebuilt in its own Figma file
+
+Same scheme as Springboard (one page; Handoff / Screens / Components sections; library-bound). 64 screen frames: 17 states × 4 widths + 2 phone-only. Two library bugs surfaced while building and were fixed in the DS file (need a republish): **Search Focus** showed a typed value + clear ×, but search.tokens says focus only moves the border — Focus is now the empty focused field and Populated carries the value; and the **Thread List Item Flagged=Yes** variants (cloned from the originals) had lost every text/visibility property link, so flagged rows showed the default copy — relinked. Plugin gotcha worth keeping: `node.findOne()` inside an instance returns a new wrapper each time, so `parent.children.indexOf(found)` is −1 — compare by `id`.
+
+Deviations recorded on the Handoff page rather than papered over: topbar title restyled to title/xl (App Topbar's default is heading/lg); Discard gets a danger fill because Button has no Danger variant; the reply bar's upward shadow is literal (no upward shadow style); Attachment has no property for its size/type line.
