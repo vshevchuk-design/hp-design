@@ -1624,3 +1624,7 @@ Separator had a TEXT property and a VARIANT axis both named "Label", and no Vert
 ## 2026-09-30 — App Topbar: one component, no Mobile variant
 
 User: a separate mobile topbar is pointless when the height is the same — and its Settings button had lost its right alignment (the Mobile variants' primary-axis alignment had fallen back to MIN). Removed the Viewport axis; `App Topbar` is now Left=Logo|Title, SPACE_BETWEEN so Settings stays pinned right at any width. The one real difference (16 vs 24px side padding, meta note hidden below 560) is an instance override on phone frames, not a variant. Rule for the Figma library: a viewport variant earns its place only when anatomy or height changes (e.g. the Springboard tile's vertical launcher shape), never for padding alone.
+
+## 2026-09-30 — Springboard rebuilt in its own Figma file on the published library
+
+First product file consuming the DS as a library. Split rule applied: reusable pieces went to the library first (12 icons, Logo, App Topbar), and only Springboard compositions live in the product file. Viewports are separate screen frames; component *states* live on the Components page, per the user's "Стани можна показати окремо в компонентах". The tile keeps a Layout variant because its anatomy changes (stacked launcher → row → larger row), unlike the topbar, which is one component with a padding override on phones. Feed rows are separated by the DS Separator dropped into the Feed Card's Body slot rather than a divider baked into each row, so the last row needs no special case.
