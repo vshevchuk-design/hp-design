@@ -147,6 +147,9 @@ const iconClear = iconOf("close", "search__clear");
 const iconChevronDown = iconOf("expand_more", "chip__icon");
 const iconFilter = iconOf("filter_list", "chip__icon");
 const iconEdit = iconOf("edit", "btn__icon");
+// Settings — the portal shell's standing action; New message sits to its left
+// on split views (on a phone New message is the FAB, Settings stays)
+const iconSettings = iconOf("settings", "btn__icon");
 const iconChevronSelect = iconOf("expand_more", "select__chevron");
 const iconCloseBtn = iconOf("close", "btn__icon");
 const iconCheckmark = iconOf("check", "listbox__checkmark");
@@ -861,6 +864,7 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .mc__topbar { flex-shrink: 0; height: ${px(resolve("dim.16"))}; display: flex; align-items: center; justify-content: space-between; gap: ${px(resolve("dim.3"))}; padding: 0 ${px(resolve("dim.4"))}; background: ${cv("surface.default")}; border-bottom: 1px solid ${cv("border.default")}; }
 /* New message entry point: floating pill over the list on mobile, a regular
    topbar button on every split view (>=768) */
+.mc__topbar-actions { display: flex; align-items: center; gap: ${px(resolve("dim.2"))}; }
 .mc-topbar-new { display: none; }
 .mc-fab { position: absolute; right: ${px(resolve("dim.4"))}; bottom: ${px(resolve("dim.4"))}; border-radius: ${px(resolve("radius.full"))}; box-shadow: ${fabShadowCss}; transition: padding 0.25s ease, gap 0.25s ease; }
 /* extended-FAB convention: the label collapses away while the list scrolls
@@ -2011,7 +2015,7 @@ ${appCss}
 </head>
 <body>
 <div class="mc">
-  <header class="mc__topbar"><h1>Message Center</h1><button class="btn btn--primary btn--base mc-topbar-new" id="mc-new-desktop" type="button">${iconEdit}New message</button></header>
+  <header class="mc__topbar"><h1>Message Center</h1><div class="mc__topbar-actions"><button class="btn btn--primary btn--base mc-topbar-new" id="mc-new-desktop" type="button">${iconEdit}New message</button><button class="btn btn--secondary btn--base btn--icon-only" type="button" aria-label="Settings">${iconSettings}</button></div></header>
   <div class="mc__body">
     <aside class="mc__rail" aria-label="Thread list">
       <div class="mc-rail__topbar">
