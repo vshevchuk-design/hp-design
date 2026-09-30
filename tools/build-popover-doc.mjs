@@ -27,6 +27,9 @@ const typo = load("tokens/primitives/typography.tokens.json");
 const textStyle = load("tokens/primitives/text-styles.tokens.json")["text-style"];
 const semantic = load("tokens/semantic/color.tokens.json");
 const popover = load("tokens/components/popover.tokens.json").component.popover;
+// Close (×) IS a Button — ghost, sm, icon-only — so its size/colors come from button.tokens.json, not a local recipe.
+const ghost = load("tokens/components/button.tokens.json").component.button.ghost;
+const ghostRole = (n) => n.$value.replace(/[{}]/g, "");
 
 const registry = {
   color: colorPrim,
@@ -66,7 +69,7 @@ const px = (d) => `${d.value}${d.unit}`;
 const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 const cv = (tokenPath) => `var(${cssVarName(tokenPath)})`;
 
-const colorPaths = ["surface.default", "border.default", "border.focus", "text.default", "text.secondary", "icon.secondary", "fill.neutralHover", "fill.neutralActive"];
+const colorPaths = ["surface.default", "border.default", "border.focus", "text.default", "text.secondary", "icon.secondary", "fill.neutralHover", "fill.neutralActive"].concat([ghost.state.default.icon, ghost.state.hover.fill, ghost.state.pressed.fill, ghost.state.focused.ringColor].map(ghostRole)).filter((p, i, a) => a.indexOf(p) === i);
 const colorValue = Object.fromEntries(colorPaths.map((p) => [p, resolve(p)]));
 const fontSans = resolve("family.sans");
 const rootVars = renderRootVars([...colorPaths.map((p) => [p, colorValue[p]]), ["family.sans", `'${fontSans}', sans-serif`]]);
@@ -88,14 +91,14 @@ function typoCss(t) {
 const css = `${rootVars}
 
 .popover { margin: 0; box-sizing: border-box; max-width: 280px; padding: ${padding}; border-radius: ${radius}; background: ${cv("surface.default")}; border: 1px solid ${cv("border.default")}; box-shadow: ${shadowCss}; font-family: ${cv("family.sans")}; }
-.popover__header { display: flex; align-items: flex-start; justify-content: space-between; gap: ${px(resolve("dim.2"))}; }
+.popover__header { display: flex; align-items: center; justify-content: space-between; gap: ${px(resolve("dim.2"))}; }
 .popover__title { margin: 0; color: ${cv("text.default")}; ${typoCss(titleType)} }
 .popover__body { margin: 8px 0 0; color: ${cv("text.secondary")}; ${typoCss(bodyType)} }
-.popover__close { flex-shrink: 0; width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center; border: none; border-radius: ${px(resolve("radius.default"))}; background: transparent; padding: 0; cursor: pointer; color: ${cv("icon.secondary")}; }
-.popover__close:hover { background: ${cv("fill.neutralHover")}; }
-.popover__close:active { background: ${cv("fill.neutralActive")}; }
-.popover__close:focus-visible { outline: ${px(resolve("dim.1"))} solid ${cv("border.focus")}; outline-offset: ${px(resolve("dim.0_5"))}; }
-.popover__close-icon { width: 18px; height: 18px; display: block; }
+.popover__close { flex-shrink: 0; box-sizing: border-box; width: ${px(resolve(ghost.size.sm.height.$value))}; height: ${px(resolve(ghost.size.sm.height.$value))}; display: inline-flex; align-items: center; justify-content: center; border: none; border-radius: ${px(resolve(ghost.radius.$value))}; background: transparent; padding: 0; cursor: pointer; color: ${cv(ghostRole(ghost.state.default.icon))}; }
+.popover__close:hover { background: ${cv(ghostRole(ghost.state.hover.fill))}; }
+.popover__close:active { background: ${cv(ghostRole(ghost.state.pressed.fill))}; }
+.popover__close:focus-visible { outline: ${px(resolve(ghost.state.focused.ringWidth.$value))} solid ${cv(ghostRole(ghost.state.focused.ringColor))}; outline-offset: ${px(resolve(ghost.state.focused.ringOffset.$value))}; }
+.popover__close-icon { width: ${px(resolve(ghost.size.sm.iconSize.$value))}; height: ${px(resolve(ghost.size.sm.iconSize.$value))}; display: block; }
 .popover__menu { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
 .popover__menu-item { border: none; background: none; text-align: left; width: 100%; padding: 8px; border-radius: 6px; cursor: pointer; color: ${cv("text.default")}; font-family: inherit; ${typoCss(bodyType)} }
 .popover__menu-item:hover { background: ${cv("fill.neutralHover")}; }`;

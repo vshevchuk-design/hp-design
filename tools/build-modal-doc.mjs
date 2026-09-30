@@ -24,6 +24,9 @@ const typo = load("tokens/primitives/typography.tokens.json");
 const textStyle = load("tokens/primitives/text-styles.tokens.json")["text-style"];
 const semantic = load("tokens/semantic/color.tokens.json");
 const modal = load("tokens/components/modal.tokens.json").component.modal;
+// Close (×) IS a Button — ghost, sm, icon-only — so its size/colors come from button.tokens.json, not a local recipe.
+const ghost = load("tokens/components/button.tokens.json").component.button.ghost;
+const ghostRole = (n) => n.$value.replace(/[{}]/g, "");
 
 const registry = {
   color: colorPrim,
@@ -67,7 +70,7 @@ const colorPaths = [
   "fill.neutralHoverStrong",
   "surface.default", "surface.overlay", "border.default", "border.focus", "text.default", "text.secondary", "text.onFill", "icon.secondary",
   "fill.neutral", "fill.neutralHover", "fill.neutralActive", "fill.danger", "fill.dangerHover",
-];
+].concat([ghost.state.default.icon, ghost.state.hover.fill, ghost.state.pressed.fill, ghost.state.focused.ringColor].map(ghostRole)).filter((p, i, a) => a.indexOf(p) === i);
 const colorValue = Object.fromEntries(colorPaths.map((p) => [p, resolve(p)]));
 const fontSans = resolve("family.sans");
 const rootVars = renderRootVars([...colorPaths.map((p) => [p, colorValue[p]]), ["family.sans", `'${fontSans}', sans-serif`]]);
@@ -100,17 +103,17 @@ dialog.modal[open]::backdrop { opacity: 1; }
 @starting-style { dialog.modal[open]::backdrop { opacity: 0; } }
 
 .modal__content { display: flex; flex-direction: column; max-height: 85dvh; box-sizing: border-box; font-family: ${cv("family.sans")}; }
-.modal__header { flex-shrink: 0; box-sizing: border-box; display: flex; align-items: flex-start; justify-content: space-between; gap: ${gap}; padding: ${padding}; border-bottom: 1px solid ${cv("border.default")}; }
+.modal__header { flex-shrink: 0; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between; gap: ${gap}; padding: ${padding}; border-bottom: 1px solid ${cv("border.default")}; }
 .modal__title { margin: 0; color: ${cv("text.default")}; ${typoCss(titleType)} }
 .modal__body { flex: 1; box-sizing: border-box; overflow: auto; padding: ${padding}; }
 .modal__body-text { margin: 0; color: ${cv("text.secondary")}; ${typoCss(bodyType)} }
 .modal__footer { flex-shrink: 0; box-sizing: border-box; display: flex; gap: ${gap}; justify-content: flex-end; padding: ${padding}; border-top: 1px solid ${cv("border.default")}; }
 
-.modal__close { flex-shrink: 0; width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center; border: none; border-radius: ${px(resolve("radius.default"))}; background: transparent; padding: 0; cursor: pointer; color: ${cv("icon.secondary")}; }
-.modal__close:hover { background: ${cv("fill.neutralHover")}; }
-.modal__close:active { background: ${cv("fill.neutralActive")}; }
-.modal__close:focus-visible { outline: ${px(resolve("dim.1"))} solid ${cv("border.focus")}; outline-offset: ${px(resolve("dim.0_5"))}; }
-.modal__close-icon { width: 20px; height: 20px; display: block; }
+.modal__close { flex-shrink: 0; box-sizing: border-box; width: ${px(resolve(ghost.size.sm.height.$value))}; height: ${px(resolve(ghost.size.sm.height.$value))}; display: inline-flex; align-items: center; justify-content: center; border: none; border-radius: ${px(resolve(ghost.radius.$value))}; background: transparent; padding: 0; cursor: pointer; color: ${cv(ghostRole(ghost.state.default.icon))}; }
+.modal__close:hover { background: ${cv(ghostRole(ghost.state.hover.fill))}; }
+.modal__close:active { background: ${cv(ghostRole(ghost.state.pressed.fill))}; }
+.modal__close:focus-visible { outline: ${px(resolve(ghost.state.focused.ringWidth.$value))} solid ${cv(ghostRole(ghost.state.focused.ringColor))}; outline-offset: ${px(resolve(ghost.state.focused.ringOffset.$value))}; }
+.modal__close-icon { width: ${px(resolve(ghost.size.sm.iconSize.$value))}; height: ${px(resolve(ghost.size.sm.iconSize.$value))}; display: block; }
 
 .ov-btn { box-sizing: border-box; height: ${px(resolve("dim.10"))}; padding: 0 ${px(resolve("dim.3"))}; border-radius: ${px(resolve("radius.default"))}; border: none; cursor: pointer; font-family: ${cv("family.sans")}; ${typoCss(resolveToken(get("text-style.heading-base")))} }
 .ov-btn--secondary { background: ${cv("fill.neutral")}; color: ${cv("text.default")}; }
