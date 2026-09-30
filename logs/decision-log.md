@@ -1638,3 +1638,13 @@ Figma gotchas from the same round: an INSTANCE_SWAP property is ONE default for 
 ## 2026-09-30 — Springboard Figma: Date Chip and Meta Line folded into Event Row
 
 User asked why Meta Line was a component when the location line and "Read Article" weren't. The reason (Meta Line appeared twice — time and place) was weak: both it and Date Chip live only inside Event Row, so they only added a nesting level designers had to drill through. Detached them inside the four Event Row variants; Event Row now exposes Title, Month, Day, When, Where as its own text properties; the two components are deleted and the screens re-filled. Rule for product files: a sub-part becomes its own component only when it is placed on its own somewhere else (or needs states of its own) — repetition inside one parent isn't enough.
+
+## 2026-09-30 — DS Figma library prepared for the Student Message Center file
+
+Before rebuilding the student MC as its own Figma file (Springboard scheme), the library got what the MC needs and was missing — each one a gap in the library, not an MC-only thing:
+- Icons `arrow_back`, `print`.
+- **App Topbar**: the right side is now an `Actions` SLOT (default content: Settings). MC's topbar carries a primary "New message" there; `shellTopbar({ actions })` in code already allowed this.
+- **Message**: body became a SLOT (default content = the full paragraph/list/attachment/CTA recipe); the Show list/image/attachments/CTA booleans are gone. The sender line is two texts with `Name` and `Meta` TEXT properties (it was one unpropertied string).
+- **Bubble Row** (new set, Sender=Self|Other): sender row (Avatar sm + name + '-- date') over a Bubble — the bubble-row composition Bubble's docs already define; the Figma Bubble had no sender at all.
+- **Thread List Item**: `Badges` SLOT (up to three Badge sm) and a `Flagged` variant axis (filled flag in icon/warning) — 16 variants now.
+- **Chip/Toggle**: `Show chevron` BOOLEAN — trailing expand_more for dropdown chips (MC's Filters · N / Department).
