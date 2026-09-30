@@ -282,8 +282,8 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .sb-ibox { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; border-radius: ${cardRadius}; }
 .sb-ibox--lg { width: ${px(resolve("dim.10"))}; height: ${px(resolve("dim.10"))}; }
 .sb-ibox--lg svg { width: ${px(resolve("dim.6"))}; height: ${px(resolve("dim.6"))}; }
-.sb-ibox--sm { width: ${px(resolve("dim.7"))}; height: ${px(resolve("dim.7"))}; }
-.sb-ibox--sm svg { width: ${px(resolve("dim.4"))}; height: ${px(resolve("dim.4"))}; }
+.sb-ibox--sm { width: ${px(resolve("dim.8"))}; height: ${px(resolve("dim.8"))}; }
+.sb-ibox--sm svg { width: ${px(resolve("dim.5"))}; height: ${px(resolve("dim.5"))}; }
 ${hueVars}
 
 /* A tile is Card's interactive variant on a real <button> — its own
@@ -323,7 +323,7 @@ ${hueVars}
    Every band uses dim.3, one step under Card's dim.4: a feed is the same kind
    of card as a tile, just carrying more detail — it shouldn't outweigh it. */
 .card { background: ${cv(cardBg)}; border: 1px solid ${cv(cardBorder)}; border-radius: ${cardRadius}; overflow: hidden; }
-.card__header { display: flex; align-items: center; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.3"))}; border-bottom: 1px solid ${cv(cardDivider)}; }
+.card__header { display: flex; align-items: center; gap: ${px(resolve("dim.2"))}; height: ${px(resolve("dim.14"))}; padding: 0 ${px(resolve("dim.3"))}; border-bottom: 1px solid ${cv(cardDivider)}; }
 .card__title { flex: 1; min-width: 0; margin: 0; color: ${cv(cardTitleColor)}; ${typoCss(cardTitleType)} }
 
 /* In-card action links (View All / Read Article) — link-sm's type + the
