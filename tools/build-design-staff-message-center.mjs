@@ -131,7 +131,10 @@ const identityNames = [
   // students — initials tier, no photos
   "George Amalor", "Cait Genatossio", "Maya Patel", "Diego Fernandez", "Lena Hoffman", "Tomas Novak",
 ];
-const usedHues = [...new Set(identityNames.map(hueOf))];
+// Emit every hue the hash can produce — group discs ("group-52"), generated
+// recipients and runtime-composed names can land on any of the 8, not just the
+// hues of the named people above.
+const usedHues = [...AVATAR_HUES];
 
 // The field hover fill, read from input.tokens.json — the whole field family
 // (Input/Select/Search/Composer/compose fields) shares one recipe.
@@ -1998,7 +2001,7 @@ function rowMarkup(t, idx) {
   // or they've replied in the thread
   const involved = (t.responsibles || []).indexOf(SELF.name) > -1 || t.replied;
   const dv = (t.date || "").split("/"); // MM/DD/YYYY -> YYYYMMDD for range compares
-  const dateVal = dv.length === 3 ? dv[2] + dv[0] + dv[1] : "";
+  const dateVal = dv.length === 3 ? dv[2] + dv[0] + dv[1] : shortDateVal(t.date || "");
   return `<div class="thread-item-inbox mc-trow mc-console-cols thread-item-inbox--${t.unread ? "unread" : "read"}" role="button" tabindex="0" data-thread="${t.id}" data-idx="${idx}" data-subject="${esc(t.subject)}" data-department="${esc(t.department)}" data-student-id="${esc(t.studentId || "")}" data-responsibles="${esc((t.responsibles || []).join("|"))}" data-date-val="${dateVal}" data-involved="${involved ? "true" : "false"}"${t.expires ? ` data-expires="${t.expires.role}"` : ""}>
         <div class="mc-td mc-col-flag"><button class="thread-item-inbox__flag-btn" type="button" aria-pressed="${t.flagged ? "true" : "false"}" aria-label="Flag thread">${iconFlagOutlined}${iconFlagFilled}</button></div>
         <div class="mc-td mc-cellwrap">${avatarMarkup(t.sender || t.department, "sm")}<span class="mc-cellstack"><span class="mc-lead">${t.sender || t.department}</span><span class="mc-td--muted" style="font-size:12px">${t.studentId || t.department}</span></span></div>
@@ -2022,6 +2025,14 @@ function responsiblePills(list) {
   return html + `</span>`;
 }
 // Date cell: date on top, time (with zone) beneath — matches the real product
+// "Jul 12" (group-message dates, current year 2026) -> "20260712", so group
+// cards and their child reply threads sort/filter by date like every other row
+function shortDateVal(md) {
+  const m = /^([A-Z][a-z]{2}) (\d{1,2})$/.exec(md);
+  if (!m) return "";
+  const mi = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"].indexOf(m[1]);
+  return mi < 0 ? "" : "2026" + String(mi + 1).padStart(2, "0") + m[2].padStart(2, "0");
+}
 function dateCell(date, time) {
   return `<span class="mc-date__d">${date}</span>${time ? `<span class="mc-date__t">${time}</span>` : ""}`;
 }
@@ -2728,8 +2739,8 @@ const gwizMarkup = `<dialog class="mc-gwiz" id="mc-gwiz" aria-labelledby="mc-gwi
           ${radioMarkup("mc-gexp-mode", "mc-gexp-amount", "Amount of Time", false)}
         </div>
         <div class="mc-compose__exp-ctl" data-exp="fixed">
-          <div class="mc-dp" data-date="2026-08-15" id="mc-gwiz-dp">
-            <button class="mc-dp__trigger" type="button" popovertarget="mc-gwiz-dp-panel" aria-haspopup="dialog">${iconOf("calendar_today", "mc-dp__cal")}<span class="mc-dp__value">Aug 15, 2026</span>${iconOf("expand_more", "mc-dp__chev")}</button>
+          <div class="mc-dp" data-date="2026-09-15" id="mc-gwiz-dp">
+            <button class="mc-dp__trigger" type="button" popovertarget="mc-gwiz-dp-panel" aria-haspopup="dialog">${iconOf("calendar_today", "mc-dp__cal")}<span class="mc-dp__value">Sep 15, 2026</span>${iconOf("expand_more", "mc-dp__chev")}</button>
             <div class="mc-dp__panel" id="mc-gwiz-dp-panel" popover role="dialog" aria-label="Choose a date">
               <div class="mc-dp__header">
                 <button class="mc-dp__nav mc-dp__nav--prev" type="button" aria-label="Previous month">${iconOf("chevron_left", "")}</button>
@@ -2775,7 +2786,7 @@ const GROUPS = [
     body: "Hi {Preferred Name}, registration for the fall term opens on Monday, July 20. Reply here if you would like to review your remaining requirements first.",
     delivered: 37, seen: 24, replied: 6,
     replies: [
-      { id: "CX0001", name: "Cait Adelson", reply: "Yes — can we go over my remaining requirements before Monday?", replyTime: "Jul 12, 2:14 PM", unread: true },
+      { id: "CX0001", name: "Cait Genatossio", reply: "Yes — can we go over my remaining requirements before Monday?", replyTime: "Jul 12, 2:14 PM", unread: true },
       { id: "CX0002", name: "Calam Xavier", reply: "Thanks! I already registered for my classes.", replyTime: "Jul 12, 3:02 PM", unread: false },
     ],
   },
@@ -2811,14 +2822,19 @@ const GROUP_REPLY_POOL = [
   "Perfect timing — I was about to ask about this.",
   "Following up: is the deadline firm?",
 ];
+// 24h hour + minute → "1:07 PM" (valid 12-hour clock, correct meridiem)
+function groupReplyClock12(h24, mn) {
+  const h12 = h24 % 12 === 0 ? 12 : h24 % 12;
+  return h12 + ":" + String(mn).padStart(2, "0") + (h24 < 12 ? " AM" : " PM");
+}
 GROUPS.forEach((g) => {
   let i = 0;
   while (g.replies.length < g.replied && i < 200) {
     const s = gwizStudents[(i + g.n) % gwizStudents.length];
     if (!g.replies.some((r) => r.id === s.id)) {
       const n = g.replies.length;
-      const hr = 9 + (n % 7), mn = (10 + n * 13) % 55;
-      g.replies.push({ id: s.id, name: s.name, reply: GROUP_REPLY_POOL[n % GROUP_REPLY_POOL.length], replyTime: g.date + ", " + hr + ":" + String(mn).padStart(2, "0") + " AM", unread: false });
+      const hr = 9 + (n % 7), mn = (10 + n * 13) % 55; // 24h hour, 9–15
+      g.replies.push({ id: s.id, name: s.name, reply: GROUP_REPLY_POOL[n % GROUP_REPLY_POOL.length], replyTime: g.date + ", " + groupReplyClock12(hr, mn), unread: false });
     }
     i++;
   }
@@ -2837,14 +2853,17 @@ const GROUP_CHILD_THREADS = GROUPS.flatMap((g) => g.replies.map((r) => ({
     bubbleRow({ role: "other", name: r.name, meta: r.replyTime, text: r.reply }),
   ],
 })));
-const GROUP_RECIPIENTS = [
-  { id: "CX0001", name: "Cait Adelson", status: "replied", reply: "Yes — can we go over my remaining requirements before Monday?" },
-  { id: "CX0002", name: "Calam Xavier", status: "replied", reply: "Thanks! I already registered for my classes." },
-  { id: "AA0215", name: "Maya Okafor", status: "seen" },
-  { id: "AA0367", name: "Allison Rao", status: "seen" },
-  { id: "AA0007", name: "L Arcos", status: "notseen" },
-  { id: "AA0412", name: "Dana Torres", status: "notseen" },
-];
+// Every group gets its own recipient list, derived from its data: everyone who
+// replied (status "replied"), then the rest of the roster split between "seen"
+// and "not seen" in the group's own seen/not-seen proportion. The roster is a
+// 14-student sample, so the drawer shows a representative slice of g.n.
+GROUPS.forEach((g) => {
+  const replied = g.replies.map((r) => ({ id: r.id, name: r.name, status: "replied" }));
+  const rest = gwizStudents.filter((s) => !g.replies.some((r) => r.id === s.id));
+  const seenShare = (g.seen - g.replied) / Math.max(1, g.n - g.replied);
+  const seenCount = Math.round(rest.length * seenShare);
+  g.recipients = replied.concat(rest.map((s, i) => ({ id: s.id, name: s.name, status: i < seenCount ? "seen" : "notseen" })));
+});
 const statusBadge = (s) => s === "replied" ? `<span class="badge badge--sm badge--role-success">Replied</span>` : s === "seen" ? `<span class="badge badge--sm badge--role-primary">Seen</span>` : `<span class="badge badge--sm badge--role-neutral">Not seen</span>`;
 
 const groupCss = `.mc-group__stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: ${px(resolve("dim.2"))}; }
@@ -2908,7 +2927,7 @@ function groupAvatarStack(n) {
   return `<span class="avatar avatar--${hue} avatar--sm" role="img" aria-label="${n} students"><span class="avatar__initials">${n}</span></span>`;
 }
 function groupCardMarkup(g) {
-  return `<div class="thread-item-inbox mc-trow mc-console-cols mc-group-row thread-item-inbox--read" role="button" tabindex="0" data-thread="${g.id}" data-subject="${esc(g.subject)}" data-department="Academic Advising">
+  return `<div class="thread-item-inbox mc-trow mc-console-cols mc-group-row thread-item-inbox--read" role="button" tabindex="0" data-thread="${g.id}" data-subject="${esc(g.subject)}" data-department="Academic Advising" data-date-val="${shortDateVal(g.date)}">
         <div class="mc-td mc-col-flag"><button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread">${iconFlagOutlined}${iconFlagFilled}</button></div>
         <div class="mc-td mc-cellwrap">${groupAvatarStack(g.n)}<span class="mc-cellstack"><span class="mc-lead">${g.n} Students</span><span class="badge badge--sm badge--role-primary" style="width:fit-content">Group</span></span></div>
         <div class="mc-td mc-col-responsible"><span class="mc-resp"><span class="mc-resp__pill">${SELF.name}</span></span></div>
@@ -2949,20 +2968,20 @@ function groupPaneMarkup(g) {
         </div>
       </article>`;
 }
-const recipDrawerMarkup = `<dialog class="mc-recip" id="mc-recip" aria-labelledby="mc-recip-title">
+const recipDrawerMarkup = `<dialog class="mc-recip" id="mc-recip" aria-labelledby="mc-recip-title" data-group="${GROUP.id}">
   <div class="mc-recip__header">
     <h2 class="mc-recip__title" id="mc-recip-title">Recipients · ${GROUP.n}</h2>
     <button class="btn btn--ghost btn--sm btn--icon-only mc-recip__close" id="mc-recip-close" type="button" aria-label="Close">${iconCloseBtn}</button>
   </div>
   <div class="mc-recip__chips">
     <button class="chip chip--base mc-recip-chip" type="button" aria-pressed="true" data-status="all">All</button>
-    <button class="chip chip--base mc-recip-chip" type="button" aria-pressed="false" data-status="replied">Replied · ${GROUP_RECIPIENTS.filter((r) => r.status === "replied").length}</button>
+    <button class="chip chip--base mc-recip-chip" type="button" aria-pressed="false" data-status="replied">Replied · <span id="mc-recip-replied">${GROUP.recipients.filter((r) => r.status === "replied").length}</span></button>
     <button class="chip chip--base mc-recip-chip" type="button" aria-pressed="false" data-status="seen">Seen</button>
     <button class="chip chip--base mc-recip-chip" type="button" aria-pressed="false" data-status="notseen">Not seen</button>
   </div>
   <div class="mc-recip__search"><div class="search search--base">${iconSearch}<input class="search__input" id="mc-recip-search" placeholder="Search recipients" aria-label="Search recipients" /></div></div>
   <div class="mc-recip__list" id="mc-recip-list">
-    ${GROUP_RECIPIENTS.map((r) => `<div class="mc-recip__row" data-status="${r.status}" data-name="${esc(r.name)}" data-id="${r.id}">${avatarMarkup(r.name, "sm")}<span class="mc-recip__stack"><span class="mc-recip__name">${r.name}</span><span class="mc-recip__id">${r.id}</span></span>${statusBadge(r.status)}</div>`).join("\n    ")}
+    ${GROUPS.flatMap((g) => g.recipients.map((r) => `<div class="mc-recip__row" data-group="${g.id}" data-status="${r.status}" data-name="${esc(r.name)}" data-id="${r.id}"${g === GROUP ? "" : " hidden"}>${avatarMarkup(r.name, "sm")}<span class="mc-recip__stack"><span class="mc-recip__name">${r.name}</span><span class="mc-recip__id">${r.id}</span></span>${statusBadge(r.status)}</div>`)).join("\n    ")}
   </div>
 </dialog>`;
 
@@ -3575,7 +3594,7 @@ const appJs = `(function () {
   });
 
   // ---- sortable columns: click a header to reorder the rows in both lists ----
-  var sortState = { key: "date", dir: "desc" }; // matches the authored order
+  var sortState = { key: "date", dir: "desc" }; // applied on load below
   function sortVal(r, key) {
     if (key === "date") return r.dataset.dateVal || "";
     if (key === "student") { var l = r.querySelector(".mc-cellwrap .mc-lead"); return l ? l.textContent.toLowerCase() : ""; }
@@ -3614,6 +3633,7 @@ const appJs = `(function () {
     th.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); doSort(); } });
   });
   updateSortHeaders();
+  applySort(); // the header says Date ↓ — make the initial rows match it
 
   // rich composer — Send appends a real self Bubble (tint). The field is a
   // 1-row textarea auto-growing to ~5 lines (Enter sends, Shift+Enter
@@ -4333,7 +4353,7 @@ const appJs = `(function () {
   // ---- Send Message — creates a real outbound Inbox thread (a staff-initiated
   // message the student hasn't answered yet: Awaiting reply). Faithful to the
   // student side's send-creates-a-thread behaviour, staff-flavoured. ----
-  var COMPOSE_PANE_SKELETON = ${JSON.stringify(`<header class="mc-thread__topbar"><button class="btn btn--ghost btn--sm mc-thread__back" type="button">${iconBack}Back</button><div class="mc-thread__actions"><button class="btn btn--secondary btn--sm mc-archive" type="button">Resolve</button><button class="btn btn--secondary btn--sm btn--icon-only mc-print" type="button" aria-label="Print thread">${iconPrint}</button></div></header><div class="mc-thread__head"><h2 class="mc-thread__subject"></h2><div class="mc-thread__tags"><span class="mc-thread__meta-line"></span><span class="badge badge--sm badge--role-primary">Awaiting reply</span></div></div><div class="mc-thread__scroll"></div><footer class="mc-thread__composer"><form class="composer composer--rich mc-composer"><div class="composer__toolbar"><button type="button" class="composer__icon-btn" aria-label="Bold">${iconBold}</button><button type="button" class="composer__icon-btn" aria-label="Italic">${iconItalic}</button><button type="button" class="composer__icon-btn" aria-label="Underline">${iconUnderline}</button><button type="button" class="btn btn--ghost btn--sm">${iconTag}Merge Tags</button><button type="button" class="composer__ai-assist">${iconAi}AI Assist</button></div><div class="composer__field"><textarea class="composer__input" rows="1" placeholder="Reply..." aria-label="Reply"></textarea></div><div class="composer__settings"><div class="composer__settings-row"><span class="composer__settings-label">Allow Replies</span>${switchMarkup(true)}</div><div class="composer__settings-row"><span class="composer__settings-label">Expiration</span><button type="button" class="composer__expiration-trigger">Aug 15, 2026 ${iconChevronRight}</button></div></div><button type="submit" class="btn btn--primary btn--base composer__send">${iconSend}Send</button></form></footer>`)};
+  var COMPOSE_PANE_SKELETON = ${JSON.stringify(`<header class="mc-thread__topbar"><button class="btn btn--ghost btn--sm mc-thread__back" type="button">${iconBack}Back</button><div class="mc-thread__actions"><button class="btn btn--secondary btn--sm mc-archive" type="button">Resolve</button><button class="btn btn--secondary btn--sm btn--icon-only mc-print" type="button" aria-label="Print thread">${iconPrint}</button></div></header><div class="mc-thread__head"><h2 class="mc-thread__subject"></h2><div class="mc-thread__tags"><span class="mc-thread__meta-line"></span><span class="badge badge--sm badge--role-primary">Awaiting reply</span></div></div><div class="mc-thread__scroll"></div><footer class="mc-thread__composer"><form class="composer composer--rich mc-composer"><div class="composer__toolbar"><button type="button" class="composer__icon-btn" aria-label="Bold">${iconBold}</button><button type="button" class="composer__icon-btn" aria-label="Italic">${iconItalic}</button><button type="button" class="composer__icon-btn" aria-label="Underline">${iconUnderline}</button><button type="button" class="btn btn--ghost btn--sm">${iconTag}Merge Tags</button><button type="button" class="composer__ai-assist">${iconAi}AI Assist</button></div><div class="composer__field"><textarea class="composer__input" rows="1" placeholder="Reply..." aria-label="Reply"></textarea></div><div class="composer__settings"><div class="composer__settings-row"><span class="composer__settings-label">Allow Replies</span>${switchMarkup(true)}</div><div class="composer__settings-row"><span class="composer__settings-label">Expiration</span><button type="button" class="composer__expiration-trigger">Sep 15, 2026 ${iconChevronRight}</button></div></div><button type="submit" class="btn btn--primary btn--base composer__send">${iconSend}Send</button></form></footer>`)};
   var COMPOSE_ROW_SKELETON = ${JSON.stringify(`<div class="thread-item-inbox__main"><div class="thread-item-inbox__top"><span class="thread-item-inbox__identity"></span><span class="thread-item-inbox__time">Just now</span></div><div class="thread-item-inbox__subject"></div><div class="thread-item-inbox__preview-row"><span class="thread-item-inbox__preview"></span><button class="thread-item-inbox__flag-btn" type="button" aria-pressed="false" aria-label="Flag thread">${iconFlagOutlined}${iconFlagFilled}</button></div><div class="thread-item-inbox__expires"><span class="badge badge--sm badge--role-primary">Awaiting reply</span><span class="badge badge--sm badge--role-primary thread-item-inbox__scope">Inbox</span></div></div>`)};
   var DEPT_AVATARS = ${JSON.stringify(Object.fromEntries(composeDepartments.map((d) => [d, avatarMarkup(d, "sm")])))};
   var STUDENT_AVATARS = ${JSON.stringify(Object.fromEntries(gwizStudents.map((s) => [s.id, avatarMarkup(s.name, "sm")])))};
@@ -4407,10 +4427,10 @@ const appJs = `(function () {
     var trigger = dpEl.querySelector(".mc-dp__trigger");
     var panel = dpEl.querySelector(".mc-dp__panel");
     var valEl = dpEl.querySelector(".mc-dp__value");
-    var parts = (dpEl.dataset.date || "2026-08-15").split("-").map(Number);
+    var parts = (dpEl.dataset.date || "2026-09-15").split("-").map(Number);
     var sel = { y: parts[0], m: parts[1] - 1, d: parts[2] };
     var view = { y: sel.y, m: sel.m };
-    var today = { y: 2026, m: 7, d: 8 };
+    var today = { y: 2026, m: 8, d: 8 };                 // Sep 8, 2026 — same today as the date range
     function render() {
       var first = new Date(view.y, view.m, 1).getDay();
       var days = new Date(view.y, view.m + 1, 0).getDate();
@@ -4848,8 +4868,24 @@ const appJs = `(function () {
   document.querySelectorAll(".mc-group-row").forEach(bindGroupRow);
 
   var recipDlg = document.getElementById("mc-recip");
+  var RECIP_GROUPS = ${JSON.stringify(Object.fromEntries(GROUPS.map((g) => [g.id, { n: g.n, replied: g.recipients.filter((r) => r.status === "replied").length }])))};
+  var recipGroup = recipDlg.dataset.group;
   document.querySelectorAll(".mc-recip-open").forEach(function (b) {
-    b.addEventListener("click", function () { recipDlg.showModal(); });
+    b.addEventListener("click", function () {
+      var info = RECIP_GROUPS[b.dataset.group];
+      if (info) {
+        recipGroup = b.dataset.group;
+        recipDlg.dataset.group = recipGroup;
+        document.getElementById("mc-recip-title").textContent = "Recipients · " + info.n;
+        document.getElementById("mc-recip-replied").textContent = info.replied;
+      }
+      // each open starts clean: All chip, empty search, this group's rows
+      recipStatus = "all";
+      recipDlg.querySelectorAll(".mc-recip-chip").forEach(function (c) { c.setAttribute("aria-pressed", c.dataset.status === "all" ? "true" : "false"); });
+      document.getElementById("mc-recip-search").value = "";
+      recipFilter();
+      recipDlg.showModal();
+    });
   });
   document.getElementById("mc-recip-close").addEventListener("click", function () { recipDlg.close(); });
   recipDlg.addEventListener("click", function (e) { if (e.target === recipDlg) recipDlg.close(); });
@@ -4857,6 +4893,7 @@ const appJs = `(function () {
   function recipFilter() {
     var q = document.getElementById("mc-recip-search").value.trim().toLowerCase();
     recipDlg.querySelectorAll(".mc-recip__row").forEach(function (r) {
+      if (r.dataset.group !== recipGroup) { r.hidden = true; return; }
       var okStatus = recipStatus === "all" || r.dataset.status === recipStatus;
       var okSearch = !q || (r.dataset.name + " " + r.dataset.id).toLowerCase().indexOf(q) !== -1;
       r.hidden = !(okStatus && okSearch);
