@@ -15,7 +15,7 @@
   .navlink { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 8px; border-radius: 7px; font-size: 13px; text-decoration: none; color: var(--text-primary); margin-bottom: 1px; }
   .navlink:hover { background: var(--bg-card-hover); } .navlink.active { background: var(--accent-bg); color: var(--accent); font-weight: 600; }
   .nav-category { font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin: 16px 8px 6px; }
-  main { flex: 1; padding: 4rem 4rem 6rem; max-width: 1120px; }
+  main { flex: 1; padding: 4rem 4rem 6rem; max-width: 1120px; min-width: 0; }
   h1 { font-size: 36px; font-weight: 700; margin: 0 0 10px; letter-spacing: -0.02em; }
   .sub { font-size: 14px; color: var(--text-secondary); margin: 0 0 2.5rem; }
   h2.big-section { font-size: 24px; font-weight: 700; margin: 5.5rem 0 1.5rem; letter-spacing: -0.01em; padding-top: 2.5rem; border-top: 1px solid var(--border); }
@@ -27,63 +27,92 @@
   code.tok { font-family: var(--mono); font-size: 12px; color: var(--accent); }
   pre.code { background: var(--code-bg); color: var(--code-text); border-radius: 10px; padding: 16px 18px; margin: 0; overflow-x: auto; font-family: var(--mono); font-size: 12px; line-height: 1.7; } pre.code code { font-family: inherit; }
   .story-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; }
-  .story { border: 0.5px solid var(--border); border-radius: 14px; background: var(--bg-card); padding: 22px; display: flex; flex-direction: column; gap: 12px; }
+  .story { border: 0.5px solid var(--border); border-radius: 14px; background: var(--bg-card); padding: 22px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
   .story h3 { font-size: 14px; font-weight: 600; margin: 0; font-family: var(--mono); }
   .story-preview { min-height: 52px; padding: 8px 0; }
   .story-note { font-size: 11.5px; color: var(--text-muted); margin: 0; line-height: 1.5; }
+  @media (max-width: 760px) { .shell { display: block; } nav.side { display: none; } main { padding: 2rem 16px 4rem; } }
   :root {
   --tok-surface-dim: #f4f5f7;
-  --tok-surface-default: #ffffff;
   --tok-border-default: #dadde0;
   --tok-border-strong: #adb5be;
   --tok-border-focus: #0468c4;
-  --tok-text-default: #121921;
-  --tok-text-secondary: #5d6a7a;
-  --tok-text-muted: #758191;
   --tok-icon-default: #485462;
   --tok-fill-neutral-hover: #e6e8eb;
+  --tok-text-default: #121921;
+  --tok-surface-default: #ffffff;
+  --tok-text-muted: #758191;
   --tok-fill-primary: #077fec;
   --tok-text-on-fill: #ffffff;
   --tok-bg-primary: #d9eaff;
+  --tok-fill-primary-hover: #0468c4;
+  --tok-fill-primary-active: #01519c;
+  --tok-fill-neutral: #e6e8eb;
+  --tok-fill-neutral-hover-strong: #cdd1d6;
+  --tok-fill-neutral-active-strong: #adb5be;
   --tok-family-sans: 'Sora', sans-serif;
 }
 
 .daterange { display: inline-block; font-family: var(--tok-family-sans); }
-/* navigator: prev · start field · period label · end field · next, hairline-divided */
+/* the field: ‹ | [calendar icon + range] | ›, hairline-divided, one field recipe */
 .daterange__nav { box-sizing: border-box; display: inline-flex; align-items: stretch; height: 40px; border-radius: 8px; background: var(--tok-surface-dim); border: 1px solid var(--tok-border-default); overflow: hidden; }
 .daterange__nav:hover { border-color: var(--tok-border-strong); }
 .daterange__nav:focus-within { border-color: var(--tok-border-focus); }
-.daterange__arrow, .daterange__field { border: none; background: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; font-family: inherit; color: var(--tok-text-default); }
-.daterange__arrow { width: 32px; flex-shrink: 0; color: var(--tok-icon-default); }
+.daterange__arrow, .daterange__field { border: none; background: none; cursor: pointer; display: inline-flex; align-items: center; font-family: inherit; color: var(--tok-text-default); }
+.daterange__arrow { width: 32px; flex-shrink: 0; justify-content: center; color: var(--tok-icon-default); }
 .daterange__arrow:hover { background: var(--tok-fill-neutral-hover); }
-.daterange__arrow-icon { width: 18px; height: 18px; }
-.daterange__field { padding: 0 10px; font-weight: 400; font-size: 12px; line-height: 1.4; white-space: nowrap; border-left: 1px solid var(--tok-border-default); }
+.daterange__arrow-icon { width: 20px; height: 20px; }
+.daterange__field { gap: 8px; padding: 0 12px; font-weight: 400; font-size: 12px; line-height: 1.4; white-space: nowrap; border-left: 1px solid var(--tok-border-default); }
 .daterange__field:hover { background: var(--tok-fill-neutral-hover); }
-.daterange__label { display: inline-flex; align-items: center; padding: 0 10px; font-weight: 400; font-size: 12px; line-height: 1.4; color: var(--tok-text-secondary); white-space: nowrap; border-left: 1px solid var(--tok-border-default); }
+.daterange__cal-icon { width: 16px; height: 16px; flex-shrink: 0; color: var(--tok-icon-default); }
+.daterange__range-val { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 .daterange__arrow--next { border-left: 1px solid var(--tok-border-default); }
+.daterange__arrow:focus-visible, .daterange__field:focus-visible { outline: 2px solid var(--tok-border-focus); outline-offset: -2px; }
 
-.daterange__panel { margin: 0; box-sizing: border-box; padding: 12px; border-radius: 8px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); box-shadow: 0px 2px 8px 0px rgba(21, 25, 30, 0.10); font-family: var(--tok-family-sans); }
-.daterange__phead { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-.daterange__month { font-weight: 600; font-size: 12px; line-height: 1.4; color: var(--tok-text-default); }
-.daterange__pnav { width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border: none; background: none; border-radius: 8px; cursor: pointer; color: var(--tok-icon-default); }
+/* the panel: two consecutive months side by side + Reset / Apply */
+.daterange__panel { margin: 0; box-sizing: border-box; padding: 16px; border-radius: 8px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); box-shadow: 0px 2px 8px 0px rgba(21, 25, 30, 0.10); font-family: var(--tok-family-sans); max-width: calc(100vw - 16px); }
+.daterange__cals { display: flex; gap: 20px; }
+.daterange__chead { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+.daterange__mrow { display: flex; align-items: center; gap: 4px; }
+/* month / year select — a 32px control in the field family, chevron = expand_more */
+.daterange__sel { position: relative; display: inline-flex; }
+.daterange__month, .daterange__year { appearance: none; -webkit-appearance: none; box-sizing: border-box; height: 32px; margin: 0; padding: 0 28px 0 8px; border: 1px solid var(--tok-border-default); border-radius: 8px; background: var(--tok-surface-default); color: var(--tok-text-default); font-family: inherit; font-weight: 400; font-size: 12px; line-height: 1.4; cursor: pointer; }
+.daterange__month:hover, .daterange__year:hover { border-color: var(--tok-border-strong); }
+.daterange__month:focus-visible, .daterange__year:focus-visible { outline: none; border-color: var(--tok-border-focus); }
+.daterange__sel-chevron { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--tok-icon-default); pointer-events: none; }
+/* paging arrows sit on the OUTER sides; the inner side keeps a same-width spacer */
+.daterange__pnav { width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border: none; background: none; border-radius: 8px; cursor: pointer; color: var(--tok-icon-default); flex-shrink: 0; padding: 0; }
 .daterange__pnav:hover { background: var(--tok-fill-neutral-hover); }
+.daterange__pnav:focus-visible { outline: 2px solid var(--tok-border-focus); outline-offset: -2px; }
 .daterange__pnav-icon { width: 20px; height: 20px; }
+.daterange__pnav-sp { width: 32px; flex-shrink: 0; }
 .daterange__grid { display: grid; grid-template-columns: repeat(7, 36px); gap: 2px 0; }
 .daterange__weekday { width: 36px; height: 28px; display: inline-flex; align-items: center; justify-content: center; color: var(--tok-text-muted); font-weight: 700; font-size: 12px; line-height: 1.4; text-transform: uppercase; }
-.daterange__day { width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid transparent; background: none; cursor: pointer; color: var(--tok-text-default); font-weight: 400; font-size: 12px; line-height: 1.4; font-family: inherit; border-radius: 8px; }
+.daterange__day { box-sizing: border-box; width: 36px; height: 36px; padding: 0; display: inline-flex; align-items: center; justify-content: center; border: 1px solid transparent; background: none; cursor: pointer; color: var(--tok-text-default); font-weight: 400; font-size: 12px; line-height: 1.4; font-family: inherit; border-radius: 8px; }
 .daterange__day:hover { background: var(--tok-fill-neutral-hover); }
-.daterange__day--outside { color: var(--tok-text-muted); pointer-events: none; }
+.daterange__day--outside { color: var(--tok-text-muted); pointer-events: none; cursor: default; }
 .daterange__day--today { border-color: var(--tok-border-strong); }
-/* range wash sits edge-to-edge; the ends round on their outer side */
-.daterange__day--mid { background: var(--tok-bg-primary); color: var(--tok-text-default); border-radius: 0; }
+/* the range wash runs edge-to-edge; the ends round on their outer side */
+.daterange__day--mid, .daterange__day--mid:hover { background: var(--tok-bg-primary); color: var(--tok-text-default); border-radius: 0; }
 .daterange__day--start, .daterange__day--end, .daterange__day--start:hover, .daterange__day--end:hover { background: var(--tok-fill-primary); color: var(--tok-text-on-fill); border-color: var(--tok-fill-primary); }
 .daterange__day--start { border-radius: 8px 0 0 8px; }
 .daterange__day--end { border-radius: 0 8px 8px 0; }
 .daterange__day--start.daterange__day--end { border-radius: 8px; }
 .daterange__day:focus-visible { outline: 2px solid var(--tok-border-focus); outline-offset: -2px; }
 .daterange__footer { display: flex; justify-content: space-between; gap: 8px; padding-top: 12px; margin-top: 8px; border-top: 1px solid var(--tok-border-default); }
-.daterange__btn { border: 1px solid var(--tok-border-default); background: var(--tok-surface-default); color: var(--tok-text-default); border-radius: 8px; padding: 0 12px; height: 32px; cursor: pointer; font-weight: 400; font-size: 12px; line-height: 1.4; font-family: inherit; }
-.daterange__btn--primary { background: var(--tok-fill-primary); border-color: var(--tok-fill-primary); color: var(--tok-text-on-fill); }
+/* Reset = Button secondary sm · Apply = Button primary sm */
+.daterange__btn--secondary { box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; border: none; cursor: pointer; white-space: nowrap; font-family: inherit; height: 32px; padding: 0 8px; gap: 8px; border-radius: 8px; font-weight: 600; font-size: 12px; line-height: 1.4; background: var(--tok-fill-neutral); color: var(--tok-text-default); }
+.daterange__btn--secondary:hover { background: var(--tok-fill-neutral-hover-strong); }
+.daterange__btn--secondary:active { background: var(--tok-fill-neutral-active-strong); }
+.daterange__btn--secondary:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
+.daterange__btn--primary { box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; border: none; cursor: pointer; white-space: nowrap; font-family: inherit; height: 32px; padding: 0 8px; gap: 8px; border-radius: 8px; font-weight: 600; font-size: 12px; line-height: 1.4; background: var(--tok-fill-primary); color: var(--tok-text-on-fill); }
+.daterange__btn--primary:hover { background: var(--tok-fill-primary-hover); }
+.daterange__btn--primary:active { background: var(--tok-fill-primary-active); }
+.daterange__btn--primary:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
+/* narrow containers: the dual panel stacks its months */
+@media (max-width: 560px) { .daterange__cals { flex-direction: column; gap: 12px; } }
+/* single-month variant (mobile/tablet filters drawer): caps height + scrolls on short screens */
+.daterange__panel--single { max-height: calc(100dvh - 16px); overflow-y: auto; }
 </style>
 </head>
 <body>
@@ -196,186 +225,258 @@
 </script></nav>
   <main>
     <h1>DateRangePicker</h1>
-    <p class="sub">tokens/components/date-range-picker.tokens.json · generated — a period navigator that opens a range calendar. Step the range with the arrows, or click a date to pick a custom start &amp; end; the span between highlights.</p>
+    <p class="sub">tokens/components/date-range-picker.tokens.json · generated — the console filter's date window. One field steps the window a month at a time; its middle opens a two-month calendar for a custom start &amp; end.</p>
 
     <div class="legend">
-      <div class="row"><b>Navigator</b><span>‹ prev · start date · period label · end date · next ›, hairline-divided in the field recipe (<code class="tok">surface.dim</code> → <code class="tok">border.strong</code> hover → <code class="tok">border.focus</code>). The arrows step the whole range by a month; the label reads <b>Current</b> for the default window, else the month.</span></div>
-      <div class="row"><b>Calendar</b><span>Floats on the Popover shell. Click a day to set the start, click again to set the end (picking earlier swaps them). Prev/next month nav, <b>Apply</b> / <b>Clear</b> in the footer.</span></div>
-      <div class="row"><b>Range</b><span>Start and end fill <code class="tok">fill.primary</code>; the days between get a light <code class="tok">bg.primary</code> wash; <code class="tok">today</code> keeps its hairline ring.</span></div>
+      <div class="row"><b>Field</b><span><b>‹</b> · calendar icon + range (“Aug 08, 2026 – Sep 08, 2026”) · <b>›</b>, hairline-divided, 40px tall, in the field recipe (<code class="tok">surface.dim</code> → <code class="tok">border.strong</code> hover → <code class="tok">border.focus</code>). The arrows step the <i>whole</i> window by a month — no calendar needed for “the month before”. The middle opens the panel.</span></div>
+      <div class="row"><b>Panel</b><span>Two consecutive months side by side on the Popover shell. Each month has month + year selects (32px, <code class="tok">surface.default</code>, <code class="tok">expand_more</code> chevron); the paging arrows sit on the outer sides and move both months together. Under 560px the months stack.</span></div>
+      <div class="row"><b>Picking</b><span>Click a day to set the start, another to set the end (picking an earlier day swaps them). Nothing applies until <b>Apply</b>; <b>Reset</b> returns to the default window. Reset = Button secondary sm, Apply = Button primary sm.</span></div>
+      <div class="row"><b>Days</b><span>Start and end fill <code class="tok">fill.primary</code>; the days between get a <code class="tok">bg.primary</code> wash, flush edge-to-edge as one band; today keeps a <code class="tok">border.strong</code> ring; outside-month days are muted and not pickable.</span></div>
     </div>
 
     <h2 class="big-section">Filter by date window</h2>
-    <p class="section-desc">Default range Aug 9 – Sep 8, 2026 ("Current"); "today" is Aug 8 in this deterministic demo.</p>
+    <p class="section-desc">Default window Aug 08 – Sep 08, 2026; “today” is fixed at Sep 8, 2026 so the demo is deterministic. Try the arrows, then open the calendar and pick a range.</p>
     <div class="story-grid">
-      <div class="story"><h3>Pick a range</h3><div class="story-preview"><div class="daterange" data-start="2026-08-09" data-end="2026-09-08">
+      <div class="story"><h3>Dual month (default)</h3><div class="story-preview"><div class="daterange" id="dr-dual" data-start="2026-08-08" data-end="2026-09-08">
       <div class="daterange__nav">
-        <button class="daterange__arrow daterange__arrow--prev" type="button" aria-label="Previous period"><svg class="daterange__arrow-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg></button>
-        <button class="daterange__field daterange__field--start" type="button" popovertarget="dr-panel" aria-haspopup="dialog"><span class="daterange__start-val">08/09/2026</span></button>
-        <span class="daterange__label">Current</span>
-        <button class="daterange__field daterange__field--end" type="button" popovertarget="dr-panel" aria-haspopup="dialog"><span class="daterange__end-val">09/08/2026</span></button>
-        <button class="daterange__arrow daterange__arrow--next" type="button" aria-label="Next period"><svg class="daterange__arrow-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button>
+        <button class="daterange__arrow daterange__arrow--prev" type="button" aria-label="Previous month"><svg class="daterange__arrow-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg></button>
+        <button class="daterange__field" type="button" popovertarget="dr-dual-panel" aria-haspopup="dialog"><svg class="daterange__cal-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 3h-1V1h-2v2H7V1H5v2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H4V8h16v13z"/></svg><span class="daterange__range-val">Aug 08, 2026 – Sep 08, 2026</span></button>
+        <button class="daterange__arrow daterange__arrow--next" type="button" aria-label="Next month"><svg class="daterange__arrow-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button>
       </div>
-      <div class="daterange__panel" id="dr-panel" popover role="dialog" aria-label="Choose a date range">
-        <div class="daterange__phead">
-          <button class="daterange__pnav daterange__pnav--prev" type="button" aria-label="Previous month"><svg class="daterange__pnav-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg></button>
-          <span class="daterange__month">August 2026</span>
-          <button class="daterange__pnav daterange__pnav--next" type="button" aria-label="Next month"><svg class="daterange__pnav-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button>
+      <div class="daterange__panel" id="dr-dual-panel" popover role="dialog" aria-label="Choose a date range">
+        <div class="daterange__cals">
+          <div class="daterange__cal"><div class="daterange__chead"><button class="daterange__pnav daterange__pnav--prev" type="button" aria-label="Previous month"><svg class="daterange__pnav-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg></button><span class="daterange__mrow"><span class="daterange__sel"><select class="daterange__month" data-cal="0" aria-label="Month"><option value="0">January</option><option value="1">February</option><option value="2">March</option><option value="3">April</option><option value="4">May</option><option value="5">June</option><option value="6">July</option><option value="7" selected>August</option><option value="8">September</option><option value="9">October</option><option value="10">November</option><option value="11">December</option></select><svg class="daterange__sel-chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></span><span class="daterange__sel"><select class="daterange__year" data-cal="0" aria-label="Year"><option value="2024">2024</option><option value="2025">2025</option><option value="2026" selected>2026</option><option value="2027">2027</option><option value="2028">2028</option><option value="2029">2029</option></select><svg class="daterange__sel-chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></span></span><span class="daterange__pnav-sp"></span></div><div class="daterange__grid" data-cal="0"></div></div>
+          <div class="daterange__cal"><div class="daterange__chead"><span class="daterange__pnav-sp"></span><span class="daterange__mrow"><span class="daterange__sel"><select class="daterange__month" data-cal="1" aria-label="Month"><option value="0">January</option><option value="1">February</option><option value="2">March</option><option value="3">April</option><option value="4">May</option><option value="5">June</option><option value="6">July</option><option value="7" selected>August</option><option value="8">September</option><option value="9">October</option><option value="10">November</option><option value="11">December</option></select><svg class="daterange__sel-chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></span><span class="daterange__sel"><select class="daterange__year" data-cal="1" aria-label="Year"><option value="2024">2024</option><option value="2025">2025</option><option value="2026" selected>2026</option><option value="2027">2027</option><option value="2028">2028</option><option value="2029">2029</option></select><svg class="daterange__sel-chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></span></span><button class="daterange__pnav daterange__pnav--next" type="button" aria-label="Next month"><svg class="daterange__pnav-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button></div><div class="daterange__grid" data-cal="1"></div></div>
         </div>
-        <div class="daterange__grid"></div>
         <div class="daterange__footer">
-          <button class="daterange__btn daterange__clear" type="button">Clear</button>
-          <button class="daterange__btn daterange__btn--primary daterange__apply" type="button">Apply</button>
+          <button class="daterange__btn--secondary daterange__reset" type="button">Reset</button>
+          <button class="daterange__btn--primary daterange__apply" type="button">Apply</button>
         </div>
       </div>
-    </div></div></div>
+    </div></div><p class="story-note">Desktop console toolbar. Paging arrows on the outer edges, month/year selects per month.</p></div>
+      <div class="story"><h3>--single</h3><div class="story-preview"><div class="daterange daterange--single" id="dr-single" data-start="2026-08-08" data-end="2026-09-08">
+      <div class="daterange__nav">
+        <button class="daterange__arrow daterange__arrow--prev" type="button" aria-label="Previous month"><svg class="daterange__arrow-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg></button>
+        <button class="daterange__field" type="button" popovertarget="dr-single-panel" aria-haspopup="dialog"><svg class="daterange__cal-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 3h-1V1h-2v2H7V1H5v2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H4V8h16v13z"/></svg><span class="daterange__range-val">Aug 08, 2026 – Sep 08, 2026</span></button>
+        <button class="daterange__arrow daterange__arrow--next" type="button" aria-label="Next month"><svg class="daterange__arrow-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button>
+      </div>
+      <div class="daterange__panel daterange__panel--single" id="dr-single-panel" popover role="dialog" aria-label="Choose a date range">
+        <div class="daterange__cals">
+          <div class="daterange__cal"><div class="daterange__chead"><button class="daterange__pnav daterange__pnav--prev" type="button" aria-label="Previous month"><svg class="daterange__pnav-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg></button><span class="daterange__mrow"><span class="daterange__sel"><select class="daterange__month" data-cal="0" aria-label="Month"><option value="0">January</option><option value="1">February</option><option value="2">March</option><option value="3">April</option><option value="4">May</option><option value="5">June</option><option value="6">July</option><option value="7" selected>August</option><option value="8">September</option><option value="9">October</option><option value="10">November</option><option value="11">December</option></select><svg class="daterange__sel-chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></span><span class="daterange__sel"><select class="daterange__year" data-cal="0" aria-label="Year"><option value="2024">2024</option><option value="2025">2025</option><option value="2026" selected>2026</option><option value="2027">2027</option><option value="2028">2028</option><option value="2029">2029</option></select><svg class="daterange__sel-chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></span></span><button class="daterange__pnav daterange__pnav--next" type="button" aria-label="Next month"><svg class="daterange__pnav-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button></div><div class="daterange__grid" data-cal="0"></div></div>
+        </div>
+        <div class="daterange__footer">
+          <button class="daterange__btn--secondary daterange__reset" type="button">Reset</button>
+          <button class="daterange__btn--primary daterange__apply" type="button">Apply</button>
+        </div>
+      </div>
+    </div></div><p class="story-note">One month with both paging arrows — for narrow containers like the mobile/tablet filters drawer.</p></div>
     </div>
+
+    <h2 class="big-section">Markup</h2>
+    <p class="section-desc">The panel is a native popover opened by the range field. Day grids are rendered by script from the committed range; the selects and arrows only change the visible months.</p>
+    <pre class="code"><code>&lt;div class="daterange" data-start="2026-08-08" data-end="2026-09-08"&gt;
+  &lt;div class="daterange__nav"&gt;
+    &lt;button class="daterange__arrow daterange__arrow--prev" aria-label="Previous month"&gt;…chevron_left…&lt;/button&gt;
+    &lt;button class="daterange__field" popovertarget="dr-panel" aria-haspopup="dialog"&gt;
+      …calendar_today…&lt;span class="daterange__range-val"&gt;Aug 08, 2026 – Sep 08, 2026&lt;/span&gt;
+    &lt;/button&gt;
+    &lt;button class="daterange__arrow daterange__arrow--next" aria-label="Next month"&gt;…chevron_right…&lt;/button&gt;
+  &lt;/div&gt;
+  &lt;div class="daterange__panel" id="dr-panel" popover role="dialog" aria-label="Choose a date range"&gt;
+    &lt;div class="daterange__cals"&gt;
+      &lt;div class="daterange__cal"&gt;
+        &lt;div class="daterange__chead"&gt;
+          &lt;button class="daterange__pnav daterange__pnav--prev" aria-label="Previous month"&gt;…&lt;/button&gt;
+          &lt;span class="daterange__mrow"&gt;
+            &lt;span class="daterange__sel"&gt;&lt;select class="daterange__month" data-cal="0"&gt;…&lt;/select&gt;…expand_more…&lt;/span&gt;
+            &lt;span class="daterange__sel"&gt;&lt;select class="daterange__year" data-cal="0"&gt;…&lt;/select&gt;…expand_more…&lt;/span&gt;
+          &lt;/span&gt;
+          &lt;span class="daterange__pnav-sp"&gt;&lt;/span&gt;
+        &lt;/div&gt;
+        &lt;div class="daterange__grid" data-cal="0"&gt;&lt;!-- weekdays + days, built in JS --&gt;&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class="daterange__cal"&gt;&lt;!-- same, data-cal="1": spacer left, next arrow right --&gt;&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class="daterange__footer"&gt;
+      &lt;button class="daterange__btn--secondary daterange__reset"&gt;Reset&lt;/button&gt;
+      &lt;button class="daterange__btn--primary daterange__apply"&gt;Apply&lt;/button&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
 
     <h2 class="big-section">CSS</h2>
     <pre class="code"><code>:root {
   --tok-surface-dim: #f4f5f7;
-  --tok-surface-default: #ffffff;
   --tok-border-default: #dadde0;
   --tok-border-strong: #adb5be;
   --tok-border-focus: #0468c4;
-  --tok-text-default: #121921;
-  --tok-text-secondary: #5d6a7a;
-  --tok-text-muted: #758191;
   --tok-icon-default: #485462;
   --tok-fill-neutral-hover: #e6e8eb;
+  --tok-text-default: #121921;
+  --tok-surface-default: #ffffff;
+  --tok-text-muted: #758191;
   --tok-fill-primary: #077fec;
   --tok-text-on-fill: #ffffff;
   --tok-bg-primary: #d9eaff;
+  --tok-fill-primary-hover: #0468c4;
+  --tok-fill-primary-active: #01519c;
+  --tok-fill-neutral: #e6e8eb;
+  --tok-fill-neutral-hover-strong: #cdd1d6;
+  --tok-fill-neutral-active-strong: #adb5be;
   --tok-family-sans: 'Sora', sans-serif;
 }
 
 .daterange { display: inline-block; font-family: var(--tok-family-sans); }
-/* navigator: prev · start field · period label · end field · next, hairline-divided */
+/* the field: ‹ | [calendar icon + range] | ›, hairline-divided, one field recipe */
 .daterange__nav { box-sizing: border-box; display: inline-flex; align-items: stretch; height: 40px; border-radius: 8px; background: var(--tok-surface-dim); border: 1px solid var(--tok-border-default); overflow: hidden; }
 .daterange__nav:hover { border-color: var(--tok-border-strong); }
 .daterange__nav:focus-within { border-color: var(--tok-border-focus); }
-.daterange__arrow, .daterange__field { border: none; background: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; font-family: inherit; color: var(--tok-text-default); }
-.daterange__arrow { width: 32px; flex-shrink: 0; color: var(--tok-icon-default); }
+.daterange__arrow, .daterange__field { border: none; background: none; cursor: pointer; display: inline-flex; align-items: center; font-family: inherit; color: var(--tok-text-default); }
+.daterange__arrow { width: 32px; flex-shrink: 0; justify-content: center; color: var(--tok-icon-default); }
 .daterange__arrow:hover { background: var(--tok-fill-neutral-hover); }
-.daterange__arrow-icon { width: 18px; height: 18px; }
-.daterange__field { padding: 0 10px; font-weight: 400; font-size: 12px; line-height: 1.4; white-space: nowrap; border-left: 1px solid var(--tok-border-default); }
+.daterange__arrow-icon { width: 20px; height: 20px; }
+.daterange__field { gap: 8px; padding: 0 12px; font-weight: 400; font-size: 12px; line-height: 1.4; white-space: nowrap; border-left: 1px solid var(--tok-border-default); }
 .daterange__field:hover { background: var(--tok-fill-neutral-hover); }
-.daterange__label { display: inline-flex; align-items: center; padding: 0 10px; font-weight: 400; font-size: 12px; line-height: 1.4; color: var(--tok-text-secondary); white-space: nowrap; border-left: 1px solid var(--tok-border-default); }
+.daterange__cal-icon { width: 16px; height: 16px; flex-shrink: 0; color: var(--tok-icon-default); }
+.daterange__range-val { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 .daterange__arrow--next { border-left: 1px solid var(--tok-border-default); }
+.daterange__arrow:focus-visible, .daterange__field:focus-visible { outline: 2px solid var(--tok-border-focus); outline-offset: -2px; }
 
-.daterange__panel { margin: 0; box-sizing: border-box; padding: 12px; border-radius: 8px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); box-shadow: 0px 2px 8px 0px rgba(21, 25, 30, 0.10); font-family: var(--tok-family-sans); }
-.daterange__phead { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-.daterange__month { font-weight: 600; font-size: 12px; line-height: 1.4; color: var(--tok-text-default); }
-.daterange__pnav { width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border: none; background: none; border-radius: 8px; cursor: pointer; color: var(--tok-icon-default); }
+/* the panel: two consecutive months side by side + Reset / Apply */
+.daterange__panel { margin: 0; box-sizing: border-box; padding: 16px; border-radius: 8px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); box-shadow: 0px 2px 8px 0px rgba(21, 25, 30, 0.10); font-family: var(--tok-family-sans); max-width: calc(100vw - 16px); }
+.daterange__cals { display: flex; gap: 20px; }
+.daterange__chead { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+.daterange__mrow { display: flex; align-items: center; gap: 4px; }
+/* month / year select — a 32px control in the field family, chevron = expand_more */
+.daterange__sel { position: relative; display: inline-flex; }
+.daterange__month, .daterange__year { appearance: none; -webkit-appearance: none; box-sizing: border-box; height: 32px; margin: 0; padding: 0 28px 0 8px; border: 1px solid var(--tok-border-default); border-radius: 8px; background: var(--tok-surface-default); color: var(--tok-text-default); font-family: inherit; font-weight: 400; font-size: 12px; line-height: 1.4; cursor: pointer; }
+.daterange__month:hover, .daterange__year:hover { border-color: var(--tok-border-strong); }
+.daterange__month:focus-visible, .daterange__year:focus-visible { outline: none; border-color: var(--tok-border-focus); }
+.daterange__sel-chevron { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--tok-icon-default); pointer-events: none; }
+/* paging arrows sit on the OUTER sides; the inner side keeps a same-width spacer */
+.daterange__pnav { width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border: none; background: none; border-radius: 8px; cursor: pointer; color: var(--tok-icon-default); flex-shrink: 0; padding: 0; }
 .daterange__pnav:hover { background: var(--tok-fill-neutral-hover); }
+.daterange__pnav:focus-visible { outline: 2px solid var(--tok-border-focus); outline-offset: -2px; }
 .daterange__pnav-icon { width: 20px; height: 20px; }
+.daterange__pnav-sp { width: 32px; flex-shrink: 0; }
 .daterange__grid { display: grid; grid-template-columns: repeat(7, 36px); gap: 2px 0; }
 .daterange__weekday { width: 36px; height: 28px; display: inline-flex; align-items: center; justify-content: center; color: var(--tok-text-muted); font-weight: 700; font-size: 12px; line-height: 1.4; text-transform: uppercase; }
-.daterange__day { width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid transparent; background: none; cursor: pointer; color: var(--tok-text-default); font-weight: 400; font-size: 12px; line-height: 1.4; font-family: inherit; border-radius: 8px; }
+.daterange__day { box-sizing: border-box; width: 36px; height: 36px; padding: 0; display: inline-flex; align-items: center; justify-content: center; border: 1px solid transparent; background: none; cursor: pointer; color: var(--tok-text-default); font-weight: 400; font-size: 12px; line-height: 1.4; font-family: inherit; border-radius: 8px; }
 .daterange__day:hover { background: var(--tok-fill-neutral-hover); }
-.daterange__day--outside { color: var(--tok-text-muted); pointer-events: none; }
+.daterange__day--outside { color: var(--tok-text-muted); pointer-events: none; cursor: default; }
 .daterange__day--today { border-color: var(--tok-border-strong); }
-/* range wash sits edge-to-edge; the ends round on their outer side */
-.daterange__day--mid { background: var(--tok-bg-primary); color: var(--tok-text-default); border-radius: 0; }
+/* the range wash runs edge-to-edge; the ends round on their outer side */
+.daterange__day--mid, .daterange__day--mid:hover { background: var(--tok-bg-primary); color: var(--tok-text-default); border-radius: 0; }
 .daterange__day--start, .daterange__day--end, .daterange__day--start:hover, .daterange__day--end:hover { background: var(--tok-fill-primary); color: var(--tok-text-on-fill); border-color: var(--tok-fill-primary); }
 .daterange__day--start { border-radius: 8px 0 0 8px; }
 .daterange__day--end { border-radius: 0 8px 8px 0; }
 .daterange__day--start.daterange__day--end { border-radius: 8px; }
 .daterange__day:focus-visible { outline: 2px solid var(--tok-border-focus); outline-offset: -2px; }
 .daterange__footer { display: flex; justify-content: space-between; gap: 8px; padding-top: 12px; margin-top: 8px; border-top: 1px solid var(--tok-border-default); }
-.daterange__btn { border: 1px solid var(--tok-border-default); background: var(--tok-surface-default); color: var(--tok-text-default); border-radius: 8px; padding: 0 12px; height: 32px; cursor: pointer; font-weight: 400; font-size: 12px; line-height: 1.4; font-family: inherit; }
-.daterange__btn--primary { background: var(--tok-fill-primary); border-color: var(--tok-fill-primary); color: var(--tok-text-on-fill); }</code></pre>
+/* Reset = Button secondary sm · Apply = Button primary sm */
+.daterange__btn--secondary { box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; border: none; cursor: pointer; white-space: nowrap; font-family: inherit; height: 32px; padding: 0 8px; gap: 8px; border-radius: 8px; font-weight: 600; font-size: 12px; line-height: 1.4; background: var(--tok-fill-neutral); color: var(--tok-text-default); }
+.daterange__btn--secondary:hover { background: var(--tok-fill-neutral-hover-strong); }
+.daterange__btn--secondary:active { background: var(--tok-fill-neutral-active-strong); }
+.daterange__btn--secondary:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
+.daterange__btn--primary { box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; border: none; cursor: pointer; white-space: nowrap; font-family: inherit; height: 32px; padding: 0 8px; gap: 8px; border-radius: 8px; font-weight: 600; font-size: 12px; line-height: 1.4; background: var(--tok-fill-primary); color: var(--tok-text-on-fill); }
+.daterange__btn--primary:hover { background: var(--tok-fill-primary-hover); }
+.daterange__btn--primary:active { background: var(--tok-fill-primary-active); }
+.daterange__btn--primary:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
+/* narrow containers: the dual panel stacks its months */
+@media (max-width: 560px) { .daterange__cals { flex-direction: column; gap: 12px; } }
+/* single-month variant (mobile/tablet filters drawer): caps height + scrolls on short screens */
+.daterange__panel--single { max-height: calc(100dvh - 16px); overflow-y: auto; }</code></pre>
   </main>
 </div>
 <script>(function () {
-  var MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  var ABBR = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   var WD = ["Su","Mo","Tu","We","Th","Fr","Sa"];
-  function pad(n){ return ("0" + n).slice(-2); }
-  function fmt(a){ return pad(a.m + 1) + "/" + pad(a.d) + "/" + a.y; }
-  function iso(a){ return a.y + "-" + pad(a.m + 1) + "-" + pad(a.d); }
-  function parse(s){ var p = s.split("-").map(Number); return { y: p[0], m: p[1] - 1, d: p[2] }; }
-  function cmp(a){ return a.y * 10000 + a.m * 100 + a.d; }
-  function addMonths(a, n){ var d = new Date(a.y, a.m + n, a.d); return { y: d.getFullYear(), m: d.getMonth(), d: d.getDate() }; }
-  var TODAY = { y: 2026, m: 7, d: 8 };
+  var TODAY = { y: 2026, m: 8, d: 8 }; // Sep 8, 2026 — fixed so the demo is deterministic
+  function pad(n) { return ("0" + n).slice(-2); }
+  function parse(s) { var p = s.split("-").map(Number); return { y: p[0], m: p[1] - 1, d: p[2] }; }
+  function iso(a) { return a.y + "-" + pad(a.m + 1) + "-" + pad(a.d); }
+  function cmp(a) { return a.y * 10000 + a.m * 100 + a.d; }
+  function addMonths(a, n) { var d = new Date(a.y, a.m + n, a.d); return { y: d.getFullYear(), m: d.getMonth(), d: d.getDate() }; }
+  function viewAdd(v, n) { var d = new Date(v.y, v.m + n, 1); return { y: d.getFullYear(), m: d.getMonth() }; }
+  function fmtRange(s, e) { return ABBR[s.m] + " " + pad(s.d) + ", " + s.y + " – " + ABBR[e.m] + " " + pad(e.d) + ", " + e.y; }
 
   document.querySelectorAll(".daterange").forEach(function (el) {
     var panel = el.querySelector(".daterange__panel");
-    var startVal = el.querySelector(".daterange__start-val");
-    var endVal = el.querySelector(".daterange__end-val");
-    var labelEl = el.querySelector(".daterange__label");
-    var DEFAULT_S = parse(el.dataset.start), DEFAULT_E = parse(el.dataset.end);
-    var start = parse(el.dataset.start), end = parse(el.dataset.end);
-    var draftS = null, draftE = null; // in-progress selection inside the panel
-    var view = { y: start.y, m: start.m };
+    var valEl = el.querySelector(".daterange__range-val");
+    var DEF_S = el.dataset.start, DEF_E = el.dataset.end;
+    var cur = { s: parse(DEF_S), e: parse(DEF_E) };
+    var grids = [el.querySelector('.daterange__grid[data-cal="0"]'), el.querySelector('.daterange__grid[data-cal="1"]')];
+    var monthSels = [el.querySelector('.daterange__month[data-cal="0"]'), el.querySelector('.daterange__month[data-cal="1"]')];
+    var yearSels = [el.querySelector('.daterange__year[data-cal="0"]'), el.querySelector('.daterange__year[data-cal="1"]')];
+    var views, draftS = null, draftE = null;
+    function resetViews() { views = [{ y: cur.s.y, m: cur.s.m }, viewAdd({ y: cur.s.y, m: cur.s.m }, 1)]; }
+    function sync() { valEl.textContent = fmtRange(cur.s, cur.e); el.dataset.start = iso(cur.s); el.dataset.end = iso(cur.e); }
+    function commit(s, e) { if (cmp(s) > cmp(e)) { var t = s; s = e; e = t; } cur.s = s; cur.e = e; sync(); }
 
-    function isDefault(){ return cmp(start) === cmp(DEFAULT_S) && cmp(end) === cmp(DEFAULT_E); }
-    function syncNav(){
-      startVal.textContent = fmt(start);
-      endVal.textContent = fmt(end);
-      labelEl.textContent = isDefault() ? "Current" : MONTHS[start.m].slice(0, 3) + " " + start.y;
-      el.dataset.start = iso(start); el.dataset.end = iso(end);
-    }
-    function render(){
-      var s = draftS || start, e = draftE || (draftS ? null : end);
-      var first = new Date(view.y, view.m, 1).getDay();
-      var days = new Date(view.y, view.m + 1, 0).getDate();
-      var prevDays = new Date(view.y, view.m, 0).getDate();
-      var cells = [];
-      for (var i = 0; i < first; i++) cells.push({ d: prevDays - first + 1 + i, outside: true });
-      for (var d = 1; d <= days; d++) cells.push({ d: d, outside: false });
+    function renderCal(ci) {
+      var view = views[ci], grid = grids[ci];
+      if (!grid) return;
+      if (monthSels[ci]) monthSels[ci].value = view.m;
+      if (yearSels[ci]) yearSels[ci].value = view.y;
+      var s = draftS || cur.s, e = draftE || (draftS ? null : cur.e);
+      var first = new Date(view.y, view.m, 1).getDay(), days = new Date(view.y, view.m + 1, 0).getDate(), prevDays = new Date(view.y, view.m, 0).getDate();
+      var cells = [], i, d;
+      for (i = 0; i < first; i++) cells.push({ d: prevDays - first + 1 + i, outside: true });
+      for (d = 1; d <= days; d++) cells.push({ d: d, outside: false });
       while (cells.length % 7 !== 0) cells.push({ d: cells.length - (first + days) + 1, outside: true });
-      var grid = WD.map(function (w){ return '<span class="daterange__weekday">' + w + '</span>'; }).join("");
       var sV = s ? cmp(s) : null, eV = e ? cmp(e) : null;
-      cells.forEach(function (c){
-        var cls = ["daterange__day"];
-        if (c.outside) { cls.push("daterange__day--outside"); grid += '<span class="' + cls.join(" ") + '">' + c.d + '</span>'; return; }
-        var v = view.y * 10000 + view.m * 100 + c.d;
+      var html = WD.map(function (w) { return '<span class="daterange__weekday">' + w + "</span>"; }).join("");
+      cells.forEach(function (c) {
+        if (c.outside) { html += '<span class="daterange__day daterange__day--outside" aria-hidden="true">' + c.d + "</span>"; return; }
+        var v = view.y * 10000 + view.m * 100 + c.d, cls = ["daterange__day"];
         if (view.y === TODAY.y && view.m === TODAY.m && c.d === TODAY.d) cls.push("daterange__day--today");
-        if (sV !== null && eV !== null) {
-          if (v === sV) cls.push("daterange__day--start");
-          else if (v === eV) cls.push("daterange__day--end");
-          else if (v > sV && v < eV) cls.push("daterange__day--mid");
-        } else if (sV !== null && v === sV) { cls.push("daterange__day--start", "daterange__day--end"); }
-        grid += '<button type="button" class="' + cls.join(" ") + '" data-day="' + c.d + '">' + c.d + '</button>';
+        if (sV !== null && eV !== null) { if (v === sV) cls.push("daterange__day--start"); else if (v === eV) cls.push("daterange__day--end"); else if (v > sV && v < eV) cls.push("daterange__day--mid"); }
+        else if (sV !== null && v === sV) cls.push("daterange__day--start", "daterange__day--end");
+        html += '<button type="button" class="' + cls.join(" ") + '" data-day="' + c.d + '">' + c.d + "</button>";
       });
-      panel.querySelector(".daterange__month").textContent = MONTHS[view.m] + " " + view.y;
-      panel.querySelector(".daterange__grid").innerHTML = grid;
-      panel.querySelectorAll(".daterange__day[data-day]").forEach(function (btn){
-        btn.addEventListener("click", function (){
-          var picked = { y: view.y, m: view.m, d: parseInt(btn.dataset.day, 10) };
-          if (!draftS || (draftS && draftE)) { draftS = picked; draftE = null; }
-          else { if (cmp(picked) < cmp(draftS)) { draftE = draftS; draftS = picked; } else { draftE = picked; } }
-          render();
+      grid.innerHTML = html;
+      grid.querySelectorAll(".daterange__day[data-day]").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          var picked = { y: views[ci].y, m: views[ci].m, d: parseInt(btn.dataset.day, 10) };
+          if (!draftS || draftE) { draftS = picked; draftE = null; }
+          else if (cmp(picked) < cmp(draftS)) { draftE = draftS; draftS = picked; }
+          else { draftE = picked; }
+          renderAll();
         });
       });
     }
-    function openPanel(){ view = { y: start.y, m: start.m }; draftS = null; draftE = null; render(); }
-    panel.addEventListener("toggle", function (e){
+    function renderAll() { renderCal(0); renderCal(1); }
+    [0, 1].forEach(function (ci) {
+      if (monthSels[ci]) monthSels[ci].addEventListener("change", function () { views[ci] = { y: views[ci].y, m: parseInt(monthSels[ci].value, 10) }; renderCal(ci); });
+      if (yearSels[ci]) yearSels[ci].addEventListener("change", function () { views[ci] = { y: parseInt(yearSels[ci].value, 10), m: views[ci].m }; renderCal(ci); });
+    });
+
+    panel.addEventListener("toggle", function (e) {
       if (e.newState !== "open") return;
-      openPanel();
-      requestAnimationFrame(function (){
-        var anchor = el.querySelector(".daterange__nav");
-        var r = anchor.getBoundingClientRect();
-        var w = panel.getBoundingClientRect().width;
+      resetViews(); draftS = null; draftE = null; renderAll();
+      // float under the field; flip above if it doesn't fit; else clamp to the viewport
+      requestAnimationFrame(function () {
+        var r = el.querySelector(".daterange__nav").getBoundingClientRect();
+        var pr = panel.getBoundingClientRect(), vw = window.innerWidth, vh = window.innerHeight, top;
+        if (r.bottom + 4 + pr.height <= vh - 8) top = r.bottom + 4;
+        else if (r.top - 4 - pr.height >= 8) top = r.top - 4 - pr.height;
+        else top = Math.max(8, vh - pr.height - 8);
         panel.style.position = "fixed"; panel.style.margin = "0";
-        panel.style.top = (r.bottom + 4) + "px";
-        panel.style.left = Math.max(8, Math.min(r.left, window.innerWidth - w - 8)) + "px";
+        panel.style.top = top + "px";
+        panel.style.left = Math.max(8, Math.min(r.left, vw - pr.width - 8)) + "px";
       });
     });
-    panel.querySelector(".daterange__pnav--prev").addEventListener("click", function (){ view.m--; if (view.m < 0) { view.m = 11; view.y--; } render(); });
-    panel.querySelector(".daterange__pnav--next").addEventListener("click", function (){ view.m++; if (view.m > 11) { view.m = 0; view.y++; } render(); });
-    panel.querySelector(".daterange__apply").addEventListener("click", function (){
-      if (draftS) { start = draftS; end = draftE || draftS; }
-      syncNav(); panel.hidePopover();
+    var pPrev = panel.querySelector(".daterange__pnav--prev"), pNext = panel.querySelector(".daterange__pnav--next");
+    if (pPrev) pPrev.addEventListener("click", function () { views = [viewAdd(views[0], -1), viewAdd(views[1], -1)]; renderAll(); });
+    if (pNext) pNext.addEventListener("click", function () { views = [viewAdd(views[0], 1), viewAdd(views[1], 1)]; renderAll(); });
+    panel.querySelector(".daterange__apply").addEventListener("click", function () { if (draftS) commit(draftS, draftE || draftS); panel.hidePopover(); });
+    panel.querySelector(".daterange__reset").addEventListener("click", function () {
+      cur.s = parse(DEF_S); cur.e = parse(DEF_E); draftS = null; draftE = null; sync(); panel.hidePopover();
     });
-    panel.querySelector(".daterange__clear").addEventListener("click", function (){
-      start = parse(el.dataset.startDefault || iso(DEFAULT_S)); end = parse(el.dataset.endDefault || iso(DEFAULT_E));
-      start = DEFAULT_S; end = DEFAULT_E; draftS = null; draftE = null; syncNav(); openPanel();
-    });
-    // period arrows step the whole range by one month
-    el.querySelector(".daterange__arrow--prev").addEventListener("click", function (){ start = addMonths(start, -1); end = addMonths(end, -1); syncNav(); });
-    el.querySelector(".daterange__arrow--next").addEventListener("click", function (){ start = addMonths(start, 1); end = addMonths(end, 1); syncNav(); });
-
-    syncNav();
+    // the field's own arrows step the whole committed window by a month
+    el.querySelector(".daterange__arrow--prev").addEventListener("click", function () { commit(addMonths(cur.s, -1), addMonths(cur.e, -1)); });
+    el.querySelector(".daterange__arrow--next").addEventListener("click", function () { commit(addMonths(cur.s, 1), addMonths(cur.e, 1)); });
+    resetViews(); sync();
   });
 })();</script>
 </body>

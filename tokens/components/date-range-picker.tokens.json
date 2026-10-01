@@ -1,57 +1,86 @@
 {
   "component": {
     "dateRangePicker": {
-      "$description": "A date-range picker for the console toolbar — a period navigator (‹ prev · start date · period label · end date · next ›) that opens a month-grid calendar where you pick a start then an end day; the range in between highlights. The arrows step the range by one period (month), and the middle label names it ('Current' for this month, otherwise the month). Built on the same field + Popover recipes as the single DatePicker, extended with range day states. Its driving use case is filtering the threads console by a date window.",
+      "$description": "A date-range picker — the date window of the threads console's filter bar (staff Message Center). One bordered field, `‹ | [calendar icon + 'Aug 08, 2026 – Sep 08, 2026'] | ›`: the middle segment opens the calendar, the arrows step the WHOLE window back/forward by a month (the common case — 'last month', 'the month before' — is one click, no calendar). The panel is a dual-month calendar (two consecutive months side by side, each with month + year selects so a far-off window is two picks instead of a dozen arrow clicks), with Reset (back to the default window) and Apply in the footer; nothing filters until Apply, so a half-picked range never reloads the console. A `--single` one-month variant is for narrow containers (the mobile/tablet filters drawer); the dual panel stacks its months under 560px. Replaces the earlier ‹ start · period label · end › navigator, whose 'Current' label and two separate date fields cost width the console toolbar doesn't have. Built on the field + Popover recipes shared with the single DatePicker; day states extended with the range band.",
       "nav": {
-        "height": { "$type": "dimension", "$value": "{dim.10}", "$description": "40px = the base field height." },
+        "height": { "$type": "dimension", "$value": "{dim.10}", "$description": "40px = the base field height, so it lines up with the Selects/Search beside it in the console toolbar." },
         "radius": { "$type": "dimension", "$value": "{radius.default}" },
-        "bg": { "$type": "color", "$value": "{surface.dim}" },
+        "bg": { "$type": "color", "$value": "{surface.dim}", "$description": "The locked-in field recipe: surface.dim fill, hairline border → strong on hover → focus blue." },
         "border": { "$type": "color", "$value": "{border.default}" },
         "borderHover": { "$type": "color", "$value": "{border.strong}" },
         "borderFocus": { "$type": "color", "$value": "{border.focus}" },
-        "divider": { "$type": "color", "$value": "{border.default}", "$description": "hairline between the arrows / fields / label." },
-        "value": { "$type": "typography", "$value": "{text-style.body-sm}" },
-        "valueColor": { "$type": "color", "$value": "{text.default}" },
-        "label": { "$type": "typography", "$value": "{text-style.body-sm}", "$description": "The middle period label." },
-        "labelColor": { "$type": "color", "$value": "{text.secondary}" },
+        "divider": { "$type": "color", "$value": "{border.default}", "$description": "Hairline between the prev arrow, the range field and the next arrow." },
+        "arrowWidth": { "$type": "dimension", "$value": "{dim.8}", "$description": "32px-wide arrow segment (full field height) — the same 32 as the panel's paging arrows (header.navSize)." },
+        "arrowIconSize": { "$type": "dimension", "$value": "{dim.5}" },
         "arrowIcon": { "$type": "color", "$value": "{icon.default}" },
         "arrowHoverBg": { "$type": "color", "$value": "{fill.neutralHover}" },
+        "paddingX": { "$type": "dimension", "$value": "{dim.3}", "$description": "Inline padding of the middle range field." },
+        "gap": { "$type": "dimension", "$value": "{dim.2}", "$description": "Calendar icon → range text." },
+        "calIcon": { "$type": "color", "$value": "{icon.default}" },
+        "calIconSize": { "$type": "dimension", "$value": "{dim.4}" },
+        "value": { "$type": "typography", "$value": "{text-style.body-sm}", "$description": "The range text, 'Mmm DD, YYYY – Mmm DD, YYYY'." },
+        "valueColor": { "$type": "color", "$value": "{text.default}" },
         "fieldHoverBg": { "$type": "color", "$value": "{fill.neutralHover}" }
       },
       "panel": {
         "bg": { "$type": "color", "$value": "{surface.default}" },
         "border": { "$type": "color", "$value": "{border.default}" },
         "radius": { "$type": "dimension", "$value": "{radius.default}" },
-        "padding": { "$type": "dimension", "$value": "{dim.3}" },
-        "shadow": { "$type": "shadow", "$value": "{shadow.sm}" }
+        "padding": { "$type": "dimension", "$value": "{dim.4}", "$description": "16px — two months plus a footer is a bigger surface than the single DatePicker's 12px panel." },
+        "shadow": { "$type": "shadow", "$value": "{shadow.sm}" },
+        "calendarGap": { "$type": "dimension", "$value": "{dim.5}", "$description": "Space between the two side-by-side months." },
+        "stackedGap": { "$type": "dimension", "$value": "{dim.3}", "$description": "Space between the months once they stack (< 560px)." }
       },
       "header": {
-        "label": { "$type": "typography", "$value": "{text-style.heading-sm}" },
-        "labelColor": { "$type": "color", "$value": "{text.default}" },
+        "gap": { "$type": "dimension", "$value": "{dim.2}" },
+        "marginBottom": { "$type": "dimension", "$value": "{dim.2}" },
         "navIcon": { "$type": "color", "$value": "{icon.default}" },
         "navHoverBg": { "$type": "color", "$value": "{fill.neutralHover}" },
-        "navSize": { "$type": "dimension", "$value": "{dim.8}" }
+        "navSize": { "$type": "dimension", "$value": "{dim.8}", "$description": "32px paging arrow. Prev sits on the left month's outer edge, next on the right month's (both on the single variant); the inner sides keep an empty 32px spacer so the selects stay centred over their grid. Tokenized because the prototype once drifted to 30px." },
+        "navIconSize": { "$type": "dimension", "$value": "{dim.5}" },
+        "select": {
+          "$description": "Month + year <select> pair — a compact 32px control in the field family (white, not surface.dim, because it sits inside the white panel).",
+          "height": { "$type": "dimension", "$value": "{dim.8}" },
+          "gap": { "$type": "dimension", "$value": "{dim.1}", "$description": "Month select → year select." },
+          "paddingLeft": { "$type": "dimension", "$value": "{dim.2}" },
+          "paddingRight": { "$type": "dimension", "$value": "{dim.7}", "$description": "Room for the chevron (8px inset + 16px icon + 4px air)." },
+          "chevronInset": { "$type": "dimension", "$value": "{dim.2}" },
+          "chevronSize": { "$type": "dimension", "$value": "{dim.4}" },
+          "chevron": { "$type": "color", "$value": "{icon.default}" },
+          "radius": { "$type": "dimension", "$value": "{radius.default}" },
+          "bg": { "$type": "color", "$value": "{surface.default}" },
+          "border": { "$type": "color", "$value": "{border.default}" },
+          "borderHover": { "$type": "color", "$value": "{border.strong}" },
+          "borderFocus": { "$type": "color", "$value": "{border.focus}" },
+          "value": { "$type": "typography", "$value": "{text-style.body-sm}" },
+          "valueColor": { "$type": "color", "$value": "{text.default}" }
+        }
       },
       "weekday": {
+        "height": { "$type": "dimension", "$value": "{dim.7}" },
         "label": { "$type": "typography", "$value": "{text-style.label-sm}" },
         "color": { "$type": "color", "$value": "{text.muted}" }
       },
       "day": {
-        "size": { "$type": "dimension", "$value": "{dim.9}", "$description": "36px square day cell." },
+        "size": { "$type": "dimension", "$value": "{dim.9}", "$description": "36px square day cell (the prototype once drifted to 34px — this token is the one source)." },
+        "rowGap": { "$type": "dimension", "$value": "{dim.0_5}", "$description": "Vertical gap between weeks; columns sit flush (0 gap) so the range reads as one continuous band." },
         "radius": { "$type": "dimension", "$value": "{radius.default}" },
         "label": { "$type": "typography", "$value": "{text-style.body-sm}" },
         "color": { "$type": "color", "$value": "{text.default}" },
         "hoverBg": { "$type": "color", "$value": "{fill.neutralHover}" },
-        "todayBorder": { "$type": "color", "$value": "{border.strong}" },
+        "todayBorder": { "$type": "color", "$value": "{border.strong}", "$description": "Today gets a hairline ring — a quiet 'you are here', distinct from the filled ends." },
         "endsBg": { "$type": "color", "$value": "{fill.primary}", "$description": "The start and end days fill solid." },
         "endsText": { "$type": "color", "$value": "{text.onFill}" },
         "rangeBg": { "$type": "color", "$value": "{bg.primary}", "$description": "Days between start and end get a light primary wash." },
         "rangeText": { "$type": "color", "$value": "{text.default}" },
-        "outsideColor": { "$type": "color", "$value": "{text.muted}" }
+        "outsideColor": { "$type": "color", "$value": "{text.muted}", "$description": "Days spilling in from the prev/next month — shown for grid shape, not pickable." }
       },
       "footer": {
+        "$description": "Reset (left) and Apply (right). Both ARE Buttons — Reset = Button secondary sm, Apply = Button primary sm — so their size and colours come from button.tokens.json, not from this file.",
         "gap": { "$type": "dimension", "$value": "{dim.2}" },
-        "paddingTop": { "$type": "dimension", "$value": "{dim.3}" }
+        "paddingTop": { "$type": "dimension", "$value": "{dim.3}" },
+        "marginTop": { "$type": "dimension", "$value": "{dim.2}" },
+        "border": { "$type": "color", "$value": "{border.default}" }
       }
     }
   }
