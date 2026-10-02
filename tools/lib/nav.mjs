@@ -99,6 +99,12 @@ export const DESIGN_PRODUCTS = {
       "degree-progress": { label: "Degree Progress", href: "designs/degree-progress.html" },
     },
   },
+  scheduling: {
+    label: "Scheduling",
+    items: {
+      "student-scheduling": { label: "Student Scheduling", href: "designs/student-scheduling.html" },
+    },
+  },
 };
 
 const NAV_CHROME = `<style>

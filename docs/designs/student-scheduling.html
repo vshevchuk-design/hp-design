@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>hp-design — Degree Progress</title>
+<title>hp-design — Student Scheduling</title>
 <link rel="stylesheet" href="../../assets/fonts/sora/sora.css" />
 <style>
   :root {
@@ -204,11 +204,11 @@
     </details>
     <details class="nav-acc" open>
       <summary>Academics</summary>
-      <a class="navlink active" href="../designs/degree-progress.html">Degree Progress</a>
+      <a class="navlink" href="../designs/degree-progress.html">Degree Progress</a>
     </details>
     <details class="nav-acc" open>
       <summary>Scheduling</summary>
-      <a class="navlink" href="../designs/student-scheduling.html">Student Scheduling</a>
+      <a class="navlink active" href="../designs/student-scheduling.html">Student Scheduling</a>
     </details>
     </div>
     <script>
@@ -221,8 +221,8 @@
 </script>
   </nav>
   <main>
-    <h1>Degree Progress</h1>
-    <p class="sub">The student's degree progress screen — a scaffold for now. It already carries the portal's real app shell (<code>tools/lib/app-shell.mjs</code>, titled mode: the page name in the same 64px topbar the other portal screens use); the screen's own layout is waiting on reference screens. Everything built here will follow the same discipline as the other prototypes: strictly hp-design components, every recipe resolved from its own token file, with a small <code>dp-</code> composition layer as the only bespoke CSS.</p>
+    <h1>Student Scheduling</h1>
+    <p class="sub">The student's class scheduling screen — a scaffold for now. It already carries the portal's real app shell (<code>tools/lib/app-shell.mjs</code>, titled mode: the page name in the same 64px topbar the other portal screens use); the screen's own layout is waiting on reference screens. Everything built here will follow the same discipline as the other prototypes: strictly hp-design components, every recipe resolved from its own token file, with a small <code>ss-</code> composition layer as the only bespoke CSS.</p>
 
     <div class="device-bar">
       <div class="device-bar__group">
@@ -238,17 +238,17 @@
         </button>
         <div class="listbox" id="viewer-version-lb" popover>
           <ul class="listbox__list" role="listbox" aria-label="Prototype version">
-        <li role="none"><button type="button" class="listbox__option listbox__option--selected" role="option" aria-selected="true" data-version-file="degree-progress-app.html" data-version-label="v1 · current">
+        <li role="none"><button type="button" class="listbox__option listbox__option--selected" role="option" aria-selected="true" data-version-file="student-scheduling-app.html" data-version-label="v1 · current">
           <span>v1 <span class="listbox__note">· current</span></span><svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
         </button></li>
           </ul>
         </div>
       </div>
-      <a class="open-standalone" id="viewer-standalone" href="degree-progress-app.html" target="_blank" rel="noopener">Open standalone ↗</a>
+      <a class="open-standalone" id="viewer-standalone" href="student-scheduling-app.html" target="_blank" rel="noopener">Open standalone ↗</a>
     </div>
     <div class="frame-wrap">
       <div class="device device--mobile" id="device">
-        <iframe id="device-frame" src="degree-progress-app.html" title="Degree Progress prototype"></iframe>
+        <iframe id="device-frame" src="student-scheduling-app.html" title="Student Scheduling prototype"></iframe>
       </div>
     </div>
   </main>

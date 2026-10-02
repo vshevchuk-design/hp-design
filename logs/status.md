@@ -2,7 +2,7 @@
 
 Update this file whenever component inventory or conventions change. For chronological history and the reasoning behind each decision, see `decision-log.md` — this file is the fast-load summary, that one is the archive.
 
-Last updated: 2026-09-28.
+Last updated: 2026-10-02.
 
 ## Designs layer (prototype explorer) — added 2026-07-24
 
@@ -14,6 +14,8 @@ The sidebar on every docs page now has **DS / Designs tabs** (top of nav). DS = 
 - Verify designs pages with the HTTP server rooted at the **repo root**, not `docs/` — `../../assets/fonts/sora/sora.css` only resolves from the root (serving `docs/` as root 404s it silently and brings back the italic-Sora symptom).
 
 **The portal's app shell is one module — `tools/lib/app-shell.mjs` (extracted 2026-09-07 with the second portal screen).** It owns the page frame, the 64px topbar (declared `dim.16`, hairline inside), the wordmark with nav.mjs's `#090D19` → `currentColor` swap, and Button secondary's recipe (base icon-only + sm), plus a `SHELL_COLOR_PATHS` list to merge into a page's own `colorPaths`. Extracted *before* writing the second screen rather than after: the two MC builders already duplicate their shell between them (a v1 drift risk this file has carried for months) and the viewer chrome had the same problem until `design-viewer.mjs`, so a third copy was not going to happen. Springboard was migrated onto it — verified by set-comparing the generated CSS rules and the `--tok-*` map before/after: **only the three shell class names changed (`sb`/`sb__topbar`/`sb__logo` → `app`/`app__topbar`/`app__logo`), all 36 vars identical, every other rule identical.**
+
+Sixth entry: **Student Scheduling** (`tools/build-design-student-scheduling.mjs` → `docs/designs/student-scheduling.html` + `student-scheduling-app.html`), added 2026-10-02 as the first page of a new **Scheduling** product accordion. Same deliberate scaffold as Degree Progress (titled app shell + EmptyState, `ss-` composition layer); layout waits on reference screens. **First screen on the new workflow: prototype on Vercel first, then carry it into Figma** once the layout settles (the reverse of the Message Center files, which were built in Figma after the fact).
 
 Fifth entry: **Degree Progress** (`tools/build-design-degree-progress.mjs` → `docs/designs/degree-progress.html` + `degree-progress-app.html`), added 2026-09-25 as the first page of a new **Academics** product accordion. **A deliberate scaffold**, the same starting point Springboard and Explore Degrees had: the portal app shell in titled mode ("Degree Progress" in the 64px topbar, settings on the right) over an EmptyState, `dp-` composition layer. Layout waits on reference screens — don't "finish" it by inventing an audit/requirements view, ask for the refs.
 
