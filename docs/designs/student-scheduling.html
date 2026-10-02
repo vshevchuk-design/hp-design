@@ -222,7 +222,7 @@
   </nav>
   <main>
     <h1>Student Scheduling</h1>
-    <p class="sub">The student's class scheduling screen — a scaffold for now. It already carries the portal's real app shell (<code>tools/lib/app-shell.mjs</code>, titled mode: the page name in the same 64px topbar the other portal screens use); the screen's own layout is waiting on reference screens. Everything built here will follow the same discipline as the other prototypes: strictly hp-design components, every recipe resolved from its own token file, with a small <code>ss-</code> composition layer as the only bespoke CSS.</p>
+    <p class="sub">The student side of Scheduling — browse services, pick a time, confirm. Same flow and content as the live app, rebuilt strictly from hp-design components. <b>What changed is the UI, not the flow:</b> sort is a ghost Button + Listbox on the results line instead of a third filter-looking dropdown; "Drop-in available" is a toggle Chip that clears itself (no separate Clear button); Department is the dropdown chip. Picking a time is one page — day and time ChoiceTiles on the left, a sticky <b>Your appointment</b> Card on the right with the advisor RadioGroup and the one Confirm — instead of a time popup followed by a side drawer. Try <b>Academic Difficulty</b> for the no-openings state, <b>Career Counseling</b> or <b>Degree Planning</b> for a service offered by several departments. Only Browse is built; the other five sections are placeholders.</p>
 
     <div class="device-bar">
       <div class="device-bar__group">
