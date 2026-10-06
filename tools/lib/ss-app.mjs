@@ -184,13 +184,16 @@ export function ssAppJs(d) {
     $("ss-count").textContent = list.length + (list.length === 1 ? " service" : " services");
     $("ss-list").innerHTML = slice.map(function (x) {
       var s = x.s, multi = s.depts.length > 1;
+      // Several departments offer it: the department sits where every other row
+      // shows its department, as a labelled sm dropdown chip — a value you can
+      // change, not a second action competing with Pick a time.
       var dept = multi
-        ? '<button type="button" class="select" data-row-dept="' + x.i + '" aria-haspopup="listbox" aria-expanded="false" aria-label="Department for ' + esc(s.name) + '"><span class="select__value">' + esc(deptOf(x.i)) + "</span>" + ICONS.chevron + "</button>"
-        : "";
+        ? '<span class="ss-svc__dept"><span>Department</span><button type="button" class="chip chip--sm chip--dropdown" data-row-dept="' + x.i + '" aria-haspopup="listbox" aria-expanded="false" aria-label="Department for ' + esc(s.name) + ': ' + esc(deptOf(x.i)) + '"><span class="chip__label">' + esc(deptOf(x.i)) + "</span>" + ICONS.chevron + "</button></span>"
+        : "<span>" + esc(s.depts[0]) + "</span>";
       return '<div class="ss-svc">' +
         '<div class="ss-svc__main"><h3 class="ss-svc__name">' + esc(s.name) + "</h3>" +
-        '<div class="ss-svc__meta"><span>' + s.minutes + " min</span>" + (multi ? "" : "<span>·</span><span>" + esc(s.depts[0]) + "</span>") + DROP_BADGE[s.drop] + "</div></div>" +
-        '<div class="ss-svc__aside">' + dept + '<button type="button" class="btn btn--secondary btn--sm" data-pick="' + x.i + '">Pick a time</button></div>' +
+        '<div class="ss-svc__meta"><span>' + s.minutes + " min</span><span>·</span>" + dept + DROP_BADGE[s.drop] + "</div></div>" +
+        '<div class="ss-svc__aside"><button type="button" class="btn btn--secondary btn--sm" data-pick="' + x.i + '">Pick a time</button></div>' +
         "</div>";
     }).join("");
     $("ss-range").textContent = any ? "Showing " + (from + 1) + "–" + (from + slice.length) + " of " + list.length : "";
@@ -202,7 +205,8 @@ export function ssAppJs(d) {
       var i = +sel.dataset.rowDept;
       openListbox(sel, SERVICES[i].depts.map(function (x) { return { value: x, label: x }; }), deptOf(i), function (v) {
         st.rowDept[i] = v;
-        sel.querySelector(".select__value").textContent = v;
+        sel.querySelector(".chip__label").textContent = v;
+        sel.setAttribute("aria-label", "Department for " + SERVICES[i].name + ": " + v);
       });
       return;
     }

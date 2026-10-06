@@ -33,11 +33,10 @@
   --tok-surface-dim: #f4f5f7;
   --tok-border-strong: #adb5be;
   --tok-surface-dim-hover: #e6e8eb;
-  --tok-text-primary: #0468c4;
   --tok-surface-disabled: #e6e8eb;
-  --tok-border-danger: #febebd;
   --tok-bg-primary-hover: #eff6ff;
   --tok-bg-primary: #d9eaff;
+  --tok-text-primary: #0468c4;
   --tok-icon-primary: #077fec;
   --tok-bg-neutral: #e6e8eb;
   --tok-tag-gray-solid-bg: #758191;
@@ -94,6 +93,7 @@
   --tok-status-success: #0a994e;
   --tok-border-warning: #fec486;
   --tok-status-warning: #b26f07;
+  --tok-border-danger: #febebd;
   --tok-status-danger: #de394b;
   --tok-surface-inverse: #242c36;
   --tok-family-sans: 'Sora', sans-serif;
@@ -221,6 +221,8 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .chip--checked-outline { background: var(--tok-bg-primary); border-color: var(--tok-fill-primary); color: var(--tok-text-primary); }
 .chip--checked-outline .chip__icon { color: var(--tok-icon-primary); }
 .chip:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
+.chip--sm { height: 24px; padding: 0 8px; gap: 4px; font-weight: 600; font-size: 12px; line-height: 1; }
+.chip--sm .chip__icon { width: 12px; height: 12px; }
 .chip--dropdown { flex-shrink: 1; min-width: 0; max-width: 100%; }
 .chip__label { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 
@@ -232,13 +234,6 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .listbox__option:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: -4px; }
 .listbox__checkmark { flex-shrink: 0; margin-left: auto; width: 16px; height: 16px; color: var(--tok-fill-primary); visibility: hidden; }
 .listbox__option[aria-selected="true"] .listbox__checkmark { visibility: visible; }
-
-/* ============ Select (closed trigger, sm — the per-row department) ============ */
-.select { display: inline-flex; align-items: center; max-width: 100%; height: 32px; padding: 0 8px; gap: 8px; background: var(--tok-surface-dim); border: 1px solid var(--tok-border-default); border-radius: 8px; cursor: pointer; text-align: left; font-family: inherit; }
-.select:hover { background: var(--tok-surface-dim-hover); border-color: var(--tok-border-strong); }
-.select:focus-visible, .select[aria-expanded="true"] { outline: none; border-color: var(--tok-border-focus); }
-.select__value { min-width: 0; color: var(--tok-text-default); font-weight: 400; font-size: 16px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.select__chevron { flex-shrink: 0; width: 16px; height: 16px; color: var(--tok-icon-default); }
 
 /* ============ Card ============ */
 .card { background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); border-radius: 8px; }
@@ -339,13 +334,14 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .ss-svc__main { flex: 1 1 240px; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
 .ss-svc__name { margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 14px; line-height: 1.4; }
 .ss-svc__meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
-.ss-svc__aside { display: flex; align-items: center; gap: 8px; min-width: 0; margin-left: auto; }
-.ss-svc__aside .select { max-width: 240px; }
+.ss-svc__aside { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+/* "Department" + the chip are one unit: the label says what the chip picks. */
+.ss-svc__dept { display: inline-flex; align-items: center; gap: 6px; min-width: 0; max-width: 100%; }
+.ss-svc__dept .chip { max-width: 240px; }
 /* On a phone the department picker and the action share a row of their own,
    the action pushed right — the name never has to fight them for width. */
 @media (max-width: 559px) {
   .ss-svc__aside { flex: 1 1 100%; justify-content: flex-end; }
-  .ss-svc__aside .select { flex: 1; min-width: 0; max-width: none; }
 }
 .ss-pager { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
 
@@ -535,7 +531,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   var DEPARTMENTS = ["Academic Advising","Admissions & Records","Career and Talent Development","Counseling","English Dept","Grad - Admissions","Liberal Arts","Office of the Registrar","Student Mentoring","Tutoring Center"];
   var TODAY = "2026-10-02";
   var WEEKS_AHEAD = 3;
-  var ICONS = {"check":"<svg class=\"listbox__checkmark\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z\"/></svg>","chevron":"<svg class=\"select__chevron\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z\"/></svg>","chevronLeft":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z\"/></svg>","chevronRight":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z\"/></svg>","checkCircle":"<svg class=\"toast__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z\"/></svg>","group":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z\"/></svg>","call":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M20.01 15.38c-1.23 0-2.42-.2-3.53-.56-.35-.12-.74-.03-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z\"/></svg>","videocam":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z\"/></svg>"};
+  var ICONS = {"check":"<svg class=\"listbox__checkmark\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z\"/></svg>","chevron":"<svg class=\"chip__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z\"/></svg>","chevronLeft":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z\"/></svg>","chevronRight":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z\"/></svg>","checkCircle":"<svg class=\"toast__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z\"/></svg>","group":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z\"/></svg>","call":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M20.01 15.38c-1.23 0-2.42-.2-3.53-.56-.35-.12-.74-.03-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z\"/></svg>","videocam":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z\"/></svg>"};
   var PAGE_SIZE = 10;
   var FORMATS = [
     { key: "inPerson", label: "In person", icon: ICONS.group },
@@ -702,13 +698,16 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     $("ss-count").textContent = list.length + (list.length === 1 ? " service" : " services");
     $("ss-list").innerHTML = slice.map(function (x) {
       var s = x.s, multi = s.depts.length > 1;
+      // Several departments offer it: the department sits where every other row
+      // shows its department, as a labelled sm dropdown chip — a value you can
+      // change, not a second action competing with Pick a time.
       var dept = multi
-        ? '<button type="button" class="select" data-row-dept="' + x.i + '" aria-haspopup="listbox" aria-expanded="false" aria-label="Department for ' + esc(s.name) + '"><span class="select__value">' + esc(deptOf(x.i)) + "</span>" + ICONS.chevron + "</button>"
-        : "";
+        ? '<span class="ss-svc__dept"><span>Department</span><button type="button" class="chip chip--sm chip--dropdown" data-row-dept="' + x.i + '" aria-haspopup="listbox" aria-expanded="false" aria-label="Department for ' + esc(s.name) + ': ' + esc(deptOf(x.i)) + '"><span class="chip__label">' + esc(deptOf(x.i)) + "</span>" + ICONS.chevron + "</button></span>"
+        : "<span>" + esc(s.depts[0]) + "</span>";
       return '<div class="ss-svc">' +
         '<div class="ss-svc__main"><h3 class="ss-svc__name">' + esc(s.name) + "</h3>" +
-        '<div class="ss-svc__meta"><span>' + s.minutes + " min</span>" + (multi ? "" : "<span>·</span><span>" + esc(s.depts[0]) + "</span>") + DROP_BADGE[s.drop] + "</div></div>" +
-        '<div class="ss-svc__aside">' + dept + '<button type="button" class="btn btn--secondary btn--sm" data-pick="' + x.i + '">Pick a time</button></div>' +
+        '<div class="ss-svc__meta"><span>' + s.minutes + " min</span><span>·</span>" + dept + DROP_BADGE[s.drop] + "</div></div>" +
+        '<div class="ss-svc__aside"><button type="button" class="btn btn--secondary btn--sm" data-pick="' + x.i + '">Pick a time</button></div>' +
         "</div>";
     }).join("");
     $("ss-range").textContent = any ? "Showing " + (from + 1) + "–" + (from + slice.length) + " of " + list.length : "";
@@ -720,7 +719,8 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
       var i = +sel.dataset.rowDept;
       openListbox(sel, SERVICES[i].depts.map(function (x) { return { value: x, label: x }; }), deptOf(i), function (v) {
         st.rowDept[i] = v;
-        sel.querySelector(".select__value").textContent = v;
+        sel.querySelector(".chip__label").textContent = v;
+        sel.setAttribute("aria-label", "Department for " + SERVICES[i].name + ": " + v);
       });
       return;
     }

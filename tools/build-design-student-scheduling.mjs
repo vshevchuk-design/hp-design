@@ -48,7 +48,7 @@ const registry = {
   ...load("tokens/semantic/color.tokens.json"),
 };
 
-const COMPONENTS = ["tabs", "button", "select", "search", "chip", "listbox", "card", "badge", "pagination", "choice-tile", "radio", "alert", "toast", "tooltip", "empty-state"];
+const COMPONENTS = ["tabs", "button", "search", "chip", "listbox", "card", "badge", "pagination", "choice-tile", "radio", "alert", "toast", "tooltip", "empty-state"];
 const comp = (name) => load(`tokens/components/${name}.tokens.json`).component;
 const tokens = Object.assign({}, ...COMPONENTS.map(comp));
 
@@ -240,7 +240,7 @@ ${shellTopbar({ title: "Scheduling", actions: settingsBtn })}
 
 const ICONS = {
   check: icon("check", "listbox__checkmark"),
-  chevron: icon("expand_more", "select__chevron"),
+  chevron: icon("expand_more", "chip__icon"),
   chevronLeft: icon("chevron_left", ""),
   chevronRight: icon("chevron_right", ""),
   checkCircle: icon("check_circle", "toast__icon"),
