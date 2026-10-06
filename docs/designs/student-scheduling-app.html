@@ -335,8 +335,10 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   .ss-tools .search { flex: 1; min-width: 0; max-width: 360px; }
 }
 .ss-results { display: flex; flex-direction: column; gap: 8px; }
-.ss-results__bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 32px; }
-.ss-results__count { color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.ss-results__bar { display: flex; align-items: center; min-height: 32px; }
+/* Sort sits at the list's left edge; pulled out by the ghost button's own
+   padding so its icon lines up with the card edge, not with its padding box. */
+.ss-results__bar .btn--ghost { margin-inline-start: -8px; }
 /* Rows, not boxes: one Card, flush, rows divided by its own hairline. */
 .ss-list { overflow: hidden; }
 .ss-svc { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; padding: 16px; border-bottom: 1px solid var(--tok-border-default); }
@@ -434,7 +436,6 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 
       <div class="ss-results" id="ss-results">
         <div class="ss-results__bar">
-          <span class="ss-results__count" id="ss-count"></span>
           <button class="btn btn--ghost btn--sm" id="ss-sort" type="button" aria-haspopup="listbox" aria-expanded="false"><svg class="btn__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3 18h6v-2H3v2zM3 6v2h18V6H3zm0 7h12v-2H3v2z"/></svg><span id="ss-sort-label">Name (A–Z)</span></button>
         </div>
         <div class="card ss-list" id="ss-list"></div>
@@ -704,7 +705,6 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     var any = list.length > 0;
     $("ss-results").classList.toggle("is-hidden", !any);
     $("ss-empty").classList.toggle("is-hidden", any);
-    $("ss-count").textContent = list.length + (list.length === 1 ? " service" : " services");
     $("ss-list").innerHTML = slice.map(function (x) {
       var s = x.s, multi = s.depts.length > 1;
       var dept = multi

@@ -265,8 +265,10 @@ ${["neutral", "primary", "success"].map((r) => `.badge--${r} { background: ${R(b
   .ss-tools .search { flex: 1; min-width: 0; max-width: 360px; }
 }
 .ss-results { display: flex; flex-direction: column; gap: ${dim(2)}; }
-.ss-results__bar { display: flex; align-items: center; justify-content: space-between; gap: ${dim(3)}; min-height: ${bSm.height}; }
-.ss-results__count { color: ${cv("text.secondary")}; ${typoCss(style("body-sm"))} }
+.ss-results__bar { display: flex; align-items: center; min-height: ${bSm.height}; }
+/* Sort sits at the list's left edge; pulled out by the ghost button's own
+   padding so its icon lines up with the card edge, not with its padding box. */
+.ss-results__bar .btn--ghost { margin-inline-start: -${bSm.paddingX}; }
 /* Rows, not boxes: one Card, flush, rows divided by its own hairline. */
 .ss-list { overflow: hidden; }
 .ss-svc { display: flex; flex-wrap: wrap; align-items: center; gap: ${dim(2)} ${dim(4)}; padding: ${D(card.padding)}; border-bottom: 1px solid ${R(card.divider)}; }

@@ -142,7 +142,6 @@ ${shellTopbar({ title: "Scheduling", actions: settingsBtn })}
 
       <div class="ss-results" id="ss-results">
         <div class="ss-results__bar">
-          <span class="ss-results__count" id="ss-count"></span>
           <button class="btn btn--ghost btn--sm" id="ss-sort" type="button" aria-haspopup="listbox" aria-expanded="false">${icon("sort", "btn__icon")}<span id="ss-sort-label">Name (A–Z)</span></button>
         </div>
         <div class="card ss-list" id="ss-list"></div>

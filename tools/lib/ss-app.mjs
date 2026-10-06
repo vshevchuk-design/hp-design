@@ -181,7 +181,6 @@ export function ssAppJs(d) {
     var any = list.length > 0;
     $("ss-results").classList.toggle("is-hidden", !any);
     $("ss-empty").classList.toggle("is-hidden", any);
-    $("ss-count").textContent = list.length + (list.length === 1 ? " service" : " services");
     $("ss-list").innerHTML = slice.map(function (x) {
       var s = x.s, multi = s.depts.length > 1;
       var dept = multi
