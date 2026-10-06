@@ -19,7 +19,7 @@ export function ssCss(h) {
     return `${px(s.offsetX)} ${px(s.offsetY)} ${px(s.blur)} ${px(s.spread)} ${s.color}`;
   };
 
-  const { tabs, button, search, chip, listbox: lb, card, badge, pagination: pg, choiceTile: ct, radio, alert, toast, tooltip: tt, emptyState: es } = t;
+  const { tabs, button, select, search, chip, listbox: lb, card, badge, pagination: pg, choiceTile: ct, radio, alert, toast, tooltip: tt, emptyState: es } = t;
 
   const btn = (variant, size) => ({
     height: D(button[variant].size[size].height),
@@ -44,9 +44,9 @@ export function ssCss(h) {
   const segActiveWeight = resolve(tabs.segmented.state.active.fontWeight.$value);
 
   const chipBase = { height: D(chip.size.base.height), paddingX: D(chip.size.base.paddingX), gap: D(chip.size.base.gap), iconSize: D(chip.size.base.iconSize), label: T(chip.size.base.label) };
-  const chipSm = { height: D(chip.size.sm.height), paddingX: D(chip.size.sm.paddingX), gap: D(chip.size.sm.gap), iconSize: D(chip.size.sm.iconSize), label: T(chip.size.sm.label) };
   const tg = chip.toggle;
 
+  const selSm = { height: D(select.size.sm.height), paddingX: D(select.size.sm.paddingX), gap: D(select.size.sm.gap), iconSize: D(select.size.sm.iconSize), value: T(select.size.sm.value) };
   const srch = { height: D(search.size.base.height), paddingX: D(search.size.base.paddingX), gap: D(search.size.base.gap), iconSize: D(search.size.base.iconSize), value: T(search.value) };
   const badgeSm = { height: D(badge.size.sm.height), paddingX: D(badge.size.sm.paddingX), radius: D(badge.radius), label: T(badge.size.sm.label) };
 
@@ -151,8 +151,6 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .chip--checked-outline { background: ${R(tg.checkedOutline.bg)}; border-color: ${R(tg.checkedOutline.border)}; color: ${R(tg.checkedOutline.text)}; }
 .chip--checked-outline .chip__icon { color: ${R(tg.checkedOutline.icon)}; }
 .chip:focus-visible { outline: ${D(chip.focus.ringWidth)} solid ${R(chip.focus.ringColor)}; outline-offset: ${D(chip.focus.ringOffset)}; }
-.chip--sm { height: ${chipSm.height}; padding: 0 ${chipSm.paddingX}; gap: ${chipSm.gap}; ${typoCss(chipSm.label)} }
-.chip--sm .chip__icon { width: ${chipSm.iconSize}; height: ${chipSm.iconSize}; }
 .chip--dropdown { flex-shrink: 1; min-width: 0; max-width: 100%; }
 .chip__label { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 
@@ -164,6 +162,13 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .listbox__option:focus-visible { outline: ${ringW} solid ${cv("border.focus")}; outline-offset: -${ringW}; }
 .listbox__checkmark { flex-shrink: 0; margin-left: auto; width: ${D(lb.checkmarkSize)}; height: ${D(lb.checkmarkSize)}; color: ${R(lb.state.selected.checkmark)}; visibility: hidden; }
 .listbox__option[aria-selected="true"] .listbox__checkmark { visibility: visible; }
+
+/* ============ Select (closed trigger, sm — the per-row department) ============ */
+.select { display: inline-flex; align-items: center; max-width: 100%; height: ${selSm.height}; padding: 0 ${selSm.paddingX}; gap: ${selSm.gap}; background: ${R(select.state.default.bg)}; border: 1px solid ${R(select.state.default.border)}; border-radius: ${D(select.radius)}; cursor: pointer; text-align: left; font-family: inherit; }
+.select:hover { background: ${R(select.state.hover.bg)}; border-color: ${R(select.state.hover.border)}; }
+.select:focus-visible, .select[aria-expanded="true"] { outline: none; border-color: ${R(select.state.focus.border)}; }
+.select__value { min-width: 0; color: ${R(select.state.default.value)}; ${typoCss(selSm.value)} white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.select__chevron { flex-shrink: 0; width: ${selSm.iconSize}; height: ${selSm.iconSize}; color: ${R(select.state.default.chevron)}; }
 
 /* ============ Card ============ */
 .card { background: ${R(card.bg)}; border: 1px solid ${R(card.border)}; border-radius: ${D(card.radius)}; }
@@ -262,14 +267,13 @@ ${["neutral", "primary", "success"].map((r) => `.badge--${r} { background: ${R(b
 .ss-svc__main { flex: 1 1 240px; min-width: 0; display: flex; flex-direction: column; gap: ${dim(1)}; }
 .ss-svc__name { margin: 0; color: ${cv("text.default")}; ${typoCss(style("heading-base"))} }
 .ss-svc__meta { display: flex; flex-wrap: wrap; align-items: center; gap: ${dim(2)}; color: ${cv("text.secondary")}; ${typoCss(style("body-sm"))} }
-.ss-svc__aside { display: flex; align-items: center; gap: ${dim(2)}; margin-left: auto; }
-/* "Department" + the chip are one unit: the label says what the chip picks. */
-.ss-svc__dept { display: inline-flex; align-items: center; gap: ${dim("1_5")}; min-width: 0; max-width: 100%; }
-.ss-svc__dept .chip { max-width: 240px; }
+.ss-svc__aside { display: flex; align-items: center; gap: ${dim(2)}; min-width: 0; margin-left: auto; }
+.ss-svc__aside .select { max-width: 240px; }
 /* On a phone the department picker and the action share a row of their own,
    the action pushed right — the name never has to fight them for width. */
 @media (max-width: 559px) {
   .ss-svc__aside { flex: 1 1 100%; justify-content: flex-end; }
+  .ss-svc__aside .select { flex: 1; min-width: 0; max-width: none; }
 }
 .ss-pager { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: ${dim(3)}; }
 
