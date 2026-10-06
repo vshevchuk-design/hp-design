@@ -185,12 +185,12 @@ export function ssAppJs(d) {
     $("ss-list").innerHTML = slice.map(function (x) {
       var s = x.s, multi = s.depts.length > 1;
       var dept = multi
-        ? '<button type="button" class="select" data-row-dept="' + x.i + '" aria-haspopup="listbox" aria-expanded="false" aria-label="Department for ' + esc(s.name) + '"><span class="select__value">' + esc(deptOf(x.i)) + "</span>" + ICONS.chevron + "</button>"
+        ? '<button type="button" class="select" data-row-dept="' + x.i + '" aria-haspopup="listbox" aria-expanded="false" aria-label="Department for ' + esc(s.name) + '"><span class="select__stack"><span class="select__label">Department</span><span class="select__value">' + esc(deptOf(x.i)) + "</span></span>" + ICONS.chevron + "</button>"
         : "";
       return '<div class="ss-svc">' +
         '<div class="ss-svc__main"><h3 class="ss-svc__name">' + esc(s.name) + "</h3>" +
         '<div class="ss-svc__meta"><span>' + s.minutes + " min</span>" + (multi ? "" : "<span>·</span><span>" + esc(s.depts[0]) + "</span>") + DROP_BADGE[s.drop] + "</div></div>" +
-        '<div class="ss-svc__aside">' + dept + '<button type="button" class="btn btn--secondary btn--sm" data-pick="' + x.i + '">Pick a time</button></div>' +
+        '<div class="ss-svc__aside">' + dept + '<button type="button" class="btn btn--secondary btn--base" data-pick="' + x.i + '">Pick a time</button></div>' +
         "</div>";
     }).join("");
     $("ss-range").textContent = any ? "Showing " + (from + 1) + "–" + (from + slice.length) + " of " + list.length : "";

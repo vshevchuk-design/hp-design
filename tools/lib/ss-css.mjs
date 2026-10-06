@@ -46,7 +46,9 @@ export function ssCss(h) {
   const chipBase = { height: D(chip.size.base.height), paddingX: D(chip.size.base.paddingX), gap: D(chip.size.base.gap), iconSize: D(chip.size.base.iconSize), label: T(chip.size.base.label) };
   const tg = chip.toggle;
 
-  const selSm = { height: D(select.size.sm.height), paddingX: D(select.size.sm.paddingX), gap: D(select.size.sm.gap), iconSize: D(select.size.sm.iconSize), value: T(select.size.sm.value) };
+  // Row department + Pick a time are both base (40px): at sm the Select's fixed
+  // 16px value (the iOS-zoom rule) out-weighed the sm button beside it.
+  const selRow = { height: D(select.size.base.height), paddingX: D(select.size.base.paddingX), gap: D(select.size.base.gap), iconSize: D(select.size.base.iconSize), value: T(select.size.base.value), label: T(select.size.base.label), labelGap: D(select.size.base.labelGap) };
   const srch = { height: D(search.size.base.height), paddingX: D(search.size.base.paddingX), gap: D(search.size.base.gap), iconSize: D(search.size.base.iconSize), value: T(search.value) };
   const badgeSm = { height: D(badge.size.sm.height), paddingX: D(badge.size.sm.paddingX), radius: D(badge.radius), label: T(badge.size.sm.label) };
 
@@ -164,11 +166,16 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .listbox__option[aria-selected="true"] .listbox__checkmark { visibility: visible; }
 
 /* ============ Select (closed trigger, sm — the per-row department) ============ */
-.select { display: inline-flex; align-items: center; max-width: 100%; height: ${selSm.height}; padding: 0 ${selSm.paddingX}; gap: ${selSm.gap}; background: ${R(select.state.default.bg)}; border: 1px solid ${R(select.state.default.border)}; border-radius: ${D(select.radius)}; cursor: pointer; text-align: left; font-family: inherit; }
+.select { display: inline-flex; align-items: center; max-width: 100%; height: ${selRow.height}; padding: 0 ${selRow.paddingX}; gap: ${selRow.gap}; background: ${R(select.state.default.bg)}; border: 1px solid ${R(select.state.default.border)}; border-radius: ${D(select.radius)}; cursor: pointer; text-align: left; font-family: inherit; }
 .select:hover { background: ${R(select.state.hover.bg)}; border-color: ${R(select.state.hover.border)}; }
 .select:focus-visible, .select[aria-expanded="true"] { outline: none; border-color: ${R(select.state.focus.border)}; }
-.select__value { min-width: 0; color: ${R(select.state.default.value)}; ${typoCss(selSm.value)} white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.select__chevron { flex-shrink: 0; width: ${selSm.iconSize}; height: ${selSm.iconSize}; color: ${R(select.state.default.chevron)}; }
+/* Base Select's populated state: the floating label ("Department") over the
+   value — says what the control picks without a separate caption. */
+.select__stack { display: flex; flex-direction: column; justify-content: center; gap: ${selRow.labelGap}; flex: 1; min-width: 0; }
+.select__label { color: ${R(select.state.populated.label)}; ${typoCss(selRow.label)} white-space: nowrap; }
+.select[aria-expanded="true"] .select__label { color: ${R(select.state.focus.label)}; }
+.select__value { min-width: 0; color: ${R(select.state.default.value)}; ${typoCss(selRow.value)} white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.select__chevron { flex-shrink: 0; width: ${selRow.iconSize}; height: ${selRow.iconSize}; color: ${R(select.state.default.chevron)}; }
 
 /* ============ Card ============ */
 .card { background: ${R(card.bg)}; border: 1px solid ${R(card.border)}; border-radius: ${D(card.radius)}; }

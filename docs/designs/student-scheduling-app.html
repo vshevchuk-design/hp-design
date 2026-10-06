@@ -234,11 +234,16 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .listbox__option[aria-selected="true"] .listbox__checkmark { visibility: visible; }
 
 /* ============ Select (closed trigger, sm — the per-row department) ============ */
-.select { display: inline-flex; align-items: center; max-width: 100%; height: 32px; padding: 0 8px; gap: 8px; background: var(--tok-surface-dim); border: 1px solid var(--tok-border-default); border-radius: 8px; cursor: pointer; text-align: left; font-family: inherit; }
+.select { display: inline-flex; align-items: center; max-width: 100%; height: 40px; padding: 0 12px; gap: 8px; background: var(--tok-surface-dim); border: 1px solid var(--tok-border-default); border-radius: 8px; cursor: pointer; text-align: left; font-family: inherit; }
 .select:hover { background: var(--tok-surface-dim-hover); border-color: var(--tok-border-strong); }
 .select:focus-visible, .select[aria-expanded="true"] { outline: none; border-color: var(--tok-border-focus); }
+/* Base Select's populated state: the floating label ("Department") over the
+   value — says what the control picks without a separate caption. */
+.select__stack { display: flex; flex-direction: column; justify-content: center; gap: 0px; flex: 1; min-width: 0; }
+.select__label { color: var(--tok-text-muted); font-weight: 400; font-size: 12px; line-height: 1.2; white-space: nowrap; }
+.select[aria-expanded="true"] .select__label { color: var(--tok-text-primary); }
 .select__value { min-width: 0; color: var(--tok-text-default); font-weight: 400; font-size: 16px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.select__chevron { flex-shrink: 0; width: 16px; height: 16px; color: var(--tok-icon-default); }
+.select__chevron { flex-shrink: 0; width: 20px; height: 20px; color: var(--tok-icon-default); }
 
 /* ============ Card ============ */
 .card { background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); border-radius: 8px; }
@@ -703,12 +708,12 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     $("ss-list").innerHTML = slice.map(function (x) {
       var s = x.s, multi = s.depts.length > 1;
       var dept = multi
-        ? '<button type="button" class="select" data-row-dept="' + x.i + '" aria-haspopup="listbox" aria-expanded="false" aria-label="Department for ' + esc(s.name) + '"><span class="select__value">' + esc(deptOf(x.i)) + "</span>" + ICONS.chevron + "</button>"
+        ? '<button type="button" class="select" data-row-dept="' + x.i + '" aria-haspopup="listbox" aria-expanded="false" aria-label="Department for ' + esc(s.name) + '"><span class="select__stack"><span class="select__label">Department</span><span class="select__value">' + esc(deptOf(x.i)) + "</span></span>" + ICONS.chevron + "</button>"
         : "";
       return '<div class="ss-svc">' +
         '<div class="ss-svc__main"><h3 class="ss-svc__name">' + esc(s.name) + "</h3>" +
         '<div class="ss-svc__meta"><span>' + s.minutes + " min</span>" + (multi ? "" : "<span>·</span><span>" + esc(s.depts[0]) + "</span>") + DROP_BADGE[s.drop] + "</div></div>" +
-        '<div class="ss-svc__aside">' + dept + '<button type="button" class="btn btn--secondary btn--sm" data-pick="' + x.i + '">Pick a time</button></div>' +
+        '<div class="ss-svc__aside">' + dept + '<button type="button" class="btn btn--secondary btn--base" data-pick="' + x.i + '">Pick a time</button></div>' +
         "</div>";
     }).join("");
     $("ss-range").textContent = any ? "Showing " + (from + 1) + "–" + (from + slice.length) + " of " + list.length : "";
