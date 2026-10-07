@@ -168,6 +168,19 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .ss-view.is-active { display: flex; }
 .ss-head { display: flex; flex-direction: column; gap: 6px; }
 .ss-title { margin: 0; color: var(--tok-text-default); font-weight: 700; font-size: 20px; line-height: 1.2; }
+.ss-sub.ss-sub--sm { font-weight: 400; font-size: 12px; line-height: 1.4; }
+/* v5 browse head: title + a search button on a phone. The button is base
+   (40px) — the same height as the Search field that replaces the row when it
+   opens, so nothing jumps. From 768 the button goes and the field stays in
+   the filter row. */
+.ss-head__row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+@media (max-width: 767px) { .ss-head__row { min-height: 40px; } }
+.ss-head__row .search { display: none; }
+.ss-head.is-search-open .ss-head__row .ss-title, .ss-head.is-search-open .ss-search-open { display: none; }
+.ss-head.is-search-open .ss-head__row .search { display: flex; flex: 1; }
+/* open on a phone, the × is always there: it clears, then closes */
+.ss-head.is-search-open .search__clear { display: inline-flex; }
+@media (min-width: 768px) { .ss-head .ss-search-open { display: none; } }
 .ss-sub { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 14px; line-height: 1.4; max-width: 640px; }
 .ss-note { margin: 0; color: var(--tok-text-muted); font-weight: 400; font-size: 12px; line-height: 1.4; }
 .ss-eyebrow { color: var(--tok-text-secondary); font-weight: 700; font-size: 12px; line-height: 1.4; text-transform: uppercase; letter-spacing: [object Object]; }
@@ -757,9 +770,41 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     searchBox.classList.toggle("is-populated", !!searchInput.value);
     st.page = 0; renderBrowse();
   });
-  $("ss-search-clear").addEventListener("click", function () {
+  function clearSearch() {
     searchInput.value = ""; st.q = ""; searchBox.classList.remove("is-populated");
-    st.page = 0; renderBrowse(); searchInput.focus();
+    st.page = 0; renderBrowse();
+  }
+  // v5 phone: search lives behind a button in the title row and expands over
+  // the title — the Message Center's pattern. × clears, then closes; Escape
+  // clears and closes. From 768 the field goes back to the filter row.
+  var head = $("ss-browse-head"), headRow = $("ss-head-row"), openBtn = $("ss-search-open");
+  var tools = document.querySelector(".ss-tools");
+  function closeSearch() {
+    clearSearch();
+    head.classList.remove("is-search-open");
+    openBtn.setAttribute("aria-expanded", "false");
+    openBtn.focus();
+  }
+  if (head) {
+    var phone = window.matchMedia("(max-width: 767px)");
+    var placeSearch = function () {
+      if (phone.matches) headRow.appendChild(searchBox);
+      else { tools.insertBefore(searchBox, tools.firstChild); head.classList.remove("is-search-open"); }
+    };
+    phone.addEventListener("change", placeSearch);
+    placeSearch();
+    openBtn.addEventListener("click", function () {
+      head.classList.add("is-search-open");
+      openBtn.setAttribute("aria-expanded", "true");
+      searchInput.focus();
+    });
+    searchInput.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && head.classList.contains("is-search-open")) closeSearch();
+    });
+  }
+  $("ss-search-clear").addEventListener("click", function () {
+    if (!searchInput.value && head && head.classList.contains("is-search-open")) { closeSearch(); return; }
+    clearSearch(); searchInput.focus();
   });
 
   var deptChip = $("ss-dept-chip");

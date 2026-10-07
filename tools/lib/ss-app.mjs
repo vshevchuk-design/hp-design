@@ -152,9 +152,41 @@ export function ssAppJs(d) {
     searchBox.classList.toggle("is-populated", !!searchInput.value);
     st.page = 0; renderBrowse();
   });
-  $("ss-search-clear").addEventListener("click", function () {
+  function clearSearch() {
     searchInput.value = ""; st.q = ""; searchBox.classList.remove("is-populated");
-    st.page = 0; renderBrowse(); searchInput.focus();
+    st.page = 0; renderBrowse();
+  }
+  // v5 phone: search lives behind a button in the title row and expands over
+  // the title — the Message Center's pattern. × clears, then closes; Escape
+  // clears and closes. From 768 the field goes back to the filter row.
+  var head = $("ss-browse-head"), headRow = $("ss-head-row"), openBtn = $("ss-search-open");
+  var tools = document.querySelector(".ss-tools");
+  function closeSearch() {
+    clearSearch();
+    head.classList.remove("is-search-open");
+    openBtn.setAttribute("aria-expanded", "false");
+    openBtn.focus();
+  }
+  if (head) {
+    var phone = window.matchMedia("(max-width: 767px)");
+    var placeSearch = function () {
+      if (phone.matches) headRow.appendChild(searchBox);
+      else { tools.insertBefore(searchBox, tools.firstChild); head.classList.remove("is-search-open"); }
+    };
+    phone.addEventListener("change", placeSearch);
+    placeSearch();
+    openBtn.addEventListener("click", function () {
+      head.classList.add("is-search-open");
+      openBtn.setAttribute("aria-expanded", "true");
+      searchInput.focus();
+    });
+    searchInput.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && head.classList.contains("is-search-open")) closeSearch();
+    });
+  }
+  $("ss-search-clear").addEventListener("click", function () {
+    if (!searchInput.value && head && head.classList.contains("is-search-open")) { closeSearch(); return; }
+    clearSearch(); searchInput.focus();
   });
 
   var deptChip = $("ss-dept-chip");

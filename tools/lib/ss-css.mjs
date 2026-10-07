@@ -97,6 +97,19 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .ss-view.is-active { display: flex; }
 .ss-head { display: flex; flex-direction: column; gap: ${dim("1_5")}; }
 .ss-title { margin: 0; color: ${cv("text.default")}; ${typoCss(style("title-xl"))} }
+.ss-sub.ss-sub--sm { ${typoCss(style("body-sm"))} }
+/* v5 browse head: title + a search button on a phone. The button is base
+   (40px) — the same height as the Search field that replaces the row when it
+   opens, so nothing jumps. From 768 the button goes and the field stays in
+   the filter row. */
+.ss-head__row { display: flex; align-items: center; justify-content: space-between; gap: ${dim(3)}; }
+@media (max-width: 767px) { .ss-head__row { min-height: ${D(button.secondary.size.base.height)}; } }
+.ss-head__row .search { display: none; }
+.ss-head.is-search-open .ss-head__row .ss-title, .ss-head.is-search-open .ss-search-open { display: none; }
+.ss-head.is-search-open .ss-head__row .search { display: flex; flex: 1; }
+/* open on a phone, the × is always there: it clears, then closes */
+.ss-head.is-search-open .search__clear { display: inline-flex; }
+@media (min-width: 768px) { .ss-head .ss-search-open { display: none; } }
 .ss-sub { margin: 0; color: ${cv("text.secondary")}; ${typoCss(style("body-base"))} max-width: 640px; }
 .ss-note { margin: 0; color: ${cv("text.muted")}; ${typoCss(style("body-sm"))} }
 .ss-eyebrow { color: ${cv("text.secondary")}; ${typoCss(labelSm)} text-transform: ${labelSmCase}; letter-spacing: ${labelSm.letterSpacing}; }

@@ -270,10 +270,25 @@ const SEGMENTED_NAV = `<nav class="ss-sections ss-sections--seg" aria-label="Sch
     </div>
   </nav>`;
 if (!markup.includes(UNDERLINE_NAV)) throw new Error("section nav markup drifted — update UNDERLINE_NAV");
+// v5's browse head: a row for the title + a search button (phone only), and
+// a 12px subtitle. The search field itself moves into that row on a phone
+// (script, on the breakpoint) and expands over the title when opened.
+const BROWSE_HEAD = `<div class="ss-head">
+        <h2 class="ss-title">Browse services</h2>
+        <p class="ss-sub">Book time with an advisor: find the service you need, then pick a time that works for you.</p>
+      </div>`;
+const BROWSE_HEAD_V5 = `<div class="ss-head" id="ss-browse-head">
+        <div class="ss-head__row" id="ss-head-row">
+          <h2 class="ss-title">Browse services</h2>
+          <button class="btn btn--secondary btn--base btn--icon-only ss-search-open" id="ss-search-open" type="button" aria-label="Search services" aria-expanded="false">${icon("search", "btn__icon")}</button>
+        </div>
+        <p class="ss-sub ss-sub--sm">Book time with an advisor: find the service you need, then pick a time that works for you.</p>
+      </div>`;
+if (!markup.includes(BROWSE_HEAD)) throw new Error("browse head markup drifted — update BROWSE_HEAD");
 const markupFor = (layout) => {
   if (layout === "list") return markup;
   let m = markup.replace('class="card ss-list" id="ss-list"', layout === "text" ? 'class="ss-hybrid ss-hybrid--flush" id="ss-list"' : 'class="ss-hybrid" id="ss-list"');
-  if (layout === "text") m = m.replace(UNDERLINE_NAV, SEGMENTED_NAV);
+  if (layout === "text") m = m.replace(UNDERLINE_NAV, SEGMENTED_NAV).replace(BROWSE_HEAD, BROWSE_HEAD_V5);
   return m;
 };
 
