@@ -116,9 +116,9 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
   #ss-browse-head .ss-search-open { grid-column: 2; grid-row: 1; }
   #ss-browse-head .search { grid-column: 1 / -1; grid-row: 1; }
   #ss-browse-head .ss-sub { grid-column: 1; grid-row: 2; }
-  /* tighter on a phone: subtitle → filters → sort, 12 each */
-  .ss-view[data-view="browse"]:has(#ss-browse-head) { gap: ${dim(3)}; }
 }
+/* v5, every width: subtitle → filters → sort, 12 each */
+.ss-view[data-view="browse"]:has(#ss-browse-head) { gap: ${dim(3)}; }
 .ss-head__row .search { display: none; }
 .ss-head.is-search-open .ss-head__row .ss-title, .ss-head.is-search-open .ss-search-open { display: none; }
 .ss-head.is-search-open .ss-head__row .search { display: flex; flex: 1; }
