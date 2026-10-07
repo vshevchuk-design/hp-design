@@ -412,18 +412,19 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 /* ---- v4: one item, two shapes ----
    Phone: a card per service (12px padding — Card's 16 plus the 16 page gutter
    spent 64px of a 375 screen on air). From 768: rows inside one Card — name
-   and duration/mode on the left, a departments column, the action. */
+   over one wrapping line (duration, booking mode, every department), then
+   the action. */
 .ss-hybrid { display: flex; flex-direction: column; gap: 12px; }
 .ss-item { display: flex; flex-direction: column; gap: 12px; padding: 12px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); border-radius: 8px; min-width: 0; }
 .ss-item__main { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 .ss-item__name { margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 16px; line-height: 1.4; }
-.ss-item__line { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.ss-item__line { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; }
+.ss-item__line .ss-fact { margin-inline-end: 4px; }
 .ss-item__line .ss-fact { min-height: 0; }
-.ss-item__depts { position: relative; display: flex; align-items: center; gap: 6px; min-width: 0; }
 .ss-item__cta { width: 100%; }
 @media (min-width: 768px) {
   .ss-hybrid { gap: 0; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); border-radius: 8px; overflow: hidden; }
-  .ss-item { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 288px) auto; align-items: center; gap: 16px; padding: 16px; border: none; border-bottom: 1px solid var(--tok-border-default); border-radius: 0; }
+  .ss-item { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 16px; padding: 16px; border: none; border-bottom: 1px solid var(--tok-border-default); border-radius: 0; }
   .ss-item:last-child { border-bottom: none; }
   .ss-item__cta { width: auto; }
 }
@@ -846,17 +847,17 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
       '<button type="button" class="btn btn--tint btn--base btn--block ss-card__cta" data-pick="' + x.i + '">Pick a time</button>' +
       "</article>";
   }
-  // v4 item — a card on a phone, a list row from 768 (CSS decides).
+  // v4 item — a card on a phone, a list row from 768 (CSS decides). Duration,
+  // booking mode and every department share one wrapping line: they fill the
+  // line while they fit and carry on to the next, all of them shown.
   function itemHtml(x) {
     var s = x.s, depts = s.depts.slice(), at = st.dept ? depts.indexOf(st.dept) : -1;
     if (at > 0) { depts.splice(at, 1); depts.unshift(st.dept); }
     return '<article class="ss-item">' +
       '<div class="ss-item__main"><h3 class="ss-item__name">' + esc(s.name) + "</h3>" +
-      '<div class="ss-item__line"><span class="ss-fact">' + ICONS.schedule + '<span class="ss-fact__text">' + s.minutes + " min</span></span>" + DROP_BADGE_V4[s.drop] + "</div></div>" +
-      '<div class="ss-item__depts" data-depts aria-label="Offered by ' + esc(s.depts.join(", ")) + '">' +
-      depts.map(function (d) { return '<span class="badge badge--base badge--outline badge--regular ss-dept" data-dept-badge><span class="ss-dept__text">' + esc(d) + "</span></span>"; }).join("") +
-      '<span class="tooltip-wrapper ss-more is-hidden"><span class="badge badge--base badge--outline badge--regular" data-more></span><span class="tooltip" role="tooltip"></span></span>' +
-      "</div>" +
+      '<div class="ss-item__line"><span class="ss-fact">' + ICONS.schedule + '<span class="ss-fact__text">' + s.minutes + " min</span></span>" + DROP_BADGE_V4[s.drop] +
+      depts.map(function (d) { return '<span class="badge badge--base badge--outline badge--regular">' + esc(d) + "</span>"; }).join("") +
+      "</div></div>" +
       '<button type="button" class="btn btn--tint btn--base ss-item__cta" data-pick="' + x.i + '">Pick a time</button>' +
       "</article>";
   }
@@ -864,7 +865,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   // into the "+N" badge (its Tooltip names them). Measured, not guessed — a
   // short name and a long one cost very different widths.
   function fitDepts() {
-    document.querySelectorAll(".ss-card__depts, [data-depts]").forEach(function (row) {
+    document.querySelectorAll(".ss-card__depts").forEach(function (row) {
       var badges = [].slice.call(row.querySelectorAll("[data-dept-badge]"));
       var more = row.querySelector(".ss-more");
       badges.forEach(function (b) { b.classList.remove("is-hidden", "is-squeezed"); });
@@ -886,7 +887,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
       if (overflows()) badges[0].classList.add("is-squeezed");
     });
   }
-  if (DEPT_ON_PICK) {
+  if (LAYOUT === "chips") {
     window.addEventListener("resize", fitDepts);
     // The first measure runs on the fallback font; Sora is wider, so measure again once it's in.
     if (document.fonts) document.fonts.ready.then(fitDepts);
@@ -901,7 +902,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     $("ss-results").classList.toggle("is-hidden", !any);
     $("ss-empty").classList.toggle("is-hidden", any);
     $("ss-list").innerHTML = slice.map(LAYOUT === "hybrid" ? itemHtml : LAYOUT === "chips" ? chipCardHtml : LAYOUT === "cards" ? cardHtml : rowHtml).join("");
-    if (DEPT_ON_PICK) fitDepts();
+    if (LAYOUT === "chips") fitDepts();
     $("ss-range").textContent = any ? "Showing " + (from + 1) + "–" + (from + slice.length) + " of " + list.length : "";
     renderPager(pages);
   }

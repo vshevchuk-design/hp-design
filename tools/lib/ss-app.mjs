@@ -246,17 +246,17 @@ export function ssAppJs(d) {
       '<button type="button" class="btn btn--tint btn--base btn--block ss-card__cta" data-pick="' + x.i + '">Pick a time</button>' +
       "</article>";
   }
-  // v4 item — a card on a phone, a list row from 768 (CSS decides).
+  // v4 item — a card on a phone, a list row from 768 (CSS decides). Duration,
+  // booking mode and every department share one wrapping line: they fill the
+  // line while they fit and carry on to the next, all of them shown.
   function itemHtml(x) {
     var s = x.s, depts = s.depts.slice(), at = st.dept ? depts.indexOf(st.dept) : -1;
     if (at > 0) { depts.splice(at, 1); depts.unshift(st.dept); }
     return '<article class="ss-item">' +
       '<div class="ss-item__main"><h3 class="ss-item__name">' + esc(s.name) + "</h3>" +
-      '<div class="ss-item__line"><span class="ss-fact">' + ICONS.schedule + '<span class="ss-fact__text">' + s.minutes + " min</span></span>" + DROP_BADGE_V4[s.drop] + "</div></div>" +
-      '<div class="ss-item__depts" data-depts aria-label="Offered by ' + esc(s.depts.join(", ")) + '">' +
-      depts.map(function (d) { return '<span class="badge badge--base badge--outline badge--regular ss-dept" data-dept-badge><span class="ss-dept__text">' + esc(d) + "</span></span>"; }).join("") +
-      '<span class="tooltip-wrapper ss-more is-hidden"><span class="badge badge--base badge--outline badge--regular" data-more></span><span class="tooltip" role="tooltip"></span></span>' +
-      "</div>" +
+      '<div class="ss-item__line"><span class="ss-fact">' + ICONS.schedule + '<span class="ss-fact__text">' + s.minutes + " min</span></span>" + DROP_BADGE_V4[s.drop] +
+      depts.map(function (d) { return '<span class="badge badge--base badge--outline badge--regular">' + esc(d) + "</span>"; }).join("") +
+      "</div></div>" +
       '<button type="button" class="btn btn--tint btn--base ss-item__cta" data-pick="' + x.i + '">Pick a time</button>' +
       "</article>";
   }
@@ -264,7 +264,7 @@ export function ssAppJs(d) {
   // into the "+N" badge (its Tooltip names them). Measured, not guessed — a
   // short name and a long one cost very different widths.
   function fitDepts() {
-    document.querySelectorAll(".ss-card__depts, [data-depts]").forEach(function (row) {
+    document.querySelectorAll(".ss-card__depts").forEach(function (row) {
       var badges = [].slice.call(row.querySelectorAll("[data-dept-badge]"));
       var more = row.querySelector(".ss-more");
       badges.forEach(function (b) { b.classList.remove("is-hidden", "is-squeezed"); });
@@ -286,7 +286,7 @@ export function ssAppJs(d) {
       if (overflows()) badges[0].classList.add("is-squeezed");
     });
   }
-  if (DEPT_ON_PICK) {
+  if (LAYOUT === "chips") {
     window.addEventListener("resize", fitDepts);
     // The first measure runs on the fallback font; Sora is wider, so measure again once it's in.
     if (document.fonts) document.fonts.ready.then(fitDepts);
@@ -301,7 +301,7 @@ export function ssAppJs(d) {
     $("ss-results").classList.toggle("is-hidden", !any);
     $("ss-empty").classList.toggle("is-hidden", any);
     $("ss-list").innerHTML = slice.map(LAYOUT === "hybrid" ? itemHtml : LAYOUT === "chips" ? chipCardHtml : LAYOUT === "cards" ? cardHtml : rowHtml).join("");
-    if (DEPT_ON_PICK) fitDepts();
+    if (LAYOUT === "chips") fitDepts();
     $("ss-range").textContent = any ? "Showing " + (from + 1) + "–" + (from + slice.length) + " of " + list.length : "";
     renderPager(pages);
   }

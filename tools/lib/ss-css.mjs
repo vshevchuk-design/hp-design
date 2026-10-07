@@ -339,18 +339,19 @@ ${["neutral", "primary", "success", "warning"].map((r) => `.badge--${r} { backgr
 /* ---- v4: one item, two shapes ----
    Phone: a card per service (12px padding — Card's 16 plus the 16 page gutter
    spent 64px of a 375 screen on air). From 768: rows inside one Card — name
-   and duration/mode on the left, a departments column, the action. */
+   over one wrapping line (duration, booking mode, every department), then
+   the action. */
 .ss-hybrid { display: flex; flex-direction: column; gap: ${dim(3)}; }
 .ss-item { display: flex; flex-direction: column; gap: ${dim(3)}; padding: ${dim(3)}; background: ${R(card.bg)}; border: 1px solid ${R(card.border)}; border-radius: ${D(card.radius)}; min-width: 0; }
 .ss-item__main { display: flex; flex-direction: column; gap: ${dim(1)}; min-width: 0; }
 .ss-item__name { margin: 0; color: ${cv("text.default")}; ${typoCss(style("heading-md"))} }
-.ss-item__line { display: flex; flex-wrap: wrap; align-items: center; gap: ${dim(2)}; }
+.ss-item__line { display: flex; flex-wrap: wrap; align-items: center; gap: ${dim("1_5")} ${dim(2)}; }
+.ss-item__line .ss-fact { margin-inline-end: ${dim(1)}; }
 .ss-item__line .ss-fact { min-height: 0; }
-.ss-item__depts { position: relative; display: flex; align-items: center; gap: ${dim("1_5")}; min-width: 0; }
 .ss-item__cta { width: 100%; }
 @media (min-width: 768px) {
   .ss-hybrid { gap: 0; background: ${R(card.bg)}; border: 1px solid ${R(card.border)}; border-radius: ${D(card.radius)}; overflow: hidden; }
-  .ss-item { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, ${dim(72)}) auto; align-items: center; gap: ${dim(4)}; padding: ${D(card.padding)}; border: none; border-bottom: 1px solid ${R(card.divider)}; border-radius: 0; }
+  .ss-item { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: ${dim(4)}; padding: ${D(card.padding)}; border: none; border-bottom: 1px solid ${R(card.divider)}; border-radius: 0; }
   .ss-item:last-child { border-bottom: none; }
   .ss-item__cta { width: auto; }
 }
