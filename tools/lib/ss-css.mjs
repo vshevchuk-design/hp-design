@@ -103,7 +103,18 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
    opens, so nothing jumps. From 768 the button goes and the field stays in
    the filter row. */
 .ss-head__row { display: flex; align-items: center; justify-content: space-between; gap: ${dim(3)}; }
-@media (max-width: 767px) { .ss-head__row { min-height: ${D(button.secondary.size.base.height)}; } }
+/* Phone: two columns — title + subtitle on the left, the search button on
+   the right — so the subtitle wraps short of the button instead of running
+   under it. The row dissolves (display: contents) so its children become grid
+   items; the opened Search spans both columns of the first row. */
+@media (max-width: 767px) {
+  #ss-browse-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: ${dim(3)}; row-gap: ${dim("1_5")}; }
+  #ss-browse-head .ss-head__row { display: contents; }
+  #ss-browse-head .ss-title { grid-column: 1; grid-row: 1; align-self: center; min-height: ${D(button.secondary.size.base.height)}; display: flex; align-items: center; }
+  #ss-browse-head .ss-search-open { grid-column: 2; grid-row: 1; }
+  #ss-browse-head .search { grid-column: 1 / -1; grid-row: 1; }
+  #ss-browse-head .ss-sub { grid-column: 1; grid-row: 2; }
+}
 .ss-head__row .search { display: none; }
 .ss-head.is-search-open .ss-head__row .ss-title, .ss-head.is-search-open .ss-search-open { display: none; }
 .ss-head.is-search-open .ss-head__row .search { display: flex; flex: 1; }
