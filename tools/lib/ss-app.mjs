@@ -35,6 +35,16 @@ export function ssAppJs(d) {
     available: '<span class="badge badge--primary">Drop-in available</span>'
   };
 
+  // v3's badges are lg, and "By appointment" takes the warning tint — the two
+  // booking modes read as two colours, not as one coloured and one gray.
+  var DROP_BADGE_V3 = {
+    none: '<span class="badge badge--lg badge--warning">By appointment</span>',
+    // "open" is implied by the closing time — dropped so the lg badge fits
+    // beside the duration on a 3-column card without wrapping.
+    open: '<span class="badge badge--lg badge--success">Drop-in until 10:00 PM</span>',
+    available: '<span class="badge badge--lg badge--primary">Drop-in available</span>'
+  };
+
   function $(id) { return document.getElementById(id); }
   function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
   function hash(s) { var h = 2166136261; for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
@@ -217,10 +227,10 @@ export function ssAppJs(d) {
     if (at > 0) { depts.splice(at, 1); depts.unshift(st.dept); }
     return '<article class="card ss-card">' +
       '<h3 class="ss-card__name">' + esc(s.name) + "</h3>" +
-      '<div class="ss-card__line"><span class="ss-fact">' + ICONS.schedule + '<span class="ss-fact__text">' + s.minutes + " min</span></span>" + DROP_BADGE[s.drop] + "</div>" +
-      '<div class="ss-card__depts" aria-label="Offered by ' + esc(s.depts.join(", ")) + '">' + ICONS.dept +
-      depts.map(function (d) { return '<span class="badge badge--neutral ss-dept" data-dept-badge><span class="ss-dept__text">' + esc(d) + "</span></span>"; }).join("") +
-      '<span class="tooltip-wrapper ss-more is-hidden"><span class="badge badge--neutral" data-more></span><span class="tooltip" role="tooltip"></span></span>' +
+      '<div class="ss-card__line"><span class="ss-fact">' + ICONS.schedule + '<span class="ss-fact__text">' + s.minutes + " min</span></span>" + DROP_BADGE_V3[s.drop] + "</div>" +
+      '<div class="ss-card__depts" aria-label="Offered by ' + esc(s.depts.join(", ")) + '">' +
+      depts.map(function (d) { return '<span class="badge badge--lg badge--neutral ss-dept" data-dept-badge><span class="ss-dept__text">' + esc(d) + "</span></span>"; }).join("") +
+      '<span class="tooltip-wrapper ss-more is-hidden"><span class="badge badge--lg badge--neutral" data-more></span><span class="tooltip" role="tooltip"></span></span>' +
       "</div>" +
       '<button type="button" class="btn btn--tint btn--base btn--block ss-card__cta" data-pick="' + x.i + '">Pick a time</button>' +
       "</article>";

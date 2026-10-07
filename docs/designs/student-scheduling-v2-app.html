@@ -266,9 +266,11 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 
 /* ============ Badge ============ */
 .badge { display: inline-flex; align-items: center; flex-shrink: 0; height: 16px; padding: 0 8px; border-radius: 999px; white-space: nowrap; font-weight: 600; font-size: 10px; line-height: 1; }
+.badge--lg { height: 24px; padding: 0 8px; font-weight: 600; font-size: 14px; line-height: 1; }
 .badge--neutral { background: var(--tok-bg-neutral); color: var(--tok-text-default); }
 .badge--primary { background: var(--tok-bg-primary); color: var(--tok-text-primary); }
 .badge--success { background: var(--tok-bg-success); color: var(--tok-text-success); }
+.badge--warning { background: var(--tok-bg-warning); color: var(--tok-text-warning); }
 
 /* ============ Pagination ============ */
 .pagination { display: inline-flex; align-items: center; gap: 4px; }
@@ -386,10 +388,15 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .ss-card__badges { display: flex; flex-wrap: wrap; gap: 8px; }
 .ss-card__cta { margin-top: auto; }
 /* v3: duration and booking mode share one line; the departments get the next. */
-.ss-card__line { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+/* Duration left, booking mode right — the two facts read as a pair of ends. */
+.ss-card__line { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
 .ss-card__line .ss-fact { min-height: 0; }
-.ss-card__depts { position: relative; display: flex; align-items: center; gap: 6px; min-width: 0; }
-.ss-card__depts > svg { flex-shrink: 0; width: 16px; height: 16px; color: var(--tok-icon-secondary); }
+/* Beside lg badges the duration steps up to body-base, icon to 20. */
+.ss-card__line .ss-fact__text { color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; }
+.ss-card__line .ss-fact > svg { width: 20px; height: 20px; }
+/* The departments sit under a Card hairline: the line above is about the
+   service, this one is about who offers it. */
+.ss-card__depts { position: relative; display: flex; align-items: center; gap: 8px; min-width: 0; padding-top: 12px; border-top: 1px solid var(--tok-border-default); }
 /* A lone department too long for the card truncates instead of overflowing. */
 .ss-dept { min-width: 0; flex-shrink: 0; }
 .ss-dept.is-squeezed { flex-shrink: 1; }
@@ -605,6 +612,16 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     available: '<span class="badge badge--primary">Drop-in available</span>'
   };
 
+  // v3's badges are lg, and "By appointment" takes the warning tint — the two
+  // booking modes read as two colours, not as one coloured and one gray.
+  var DROP_BADGE_V3 = {
+    none: '<span class="badge badge--lg badge--warning">By appointment</span>',
+    // "open" is implied by the closing time — dropped so the lg badge fits
+    // beside the duration on a 3-column card without wrapping.
+    open: '<span class="badge badge--lg badge--success">Drop-in until 10:00 PM</span>',
+    available: '<span class="badge badge--lg badge--primary">Drop-in available</span>'
+  };
+
   function $(id) { return document.getElementById(id); }
   function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
   function hash(s) { var h = 2166136261; for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
@@ -787,10 +804,10 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     if (at > 0) { depts.splice(at, 1); depts.unshift(st.dept); }
     return '<article class="card ss-card">' +
       '<h3 class="ss-card__name">' + esc(s.name) + "</h3>" +
-      '<div class="ss-card__line"><span class="ss-fact">' + ICONS.schedule + '<span class="ss-fact__text">' + s.minutes + " min</span></span>" + DROP_BADGE[s.drop] + "</div>" +
-      '<div class="ss-card__depts" aria-label="Offered by ' + esc(s.depts.join(", ")) + '">' + ICONS.dept +
-      depts.map(function (d) { return '<span class="badge badge--neutral ss-dept" data-dept-badge><span class="ss-dept__text">' + esc(d) + "</span></span>"; }).join("") +
-      '<span class="tooltip-wrapper ss-more is-hidden"><span class="badge badge--neutral" data-more></span><span class="tooltip" role="tooltip"></span></span>' +
+      '<div class="ss-card__line"><span class="ss-fact">' + ICONS.schedule + '<span class="ss-fact__text">' + s.minutes + " min</span></span>" + DROP_BADGE_V3[s.drop] + "</div>" +
+      '<div class="ss-card__depts" aria-label="Offered by ' + esc(s.depts.join(", ")) + '">' +
+      depts.map(function (d) { return '<span class="badge badge--lg badge--neutral ss-dept" data-dept-badge><span class="ss-dept__text">' + esc(d) + "</span></span>"; }).join("") +
+      '<span class="tooltip-wrapper ss-more is-hidden"><span class="badge badge--lg badge--neutral" data-more></span><span class="tooltip" role="tooltip"></span></span>' +
       "</div>" +
       '<button type="button" class="btn btn--tint btn--base btn--block ss-card__cta" data-pick="' + x.i + '">Pick a time</button>' +
       "</article>";

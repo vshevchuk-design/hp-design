@@ -50,6 +50,7 @@ export function ssCss(h) {
   // 16px value (the iOS-zoom rule) out-weighed the sm button beside it.
   const selRow = { height: D(select.size.base.height), paddingX: D(select.size.base.paddingX), gap: D(select.size.base.gap), iconSize: D(select.size.base.iconSize), value: T(select.size.base.value), label: T(select.size.base.label), labelGap: D(select.size.base.labelGap) };
   const srch = { height: D(search.size.base.height), paddingX: D(search.size.base.paddingX), gap: D(search.size.base.gap), iconSize: D(search.size.base.iconSize), value: T(search.value) };
+  const badgeLg = { height: D(badge.size.lg.height), paddingX: D(badge.size.lg.paddingX), label: T(badge.size.lg.label) };
   const badgeSm = { height: D(badge.size.sm.height), paddingX: D(badge.size.sm.paddingX), radius: D(badge.radius), label: T(badge.size.sm.label) };
 
   const labelSm = style("label-sm");
@@ -195,7 +196,8 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 
 /* ============ Badge ============ */
 .badge { display: inline-flex; align-items: center; flex-shrink: 0; height: ${badgeSm.height}; padding: 0 ${badgeSm.paddingX}; border-radius: ${badgeSm.radius}; white-space: nowrap; ${typoCss(badgeSm.label)} }
-${["neutral", "primary", "success"].map((r) => `.badge--${r} { background: ${R(badge.role[r].tint.bg)}; color: ${R(badge.role[r].tint.text)}; }`).join("\n")}
+.badge--lg { height: ${badgeLg.height}; padding: 0 ${badgeLg.paddingX}; ${typoCss(badgeLg.label)} }
+${["neutral", "primary", "success", "warning"].map((r) => `.badge--${r} { background: ${R(badge.role[r].tint.bg)}; color: ${R(badge.role[r].tint.text)}; }`).join("\n")}
 
 /* ============ Pagination ============ */
 .pagination { display: inline-flex; align-items: center; gap: ${D(pg.item.gap)}; }
@@ -313,10 +315,15 @@ ${["neutral", "primary", "success"].map((r) => `.badge--${r} { background: ${R(b
 .ss-card__badges { display: flex; flex-wrap: wrap; gap: ${dim(2)}; }
 .ss-card__cta { margin-top: auto; }
 /* v3: duration and booking mode share one line; the departments get the next. */
-.ss-card__line { display: flex; flex-wrap: wrap; align-items: center; gap: ${dim(2)}; }
+/* Duration left, booking mode right — the two facts read as a pair of ends. */
+.ss-card__line { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: ${dim(2)}; }
 .ss-card__line .ss-fact { min-height: 0; }
-.ss-card__depts { position: relative; display: flex; align-items: center; gap: ${dim("1_5")}; min-width: 0; }
-.ss-card__depts > svg { flex-shrink: 0; width: ${dim(4)}; height: ${dim(4)}; color: ${cv("icon.secondary")}; }
+/* Beside lg badges the duration steps up to body-base, icon to 20. */
+.ss-card__line .ss-fact__text { color: ${cv("text.default")}; ${typoCss(style("body-base"))} }
+.ss-card__line .ss-fact > svg { width: ${dim(5)}; height: ${dim(5)}; }
+/* The departments sit under a Card hairline: the line above is about the
+   service, this one is about who offers it. */
+.ss-card__depts { position: relative; display: flex; align-items: center; gap: ${dim(2)}; min-width: 0; padding-top: ${dim(3)}; border-top: 1px solid ${R(card.divider)}; }
 /* A lone department too long for the card truncates instead of overflowing. */
 .ss-dept { min-width: 0; flex-shrink: 0; }
 .ss-dept.is-squeezed { flex-shrink: 1; }
