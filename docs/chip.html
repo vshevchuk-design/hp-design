@@ -107,7 +107,7 @@
 .chip--base .chip__icon { width: 16px; height: 16px; }
 .chip--base .chip__remove { width: 16px; height: 16px; }
 .chip--base .chip__remove-icon { width: calc(16px * 0.75); height: calc(16px * 0.75); }
-.chip--lg { height: 40px; padding: 0 16px; gap: 8px; font-weight: 600; font-size: 16px; line-height: 1; }
+.chip--lg { height: 40px; padding: 0 16px; gap: 8px; font-weight: 600; font-size: 14px; line-height: 1; }
 .chip--lg .chip__icon { width: 20px; height: 20px; }
 .chip--lg .chip__remove { width: 20px; height: 20px; }
 .chip--lg .chip__remove-icon { width: calc(20px * 0.75); height: calc(20px * 0.75); }
@@ -284,7 +284,7 @@
       <div class="row"><b>toggle / removable / action</b><span>Three kinds sharing one shell, split by ARIA role. <code class="tok">toggle</code> = filter selection, checkbox-like (click flips checked/unchecked — "I'm Involved"/"Flagged"/"Expires Soon"). <code class="tok">removable</code> = a selected value with a trailing dismiss (×) — a chosen multi-select option, a recipient chip; existence IS the selection, no checked ladder. <code class="tok">action</code> = button-like (a real <code class="tok">&lt;button&gt;</code> that fires an action and returns to rest, no persistent state) with a trailing arrow — Material's suggestion/assist chip.</span></div>
       <div class="row"><b>Not Badge</b><span>Badge is the display-only sibling this was deliberately split from — a status/tag pill you look at, not click. Chip is the checkbox-like/actionable, interactive one. Same ARIA-role reasoning as the Menu/Listbox split.</span></div>
       <div class="row"><b>solid vs. outline checked</b><span>Two checked treatments for <code class="tok">toggle</code>, not a ladder — pick by content. Solid (fill.primary + white text) for a real single boolean. Outline (bg.primary tint + border, reuses Badge's own tint recipe) for a chip carrying a <code class="tok">Counter</code> — a "Filters · 3" trigger summarizing several sub-selections is an aggregate, not one thing being on, so filling it fully solid would overstate it.</span></div>
-      <div class="row"><b>Sizes</b><span>sm 24 / base 32 / lg 40 — Button's own height ladder (32/40/48) shifted down one dim-step at every size, since a chip is clickable like a button but reads as a small pill like Badge.</span></div>
+      <div class="row"><b>Sizes</b><span>sm 24 / base 32 / lg 40 — Button's own height ladder (32/40/48) shifted down one dim-step at every size, since a chip is clickable like a button but reads as a small pill like Badge. Label: sm 12 / base 14 / <b>lg 14</b> — lg only adds height, to sit level with a 40px Search or field (changed from 16px 2026-10-07: a 16px semibold chip shouted over the content it filters).</span></div>
       <div class="row"><b>Remove button</b><span>Resolved from Popover/Drawer/Modal's own close-button recipe, not re-invented: transparent → fill.neutralHover → fill.neutralActive.</span></div>
     </div>
 
@@ -329,7 +329,7 @@
 .chip--base .chip__icon { width: 16px; height: 16px; }
 .chip--base .chip__remove { width: 16px; height: 16px; }
 .chip--base .chip__remove-icon { width: calc(16px * 0.75); height: calc(16px * 0.75); }
-.chip--lg { height: 40px; padding: 0 16px; gap: 8px; font-weight: 600; font-size: 16px; line-height: 1; }
+.chip--lg { height: 40px; padding: 0 16px; gap: 8px; font-weight: 600; font-size: 14px; line-height: 1; }
 .chip--lg .chip__icon { width: 20px; height: 20px; }
 .chip--lg .chip__remove { width: 20px; height: 20px; }
 .chip--lg .chip__remove-icon { width: calc(20px * 0.75); height: calc(20px * 0.75); }

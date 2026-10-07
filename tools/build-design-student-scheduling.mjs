@@ -142,8 +142,8 @@ ${shellTopbar({ title: "Scheduling", actions: settingsBtn })}
           <button class="search__clear" id="ss-search-clear" type="button" aria-label="Clear search">${icon("close", "")}</button>
         </label>
         <div class="ss-filters">
-          <button class="chip chip--dropdown" id="ss-dept-chip" type="button" aria-haspopup="listbox" aria-expanded="false"><span class="chip__label" id="ss-dept-label">Department</span>${chevronDown}</button>
-          <button class="chip" id="ss-drop-chip" type="button" aria-pressed="false">Drop-in available</button>
+          <button class="chip chip--lg chip--dropdown" id="ss-dept-chip" type="button" aria-haspopup="listbox" aria-expanded="false"><span class="chip__label" id="ss-dept-label">Department</span>${chevronDown}</button>
+          <button class="chip chip--lg" id="ss-drop-chip" type="button" aria-pressed="false">Drop-in available</button>
         </div>
       </div>
 

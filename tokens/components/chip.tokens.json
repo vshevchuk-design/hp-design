@@ -86,10 +86,11 @@
             "$value": {
               "fontFamily": "{family.sans}",
               "fontWeight": "{weight.semibold}",
-              "fontSize": "{size.md}",
+              "fontSize": "{size.base}",
               "lineHeight": "{leading.none}",
               "letterSpacing": "{tracking.normal}"
-            }
+            },
+            "$description": "14px, the same as base — lg only adds height and padding (40px, to sit level with a base Search/Input/Select or a base Button). A 16px semibold chip label read louder than the content it filters, and no use case wanted that (user, 2026-10-07). Same 14px label Button base uses at 40px."
           }
         }
       },

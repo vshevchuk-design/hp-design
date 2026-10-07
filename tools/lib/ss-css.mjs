@@ -44,6 +44,7 @@ export function ssCss(h) {
   const segActiveWeight = resolve(tabs.segmented.state.active.fontWeight.$value);
 
   const chipBase = { height: D(chip.size.base.height), paddingX: D(chip.size.base.paddingX), gap: D(chip.size.base.gap), iconSize: D(chip.size.base.iconSize), label: T(chip.size.base.label) };
+  const chipLg = { height: D(chip.size.lg.height), paddingX: D(chip.size.lg.paddingX), gap: D(chip.size.lg.gap), iconSize: D(chip.size.lg.iconSize), label: T(chip.size.lg.label) };
   const tg = chip.toggle;
 
   // Row department + Pick a time are both base (40px): at sm the Select's fixed
@@ -212,6 +213,9 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .chip--checked-outline { background: ${R(tg.checkedOutline.bg)}; border-color: ${R(tg.checkedOutline.border)}; color: ${R(tg.checkedOutline.text)}; }
 .chip--checked-outline .chip__icon { color: ${R(tg.checkedOutline.icon)}; }
 .chip:focus-visible { outline: ${D(chip.focus.ringWidth)} solid ${R(chip.focus.ringColor)}; outline-offset: ${D(chip.focus.ringOffset)}; }
+/* lg — the filters, level with the 40px Search beside them */
+.chip--lg { height: ${chipLg.height}; padding: 0 ${chipLg.paddingX}; gap: ${chipLg.gap}; ${typoCss(chipLg.label)} }
+.chip--lg .chip__icon { width: ${chipLg.iconSize}; height: ${chipLg.iconSize}; }
 .chip--dropdown { flex-shrink: 1; min-width: 0; max-width: 100%; }
 .chip__label { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 
