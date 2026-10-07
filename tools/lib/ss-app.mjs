@@ -125,6 +125,16 @@ export function ssAppJs(d) {
   // on any scroll up (a few px of slack so a jittery finger doesn't flicker it).
   var band = document.querySelector(".ss-sections--seg");
   if (band) {
+    var row = band.querySelector(".tabs--segmented");
+    var fades = function () {
+      var max = row.scrollWidth - row.clientWidth;
+      band.classList.toggle("has-more-start", row.scrollLeft > 1);
+      band.classList.toggle("has-more-end", row.scrollLeft < max - 1);
+    };
+    row.addEventListener("scroll", fades, { passive: true });
+    window.addEventListener("resize", fades);
+    if (document.fonts) document.fonts.ready.then(fades);
+    fades();
     var lastY = window.scrollY;
     window.addEventListener("scroll", function () {
       var y = window.scrollY;

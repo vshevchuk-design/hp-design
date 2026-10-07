@@ -147,9 +147,19 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
    label up with the topbar title (gutter − the tab's paddingX). It tucks up
    under the topbar while scrolling down and returns on any scroll up. */
 .app__topbar { z-index: 2; }
-.ss-sections--seg { height: 48px; display: flex; align-items: center; gap: 4px; padding: 4px calc(16px - 12px); background: var(--tok-surface-sunken); overflow-x: auto; scrollbar-width: none; transition: transform 0.2s ease; }
-.ss-sections--seg .tabs--segmented { flex: none; height: 100%; padding: 0; border-radius: 0; background: transparent; overflow: visible; }
+.ss-sections--seg { height: 48px; display: flex; align-items: center; gap: 4px; padding: 4px calc(16px - 12px); background: var(--tok-surface-sunken); transition: transform 0.2s ease; }
+.ss-sections--seg .tabs--segmented { height: 100%; padding: 0; border-radius: 0; background: transparent; }
 .ss-sections--seg.is-tucked { transform: translateY(-100%); }
+/* When the tabs overflow (a phone), the ROW scrolls inside the bar and its
+   edges fade out — a mask on the tabs themselves, so they dissolve into the
+   track gray rather than a gradient being painted over them. The script
+   turns each side on only while something is hidden that way. (black in a
+   mask is alpha, not a colour.) */
+.ss-sections--seg .tabs--segmented { flex: 1; min-width: 0; overflow-x: auto; scrollbar-width: none; }
+.ss-sections--seg .tabs--segmented::-webkit-scrollbar { display: none; }
+.ss-sections--seg.has-more-end .tabs--segmented { -webkit-mask-image: linear-gradient(to right, black calc(100% - 40px), transparent); mask-image: linear-gradient(to right, black calc(100% - 40px), transparent); }
+.ss-sections--seg.has-more-start .tabs--segmented { -webkit-mask-image: linear-gradient(to right, transparent, black 40px); mask-image: linear-gradient(to right, transparent, black 40px); }
+.ss-sections--seg.has-more-start.has-more-end .tabs--segmented { -webkit-mask-image: linear-gradient(to right, transparent, black 40px, black calc(100% - 40px), transparent); mask-image: linear-gradient(to right, transparent, black 40px, black calc(100% - 40px), transparent); }
 @media (min-width: 768px) { .ss-sections--seg { padding-inline: calc(24px - 12px); } }
 @media (prefers-reduced-motion: reduce) { .ss-sections--seg { transition: none; } }
 .ss__main { flex: 1; width: 100%; max-width: 1040px; margin: 0 auto; padding: 24px 16px 48px; display: flex; flex-direction: column; gap: 24px; }
@@ -720,6 +730,16 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   // on any scroll up (a few px of slack so a jittery finger doesn't flicker it).
   var band = document.querySelector(".ss-sections--seg");
   if (band) {
+    var row = band.querySelector(".tabs--segmented");
+    var fades = function () {
+      var max = row.scrollWidth - row.clientWidth;
+      band.classList.toggle("has-more-start", row.scrollLeft > 1);
+      band.classList.toggle("has-more-end", row.scrollLeft < max - 1);
+    };
+    row.addEventListener("scroll", fades, { passive: true });
+    window.addEventListener("resize", fades);
+    if (document.fonts) document.fonts.ready.then(fades);
+    fades();
     var lastY = window.scrollY;
     window.addEventListener("scroll", function () {
       var y = window.scrollY;

@@ -76,9 +76,19 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
    label up with the topbar title (gutter − the tab's paddingX). It tucks up
    under the topbar while scrolling down and returns on any scroll up. */
 .app__topbar { z-index: 2; }
-.ss-sections--seg { height: ${dim(12)}; display: flex; align-items: center; gap: ${D(tabs.segmented.trackPadding)}; padding: ${D(tabs.segmented.trackPadding)} calc(${dim(4)} - ${D(tabs.size.base.paddingX)}); background: ${R(tabs.segmented.trackBg)}; overflow-x: auto; scrollbar-width: none; transition: transform 0.2s ease; }
-.ss-sections--seg .tabs--segmented { flex: none; height: 100%; padding: 0; border-radius: 0; background: transparent; overflow: visible; }
+.ss-sections--seg { height: ${dim(12)}; display: flex; align-items: center; gap: ${D(tabs.segmented.trackPadding)}; padding: ${D(tabs.segmented.trackPadding)} calc(${dim(4)} - ${D(tabs.size.base.paddingX)}); background: ${R(tabs.segmented.trackBg)}; transition: transform 0.2s ease; }
+.ss-sections--seg .tabs--segmented { height: 100%; padding: 0; border-radius: 0; background: transparent; }
 .ss-sections--seg.is-tucked { transform: translateY(-100%); }
+/* When the tabs overflow (a phone), the ROW scrolls inside the bar and its
+   edges fade out — a mask on the tabs themselves, so they dissolve into the
+   track gray rather than a gradient being painted over them. The script
+   turns each side on only while something is hidden that way. (black in a
+   mask is alpha, not a colour.) */
+.ss-sections--seg .tabs--segmented { flex: 1; min-width: 0; overflow-x: auto; scrollbar-width: none; }
+.ss-sections--seg .tabs--segmented::-webkit-scrollbar { display: none; }
+.ss-sections--seg.has-more-end .tabs--segmented { -webkit-mask-image: linear-gradient(to right, black calc(100% - ${dim(10)}), transparent); mask-image: linear-gradient(to right, black calc(100% - ${dim(10)}), transparent); }
+.ss-sections--seg.has-more-start .tabs--segmented { -webkit-mask-image: linear-gradient(to right, transparent, black ${dim(10)}); mask-image: linear-gradient(to right, transparent, black ${dim(10)}); }
+.ss-sections--seg.has-more-start.has-more-end .tabs--segmented { -webkit-mask-image: linear-gradient(to right, transparent, black ${dim(10)}, black calc(100% - ${dim(10)}), transparent); mask-image: linear-gradient(to right, transparent, black ${dim(10)}, black calc(100% - ${dim(10)}), transparent); }
 @media (min-width: 768px) { .ss-sections--seg { padding-inline: calc(${dim(6)} - ${D(tabs.size.base.paddingX)}); } }
 @media (prefers-reduced-motion: reduce) { .ss-sections--seg { transition: none; } }
 .ss__main { flex: 1; width: 100%; max-width: 1040px; margin: 0 auto; padding: ${dim(6)} ${dim(4)} ${dim(12)}; display: flex; flex-direction: column; gap: ${dim(6)}; }
