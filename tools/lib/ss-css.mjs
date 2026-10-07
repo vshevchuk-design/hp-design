@@ -216,6 +216,12 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 /* lg — the filters, level with the 40px Search beside them */
 .chip--lg { height: ${chipLg.height}; padding: 0 ${chipLg.paddingX}; gap: ${chipLg.gap}; ${typoCss(chipLg.label)} }
 .chip--lg .chip__icon { width: ${chipLg.iconSize}; height: ${chipLg.iconSize}; }
+/* On a phone the filters sit on their own line, not beside the Search, so
+   there's nothing to be level with — back to Chip base (32px). */
+@media (max-width: 767px) {
+  .ss-filters .chip--lg { height: ${chipBase.height}; padding: 0 ${chipBase.paddingX}; gap: ${chipBase.gap}; ${typoCss(chipBase.label)} }
+  .ss-filters .chip--lg .chip__icon { width: ${chipBase.iconSize}; height: ${chipBase.iconSize}; }
+}
 .chip--dropdown { flex-shrink: 1; min-width: 0; max-width: 100%; }
 .chip__label { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 

@@ -286,6 +286,12 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 /* lg — the filters, level with the 40px Search beside them */
 .chip--lg { height: 40px; padding: 0 16px; gap: 8px; font-weight: 600; font-size: 14px; line-height: 1; }
 .chip--lg .chip__icon { width: 20px; height: 20px; }
+/* On a phone the filters sit on their own line, not beside the Search, so
+   there's nothing to be level with — back to Chip base (32px). */
+@media (max-width: 767px) {
+  .ss-filters .chip--lg { height: 32px; padding: 0 12px; gap: 6px; font-weight: 600; font-size: 14px; line-height: 1; }
+  .ss-filters .chip--lg .chip__icon { width: 16px; height: 16px; }
+}
 .chip--dropdown { flex-shrink: 1; min-width: 0; max-width: 100%; }
 .chip__label { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 
