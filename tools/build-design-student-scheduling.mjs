@@ -246,9 +246,16 @@ const ICONS = {
   group: icon("group", ""),
   call: icon("call", ""),
   videocam: icon("videocam", ""),
+  chevronBtn: icon("expand_more", "btn__icon"),
+  schedule: icon("schedule", ""),
+  dept: icon("account_balance", ""),
 };
 
-const appHtml = `<!doctype html>
+// Two layouts of the same app, both kept buildable rather than one frozen as
+// a copy: v2 (cards) is current, v1 (rows in one Card) stays comparable in
+// the viewer's Versions dropdown. Only the browse container and the client
+// script's item template differ.
+const appHtmlFor = (layout) => `<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
@@ -260,9 +267,9 @@ ${appCss}
 </style>
 </head>
 <body>
-${markup}
+${layout === "cards" ? markup.replace('class="card ss-list" id="ss-list"', 'class="ss-cards" id="ss-list"') : markup}
 <script>
-${ssAppJs({ ...DATA, ICONS })}
+${ssAppJs({ ...DATA, ICONS, LAYOUT: layout })}
 </script>
 </body>
 </html>
@@ -272,12 +279,17 @@ const viewerHtml = renderDesignViewer({
   activeKey: "student-scheduling",
   title: "Student Scheduling",
   heading: "Student Scheduling",
-  sub: `The student side of Scheduling — browse services, pick a time, confirm. Same flow and content as the live app, rebuilt strictly from hp-design components. <b>What changed is the UI, not the flow:</b> sort is a ghost Button + Listbox on the results line instead of a third filter-looking dropdown; "Drop-in available" is a toggle Chip that clears itself (no separate Clear button); Department is the dropdown chip. Picking a time is one page — day and time ChoiceTiles on the left, a sticky <b>Your appointment</b> Card on the right with the advisor RadioGroup and the one Confirm — instead of a time popup followed by a side drawer. Try <b>Academic Difficulty</b> for the no-openings state, <b>Career Counseling</b> or <b>Degree Planning</b> for a service offered by several departments. Only Browse is built; the other five sections are placeholders.`,
-  versions: [{ label: "v1", note: "current", file: "student-scheduling-app.html" }],
+  sub: `The student side of Scheduling — browse services, pick a time, confirm. Same flow and content as the live app, rebuilt strictly from hp-design components. <b>What changed is the UI, not the flow:</b> sort is a ghost Button + Listbox on the results line instead of a third filter-looking dropdown; "Drop-in available" is a toggle Chip that clears itself (no separate Clear button); Department is the dropdown chip. <b>v2 (current)</b> lays the services out as a card grid — name, duration, department (plain text, or a ghost dropdown when several departments offer it — always on the same line), the booking-mode Badge, Pick a time; <b>v1</b> keeps the list. Picking a time is one page — day and time ChoiceTiles on the left, a sticky <b>Your appointment</b> Card on the right with the advisor RadioGroup and the one Confirm — instead of a time popup followed by a side drawer. Try <b>Academic Difficulty</b> for the no-openings state, <b>Career Counseling</b> or <b>Degree Planning</b> for a service offered by several departments. Only Browse is built; the other five sections are placeholders.`,
+  versions: [
+    { label: "v2", note: "cards · current", file: "student-scheduling-app.html" },
+    { label: "v1", note: "list", file: "student-scheduling-v1-app.html" },
+  ],
 });
 
 fs.mkdirSync(path.join(root, "docs/designs"), { recursive: true });
-fs.writeFileSync(path.join(root, "docs/designs/student-scheduling-app.html"), appHtml);
+fs.writeFileSync(path.join(root, "docs/designs/student-scheduling-app.html"), appHtmlFor("cards"));
+fs.writeFileSync(path.join(root, "docs/designs/student-scheduling-v1-app.html"), appHtmlFor("list"));
 fs.writeFileSync(path.join(root, "docs/designs/student-scheduling.html"), viewerHtml);
-console.log("wrote docs/designs/student-scheduling-app.html");
+console.log("wrote docs/designs/student-scheduling-app.html (v2, cards)");
+console.log("wrote docs/designs/student-scheduling-v1-app.html (v1, list)");
 console.log("wrote docs/designs/student-scheduling.html");

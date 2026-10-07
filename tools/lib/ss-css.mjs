@@ -284,6 +284,25 @@ ${["neutral", "primary", "success"].map((r) => `.badge--${r} { background: ${R(b
   .ss-svc__aside { flex: 1 1 100%; justify-content: flex-end; }
   .ss-svc__aside .select { flex: 1; min-width: 0; max-width: none; }
 }
+/* ---- v2: card grid ----
+   One column on a phone, two from ~600, three on desktop — no breakpoint, the
+   track min does it. Cards in a row stretch to the tallest, and the action is
+   pinned to the bottom so every Pick a time sits on one line. */
+.ss-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(${dim(72)}, 100%), 1fr)); gap: ${dim(3)}; }
+.ss-card { display: flex; flex-direction: column; gap: ${dim(3)}; padding: ${D(card.padding)}; min-width: 0; }
+.ss-card__name { margin: 0; color: ${R(card.titleColor)}; ${typoCss(T(card.title))} }
+.ss-card__facts { display: flex; flex-direction: column; }
+/* Every fact line is the ghost sm button's height, static or not — so a card
+   with a department picker and one without line up row for row. */
+.ss-fact { display: flex; align-items: center; gap: ${dim(2)}; min-width: 0; min-height: ${bSm.height}; }
+.ss-fact > svg { flex-shrink: 0; width: ${dim(4)}; height: ${dim(4)}; color: ${cv("icon.secondary")}; }
+.ss-fact__text { min-width: 0; color: ${cv("text.secondary")}; ${typoCss(style("body-sm"))} white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* The department picker is Button ghost sm, pulled left by its own padding so
+   its text starts where a static department's text does. */
+.ss-dept-pick { min-width: 0; max-width: calc(100% + ${bSm.paddingX}); margin-inline-start: -${bSm.paddingX}; }
+.ss-dept-pick__value { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.ss-card__badges { display: flex; flex-wrap: wrap; gap: ${dim(2)}; }
+.ss-card__cta { margin-top: auto; }
 .ss-pager { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: ${dim(3)}; }
 
 /* ============ pick a time (ss-*) ============ */

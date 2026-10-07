@@ -18,7 +18,9 @@ export function ssAppJs(d) {
   var TODAY = ${JSON.stringify(d.TODAY)};
   var WEEKS_AHEAD = ${d.WEEKS_AHEAD};
   var ICONS = ${JSON.stringify(d.ICONS)};
-  var PAGE_SIZE = 10;
+  // "list" (v1: rows in one Card) or "cards" (v2: a grid of Cards).
+  var LAYOUT = ${JSON.stringify(d.LAYOUT || "list")};
+  var PAGE_SIZE = LAYOUT === "cards" ? 12 : 10;
   var FORMATS = [
     { key: "inPerson", label: "In person", icon: ICONS.group },
     { key: "phone", label: "Phone", icon: ICONS.call },
@@ -173,6 +175,37 @@ export function ssAppJs(d) {
     return s.depts[0];
   }
 
+  function rowHtml(x) {
+    var s = x.s, multi = s.depts.length > 1;
+    var dept = multi
+      ? '<button type="button" class="select" data-row-dept="' + x.i + '" aria-haspopup="listbox" aria-expanded="false" aria-label="Department for ' + esc(s.name) + '"><span class="select__stack"><span class="select__label">Department</span><span class="select__value" data-dept-value>' + esc(deptOf(x.i)) + "</span></span>" + ICONS.chevron + "</button>"
+      : "";
+    return '<div class="ss-svc">' +
+      '<div class="ss-svc__main"><h3 class="ss-svc__name">' + esc(s.name) + "</h3>" +
+      '<div class="ss-svc__meta"><span>' + s.minutes + " min</span>" + (multi ? "" : "<span>·</span><span>" + esc(s.depts[0]) + "</span>") + DROP_BADGE[s.drop] + "</div></div>" +
+      '<div class="ss-svc__aside">' + dept + '<button type="button" class="btn btn--secondary btn--base" data-pick="' + x.i + '">Pick a time</button></div>' +
+      "</div>";
+  }
+  // v2 card: name, then the facts in a fixed order — duration, department —
+  // each on its own icon line, so the department is in the SAME place whether
+  // it is plain text (one department) or a ghost dropdown (several). Then the
+  // booking-mode Badge, then the action pinned to the card's bottom edge.
+  function cardHtml(x) {
+    var s = x.s, multi = s.depts.length > 1;
+    var dept = multi
+      ? '<button type="button" class="btn btn--ghost btn--sm ss-dept-pick" data-row-dept="' + x.i + '" aria-haspopup="listbox" aria-expanded="false" aria-label="Department for ' + esc(s.name) + ', ' + s.depts.length + ' options"><span class="ss-dept-pick__value" data-dept-value>' + esc(deptOf(x.i)) + "</span>" + ICONS.chevronBtn + "</button>"
+      : '<span class="ss-fact__text">' + esc(s.depts[0]) + "</span>";
+    return '<article class="card ss-card">' +
+      '<h3 class="ss-card__name">' + esc(s.name) + "</h3>" +
+      '<div class="ss-card__facts">' +
+      '<span class="ss-fact">' + ICONS.schedule + '<span class="ss-fact__text">' + s.minutes + " min</span></span>" +
+      '<span class="ss-fact">' + ICONS.dept + dept + "</span>" +
+      "</div>" +
+      '<div class="ss-card__badges">' + DROP_BADGE[s.drop] + "</div>" +
+      '<button type="button" class="btn btn--secondary btn--base btn--block ss-card__cta" data-pick="' + x.i + '">Pick a time</button>' +
+      "</article>";
+  }
+
   function renderBrowse() {
     var list = filtered();
     var pages = Math.max(1, Math.ceil(list.length / PAGE_SIZE));
@@ -181,17 +214,7 @@ export function ssAppJs(d) {
     var any = list.length > 0;
     $("ss-results").classList.toggle("is-hidden", !any);
     $("ss-empty").classList.toggle("is-hidden", any);
-    $("ss-list").innerHTML = slice.map(function (x) {
-      var s = x.s, multi = s.depts.length > 1;
-      var dept = multi
-        ? '<button type="button" class="select" data-row-dept="' + x.i + '" aria-haspopup="listbox" aria-expanded="false" aria-label="Department for ' + esc(s.name) + '"><span class="select__stack"><span class="select__label">Department</span><span class="select__value">' + esc(deptOf(x.i)) + "</span></span>" + ICONS.chevron + "</button>"
-        : "";
-      return '<div class="ss-svc">' +
-        '<div class="ss-svc__main"><h3 class="ss-svc__name">' + esc(s.name) + "</h3>" +
-        '<div class="ss-svc__meta"><span>' + s.minutes + " min</span>" + (multi ? "" : "<span>·</span><span>" + esc(s.depts[0]) + "</span>") + DROP_BADGE[s.drop] + "</div></div>" +
-        '<div class="ss-svc__aside">' + dept + '<button type="button" class="btn btn--secondary btn--base" data-pick="' + x.i + '">Pick a time</button></div>' +
-        "</div>";
-    }).join("");
+    $("ss-list").innerHTML = slice.map(LAYOUT === "cards" ? cardHtml : rowHtml).join("");
     $("ss-range").textContent = any ? "Showing " + (from + 1) + "–" + (from + slice.length) + " of " + list.length : "";
     renderPager(pages);
   }
@@ -201,7 +224,7 @@ export function ssAppJs(d) {
       var i = +sel.dataset.rowDept;
       openListbox(sel, SERVICES[i].depts.map(function (x) { return { value: x, label: x }; }), deptOf(i), function (v) {
         st.rowDept[i] = v;
-        sel.querySelector(".select__value").textContent = v;
+        sel.querySelector("[data-dept-value]").textContent = v;
       });
       return;
     }
