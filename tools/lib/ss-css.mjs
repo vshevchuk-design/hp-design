@@ -116,6 +116,8 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
   #ss-browse-head .ss-search-open { grid-column: 2; grid-row: 1; }
   #ss-browse-head .search { grid-column: 1 / -1; grid-row: 1; }
   #ss-browse-head .ss-sub { grid-column: 1; grid-row: 2; }
+  /* tighter on a phone: subtitle → filters → sort, 12 each */
+  .ss-view[data-view="browse"]:has(#ss-browse-head) { gap: ${dim(3)}; }
 }
 .ss-head__row .search { display: none; }
 .ss-head.is-search-open .ss-head__row .ss-title, .ss-head.is-search-open .ss-search-open { display: none; }
@@ -320,7 +322,10 @@ ${["neutral", "primary", "success"].map((r) => `.badge--${r} { background: ${R(b
    filters. Sort is NOT in this row — it orders the results, it doesn't narrow
    them, so it sits on the results line beside the count. */
 .ss-tools { display: flex; flex-direction: column; gap: ${dim(3)}; }
-.ss-filters { display: flex; flex-wrap: wrap; align-items: center; gap: ${dim(2)}; }
+/* The two filters never wrap: the department chip gives way (its label
+   ellipsizes), the drop-in toggle keeps its width. */
+.ss-filters { display: flex; flex-wrap: nowrap; align-items: center; gap: ${dim(2)}; min-width: 0; }
+.ss-filters .chip:not(.chip--dropdown) { flex-shrink: 0; }
 @media (min-width: 768px) {
   .ss-tools { flex-direction: row; align-items: center; }
   .ss-tools .search { flex: 1; min-width: 0; max-width: 360px; }
