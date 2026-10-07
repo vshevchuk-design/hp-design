@@ -253,8 +253,6 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 /* ============ Badge ============ */
 .badge { display: inline-flex; align-items: center; flex-shrink: 0; height: ${badgeSm.height}; padding: 0 ${badgeSm.paddingX}; border-radius: ${badgeSm.radius}; white-space: nowrap; ${typoCss(badgeSm.label)} }
 .badge--base { height: ${D(badge.size.base.height)}; padding: 0 ${D(badge.size.base.paddingX)}; ${typoCss(T(badge.size.base.label))} }
-/* outline: white + hairline (inside the box, so the height holds) + default text */
-.badge--outline { background: ${R(badge.outline.bg)}; border: 1px solid ${R(badge.outline.border)}; color: ${R(badge.outline.text)}; }
 .badge--regular { font-weight: ${resolve(badge.regular.fontWeight.$value)}; }
 .badge--violet { background: ${R(badge.color.violet.tint.bg)}; color: ${R(badge.color.violet.tint.text)}; }
 ${["neutral", "primary", "success"].map((r) => `.badge--${r} { background: ${R(badge.role[r].tint.bg)}; color: ${R(badge.role[r].tint.text)}; }`).join("\n")}
@@ -358,7 +356,7 @@ ${["neutral", "primary", "success"].map((r) => `.badge--${r} { background: ${R(b
   .ss-svc__aside { flex: 1 1 100%; justify-content: flex-end; }
   .ss-svc__aside .select { flex: 1; min-width: 0; max-width: none; }
 }
-/* v4/v5 pick page: the department Select sits above the week. */
+/* v5 pick page: the department Select sits above the week. */
 /* The department step: a heading, then the Select (several departments) or
    the name as text (one). */
 .ss-step { display: flex; flex-direction: column; gap: ${dim(2)}; }
@@ -369,7 +367,7 @@ ${["neutral", "primary", "success"].map((r) => `.badge--${r} { background: ${R(b
 .select--sm { height: ${D(select.size.sm.height)}; padding: 0 ${D(select.size.sm.paddingX)}; gap: ${D(select.size.sm.gap)}; }
 .select--sm .select__value { ${typoCss(T(select.size.sm.value))} flex: 1; }
 .select--sm .select__chevron { width: ${D(select.size.sm.iconSize)}; height: ${D(select.size.sm.iconSize)}; }
-/* ---- v4: one item, two shapes ----
+/* ---- v5: one item, two shapes ----
    Phone: a card per service (12px padding — Card's 16 plus the 16 page gutter
    spent 64px of a 375 screen on air). From 768: rows inside one Card — name
    over one wrapping line (duration, booking mode, every department), then

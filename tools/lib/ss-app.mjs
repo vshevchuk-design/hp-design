@@ -20,11 +20,10 @@ export function ssAppJs(d) {
   var ICONS = ${JSON.stringify(d.ICONS)};
   // "list" (v1: rows in one Card).
   var LAYOUT = ${JSON.stringify(d.LAYOUT || "list")};
-  // "hybrid" (v4) and "text" (v5): cards on a phone, list rows from 768 —
-  // one markup, CSS switches the shape. Both list every department on the
-  // item and choose one on the pick-a-time page.
+  // "text" (v5): a flush divided list on a phone, list rows in a Card from
+  // 768. Lists every department on the item; one is chosen on pick-a-time.
   var PAGE_SIZE = 10;
-  var DEPT_ON_PICK = LAYOUT === "hybrid" || LAYOUT === "text";
+  var DEPT_ON_PICK = LAYOUT === "text";
   var FORMATS = [
     { key: "inPerson", label: "In person", icon: ICONS.group },
     { key: "phone", label: "Phone", icon: ICONS.call },
@@ -36,8 +35,8 @@ export function ssAppJs(d) {
     available: '<span class="badge badge--primary">Drop-in available</span>'
   };
 
-  // v4: base badges, regular weight; By appointment in the violet tag hue.
-  var DROP_BADGE_V4 = {
+  // v5: base badges, regular weight; By appointment in the violet tag hue.
+  var DROP_BADGE_V5 = {
     none: '<span class="badge badge--base badge--regular badge--violet">By appointment</span>',
     open: '<span class="badge badge--base badge--regular badge--success">Drop-in until 10:00 PM</span>',
     available: '<span class="badge badge--base badge--regular badge--primary">Drop-in available</span>'
@@ -270,29 +269,15 @@ export function ssAppJs(d) {
       '<div class="ss-svc__aside">' + dept + '<button type="button" class="btn btn--secondary btn--base" data-pick="' + x.i + '">Pick a time</button></div>' +
       "</div>";
   }
-  // v4 item — a card on a phone, a list row from 768 (CSS decides). Duration,
-  // booking mode and every department share one wrapping line: they fill the
-  // line while they fit and carry on to the next, all of them shown.
-  function itemHtml(x) {
-    var s = x.s, depts = s.depts.slice(), at = st.dept ? depts.indexOf(st.dept) : -1;
-    if (at > 0) { depts.splice(at, 1); depts.unshift(st.dept); }
-    return '<article class="ss-item">' +
-      '<div class="ss-item__main"><h3 class="ss-item__name">' + esc(s.name) + "</h3>" +
-      '<div class="ss-item__line"><span class="ss-fact">' + ICONS.schedule + '<span class="ss-fact__text">' + s.minutes + " min</span></span>" + DROP_BADGE_V4[s.drop] +
-      depts.map(function (d) { return '<span class="badge badge--base badge--outline badge--regular">' + esc(d) + "</span>"; }).join("") +
-      "</div></div>" +
-      '<button type="button" class="btn btn--tint btn--base ss-item__cta" data-pick="' + x.i + '">Pick a time</button>' +
-      "</article>";
-  }
-  // v5 item — same shell as v4, but the departments are plain text, comma-
-  // separated, right under the name; duration + booking mode on the line below.
+  // v5 item — the departments as plain comma-separated text right under the
+  // name; duration + booking mode on the line below.
   function textItemHtml(x) {
     var s = x.s, depts = s.depts.slice(), at = st.dept ? depts.indexOf(st.dept) : -1;
     if (at > 0) { depts.splice(at, 1); depts.unshift(st.dept); }
     return '<article class="ss-item ss-item--text">' +
       '<div class="ss-item__main"><h3 class="ss-item__name">' + esc(s.name) + "</h3>" +
       '<p class="ss-item__depts">' + esc(depts.join(", ")) + "</p>" +
-      '<div class="ss-item__line"><span class="ss-fact">' + ICONS.schedule + '<span class="ss-fact__text">' + s.minutes + " min</span></span>" + DROP_BADGE_V4[s.drop] + "</div></div>" +
+      '<div class="ss-item__line"><span class="ss-fact">' + ICONS.schedule + '<span class="ss-fact__text">' + s.minutes + " min</span></span>" + DROP_BADGE_V5[s.drop] + "</div></div>" +
       '<button type="button" class="btn btn--tint btn--base ss-item__cta" data-pick="' + x.i + '">Pick a time</button>' +
       "</article>";
   }
@@ -305,7 +290,7 @@ export function ssAppJs(d) {
     var any = list.length > 0;
     $("ss-results").classList.toggle("is-hidden", !any);
     $("ss-empty").classList.toggle("is-hidden", any);
-    $("ss-list").innerHTML = slice.map(LAYOUT === "hybrid" ? itemHtml : LAYOUT === "text" ? textItemHtml : rowHtml).join("");
+    $("ss-list").innerHTML = slice.map(LAYOUT === "text" ? textItemHtml : rowHtml).join("");
     $("ss-range").textContent = any ? "Showing " + (from + 1) + "–" + (from + slice.length) + " of " + list.length : "";
     renderPager(pages);
   }
