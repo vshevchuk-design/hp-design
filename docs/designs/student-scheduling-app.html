@@ -132,6 +132,10 @@
 /* ============ page frame (ss-* composition) ============ */
 * { box-sizing: border-box; }
 html, body { height: 100%; }
+/* iOS Safari inflates some text in landscape ("text size adjust") — the
+   service names grew when the phone was turned. Sizes come from the tokens;
+   the browser doesn't get to rescale them. */
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-family-sans); color: var(--tok-text-default); }
 /* The section bar is Tabs underline, laid edge to edge under the topbar as
    one band — same white, same hairline, same gutters as the bar above, so the
