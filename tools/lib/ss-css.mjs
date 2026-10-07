@@ -343,9 +343,9 @@ ${["neutral", "primary", "success", "warning"].map((r) => `.badge--${r} { backgr
    the action. */
 .ss-hybrid { display: flex; flex-direction: column; gap: ${dim(3)}; }
 .ss-item { display: flex; flex-direction: column; gap: ${dim(3)}; padding: ${dim(3)}; background: ${R(card.bg)}; border: 1px solid ${R(card.border)}; border-radius: ${D(card.radius)}; min-width: 0; }
-.ss-item__main { display: flex; flex-direction: column; gap: ${dim(1)}; min-width: 0; }
+.ss-item__main { display: flex; flex-direction: column; gap: ${dim(3)}; min-width: 0; }
 .ss-item__name { margin: 0; color: ${cv("text.default")}; ${typoCss(style("heading-md"))} }
-.ss-item__line { display: flex; flex-wrap: wrap; align-items: center; gap: ${dim("1_5")} ${dim(2)}; }
+.ss-item__line { display: flex; flex-wrap: wrap; align-items: center; gap: ${dim(2)}; }
 .ss-item__line .ss-fact { margin-inline-end: ${dim(1)}; }
 .ss-item__line .ss-fact { min-height: 0; }
 .ss-item__cta { width: 100%; }
