@@ -121,6 +121,19 @@ export function ssAppJs(d) {
   }
   sectionTabs.forEach(function (t, i) { t.addEventListener("click", function () { goSection(i); }); });
 
+  // v5: the segmented section bar tucks away while scrolling down and returns
+  // on any scroll up (a few px of slack so a jittery finger doesn't flicker it).
+  var band = document.querySelector(".ss-sections--seg");
+  if (band) {
+    var lastY = window.scrollY;
+    window.addEventListener("scroll", function () {
+      var y = window.scrollY;
+      if (Math.abs(y - lastY) < 4) return;
+      band.classList.toggle("is-tucked", y > lastY && y > band.offsetHeight);
+      lastY = y;
+    }, { passive: true });
+  }
+
   // ---------------- browse ----------------
   var st = { q: "", dept: "", dropOnly: false, sort: "name", page: 0, rowDept: {} };
   var searchBox = $("ss-search"), searchInput = $("ss-search-input");

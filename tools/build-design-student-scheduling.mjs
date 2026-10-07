@@ -110,6 +110,10 @@ ${ssCss({ tokens, resolve, resolveToken, cv, px, refPath, typoCss, textExt, get 
 const settingsBtn = `<button class="btn btn--secondary btn--base btn--icon-only" type="button" aria-label="Settings">${icon("settings", "btn__icon")}</button>`;
 const chevronDown = icon("expand_more", "chip__icon");
 
+// v5's section bar: segmented sm Tabs instead of underline.
+const sectionsSeg = DATA.SECTIONS.map(
+  (s, i) => `<button class="tab tab--sm${i === 0 ? " tab--active" : ""}" type="button" role="tab" aria-selected="${i === 0}">${s}</button>`
+).join("\n      ");
 const sections = DATA.SECTIONS.map(
   (s, i) => `<button class="tab tab--base${i === 0 ? " tab--active" : ""}" type="button" role="tab" aria-selected="${i === 0}">${s}</button>`
 ).join("\n      ");
@@ -255,6 +259,24 @@ const ICONS = {
   schedule: icon("schedule", ""),
 };
 
+const UNDERLINE_NAV = `<nav class="ss-sections" aria-label="Scheduling sections">
+    <div class="tabs--underline" role="tablist">
+      ${sections}
+    </div>
+  </nav>`;
+const SEGMENTED_NAV = `<nav class="ss-sections ss-sections--seg" aria-label="Scheduling sections">
+    <div class="tabs--segmented" role="tablist">
+      ${sectionsSeg}
+    </div>
+  </nav>`;
+if (!markup.includes(UNDERLINE_NAV)) throw new Error("section nav markup drifted — update UNDERLINE_NAV");
+const markupFor = (layout) => {
+  if (layout === "list") return markup;
+  let m = markup.replace('class="card ss-list" id="ss-list"', layout === "text" ? 'class="ss-hybrid ss-hybrid--flush" id="ss-list"' : 'class="ss-hybrid" id="ss-list"');
+  if (layout === "text") m = m.replace(UNDERLINE_NAV, SEGMENTED_NAV);
+  return m;
+};
+
 // Three layouts of the same app, all kept buildable rather than frozen as
 // copies: v5 (departments as text under the name) is current, v4 (departments
 // as outline badges inline) and v1 (the original list) stay comparable in the
@@ -272,7 +294,7 @@ ${appCss}
 </style>
 </head>
 <body>
-${layout === "list" ? markup : markup.replace('class="card ss-list" id="ss-list"', layout === "text" ? 'class="ss-hybrid ss-hybrid--flush" id="ss-list"' : 'class="ss-hybrid" id="ss-list"')}
+${markupFor(layout)}
 <script>
 ${ssAppJs({ ...DATA, ICONS, LAYOUT: layout })}
 </script>

@@ -70,6 +70,15 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .ss-sections { position: sticky; top: ${dim(16)}; z-index: 1; background: ${cv("surface.default")}; padding: 0 ${dim(2)}; }
 .ss-sections .tabs--underline { width: 100%; }
 @media (min-width: 768px) { .ss-sections { padding: 0 ${dim(4)}; } }
+/* v5: the sections are segmented Tabs (sm) in a white band the same width
+   and gutters as the topbar, declared dim.14 tall with its hairline inside
+   (40px track + 8 above, 7 + 1 below). It tucks up under the topbar while
+   scrolling down and comes back on any scroll up — the topbar stays put. */
+.app__topbar { z-index: 2; }
+.ss-sections--seg { height: ${dim(14)}; display: flex; align-items: center; padding: 0 ${dim(4)}; border-bottom: 1px solid ${cv("border.default")}; transition: transform 0.2s ease; }
+.ss-sections--seg.is-tucked { transform: translateY(-100%); }
+@media (min-width: 768px) { .ss-sections--seg { padding: 0 ${dim(6)}; } }
+@media (prefers-reduced-motion: reduce) { .ss-sections--seg { transition: none; } }
 .ss__main { flex: 1; width: 100%; max-width: 1040px; margin: 0 auto; padding: ${dim(6)} ${dim(4)} ${dim(12)}; display: flex; flex-direction: column; gap: ${dim(6)}; }
 @media (min-width: 768px) { .ss__main { padding: ${dim(8)} ${dim(6)} ${dim(16)}; } }
 .ss-view { display: none; flex-direction: column; gap: ${dim(6)}; }

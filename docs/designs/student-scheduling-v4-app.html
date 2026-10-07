@@ -141,6 +141,15 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .ss-sections { position: sticky; top: 64px; z-index: 1; background: var(--tok-surface-default); padding: 0 8px; }
 .ss-sections .tabs--underline { width: 100%; }
 @media (min-width: 768px) { .ss-sections { padding: 0 16px; } }
+/* v5: the sections are segmented Tabs (sm) in a white band the same width
+   and gutters as the topbar, declared dim.14 tall with its hairline inside
+   (40px track + 8 above, 7 + 1 below). It tucks up under the topbar while
+   scrolling down and comes back on any scroll up — the topbar stays put. */
+.app__topbar { z-index: 2; }
+.ss-sections--seg { height: 56px; display: flex; align-items: center; padding: 0 16px; border-bottom: 1px solid var(--tok-border-default); transition: transform 0.2s ease; }
+.ss-sections--seg.is-tucked { transform: translateY(-100%); }
+@media (min-width: 768px) { .ss-sections--seg { padding: 0 24px; } }
+@media (prefers-reduced-motion: reduce) { .ss-sections--seg { transition: none; } }
 .ss__main { flex: 1; width: 100%; max-width: 1040px; margin: 0 auto; padding: 24px 16px 48px; display: flex; flex-direction: column; gap: 24px; }
 @media (min-width: 768px) { .ss__main { padding: 32px 24px 64px; } }
 .ss-view { display: none; flex-direction: column; gap: 24px; }
@@ -704,6 +713,19 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     showView("placeholder");
   }
   sectionTabs.forEach(function (t, i) { t.addEventListener("click", function () { goSection(i); }); });
+
+  // v5: the segmented section bar tucks away while scrolling down and returns
+  // on any scroll up (a few px of slack so a jittery finger doesn't flicker it).
+  var band = document.querySelector(".ss-sections--seg");
+  if (band) {
+    var lastY = window.scrollY;
+    window.addEventListener("scroll", function () {
+      var y = window.scrollY;
+      if (Math.abs(y - lastY) < 4) return;
+      band.classList.toggle("is-tucked", y > lastY && y > band.offsetHeight);
+      lastY = y;
+    }, { passive: true });
+  }
 
   // ---------------- browse ----------------
   var st = { q: "", dept: "", dropOnly: false, sort: "name", page: 0, rowDept: {} };

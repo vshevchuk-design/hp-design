@@ -141,6 +141,15 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .ss-sections { position: sticky; top: 64px; z-index: 1; background: var(--tok-surface-default); padding: 0 8px; }
 .ss-sections .tabs--underline { width: 100%; }
 @media (min-width: 768px) { .ss-sections { padding: 0 16px; } }
+/* v5: the sections are segmented Tabs (sm) in a white band the same width
+   and gutters as the topbar, declared dim.14 tall with its hairline inside
+   (40px track + 8 above, 7 + 1 below). It tucks up under the topbar while
+   scrolling down and comes back on any scroll up — the topbar stays put. */
+.app__topbar { z-index: 2; }
+.ss-sections--seg { height: 56px; display: flex; align-items: center; padding: 0 16px; border-bottom: 1px solid var(--tok-border-default); transition: transform 0.2s ease; }
+.ss-sections--seg.is-tucked { transform: translateY(-100%); }
+@media (min-width: 768px) { .ss-sections--seg { padding: 0 24px; } }
+@media (prefers-reduced-motion: reduce) { .ss-sections--seg { transition: none; } }
 .ss__main { flex: 1; width: 100%; max-width: 1040px; margin: 0 auto; padding: 24px 16px 48px; display: flex; flex-direction: column; gap: 24px; }
 @media (min-width: 768px) { .ss__main { padding: 32px 24px 64px; } }
 .ss-view { display: none; flex-direction: column; gap: 24px; }
@@ -461,14 +470,14 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     <div class="app__brand"><h1 class="app__title">Scheduling</h1></div>
     <button class="btn btn--secondary btn--base btn--icon-only" type="button" aria-label="Settings"><svg class="btn__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"><g><path d="M0,0h24v24H0V0z" fill="none"/><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></g></svg></button>
   </header>
-  <nav class="ss-sections" aria-label="Scheduling sections">
-    <div class="tabs--underline" role="tablist">
-      <button class="tab tab--base tab--active" type="button" role="tab" aria-selected="true">Browse</button>
-      <button class="tab tab--base" type="button" role="tab" aria-selected="false">Appointments</button>
-      <button class="tab tab--base" type="button" role="tab" aria-selected="false">Drop-Ins</button>
-      <button class="tab tab--base" type="button" role="tab" aria-selected="false">Workshops</button>
-      <button class="tab tab--base" type="button" role="tab" aria-selected="false">Reserve a Seat</button>
-      <button class="tab tab--base" type="button" role="tab" aria-selected="false">Calendar</button>
+  <nav class="ss-sections ss-sections--seg" aria-label="Scheduling sections">
+    <div class="tabs--segmented" role="tablist">
+      <button class="tab tab--sm tab--active" type="button" role="tab" aria-selected="true">Browse</button>
+      <button class="tab tab--sm" type="button" role="tab" aria-selected="false">Appointments</button>
+      <button class="tab tab--sm" type="button" role="tab" aria-selected="false">Drop-Ins</button>
+      <button class="tab tab--sm" type="button" role="tab" aria-selected="false">Workshops</button>
+      <button class="tab tab--sm" type="button" role="tab" aria-selected="false">Reserve a Seat</button>
+      <button class="tab tab--sm" type="button" role="tab" aria-selected="false">Calendar</button>
     </div>
   </nav>
   <main class="ss__main">
@@ -704,6 +713,19 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     showView("placeholder");
   }
   sectionTabs.forEach(function (t, i) { t.addEventListener("click", function () { goSection(i); }); });
+
+  // v5: the segmented section bar tucks away while scrolling down and returns
+  // on any scroll up (a few px of slack so a jittery finger doesn't flicker it).
+  var band = document.querySelector(".ss-sections--seg");
+  if (band) {
+    var lastY = window.scrollY;
+    window.addEventListener("scroll", function () {
+      var y = window.scrollY;
+      if (Math.abs(y - lastY) < 4) return;
+      band.classList.toggle("is-tucked", y > lastY && y > band.offsetHeight);
+      lastY = y;
+    }, { passive: true });
+  }
 
   // ---------------- browse ----------------
   var st = { q: "", dept: "", dropOnly: false, sort: "name", page: 0, rowDept: {} };
