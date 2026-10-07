@@ -188,6 +188,15 @@ export function ssAppJs(d) {
     searchInput.addEventListener("keydown", function (e) {
       if (e.key === "Escape" && head.classList.contains("is-search-open")) closeSearch(true);
     });
+    // Leaving an EMPTY open search (tapping a filter, sort, the list…) folds it
+    // back into the button. With text in it, it stays open — it is an active
+    // filter and has to stay visible, same as the always-open field on desktop.
+    searchBox.addEventListener("focusout", function (e) {
+      if (!head.classList.contains("is-search-open") || searchInput.value) return;
+      if (e.relatedTarget && searchBox.contains(e.relatedTarget)) return;
+      head.classList.remove("is-search-open");
+      openBtn.setAttribute("aria-expanded", "false");
+    });
   }
   $("ss-search-clear").addEventListener("click", function (e) {
     if (!searchInput.value && head && head.classList.contains("is-search-open")) { closeSearch(e.detail === 0); return; }
