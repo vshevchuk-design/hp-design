@@ -394,8 +394,11 @@ export function ssAppJs(d) {
     if (DEPT_ON_PICK) pk.dept = s.depts.length === 1 ? s.depts[0] : s.depts.indexOf(st.dept) !== -1 ? st.dept : null;
     else pk.dept = deptOf(si);
     $("ss-pick-title").textContent = s.name;
-    $("ss-pick-meta").textContent = s.minutes + " minutes" + (choose ? "" : " · " + pk.dept);
+    $("ss-pick-meta").textContent = s.minutes + " minutes" + (DEPT_ON_PICK ? "" : " · " + pk.dept);
+    $("ss-dept-step").classList.toggle("is-hidden", !DEPT_ON_PICK);
     $("ss-pick-dept").classList.toggle("is-hidden", !choose);
+    $("ss-pick-dept-text").classList.toggle("is-hidden", choose);
+    $("ss-pick-dept-text").textContent = choose ? "" : pk.dept;
     showView("pick");
     renderPick();
   }

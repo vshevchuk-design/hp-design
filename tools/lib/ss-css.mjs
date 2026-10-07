@@ -359,7 +359,16 @@ ${["neutral", "primary", "success"].map((r) => `.badge--${r} { background: ${R(b
   .ss-svc__aside .select { flex: 1; min-width: 0; max-width: none; }
 }
 /* v4/v5 pick page: the department Select sits above the week. */
+/* The department step: a heading, then the Select (several departments) or
+   the name as text (one). */
+.ss-step { display: flex; flex-direction: column; gap: ${dim(2)}; }
+.ss-step__title { margin: 0; color: ${cv("text.default")}; ${typoCss(style("heading-base"))} }
+.ss-step__value { margin: 0; color: ${cv("text.default")}; ${typoCss(style("body-base"))} }
 .ss-pick-dept { align-self: flex-start; width: min(100%, 320px); }
+/* Select sm — no floating label at this size (DS), the step heading names it */
+.select--sm { height: ${D(select.size.sm.height)}; padding: 0 ${D(select.size.sm.paddingX)}; gap: ${D(select.size.sm.gap)}; }
+.select--sm .select__value { ${typoCss(T(select.size.sm.value))} flex: 1; }
+.select--sm .select__chevron { width: ${D(select.size.sm.iconSize)}; height: ${D(select.size.sm.iconSize)}; }
 /* ---- v4: one item, two shapes ----
    Phone: a card per service (12px padding — Card's 16 plus the 16 page gutter
    spent 64px of a 375 screen on air). From 768: rows inside one Card — name

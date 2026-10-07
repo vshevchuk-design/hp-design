@@ -174,7 +174,14 @@ ${shellTopbar({ title: "Scheduling", actions: settingsBtn })}
       </div>
       <div class="ss-pick">
         <div class="ss-choose">
-          <button class="select ss-pick-dept is-hidden" id="ss-pick-dept" type="button" aria-haspopup="listbox" aria-expanded="false"><span class="select__stack"><span class="select__label">Department</span><span class="select__value" id="ss-pick-dept-value"></span></span>${icon("expand_more", "select__chevron")}</button>
+          <!-- Step one, before any times: the department. A Select when several
+               offer the service, the plain name when only one does — same place,
+               same heading, either way. (v1 shows it in the meta line instead.) -->
+          <div class="ss-step is-hidden" id="ss-dept-step">
+            <h3 class="ss-step__title" id="ss-dept-step-title">Department</h3>
+            <button class="select select--sm ss-pick-dept" id="ss-pick-dept" type="button" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="ss-dept-step-title ss-pick-dept-value"><span class="select__value" id="ss-pick-dept-value"></span>${icon("expand_more", "select__chevron")}</button>
+            <p class="ss-step__value" id="ss-pick-dept-text"></p>
+          </div>
           <div class="empty-state is-hidden" id="ss-need-dept"><span class="empty-state__text">Choose a department to see open times</span></div>
           <div class="ss-week" id="ss-week">
             <h3 class="ss-week__label" id="ss-week-label"></h3>

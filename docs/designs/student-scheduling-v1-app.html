@@ -431,7 +431,16 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   .ss-svc__aside .select { flex: 1; min-width: 0; max-width: none; }
 }
 /* v4/v5 pick page: the department Select sits above the week. */
+/* The department step: a heading, then the Select (several departments) or
+   the name as text (one). */
+.ss-step { display: flex; flex-direction: column; gap: 8px; }
+.ss-step__title { margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 14px; line-height: 1.4; }
+.ss-step__value { margin: 0; color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; }
 .ss-pick-dept { align-self: flex-start; width: min(100%, 320px); }
+/* Select sm — no floating label at this size (DS), the step heading names it */
+.select--sm { height: 32px; padding: 0 8px; gap: 8px; }
+.select--sm .select__value { font-weight: 400; font-size: 16px; line-height: 1.2; flex: 1; }
+.select--sm .select__chevron { width: 16px; height: 16px; }
 /* ---- v4: one item, two shapes ----
    Phone: a card per service (12px padding — Card's 16 plus the 16 page gutter
    spent 64px of a 375 screen on air). From 768: rows inside one Card — name
@@ -577,7 +586,14 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
       </div>
       <div class="ss-pick">
         <div class="ss-choose">
-          <button class="select ss-pick-dept is-hidden" id="ss-pick-dept" type="button" aria-haspopup="listbox" aria-expanded="false"><span class="select__stack"><span class="select__label">Department</span><span class="select__value" id="ss-pick-dept-value"></span></span><svg class="select__chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+          <!-- Step one, before any times: the department. A Select when several
+               offer the service, the plain name when only one does — same place,
+               same heading, either way. (v1 shows it in the meta line instead.) -->
+          <div class="ss-step is-hidden" id="ss-dept-step">
+            <h3 class="ss-step__title" id="ss-dept-step-title">Department</h3>
+            <button class="select select--sm ss-pick-dept" id="ss-pick-dept" type="button" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="ss-dept-step-title ss-pick-dept-value"><span class="select__value" id="ss-pick-dept-value"></span><svg class="select__chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+            <p class="ss-step__value" id="ss-pick-dept-text"></p>
+          </div>
           <div class="empty-state is-hidden" id="ss-need-dept"><span class="empty-state__text">Choose a department to see open times</span></div>
           <div class="ss-week" id="ss-week">
             <h3 class="ss-week__label" id="ss-week-label"></h3>
@@ -1037,8 +1053,11 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     if (DEPT_ON_PICK) pk.dept = s.depts.length === 1 ? s.depts[0] : s.depts.indexOf(st.dept) !== -1 ? st.dept : null;
     else pk.dept = deptOf(si);
     $("ss-pick-title").textContent = s.name;
-    $("ss-pick-meta").textContent = s.minutes + " minutes" + (choose ? "" : " · " + pk.dept);
+    $("ss-pick-meta").textContent = s.minutes + " minutes" + (DEPT_ON_PICK ? "" : " · " + pk.dept);
+    $("ss-dept-step").classList.toggle("is-hidden", !DEPT_ON_PICK);
     $("ss-pick-dept").classList.toggle("is-hidden", !choose);
+    $("ss-pick-dept-text").classList.toggle("is-hidden", choose);
+    $("ss-pick-dept-text").textContent = choose ? "" : pk.dept;
     showView("pick");
     renderPick();
   }
