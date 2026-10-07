@@ -271,11 +271,9 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .badge--outline { background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); color: var(--tok-text-default); }
 .badge--regular { font-weight: 400; }
 .badge--violet { background: var(--tok-tag-violet-tint-bg); color: var(--tok-tag-violet-tint-text); }
-.badge--lg { height: 24px; padding: 0 8px; font-weight: 600; font-size: 14px; line-height: 1; }
 .badge--neutral { background: var(--tok-bg-neutral); color: var(--tok-text-default); }
 .badge--primary { background: var(--tok-bg-primary); color: var(--tok-text-primary); }
 .badge--success { background: var(--tok-bg-success); color: var(--tok-text-success); }
-.badge--warning { background: var(--tok-bg-warning); color: var(--tok-text-warning); }
 
 /* ============ Pagination ============ */
 .pagination { display: inline-flex; align-items: center; gap: 4px; }
@@ -373,41 +371,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   .ss-svc__aside { flex: 1 1 100%; justify-content: flex-end; }
   .ss-svc__aside .select { flex: 1; min-width: 0; max-width: none; }
 }
-/* ---- v2: card grid ----
-   One column on a phone, two from ~600, three on desktop — no breakpoint, the
-   track min does it. Cards in a row stretch to the tallest, and the action is
-   pinned to the bottom so every Pick a time sits on one line. */
-.ss-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(288px, 100%), 1fr)); gap: 12px; }
-.ss-card { display: flex; flex-direction: column; gap: 12px; padding: 16px; min-width: 0; }
-.ss-card__name { margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 14px; line-height: 1.4; }
-.ss-card__facts { display: flex; flex-direction: column; }
-/* Every fact line is the ghost sm button's height, static or not — so a card
-   with a department picker and one without line up row for row. */
-.ss-fact { display: flex; align-items: center; gap: 8px; min-width: 0; min-height: 32px; }
-.ss-fact > svg { flex-shrink: 0; width: 16px; height: 16px; color: var(--tok-icon-secondary); }
-.ss-fact__text { min-width: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-/* The department picker is Button ghost sm, pulled left by its own padding so
-   its text starts where a static department's text does. */
-.ss-dept-pick { min-width: 0; max-width: calc(100% + 8px); margin-inline-start: -8px; }
-.ss-dept-pick__value { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
-.ss-card__badges { display: flex; flex-wrap: wrap; gap: 8px; }
-.ss-card__cta { margin-top: auto; }
-/* v3: duration and booking mode share one line; the departments get the next. */
-/* Duration left, booking mode right — the two facts read as a pair of ends. */
-.ss-card__line { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
-.ss-card__line .ss-fact { min-height: 0; }
-/* Beside lg badges the duration steps up to body-base, icon to 20. */
-.ss-card__line .ss-fact__text { color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; }
-.ss-card__line .ss-fact > svg { width: 20px; height: 20px; }
-/* The departments sit under a Card hairline: the line above is about the
-   service, this one is about who offers it. */
-.ss-card__depts { position: relative; display: flex; align-items: center; gap: 8px; min-width: 0; padding-top: 12px; border-top: 1px solid var(--tok-border-default); }
-/* A lone department too long for the card truncates instead of overflowing. */
-.ss-dept { min-width: 0; flex-shrink: 0; }
-.ss-dept.is-squeezed { flex-shrink: 1; }
-.ss-dept__text { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
-.ss-more .badge { cursor: default; }
-/* v3 pick page: the department Select sits above the week. */
+/* v4/v5 pick page: the department Select sits above the week. */
 .ss-pick-dept { align-self: flex-start; width: min(100%, 320px); }
 /* ---- v4: one item, two shapes ----
    Phone: a card per service (12px padding — Card's 16 plus the 16 page gutter
@@ -420,8 +384,15 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .ss-item__name { margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 16px; line-height: 1.4; }
 .ss-item__line { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .ss-item__line .ss-fact { margin-inline-end: 4px; }
-.ss-item__line .ss-fact { min-height: 0; }
+/* duration: 16px icon + body-sm text */
+.ss-fact { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.ss-fact > svg { flex-shrink: 0; width: 16px; height: 16px; color: var(--tok-icon-secondary); }
+.ss-fact__text { color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; white-space: nowrap; }
 .ss-item__cta { width: 100%; }
+/* v5: departments as plain text under the name. Name → departments 8,
+   departments → duration/mode 8, then the item's own 12 to the button. */
+.ss-item--text .ss-item__main { gap: 8px; }
+.ss-item__depts { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
 @media (min-width: 768px) {
   .ss-hybrid { gap: 0; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); border-radius: 8px; overflow: hidden; }
   .ss-item { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 16px; padding: 16px; border: none; border-bottom: 1px solid var(--tok-border-default); border-radius: 0; }
@@ -618,17 +589,14 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   var DEPARTMENTS = ["Academic Advising","Admissions & Records","Career and Talent Development","Counseling","English Dept","Grad - Admissions","Liberal Arts","Office of the Registrar","Student Mentoring","Tutoring Center"];
   var TODAY = "2026-10-02";
   var WEEKS_AHEAD = 3;
-  var ICONS = {"check":"<svg class=\"listbox__checkmark\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z\"/></svg>","chevron":"<svg class=\"select__chevron\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z\"/></svg>","chevronLeft":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z\"/></svg>","chevronRight":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z\"/></svg>","checkCircle":"<svg class=\"toast__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z\"/></svg>","group":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z\"/></svg>","call":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M20.01 15.38c-1.23 0-2.42-.2-3.53-.56-.35-.12-.74-.03-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z\"/></svg>","videocam":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z\"/></svg>","chevronBtn":"<svg class=\"btn__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z\"/></svg>","schedule":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z\"/><path d=\"M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z\"/></svg>","dept":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" enable-background=\"new 0 0 24 24\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><g><rect fill=\"none\" height=\"24\" width=\"24\"/></g><g><g><rect height=\"7\" width=\"3\" x=\"4\" y=\"10\"/><rect height=\"7\" width=\"3\" x=\"10.5\" y=\"10\"/><rect height=\"3\" width=\"20\" x=\"2\" y=\"19\"/><rect height=\"7\" width=\"3\" x=\"17\" y=\"10\"/><polygon points=\"12,1 2,6 2,8 22,8 22,6\"/></g></g></svg>"};
-  // "list" (v1: rows in one Card) or "cards" (v2: a grid of Cards).
+  var ICONS = {"check":"<svg class=\"listbox__checkmark\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z\"/></svg>","chevron":"<svg class=\"select__chevron\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z\"/></svg>","chevronLeft":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z\"/></svg>","chevronRight":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z\"/></svg>","checkCircle":"<svg class=\"toast__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z\"/></svg>","group":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z\"/></svg>","call":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M20.01 15.38c-1.23 0-2.42-.2-3.53-.56-.35-.12-.74-.03-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z\"/></svg>","videocam":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z\"/></svg>","schedule":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z\"/><path d=\"M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z\"/></svg>"};
+  // "list" (v1: rows in one Card).
   var LAYOUT = "list";
-  // "chips" (v3): cards that LIST every department instead of picking one;
-  // the department is chosen on the pick-a-time page.
-  // "hybrid" (v4): v3's content, cards on a phone and list rows from 768 —
-  // one markup, CSS switches the shape.
-  var CARDS = LAYOUT === "cards" || LAYOUT === "chips";
-  var PAGE_SIZE = CARDS ? 12 : 10;
-  // v3 and v4 choose the department on the pick-a-time page.
-  var DEPT_ON_PICK = LAYOUT === "chips" || LAYOUT === "hybrid";
+  // "hybrid" (v4) and "text" (v5): cards on a phone, list rows from 768 —
+  // one markup, CSS switches the shape. Both list every department on the
+  // item and choose one on the pick-a-time page.
+  var PAGE_SIZE = 10;
+  var DEPT_ON_PICK = LAYOUT === "hybrid" || LAYOUT === "text";
   var FORMATS = [
     { key: "inPerson", label: "In person", icon: ICONS.group },
     { key: "phone", label: "Phone", icon: ICONS.call },
@@ -638,16 +606,6 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     none: '<span class="badge badge--neutral">By appointment</span>',
     open: '<span class="badge badge--success">Drop-in open until 10:00 PM</span>',
     available: '<span class="badge badge--primary">Drop-in available</span>'
-  };
-
-  // v3's badges are lg, and "By appointment" takes the warning tint — the two
-  // booking modes read as two colours, not as one coloured and one gray.
-  var DROP_BADGE_V3 = {
-    none: '<span class="badge badge--lg badge--warning">By appointment</span>',
-    // "open" is implied by the closing time — dropped so the lg badge fits
-    // beside the duration on a 3-column card without wrapping.
-    open: '<span class="badge badge--lg badge--success">Drop-in until 10:00 PM</span>',
-    available: '<span class="badge badge--lg badge--primary">Drop-in available</span>'
   };
 
   // v4: base badges, regular weight; By appointment in the violet tag hue.
@@ -811,42 +769,6 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
       '<div class="ss-svc__aside">' + dept + '<button type="button" class="btn btn--secondary btn--base" data-pick="' + x.i + '">Pick a time</button></div>' +
       "</div>";
   }
-  // v2 card: name, then the facts in a fixed order — duration, department —
-  // each on its own icon line, so the department is in the SAME place whether
-  // it is plain text (one department) or a ghost dropdown (several). Then the
-  // booking-mode Badge, then the action pinned to the card's bottom edge.
-  function cardHtml(x) {
-    var s = x.s, multi = s.depts.length > 1;
-    var dept = multi
-      ? '<button type="button" class="btn btn--ghost btn--sm ss-dept-pick" data-row-dept="' + x.i + '" aria-haspopup="listbox" aria-expanded="false" aria-label="Department for ' + esc(s.name) + ', ' + s.depts.length + ' options"><span class="ss-dept-pick__value" data-dept-value>' + esc(deptOf(x.i)) + "</span>" + ICONS.chevronBtn + "</button>"
-      : '<span class="ss-fact__text">' + esc(s.depts[0]) + "</span>";
-    return '<article class="card ss-card">' +
-      '<h3 class="ss-card__name">' + esc(s.name) + "</h3>" +
-      '<div class="ss-card__facts">' +
-      '<span class="ss-fact">' + ICONS.schedule + '<span class="ss-fact__text">' + s.minutes + " min</span></span>" +
-      '<span class="ss-fact">' + ICONS.dept + dept + "</span>" +
-      "</div>" +
-      '<div class="ss-card__badges">' + DROP_BADGE[s.drop] + "</div>" +
-      '<button type="button" class="btn btn--secondary btn--base btn--block ss-card__cta" data-pick="' + x.i + '">Pick a time</button>' +
-      "</article>";
-  }
-
-  // v3 card: name; duration + booking mode on one line; every department that
-  // offers the service as a Badge (the filtered one first), collapsing to "+N"
-  // with a Tooltip when they don't fit one line; Pick a time in Button tint.
-  function chipCardHtml(x) {
-    var s = x.s, depts = s.depts.slice(), at = st.dept ? depts.indexOf(st.dept) : -1;
-    if (at > 0) { depts.splice(at, 1); depts.unshift(st.dept); }
-    return '<article class="card ss-card">' +
-      '<h3 class="ss-card__name">' + esc(s.name) + "</h3>" +
-      '<div class="ss-card__line"><span class="ss-fact">' + ICONS.schedule + '<span class="ss-fact__text">' + s.minutes + " min</span></span>" + DROP_BADGE_V3[s.drop] + "</div>" +
-      '<div class="ss-card__depts" aria-label="Offered by ' + esc(s.depts.join(", ")) + '">' +
-      depts.map(function (d) { return '<span class="badge badge--lg badge--neutral ss-dept" data-dept-badge><span class="ss-dept__text">' + esc(d) + "</span></span>"; }).join("") +
-      '<span class="tooltip-wrapper ss-more is-hidden"><span class="badge badge--lg badge--neutral" data-more></span><span class="tooltip" role="tooltip"></span></span>' +
-      "</div>" +
-      '<button type="button" class="btn btn--tint btn--base btn--block ss-card__cta" data-pick="' + x.i + '">Pick a time</button>' +
-      "</article>";
-  }
   // v4 item — a card on a phone, a list row from 768 (CSS decides). Duration,
   // booking mode and every department share one wrapping line: they fill the
   // line while they fit and carry on to the next, all of them shown.
@@ -861,36 +783,17 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
       '<button type="button" class="btn btn--tint btn--base ss-item__cta" data-pick="' + x.i + '">Pick a time</button>' +
       "</article>";
   }
-  // Hide departments from the end until the row fits one line, counting them
-  // into the "+N" badge (its Tooltip names them). Measured, not guessed — a
-  // short name and a long one cost very different widths.
-  function fitDepts() {
-    document.querySelectorAll(".ss-card__depts").forEach(function (row) {
-      var badges = [].slice.call(row.querySelectorAll("[data-dept-badge]"));
-      var more = row.querySelector(".ss-more");
-      badges.forEach(function (b) { b.classList.remove("is-hidden", "is-squeezed"); });
-      more.classList.add("is-hidden");
-      var hidden = [];
-      function overflows() {
-        var lastEl = more.classList.contains("is-hidden") ? badges[badges.length - 1 - hidden.length] : more;
-        return lastEl.offsetLeft + lastEl.offsetWidth > row.clientWidth + 0.5;
-      }
-      while (badges.length - hidden.length > 1 && overflows()) {
-        var b = badges[badges.length - 1 - hidden.length];
-        b.classList.add("is-hidden");
-        hidden.unshift(b.textContent);
-        more.classList.remove("is-hidden");
-        more.querySelector("[data-more]").textContent = "+" + hidden.length;
-        more.querySelector(".tooltip").textContent = hidden.join(", ");
-      }
-      // Down to one and it still doesn't fit: that one truncates.
-      if (overflows()) badges[0].classList.add("is-squeezed");
-    });
-  }
-  if (LAYOUT === "chips") {
-    window.addEventListener("resize", fitDepts);
-    // The first measure runs on the fallback font; Sora is wider, so measure again once it's in.
-    if (document.fonts) document.fonts.ready.then(fitDepts);
+  // v5 item — same shell as v4, but the departments are plain text, comma-
+  // separated, right under the name; duration + booking mode on the line below.
+  function textItemHtml(x) {
+    var s = x.s, depts = s.depts.slice(), at = st.dept ? depts.indexOf(st.dept) : -1;
+    if (at > 0) { depts.splice(at, 1); depts.unshift(st.dept); }
+    return '<article class="ss-item ss-item--text">' +
+      '<div class="ss-item__main"><h3 class="ss-item__name">' + esc(s.name) + "</h3>" +
+      '<p class="ss-item__depts">' + esc(depts.join(", ")) + "</p>" +
+      '<div class="ss-item__line"><span class="ss-fact">' + ICONS.schedule + '<span class="ss-fact__text">' + s.minutes + " min</span></span>" + DROP_BADGE_V4[s.drop] + "</div></div>" +
+      '<button type="button" class="btn btn--tint btn--base ss-item__cta" data-pick="' + x.i + '">Pick a time</button>' +
+      "</article>";
   }
 
   function renderBrowse() {
@@ -901,8 +804,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     var any = list.length > 0;
     $("ss-results").classList.toggle("is-hidden", !any);
     $("ss-empty").classList.toggle("is-hidden", any);
-    $("ss-list").innerHTML = slice.map(LAYOUT === "hybrid" ? itemHtml : LAYOUT === "chips" ? chipCardHtml : LAYOUT === "cards" ? cardHtml : rowHtml).join("");
-    if (LAYOUT === "chips") fitDepts();
+    $("ss-list").innerHTML = slice.map(LAYOUT === "hybrid" ? itemHtml : LAYOUT === "text" ? textItemHtml : rowHtml).join("");
     $("ss-range").textContent = any ? "Showing " + (from + 1) + "–" + (from + slice.length) + " of " + list.length : "";
     renderPager(pages);
   }

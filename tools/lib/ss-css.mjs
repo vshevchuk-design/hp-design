@@ -50,7 +50,6 @@ export function ssCss(h) {
   // 16px value (the iOS-zoom rule) out-weighed the sm button beside it.
   const selRow = { height: D(select.size.base.height), paddingX: D(select.size.base.paddingX), gap: D(select.size.base.gap), iconSize: D(select.size.base.iconSize), value: T(select.size.base.value), label: T(select.size.base.label), labelGap: D(select.size.base.labelGap) };
   const srch = { height: D(search.size.base.height), paddingX: D(search.size.base.paddingX), gap: D(search.size.base.gap), iconSize: D(search.size.base.iconSize), value: T(search.value) };
-  const badgeLg = { height: D(badge.size.lg.height), paddingX: D(badge.size.lg.paddingX), label: T(badge.size.lg.label) };
   const badgeSm = { height: D(badge.size.sm.height), paddingX: D(badge.size.sm.paddingX), radius: D(badge.radius), label: T(badge.size.sm.label) };
 
   const labelSm = style("label-sm");
@@ -201,8 +200,7 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .badge--outline { background: ${R(badge.outline.bg)}; border: 1px solid ${R(badge.outline.border)}; color: ${R(badge.outline.text)}; }
 .badge--regular { font-weight: ${resolve(badge.regular.fontWeight.$value)}; }
 .badge--violet { background: ${R(badge.color.violet.tint.bg)}; color: ${R(badge.color.violet.tint.text)}; }
-.badge--lg { height: ${badgeLg.height}; padding: 0 ${badgeLg.paddingX}; ${typoCss(badgeLg.label)} }
-${["neutral", "primary", "success", "warning"].map((r) => `.badge--${r} { background: ${R(badge.role[r].tint.bg)}; color: ${R(badge.role[r].tint.text)}; }`).join("\n")}
+${["neutral", "primary", "success"].map((r) => `.badge--${r} { background: ${R(badge.role[r].tint.bg)}; color: ${R(badge.role[r].tint.text)}; }`).join("\n")}
 
 /* ============ Pagination ============ */
 .pagination { display: inline-flex; align-items: center; gap: ${D(pg.item.gap)}; }
@@ -300,41 +298,7 @@ ${["neutral", "primary", "success", "warning"].map((r) => `.badge--${r} { backgr
   .ss-svc__aside { flex: 1 1 100%; justify-content: flex-end; }
   .ss-svc__aside .select { flex: 1; min-width: 0; max-width: none; }
 }
-/* ---- v2: card grid ----
-   One column on a phone, two from ~600, three on desktop — no breakpoint, the
-   track min does it. Cards in a row stretch to the tallest, and the action is
-   pinned to the bottom so every Pick a time sits on one line. */
-.ss-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(${dim(72)}, 100%), 1fr)); gap: ${dim(3)}; }
-.ss-card { display: flex; flex-direction: column; gap: ${dim(3)}; padding: ${D(card.padding)}; min-width: 0; }
-.ss-card__name { margin: 0; color: ${R(card.titleColor)}; ${typoCss(T(card.title))} }
-.ss-card__facts { display: flex; flex-direction: column; }
-/* Every fact line is the ghost sm button's height, static or not — so a card
-   with a department picker and one without line up row for row. */
-.ss-fact { display: flex; align-items: center; gap: ${dim(2)}; min-width: 0; min-height: ${bSm.height}; }
-.ss-fact > svg { flex-shrink: 0; width: ${dim(4)}; height: ${dim(4)}; color: ${cv("icon.secondary")}; }
-.ss-fact__text { min-width: 0; color: ${cv("text.secondary")}; ${typoCss(style("body-sm"))} white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-/* The department picker is Button ghost sm, pulled left by its own padding so
-   its text starts where a static department's text does. */
-.ss-dept-pick { min-width: 0; max-width: calc(100% + ${bSm.paddingX}); margin-inline-start: -${bSm.paddingX}; }
-.ss-dept-pick__value { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
-.ss-card__badges { display: flex; flex-wrap: wrap; gap: ${dim(2)}; }
-.ss-card__cta { margin-top: auto; }
-/* v3: duration and booking mode share one line; the departments get the next. */
-/* Duration left, booking mode right — the two facts read as a pair of ends. */
-.ss-card__line { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: ${dim(2)}; }
-.ss-card__line .ss-fact { min-height: 0; }
-/* Beside lg badges the duration steps up to body-base, icon to 20. */
-.ss-card__line .ss-fact__text { color: ${cv("text.default")}; ${typoCss(style("body-base"))} }
-.ss-card__line .ss-fact > svg { width: ${dim(5)}; height: ${dim(5)}; }
-/* The departments sit under a Card hairline: the line above is about the
-   service, this one is about who offers it. */
-.ss-card__depts { position: relative; display: flex; align-items: center; gap: ${dim(2)}; min-width: 0; padding-top: ${dim(3)}; border-top: 1px solid ${R(card.divider)}; }
-/* A lone department too long for the card truncates instead of overflowing. */
-.ss-dept { min-width: 0; flex-shrink: 0; }
-.ss-dept.is-squeezed { flex-shrink: 1; }
-.ss-dept__text { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
-.ss-more .badge { cursor: default; }
-/* v3 pick page: the department Select sits above the week. */
+/* v4/v5 pick page: the department Select sits above the week. */
 .ss-pick-dept { align-self: flex-start; width: min(100%, 320px); }
 /* ---- v4: one item, two shapes ----
    Phone: a card per service (12px padding — Card's 16 plus the 16 page gutter
@@ -347,8 +311,15 @@ ${["neutral", "primary", "success", "warning"].map((r) => `.badge--${r} { backgr
 .ss-item__name { margin: 0; color: ${cv("text.default")}; ${typoCss(style("heading-md"))} }
 .ss-item__line { display: flex; flex-wrap: wrap; align-items: center; gap: ${dim(2)}; }
 .ss-item__line .ss-fact { margin-inline-end: ${dim(1)}; }
-.ss-item__line .ss-fact { min-height: 0; }
+/* duration: 16px icon + body-sm text */
+.ss-fact { display: flex; align-items: center; gap: ${dim("1_5")}; min-width: 0; }
+.ss-fact > svg { flex-shrink: 0; width: ${dim(4)}; height: ${dim(4)}; color: ${cv("icon.secondary")}; }
+.ss-fact__text { color: ${cv("text.secondary")}; ${typoCss(style("body-sm"))} white-space: nowrap; }
 .ss-item__cta { width: 100%; }
+/* v5: departments as plain text under the name. Name → departments 8,
+   departments → duration/mode 8, then the item's own 12 to the button. */
+.ss-item--text .ss-item__main { gap: ${dim(2)}; }
+.ss-item__depts { margin: 0; color: ${cv("text.secondary")}; ${typoCss(style("body-sm"))} }
 @media (min-width: 768px) {
   .ss-hybrid { gap: 0; background: ${R(card.bg)}; border: 1px solid ${R(card.border)}; border-radius: ${D(card.radius)}; overflow: hidden; }
   .ss-item { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: ${dim(4)}; padding: ${D(card.padding)}; border: none; border-bottom: 1px solid ${R(card.divider)}; border-radius: 0; }
