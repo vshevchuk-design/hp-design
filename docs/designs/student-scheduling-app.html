@@ -362,7 +362,10 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 
 /* ============ Radio (advisor) ============ */
 .radio-group { display: flex; flex-direction: column; gap: 8px; border: none; margin: 0; padding: 0; min-width: 0; }
-.radio-group__label { padding: 0; color: var(--tok-text-default); font-weight: 600; font-size: 12px; line-height: 1.4; }
+/* The heading is a <legend>, which doesn't take part in the fieldset's flex
+   gap — so the label gap goes on it as a margin, or it sits flush on the
+   first option. */
+.radio-group__label { padding: 0; margin-bottom: 8px; color: var(--tok-text-default); font-weight: 600; font-size: 12px; line-height: 1.4; }
 .radio-group__items { display: flex; flex-direction: column; gap: 12px; }
 .radio-group__helper { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
 .radio { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; }

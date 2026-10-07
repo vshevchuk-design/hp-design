@@ -290,7 +290,10 @@ ${["neutral", "primary", "success"].map((r) => `.badge--${r} { background: ${R(b
 
 /* ============ Radio (advisor) ============ */
 .radio-group { display: flex; flex-direction: column; gap: ${D(radio.group.labelGap)}; border: none; margin: 0; padding: 0; min-width: 0; }
-.radio-group__label { padding: 0; color: ${R(radio.group.labelColor)}; ${typoCss(T(radio.group.label))} }
+/* The heading is a <legend>, which doesn't take part in the fieldset's flex
+   gap — so the label gap goes on it as a margin, or it sits flush on the
+   first option. */
+.radio-group__label { padding: 0; margin-bottom: ${D(radio.group.labelGap)}; color: ${R(radio.group.labelColor)}; ${typoCss(T(radio.group.label))} }
 .radio-group__items { display: flex; flex-direction: column; gap: ${D(radio.group.gapVertical)}; }
 .radio-group__helper { margin: 0; color: ${R(radio.group.helperColor)}; ${typoCss(T(radio.group.helper))} }
 .radio { display: inline-flex; align-items: center; gap: ${D(radio.size.gap)}; cursor: pointer; color: ${R(radio.state.default.label)}; ${typoCss(T(radio.label))} }
