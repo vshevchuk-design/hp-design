@@ -413,7 +413,7 @@ export function ssAppJs(d) {
     if (needDept) {
       $("ss-choose-body").classList.add("is-hidden");
       $("ss-noslots").classList.add("is-hidden");
-      $("ss-summary").classList.add("is-hidden");
+      renderSummary(true);
       return;
     }
     var days = weekDays(pk.week);
@@ -427,14 +427,16 @@ export function ssAppJs(d) {
     var empty = weekTotal === 0;
     $("ss-choose-body").classList.toggle("is-hidden", empty);
     $("ss-noslots").classList.toggle("is-hidden", !empty);
-    // Nothing to book this week, so nothing to summarise.
-    $("ss-summary").classList.toggle("is-hidden", empty);
     if (empty) {
       var s = SERVICES[pk.si];
       $("ss-dropins").classList.toggle("is-hidden", s.drop === "none");
       var nb = $("ss-notify"), done = !!pk.notified[pk.si];
       nb.disabled = done;
       nb.querySelector("span").textContent = done ? "We'll let you know" : "Notify me when a spot opens";
+      // Nothing to book this week: the summary stays (so the page keeps its
+      // shape) but in its minimal form — no When, no advisors, no Confirm.
+      renderSummary(true);
+      return;
     }
 
     // time-of-day tabs: a range with nothing in it this week is disabled
@@ -481,7 +483,11 @@ export function ssAppJs(d) {
     if (window.innerWidth < 1024) $("ss-summary").scrollIntoView({ behavior: "smooth", block: "start" });
   });
 
-  function renderSummary() {
+  // minimal: nothing bookable yet (no open times, or no department chosen) —
+  // the card keeps what's known (service, department, duration, location)
+  // and drops the booking half: When, the advisor block and Confirm.
+  function renderSummary(minimal) {
+    document.querySelectorAll("#ss-summary .ss-sum-when-row, #ss-summary .ss-sum-booking").forEach(function (el) { el.classList.toggle("is-hidden", !!minimal); });
     var s = SERVICES[pk.si], days = weekDays(pk.week), dt = pk.day === null ? null : days[pk.day];
     $("ss-sum-service").textContent = s.name;
     $("ss-sum-duration").textContent = s.minutes + " minutes";
@@ -494,19 +500,23 @@ export function ssAppJs(d) {
       when.classList.add("is-empty");
     }
     var adv = $("ss-advisors");
-    $("ss-advisor-group").classList.toggle("is-hidden", !pk.slot);
-    $("ss-advisor-hint").classList.toggle("is-hidden", !!pk.slot);
+    if (!minimal) {
+      $("ss-advisor-group").classList.toggle("is-hidden", !pk.slot);
+      $("ss-advisor-hint").classList.toggle("is-hidden", !!pk.slot);
+    }
     if (pk.slot) {
       adv.innerHTML = pk.slot.advisors.map(function (a, i) {
         return '<label class="radio"><input class="radio__input" type="radio" name="ss-advisor" value="' + esc(a) + '"' + (a === pk.advisor ? " checked" : "") + '><span class="radio__circle"></span><span class="radio__text">' + esc(a) + (i === 0 ? ' <span class="badge badge--primary">Recommended</span>' : "") + "</span></label>";
       }).join("");
     }
     var dept = pk.dept;
-    $("ss-sum-dept").textContent = dept;
-    $("ss-sum-location").textContent = LOCATIONS[dept];
+    $("ss-sum-dept").textContent = dept || "Choose a department";
+    $("ss-sum-dept").classList.toggle("is-empty", !dept);
+    document.querySelectorAll("#ss-summary .ss-sum-loc").forEach(function (el) { el.classList.toggle("is-hidden", !dept); });
+    $("ss-sum-location").textContent = dept ? LOCATIONS[dept] : "";
     $("ss-sum-formats").textContent = pk.slot
       ? pk.slot.formats.map(function (k) { return FORMATS.filter(function (y) { return y.key === k; })[0].label; }).join(" · ")
-      : "In person, phone or video — depends on the time";
+      : minimal ? "In person, phone or video" : "In person, phone or video — depends on the time";
     $("ss-confirm").disabled = !pk.slot;
   }
   $("ss-advisors").addEventListener("change", function (e) { pk.advisor = e.target.value; });

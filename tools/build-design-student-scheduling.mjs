@@ -223,23 +223,23 @@ ${shellTopbar({ title: "Scheduling", actions: settingsBtn })}
             <dl class="ss-facts">
               <dt>Service</dt><dd id="ss-sum-service"></dd>
               <dt>Department</dt><dd id="ss-sum-dept"></dd>
-              <dt>When</dt><dd id="ss-sum-when" class="is-empty"></dd>
+              <dt class="ss-sum-when-row">When</dt><dd id="ss-sum-when" class="ss-sum-when-row is-empty"></dd>
               <dt>Duration</dt><dd id="ss-sum-duration"></dd>
             </dl>
-            <div class="ss-rule"></div>
-            <p class="ss-note" id="ss-advisor-hint">Pick a time to see which advisors are free.</p>
-            <fieldset class="radio-group is-hidden" id="ss-advisor-group">
+            <div class="ss-rule ss-sum-booking"></div>
+            <p class="ss-note ss-sum-booking" id="ss-advisor-hint">Pick a time to see which advisors are free.</p>
+            <fieldset class="radio-group ss-sum-booking is-hidden" id="ss-advisor-group">
               <legend class="radio-group__label">Advisor</legend>
               <div class="radio-group__items" id="ss-advisors"></div>
             </fieldset>
-            <div class="ss-rule"></div>
-            <div class="ss-loc">
+            <div class="ss-rule ss-sum-loc"></div>
+            <div class="ss-loc ss-sum-loc">
               <span class="ss-eyebrow">Location</span>
               <p class="ss-loc__text" id="ss-sum-location"></p>
               <p class="ss-note" id="ss-sum-formats"></p>
             </div>
           </div>
-          <div class="card__foot">
+          <div class="card__foot ss-sum-booking">
             <button class="btn btn--primary btn--base btn--block" id="ss-confirm" type="button" disabled>Confirm appointment</button>
           </div>
         </aside>
