@@ -161,11 +161,16 @@ export function ssAppJs(d) {
   // clears and closes. From 768 the field goes back to the filter row.
   var head = $("ss-browse-head"), headRow = $("ss-head-row"), openBtn = $("ss-search-open");
   var tools = document.querySelector(".ss-tools");
-  function closeSearch() {
+  // Focus goes back to the search button only for a keyboard close (Escape).
+  // After a tap on ×, moving focus programmatically from the text field (which
+  // always matches :focus-visible) carries the ring onto the button — so a
+  // pointer close just lets focus go.
+  function closeSearch(fromKeyboard) {
     clearSearch();
     head.classList.remove("is-search-open");
     openBtn.setAttribute("aria-expanded", "false");
-    openBtn.focus();
+    if (fromKeyboard) openBtn.focus();
+    else if (document.activeElement) document.activeElement.blur();
   }
   if (head) {
     var phone = window.matchMedia("(max-width: 767px)");
@@ -181,11 +186,11 @@ export function ssAppJs(d) {
       searchInput.focus();
     });
     searchInput.addEventListener("keydown", function (e) {
-      if (e.key === "Escape" && head.classList.contains("is-search-open")) closeSearch();
+      if (e.key === "Escape" && head.classList.contains("is-search-open")) closeSearch(true);
     });
   }
-  $("ss-search-clear").addEventListener("click", function () {
-    if (!searchInput.value && head && head.classList.contains("is-search-open")) { closeSearch(); return; }
+  $("ss-search-clear").addEventListener("click", function (e) {
+    if (!searchInput.value && head && head.classList.contains("is-search-open")) { closeSearch(e.detail === 0); return; }
     clearSearch(); searchInput.focus();
   });
 
