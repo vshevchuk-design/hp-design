@@ -50,16 +50,20 @@ export function ssAppJs(d) {
   // ---------------- shared Listbox popover ----------------
   var lb = $("ss-lb");
   var lbList = lb.querySelector(".listbox__list");
-  var lbTrigger = null, lbOnPick = null, lbClosedAt = 0, lbClosedBy = null;
+  var lbTrigger = null, lbOnPick = null, lbSuppress = null;
   lb.addEventListener("toggle", function (e) {
-    if (e.newState === "closed") {
-      if (lbTrigger) lbTrigger.setAttribute("aria-expanded", "false");
-      lbClosedAt = Date.now(); lbClosedBy = lbTrigger;
-    }
+    if (e.newState === "closed" && lbTrigger) lbTrigger.setAttribute("aria-expanded", "false");
   });
+  // Tapping the trigger of an open listbox should close it, not reopen it.
+  // Light-dismiss closes the panel on pointerdown, and its toggle event is
+  // queued — so by the click, nothing synchronous says "it was just open".
+  // Record it here, in the capture phase, while it still is.
+  document.addEventListener("pointerdown", function (e) {
+    lbSuppress = lb.matches(":popover-open") && lbTrigger && lbTrigger.contains(e.target) ? lbTrigger : null;
+  }, true);
   function openListbox(trigger, options, selected, onPick) {
-    // A click on the same trigger that just light-dismissed the panel is a close.
-    if (lbClosedBy === trigger && Date.now() - lbClosedAt < 250) return;
+    if (lbSuppress === trigger) { lbSuppress = null; return; }
+    lbSuppress = null;
     lbTrigger = trigger; lbOnPick = onPick;
     lbList.innerHTML = options.map(function (o) {
       var sel = o.value === selected;

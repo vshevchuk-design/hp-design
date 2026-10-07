@@ -28,6 +28,7 @@ import { renderDesignViewer } from "./lib/design-viewer.mjs";
 import { SHELL_TOPBAR_CSS, SHELL_COLOR_PATHS, shellTopbar } from "./lib/app-shell.mjs";
 import { ssCss, SS_COLOR_PATHS } from "./lib/ss-css.mjs";
 import { ssAppJs } from "./lib/ss-app.mjs";
+import { hoverGuard } from "./lib/hover-guard.mjs";
 import * as DATA from "./lib/ss-data.mjs";
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
@@ -98,9 +99,11 @@ const colorPaths = [...new Set([...SHELL_COLOR_PATHS, ...SS_COLOR_PATHS, ...comp
 const fontSans = resolve("family.sans");
 const rootVars = renderRootVars([...colorPaths.map((p) => [p, resolve(p)]), ["family.sans", `'${fontSans}', sans-serif`]]);
 
-const appCss = `${rootVars}
+// Every :hover goes behind @media (hover: hover) — on touch screens a tapped
+// chip/button otherwise keeps its hover fill until something else is tapped.
+const appCss = hoverGuard(`${rootVars}
 ${SHELL_TOPBAR_CSS}
-${ssCss({ tokens, resolve, resolveToken, cv, px, refPath, typoCss, textExt, get })}`;
+${ssCss({ tokens, resolve, resolveToken, cv, px, refPath, typoCss, textExt, get })}`);
 
 // The topbar's settings action: Button secondary base icon-only — this page
 // ships its own full Button recipe, so it takes only the topbar half of the shell.
