@@ -253,6 +253,8 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 /* ============ Badge ============ */
 .badge { display: inline-flex; align-items: center; flex-shrink: 0; height: ${badgeSm.height}; padding: 0 ${badgeSm.paddingX}; border-radius: ${badgeSm.radius}; white-space: nowrap; ${typoCss(badgeSm.label)} }
 .badge--base { height: ${D(badge.size.base.height)}; padding: 0 ${D(badge.size.base.paddingX)}; ${typoCss(T(badge.size.base.label))} }
+/* outline: white + hairline (inside the box, so the height holds) + default text */
+.badge--outline { background: ${R(badge.outline.bg)}; border: 1px solid ${R(badge.outline.border)}; color: ${R(badge.outline.text)}; }
 .badge--regular { font-weight: ${resolve(badge.regular.fontWeight.$value)}; }
 .badge--violet { background: ${R(badge.color.violet.tint.bg)}; color: ${R(badge.color.violet.tint.text)}; }
 ${["neutral", "primary", "success"].map((r) => `.badge--${r} { background: ${R(badge.role[r].tint.bg)}; color: ${R(badge.role[r].tint.text)}; }`).join("\n")}
@@ -341,21 +343,6 @@ ${["neutral", "primary", "success"].map((r) => `.badge--${r} { background: ${R(b
 /* Sort sits at the list's left edge; pulled out by the ghost button's own
    padding so its icon lines up with the card edge, not with its padding box. */
 .ss-results__bar .btn--ghost { margin-inline-start: -${bSm.paddingX}; }
-/* Rows, not boxes: one Card, flush, rows divided by its own hairline. */
-.ss-list { overflow: hidden; }
-.ss-svc { display: flex; flex-wrap: wrap; align-items: center; gap: ${dim(2)} ${dim(4)}; padding: ${D(card.padding)}; border-bottom: 1px solid ${R(card.divider)}; }
-.ss-svc:last-child { border-bottom: none; }
-.ss-svc__main { flex: 1 1 240px; min-width: 0; display: flex; flex-direction: column; gap: ${dim(1)}; }
-.ss-svc__name { margin: 0; color: ${cv("text.default")}; ${typoCss(style("heading-base"))} }
-.ss-svc__meta { display: flex; flex-wrap: wrap; align-items: center; gap: ${dim(2)}; color: ${cv("text.secondary")}; ${typoCss(style("body-sm"))} }
-.ss-svc__aside { display: flex; align-items: center; gap: ${dim(2)}; min-width: 0; margin-left: auto; }
-.ss-svc__aside .select { max-width: 240px; }
-/* On a phone the department picker and the action share a row of their own,
-   the action pushed right — the name never has to fight them for width. */
-@media (max-width: 559px) {
-  .ss-svc__aside { flex: 1 1 100%; justify-content: flex-end; }
-  .ss-svc__aside .select { flex: 1; min-width: 0; max-width: none; }
-}
 /* v5 pick page: the department Select sits above the week. */
 /* The department step: a heading, then the Select (several departments) or
    the name as text (one). */
@@ -383,6 +370,18 @@ ${["neutral", "primary", "success"].map((r) => `.badge--${r} { background: ${R(b
 .ss-fact > svg { flex-shrink: 0; width: ${dim(4)}; height: ${dim(4)}; color: ${cv("icon.secondary")}; }
 .ss-fact__text { color: ${cv("text.secondary")}; ${typoCss(style("body-sm"))} white-space: nowrap; }
 .ss-item__cta { width: 100%; }
+/* v1: name → duration/badges 8; the row's aside holds the department Select
+   (when several) and Pick a time. On a phone a row WITH a Select gives the
+   aside its own line under the text, Select taking the width. */
+.ss-item--pick .ss-item__main { gap: ${dim(2)}; }
+.ss-item__aside { display: flex; align-items: center; gap: ${dim(2)}; min-width: 0; }
+.ss-item__aside .select { width: ${dim(60)}; max-width: 100%; }
+@media (max-width: 767px) {
+  .ss-hybrid--flush .ss-item:has(.select) .ss-item__aside { grid-column: 1 / -1; }
+  .ss-hybrid--flush .ss-item:has(.select) .ss-item__aside .select { flex: 1; width: auto; min-width: 0; }
+  /* beside the 40px Select, the button goes back to base so the pair is level */
+  .ss-hybrid--flush .ss-item:has(.select) .ss-item__cta { height: ${bBase.height}; padding: 0 ${bBase.paddingX}; gap: ${bBase.gap}; ${typoCss(bBase.label)} }
+}
 /* v5: departments as plain text under the name. Name → departments 4,
    departments → duration/mode 8. */
 .ss-item--text .ss-item__main { gap: ${dim(1)}; }

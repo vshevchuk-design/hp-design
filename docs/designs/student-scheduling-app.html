@@ -323,6 +323,8 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 /* ============ Badge ============ */
 .badge { display: inline-flex; align-items: center; flex-shrink: 0; height: 16px; padding: 0 8px; border-radius: 999px; white-space: nowrap; font-weight: 600; font-size: 10px; line-height: 1; }
 .badge--base { height: 20px; padding: 0 8px; font-weight: 600; font-size: 12px; line-height: 1; }
+/* outline: white + hairline (inside the box, so the height holds) + default text */
+.badge--outline { background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); color: var(--tok-text-default); }
 .badge--regular { font-weight: 400; }
 .badge--violet { background: var(--tok-tag-violet-tint-bg); color: var(--tok-tag-violet-tint-text); }
 .badge--neutral { background: var(--tok-bg-neutral); color: var(--tok-text-default); }
@@ -413,21 +415,6 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 /* Sort sits at the list's left edge; pulled out by the ghost button's own
    padding so its icon lines up with the card edge, not with its padding box. */
 .ss-results__bar .btn--ghost { margin-inline-start: -8px; }
-/* Rows, not boxes: one Card, flush, rows divided by its own hairline. */
-.ss-list { overflow: hidden; }
-.ss-svc { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; padding: 16px; border-bottom: 1px solid var(--tok-border-default); }
-.ss-svc:last-child { border-bottom: none; }
-.ss-svc__main { flex: 1 1 240px; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
-.ss-svc__name { margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 14px; line-height: 1.4; }
-.ss-svc__meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
-.ss-svc__aside { display: flex; align-items: center; gap: 8px; min-width: 0; margin-left: auto; }
-.ss-svc__aside .select { max-width: 240px; }
-/* On a phone the department picker and the action share a row of their own,
-   the action pushed right — the name never has to fight them for width. */
-@media (max-width: 559px) {
-  .ss-svc__aside { flex: 1 1 100%; justify-content: flex-end; }
-  .ss-svc__aside .select { flex: 1; min-width: 0; max-width: none; }
-}
 /* v5 pick page: the department Select sits above the week. */
 /* The department step: a heading, then the Select (several departments) or
    the name as text (one). */
@@ -455,6 +442,18 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .ss-fact > svg { flex-shrink: 0; width: 16px; height: 16px; color: var(--tok-icon-secondary); }
 .ss-fact__text { color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; white-space: nowrap; }
 .ss-item__cta { width: 100%; }
+/* v1: name → duration/badges 8; the row's aside holds the department Select
+   (when several) and Pick a time. On a phone a row WITH a Select gives the
+   aside its own line under the text, Select taking the width. */
+.ss-item--pick .ss-item__main { gap: 8px; }
+.ss-item__aside { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.ss-item__aside .select { width: 240px; max-width: 100%; }
+@media (max-width: 767px) {
+  .ss-hybrid--flush .ss-item:has(.select) .ss-item__aside { grid-column: 1 / -1; }
+  .ss-hybrid--flush .ss-item:has(.select) .ss-item__aside .select { flex: 1; width: auto; min-width: 0; }
+  /* beside the 40px Select, the button goes back to base so the pair is level */
+  .ss-hybrid--flush .ss-item:has(.select) .ss-item__cta { height: 40px; padding: 0 12px; gap: 8px; font-weight: 600; font-size: 14px; line-height: 1.4; }
+}
 /* v5: departments as plain text under the name. Name → departments 4,
    departments → duration/mode 8. */
 .ss-item--text .ss-item__main { gap: 4px; }
@@ -689,12 +688,6 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     { key: "phone", label: "Phone", icon: ICONS.call },
     { key: "video", label: "Video", icon: ICONS.videocam }
   ];
-  var DROP_BADGE = {
-    none: '<span class="badge badge--neutral">By appointment</span>',
-    open: '<span class="badge badge--success">Drop-in open until 10:00 PM</span>',
-    available: '<span class="badge badge--primary">Drop-in available</span>'
-  };
-
   // v5: base badges, regular weight; By appointment in the violet tag hue.
   var DROP_BADGE_V5 = {
     none: '<span class="badge badge--base badge--regular badge--violet">By appointment</span>',
@@ -918,16 +911,22 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     return s.depts[0];
   }
 
+  // v1 item — v5's shell and type, but the department is picked HERE: a base
+  // Select (floating "Department" label) when several departments offer the
+  // service, an outline Badge after the booking mode when only one does.
+  // Pick a time is Button secondary.
   function rowHtml(x) {
     var s = x.s, multi = s.depts.length > 1;
-    var dept = multi
+    var select = multi
       ? '<button type="button" class="select" data-row-dept="' + x.i + '" aria-haspopup="listbox" aria-expanded="false" aria-label="Department for ' + esc(s.name) + '"><span class="select__stack"><span class="select__label">Department</span><span class="select__value" data-dept-value>' + esc(deptOf(x.i)) + "</span></span>" + ICONS.chevron + "</button>"
       : "";
-    return '<div class="ss-svc">' +
-      '<div class="ss-svc__main"><h3 class="ss-svc__name">' + esc(s.name) + "</h3>" +
-      '<div class="ss-svc__meta"><span>' + s.minutes + " min</span>" + (multi ? "" : "<span>·</span><span>" + esc(s.depts[0]) + "</span>") + DROP_BADGE[s.drop] + "</div></div>" +
-      '<div class="ss-svc__aside">' + dept + '<button type="button" class="btn btn--secondary btn--base" data-pick="' + x.i + '">Pick a time</button></div>' +
-      "</div>";
+    return '<article class="ss-item ss-item--pick">' +
+      '<div class="ss-item__main"><h3 class="ss-item__name">' + esc(s.name) + "</h3>" +
+      '<div class="ss-item__line"><span class="ss-fact">' + ICONS.schedule + '<span class="ss-fact__text">' + s.minutes + " min</span></span>" + DROP_BADGE_V5[s.drop] +
+      (multi ? "" : '<span class="badge badge--base badge--outline badge--regular">' + esc(s.depts[0]) + "</span>") +
+      "</div></div>" +
+      '<div class="ss-item__aside">' + select + '<button type="button" class="btn btn--secondary btn--base ss-item__cta" data-pick="' + x.i + '">Pick a time</button></div>' +
+      "</article>";
   }
   // v5 item — the departments as plain comma-separated text right under the
   // name; duration + booking mode on the line below.

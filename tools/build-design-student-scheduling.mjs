@@ -292,12 +292,14 @@ const BROWSE_HEAD_V5 = `<div class="ss-head" id="ss-browse-head">
         <p class="ss-sub ss-sub--sm">Book time with an advisor: find the service you need, then pick a time that works for you.</p>
       </div>`;
 if (!markup.includes(BROWSE_HEAD)) throw new Error("browse head markup drifted — update BROWSE_HEAD");
-const markupFor = (layout) => {
-  if (layout === "list") return markup;
-  let m = markup.replace('class="card ss-list" id="ss-list"', 'class="ss-hybrid ss-hybrid--flush" id="ss-list"');
-  if (layout === "text") m = m.replace(UNDERLINE_NAV, SEGMENTED_NAV).replace(BROWSE_HEAD, BROWSE_HEAD_V5);
-  return m;
-};
+// v1 and v5 now share the whole shell (segmented section bar, browse head
+// with the phone search button, flush divided list); they differ only in the
+// item template and where the department is chosen.
+const markupFor = () =>
+  markup
+    .replace('class="card ss-list" id="ss-list"', 'class="ss-hybrid ss-hybrid--flush" id="ss-list"')
+    .replace(UNDERLINE_NAV, SEGMENTED_NAV)
+    .replace(BROWSE_HEAD, BROWSE_HEAD_V5);
 
 // Two layouts of the same app, both kept buildable rather than frozen as
 // copies: v5 (departments as text under the name) is current, v1 (the
@@ -327,10 +329,10 @@ const viewerHtml = renderDesignViewer({
   activeKey: "student-scheduling",
   title: "Student Scheduling",
   heading: "Student Scheduling",
-  sub: `The student side of Scheduling — browse services, pick a time, confirm. Same flow and content as the live app, rebuilt strictly from hp-design components. <b>What changed is the UI, not the flow:</b> sort is a ghost Button + Listbox on the results line instead of a third filter-looking dropdown; "Drop-in available" is a toggle Chip that clears itself (no separate Clear button); Department is the dropdown chip. <b>v5 (current)</b> is cards on a phone and list rows from 768px: the 16px service name, the departments that offer it as plain comma-separated text right under it, then duration and the booking-mode Badge (base, regular weight; By appointment in violet), then Pick a time in the Button <b>tint</b> variant. The department is chosen on the pick-a-time page — pre-set when the browse filter already named one. <b>v1</b> is the original list with a per-row department Select. Picking a time is one page — day and time ChoiceTiles on the left, a sticky <b>Your appointment</b> Card on the right with the advisor RadioGroup and the one Confirm — instead of a time popup followed by a side drawer. Try <b>Academic Difficulty</b> for the no-openings state, <b>Career Counseling</b> or <b>Degree Planning</b> for a service offered by several departments. Only Browse is built; the other five sections are placeholders.`,
+  sub: `The student side of Scheduling — browse services, pick a time, confirm. Same flow and content as the live app, rebuilt strictly from hp-design components. <b>What changed is the UI, not the flow:</b> sort is a ghost Button + Listbox on the results line instead of a third filter-looking dropdown; "Drop-in available" is a toggle Chip that clears itself (no separate Clear button); Department is the dropdown chip. <b>v5 (current)</b> is cards on a phone and list rows from 768px: the 16px service name, the departments that offer it as plain comma-separated text right under it, then duration and the booking-mode Badge (base, regular weight; By appointment in violet), then Pick a time in the Button <b>tint</b> variant. The department is chosen on the pick-a-time page — pre-set when the browse filter already named one. <b>v1</b> wears the same shell but picks the department in the list: a Select in the row when several departments offer the service, an outline Badge when only one does, and Pick a time in Button secondary. Picking a time is one page — day and time ChoiceTiles on the left, a sticky <b>Your appointment</b> Card on the right with the advisor RadioGroup and the one Confirm — instead of a time popup followed by a side drawer. Try <b>Academic Difficulty</b> for the no-openings state, <b>Career Counseling</b> or <b>Degree Planning</b> for a service offered by several departments. Only Browse is built; the other five sections are placeholders.`,
   versions: [
     { label: "v5", note: "departments as text · current", file: "student-scheduling-app.html" },
-    { label: "v1", note: "list", file: "student-scheduling-v1-app.html" },
+    { label: "v1", note: "department picked in the list", file: "student-scheduling-v1-app.html" },
   ],
 });
 

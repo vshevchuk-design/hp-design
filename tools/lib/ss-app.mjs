@@ -29,12 +29,6 @@ export function ssAppJs(d) {
     { key: "phone", label: "Phone", icon: ICONS.call },
     { key: "video", label: "Video", icon: ICONS.videocam }
   ];
-  var DROP_BADGE = {
-    none: '<span class="badge badge--neutral">By appointment</span>',
-    open: '<span class="badge badge--success">Drop-in open until 10:00 PM</span>',
-    available: '<span class="badge badge--primary">Drop-in available</span>'
-  };
-
   // v5: base badges, regular weight; By appointment in the violet tag hue.
   var DROP_BADGE_V5 = {
     none: '<span class="badge badge--base badge--regular badge--violet">By appointment</span>',
@@ -258,16 +252,22 @@ export function ssAppJs(d) {
     return s.depts[0];
   }
 
+  // v1 item — v5's shell and type, but the department is picked HERE: a base
+  // Select (floating "Department" label) when several departments offer the
+  // service, an outline Badge after the booking mode when only one does.
+  // Pick a time is Button secondary.
   function rowHtml(x) {
     var s = x.s, multi = s.depts.length > 1;
-    var dept = multi
+    var select = multi
       ? '<button type="button" class="select" data-row-dept="' + x.i + '" aria-haspopup="listbox" aria-expanded="false" aria-label="Department for ' + esc(s.name) + '"><span class="select__stack"><span class="select__label">Department</span><span class="select__value" data-dept-value>' + esc(deptOf(x.i)) + "</span></span>" + ICONS.chevron + "</button>"
       : "";
-    return '<div class="ss-svc">' +
-      '<div class="ss-svc__main"><h3 class="ss-svc__name">' + esc(s.name) + "</h3>" +
-      '<div class="ss-svc__meta"><span>' + s.minutes + " min</span>" + (multi ? "" : "<span>·</span><span>" + esc(s.depts[0]) + "</span>") + DROP_BADGE[s.drop] + "</div></div>" +
-      '<div class="ss-svc__aside">' + dept + '<button type="button" class="btn btn--secondary btn--base" data-pick="' + x.i + '">Pick a time</button></div>' +
-      "</div>";
+    return '<article class="ss-item ss-item--pick">' +
+      '<div class="ss-item__main"><h3 class="ss-item__name">' + esc(s.name) + "</h3>" +
+      '<div class="ss-item__line"><span class="ss-fact">' + ICONS.schedule + '<span class="ss-fact__text">' + s.minutes + " min</span></span>" + DROP_BADGE_V5[s.drop] +
+      (multi ? "" : '<span class="badge badge--base badge--outline badge--regular">' + esc(s.depts[0]) + "</span>") +
+      "</div></div>" +
+      '<div class="ss-item__aside">' + select + '<button type="button" class="btn btn--secondary btn--base ss-item__cta" data-pick="' + x.i + '">Pick a time</button></div>' +
+      "</article>";
   }
   // v5 item — the departments as plain comma-separated text right under the
   // name; duration + booking mode on the line below.
