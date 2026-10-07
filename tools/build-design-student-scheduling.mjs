@@ -269,7 +269,7 @@ ${appCss}
 </style>
 </head>
 <body>
-${layout === "list" ? markup : markup.replace('class="card ss-list" id="ss-list"', 'class="ss-hybrid" id="ss-list"')}
+${layout === "list" ? markup : markup.replace('class="card ss-list" id="ss-list"', layout === "text" ? 'class="ss-hybrid ss-hybrid--flush" id="ss-list"' : 'class="ss-hybrid" id="ss-list"')}
 <script>
 ${ssAppJs({ ...DATA, ICONS, LAYOUT: layout })}
 </script>

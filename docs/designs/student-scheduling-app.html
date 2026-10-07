@@ -389,9 +389,21 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .ss-fact > svg { flex-shrink: 0; width: 16px; height: 16px; color: var(--tok-icon-secondary); }
 .ss-fact__text { color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; white-space: nowrap; }
 .ss-item__cta { width: 100%; }
-/* v5: departments as plain text under the name. Name → departments 8,
-   departments → duration/mode 8, then the item's own 12 to the button. */
-.ss-item--text .ss-item__main { gap: 8px; }
+/* v5: departments as plain text under the name. Name → departments 4,
+   departments → duration/mode 8. */
+.ss-item--text .ss-item__main { gap: 4px; }
+.ss-item--text .ss-item__line { margin-top: 4px; }
+/* v5 on a phone: no cards — a flush list like the desktop rows and the
+   Message Center's thread list. Edge to edge (pulled out of the page gutter),
+   hairlines between rows, the action on the right of each row. */
+@media (max-width: 767px) {
+  .ss-hybrid--flush { gap: 0; margin-inline: -16px; background: var(--tok-surface-default); border-block: 1px solid var(--tok-border-default); }
+  .ss-hybrid--flush .ss-item { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 16px; border: none; border-bottom: 1px solid var(--tok-border-default); border-radius: 0; }
+  .ss-hybrid--flush .ss-item:last-child { border-bottom: none; }
+  /* Button sm on a phone row: base left the content column too narrow for
+     "Drop-in until 10:00 PM" beside the duration. */
+  .ss-hybrid--flush .ss-item__cta { width: auto; height: 32px; padding: 0 8px; gap: 8px; font-weight: 600; font-size: 12px; line-height: 1.4; }
+}
 .ss-item__depts { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
 @media (min-width: 768px) {
   .ss-hybrid { gap: 0; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); border-radius: 8px; overflow: hidden; }
@@ -483,7 +495,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         <div class="ss-results__bar">
           <button class="btn btn--ghost btn--sm" id="ss-sort" type="button" aria-haspopup="listbox" aria-expanded="false"><svg class="btn__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3 18h6v-2H3v2zM3 6v2h18V6H3zm0 7h12v-2H3v2z"/></svg><span id="ss-sort-label">Name (A–Z)</span></button>
         </div>
-        <div class="ss-hybrid" id="ss-list"></div>
+        <div class="ss-hybrid ss-hybrid--flush" id="ss-list"></div>
         <div class="ss-pager" id="ss-pager">
           <span class="ss-note" id="ss-range"></span>
           <nav class="pagination" id="ss-pages" aria-label="Pages"></nav>

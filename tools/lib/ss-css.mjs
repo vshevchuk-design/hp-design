@@ -316,9 +316,21 @@ ${["neutral", "primary", "success"].map((r) => `.badge--${r} { background: ${R(b
 .ss-fact > svg { flex-shrink: 0; width: ${dim(4)}; height: ${dim(4)}; color: ${cv("icon.secondary")}; }
 .ss-fact__text { color: ${cv("text.secondary")}; ${typoCss(style("body-sm"))} white-space: nowrap; }
 .ss-item__cta { width: 100%; }
-/* v5: departments as plain text under the name. Name → departments 8,
-   departments → duration/mode 8, then the item's own 12 to the button. */
-.ss-item--text .ss-item__main { gap: ${dim(2)}; }
+/* v5: departments as plain text under the name. Name → departments 4,
+   departments → duration/mode 8. */
+.ss-item--text .ss-item__main { gap: ${dim(1)}; }
+.ss-item--text .ss-item__line { margin-top: ${dim(1)}; }
+/* v5 on a phone: no cards — a flush list like the desktop rows and the
+   Message Center's thread list. Edge to edge (pulled out of the page gutter),
+   hairlines between rows, the action on the right of each row. */
+@media (max-width: 767px) {
+  .ss-hybrid--flush { gap: 0; margin-inline: -${dim(4)}; background: ${R(card.bg)}; border-block: 1px solid ${R(card.border)}; }
+  .ss-hybrid--flush .ss-item { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: ${dim(3)}; padding: ${dim(4)}; border: none; border-bottom: 1px solid ${R(card.divider)}; border-radius: 0; }
+  .ss-hybrid--flush .ss-item:last-child { border-bottom: none; }
+  /* Button sm on a phone row: base left the content column too narrow for
+     "Drop-in until 10:00 PM" beside the duration. */
+  .ss-hybrid--flush .ss-item__cta { width: auto; height: ${bSm.height}; padding: 0 ${bSm.paddingX}; gap: ${bSm.gap}; ${typoCss(bSm.label)} }
+}
 .ss-item__depts { margin: 0; color: ${cv("text.secondary")}; ${typoCss(style("body-sm"))} }
 @media (min-width: 768px) {
   .ss-hybrid { gap: 0; background: ${R(card.bg)}; border: 1px solid ${R(card.border)}; border-radius: ${D(card.radius)}; overflow: hidden; }
