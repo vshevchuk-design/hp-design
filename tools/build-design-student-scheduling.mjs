@@ -110,9 +110,9 @@ ${ssCss({ tokens, resolve, resolveToken, cv, px, refPath, typoCss, textExt, get 
 const settingsBtn = `<button class="btn btn--secondary btn--base btn--icon-only" type="button" aria-label="Settings">${icon("settings", "btn__icon")}</button>`;
 const chevronDown = icon("expand_more", "chip__icon");
 
-// v5's section bar: segmented sm Tabs instead of underline.
+// v5's section bar: segmented Tabs (base) instead of underline; the bar is the track.
 const sectionsSeg = DATA.SECTIONS.map(
-  (s, i) => `<button class="tab tab--sm${i === 0 ? " tab--active" : ""}" type="button" role="tab" aria-selected="${i === 0}">${s}</button>`
+  (s, i) => `<button class="tab tab--base${i === 0 ? " tab--active" : ""}" type="button" role="tab" aria-selected="${i === 0}">${s}</button>`
 ).join("\n      ");
 const sections = DATA.SECTIONS.map(
   (s, i) => `<button class="tab tab--base${i === 0 ? " tab--active" : ""}" type="button" role="tab" aria-selected="${i === 0}">${s}</button>`

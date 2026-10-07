@@ -70,14 +70,16 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .ss-sections { position: sticky; top: ${dim(16)}; z-index: 1; background: ${cv("surface.default")}; padding: 0 ${dim(2)}; }
 .ss-sections .tabs--underline { width: 100%; }
 @media (min-width: 768px) { .ss-sections { padding: 0 ${dim(4)}; } }
-/* v5: the sections are segmented Tabs (sm) in a white band the same width
-   and gutters as the topbar, declared dim.14 tall with its hairline inside
-   (40px track + 8 above, 7 + 1 below). It tucks up under the topbar while
-   scrolling down and comes back on any scroll up — the topbar stays put. */
+/* v5: the section bar IS the segmented Tabs track — its gray, edge to edge,
+   no radius — with the base (40px) pills inside it: dim.12 tall = the
+   track's own 4px padding + 40 + 4. Horizontal padding lines the first
+   label up with the topbar title (gutter − the tab's paddingX). It tucks up
+   under the topbar while scrolling down and returns on any scroll up. */
 .app__topbar { z-index: 2; }
-.ss-sections--seg { height: ${dim(14)}; display: flex; align-items: center; padding: 0 ${dim(4)}; border-bottom: 1px solid ${cv("border.default")}; transition: transform 0.2s ease; }
+.ss-sections--seg { height: ${dim(12)}; display: flex; align-items: center; gap: ${D(tabs.segmented.trackPadding)}; padding: ${D(tabs.segmented.trackPadding)} calc(${dim(4)} - ${D(tabs.size.base.paddingX)}); background: ${R(tabs.segmented.trackBg)}; overflow-x: auto; scrollbar-width: none; transition: transform 0.2s ease; }
+.ss-sections--seg .tabs--segmented { flex: none; height: 100%; padding: 0; border-radius: 0; background: transparent; overflow: visible; }
 .ss-sections--seg.is-tucked { transform: translateY(-100%); }
-@media (min-width: 768px) { .ss-sections--seg { padding: 0 ${dim(6)}; } }
+@media (min-width: 768px) { .ss-sections--seg { padding-inline: calc(${dim(6)} - ${D(tabs.size.base.paddingX)}); } }
 @media (prefers-reduced-motion: reduce) { .ss-sections--seg { transition: none; } }
 .ss__main { flex: 1; width: 100%; max-width: 1040px; margin: 0 auto; padding: ${dim(6)} ${dim(4)} ${dim(12)}; display: flex; flex-direction: column; gap: ${dim(6)}; }
 @media (min-width: 768px) { .ss__main { padding: ${dim(8)} ${dim(6)} ${dim(16)}; } }

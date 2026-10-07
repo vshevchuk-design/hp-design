@@ -141,14 +141,16 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .ss-sections { position: sticky; top: 64px; z-index: 1; background: var(--tok-surface-default); padding: 0 8px; }
 .ss-sections .tabs--underline { width: 100%; }
 @media (min-width: 768px) { .ss-sections { padding: 0 16px; } }
-/* v5: the sections are segmented Tabs (sm) in a white band the same width
-   and gutters as the topbar, declared dim.14 tall with its hairline inside
-   (40px track + 8 above, 7 + 1 below). It tucks up under the topbar while
-   scrolling down and comes back on any scroll up — the topbar stays put. */
+/* v5: the section bar IS the segmented Tabs track — its gray, edge to edge,
+   no radius — with the base (40px) pills inside it: dim.12 tall = the
+   track's own 4px padding + 40 + 4. Horizontal padding lines the first
+   label up with the topbar title (gutter − the tab's paddingX). It tucks up
+   under the topbar while scrolling down and returns on any scroll up. */
 .app__topbar { z-index: 2; }
-.ss-sections--seg { height: 56px; display: flex; align-items: center; padding: 0 16px; border-bottom: 1px solid var(--tok-border-default); transition: transform 0.2s ease; }
+.ss-sections--seg { height: 48px; display: flex; align-items: center; gap: 4px; padding: 4px calc(16px - 12px); background: var(--tok-surface-sunken); overflow-x: auto; scrollbar-width: none; transition: transform 0.2s ease; }
+.ss-sections--seg .tabs--segmented { flex: none; height: 100%; padding: 0; border-radius: 0; background: transparent; overflow: visible; }
 .ss-sections--seg.is-tucked { transform: translateY(-100%); }
-@media (min-width: 768px) { .ss-sections--seg { padding: 0 24px; } }
+@media (min-width: 768px) { .ss-sections--seg { padding-inline: calc(24px - 12px); } }
 @media (prefers-reduced-motion: reduce) { .ss-sections--seg { transition: none; } }
 .ss__main { flex: 1; width: 100%; max-width: 1040px; margin: 0 auto; padding: 24px 16px 48px; display: flex; flex-direction: column; gap: 24px; }
 @media (min-width: 768px) { .ss__main { padding: 32px 24px 64px; } }
