@@ -29,10 +29,11 @@
             "$value": {
               "fontFamily": "{family.sans}",
               "fontWeight": "{weight.normal}",
-              "fontSize": "{size.md}",
+              "fontSize": "{size.base}",
               "lineHeight": "{leading.tight}",
               "letterSpacing": "{tracking.normal}"
-            }
+            },
+            "$description": "14px at every size (was 16px until 2026-10-07). Select is a button that opens the Listbox — not a native <select> and never a text field — so the iOS Safari focus-zoom that forces 16px on Input/Search does not apply; the live product's Select (Radix, role=combobox, text-sm) is 14px too. Implement it as a button + Listbox; a native <select> on iOS would need 16px again."
           }
         },
         "base": {
@@ -61,10 +62,11 @@
             "$value": {
               "fontFamily": "{family.sans}",
               "fontWeight": "{weight.normal}",
-              "fontSize": "{size.md}",
+              "fontSize": "{size.base}",
               "lineHeight": "{leading.tight}",
               "letterSpacing": "{tracking.normal}"
-            }
+            },
+            "$description": "14px at every size (was 16px until 2026-10-07). Select is a button that opens the Listbox — not a native <select> and never a text field — so the iOS Safari focus-zoom that forces 16px on Input/Search does not apply; the live product's Select (Radix, role=combobox, text-sm) is 14px too. Implement it as a button + Listbox; a native <select> on iOS would need 16px again."
           },
           "label": {
             "$type": "typography",
@@ -103,10 +105,11 @@
             "$value": {
               "fontFamily": "{family.sans}",
               "fontWeight": "{weight.normal}",
-              "fontSize": "{size.md}",
+              "fontSize": "{size.base}",
               "lineHeight": "{leading.tight}",
               "letterSpacing": "{tracking.normal}"
-            }
+            },
+            "$description": "14px at every size (was 16px until 2026-10-07). Select is a button that opens the Listbox — not a native <select> and never a text field — so the iOS Safari focus-zoom that forces 16px on Input/Search does not apply; the live product's Select (Radix, role=combobox, text-sm) is 14px too. Implement it as a button + Listbox; a native <select> on iOS would need 16px again."
           },
           "label": {
             "$type": "typography",

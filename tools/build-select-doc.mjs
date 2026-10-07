@@ -276,7 +276,7 @@ const html = `<!doctype html>
 
     <div class="legend">
       <div class="row"><b>Fill + border</b><span>Same as <a href="input.html">Input</a> — surface.sunken bg + border.default hairline.</span></div>
-      <div class="row"><b>Sizes</b><span>Identical grid to Input: sm 32px (no floating label) / base 40px / lg 48px, 16px value text throughout.</span></div>
+      <div class="row"><b>Sizes</b><span>Identical height grid to Input: sm 32px (no floating label) / base 40px / lg 48px. <b>Value text is 14px at every size</b> (16px until 2026-10-07): Select is a button that opens the Listbox, not a text field, so the iOS Safari focus-zoom that keeps Input/Search at 16px does not apply — the live product’s Radix Select is text-sm (14px) too. Build it as a button + Listbox; a native Identical grid to Input: sm 32px (no floating label) / base 40px / lg 48px, 16px value text throughout.lt;selectIdentical grid to Input: sm 32px (no floating label) / base 40px / lg 48px, 16px value text throughout.gt; on iOS would need 16px again.</span></div>
       <div class="row"><b>Chevron</b><span>Always present, right-aligned (margin-left: auto pushes it to the far edge regardless of value length) — unlike the optional icon-left, this isn't a content variant, every select has one.</span></div>
       <div class="row"><b>Floating label</b><span>Same mechanics as Input — see <a href="input.html">input.html</a> for the full reasoning.</span></div>
       <div class="row"><b>States</b><span>Same set as Input: default / hover / focus / populated / disabled / error.</span></div>
