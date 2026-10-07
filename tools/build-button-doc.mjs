@@ -72,6 +72,7 @@ const colorPaths = [
   "text.secondary", "icon.secondary",
   "fill.disabled", "text.disabled", "icon.disabled",
   "border.focus", "color.white", "text.primary",
+  "fill.primaryTint", "fill.primaryTintHover", "fill.primaryTintActive", "icon.primary",
 ];
 const colorValue = Object.fromEntries(colorPaths.map((p) => [p, resolve(p)]));
 const fontSans = resolve("family.sans"); // e.g. "Sora"
@@ -95,14 +96,15 @@ function resolveSize(variantToken) {
 const primarySizes = resolveSize(button.primary);
 const secondarySizes = resolveSize(button.secondary);
 const ghostSizes = resolveSize(button.ghost);
+const tintSizes = resolveSize(button.tint);
 primarySizes.forEach((p, i) => {
-  for (const [label, sizes_] of [["secondary", secondarySizes], ["ghost", ghostSizes]]) {
+  for (const [label, sizes_] of [["secondary", secondarySizes], ["tint", tintSizes], ["ghost", ghostSizes]]) {
     const s = sizes_[i];
     const same = JSON.stringify(p) === JSON.stringify(s);
     if (!same) throw new Error(`button.primary.size.${p.key} and button.${label}.size.${s.key} were expected to be identical but diverged — update the shared .btn--${p.key} CSS generation to handle them separately.`);
   }
 });
-const sizes = primarySizes; // identical across all three variants, asserted above — one shared size grid
+const sizes = primarySizes; // identical across all four variants, asserted above — one shared size grid
 const btnRadius = px(resolve(button.primary.radius.$value));
 
 const focusWidth = resolve(button.primary.state.focused.ringWidth.$value);
@@ -123,7 +125,7 @@ const counterSizes = ["sm", "base", "lg"].map((key) => {
 // onPrimary's colors (white "active" pill, dark-navy "inactive") don't work on a
 // near-white gray button: the white pill barely shows and the navy reads as loud
 // rather than quiet, so each button variant needs its matching counter surface.
-const counterSurfaceFor = { primary: "onPrimary", secondary: "onNeutral", ghost: "onNeutral" };
+const counterSurfaceFor = { primary: "onPrimary", secondary: "onNeutral", tint: "onNeutral", ghost: "onNeutral" };
 // Read from counter.tokens.json, never retyped: onNeutral's inactive bg moved to
 // fill.neutralActiveStrong and a hand-typed "fill.neutralActive" here kept
 // painting the old gray.200 pill on this page until 2026-09-28.
@@ -154,6 +156,7 @@ const roleOf = (node) => (node ? node.$value.replace(/[{}]/g, "") : null);
 const variants = {
   primary: { label: "Primary", fill: roleOf(button.primary.state.default.fill), fillHover: roleOf(button.primary.state.hover.fill), fillActive: roleOf(button.primary.state.pressed.fill), text: roleOf(button.primary.state.default.label), icon: roleOf(button.primary.state.default.icon) },
   secondary: { label: "Secondary", fill: roleOf(button.secondary.state.default.fill), fillHover: roleOf(button.secondary.state.hover.fill), fillActive: roleOf(button.secondary.state.pressed.fill), text: roleOf(button.secondary.state.default.label), icon: roleOf(button.secondary.state.default.icon) },
+  tint: { label: "Tint", fill: roleOf(button.tint.state.default.fill), fillHover: roleOf(button.tint.state.hover.fill), fillActive: roleOf(button.tint.state.pressed.fill), text: roleOf(button.tint.state.default.label), icon: roleOf(button.tint.state.default.icon) },
   ghost: { label: "Ghost", fill: null, fillHover: roleOf(button.ghost.state.hover.fill), fillActive: roleOf(button.ghost.state.pressed.fill), text: roleOf(button.ghost.state.default.label), icon: roleOf(button.ghost.state.default.icon) },
 };
 // Whatever roles the token file names must exist as emitted CSS vars.
@@ -209,6 +212,8 @@ ${sizes
 ${variantCss("primary")}
 
 ${variantCss("secondary")}
+
+${variantCss("tint")}
 
 ${variantCss("ghost")}
 
@@ -420,11 +425,11 @@ const html = `<!doctype html>
     <p class="sub">tokens/components/button.tokens.json · Primary + Secondary + Ghost variants · generated — the CSS below is generated from the same resolved tokens driving every preview on this page, not hand-copied. Colors are CSS custom properties (<code class="tok">var(--fill-primary)</code> etc.), not literal hex — retune a token, regenerate, and every rule that references it updates together.</p>
 
     <div class="legend">
-      <div class="row"><b>Sizes</b><span>sm 32px / base 40px (default) / lg 48px — shared by all three variants, byte-for-byte identical (asserted at build time). paddingX and iconSize scale with height on the same 4px grid the size step itself moves on; the 8px icon↔label gap is flat at every size, per spec.</span></div>
+      <div class="row"><b>Sizes</b><span>sm 32px / base 40px (default) / lg 48px — shared by all four variants, byte-for-byte identical (asserted at build time). paddingX and iconSize scale with height on the same 4px grid the size step itself moves on; the 8px icon↔label gap is flat at every size, per spec.</span></div>
       <div class="row"><b>Icon size</b><span>16 / 20 / 24px — resolves to exactly 50% of button height at every size, which is why it self-scales instead of needing separate tuning as more sizes get added later.</span></div>
       <div class="row"><b>Icon-only</b><span>Square (width = height), no paddingX/gap — the icon centers directly in the box.</span></div>
       <div class="row"><b>Radius</b><span>radius.default (8px) at every size — constant, doesn't scale with height, so the corner reads the same across sm/base/lg.</span></div>
-      <div class="row"><b>Primary vs Secondary vs Ghost</b><span>Same size/state/content-variant grid, three color roles: primary → fill.primary (brand blue, highest emphasis). secondary → fill.neutral (gray fill — fill.neutral's own token description calls it out as the intended secondary-button fill). ghost → no fill or border at rest, the quietest tier — reuses the same transparent→fill.neutralHover→fill.neutralActive progression already established by pagination's page-item and tabs' segmented style.</span></div>
+      <div class="row"><b>Primary vs Secondary vs Tint vs Ghost</b><span>Same size/state/content-variant grid, four color roles: primary → fill.primary (brand blue, highest emphasis). secondary → fill.neutral (gray fill — fill.neutral's own token description calls it out as the intended secondary-button fill). tint → fill.primaryTint (blue.100) with a text.primary label, hovering to blue.150 and pressing to blue.200 — the brand colour at low emphasis, for an action that repeats on every card of a grid where a solid primary on each would make the whole screen shout (added 2026-10-07 for Scheduling's Pick a time). ghost → no fill or border at rest, the quietest tier — reuses the same transparent→fill.neutralHover→fill.neutralActive progression already established by pagination's page-item and tabs' segmented style.</span></div>
       <div class="row"><b>States</b><span>default → variant's fill (or transparent, for ghost) · hover → fillHover · pressed → fillActive · focused → additive ${px(focusWidth)} ring (border.focus) with ${px(focusOffset)} offset, composes on top of any of the three · disabled → fill.disabled + text.disabled + icon.disabled (ghost stays transparent, no fill to lose).</span></div>
     </div>
 
@@ -434,6 +439,7 @@ const html = `<!doctype html>
 
     ${variantSection("primary")}
     ${variantSection("secondary")}
+    ${variantSection("tint")}
     ${variantSection("ghost")}
 
     <p class="placeholder-note">Every code sample on this page is printed from the same resolved token values driving the live previews above it — copy it directly, nothing here is hand-typed.</p>

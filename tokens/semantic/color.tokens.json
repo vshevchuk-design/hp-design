@@ -216,6 +216,21 @@
       "$type": "color",
       "$value": "{color.blue.700}"
     },
+    "primaryTint": {
+      "$type": "color",
+      "$value": "{color.blue.100}",
+      "$description": "Pale primary fill for a lower-emphasis brand action (Button tint) — same blue.100 as bg.primary, but a fill role: it is the control's own surface and has a hover/active ladder, where bg.primary is a static tint behind content."
+    },
+    "primaryTintHover": {
+      "$type": "color",
+      "$value": "{color.blue.150}",
+      "$description": "Hover step for fill.primaryTint — one ramp step darker (blue.150)."
+    },
+    "primaryTintActive": {
+      "$type": "color",
+      "$value": "{color.blue.200}",
+      "$description": "Pressed step for fill.primaryTint (blue.200)."
+    },
     "neutral": {
       "$type": "color",
       "$value": "{color.gray.100}",

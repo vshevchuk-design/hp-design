@@ -20,7 +20,10 @@ export function ssAppJs(d) {
   var ICONS = ${JSON.stringify(d.ICONS)};
   // "list" (v1: rows in one Card) or "cards" (v2: a grid of Cards).
   var LAYOUT = ${JSON.stringify(d.LAYOUT || "list")};
-  var PAGE_SIZE = LAYOUT === "cards" ? 12 : 10;
+  // "chips" (v3): cards that LIST every department instead of picking one;
+  // the department is chosen on the pick-a-time page.
+  var CARDS = LAYOUT === "cards" || LAYOUT === "chips";
+  var PAGE_SIZE = CARDS ? 12 : 10;
   var FORMATS = [
     { key: "inPerson", label: "In person", icon: ICONS.group },
     { key: "phone", label: "Phone", icon: ICONS.call },
@@ -206,6 +209,50 @@ export function ssAppJs(d) {
       "</article>";
   }
 
+  // v3 card: name; duration + booking mode on one line; every department that
+  // offers the service as a Badge (the filtered one first), collapsing to "+N"
+  // with a Tooltip when they don't fit one line; Pick a time in Button tint.
+  function chipCardHtml(x) {
+    var s = x.s, depts = s.depts.slice(), at = st.dept ? depts.indexOf(st.dept) : -1;
+    if (at > 0) { depts.splice(at, 1); depts.unshift(st.dept); }
+    return '<article class="card ss-card">' +
+      '<h3 class="ss-card__name">' + esc(s.name) + "</h3>" +
+      '<div class="ss-card__line"><span class="ss-fact">' + ICONS.schedule + '<span class="ss-fact__text">' + s.minutes + " min</span></span>" + DROP_BADGE[s.drop] + "</div>" +
+      '<div class="ss-card__depts" aria-label="Offered by ' + esc(s.depts.join(", ")) + '">' + ICONS.dept +
+      depts.map(function (d) { return '<span class="badge badge--neutral ss-dept" data-dept-badge><span class="ss-dept__text">' + esc(d) + "</span></span>"; }).join("") +
+      '<span class="tooltip-wrapper ss-more is-hidden"><span class="badge badge--neutral" data-more></span><span class="tooltip" role="tooltip"></span></span>' +
+      "</div>" +
+      '<button type="button" class="btn btn--tint btn--base btn--block ss-card__cta" data-pick="' + x.i + '">Pick a time</button>' +
+      "</article>";
+  }
+  // Hide departments from the end until the row fits one line, counting them
+  // into the "+N" badge (its Tooltip names them). Measured, not guessed — a
+  // short name and a long one cost very different widths.
+  function fitDepts() {
+    document.querySelectorAll(".ss-card__depts").forEach(function (row) {
+      var badges = [].slice.call(row.querySelectorAll("[data-dept-badge]"));
+      var more = row.querySelector(".ss-more");
+      badges.forEach(function (b) { b.classList.remove("is-hidden", "is-squeezed"); });
+      more.classList.add("is-hidden");
+      var hidden = [];
+      function overflows() {
+        var lastEl = more.classList.contains("is-hidden") ? badges[badges.length - 1 - hidden.length] : more;
+        return lastEl.offsetLeft + lastEl.offsetWidth > row.clientWidth + 0.5;
+      }
+      while (badges.length - hidden.length > 1 && overflows()) {
+        var b = badges[badges.length - 1 - hidden.length];
+        b.classList.add("is-hidden");
+        hidden.unshift(b.textContent);
+        more.classList.remove("is-hidden");
+        more.querySelector("[data-more]").textContent = "+" + hidden.length;
+        more.querySelector(".tooltip").textContent = hidden.join(", ");
+      }
+      // Down to one and it still doesn't fit: that one truncates.
+      if (overflows()) badges[0].classList.add("is-squeezed");
+    });
+  }
+  if (LAYOUT === "chips") window.addEventListener("resize", fitDepts);
+
   function renderBrowse() {
     var list = filtered();
     var pages = Math.max(1, Math.ceil(list.length / PAGE_SIZE));
@@ -214,7 +261,8 @@ export function ssAppJs(d) {
     var any = list.length > 0;
     $("ss-results").classList.toggle("is-hidden", !any);
     $("ss-empty").classList.toggle("is-hidden", any);
-    $("ss-list").innerHTML = slice.map(LAYOUT === "cards" ? cardHtml : rowHtml).join("");
+    $("ss-list").innerHTML = slice.map(LAYOUT === "chips" ? chipCardHtml : LAYOUT === "cards" ? cardHtml : rowHtml).join("");
+    if (LAYOUT === "chips") fitDepts();
     $("ss-range").textContent = any ? "Showing " + (from + 1) + "–" + (from + slice.length) + " of " + list.length : "";
     renderPager(pages);
   }
@@ -269,7 +317,7 @@ export function ssAppJs(d) {
   var booked = {};
   var slotCache = {};
   function slotsFor(si, dt) {
-    var k = si + "|" + key(dt);
+    var k = si + "|" + pk.dept + "|" + key(dt);
     if (!slotCache[k]) {
       var s = SERVICES[si], out = [];
       if (!s.noSlots) {
@@ -292,12 +340,19 @@ export function ssAppJs(d) {
   function inTod(slot, tod) { var r = TODS[tod]; return slot.min >= r[0] && slot.min < r[1]; }
 
   // ---------------- pick a time ----------------
-  var pk = { si: 0, week: 0, tod: "any", day: null, slot: null, advisor: null, notified: {} };
+  var pk = { si: 0, dept: null, week: 0, tod: "any", day: null, slot: null, advisor: null, notified: {} };
   function openPick(si) {
     pk.si = si; pk.week = 0; pk.tod = "any"; pk.day = null; pk.slot = null; pk.advisor = null;
     var s = SERVICES[si];
+    // v3 chooses the department here. It arrives pre-set when the browse
+    // filter already named one this service has (or when there is only one);
+    // otherwise the student picks it before any times show.
+    var choose = LAYOUT === "chips" && s.depts.length > 1;
+    if (LAYOUT === "chips") pk.dept = s.depts.length === 1 ? s.depts[0] : s.depts.indexOf(st.dept) !== -1 ? st.dept : null;
+    else pk.dept = deptOf(si);
     $("ss-pick-title").textContent = s.name;
-    $("ss-pick-meta").textContent = s.minutes + " minutes · " + deptOf(si);
+    $("ss-pick-meta").textContent = s.minutes + " minutes" + (choose ? "" : " · " + pk.dept);
+    $("ss-pick-dept").classList.toggle("is-hidden", !choose);
     showView("pick");
     renderPick();
   }
@@ -308,7 +363,28 @@ export function ssAppJs(d) {
     t.addEventListener("click", function () { pk.tod = t.dataset.tod; pk.slot = null; renderPick(); });
   });
 
+  var pickDept = $("ss-pick-dept");
+  pickDept.addEventListener("click", function () {
+    openListbox(pickDept, SERVICES[pk.si].depts.map(function (x) { return { value: x, label: x }; }), pk.dept, function (v) {
+      pk.dept = v; pk.week = 0; pk.day = null; pk.slot = null; pk.advisor = null;
+      renderPick();
+    });
+  });
+
   function renderPick() {
+    // Department picker state (v3): Select's resting placeholder until chosen,
+    // then the populated shape with its floating "Department" label.
+    pickDept.classList.toggle("is-placeholder", !pk.dept);
+    $("ss-pick-dept-value").textContent = pk.dept || "Choose a department";
+    var needDept = !pk.dept;
+    $("ss-need-dept").classList.toggle("is-hidden", !needDept);
+    $("ss-week").classList.toggle("is-hidden", needDept);
+    if (needDept) {
+      $("ss-choose-body").classList.add("is-hidden");
+      $("ss-noslots").classList.add("is-hidden");
+      $("ss-summary").classList.add("is-hidden");
+      return;
+    }
     var days = weekDays(pk.week);
     var first = days[0], last = days[days.length - 1];
     $("ss-week-label").textContent = MON[first.getMonth()] + " " + first.getDate() + " – " + (first.getMonth() === last.getMonth() ? "" : MON[last.getMonth()] + " ") + last.getDate();
@@ -394,7 +470,8 @@ export function ssAppJs(d) {
         return '<label class="radio"><input class="radio__input" type="radio" name="ss-advisor" value="' + esc(a) + '"' + (a === pk.advisor ? " checked" : "") + '><span class="radio__circle"></span><span class="radio__text">' + esc(a) + (i === 0 ? ' <span class="badge badge--primary">Recommended</span>' : "") + "</span></label>";
       }).join("");
     }
-    var dept = deptOf(pk.si);
+    var dept = pk.dept;
+    $("ss-sum-dept").textContent = dept;
     $("ss-sum-location").textContent = LOCATIONS[dept];
     $("ss-sum-formats").textContent = pk.slot
       ? pk.slot.formats.map(function (k) { return FORMATS.filter(function (y) { return y.key === k; })[0].label; }).join(" · ")

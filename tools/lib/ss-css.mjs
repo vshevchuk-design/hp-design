@@ -119,6 +119,12 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .btn--ghost:not(:disabled):hover { background: ${R(button.ghost.state.hover.fill)}; }
 .btn--ghost:not(:disabled):active { background: ${R(button.ghost.state.pressed.fill)}; }
 .btn--ghost:disabled { color: ${R(button.ghost.state.disabled.label)}; }
+/* Tint — pale brand fill, blue label: the repeated per-card action. */
+.btn--tint { background: ${R(button.tint.state.default.fill)}; color: ${R(button.tint.state.default.label)}; }
+.btn--tint .btn__icon { color: ${R(button.tint.state.default.icon)}; }
+.btn--tint:not(:disabled):hover { background: ${R(button.tint.state.hover.fill)}; }
+.btn--tint:not(:disabled):active { background: ${R(button.tint.state.pressed.fill)}; }
+.btn--tint:disabled { background: ${R(button.tint.state.disabled.fill)}; color: ${R(button.tint.state.disabled.label)}; }
 .btn--base { height: ${bBase.height}; padding: 0 ${bBase.paddingX}; gap: ${bBase.gap}; ${typoCss(bBase.label)} }
 .btn--base .btn__icon { width: ${bBase.iconSize}; height: ${bBase.iconSize}; }
 .btn--sm { height: ${bSm.height}; padding: 0 ${bSm.paddingX}; gap: ${bSm.gap}; ${typoCss(bSm.label)} }
@@ -174,6 +180,9 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .select__stack { display: flex; flex-direction: column; justify-content: center; gap: ${selRow.labelGap}; flex: 1; min-width: 0; }
 .select__label { color: ${R(select.state.populated.label)}; ${typoCss(selRow.label)} white-space: nowrap; }
 .select[aria-expanded="true"] .select__label { color: ${R(select.state.focus.label)}; }
+/* Resting (no value yet): the placeholder alone, no floating label. */
+.select.is-placeholder .select__label { display: none; }
+.select.is-placeholder .select__value { color: ${R(select.state.default.placeholder)}; }
 .select__value { min-width: 0; color: ${R(select.state.default.value)}; ${typoCss(selRow.value)} white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .select__chevron { flex-shrink: 0; width: ${selRow.iconSize}; height: ${selRow.iconSize}; color: ${R(select.state.default.chevron)}; }
 
@@ -303,6 +312,18 @@ ${["neutral", "primary", "success"].map((r) => `.badge--${r} { background: ${R(b
 .ss-dept-pick__value { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 .ss-card__badges { display: flex; flex-wrap: wrap; gap: ${dim(2)}; }
 .ss-card__cta { margin-top: auto; }
+/* v3: duration and booking mode share one line; the departments get the next. */
+.ss-card__line { display: flex; flex-wrap: wrap; align-items: center; gap: ${dim(2)}; }
+.ss-card__line .ss-fact { min-height: 0; }
+.ss-card__depts { position: relative; display: flex; align-items: center; gap: ${dim("1_5")}; min-width: 0; }
+.ss-card__depts > svg { flex-shrink: 0; width: ${dim(4)}; height: ${dim(4)}; color: ${cv("icon.secondary")}; }
+/* A lone department too long for the card truncates instead of overflowing. */
+.ss-dept { min-width: 0; flex-shrink: 0; }
+.ss-dept.is-squeezed { flex-shrink: 1; }
+.ss-dept__text { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.ss-more .badge { cursor: default; }
+/* v3 pick page: the department Select sits above the week. */
+.ss-pick-dept { align-self: flex-start; width: min(100%, 320px); }
 .ss-pager { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: ${dim(3)}; }
 
 /* ============ pick a time (ss-*) ============ */

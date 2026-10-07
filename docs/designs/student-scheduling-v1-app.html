@@ -29,16 +29,19 @@
   --tok-fill-primary-active: #01519c;
   --tok-fill-disabled: #e6e8eb;
   --tok-icon-disabled: #adb5be;
+  --tok-fill-primary-tint: #d9eaff;
+  --tok-text-primary: #0468c4;
+  --tok-icon-primary: #077fec;
+  --tok-fill-primary-tint-hover: #c7dffc;
+  --tok-fill-primary-tint-active: #b2d4fe;
   --tok-fill-neutral-active: #cdd1d6;
   --tok-surface-dim: #f4f5f7;
   --tok-border-strong: #adb5be;
   --tok-surface-dim-hover: #e6e8eb;
-  --tok-text-primary: #0468c4;
   --tok-surface-disabled: #e6e8eb;
   --tok-border-danger: #febebd;
   --tok-bg-primary-hover: #eff6ff;
   --tok-bg-primary: #d9eaff;
-  --tok-icon-primary: #077fec;
   --tok-bg-neutral: #e6e8eb;
   --tok-tag-gray-solid-bg: #758191;
   --tok-tag-gray-solid-text: #ffffff;
@@ -187,6 +190,12 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .btn--ghost:not(:disabled):hover { background: var(--tok-fill-neutral-hover); }
 .btn--ghost:not(:disabled):active { background: var(--tok-fill-neutral-active); }
 .btn--ghost:disabled { color: var(--tok-text-disabled); }
+/* Tint — pale brand fill, blue label: the repeated per-card action. */
+.btn--tint { background: var(--tok-fill-primary-tint); color: var(--tok-text-primary); }
+.btn--tint .btn__icon { color: var(--tok-icon-primary); }
+.btn--tint:not(:disabled):hover { background: var(--tok-fill-primary-tint-hover); }
+.btn--tint:not(:disabled):active { background: var(--tok-fill-primary-tint-active); }
+.btn--tint:disabled { background: var(--tok-fill-disabled); color: var(--tok-text-disabled); }
 .btn--base { height: 40px; padding: 0 12px; gap: 8px; font-weight: 600; font-size: 14px; line-height: 1.4; }
 .btn--base .btn__icon { width: 20px; height: 20px; }
 .btn--sm { height: 32px; padding: 0 8px; gap: 8px; font-weight: 600; font-size: 12px; line-height: 1.4; }
@@ -242,6 +251,9 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .select__stack { display: flex; flex-direction: column; justify-content: center; gap: 0px; flex: 1; min-width: 0; }
 .select__label { color: var(--tok-text-muted); font-weight: 400; font-size: 12px; line-height: 1.2; white-space: nowrap; }
 .select[aria-expanded="true"] .select__label { color: var(--tok-text-primary); }
+/* Resting (no value yet): the placeholder alone, no floating label. */
+.select.is-placeholder .select__label { display: none; }
+.select.is-placeholder .select__value { color: var(--tok-text-muted); }
 .select__value { min-width: 0; color: var(--tok-text-default); font-weight: 400; font-size: 16px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .select__chevron { flex-shrink: 0; width: 20px; height: 20px; color: var(--tok-icon-default); }
 
@@ -373,6 +385,18 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .ss-dept-pick__value { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 .ss-card__badges { display: flex; flex-wrap: wrap; gap: 8px; }
 .ss-card__cta { margin-top: auto; }
+/* v3: duration and booking mode share one line; the departments get the next. */
+.ss-card__line { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.ss-card__line .ss-fact { min-height: 0; }
+.ss-card__depts { position: relative; display: flex; align-items: center; gap: 6px; min-width: 0; }
+.ss-card__depts > svg { flex-shrink: 0; width: 16px; height: 16px; color: var(--tok-icon-secondary); }
+/* A lone department too long for the card truncates instead of overflowing. */
+.ss-dept { min-width: 0; flex-shrink: 0; }
+.ss-dept.is-squeezed { flex-shrink: 1; }
+.ss-dept__text { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.ss-more .badge { cursor: default; }
+/* v3 pick page: the department Select sits above the week. */
+.ss-pick-dept { align-self: flex-start; width: min(100%, 320px); }
 .ss-pager { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
 
 /* ============ pick a time (ss-*) ============ */
@@ -480,7 +504,9 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
       </div>
       <div class="ss-pick">
         <div class="ss-choose">
-          <div class="ss-week">
+          <button class="select ss-pick-dept is-hidden" id="ss-pick-dept" type="button" aria-haspopup="listbox" aria-expanded="false"><span class="select__stack"><span class="select__label">Department</span><span class="select__value" id="ss-pick-dept-value"></span></span><svg class="select__chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+          <div class="empty-state is-hidden" id="ss-need-dept"><span class="empty-state__text">Choose a department to see open times</span></div>
+          <div class="ss-week" id="ss-week">
             <h3 class="ss-week__label" id="ss-week-label"></h3>
             <div class="ss-week__nav">
               <button class="btn btn--secondary btn--sm btn--icon-only" id="ss-prev-week" type="button" aria-label="Previous week"><svg class="btn__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg></button>
@@ -522,6 +548,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
           <div class="card__body">
             <dl class="ss-facts">
               <dt>Service</dt><dd id="ss-sum-service"></dd>
+              <dt>Department</dt><dd id="ss-sum-dept"></dd>
               <dt>When</dt><dd id="ss-sum-when" class="is-empty"></dd>
               <dt>Duration</dt><dd id="ss-sum-duration"></dd>
             </dl>
@@ -563,7 +590,10 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   var ICONS = {"check":"<svg class=\"listbox__checkmark\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z\"/></svg>","chevron":"<svg class=\"select__chevron\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z\"/></svg>","chevronLeft":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z\"/></svg>","chevronRight":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z\"/></svg>","checkCircle":"<svg class=\"toast__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z\"/></svg>","group":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z\"/></svg>","call":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M20.01 15.38c-1.23 0-2.42-.2-3.53-.56-.35-.12-.74-.03-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z\"/></svg>","videocam":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z\"/></svg>","chevronBtn":"<svg class=\"btn__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z\"/></svg>","schedule":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z\"/><path d=\"M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z\"/></svg>","dept":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" enable-background=\"new 0 0 24 24\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><g><rect fill=\"none\" height=\"24\" width=\"24\"/></g><g><g><rect height=\"7\" width=\"3\" x=\"4\" y=\"10\"/><rect height=\"7\" width=\"3\" x=\"10.5\" y=\"10\"/><rect height=\"3\" width=\"20\" x=\"2\" y=\"19\"/><rect height=\"7\" width=\"3\" x=\"17\" y=\"10\"/><polygon points=\"12,1 2,6 2,8 22,8 22,6\"/></g></g></svg>"};
   // "list" (v1: rows in one Card) or "cards" (v2: a grid of Cards).
   var LAYOUT = "list";
-  var PAGE_SIZE = LAYOUT === "cards" ? 12 : 10;
+  // "chips" (v3): cards that LIST every department instead of picking one;
+  // the department is chosen on the pick-a-time page.
+  var CARDS = LAYOUT === "cards" || LAYOUT === "chips";
+  var PAGE_SIZE = CARDS ? 12 : 10;
   var FORMATS = [
     { key: "inPerson", label: "In person", icon: ICONS.group },
     { key: "phone", label: "Phone", icon: ICONS.call },
@@ -749,6 +779,50 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
       "</article>";
   }
 
+  // v3 card: name; duration + booking mode on one line; every department that
+  // offers the service as a Badge (the filtered one first), collapsing to "+N"
+  // with a Tooltip when they don't fit one line; Pick a time in Button tint.
+  function chipCardHtml(x) {
+    var s = x.s, depts = s.depts.slice(), at = st.dept ? depts.indexOf(st.dept) : -1;
+    if (at > 0) { depts.splice(at, 1); depts.unshift(st.dept); }
+    return '<article class="card ss-card">' +
+      '<h3 class="ss-card__name">' + esc(s.name) + "</h3>" +
+      '<div class="ss-card__line"><span class="ss-fact">' + ICONS.schedule + '<span class="ss-fact__text">' + s.minutes + " min</span></span>" + DROP_BADGE[s.drop] + "</div>" +
+      '<div class="ss-card__depts" aria-label="Offered by ' + esc(s.depts.join(", ")) + '">' + ICONS.dept +
+      depts.map(function (d) { return '<span class="badge badge--neutral ss-dept" data-dept-badge><span class="ss-dept__text">' + esc(d) + "</span></span>"; }).join("") +
+      '<span class="tooltip-wrapper ss-more is-hidden"><span class="badge badge--neutral" data-more></span><span class="tooltip" role="tooltip"></span></span>' +
+      "</div>" +
+      '<button type="button" class="btn btn--tint btn--base btn--block ss-card__cta" data-pick="' + x.i + '">Pick a time</button>' +
+      "</article>";
+  }
+  // Hide departments from the end until the row fits one line, counting them
+  // into the "+N" badge (its Tooltip names them). Measured, not guessed — a
+  // short name and a long one cost very different widths.
+  function fitDepts() {
+    document.querySelectorAll(".ss-card__depts").forEach(function (row) {
+      var badges = [].slice.call(row.querySelectorAll("[data-dept-badge]"));
+      var more = row.querySelector(".ss-more");
+      badges.forEach(function (b) { b.classList.remove("is-hidden", "is-squeezed"); });
+      more.classList.add("is-hidden");
+      var hidden = [];
+      function overflows() {
+        var lastEl = more.classList.contains("is-hidden") ? badges[badges.length - 1 - hidden.length] : more;
+        return lastEl.offsetLeft + lastEl.offsetWidth > row.clientWidth + 0.5;
+      }
+      while (badges.length - hidden.length > 1 && overflows()) {
+        var b = badges[badges.length - 1 - hidden.length];
+        b.classList.add("is-hidden");
+        hidden.unshift(b.textContent);
+        more.classList.remove("is-hidden");
+        more.querySelector("[data-more]").textContent = "+" + hidden.length;
+        more.querySelector(".tooltip").textContent = hidden.join(", ");
+      }
+      // Down to one and it still doesn't fit: that one truncates.
+      if (overflows()) badges[0].classList.add("is-squeezed");
+    });
+  }
+  if (LAYOUT === "chips") window.addEventListener("resize", fitDepts);
+
   function renderBrowse() {
     var list = filtered();
     var pages = Math.max(1, Math.ceil(list.length / PAGE_SIZE));
@@ -757,7 +831,8 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     var any = list.length > 0;
     $("ss-results").classList.toggle("is-hidden", !any);
     $("ss-empty").classList.toggle("is-hidden", any);
-    $("ss-list").innerHTML = slice.map(LAYOUT === "cards" ? cardHtml : rowHtml).join("");
+    $("ss-list").innerHTML = slice.map(LAYOUT === "chips" ? chipCardHtml : LAYOUT === "cards" ? cardHtml : rowHtml).join("");
+    if (LAYOUT === "chips") fitDepts();
     $("ss-range").textContent = any ? "Showing " + (from + 1) + "–" + (from + slice.length) + " of " + list.length : "";
     renderPager(pages);
   }
@@ -812,7 +887,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   var booked = {};
   var slotCache = {};
   function slotsFor(si, dt) {
-    var k = si + "|" + key(dt);
+    var k = si + "|" + pk.dept + "|" + key(dt);
     if (!slotCache[k]) {
       var s = SERVICES[si], out = [];
       if (!s.noSlots) {
@@ -835,12 +910,19 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   function inTod(slot, tod) { var r = TODS[tod]; return slot.min >= r[0] && slot.min < r[1]; }
 
   // ---------------- pick a time ----------------
-  var pk = { si: 0, week: 0, tod: "any", day: null, slot: null, advisor: null, notified: {} };
+  var pk = { si: 0, dept: null, week: 0, tod: "any", day: null, slot: null, advisor: null, notified: {} };
   function openPick(si) {
     pk.si = si; pk.week = 0; pk.tod = "any"; pk.day = null; pk.slot = null; pk.advisor = null;
     var s = SERVICES[si];
+    // v3 chooses the department here. It arrives pre-set when the browse
+    // filter already named one this service has (or when there is only one);
+    // otherwise the student picks it before any times show.
+    var choose = LAYOUT === "chips" && s.depts.length > 1;
+    if (LAYOUT === "chips") pk.dept = s.depts.length === 1 ? s.depts[0] : s.depts.indexOf(st.dept) !== -1 ? st.dept : null;
+    else pk.dept = deptOf(si);
     $("ss-pick-title").textContent = s.name;
-    $("ss-pick-meta").textContent = s.minutes + " minutes · " + deptOf(si);
+    $("ss-pick-meta").textContent = s.minutes + " minutes" + (choose ? "" : " · " + pk.dept);
+    $("ss-pick-dept").classList.toggle("is-hidden", !choose);
     showView("pick");
     renderPick();
   }
@@ -851,7 +933,28 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     t.addEventListener("click", function () { pk.tod = t.dataset.tod; pk.slot = null; renderPick(); });
   });
 
+  var pickDept = $("ss-pick-dept");
+  pickDept.addEventListener("click", function () {
+    openListbox(pickDept, SERVICES[pk.si].depts.map(function (x) { return { value: x, label: x }; }), pk.dept, function (v) {
+      pk.dept = v; pk.week = 0; pk.day = null; pk.slot = null; pk.advisor = null;
+      renderPick();
+    });
+  });
+
   function renderPick() {
+    // Department picker state (v3): Select's resting placeholder until chosen,
+    // then the populated shape with its floating "Department" label.
+    pickDept.classList.toggle("is-placeholder", !pk.dept);
+    $("ss-pick-dept-value").textContent = pk.dept || "Choose a department";
+    var needDept = !pk.dept;
+    $("ss-need-dept").classList.toggle("is-hidden", !needDept);
+    $("ss-week").classList.toggle("is-hidden", needDept);
+    if (needDept) {
+      $("ss-choose-body").classList.add("is-hidden");
+      $("ss-noslots").classList.add("is-hidden");
+      $("ss-summary").classList.add("is-hidden");
+      return;
+    }
     var days = weekDays(pk.week);
     var first = days[0], last = days[days.length - 1];
     $("ss-week-label").textContent = MON[first.getMonth()] + " " + first.getDate() + " – " + (first.getMonth() === last.getMonth() ? "" : MON[last.getMonth()] + " ") + last.getDate();
@@ -937,7 +1040,8 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         return '<label class="radio"><input class="radio__input" type="radio" name="ss-advisor" value="' + esc(a) + '"' + (a === pk.advisor ? " checked" : "") + '><span class="radio__circle"></span><span class="radio__text">' + esc(a) + (i === 0 ? ' <span class="badge badge--primary">Recommended</span>' : "") + "</span></label>";
       }).join("");
     }
-    var dept = deptOf(pk.si);
+    var dept = pk.dept;
+    $("ss-sum-dept").textContent = dept;
     $("ss-sum-location").textContent = LOCATIONS[dept];
     $("ss-sum-formats").textContent = pk.slot
       ? pk.slot.formats.map(function (k) { return FORMATS.filter(function (y) { return y.key === k; })[0].label; }).join(" · ")

@@ -167,7 +167,9 @@ ${shellTopbar({ title: "Scheduling", actions: settingsBtn })}
       </div>
       <div class="ss-pick">
         <div class="ss-choose">
-          <div class="ss-week">
+          <button class="select ss-pick-dept is-hidden" id="ss-pick-dept" type="button" aria-haspopup="listbox" aria-expanded="false"><span class="select__stack"><span class="select__label">Department</span><span class="select__value" id="ss-pick-dept-value"></span></span>${icon("expand_more", "select__chevron")}</button>
+          <div class="empty-state is-hidden" id="ss-need-dept"><span class="empty-state__text">Choose a department to see open times</span></div>
+          <div class="ss-week" id="ss-week">
             <h3 class="ss-week__label" id="ss-week-label"></h3>
             <div class="ss-week__nav">
               <button class="btn btn--secondary btn--sm btn--icon-only" id="ss-prev-week" type="button" aria-label="Previous week">${icon("chevron_left", "btn__icon")}</button>
@@ -206,6 +208,7 @@ ${shellTopbar({ title: "Scheduling", actions: settingsBtn })}
           <div class="card__body">
             <dl class="ss-facts">
               <dt>Service</dt><dd id="ss-sum-service"></dd>
+              <dt>Department</dt><dd id="ss-sum-dept"></dd>
               <dt>When</dt><dd id="ss-sum-when" class="is-empty"></dd>
               <dt>Duration</dt><dd id="ss-sum-duration"></dd>
             </dl>
@@ -251,8 +254,9 @@ const ICONS = {
   dept: icon("account_balance", ""),
 };
 
-// Two layouts of the same app, both kept buildable rather than one frozen as
-// a copy: v2 (cards) is current, v1 (rows in one Card) stays comparable in
+// Three layouts of the same app, all kept buildable rather than frozen as
+// copies: v3 (cards listing departments) is current, v2 (cards with a
+// department picker) and v1 (rows in one Card) stay comparable in
 // the viewer's Versions dropdown. Only the browse container and the client
 // script's item template differ.
 const appHtmlFor = (layout) => `<!doctype html>
@@ -267,7 +271,7 @@ ${appCss}
 </style>
 </head>
 <body>
-${layout === "cards" ? markup.replace('class="card ss-list" id="ss-list"', 'class="ss-cards" id="ss-list"') : markup}
+${layout !== "list" ? markup.replace('class="card ss-list" id="ss-list"', 'class="ss-cards" id="ss-list"') : markup}
 <script>
 ${ssAppJs({ ...DATA, ICONS, LAYOUT: layout })}
 </script>
@@ -279,17 +283,20 @@ const viewerHtml = renderDesignViewer({
   activeKey: "student-scheduling",
   title: "Student Scheduling",
   heading: "Student Scheduling",
-  sub: `The student side of Scheduling — browse services, pick a time, confirm. Same flow and content as the live app, rebuilt strictly from hp-design components. <b>What changed is the UI, not the flow:</b> sort is a ghost Button + Listbox on the results line instead of a third filter-looking dropdown; "Drop-in available" is a toggle Chip that clears itself (no separate Clear button); Department is the dropdown chip. <b>v2 (current)</b> lays the services out as a card grid — name, duration, department (plain text, or a ghost dropdown when several departments offer it — always on the same line), the booking-mode Badge, Pick a time; <b>v1</b> keeps the list. Picking a time is one page — day and time ChoiceTiles on the left, a sticky <b>Your appointment</b> Card on the right with the advisor RadioGroup and the one Confirm — instead of a time popup followed by a side drawer. Try <b>Academic Difficulty</b> for the no-openings state, <b>Career Counseling</b> or <b>Degree Planning</b> for a service offered by several departments. Only Browse is built; the other five sections are placeholders.`,
+  sub: `The student side of Scheduling — browse services, pick a time, confirm. Same flow and content as the live app, rebuilt strictly from hp-design components. <b>What changed is the UI, not the flow:</b> sort is a ghost Button + Listbox on the results line instead of a third filter-looking dropdown; "Drop-in available" is a toggle Chip that clears itself (no separate Clear button); Department is the dropdown chip. <b>v3 (current)</b> drops the department choice from browse: each card lists every department that offers the service as Badges (\u201c+N\u201d with a Tooltip when they don't fit), the Department filter narrows the grid, and the department is chosen on the pick-a-time page — pre-set when the filter already named one. Pick a time is the new Button <b>tint</b> variant. <b>v2</b> lays the services out as a card grid — name, duration, department (plain text, or a ghost dropdown when several departments offer it — always on the same line), the booking-mode Badge, Pick a time; <b>v1</b> keeps the list. Picking a time is one page — day and time ChoiceTiles on the left, a sticky <b>Your appointment</b> Card on the right with the advisor RadioGroup and the one Confirm — instead of a time popup followed by a side drawer. Try <b>Academic Difficulty</b> for the no-openings state, <b>Career Counseling</b> or <b>Degree Planning</b> for a service offered by several departments. Only Browse is built; the other five sections are placeholders.`,
   versions: [
-    { label: "v2", note: "cards · current", file: "student-scheduling-app.html" },
+    { label: "v3", note: "department badges · current", file: "student-scheduling-app.html" },
+    { label: "v2", note: "cards", file: "student-scheduling-v2-app.html" },
     { label: "v1", note: "list", file: "student-scheduling-v1-app.html" },
   ],
 });
 
 fs.mkdirSync(path.join(root, "docs/designs"), { recursive: true });
-fs.writeFileSync(path.join(root, "docs/designs/student-scheduling-app.html"), appHtmlFor("cards"));
+fs.writeFileSync(path.join(root, "docs/designs/student-scheduling-app.html"), appHtmlFor("chips"));
+fs.writeFileSync(path.join(root, "docs/designs/student-scheduling-v2-app.html"), appHtmlFor("cards"));
 fs.writeFileSync(path.join(root, "docs/designs/student-scheduling-v1-app.html"), appHtmlFor("list"));
 fs.writeFileSync(path.join(root, "docs/designs/student-scheduling.html"), viewerHtml);
-console.log("wrote docs/designs/student-scheduling-app.html (v2, cards)");
+console.log("wrote docs/designs/student-scheduling-app.html (v3, department badges)");
+console.log("wrote docs/designs/student-scheduling-v2-app.html (v2, cards)");
 console.log("wrote docs/designs/student-scheduling-v1-app.html (v1, list)");
 console.log("wrote docs/designs/student-scheduling.html");
