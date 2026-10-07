@@ -196,6 +196,11 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 
 /* ============ Badge ============ */
 .badge { display: inline-flex; align-items: center; flex-shrink: 0; height: ${badgeSm.height}; padding: 0 ${badgeSm.paddingX}; border-radius: ${badgeSm.radius}; white-space: nowrap; ${typoCss(badgeSm.label)} }
+.badge--base { height: ${D(badge.size.base.height)}; padding: 0 ${D(badge.size.base.paddingX)}; ${typoCss(T(badge.size.base.label))} }
+/* outline: white + hairline (inside the box, so the height holds) + default text */
+.badge--outline { background: ${R(badge.outline.bg)}; border: 1px solid ${R(badge.outline.border)}; color: ${R(badge.outline.text)}; }
+.badge--regular { font-weight: ${resolve(badge.regular.fontWeight.$value)}; }
+.badge--violet { background: ${R(badge.color.violet.tint.bg)}; color: ${R(badge.color.violet.tint.text)}; }
 .badge--lg { height: ${badgeLg.height}; padding: 0 ${badgeLg.paddingX}; ${typoCss(badgeLg.label)} }
 ${["neutral", "primary", "success", "warning"].map((r) => `.badge--${r} { background: ${R(badge.role[r].tint.bg)}; color: ${R(badge.role[r].tint.text)}; }`).join("\n")}
 
@@ -331,6 +336,26 @@ ${["neutral", "primary", "success", "warning"].map((r) => `.badge--${r} { backgr
 .ss-more .badge { cursor: default; }
 /* v3 pick page: the department Select sits above the week. */
 .ss-pick-dept { align-self: flex-start; width: min(100%, 320px); }
+/* ---- v4: one item, two shapes ----
+   Phone: a card per service (12px padding — Card's 16 plus the 16 page gutter
+   spent 64px of a 375 screen on air). From 768: rows inside one Card — name
+   and duration/mode on the left, a departments column, the action. */
+.ss-hybrid { display: flex; flex-direction: column; gap: ${dim(3)}; }
+.ss-item { display: flex; flex-direction: column; gap: ${dim(3)}; padding: ${dim(3)}; background: ${R(card.bg)}; border: 1px solid ${R(card.border)}; border-radius: ${D(card.radius)}; min-width: 0; }
+.ss-item__main { display: flex; flex-direction: column; gap: ${dim(1)}; min-width: 0; }
+.ss-item__name { margin: 0; color: ${cv("text.default")}; ${typoCss(style("heading-md"))} }
+.ss-item__line { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: ${dim(2)}; }
+.ss-item__line .ss-fact { min-height: 0; }
+.ss-item__depts { position: relative; display: flex; align-items: center; gap: ${dim("1_5")}; min-width: 0; padding-top: ${dim(3)}; border-top: 1px solid ${R(card.divider)}; }
+.ss-item__cta { width: 100%; }
+@media (min-width: 768px) {
+  .ss-hybrid { gap: 0; background: ${R(card.bg)}; border: 1px solid ${R(card.border)}; border-radius: ${D(card.radius)}; overflow: hidden; }
+  .ss-item { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, ${dim(72)}) auto; align-items: center; gap: ${dim(4)}; padding: ${D(card.padding)}; border: none; border-bottom: 1px solid ${R(card.divider)}; border-radius: 0; }
+  .ss-item:last-child { border-bottom: none; }
+  .ss-item__line { justify-content: flex-start; }
+  .ss-item__depts { padding-top: 0; border-top: none; }
+  .ss-item__cta { width: auto; }
+}
 .ss-pager { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: ${dim(3)}; }
 
 /* ============ pick a time (ss-*) ============ */

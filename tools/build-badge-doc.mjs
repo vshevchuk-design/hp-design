@@ -99,6 +99,8 @@ for (const c of COLORS) for (const f of FILLS) pathsOf(badge.color[c][f]);
 // in it, so it has to be registered explicitly or the caption loses its colour
 // (undefined var). Caught by tools/check-css-vars.mjs.
 colorVarPaths.add("text.secondary");
+// outline style's own three roles
+for (const k of ["bg", "border", "text"]) colorVarPaths.add(badge.outline[k].$value.replace(/[{}]/g, ""));
 const uniqPaths = [...colorVarPaths];
 const colorValue = Object.fromEntries(uniqPaths.map((p) => [p, resolve(p)]));
 const fontSans = resolve("family.sans");
@@ -121,7 +123,9 @@ const css = `${rootVars}
 .badge { box-sizing: border-box; display: inline-flex; align-items: center; border-radius: ${radius}; font-family: ${cv("family.sans")}; white-space: nowrap; }
 ${sizeDefs.map((s) => `.badge--${s.key} { height: ${px(s.height)}; padding: 0 ${px(s.paddingX)}; ${typoCss(s.label)} }`).join("\n")}
 ${ROLES.map((r) => FILLS.map((f) => `.badge--role-${r}.badge--${f} { background: ${cv(refPath(badge.role[r][f].bg.$value))}; color: ${cv(refPath(badge.role[r][f].text.$value))}; }`).join("\n")).join("\n")}
-${COLORS.map((c) => FILLS.map((f) => `.badge--color-${c}.badge--${f} { background: ${cv(refPath(badge.color[c][f].bg.$value))}; color: ${cv(refPath(badge.color[c][f].text.$value))}; }`).join("\n")).join("\n")}`;
+${COLORS.map((c) => FILLS.map((f) => `.badge--color-${c}.badge--${f} { background: ${cv(refPath(badge.color[c][f].bg.$value))}; color: ${cv(refPath(badge.color[c][f].text.$value))}; }`).join("\n")).join("\n")}
+.badge--outline { background: ${cv(refPath(badge.outline.bg.$value))}; border: 1px solid ${cv(refPath(badge.outline.border.$value))}; color: ${cv(refPath(badge.outline.text.$value))}; }
+.badge--regular { font-weight: ${resolve(badge.regular.fontWeight.$value)}; }`;
 
 function markup(sizeKey, kind, name, fill, label) {
   const flavor = kind === "role" ? `role-${name}` : `color-${name}`;
@@ -294,6 +298,7 @@ const html = `<!doctype html>
       <div class="row"><b>tint vs. solid</b><span>Every role and color supports both: <code class="tok">tint</code> (pale bg + colored text, 100/600 step) and <code class="tok">solid</code> (saturated bg + <code class="tok">text.onFill</code>, 500 step) — the same intensity pair Button/Card/Menu already split into <code class="tok">bg.*</code> vs. <code class="tok">fill.*</code>.</span></div>
       <div class="row"><b>Not Chip</b><span>The interactive filter-toggle sibling (checked/unchecked, clickable) is a separate component on purpose — a status/tag pill and a checkbox-like control are different ARIA roles, same reasoning the Menu/Listbox split already established.</span></div>
       <div class="row"><b>Zero-to-minimal new tokens</b><span>Every <code class="tok">role</code> pair and 5 of the 10 <code class="tok">color</code> pairs (gray/blue/red/green/amber) are pure reuses of existing semantic tokens. Only orange/violet/magenta/teal/brown needed new leaf color references (<code class="tok">tag.*</code>, tokens/semantic/color.tokens.json).</span></div>
+      <div class="row"><b>outline · regular</b><span>Added 2026-10-07 (Student Scheduling). <code class="tok">outline</code> is a third fill style — white surface, <code class="tok">border.default</code> hairline inside the box, <code class="tok">text.default</code> — neutral only, for plain metadata labels that must not read as a status. <code class="tok">regular</code> is a weight modifier for any badge: the label at <code class="tok">weight.normal</code> instead of semibold, for badges that appear several to a card beside body text, where a row of semibold pills out-shouts the heading.</span></div>
       <div class="row"><b>Sizes</b><span>sm 16 / base 20 / lg 24 — deliberately mirrors Counter's own height/paddingX/label ladder (resolved from Counter's real values, not re-guessed) so the two small-pill components line up when they sit side by side.</span></div>
     </div>
 
@@ -316,6 +321,14 @@ const html = `<!doctype html>
     <p class="section-desc">10 decorative hues × tint/solid, base size. gray/blue/red/green/amber are aliases of the role tokens above; orange/violet/magenta/teal/brown are new.</p>
     <div class="story-grid">
       ${colorStories()}
+    </div>
+
+    <h2 class="big-section">Outline &amp; regular weight</h2>
+    <p class="section-desc">Base size. <code class="tok">.badge--outline</code> replaces the fill; <code class="tok">.badge--regular</code> composes with any fill, role or colour.</p>
+    <div class="story-grid">
+      ${storyCard("outline", `<span class="badge badge--base badge--outline">Counseling</span>`, `<span class="badge badge--base badge--outline">Counseling</span>`)}
+      ${storyCard("outline + regular", `<span class="badge badge--base badge--outline badge--regular">Counseling</span>`, `<span class="badge badge--base badge--outline badge--regular">Counseling</span>`)}
+      ${storyCard("tint + regular", `<span class="badge badge--base badge--tint badge--role-success badge--regular">Drop-in until 10:00 PM</span>`, `<span class="badge badge--base badge--tint badge--role-success badge--regular">Drop-in until 10:00 PM</span>`)}
     </div>
 
     <h2 class="big-section">In context</h2>

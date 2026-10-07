@@ -271,7 +271,7 @@ ${appCss}
 </style>
 </head>
 <body>
-${layout !== "list" ? markup.replace('class="card ss-list" id="ss-list"', 'class="ss-cards" id="ss-list"') : markup}
+${layout === "list" ? markup : markup.replace('class="card ss-list" id="ss-list"', layout === "hybrid" ? 'class="ss-hybrid" id="ss-list"' : 'class="ss-cards" id="ss-list"')}
 <script>
 ${ssAppJs({ ...DATA, ICONS, LAYOUT: layout })}
 </script>
@@ -283,20 +283,23 @@ const viewerHtml = renderDesignViewer({
   activeKey: "student-scheduling",
   title: "Student Scheduling",
   heading: "Student Scheduling",
-  sub: `The student side of Scheduling — browse services, pick a time, confirm. Same flow and content as the live app, rebuilt strictly from hp-design components. <b>What changed is the UI, not the flow:</b> sort is a ghost Button + Listbox on the results line instead of a third filter-looking dropdown; "Drop-in available" is a toggle Chip that clears itself (no separate Clear button); Department is the dropdown chip. <b>v3 (current)</b> drops the department choice from browse: each card lists every department that offers the service as Badges (\u201c+N\u201d with a Tooltip when they don't fit), the Department filter narrows the grid, and the department is chosen on the pick-a-time page — pre-set when the filter already named one. Pick a time is the new Button <b>tint</b> variant. <b>v2</b> lays the services out as a card grid — name, duration, department (plain text, or a ghost dropdown when several departments offer it — always on the same line), the booking-mode Badge, Pick a time; <b>v1</b> keeps the list. Picking a time is one page — day and time ChoiceTiles on the left, a sticky <b>Your appointment</b> Card on the right with the advisor RadioGroup and the one Confirm — instead of a time popup followed by a side drawer. Try <b>Academic Difficulty</b> for the no-openings state, <b>Career Counseling</b> or <b>Degree Planning</b> for a service offered by several departments. Only Browse is built; the other five sections are placeholders.`,
+  sub: `The student side of Scheduling — browse services, pick a time, confirm. Same flow and content as the live app, rebuilt strictly from hp-design components. <b>What changed is the UI, not the flow:</b> sort is a ghost Button + Listbox on the results line instead of a third filter-looking dropdown; "Drop-in available" is a toggle Chip that clears itself (no separate Clear button); Department is the dropdown chip. <b>v4 (current)</b> keeps v3's content but lays it out as cards on a phone and list rows from 768px, with 16px service names, base (20px) regular-weight badges, departments as outline badges, and By appointment in violet. <b>v3</b> drops the department choice from browse: each card lists every department that offers the service as Badges (\u201c+N\u201d with a Tooltip when they don't fit), the Department filter narrows the grid, and the department is chosen on the pick-a-time page — pre-set when the filter already named one. Pick a time is the new Button <b>tint</b> variant. <b>v2</b> lays the services out as a card grid — name, duration, department (plain text, or a ghost dropdown when several departments offer it — always on the same line), the booking-mode Badge, Pick a time; <b>v1</b> keeps the list. Picking a time is one page — day and time ChoiceTiles on the left, a sticky <b>Your appointment</b> Card on the right with the advisor RadioGroup and the one Confirm — instead of a time popup followed by a side drawer. Try <b>Academic Difficulty</b> for the no-openings state, <b>Career Counseling</b> or <b>Degree Planning</b> for a service offered by several departments. Only Browse is built; the other five sections are placeholders.`,
   versions: [
-    { label: "v3", note: "department badges · current", file: "student-scheduling-app.html" },
+    { label: "v4", note: "cards on phone, list on desktop · current", file: "student-scheduling-app.html" },
+    { label: "v3", note: "department badges", file: "student-scheduling-v3-app.html" },
     { label: "v2", note: "cards", file: "student-scheduling-v2-app.html" },
     { label: "v1", note: "list", file: "student-scheduling-v1-app.html" },
   ],
 });
 
 fs.mkdirSync(path.join(root, "docs/designs"), { recursive: true });
-fs.writeFileSync(path.join(root, "docs/designs/student-scheduling-app.html"), appHtmlFor("chips"));
+fs.writeFileSync(path.join(root, "docs/designs/student-scheduling-app.html"), appHtmlFor("hybrid"));
+fs.writeFileSync(path.join(root, "docs/designs/student-scheduling-v3-app.html"), appHtmlFor("chips"));
 fs.writeFileSync(path.join(root, "docs/designs/student-scheduling-v2-app.html"), appHtmlFor("cards"));
 fs.writeFileSync(path.join(root, "docs/designs/student-scheduling-v1-app.html"), appHtmlFor("list"));
 fs.writeFileSync(path.join(root, "docs/designs/student-scheduling.html"), viewerHtml);
-console.log("wrote docs/designs/student-scheduling-app.html (v3, department badges)");
+console.log("wrote docs/designs/student-scheduling-app.html (v4, hybrid)");
+console.log("wrote docs/designs/student-scheduling-v3-app.html (v3, department badges)");
 console.log("wrote docs/designs/student-scheduling-v2-app.html (v2, cards)");
 console.log("wrote docs/designs/student-scheduling-v1-app.html (v1, list)");
 console.log("wrote docs/designs/student-scheduling.html");

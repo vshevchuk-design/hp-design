@@ -22,8 +22,12 @@ export function ssAppJs(d) {
   var LAYOUT = ${JSON.stringify(d.LAYOUT || "list")};
   // "chips" (v3): cards that LIST every department instead of picking one;
   // the department is chosen on the pick-a-time page.
+  // "hybrid" (v4): v3's content, cards on a phone and list rows from 768 —
+  // one markup, CSS switches the shape.
   var CARDS = LAYOUT === "cards" || LAYOUT === "chips";
   var PAGE_SIZE = CARDS ? 12 : 10;
+  // v3 and v4 choose the department on the pick-a-time page.
+  var DEPT_ON_PICK = LAYOUT === "chips" || LAYOUT === "hybrid";
   var FORMATS = [
     { key: "inPerson", label: "In person", icon: ICONS.group },
     { key: "phone", label: "Phone", icon: ICONS.call },
@@ -43,6 +47,13 @@ export function ssAppJs(d) {
     // beside the duration on a 3-column card without wrapping.
     open: '<span class="badge badge--lg badge--success">Drop-in until 10:00 PM</span>',
     available: '<span class="badge badge--lg badge--primary">Drop-in available</span>'
+  };
+
+  // v4: base badges, regular weight; By appointment in the violet tag hue.
+  var DROP_BADGE_V4 = {
+    none: '<span class="badge badge--base badge--regular badge--violet">By appointment</span>',
+    open: '<span class="badge badge--base badge--regular badge--success">Drop-in until 10:00 PM</span>',
+    available: '<span class="badge badge--base badge--regular badge--primary">Drop-in available</span>'
   };
 
   function $(id) { return document.getElementById(id); }
@@ -235,11 +246,25 @@ export function ssAppJs(d) {
       '<button type="button" class="btn btn--tint btn--base btn--block ss-card__cta" data-pick="' + x.i + '">Pick a time</button>' +
       "</article>";
   }
+  // v4 item — a card on a phone, a list row from 768 (CSS decides).
+  function itemHtml(x) {
+    var s = x.s, depts = s.depts.slice(), at = st.dept ? depts.indexOf(st.dept) : -1;
+    if (at > 0) { depts.splice(at, 1); depts.unshift(st.dept); }
+    return '<article class="ss-item">' +
+      '<div class="ss-item__main"><h3 class="ss-item__name">' + esc(s.name) + "</h3>" +
+      '<div class="ss-item__line"><span class="ss-fact">' + ICONS.schedule + '<span class="ss-fact__text">' + s.minutes + " min</span></span>" + DROP_BADGE_V4[s.drop] + "</div></div>" +
+      '<div class="ss-item__depts" data-depts aria-label="Offered by ' + esc(s.depts.join(", ")) + '">' +
+      depts.map(function (d) { return '<span class="badge badge--base badge--outline badge--regular ss-dept" data-dept-badge><span class="ss-dept__text">' + esc(d) + "</span></span>"; }).join("") +
+      '<span class="tooltip-wrapper ss-more is-hidden"><span class="badge badge--base badge--outline badge--regular" data-more></span><span class="tooltip" role="tooltip"></span></span>' +
+      "</div>" +
+      '<button type="button" class="btn btn--tint btn--base ss-item__cta" data-pick="' + x.i + '">Pick a time</button>' +
+      "</article>";
+  }
   // Hide departments from the end until the row fits one line, counting them
   // into the "+N" badge (its Tooltip names them). Measured, not guessed — a
   // short name and a long one cost very different widths.
   function fitDepts() {
-    document.querySelectorAll(".ss-card__depts").forEach(function (row) {
+    document.querySelectorAll(".ss-card__depts, [data-depts]").forEach(function (row) {
       var badges = [].slice.call(row.querySelectorAll("[data-dept-badge]"));
       var more = row.querySelector(".ss-more");
       badges.forEach(function (b) { b.classList.remove("is-hidden", "is-squeezed"); });
@@ -261,7 +286,11 @@ export function ssAppJs(d) {
       if (overflows()) badges[0].classList.add("is-squeezed");
     });
   }
-  if (LAYOUT === "chips") window.addEventListener("resize", fitDepts);
+  if (DEPT_ON_PICK) {
+    window.addEventListener("resize", fitDepts);
+    // The first measure runs on the fallback font; Sora is wider, so measure again once it's in.
+    if (document.fonts) document.fonts.ready.then(fitDepts);
+  }
 
   function renderBrowse() {
     var list = filtered();
@@ -271,8 +300,8 @@ export function ssAppJs(d) {
     var any = list.length > 0;
     $("ss-results").classList.toggle("is-hidden", !any);
     $("ss-empty").classList.toggle("is-hidden", any);
-    $("ss-list").innerHTML = slice.map(LAYOUT === "chips" ? chipCardHtml : LAYOUT === "cards" ? cardHtml : rowHtml).join("");
-    if (LAYOUT === "chips") fitDepts();
+    $("ss-list").innerHTML = slice.map(LAYOUT === "hybrid" ? itemHtml : LAYOUT === "chips" ? chipCardHtml : LAYOUT === "cards" ? cardHtml : rowHtml).join("");
+    if (DEPT_ON_PICK) fitDepts();
     $("ss-range").textContent = any ? "Showing " + (from + 1) + "–" + (from + slice.length) + " of " + list.length : "";
     renderPager(pages);
   }
@@ -357,8 +386,8 @@ export function ssAppJs(d) {
     // v3 chooses the department here. It arrives pre-set when the browse
     // filter already named one this service has (or when there is only one);
     // otherwise the student picks it before any times show.
-    var choose = LAYOUT === "chips" && s.depts.length > 1;
-    if (LAYOUT === "chips") pk.dept = s.depts.length === 1 ? s.depts[0] : s.depts.indexOf(st.dept) !== -1 ? st.dept : null;
+    var choose = DEPT_ON_PICK && s.depts.length > 1;
+    if (DEPT_ON_PICK) pk.dept = s.depts.length === 1 ? s.depts[0] : s.depts.indexOf(st.dept) !== -1 ? st.dept : null;
     else pk.dept = deptOf(si);
     $("ss-pick-title").textContent = s.name;
     $("ss-pick-meta").textContent = s.minutes + " minutes" + (choose ? "" : " · " + pk.dept);

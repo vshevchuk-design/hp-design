@@ -405,6 +405,28 @@
             }
           }
         }
+      },
+      "regular": {
+        "$description": "Weight modifier, any size/role/color/outline: the label at weight.normal instead of semibold. For badges that sit in quantity beside body text (a card's booking mode, a list of departments) where a row of semibold pills out-shouts the heading they belong to. Added 2026-10-07 for Student Scheduling.",
+        "fontWeight": {
+          "$type": "fontWeight",
+          "$value": "{weight.normal}"
+        }
+      },
+      "outline": {
+        "$description": "A third fill style beside tint and solid: white surface + border.default hairline + text.default — no colour at all. For plain metadata labels (which departments offer a service) that must read as labels, not as a status; a neutral tint would sit at the same visual level as a role badge beside it. Neutral only — a coloured outline would reintroduce the meaning it exists to avoid. The hairline is inside the box (border-box), so heights stay 16/20/24.",
+        "bg": {
+          "$type": "color",
+          "$value": "{surface.default}"
+        },
+        "border": {
+          "$type": "color",
+          "$value": "{border.default}"
+        },
+        "text": {
+          "$type": "color",
+          "$value": "{text.default}"
+        }
       }
     }
   }

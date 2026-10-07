@@ -266,6 +266,11 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 
 /* ============ Badge ============ */
 .badge { display: inline-flex; align-items: center; flex-shrink: 0; height: 16px; padding: 0 8px; border-radius: 999px; white-space: nowrap; font-weight: 600; font-size: 10px; line-height: 1; }
+.badge--base { height: 20px; padding: 0 8px; font-weight: 600; font-size: 12px; line-height: 1; }
+/* outline: white + hairline (inside the box, so the height holds) + default text */
+.badge--outline { background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); color: var(--tok-text-default); }
+.badge--regular { font-weight: 400; }
+.badge--violet { background: var(--tok-tag-violet-tint-bg); color: var(--tok-tag-violet-tint-text); }
 .badge--lg { height: 24px; padding: 0 8px; font-weight: 600; font-size: 14px; line-height: 1; }
 .badge--neutral { background: var(--tok-bg-neutral); color: var(--tok-text-default); }
 .badge--primary { background: var(--tok-bg-primary); color: var(--tok-text-primary); }
@@ -404,6 +409,26 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .ss-more .badge { cursor: default; }
 /* v3 pick page: the department Select sits above the week. */
 .ss-pick-dept { align-self: flex-start; width: min(100%, 320px); }
+/* ---- v4: one item, two shapes ----
+   Phone: a card per service (12px padding — Card's 16 plus the 16 page gutter
+   spent 64px of a 375 screen on air). From 768: rows inside one Card — name
+   and duration/mode on the left, a departments column, the action. */
+.ss-hybrid { display: flex; flex-direction: column; gap: 12px; }
+.ss-item { display: flex; flex-direction: column; gap: 12px; padding: 12px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); border-radius: 8px; min-width: 0; }
+.ss-item__main { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.ss-item__name { margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 16px; line-height: 1.4; }
+.ss-item__line { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+.ss-item__line .ss-fact { min-height: 0; }
+.ss-item__depts { position: relative; display: flex; align-items: center; gap: 6px; min-width: 0; padding-top: 12px; border-top: 1px solid var(--tok-border-default); }
+.ss-item__cta { width: 100%; }
+@media (min-width: 768px) {
+  .ss-hybrid { gap: 0; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); border-radius: 8px; overflow: hidden; }
+  .ss-item { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 288px) auto; align-items: center; gap: 16px; padding: 16px; border: none; border-bottom: 1px solid var(--tok-border-default); border-radius: 0; }
+  .ss-item:last-child { border-bottom: none; }
+  .ss-item__line { justify-content: flex-start; }
+  .ss-item__depts { padding-top: 0; border-top: none; }
+  .ss-item__cta { width: auto; }
+}
 .ss-pager { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
 
 /* ============ pick a time (ss-*) ============ */
@@ -488,7 +513,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         <div class="ss-results__bar">
           <button class="btn btn--ghost btn--sm" id="ss-sort" type="button" aria-haspopup="listbox" aria-expanded="false"><svg class="btn__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3 18h6v-2H3v2zM3 6v2h18V6H3zm0 7h12v-2H3v2z"/></svg><span id="ss-sort-label">Name (A–Z)</span></button>
         </div>
-        <div class="ss-cards" id="ss-list"></div>
+        <div class="ss-hybrid" id="ss-list"></div>
         <div class="ss-pager" id="ss-pager">
           <span class="ss-note" id="ss-range"></span>
           <nav class="pagination" id="ss-pages" aria-label="Pages"></nav>
@@ -596,11 +621,15 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   var WEEKS_AHEAD = 3;
   var ICONS = {"check":"<svg class=\"listbox__checkmark\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z\"/></svg>","chevron":"<svg class=\"select__chevron\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z\"/></svg>","chevronLeft":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z\"/></svg>","chevronRight":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z\"/></svg>","checkCircle":"<svg class=\"toast__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z\"/></svg>","group":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z\"/></svg>","call":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M20.01 15.38c-1.23 0-2.42-.2-3.53-.56-.35-.12-.74-.03-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z\"/></svg>","videocam":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z\"/></svg>","chevronBtn":"<svg class=\"btn__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z\"/></svg>","schedule":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z\"/><path d=\"M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z\"/></svg>","dept":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" enable-background=\"new 0 0 24 24\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><g><rect fill=\"none\" height=\"24\" width=\"24\"/></g><g><g><rect height=\"7\" width=\"3\" x=\"4\" y=\"10\"/><rect height=\"7\" width=\"3\" x=\"10.5\" y=\"10\"/><rect height=\"3\" width=\"20\" x=\"2\" y=\"19\"/><rect height=\"7\" width=\"3\" x=\"17\" y=\"10\"/><polygon points=\"12,1 2,6 2,8 22,8 22,6\"/></g></g></svg>"};
   // "list" (v1: rows in one Card) or "cards" (v2: a grid of Cards).
-  var LAYOUT = "chips";
+  var LAYOUT = "hybrid";
   // "chips" (v3): cards that LIST every department instead of picking one;
   // the department is chosen on the pick-a-time page.
+  // "hybrid" (v4): v3's content, cards on a phone and list rows from 768 —
+  // one markup, CSS switches the shape.
   var CARDS = LAYOUT === "cards" || LAYOUT === "chips";
   var PAGE_SIZE = CARDS ? 12 : 10;
+  // v3 and v4 choose the department on the pick-a-time page.
+  var DEPT_ON_PICK = LAYOUT === "chips" || LAYOUT === "hybrid";
   var FORMATS = [
     { key: "inPerson", label: "In person", icon: ICONS.group },
     { key: "phone", label: "Phone", icon: ICONS.call },
@@ -620,6 +649,13 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     // beside the duration on a 3-column card without wrapping.
     open: '<span class="badge badge--lg badge--success">Drop-in until 10:00 PM</span>',
     available: '<span class="badge badge--lg badge--primary">Drop-in available</span>'
+  };
+
+  // v4: base badges, regular weight; By appointment in the violet tag hue.
+  var DROP_BADGE_V4 = {
+    none: '<span class="badge badge--base badge--regular badge--violet">By appointment</span>',
+    open: '<span class="badge badge--base badge--regular badge--success">Drop-in until 10:00 PM</span>',
+    available: '<span class="badge badge--base badge--regular badge--primary">Drop-in available</span>'
   };
 
   function $(id) { return document.getElementById(id); }
@@ -812,11 +848,25 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
       '<button type="button" class="btn btn--tint btn--base btn--block ss-card__cta" data-pick="' + x.i + '">Pick a time</button>' +
       "</article>";
   }
+  // v4 item — a card on a phone, a list row from 768 (CSS decides).
+  function itemHtml(x) {
+    var s = x.s, depts = s.depts.slice(), at = st.dept ? depts.indexOf(st.dept) : -1;
+    if (at > 0) { depts.splice(at, 1); depts.unshift(st.dept); }
+    return '<article class="ss-item">' +
+      '<div class="ss-item__main"><h3 class="ss-item__name">' + esc(s.name) + "</h3>" +
+      '<div class="ss-item__line"><span class="ss-fact">' + ICONS.schedule + '<span class="ss-fact__text">' + s.minutes + " min</span></span>" + DROP_BADGE_V4[s.drop] + "</div></div>" +
+      '<div class="ss-item__depts" data-depts aria-label="Offered by ' + esc(s.depts.join(", ")) + '">' +
+      depts.map(function (d) { return '<span class="badge badge--base badge--outline badge--regular ss-dept" data-dept-badge><span class="ss-dept__text">' + esc(d) + "</span></span>"; }).join("") +
+      '<span class="tooltip-wrapper ss-more is-hidden"><span class="badge badge--base badge--outline badge--regular" data-more></span><span class="tooltip" role="tooltip"></span></span>' +
+      "</div>" +
+      '<button type="button" class="btn btn--tint btn--base ss-item__cta" data-pick="' + x.i + '">Pick a time</button>' +
+      "</article>";
+  }
   // Hide departments from the end until the row fits one line, counting them
   // into the "+N" badge (its Tooltip names them). Measured, not guessed — a
   // short name and a long one cost very different widths.
   function fitDepts() {
-    document.querySelectorAll(".ss-card__depts").forEach(function (row) {
+    document.querySelectorAll(".ss-card__depts, [data-depts]").forEach(function (row) {
       var badges = [].slice.call(row.querySelectorAll("[data-dept-badge]"));
       var more = row.querySelector(".ss-more");
       badges.forEach(function (b) { b.classList.remove("is-hidden", "is-squeezed"); });
@@ -838,7 +888,11 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
       if (overflows()) badges[0].classList.add("is-squeezed");
     });
   }
-  if (LAYOUT === "chips") window.addEventListener("resize", fitDepts);
+  if (DEPT_ON_PICK) {
+    window.addEventListener("resize", fitDepts);
+    // The first measure runs on the fallback font; Sora is wider, so measure again once it's in.
+    if (document.fonts) document.fonts.ready.then(fitDepts);
+  }
 
   function renderBrowse() {
     var list = filtered();
@@ -848,8 +902,8 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     var any = list.length > 0;
     $("ss-results").classList.toggle("is-hidden", !any);
     $("ss-empty").classList.toggle("is-hidden", any);
-    $("ss-list").innerHTML = slice.map(LAYOUT === "chips" ? chipCardHtml : LAYOUT === "cards" ? cardHtml : rowHtml).join("");
-    if (LAYOUT === "chips") fitDepts();
+    $("ss-list").innerHTML = slice.map(LAYOUT === "hybrid" ? itemHtml : LAYOUT === "chips" ? chipCardHtml : LAYOUT === "cards" ? cardHtml : rowHtml).join("");
+    if (DEPT_ON_PICK) fitDepts();
     $("ss-range").textContent = any ? "Showing " + (from + 1) + "–" + (from + slice.length) + " of " + list.length : "";
     renderPager(pages);
   }
@@ -934,8 +988,8 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     // v3 chooses the department here. It arrives pre-set when the browse
     // filter already named one this service has (or when there is only one);
     // otherwise the student picks it before any times show.
-    var choose = LAYOUT === "chips" && s.depts.length > 1;
-    if (LAYOUT === "chips") pk.dept = s.depts.length === 1 ? s.depts[0] : s.depts.indexOf(st.dept) !== -1 ? st.dept : null;
+    var choose = DEPT_ON_PICK && s.depts.length > 1;
+    if (DEPT_ON_PICK) pk.dept = s.depts.length === 1 ? s.depts[0] : s.depts.indexOf(st.dept) !== -1 ? st.dept : null;
     else pk.dept = deptOf(si);
     $("ss-pick-title").textContent = s.name;
     $("ss-pick-meta").textContent = s.minutes + " minutes" + (choose ? "" : " · " + pk.dept);

@@ -126,6 +126,8 @@
   --tok-tag-brown-solid-bg: #9d775b;
   --tok-tag-brown-solid-text: #ffffff;
   --tok-text-secondary: #5d6a7a;
+  --tok-surface-default: #ffffff;
+  --tok-border-default: #dadde0;
   --tok-family-sans: 'Sora', sans-serif;
 }
 
@@ -163,6 +165,8 @@
 .badge--color-teal.badge--solid { background: var(--tok-tag-teal-solid-bg); color: var(--tok-tag-teal-solid-text); }
 .badge--color-brown.badge--tint { background: var(--tok-tag-brown-tint-bg); color: var(--tok-tag-brown-tint-text); }
 .badge--color-brown.badge--solid { background: var(--tok-tag-brown-solid-bg); color: var(--tok-tag-brown-solid-text); }
+.badge--outline { background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); color: var(--tok-text-default); }
+.badge--regular { font-weight: 400; }
 </style>
 </head>
 <body>
@@ -289,6 +293,7 @@
       <div class="row"><b>tint vs. solid</b><span>Every role and color supports both: <code class="tok">tint</code> (pale bg + colored text, 100/600 step) and <code class="tok">solid</code> (saturated bg + <code class="tok">text.onFill</code>, 500 step) — the same intensity pair Button/Card/Menu already split into <code class="tok">bg.*</code> vs. <code class="tok">fill.*</code>.</span></div>
       <div class="row"><b>Not Chip</b><span>The interactive filter-toggle sibling (checked/unchecked, clickable) is a separate component on purpose — a status/tag pill and a checkbox-like control are different ARIA roles, same reasoning the Menu/Listbox split already established.</span></div>
       <div class="row"><b>Zero-to-minimal new tokens</b><span>Every <code class="tok">role</code> pair and 5 of the 10 <code class="tok">color</code> pairs (gray/blue/red/green/amber) are pure reuses of existing semantic tokens. Only orange/violet/magenta/teal/brown needed new leaf color references (<code class="tok">tag.*</code>, tokens/semantic/color.tokens.json).</span></div>
+      <div class="row"><b>outline · regular</b><span>Added 2026-10-07 (Student Scheduling). <code class="tok">outline</code> is a third fill style — white surface, <code class="tok">border.default</code> hairline inside the box, <code class="tok">text.default</code> — neutral only, for plain metadata labels that must not read as a status. <code class="tok">regular</code> is a weight modifier for any badge: the label at <code class="tok">weight.normal</code> instead of semibold, for badges that appear several to a card beside body text, where a row of semibold pills out-shouts the heading.</span></div>
       <div class="row"><b>Sizes</b><span>sm 16 / base 20 / lg 24 — deliberately mirrors Counter's own height/paddingX/label ladder (resolved from Counter's real values, not re-guessed) so the two small-pill components line up when they sit side by side.</span></div>
     </div>
 
@@ -350,6 +355,8 @@
   --tok-tag-brown-solid-bg: #9d775b;
   --tok-tag-brown-solid-text: #ffffff;
   --tok-text-secondary: #5d6a7a;
+  --tok-surface-default: #ffffff;
+  --tok-border-default: #dadde0;
   --tok-family-sans: 'Sora', sans-serif;
 }
 
@@ -386,7 +393,9 @@
 .badge--color-teal.badge--tint { background: var(--tok-tag-teal-tint-bg); color: var(--tok-tag-teal-tint-text); }
 .badge--color-teal.badge--solid { background: var(--tok-tag-teal-solid-bg); color: var(--tok-tag-teal-solid-text); }
 .badge--color-brown.badge--tint { background: var(--tok-tag-brown-tint-bg); color: var(--tok-tag-brown-tint-text); }
-.badge--color-brown.badge--solid { background: var(--tok-tag-brown-solid-bg); color: var(--tok-tag-brown-solid-text); }</code></pre>
+.badge--color-brown.badge--solid { background: var(--tok-tag-brown-solid-bg); color: var(--tok-tag-brown-solid-text); }
+.badge--outline { background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); color: var(--tok-text-default); }
+.badge--regular { font-weight: 400; }</code></pre>
 
     <h2 class="big-section">Sizes</h2>
     <p class="section-desc">sm / base / lg, role="primary" tint as the reference.</p>
@@ -541,6 +550,32 @@
         <pre class="code"><code>&lt;span class="badge badge--base badge--tint badge--color-brown"&gt;Label&lt;/span&gt;
 &lt;span class="badge badge--base badge--solid badge--color-brown"&gt;Label&lt;/span&gt;</code></pre>
         <p class="story-note">New leaf color — not tied to any status role.</p>
+      </div>
+    </div>
+
+    <h2 class="big-section">Outline &amp; regular weight</h2>
+    <p class="section-desc">Base size. <code class="tok">.badge--outline</code> replaces the fill; <code class="tok">.badge--regular</code> composes with any fill, role or colour.</p>
+    <div class="story-grid">
+      
+      <div class="story">
+        <h3>outline</h3>
+        <div class="story-preview"><span class="badge badge--base badge--outline">Counseling</span></div>
+        <pre class="code"><code>&lt;span class="badge badge--base badge--outline"&gt;Counseling&lt;/span&gt;</code></pre>
+        
+      </div>
+      
+      <div class="story">
+        <h3>outline + regular</h3>
+        <div class="story-preview"><span class="badge badge--base badge--outline badge--regular">Counseling</span></div>
+        <pre class="code"><code>&lt;span class="badge badge--base badge--outline badge--regular"&gt;Counseling&lt;/span&gt;</code></pre>
+        
+      </div>
+      
+      <div class="story">
+        <h3>tint + regular</h3>
+        <div class="story-preview"><span class="badge badge--base badge--tint badge--role-success badge--regular">Drop-in until 10:00 PM</span></div>
+        <pre class="code"><code>&lt;span class="badge badge--base badge--tint badge--role-success badge--regular"&gt;Drop-in until 10:00 PM&lt;/span&gt;</code></pre>
+        
       </div>
     </div>
 
