@@ -76,7 +76,7 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
    label up with the topbar title (gutter − the tab's paddingX). It tucks up
    under the topbar while scrolling down and returns on any scroll up. */
 .app__topbar { z-index: 2; }
-.ss-sections--seg { height: ${dim(12)}; display: flex; align-items: center; gap: ${D(tabs.segmented.trackPadding)}; padding: ${D(tabs.segmented.trackPadding)} calc(${dim(4)} - ${D(tabs.size.base.paddingX)}); background: ${R(tabs.segmented.trackBg)}; transition: transform 0.2s ease; }
+.ss-sections--seg { height: ${dim(12)}; display: flex; align-items: center; gap: ${D(tabs.segmented.trackPadding)}; padding: ${D(tabs.segmented.trackPadding)} calc(${dim(4)} - ${D(tabs.size.base.paddingX)}); background: ${R(tabs.segmented.trackBg)}; transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1); }
 .ss-sections--seg .tabs--segmented { height: 100%; padding: 0; border-radius: 0; background: transparent; }
 .ss-sections--seg.is-tucked { transform: translateY(-100%); }
 /* When the tabs overflow (a phone), the ROW scrolls inside the bar and its
