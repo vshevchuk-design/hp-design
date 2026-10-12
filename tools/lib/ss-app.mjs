@@ -18,6 +18,10 @@ export function ssAppJs(d) {
   var TODAY = ${JSON.stringify(d.TODAY)};
   var WEEKS_AHEAD = ${d.WEEKS_AHEAD};
   var ICONS = ${JSON.stringify(d.ICONS)};
+  var APPTS = ${JSON.stringify(d.APPOINTMENTS)};
+  var ABOUT = ${JSON.stringify(d.ABOUT)};
+  var NOW_MIN = ${d.NOW_MINUTES}, CHECKIN_BEFORE = ${d.CHECKIN_MINUTES_BEFORE};
+  var STUDENT_PHONE = ${JSON.stringify(d.STUDENT_PHONE)};
   // "list" (v1: rows in one Card).
   var LAYOUT = ${JSON.stringify(d.LAYOUT || "list")};
   // "text" (v5): a flush divided list on a phone, list rows in a Card from
@@ -109,6 +113,7 @@ export function ssAppJs(d) {
       t.setAttribute("aria-selected", i === j ? "true" : "false");
     });
     if (i === 0) { showView("browse"); return; }
+    if (i === 1) { renderAppts(); showView("appointments"); return; }
     $("ss-placeholder-text").textContent = sectionTabs[i].textContent + " — not designed yet";
     showView("placeholder");
   }
@@ -352,6 +357,8 @@ export function ssAppJs(d) {
         var density = 12 + hash(k) % 40; // percent of half-hours open that day
         if (dt.getDay() === 6) density = Math.floor(density / 3);
         for (var m = 8 * 60; m <= 19 * 60 + 30; m += 30) {
+          // today's slots that have already started aren't on offer
+          if (key(dt) === key(today) && m <= NOW_MIN) continue;
           var hk = k + "|" + m;
           if (hash(hk) % 100 >= density) continue;
           var pool = ADVISORS.slice().sort(function (a, b) { return hash(hk + a) - hash(hk + b); });
@@ -369,14 +376,19 @@ export function ssAppJs(d) {
 
   // ---------------- pick a time ----------------
   var pk = { si: 0, dept: null, week: 0, tod: "any", day: null, slot: null, advisor: null, notified: {} };
-  function openPick(si) {
+  // opts.dept: arrive with this department (Book again / Reschedule).
+  // opts.reschedule: the appointment id being moved — Confirm then moves it.
+  function openPick(si, opts) {
+    opts = opts || {};
     pk.si = si; pk.week = 0; pk.tod = "any"; pk.day = null; pk.slot = null; pk.advisor = null;
+    pk.reschedule = opts.reschedule || null;
     var s = SERVICES[si];
     // v3 chooses the department here. It arrives pre-set when the browse
     // filter already named one this service has (or when there is only one);
     // otherwise the student picks it before any times show.
     var choose = DEPT_ON_PICK && s.depts.length > 1;
-    if (DEPT_ON_PICK) pk.dept = s.depts.length === 1 ? s.depts[0] : s.depts.indexOf(st.dept) !== -1 ? st.dept : null;
+    if (opts.dept) pk.dept = opts.dept;
+    else if (DEPT_ON_PICK) pk.dept = s.depts.length === 1 ? s.depts[0] : s.depts.indexOf(st.dept) !== -1 ? st.dept : null;
     else pk.dept = deptOf(si);
     $("ss-pick-title").textContent = s.name;
     $("ss-pick-meta").textContent = s.minutes + " minutes" + (DEPT_ON_PICK ? "" : " · " + pk.dept);
@@ -384,10 +396,18 @@ export function ssAppJs(d) {
     $("ss-pick-dept").classList.toggle("is-hidden", !choose);
     $("ss-pick-dept-text").classList.toggle("is-hidden", choose);
     $("ss-pick-dept-text").textContent = choose ? "" : pk.dept;
+    var moving = pk.reschedule ? apptById(pk.reschedule) : null;
+    $("ss-resched-note").classList.toggle("is-hidden", !moving);
+    if (moving) $("ss-resched-text").textContent = moving.service + " is booked for " + whenShort(moving) + ". That time stays yours until you confirm a new one.";
+    $("ss-back").querySelector("span").textContent = moving ? "Back to appointment" : "All services";
+    $("ss-confirm").textContent = moving ? "Confirm new time" : "Confirm appointment";
     showView("pick");
     renderPick();
   }
-  $("ss-back").addEventListener("click", function () { showView("browse"); });
+  $("ss-back").addEventListener("click", function () {
+    if (pk.reschedule) { var id = pk.reschedule; pk.reschedule = null; openAppt(id); return; }
+    showView("browse");
+  });
   $("ss-prev-week").addEventListener("click", function () { pk.week--; pk.day = null; pk.slot = null; renderPick(); });
   $("ss-next-week").addEventListener("click", function () { pk.week++; pk.day = null; pk.slot = null; renderPick(); });
   document.querySelectorAll("#ss-tod .tab").forEach(function (t) {
@@ -524,7 +544,20 @@ export function ssAppJs(d) {
     if (!pk.slot) return;
     var dt = weekDays(pk.week)[pk.day];
     booked[pk.slot.id] = true;
-    showToast("Booked: " + SERVICES[pk.si].name + ", " + DOW[dt.getDay()] + " " + MON[dt.getMonth()] + " " + dt.getDate() + " at " + fmtTime(pk.slot.min) + " with " + pk.advisor);
+    var when = DOW[dt.getDay()] + ", " + MON[dt.getMonth()] + " " + dt.getDate() + " at " + fmtTime(pk.slot.min);
+    if (pk.reschedule) {
+      // Reschedule moves the existing appointment — same reference, new slot.
+      var a = apptById(pk.reschedule);
+      a.date = iso(dt); a.min = pk.slot.min; a.advisor = pk.advisor; a.format = pk.slot.formats[0]; a.dept = pk.dept;
+      a.checkedIn = false;
+      pk.reschedule = null; pk.slot = null; pk.advisor = null;
+      showToast("Rescheduled to " + when);
+      openAppt(a.id);
+      return;
+    }
+    APPTS.push({ id: "n" + Date.now(), ref: String(5200 + APPTS.length), service: SERVICES[pk.si].name, dept: pk.dept, date: iso(dt), min: pk.slot.min, advisor: pk.advisor, format: pk.slot.formats[0], status: "upcoming" });
+    updateUpcomingCount();
+    showToast("Booked: " + SERVICES[pk.si].name + ", " + when + " — it's in My appointments");
     pk.slot = null; pk.advisor = null;
     renderPick();
   });
@@ -535,6 +568,198 @@ export function ssAppJs(d) {
   });
   $("ss-dropins").addEventListener("click", function () { goSection(2); });
 
+  // ---------------- my appointments ----------------
+  var apptTab = "upcoming";
+  function apptById(id) { return APPTS.filter(function (a) { return a.id === id; })[0]; }
+  function svcIndex(name) { for (var i = 0; i < SERVICES.length; i++) if (SERVICES[i].name === name) return i; return -1; }
+  function iso(dt) { return dt.getFullYear() + "-" + (dt.getMonth() < 9 ? "0" : "") + (dt.getMonth() + 1) + "-" + (dt.getDate() < 10 ? "0" : "") + dt.getDate(); }
+  function apptDate(a) { return new Date(a.date + "T00:00:00"); }
+  function minutesOf(a) { var i = svcIndex(a.service); return i === -1 ? 30 : SERVICES[i].minutes; }
+  function isToday(a) { return a.date === TODAY; }
+  // Check-in opens CHECKIN_BEFORE minutes ahead and stays open through the slot.
+  function checkinOpen(a) { return a.status === "upcoming" && !a.checkedIn && isToday(a) && NOW_MIN >= a.min - CHECKIN_BEFORE && NOW_MIN < a.min + minutesOf(a); }
+  function whenShort(a) { var d = apptDate(a); return DOW[d.getDay()] + ", " + MON[d.getMonth()] + " " + d.getDate() + " at " + fmtTime(a.min); }
+  function whenLong(a) { var d = apptDate(a); return DOW_LONG[d.getDay()] + ", " + MON_LONG[d.getMonth()] + " " + d.getDate() + ", " + d.getFullYear() + " at " + fmtTime(a.min) + " (" + ${JSON.stringify(d.TIME_ZONE)} + ")"; }
+  function groupLabel(a) { var d = apptDate(a); return (isToday(a) ? "Today · " : "") + DOW[d.getDay()] + ", " + MON[d.getMonth()] + " " + d.getDate() + (d.getFullYear() !== today.getFullYear() ? ", " + d.getFullYear() : ""); }
+  var FORMAT_ICON = { inPerson: ICONS.group, phone: ICONS.call, video: ICONS.videocam };
+  function where(a) {
+    if (a.format === "phone") return "Phone — your advisor calls you at " + STUDENT_PHONE;
+    if (a.format === "video") return "Video — the link is in your email";
+    return "In person — " + LOCATIONS[a.dept];
+  }
+  function badge(role, text) { return '<span class="badge badge--base badge--regular badge--' + role + '">' + esc(text) + "</span>"; }
+  function statusBadges(a) {
+    var out = [];
+    if (a.status === "completed") out.push(badge("success", "Completed"));
+    else if (a.status === "noshow") out.push(badge("danger", "No-show"));
+    else if (a.status === "cancelled") out.push(badge("neutral", "Cancelled"));
+    else {
+      if (a.checkedIn) out.push(badge("success", "Checked in"));
+      else if (checkinOpen(a)) out.push(badge("success", "Check-in open"));
+      if (a.questions && !a.answered) out.push(badge("warning", a.questions.length + " questions to answer"));
+    }
+    return out.join("");
+  }
+  function checkinNote(a) {
+    return '<span class="ss-note ss-note--icon">' + ICONS.noteClock + "Check-in opens at " + fmtTime(a.min - CHECKIN_BEFORE) + "</span>";
+  }
+  function updateUpcomingCount() {
+    $("ss-upcoming-count").textContent = APPTS.filter(function (a) { return a.status === "upcoming"; }).length;
+  }
+  function apptRow(a) {
+    var actions = "";
+    if (a.status === "upcoming") {
+      var btns = (checkinOpen(a) ? '<button type="button" class="btn btn--primary btn--sm" data-checkin="' + a.id + '">Check in</button>' : "") +
+        '<button type="button" class="btn btn--secondary btn--sm" data-appt="' + a.id + '">Details</button>';
+      actions = '<div class="ss-appt__btns">' + btns + "</div>" + (!a.checkedIn && !checkinOpen(a) ? checkinNote(a) : "");
+    } else {
+      actions = '<div class="ss-appt__btns"><button type="button" class="btn btn--secondary btn--sm" data-appt="' + a.id + '">Details</button></div>';
+    }
+    return '<article class="ss-appt">' +
+      '<div class="ss-appt__time"><span class="ss-appt__clock">' + fmtTime(a.min) + '</span><span class="ss-appt__dur">' + minutesOf(a) + " min</span></div>" +
+      '<div class="ss-appt__main"><div class="ss-appt__title"><h3 class="ss-appt__name">' + esc(a.service) + "</h3>" + statusBadges(a) + "</div>" +
+      '<div class="ss-appt__meta">' +
+      '<span class="ss-fact">' + ICONS.person + '<span class="ss-fact__text">' + esc(a.advisor) + " · " + esc(a.dept) + "</span></span>" +
+      '<span class="ss-fact">' + FORMAT_ICON[a.format] + '<span class="ss-fact__text">' + esc(where(a)) + "</span></span>" +
+      "</div></div>" +
+      '<div class="ss-appt__actions">' + actions + "</div>" +
+      "</article>";
+  }
+  function renderAppts() {
+    updateUpcomingCount();
+    document.querySelectorAll("#ss-appt-tabs .tab").forEach(function (t) {
+      var on = t.dataset.apptTab === apptTab;
+      t.classList.toggle("tab--active", on);
+      t.setAttribute("aria-selected", on ? "true" : "false");
+    });
+    var list = APPTS.filter(function (a) {
+      if (apptTab === "upcoming") return a.status === "upcoming";
+      if (apptTab === "past") return a.status === "completed" || a.status === "noshow";
+      return a.status === "cancelled";
+    }).sort(function (x, y) {
+      var k = (x.date + x.min).localeCompare(y.date + y.min);
+      return apptTab === "upcoming" ? k : -k;
+    });
+    var groups = [], byKey = {};
+    list.forEach(function (a) {
+      if (!byKey[a.date]) { byKey[a.date] = { label: groupLabel(a), items: [] }; groups.push(byKey[a.date]); }
+      byKey[a.date].items.push(a);
+    });
+    $("ss-appts").innerHTML = groups.map(function (g) {
+      return '<section class="ss-appt-group"><h3 class="ss-eyebrow">' + esc(g.label) + '</h3><div class="ss-hybrid ss-hybrid--flush">' + g.items.map(apptRow).join("") + "</div></section>";
+    }).join("");
+    var empty = !list.length;
+    $("ss-appts").classList.toggle("is-hidden", empty);
+    $("ss-appts-empty").classList.toggle("is-hidden", !empty);
+    $("ss-appts-empty-text").textContent = { upcoming: "No upcoming appointments", past: "No past appointments yet", cancelled: "Nothing cancelled" }[apptTab];
+    $("ss-appts-browse").classList.toggle("is-hidden", apptTab !== "upcoming");
+  }
+  document.querySelectorAll("#ss-appt-tabs .tab").forEach(function (t) {
+    t.addEventListener("click", function () { apptTab = t.dataset.apptTab; renderAppts(); });
+  });
+  $("ss-appts-browse").addEventListener("click", function () { goSection(0); });
+  $("ss-appts").addEventListener("click", function (e) {
+    var c = e.target.closest("[data-checkin]");
+    if (c) { checkIn(apptById(c.dataset.checkin)); renderAppts(); return; }
+    var d = e.target.closest("[data-appt]");
+    if (d) openAppt(d.dataset.appt);
+  });
+  function checkIn(a) {
+    a.checkedIn = true;
+    var first = a.advisor.split(" ")[0];
+    showToast(a.format === "phone" ? "Checked in — " + first + " will call you at " + STUDENT_PHONE
+      : a.format === "video" ? "Checked in — join with the link in your email"
+      : "Checked in — " + first + " will come and get you");
+  }
+
+  // ---- details ----
+  var openId = null;
+  function openAppt(id) { openId = id; renderAppt(); showView("appt"); }
+  function renderAppt() {
+    var a = apptById(openId), up = a.status === "upcoming";
+    $("ss-d-name").textContent = a.service;
+    $("ss-d-status").innerHTML = statusBadges(a);
+    $("ss-d-dept").textContent = a.dept;
+    var askQ = up && a.questions && !a.answered;
+    $("ss-d-questions").classList.toggle("is-hidden", !askQ);
+    if (askQ) {
+      $("ss-d-q-title").textContent = a.advisor + " asked " + a.questions.length + " questions.";
+      $("ss-d-q-text").textContent = "Answer them before the meeting so you can spend the time on what matters.";
+    }
+    var rows = [
+      ["When", esc(whenLong(a))],
+      ["Duration", minutesOf(a) + " minutes"],
+      ["Advisor", esc(a.advisor)],
+      ["Meeting", '<span class="ss-fact">' + FORMAT_ICON[a.format] + "<span>" + esc(where(a)) + "</span></span>"],
+      ["Reference", '<span class="ss-ref">#' + esc(a.ref) + ' <button type="button" class="btn btn--ghost btn--sm btn--icon-only" id="ss-d-copy" aria-label="Copy reference number">' + ICONS.copy + "</button></span>"]
+    ];
+    if (a.questions && a.answered) rows.push(["Questions", "Answered — " + esc(a.advisor.split(" ")[0]) + " has them"]);
+    $("ss-d-facts").innerHTML = rows.map(function (r) { return "<dt>" + r[0] + "</dt><dd>" + r[1] + "</dd>"; }).join("");
+    var act = "";
+    if (up) {
+      if (checkinOpen(a)) act += '<button type="button" class="btn btn--primary btn--base" id="ss-d-checkin">Check in</button>';
+      else if (!a.checkedIn) act += checkinNote(a);
+      act += '<button type="button" class="btn btn--secondary btn--base ss-push" id="ss-d-resched">Reschedule</button>' +
+        '<button type="button" class="btn btn--secondary btn--base" id="ss-d-cancel">Cancel appointment</button>';
+    } else {
+      act += '<button type="button" class="btn btn--secondary btn--base" id="ss-d-again">Book again</button>';
+    }
+    $("ss-d-actions").innerHTML = act;
+    $("ss-d-about").classList.toggle("is-hidden", !ABOUT[a.service]);
+    $("ss-d-about-text").textContent = ABOUT[a.service] || "";
+  }
+  $("ss-appt-back").addEventListener("click", function () { renderAppts(); showView("appointments"); });
+  $("ss-d-facts").addEventListener("click", function (e) {
+    if (!e.target.closest("#ss-d-copy")) return;
+    var ref = "#" + apptById(openId).ref;
+    if (navigator.clipboard) navigator.clipboard.writeText(ref).catch(function () {});
+    showToast("Reference " + ref + " copied");
+  });
+  $("ss-d-actions").addEventListener("click", function (e) {
+    var a = apptById(openId);
+    if (e.target.closest("#ss-d-checkin")) { checkIn(a); renderAppt(); }
+    else if (e.target.closest("#ss-d-resched")) openPick(svcIndex(a.service), { dept: a.dept, reschedule: a.id });
+    else if (e.target.closest("#ss-d-again")) openPick(svcIndex(a.service), { dept: a.dept });
+    else if (e.target.closest("#ss-d-cancel")) {
+      $("ss-cancel-text").textContent = a.service + " with " + a.advisor + ", " + whenShort(a) + ". The time goes back to other students.";
+      $("ss-cancel-modal").showModal();
+    }
+  });
+
+  // ---- cancel: AlertDialog — no backdrop dismiss, Escape blocked ----
+  var cancelDlg = $("ss-cancel-modal");
+  cancelDlg.addEventListener("cancel", function (e) { e.preventDefault(); });
+  $("ss-cancel-keep").addEventListener("click", function () { cancelDlg.close(); });
+  $("ss-cancel-confirm").addEventListener("click", function () {
+    var a = apptById(openId);
+    a.status = "cancelled";
+    cancelDlg.close();
+    showToast(a.service + " on " + whenShort(a) + " cancelled");
+    apptTab = "upcoming";
+    renderAppts();
+    showView("appointments");
+  });
+
+  // ---- questions: Modal ----
+  var qDlg = $("ss-q-modal");
+  qDlg.addEventListener("click", function (e) { if (e.target === qDlg) qDlg.close(); });
+  $("ss-d-q-open").addEventListener("click", function () {
+    var a = apptById(openId);
+    $("ss-q-intro").textContent = a.advisor + " asked these before your " + a.service + " appointment on " + whenShort(a) + ".";
+    $("ss-q-fields").innerHTML = a.questions.map(function (q, i) {
+      return '<label class="ss-q"><span class="ss-q__label">' + esc(q) + '</span><textarea class="ss-q__field" rows="3" placeholder="Your answer" data-q="' + i + '"></textarea></label>';
+    }).join("");
+    qDlg.showModal();
+  });
+  $("ss-q-cancel").addEventListener("click", function () { qDlg.close(); });
+  $("ss-q-form").addEventListener("submit", function () {
+    var a = apptById(openId);
+    a.answered = true;
+    showToast("Answers sent to " + a.advisor);
+    renderAppt();
+  });
+
+  updateUpcomingCount();
   renderBrowse();
 })();`;
 }

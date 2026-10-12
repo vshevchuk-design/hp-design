@@ -88,3 +88,35 @@ export const WEEKS_AHEAD = 3;
 export const TIME_ZONE = "EEST";
 
 export const SECTIONS = ["Browse", "Appointments", "Drop-Ins", "Workshops", "Reserve a Seat", "Calendar"];
+
+// The prototype's "now" on TODAY — 10:20 AM, so the 10:30 appointment below
+// is inside its check-in window (opens 15 minutes before).
+export const NOW_MINUTES = 10 * 60 + 20;
+export const CHECKIN_MINUTES_BEFORE = 15;
+// The student's own number, for phone appointments ("we'll call you at…").
+export const STUDENT_PHONE = "(555) 555-1234";
+
+// What each service is for — the details page's "About this service".
+export const ABOUT = {
+  "Change of Major": "Talk through switching majors: what transfers, what changes in your plan, and how long it adds.",
+  "Comprehensive Ed Plan": "Build a full semester-by-semester education plan to your degree or transfer goal.",
+  "Ed Plan Review": "A short check of your existing education plan — after a change, or once a year.",
+  "Career Counseling": "Explore careers that fit your interests, and the programs that lead there.",
+  "Degree Planning": "Map the requirements left for your degree and the order to take them in.",
+  "Financial Aid Petition": "Get help preparing a petition to restore or extend your financial aid.",
+  "Transcript Evaluation": "Have transcripts from other schools evaluated for credit here.",
+};
+
+// Seed appointments. status: upcoming | completed | noshow | cancelled.
+// questions: what the advisor asked to be answered before the meeting — the
+// live app's unexplained "Answer Questions" button.
+export const APPOINTMENTS = [
+  { id: "a1", ref: "5098", service: "Ed Plan Review", dept: "Counseling", date: "2026-10-02", min: 10 * 60 + 30, advisor: "Caitlin Moore", format: "inPerson", status: "upcoming" },
+  { id: "a2", ref: "5121", service: "Change of Major", dept: "Academic Advising", date: "2026-10-07", min: 14 * 60, advisor: "Ava Robinson", format: "phone", status: "upcoming",
+    questions: ["Which major are you thinking of switching to, and why?", "Have you already taken any classes toward it?"] },
+  { id: "a3", ref: "5140", service: "Career Counseling", dept: "Career and Talent Development", date: "2026-10-12", min: 11 * 60 + 30, advisor: "Eric Lynch", format: "video", status: "upcoming" },
+  { id: "a4", ref: "4301", service: "Comprehensive Ed Plan", dept: "Counseling", date: "2026-09-28", min: 9 * 60, advisor: "George Amalor", format: "inPerson", status: "completed" },
+  { id: "a5", ref: "4122", service: "Degree Planning", dept: "English Dept", date: "2026-09-15", min: 15 * 60 + 15, advisor: "Ava Robinson", format: "inPerson", status: "noshow" },
+  { id: "a6", ref: "3987", service: "Financial Aid Petition", dept: "Office of the Registrar", date: "2026-08-20", min: 13 * 60, advisor: "Jonathan Rehm", format: "phone", status: "completed" },
+  { id: "a7", ref: "4410", service: "Transcript Evaluation", dept: "Office of the Registrar", date: "2026-09-30", min: 10 * 60, advisor: "Priya Natarajan", format: "video", status: "cancelled" },
+];

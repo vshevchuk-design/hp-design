@@ -49,7 +49,7 @@ const registry = {
   ...load("tokens/semantic/color.tokens.json"),
 };
 
-const COMPONENTS = ["tabs", "button", "select", "search", "chip", "listbox", "card", "badge", "pagination", "choice-tile", "radio", "alert", "toast", "tooltip", "empty-state"];
+const COMPONENTS = ["tabs", "button", "select", "search", "chip", "listbox", "card", "badge", "pagination", "choice-tile", "radio", "alert", "toast", "tooltip", "empty-state", "modal", "input", "counter"];
 const comp = (name) => load(`tokens/components/${name}.tokens.json`).component;
 const tokens = Object.assign({}, ...COMPONENTS.map(comp));
 
@@ -172,6 +172,10 @@ ${shellTopbar({ title: "Scheduling", actions: settingsBtn })}
         <h2 class="ss-title" id="ss-pick-title"></h2>
         <p class="ss-sub" id="ss-pick-meta"></p>
       </div>
+      <div class="alert is-hidden" id="ss-resched-note" role="status">
+        ${icon("info", "alert__icon")}
+        <div class="alert__stack"><p class="alert__message"><span class="alert__title">Rescheduling.</span> <span id="ss-resched-text"></span></p></div>
+      </div>
       <div class="ss-pick">
         <div class="ss-choose">
           <!-- Step one, before any times: the department. A Select when several
@@ -246,13 +250,80 @@ ${shellTopbar({ title: "Scheduling", actions: settingsBtn })}
       </div>
     </section>
 
+    <!-- ============ My appointments ============ -->
+    <!-- No "New appointment" button: it only went to the Browse tab, which is
+         one tap away in the section bar. The empty state keeps that path. -->
+    <section class="ss-view" data-view="appointments">
+      <div class="ss-head">
+        <h2 class="ss-title">My appointments</h2>
+        <p class="ss-sub ss-sub--sm">Your visits with advisors — check in, reschedule or cancel here.</p>
+      </div>
+      <div class="tabs--segmented" id="ss-appt-tabs" role="tablist" aria-label="Appointments" style="align-self:flex-start">
+        <button class="tab tab--sm tab--active" type="button" role="tab" aria-selected="true" data-appt-tab="upcoming">Upcoming <span class="counter" id="ss-upcoming-count">0</span></button>
+        <button class="tab tab--sm" type="button" role="tab" aria-selected="false" data-appt-tab="past">Past</button>
+        <button class="tab tab--sm" type="button" role="tab" aria-selected="false" data-appt-tab="cancelled">Cancelled</button>
+      </div>
+      <div class="ss-appts" id="ss-appts"></div>
+      <div class="card is-hidden" id="ss-appts-empty">
+        <div class="card__body">
+          <div class="empty-state"><span class="empty-state__text" id="ss-appts-empty-text"></span></div>
+          <button class="btn btn--secondary btn--sm is-hidden" id="ss-appts-browse" type="button" style="align-self:center">Browse services</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ Appointment details ============ -->
+    <section class="ss-view" data-view="appt">
+      <button class="btn btn--ghost btn--sm ss-back" id="ss-appt-back" type="button">${icon("arrow_back", "btn__icon")}<span>My appointments</span></button>
+      <div class="ss-detail">
+        <div class="ss-head">
+          <div class="ss-detail__title"><h2 class="ss-title" id="ss-d-name"></h2><span id="ss-d-status"></span></div>
+          <p class="ss-sub" id="ss-d-dept"></p>
+        </div>
+        <div class="alert is-hidden" id="ss-d-questions" role="status">
+          ${icon("info", "alert__icon")}
+          <div class="alert__stack">
+            <p class="alert__message"><span class="alert__title" id="ss-d-q-title"></span> <span id="ss-d-q-text"></span></p>
+            <div class="alert__actions"><button class="btn btn--primary btn--sm" id="ss-d-q-open" type="button">Answer questions</button></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card__body">
+            <dl class="ss-dl" id="ss-d-facts"></dl>
+          </div>
+          <div class="card__foot ss-detail__actions" id="ss-d-actions"></div>
+        </div>
+        <div class="ss-detail__section" id="ss-d-about"><h3>About this service</h3><p id="ss-d-about-text"></p></div>
+      </div>
+    </section>
+
     <!-- ============ other sections (not designed yet) ============ -->
     <section class="ss-view" data-view="placeholder">
       <div class="empty-state"><span class="empty-state__text" id="ss-placeholder-text"></span></div>
     </section>
   </main>
 </div>
-<div class="listbox" id="ss-lb" popover role="listbox"><div class="listbox__list"></div></div>`;
+<div class="listbox" id="ss-lb" popover role="listbox"><div class="listbox__list"></div></div>
+<!-- Questions the advisor asked before the meeting — Modal -->
+<dialog class="modal" id="ss-q-modal" aria-labelledby="ss-q-title">
+  <form method="dialog" id="ss-q-form" style="display:contents">
+    <div class="modal__head"><h2 class="modal__title" id="ss-q-title">Before your appointment</h2></div>
+    <div class="modal__body"><p id="ss-q-intro"></p><div id="ss-q-fields" class="ss-detail"></div></div>
+    <div class="modal__foot">
+      <button class="btn btn--secondary btn--base" type="button" id="ss-q-cancel">Not now</button>
+      <button class="btn btn--primary btn--base" type="submit" id="ss-q-send">Send answers</button>
+    </div>
+  </form>
+</dialog>
+<!-- Cancel confirmation — AlertDialog: no backdrop or Escape dismiss -->
+<dialog class="modal modal--alert" id="ss-cancel-modal" data-alert aria-labelledby="ss-cancel-title">
+  <div class="modal__head"><h2 class="modal__title" id="ss-cancel-title">Cancel this appointment?</h2></div>
+  <div class="modal__body"><p id="ss-cancel-text"></p></div>
+  <div class="modal__foot">
+    <button class="btn btn--secondary btn--base" type="button" id="ss-cancel-keep">Keep it</button>
+    <button class="btn btn--danger btn--base" type="button" id="ss-cancel-confirm">Cancel appointment</button>
+  </div>
+</dialog>`;
 
 const ICONS = {
   check: icon("check", "listbox__checkmark"),
@@ -264,6 +335,9 @@ const ICONS = {
   call: icon("call", ""),
   videocam: icon("videocam", ""),
   schedule: icon("schedule", ""),
+  person: icon("person", ""),
+  copy: icon("content_copy", "btn__icon"),
+  noteClock: icon("schedule", ""),
 };
 
 const UNDERLINE_NAV = `<nav class="ss-sections" aria-label="Scheduling sections">
@@ -329,7 +403,7 @@ const viewerHtml = renderDesignViewer({
   activeKey: "student-scheduling",
   title: "Student Scheduling",
   heading: "Student Scheduling",
-  sub: `The student side of Scheduling — browse services, pick a time, confirm. Same flow and content as the live app, rebuilt strictly from hp-design components. <b>What changed is the UI, not the flow:</b> sort is a ghost Button + Listbox on the results line instead of a third filter-looking dropdown; "Drop-in available" is a toggle Chip that clears itself (no separate Clear button); Department is the dropdown chip. <b>v5 (current)</b> is cards on a phone and list rows from 768px: the 16px service name, the departments that offer it as plain comma-separated text right under it, then duration and the booking-mode Badge (base, regular weight; By appointment in violet), then Pick a time in the Button <b>tint</b> variant. The department is chosen on the pick-a-time page — pre-set when the browse filter already named one. <b>v1</b> wears the same shell but picks the department in the list: a Select in the row when several departments offer the service, an outline Badge when only one does, and Pick a time in Button secondary. Picking a time is one page — day and time ChoiceTiles on the left, a sticky <b>Your appointment</b> Card on the right with the advisor RadioGroup and the one Confirm — instead of a time popup followed by a side drawer. Try <b>Academic Difficulty</b> for the no-openings state, <b>Career Counseling</b> or <b>Degree Planning</b> for a service offered by several departments. Only Browse is built; the other five sections are placeholders.`,
+  sub: `The student side of Scheduling — browse services, pick a time, confirm. Same flow and content as the live app, rebuilt strictly from hp-design components. <b>What changed is the UI, not the flow:</b> sort is a ghost Button + Listbox on the results line instead of a third filter-looking dropdown; "Drop-in available" is a toggle Chip that clears itself (no separate Clear button); Department is the dropdown chip. <b>v5 (current)</b> is cards on a phone and list rows from 768px: the 16px service name, the departments that offer it as plain comma-separated text right under it, then duration and the booking-mode Badge (base, regular weight; By appointment in violet), then Pick a time in the Button <b>tint</b> variant. The department is chosen on the pick-a-time page — pre-set when the browse filter already named one. <b>v1</b> wears the same shell but picks the department in the list: a Select in the row when several departments offer the service, an outline Badge when only one does, and Pick a time in Button secondary. Picking a time is one page — day and time ChoiceTiles on the left, a sticky <b>Your appointment</b> Card on the right with the advisor RadioGroup and the one Confirm — instead of a time popup followed by a side drawer. Try <b>Academic Difficulty</b> for the no-openings state, <b>Career Counseling</b> or <b>Degree Planning</b> for a service offered by several departments. <b>Appointments</b> is built too: Upcoming (with a count) / Past / Cancelled as segmented Tabs, rows grouped by day, check-in that opens 15 minutes ahead (the 10:30 one today is open — the prototype's clock is 10:20 AM), a details page with the advisor's questions in a Modal, Reschedule back into pick-a-time, and Cancel behind an AlertDialog. Booking on Browse lands in Upcoming. Drop-Ins, Workshops, Reserve a Seat and Calendar are placeholders.`,
   versions: [
     { label: "v5", note: "departments as text · current", file: "student-scheduling-app.html" },
     { label: "v1", note: "department picked in the list", file: "student-scheduling-v1-app.html" },

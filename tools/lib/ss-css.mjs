@@ -19,7 +19,7 @@ export function ssCss(h) {
     return `${px(s.offsetX)} ${px(s.offsetY)} ${px(s.blur)} ${px(s.spread)} ${s.color}`;
   };
 
-  const { tabs, button, select, search, chip, listbox: lb, card, badge, pagination: pg, choiceTile: ct, radio, alert, toast, tooltip: tt, emptyState: es } = t;
+  const { tabs, button, select, search, chip, listbox: lb, card, badge, pagination: pg, choiceTile: ct, radio, alert, toast, tooltip: tt, emptyState: es, modal, input, counter } = t;
 
   const btn = (variant, size) => ({
     height: D(button[variant].size[size].height),
@@ -263,7 +263,7 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .badge--outline { background: ${R(badge.outline.bg)}; border: 1px solid ${R(badge.outline.border)}; color: ${R(badge.outline.text)}; }
 .badge--regular { font-weight: ${resolve(badge.regular.fontWeight.$value)}; }
 .badge--violet { background: ${R(badge.color.violet.tint.bg)}; color: ${R(badge.color.violet.tint.text)}; }
-${["neutral", "primary", "success"].map((r) => `.badge--${r} { background: ${R(badge.role[r].tint.bg)}; color: ${R(badge.role[r].tint.text)}; }`).join("\n")}
+${["neutral", "primary", "success", "warning", "danger"].map((r) => `.badge--${r} { background: ${R(badge.role[r].tint.bg)}; color: ${R(badge.role[r].tint.text)}; }`).join("\n")}
 
 /* ============ Pagination ============ */
 .pagination { display: inline-flex; align-items: center; gap: ${D(pg.item.gap)}; }
@@ -453,6 +453,79 @@ ${["neutral", "primary", "success"].map((r) => `.badge--${r} { background: ${R(b
 .ss-rule { height: 1px; background: ${R(card.divider)}; }
 .ss-loc { display: flex; flex-direction: column; gap: ${dim(1)}; }
 .ss-loc__text { margin: 0; color: ${cv("text.default")}; ${typoCss(style("body-sm"))} }
+/* ============ Counter (onNeutral sm — on the Upcoming tab) ============ */
+.counter { display: inline-flex; align-items: center; justify-content: center; height: ${D(counter.size.sm.height)}; min-width: ${D(counter.size.sm.minWidth)}; padding: 0 ${D(counter.size.sm.paddingX)}; border-radius: ${D(counter.radius)}; background: ${R(counter.onNeutral.state.inactive.bg)}; color: ${R(counter.onNeutral.state.inactive.label)}; ${typoCss(T(counter.size.sm.label))} }
+.tab--active .counter { background: ${R(counter.onNeutral.state.active.bg)}; color: ${R(counter.onNeutral.state.active.label)}; }
+
+/* ============ Button — danger (AlertDialog's confirm, Modal's own recipe) ============ */
+.btn--danger { background: ${cv("fill.danger")}; color: ${cv("text.onFill")}; }
+.btn--danger:not(:disabled):hover, .btn--danger:not(:disabled):active { background: ${cv("fill.dangerHover")}; }
+
+/* ============ Modal / AlertDialog (native <dialog>) ============ */
+.modal { border: none; padding: 0; width: min(480px /* composition literal: room for two text areas; Modal's own 384 is the alert width */, calc(100vw - ${dim(8)})); max-height: calc(100dvh - ${dim(8)}); border-radius: ${D(modal.radius)}; background: ${R(modal.bg)}; box-shadow: ${shadowCss(modal.shadow)}; font-family: ${cv("family.sans")}; }
+.modal--alert { width: min(${D(modal.width)}, calc(100vw - ${dim(8)})); }
+.modal[open] { display: flex; flex-direction: column; }
+.modal::backdrop { background: ${R(modal.overlay)}; }
+html:has(.modal[open]) { overflow: hidden; }
+.modal__head { padding: ${D(modal.padding)} ${D(modal.padding)} 0; }
+.modal__title { margin: 0; color: ${R(modal.titleColor)}; ${typoCss(T(modal.title))} }
+.modal__body { padding: ${D(modal.padding)}; display: flex; flex-direction: column; gap: ${D(modal.gap)}; overflow-y: auto; color: ${R(modal.bodyColor)}; ${typoCss(T(modal.body))} }
+.modal__body p { margin: 0; }
+.modal__foot { display: flex; justify-content: flex-end; gap: ${dim(2)}; padding: ${dim(4)} ${D(modal.padding)}; border-top: 1px solid ${R(modal.divider)}; }
+/* a text area on Input's own field recipe (fill + hairline → strong → focus) */
+.ss-q { display: flex; flex-direction: column; gap: ${dim(2)}; }
+.ss-q__label { color: ${cv("text.default")}; ${typoCss(style("heading-sm"))} }
+.ss-q__field { width: 100%; min-height: ${dim(24)}; resize: vertical; padding: ${dim(2)} ${D(input.size.base.paddingX)}; border-radius: ${D(input.radius)}; background: ${R(input.state.default.bg)}; border: 1px solid ${R(input.state.default.border)}; color: ${R(input.state.default.value)}; font-family: inherit; ${typoCss(T(input.size.base.value))} line-height: ${style("body-base").lineHeight}; }
+.ss-q__field:hover { background: ${R(input.state.hover.bg)}; border-color: ${R(input.state.hover.border)}; }
+.ss-q__field:focus { outline: none; border-color: ${R(input.state.focus.border)}; }
+.ss-q__field::placeholder { color: ${R(input.state.default.placeholder)}; }
+
+/* ============ My appointments (ss-appt*) ============ */
+.ss-appts { display: flex; flex-direction: column; gap: ${dim(5)}; }
+.ss-appt-group { display: flex; flex-direction: column; gap: ${dim(2)}; }
+/* A row: time column, then what/who/where, then the actions. Flush rows in
+   one Card from 768 — the browse list's shell; on a phone the shell goes
+   edge to edge and the row stacks. */
+.ss-appt { display: grid; grid-template-columns: ${dim(24)} minmax(0, 1fr) auto; gap: ${dim(1)} ${dim(4)}; align-items: start; padding: ${D(card.padding)}; border-bottom: 1px solid ${R(card.divider)}; }
+.ss-appt:last-child { border-bottom: none; }
+.ss-appt__time { display: flex; flex-direction: column; gap: ${dim("0_5")}; }
+.ss-appt__clock { color: ${cv("text.default")}; ${typoCss(style("heading-base"))} white-space: nowrap; }
+.ss-appt__dur { color: ${cv("text.secondary")}; ${typoCss(style("body-sm"))} }
+.ss-appt__main { display: flex; flex-direction: column; gap: ${dim(2)}; min-width: 0; }
+.ss-appt__title { display: flex; flex-wrap: wrap; align-items: center; gap: ${dim(2)}; }
+.ss-appt__name { margin: 0; color: ${cv("text.default")}; ${typoCss(style("heading-md"))} }
+.ss-appt__meta { display: flex; flex-direction: column; gap: ${dim(1)}; }
+/* where/who lines wrap (a long location on a phone), icon pinned to line one */
+.ss-appt__meta .ss-fact { align-items: flex-start; }
+.ss-appt__meta .ss-fact > svg { margin-top: 1px; }
+.ss-appt__meta .ss-fact__text { white-space: normal; }
+.ss-appt__actions { display: flex; flex-direction: column; align-items: flex-end; gap: ${dim(2)}; }
+.ss-appt__btns { display: flex; gap: ${dim(2)}; }
+@media (max-width: 767px) {
+  .ss-appt { grid-template-columns: minmax(0, 1fr); gap: ${dim(3)}; }
+  .ss-appt__time { flex-direction: row; align-items: baseline; gap: ${dim(2)}; }
+  .ss-appt__actions { align-items: stretch; }
+  .ss-appt__btns > .btn { flex: 1; }
+}
+/* check-in not open yet: a quiet note where the button will be */
+.ss-note--icon { display: inline-flex; align-items: center; gap: ${dim(1)}; }
+.ss-note--icon svg { width: ${dim(4)}; height: ${dim(4)}; color: ${cv("icon.secondary")}; flex-shrink: 0; }
+
+/* ---- details page ---- */
+.ss-detail { display: flex; flex-direction: column; gap: ${dim(4)}; max-width: 720px; }
+.ss-detail__title { display: flex; flex-wrap: wrap; align-items: center; gap: ${dim(3)}; }
+.ss-dl { display: grid; grid-template-columns: ${dim(28)} minmax(0, 1fr); gap: ${dim(3)} ${dim(4)}; margin: 0; }
+.ss-dl dt { color: ${cv("text.secondary")}; ${typoCss(style("body-sm"))} padding-top: 1px; }
+.ss-dl dd { margin: 0; color: ${cv("text.default")}; ${typoCss(style("body-base"))} min-width: 0; }
+.ss-dl dd .ss-note { margin-top: ${dim("0_5")}; }
+@media (max-width: 559px) { .ss-dl { grid-template-columns: minmax(0, 1fr); gap: ${dim("0_5")}; } .ss-dl dd { margin-bottom: ${dim(2)}; } }
+.ss-ref { display: inline-flex; align-items: center; gap: ${dim(1)}; }
+.ss-detail__section { display: flex; flex-direction: column; gap: ${dim(1)}; }
+.ss-detail__section h3 { margin: 0; color: ${cv("text.default")}; ${typoCss(style("heading-sm"))} }
+.ss-detail__section p { margin: 0; color: ${cv("text.secondary")}; ${typoCss(style("body-base"))} }
+.ss-detail__actions { display: flex; flex-wrap: wrap; align-items: center; gap: ${dim(2)}; }
+.ss-detail__actions .ss-push { margin-left: auto; }
+@media (max-width: 559px) { .ss-detail__actions > .btn { flex: 1 1 100%; } .ss-detail__actions .ss-push { margin-left: 0; } }
 .is-hidden { display: none !important; }
 `;
 }
@@ -462,4 +535,5 @@ ${["neutral", "primary", "success"].map((r) => `.badge--${r} { background: ${R(b
 export const SS_COLOR_PATHS = [
   "surface.page", "surface.default", "border.default", "border.focus",
   "text.default", "text.secondary", "text.muted", "icon.secondary", "fill.neutralHover",
+  "fill.danger", "fill.dangerHover", "text.onFill",
 ];

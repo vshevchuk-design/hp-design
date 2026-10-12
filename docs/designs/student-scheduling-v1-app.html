@@ -20,10 +20,12 @@
   --tok-text-secondary: #5d6a7a;
   --tok-icon-secondary: #758191;
   --tok-fill-neutral-hover: #e6e8eb;
+  --tok-fill-danger: #de394b;
+  --tok-fill-danger-hover: #c11435;
+  --tok-text-on-fill: #ffffff;
   --tok-surface-sunken: #e6e8eb;
   --tok-text-disabled: #adb5be;
   --tok-fill-primary: #077fec;
-  --tok-text-on-fill: #ffffff;
   --tok-icon-on-fill: #ffffff;
   --tok-fill-primary-hover: #0468c4;
   --tok-fill-primary-active: #01519c;
@@ -53,7 +55,6 @@
   --tok-fill-warning: #b26f07;
   --tok-bg-danger: #ffdfde;
   --tok-text-danger: #c11435;
-  --tok-fill-danger: #de394b;
   --tok-tag-gray-tint-bg: #e6e8eb;
   --tok-tag-gray-tint-text: #121921;
   --tok-tag-blue-tint-bg: #d9eaff;
@@ -99,6 +100,7 @@
   --tok-status-warning: #b26f07;
   --tok-status-danger: #de394b;
   --tok-surface-inverse: #242c36;
+  --tok-surface-overlay: rgba(21, 25, 30, 0.5);
   --tok-family-sans: 'Sora', sans-serif;
 }
 /* ---- portal app shell (tools/lib/app-shell.mjs) ---- */
@@ -336,6 +338,8 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .badge--neutral { background: var(--tok-bg-neutral); color: var(--tok-text-default); }
 .badge--primary { background: var(--tok-bg-primary); color: var(--tok-text-primary); }
 .badge--success { background: var(--tok-bg-success); color: var(--tok-text-success); }
+.badge--warning { background: var(--tok-bg-warning); color: var(--tok-text-warning); }
+.badge--danger { background: var(--tok-bg-danger); color: var(--tok-text-danger); }
 
 /* ============ Pagination ============ */
 .pagination { display: inline-flex; align-items: center; gap: 4px; }
@@ -525,6 +529,79 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .ss-rule { height: 1px; background: var(--tok-border-default); }
 .ss-loc { display: flex; flex-direction: column; gap: 4px; }
 .ss-loc__text { margin: 0; color: var(--tok-text-default); font-weight: 400; font-size: 12px; line-height: 1.4; }
+/* ============ Counter (onNeutral sm — on the Upcoming tab) ============ */
+.counter { display: inline-flex; align-items: center; justify-content: center; height: 16px; min-width: 16px; padding: 0 4px; border-radius: 999px; background: var(--tok-fill-neutral-active-strong); color: var(--tok-text-default); font-weight: 700; font-size: 10px; line-height: 1; }
+.tab--active .counter { background: var(--tok-fill-primary); color: var(--tok-text-on-fill); }
+
+/* ============ Button — danger (AlertDialog's confirm, Modal's own recipe) ============ */
+.btn--danger { background: var(--tok-fill-danger); color: var(--tok-text-on-fill); }
+@media (hover: hover) { .btn--danger:not(:disabled):hover, .btn--danger:not(:disabled):active { background: var(--tok-fill-danger-hover); } }
+
+/* ============ Modal / AlertDialog (native <dialog>) ============ */
+.modal { border: none; padding: 0; width: min(480px /* composition literal: room for two text areas; Modal's own 384 is the alert width */, calc(100vw - 32px)); max-height: calc(100dvh - 32px); border-radius: 24px; background: var(--tok-surface-default); box-shadow: 0px 8px 24px -2px rgba(21, 25, 30, 0.16); font-family: var(--tok-family-sans); }
+.modal--alert { width: min(384px, calc(100vw - 32px)); }
+.modal[open] { display: flex; flex-direction: column; }
+.modal::backdrop { background: var(--tok-surface-overlay); }
+html:has(.modal[open]) { overflow: hidden; }
+.modal__head { padding: 24px 24px 0; }
+.modal__title { margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 18px; line-height: 1.4; }
+.modal__body { padding: 24px; display: flex; flex-direction: column; gap: 12px; overflow-y: auto; color: var(--tok-text-secondary); font-weight: 400; font-size: 14px; line-height: 1.4; }
+.modal__body p { margin: 0; }
+.modal__foot { display: flex; justify-content: flex-end; gap: 8px; padding: 16px 24px; border-top: 1px solid var(--tok-border-default); }
+/* a text area on Input's own field recipe (fill + hairline → strong → focus) */
+.ss-q { display: flex; flex-direction: column; gap: 8px; }
+.ss-q__label { color: var(--tok-text-default); font-weight: 600; font-size: 12px; line-height: 1.4; }
+.ss-q__field { width: 100%; min-height: 96px; resize: vertical; padding: 8px 12px; border-radius: 8px; background: var(--tok-surface-dim); border: 1px solid var(--tok-border-default); color: var(--tok-text-default); font-family: inherit; font-weight: 400; font-size: 16px; line-height: 1.2; line-height: 1.4; }
+@media (hover: hover) { .ss-q__field:hover { background: var(--tok-surface-dim-hover); border-color: var(--tok-border-strong); } }
+.ss-q__field:focus { outline: none; border-color: var(--tok-border-focus); }
+.ss-q__field::placeholder { color: var(--tok-text-muted); }
+
+/* ============ My appointments (ss-appt*) ============ */
+.ss-appts { display: flex; flex-direction: column; gap: 20px; }
+.ss-appt-group { display: flex; flex-direction: column; gap: 8px; }
+/* A row: time column, then what/who/where, then the actions. Flush rows in
+   one Card from 768 — the browse list's shell; on a phone the shell goes
+   edge to edge and the row stacks. */
+.ss-appt { display: grid; grid-template-columns: 96px minmax(0, 1fr) auto; gap: 4px 16px; align-items: start; padding: 16px; border-bottom: 1px solid var(--tok-border-default); }
+.ss-appt:last-child { border-bottom: none; }
+.ss-appt__time { display: flex; flex-direction: column; gap: 2px; }
+.ss-appt__clock { color: var(--tok-text-default); font-weight: 600; font-size: 14px; line-height: 1.4; white-space: nowrap; }
+.ss-appt__dur { color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.ss-appt__main { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.ss-appt__title { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.ss-appt__name { margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 16px; line-height: 1.4; }
+.ss-appt__meta { display: flex; flex-direction: column; gap: 4px; }
+/* where/who lines wrap (a long location on a phone), icon pinned to line one */
+.ss-appt__meta .ss-fact { align-items: flex-start; }
+.ss-appt__meta .ss-fact > svg { margin-top: 1px; }
+.ss-appt__meta .ss-fact__text { white-space: normal; }
+.ss-appt__actions { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+.ss-appt__btns { display: flex; gap: 8px; }
+@media (max-width: 767px) {
+  .ss-appt { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .ss-appt__time { flex-direction: row; align-items: baseline; gap: 8px; }
+  .ss-appt__actions { align-items: stretch; }
+  .ss-appt__btns > .btn { flex: 1; }
+}
+/* check-in not open yet: a quiet note where the button will be */
+.ss-note--icon { display: inline-flex; align-items: center; gap: 4px; }
+.ss-note--icon svg { width: 16px; height: 16px; color: var(--tok-icon-secondary); flex-shrink: 0; }
+
+/* ---- details page ---- */
+.ss-detail { display: flex; flex-direction: column; gap: 16px; max-width: 720px; }
+.ss-detail__title { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.ss-dl { display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 12px 16px; margin: 0; }
+.ss-dl dt { color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; padding-top: 1px; }
+.ss-dl dd { margin: 0; color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; min-width: 0; }
+.ss-dl dd .ss-note { margin-top: 2px; }
+@media (max-width: 559px) { .ss-dl { grid-template-columns: minmax(0, 1fr); gap: 2px; } .ss-dl dd { margin-bottom: 8px; } }
+.ss-ref { display: inline-flex; align-items: center; gap: 4px; }
+.ss-detail__section { display: flex; flex-direction: column; gap: 4px; }
+.ss-detail__section h3 { margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 12px; line-height: 1.4; }
+.ss-detail__section p { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 14px; line-height: 1.4; }
+.ss-detail__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.ss-detail__actions .ss-push { margin-left: auto; }
+@media (max-width: 559px) { .ss-detail__actions > .btn { flex: 1 1 100%; } .ss-detail__actions .ss-push { margin-left: 0; } }
 .is-hidden { display: none !important; }
 
 </style>
@@ -592,6 +669,10 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
       <div class="ss-head">
         <h2 class="ss-title" id="ss-pick-title"></h2>
         <p class="ss-sub" id="ss-pick-meta"></p>
+      </div>
+      <div class="alert is-hidden" id="ss-resched-note" role="status">
+        <svg class="alert__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+        <div class="alert__stack"><p class="alert__message"><span class="alert__title">Rescheduling.</span> <span id="ss-resched-text"></span></p></div>
       </div>
       <div class="ss-pick">
         <div class="ss-choose">
@@ -670,6 +751,53 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
       </div>
     </section>
 
+    <!-- ============ My appointments ============ -->
+    <!-- No "New appointment" button: it only went to the Browse tab, which is
+         one tap away in the section bar. The empty state keeps that path. -->
+    <section class="ss-view" data-view="appointments">
+      <div class="ss-head">
+        <h2 class="ss-title">My appointments</h2>
+        <p class="ss-sub ss-sub--sm">Your visits with advisors — check in, reschedule or cancel here.</p>
+      </div>
+      <div class="tabs--segmented" id="ss-appt-tabs" role="tablist" aria-label="Appointments" style="align-self:flex-start">
+        <button class="tab tab--sm tab--active" type="button" role="tab" aria-selected="true" data-appt-tab="upcoming">Upcoming <span class="counter" id="ss-upcoming-count">0</span></button>
+        <button class="tab tab--sm" type="button" role="tab" aria-selected="false" data-appt-tab="past">Past</button>
+        <button class="tab tab--sm" type="button" role="tab" aria-selected="false" data-appt-tab="cancelled">Cancelled</button>
+      </div>
+      <div class="ss-appts" id="ss-appts"></div>
+      <div class="card is-hidden" id="ss-appts-empty">
+        <div class="card__body">
+          <div class="empty-state"><span class="empty-state__text" id="ss-appts-empty-text"></span></div>
+          <button class="btn btn--secondary btn--sm is-hidden" id="ss-appts-browse" type="button" style="align-self:center">Browse services</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ Appointment details ============ -->
+    <section class="ss-view" data-view="appt">
+      <button class="btn btn--ghost btn--sm ss-back" id="ss-appt-back" type="button"><svg class="btn__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg><span>My appointments</span></button>
+      <div class="ss-detail">
+        <div class="ss-head">
+          <div class="ss-detail__title"><h2 class="ss-title" id="ss-d-name"></h2><span id="ss-d-status"></span></div>
+          <p class="ss-sub" id="ss-d-dept"></p>
+        </div>
+        <div class="alert is-hidden" id="ss-d-questions" role="status">
+          <svg class="alert__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+          <div class="alert__stack">
+            <p class="alert__message"><span class="alert__title" id="ss-d-q-title"></span> <span id="ss-d-q-text"></span></p>
+            <div class="alert__actions"><button class="btn btn--primary btn--sm" id="ss-d-q-open" type="button">Answer questions</button></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card__body">
+            <dl class="ss-dl" id="ss-d-facts"></dl>
+          </div>
+          <div class="card__foot ss-detail__actions" id="ss-d-actions"></div>
+        </div>
+        <div class="ss-detail__section" id="ss-d-about"><h3>About this service</h3><p id="ss-d-about-text"></p></div>
+      </div>
+    </section>
+
     <!-- ============ other sections (not designed yet) ============ -->
     <section class="ss-view" data-view="placeholder">
       <div class="empty-state"><span class="empty-state__text" id="ss-placeholder-text"></span></div>
@@ -677,6 +805,26 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   </main>
 </div>
 <div class="listbox" id="ss-lb" popover role="listbox"><div class="listbox__list"></div></div>
+<!-- Questions the advisor asked before the meeting — Modal -->
+<dialog class="modal" id="ss-q-modal" aria-labelledby="ss-q-title">
+  <form method="dialog" id="ss-q-form" style="display:contents">
+    <div class="modal__head"><h2 class="modal__title" id="ss-q-title">Before your appointment</h2></div>
+    <div class="modal__body"><p id="ss-q-intro"></p><div id="ss-q-fields" class="ss-detail"></div></div>
+    <div class="modal__foot">
+      <button class="btn btn--secondary btn--base" type="button" id="ss-q-cancel">Not now</button>
+      <button class="btn btn--primary btn--base" type="submit" id="ss-q-send">Send answers</button>
+    </div>
+  </form>
+</dialog>
+<!-- Cancel confirmation — AlertDialog: no backdrop or Escape dismiss -->
+<dialog class="modal modal--alert" id="ss-cancel-modal" data-alert aria-labelledby="ss-cancel-title">
+  <div class="modal__head"><h2 class="modal__title" id="ss-cancel-title">Cancel this appointment?</h2></div>
+  <div class="modal__body"><p id="ss-cancel-text"></p></div>
+  <div class="modal__foot">
+    <button class="btn btn--secondary btn--base" type="button" id="ss-cancel-keep">Keep it</button>
+    <button class="btn btn--danger btn--base" type="button" id="ss-cancel-confirm">Cancel appointment</button>
+  </div>
+</dialog>
 <script>
 (function () {
   var SERVICES = [{"name":"Academic Difficulty","minutes":45,"drop":"none","depts":["Counseling"],"noSlots":true},{"name":"Academic Probation","minutes":30,"drop":"open","depts":["Counseling"]},{"name":"Assessment / Placement","minutes":30,"drop":"open","depts":["Admissions & Records"]},{"name":"Career Counseling","minutes":60,"drop":"none","depts":["Career and Talent Development","Counseling"]},{"name":"Change of Major","minutes":60,"drop":"none","depts":["Academic Advising"]},{"name":"Comprehensive Ed Plan","minutes":60,"drop":"open","depts":["Counseling"]},{"name":"Degree Planning","minutes":30,"drop":"available","depts":["English Dept","Liberal Arts","Office of the Registrar"]},{"name":"Ed Plan Review","minutes":30,"drop":"open","depts":["Counseling"]},{"name":"Education Plan","minutes":30,"drop":"none","depts":["Academic Advising"]},{"name":"EOPS Appointment","minutes":45,"drop":"open","depts":["Counseling"]},{"name":"Financial Aid Petition","minutes":30,"drop":"available","depts":["Office of the Registrar"]},{"name":"Graduation","minutes":15,"drop":"available","depts":["Liberal Arts","Office of the Registrar"]},{"name":"Graduate Admissions Review","minutes":45,"drop":"none","depts":["Grad - Admissions"]},{"name":"Internship Planning","minutes":30,"drop":"none","depts":["Career and Talent Development"]},{"name":"Major Exploration","minutes":45,"drop":"none","depts":["Academic Advising","Liberal Arts"]},{"name":"Math Tutoring","minutes":30,"drop":"open","depts":["Tutoring Center"]},{"name":"Mentor Check-In","minutes":30,"drop":"none","depts":["Student Mentoring"]},{"name":"New Student Orientation","minutes":60,"drop":"none","depts":["Admissions & Records"]},{"name":"Peer Mentoring","minutes":30,"drop":"available","depts":["Student Mentoring"]},{"name":"Personal Counseling","minutes":45,"drop":"none","depts":["Counseling"]},{"name":"Readmission","minutes":30,"drop":"none","depts":["Admissions & Records"]},{"name":"Records Request","minutes":15,"drop":"available","depts":["Office of the Registrar"]},{"name":"Resume Review","minutes":30,"drop":"open","depts":["Career and Talent Development"]},{"name":"Scholarship Advising","minutes":30,"drop":"none","depts":["Academic Advising"]},{"name":"Study Skills","minutes":45,"drop":"none","depts":["Tutoring Center"]},{"name":"Transcript Evaluation","minutes":30,"drop":"none","depts":["Office of the Registrar","Admissions & Records"]},{"name":"Transfer Planning","minutes":60,"drop":"none","depts":["Academic Advising","Counseling"]},{"name":"Veterans Services","minutes":45,"drop":"none","depts":["Counseling"]},{"name":"Writing Center","minutes":30,"drop":"open","depts":["Tutoring Center","English Dept"]}];
@@ -685,7 +833,11 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   var DEPARTMENTS = ["Academic Advising","Admissions & Records","Career and Talent Development","Counseling","English Dept","Grad - Admissions","Liberal Arts","Office of the Registrar","Student Mentoring","Tutoring Center"];
   var TODAY = "2026-10-02";
   var WEEKS_AHEAD = 3;
-  var ICONS = {"check":"<svg class=\"listbox__checkmark\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z\"/></svg>","chevron":"<svg class=\"select__chevron\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z\"/></svg>","chevronLeft":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z\"/></svg>","chevronRight":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z\"/></svg>","checkCircle":"<svg class=\"toast__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z\"/></svg>","group":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z\"/></svg>","call":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M20.01 15.38c-1.23 0-2.42-.2-3.53-.56-.35-.12-.74-.03-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z\"/></svg>","videocam":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z\"/></svg>","schedule":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z\"/><path d=\"M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z\"/></svg>"};
+  var ICONS = {"check":"<svg class=\"listbox__checkmark\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z\"/></svg>","chevron":"<svg class=\"select__chevron\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z\"/></svg>","chevronLeft":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z\"/></svg>","chevronRight":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z\"/></svg>","checkCircle":"<svg class=\"toast__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z\"/></svg>","group":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z\"/></svg>","call":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M20.01 15.38c-1.23 0-2.42-.2-3.53-.56-.35-.12-.74-.03-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z\"/></svg>","videocam":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z\"/></svg>","schedule":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z\"/><path d=\"M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z\"/></svg>","person":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z\"/></svg>","copy":"<svg class=\"btn__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z\"/></svg>","noteClock":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z\"/><path d=\"M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z\"/></svg>"};
+  var APPTS = [{"id":"a1","ref":"5098","service":"Ed Plan Review","dept":"Counseling","date":"2026-10-02","min":630,"advisor":"Caitlin Moore","format":"inPerson","status":"upcoming"},{"id":"a2","ref":"5121","service":"Change of Major","dept":"Academic Advising","date":"2026-10-07","min":840,"advisor":"Ava Robinson","format":"phone","status":"upcoming","questions":["Which major are you thinking of switching to, and why?","Have you already taken any classes toward it?"]},{"id":"a3","ref":"5140","service":"Career Counseling","dept":"Career and Talent Development","date":"2026-10-12","min":690,"advisor":"Eric Lynch","format":"video","status":"upcoming"},{"id":"a4","ref":"4301","service":"Comprehensive Ed Plan","dept":"Counseling","date":"2026-09-28","min":540,"advisor":"George Amalor","format":"inPerson","status":"completed"},{"id":"a5","ref":"4122","service":"Degree Planning","dept":"English Dept","date":"2026-09-15","min":915,"advisor":"Ava Robinson","format":"inPerson","status":"noshow"},{"id":"a6","ref":"3987","service":"Financial Aid Petition","dept":"Office of the Registrar","date":"2026-08-20","min":780,"advisor":"Jonathan Rehm","format":"phone","status":"completed"},{"id":"a7","ref":"4410","service":"Transcript Evaluation","dept":"Office of the Registrar","date":"2026-09-30","min":600,"advisor":"Priya Natarajan","format":"video","status":"cancelled"}];
+  var ABOUT = {"Change of Major":"Talk through switching majors: what transfers, what changes in your plan, and how long it adds.","Comprehensive Ed Plan":"Build a full semester-by-semester education plan to your degree or transfer goal.","Ed Plan Review":"A short check of your existing education plan — after a change, or once a year.","Career Counseling":"Explore careers that fit your interests, and the programs that lead there.","Degree Planning":"Map the requirements left for your degree and the order to take them in.","Financial Aid Petition":"Get help preparing a petition to restore or extend your financial aid.","Transcript Evaluation":"Have transcripts from other schools evaluated for credit here."};
+  var NOW_MIN = 620, CHECKIN_BEFORE = 15;
+  var STUDENT_PHONE = "(555) 555-1234";
   // "list" (v1: rows in one Card).
   var LAYOUT = "list";
   // "text" (v5): a flush divided list on a phone, list rows in a Card from
@@ -777,6 +929,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
       t.setAttribute("aria-selected", i === j ? "true" : "false");
     });
     if (i === 0) { showView("browse"); return; }
+    if (i === 1) { renderAppts(); showView("appointments"); return; }
     $("ss-placeholder-text").textContent = sectionTabs[i].textContent + " — not designed yet";
     showView("placeholder");
   }
@@ -1020,6 +1173,8 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
         var density = 12 + hash(k) % 40; // percent of half-hours open that day
         if (dt.getDay() === 6) density = Math.floor(density / 3);
         for (var m = 8 * 60; m <= 19 * 60 + 30; m += 30) {
+          // today's slots that have already started aren't on offer
+          if (key(dt) === key(today) && m <= NOW_MIN) continue;
           var hk = k + "|" + m;
           if (hash(hk) % 100 >= density) continue;
           var pool = ADVISORS.slice().sort(function (a, b) { return hash(hk + a) - hash(hk + b); });
@@ -1037,14 +1192,19 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 
   // ---------------- pick a time ----------------
   var pk = { si: 0, dept: null, week: 0, tod: "any", day: null, slot: null, advisor: null, notified: {} };
-  function openPick(si) {
+  // opts.dept: arrive with this department (Book again / Reschedule).
+  // opts.reschedule: the appointment id being moved — Confirm then moves it.
+  function openPick(si, opts) {
+    opts = opts || {};
     pk.si = si; pk.week = 0; pk.tod = "any"; pk.day = null; pk.slot = null; pk.advisor = null;
+    pk.reschedule = opts.reschedule || null;
     var s = SERVICES[si];
     // v3 chooses the department here. It arrives pre-set when the browse
     // filter already named one this service has (or when there is only one);
     // otherwise the student picks it before any times show.
     var choose = DEPT_ON_PICK && s.depts.length > 1;
-    if (DEPT_ON_PICK) pk.dept = s.depts.length === 1 ? s.depts[0] : s.depts.indexOf(st.dept) !== -1 ? st.dept : null;
+    if (opts.dept) pk.dept = opts.dept;
+    else if (DEPT_ON_PICK) pk.dept = s.depts.length === 1 ? s.depts[0] : s.depts.indexOf(st.dept) !== -1 ? st.dept : null;
     else pk.dept = deptOf(si);
     $("ss-pick-title").textContent = s.name;
     $("ss-pick-meta").textContent = s.minutes + " minutes" + (DEPT_ON_PICK ? "" : " · " + pk.dept);
@@ -1052,10 +1212,18 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     $("ss-pick-dept").classList.toggle("is-hidden", !choose);
     $("ss-pick-dept-text").classList.toggle("is-hidden", choose);
     $("ss-pick-dept-text").textContent = choose ? "" : pk.dept;
+    var moving = pk.reschedule ? apptById(pk.reschedule) : null;
+    $("ss-resched-note").classList.toggle("is-hidden", !moving);
+    if (moving) $("ss-resched-text").textContent = moving.service + " is booked for " + whenShort(moving) + ". That time stays yours until you confirm a new one.";
+    $("ss-back").querySelector("span").textContent = moving ? "Back to appointment" : "All services";
+    $("ss-confirm").textContent = moving ? "Confirm new time" : "Confirm appointment";
     showView("pick");
     renderPick();
   }
-  $("ss-back").addEventListener("click", function () { showView("browse"); });
+  $("ss-back").addEventListener("click", function () {
+    if (pk.reschedule) { var id = pk.reschedule; pk.reschedule = null; openAppt(id); return; }
+    showView("browse");
+  });
   $("ss-prev-week").addEventListener("click", function () { pk.week--; pk.day = null; pk.slot = null; renderPick(); });
   $("ss-next-week").addEventListener("click", function () { pk.week++; pk.day = null; pk.slot = null; renderPick(); });
   document.querySelectorAll("#ss-tod .tab").forEach(function (t) {
@@ -1192,7 +1360,20 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
     if (!pk.slot) return;
     var dt = weekDays(pk.week)[pk.day];
     booked[pk.slot.id] = true;
-    showToast("Booked: " + SERVICES[pk.si].name + ", " + DOW[dt.getDay()] + " " + MON[dt.getMonth()] + " " + dt.getDate() + " at " + fmtTime(pk.slot.min) + " with " + pk.advisor);
+    var when = DOW[dt.getDay()] + ", " + MON[dt.getMonth()] + " " + dt.getDate() + " at " + fmtTime(pk.slot.min);
+    if (pk.reschedule) {
+      // Reschedule moves the existing appointment — same reference, new slot.
+      var a = apptById(pk.reschedule);
+      a.date = iso(dt); a.min = pk.slot.min; a.advisor = pk.advisor; a.format = pk.slot.formats[0]; a.dept = pk.dept;
+      a.checkedIn = false;
+      pk.reschedule = null; pk.slot = null; pk.advisor = null;
+      showToast("Rescheduled to " + when);
+      openAppt(a.id);
+      return;
+    }
+    APPTS.push({ id: "n" + Date.now(), ref: String(5200 + APPTS.length), service: SERVICES[pk.si].name, dept: pk.dept, date: iso(dt), min: pk.slot.min, advisor: pk.advisor, format: pk.slot.formats[0], status: "upcoming" });
+    updateUpcomingCount();
+    showToast("Booked: " + SERVICES[pk.si].name + ", " + when + " — it's in My appointments");
     pk.slot = null; pk.advisor = null;
     renderPick();
   });
@@ -1203,6 +1384,198 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   });
   $("ss-dropins").addEventListener("click", function () { goSection(2); });
 
+  // ---------------- my appointments ----------------
+  var apptTab = "upcoming";
+  function apptById(id) { return APPTS.filter(function (a) { return a.id === id; })[0]; }
+  function svcIndex(name) { for (var i = 0; i < SERVICES.length; i++) if (SERVICES[i].name === name) return i; return -1; }
+  function iso(dt) { return dt.getFullYear() + "-" + (dt.getMonth() < 9 ? "0" : "") + (dt.getMonth() + 1) + "-" + (dt.getDate() < 10 ? "0" : "") + dt.getDate(); }
+  function apptDate(a) { return new Date(a.date + "T00:00:00"); }
+  function minutesOf(a) { var i = svcIndex(a.service); return i === -1 ? 30 : SERVICES[i].minutes; }
+  function isToday(a) { return a.date === TODAY; }
+  // Check-in opens CHECKIN_BEFORE minutes ahead and stays open through the slot.
+  function checkinOpen(a) { return a.status === "upcoming" && !a.checkedIn && isToday(a) && NOW_MIN >= a.min - CHECKIN_BEFORE && NOW_MIN < a.min + minutesOf(a); }
+  function whenShort(a) { var d = apptDate(a); return DOW[d.getDay()] + ", " + MON[d.getMonth()] + " " + d.getDate() + " at " + fmtTime(a.min); }
+  function whenLong(a) { var d = apptDate(a); return DOW_LONG[d.getDay()] + ", " + MON_LONG[d.getMonth()] + " " + d.getDate() + ", " + d.getFullYear() + " at " + fmtTime(a.min) + " (" + "EEST" + ")"; }
+  function groupLabel(a) { var d = apptDate(a); return (isToday(a) ? "Today · " : "") + DOW[d.getDay()] + ", " + MON[d.getMonth()] + " " + d.getDate() + (d.getFullYear() !== today.getFullYear() ? ", " + d.getFullYear() : ""); }
+  var FORMAT_ICON = { inPerson: ICONS.group, phone: ICONS.call, video: ICONS.videocam };
+  function where(a) {
+    if (a.format === "phone") return "Phone — your advisor calls you at " + STUDENT_PHONE;
+    if (a.format === "video") return "Video — the link is in your email";
+    return "In person — " + LOCATIONS[a.dept];
+  }
+  function badge(role, text) { return '<span class="badge badge--base badge--regular badge--' + role + '">' + esc(text) + "</span>"; }
+  function statusBadges(a) {
+    var out = [];
+    if (a.status === "completed") out.push(badge("success", "Completed"));
+    else if (a.status === "noshow") out.push(badge("danger", "No-show"));
+    else if (a.status === "cancelled") out.push(badge("neutral", "Cancelled"));
+    else {
+      if (a.checkedIn) out.push(badge("success", "Checked in"));
+      else if (checkinOpen(a)) out.push(badge("success", "Check-in open"));
+      if (a.questions && !a.answered) out.push(badge("warning", a.questions.length + " questions to answer"));
+    }
+    return out.join("");
+  }
+  function checkinNote(a) {
+    return '<span class="ss-note ss-note--icon">' + ICONS.noteClock + "Check-in opens at " + fmtTime(a.min - CHECKIN_BEFORE) + "</span>";
+  }
+  function updateUpcomingCount() {
+    $("ss-upcoming-count").textContent = APPTS.filter(function (a) { return a.status === "upcoming"; }).length;
+  }
+  function apptRow(a) {
+    var actions = "";
+    if (a.status === "upcoming") {
+      var btns = (checkinOpen(a) ? '<button type="button" class="btn btn--primary btn--sm" data-checkin="' + a.id + '">Check in</button>' : "") +
+        '<button type="button" class="btn btn--secondary btn--sm" data-appt="' + a.id + '">Details</button>';
+      actions = '<div class="ss-appt__btns">' + btns + "</div>" + (!a.checkedIn && !checkinOpen(a) ? checkinNote(a) : "");
+    } else {
+      actions = '<div class="ss-appt__btns"><button type="button" class="btn btn--secondary btn--sm" data-appt="' + a.id + '">Details</button></div>';
+    }
+    return '<article class="ss-appt">' +
+      '<div class="ss-appt__time"><span class="ss-appt__clock">' + fmtTime(a.min) + '</span><span class="ss-appt__dur">' + minutesOf(a) + " min</span></div>" +
+      '<div class="ss-appt__main"><div class="ss-appt__title"><h3 class="ss-appt__name">' + esc(a.service) + "</h3>" + statusBadges(a) + "</div>" +
+      '<div class="ss-appt__meta">' +
+      '<span class="ss-fact">' + ICONS.person + '<span class="ss-fact__text">' + esc(a.advisor) + " · " + esc(a.dept) + "</span></span>" +
+      '<span class="ss-fact">' + FORMAT_ICON[a.format] + '<span class="ss-fact__text">' + esc(where(a)) + "</span></span>" +
+      "</div></div>" +
+      '<div class="ss-appt__actions">' + actions + "</div>" +
+      "</article>";
+  }
+  function renderAppts() {
+    updateUpcomingCount();
+    document.querySelectorAll("#ss-appt-tabs .tab").forEach(function (t) {
+      var on = t.dataset.apptTab === apptTab;
+      t.classList.toggle("tab--active", on);
+      t.setAttribute("aria-selected", on ? "true" : "false");
+    });
+    var list = APPTS.filter(function (a) {
+      if (apptTab === "upcoming") return a.status === "upcoming";
+      if (apptTab === "past") return a.status === "completed" || a.status === "noshow";
+      return a.status === "cancelled";
+    }).sort(function (x, y) {
+      var k = (x.date + x.min).localeCompare(y.date + y.min);
+      return apptTab === "upcoming" ? k : -k;
+    });
+    var groups = [], byKey = {};
+    list.forEach(function (a) {
+      if (!byKey[a.date]) { byKey[a.date] = { label: groupLabel(a), items: [] }; groups.push(byKey[a.date]); }
+      byKey[a.date].items.push(a);
+    });
+    $("ss-appts").innerHTML = groups.map(function (g) {
+      return '<section class="ss-appt-group"><h3 class="ss-eyebrow">' + esc(g.label) + '</h3><div class="ss-hybrid ss-hybrid--flush">' + g.items.map(apptRow).join("") + "</div></section>";
+    }).join("");
+    var empty = !list.length;
+    $("ss-appts").classList.toggle("is-hidden", empty);
+    $("ss-appts-empty").classList.toggle("is-hidden", !empty);
+    $("ss-appts-empty-text").textContent = { upcoming: "No upcoming appointments", past: "No past appointments yet", cancelled: "Nothing cancelled" }[apptTab];
+    $("ss-appts-browse").classList.toggle("is-hidden", apptTab !== "upcoming");
+  }
+  document.querySelectorAll("#ss-appt-tabs .tab").forEach(function (t) {
+    t.addEventListener("click", function () { apptTab = t.dataset.apptTab; renderAppts(); });
+  });
+  $("ss-appts-browse").addEventListener("click", function () { goSection(0); });
+  $("ss-appts").addEventListener("click", function (e) {
+    var c = e.target.closest("[data-checkin]");
+    if (c) { checkIn(apptById(c.dataset.checkin)); renderAppts(); return; }
+    var d = e.target.closest("[data-appt]");
+    if (d) openAppt(d.dataset.appt);
+  });
+  function checkIn(a) {
+    a.checkedIn = true;
+    var first = a.advisor.split(" ")[0];
+    showToast(a.format === "phone" ? "Checked in — " + first + " will call you at " + STUDENT_PHONE
+      : a.format === "video" ? "Checked in — join with the link in your email"
+      : "Checked in — " + first + " will come and get you");
+  }
+
+  // ---- details ----
+  var openId = null;
+  function openAppt(id) { openId = id; renderAppt(); showView("appt"); }
+  function renderAppt() {
+    var a = apptById(openId), up = a.status === "upcoming";
+    $("ss-d-name").textContent = a.service;
+    $("ss-d-status").innerHTML = statusBadges(a);
+    $("ss-d-dept").textContent = a.dept;
+    var askQ = up && a.questions && !a.answered;
+    $("ss-d-questions").classList.toggle("is-hidden", !askQ);
+    if (askQ) {
+      $("ss-d-q-title").textContent = a.advisor + " asked " + a.questions.length + " questions.";
+      $("ss-d-q-text").textContent = "Answer them before the meeting so you can spend the time on what matters.";
+    }
+    var rows = [
+      ["When", esc(whenLong(a))],
+      ["Duration", minutesOf(a) + " minutes"],
+      ["Advisor", esc(a.advisor)],
+      ["Meeting", '<span class="ss-fact">' + FORMAT_ICON[a.format] + "<span>" + esc(where(a)) + "</span></span>"],
+      ["Reference", '<span class="ss-ref">#' + esc(a.ref) + ' <button type="button" class="btn btn--ghost btn--sm btn--icon-only" id="ss-d-copy" aria-label="Copy reference number">' + ICONS.copy + "</button></span>"]
+    ];
+    if (a.questions && a.answered) rows.push(["Questions", "Answered — " + esc(a.advisor.split(" ")[0]) + " has them"]);
+    $("ss-d-facts").innerHTML = rows.map(function (r) { return "<dt>" + r[0] + "</dt><dd>" + r[1] + "</dd>"; }).join("");
+    var act = "";
+    if (up) {
+      if (checkinOpen(a)) act += '<button type="button" class="btn btn--primary btn--base" id="ss-d-checkin">Check in</button>';
+      else if (!a.checkedIn) act += checkinNote(a);
+      act += '<button type="button" class="btn btn--secondary btn--base ss-push" id="ss-d-resched">Reschedule</button>' +
+        '<button type="button" class="btn btn--secondary btn--base" id="ss-d-cancel">Cancel appointment</button>';
+    } else {
+      act += '<button type="button" class="btn btn--secondary btn--base" id="ss-d-again">Book again</button>';
+    }
+    $("ss-d-actions").innerHTML = act;
+    $("ss-d-about").classList.toggle("is-hidden", !ABOUT[a.service]);
+    $("ss-d-about-text").textContent = ABOUT[a.service] || "";
+  }
+  $("ss-appt-back").addEventListener("click", function () { renderAppts(); showView("appointments"); });
+  $("ss-d-facts").addEventListener("click", function (e) {
+    if (!e.target.closest("#ss-d-copy")) return;
+    var ref = "#" + apptById(openId).ref;
+    if (navigator.clipboard) navigator.clipboard.writeText(ref).catch(function () {});
+    showToast("Reference " + ref + " copied");
+  });
+  $("ss-d-actions").addEventListener("click", function (e) {
+    var a = apptById(openId);
+    if (e.target.closest("#ss-d-checkin")) { checkIn(a); renderAppt(); }
+    else if (e.target.closest("#ss-d-resched")) openPick(svcIndex(a.service), { dept: a.dept, reschedule: a.id });
+    else if (e.target.closest("#ss-d-again")) openPick(svcIndex(a.service), { dept: a.dept });
+    else if (e.target.closest("#ss-d-cancel")) {
+      $("ss-cancel-text").textContent = a.service + " with " + a.advisor + ", " + whenShort(a) + ". The time goes back to other students.";
+      $("ss-cancel-modal").showModal();
+    }
+  });
+
+  // ---- cancel: AlertDialog — no backdrop dismiss, Escape blocked ----
+  var cancelDlg = $("ss-cancel-modal");
+  cancelDlg.addEventListener("cancel", function (e) { e.preventDefault(); });
+  $("ss-cancel-keep").addEventListener("click", function () { cancelDlg.close(); });
+  $("ss-cancel-confirm").addEventListener("click", function () {
+    var a = apptById(openId);
+    a.status = "cancelled";
+    cancelDlg.close();
+    showToast(a.service + " on " + whenShort(a) + " cancelled");
+    apptTab = "upcoming";
+    renderAppts();
+    showView("appointments");
+  });
+
+  // ---- questions: Modal ----
+  var qDlg = $("ss-q-modal");
+  qDlg.addEventListener("click", function (e) { if (e.target === qDlg) qDlg.close(); });
+  $("ss-d-q-open").addEventListener("click", function () {
+    var a = apptById(openId);
+    $("ss-q-intro").textContent = a.advisor + " asked these before your " + a.service + " appointment on " + whenShort(a) + ".";
+    $("ss-q-fields").innerHTML = a.questions.map(function (q, i) {
+      return '<label class="ss-q"><span class="ss-q__label">' + esc(q) + '</span><textarea class="ss-q__field" rows="3" placeholder="Your answer" data-q="' + i + '"></textarea></label>';
+    }).join("");
+    qDlg.showModal();
+  });
+  $("ss-q-cancel").addEventListener("click", function () { qDlg.close(); });
+  $("ss-q-form").addEventListener("submit", function () {
+    var a = apptById(openId);
+    a.answered = true;
+    showToast("Answers sent to " + a.advisor);
+    renderAppt();
+  });
+
+  updateUpcomingCount();
   renderBrowse();
 })();
 </script>
