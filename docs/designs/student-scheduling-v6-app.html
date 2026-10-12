@@ -959,9 +959,9 @@ html:has(.modal[open]) { overflow: hidden; }
     { key: "phone", label: "Phone", icon: ICONS.call },
     { key: "video", label: "Video", icon: ICONS.videocam }
   ];
-  // v5: base badges, regular weight; By appointment in the violet tag hue.
+  // v5: base badges, regular weight; Appointment in the violet tag hue.
   var DROP_BADGE_V5 = {
-    none: '<span class="badge badge--base badge--regular badge--violet">By appointment</span>',
+    none: '<span class="badge badge--base badge--regular badge--violet">Appointment</span>',
     open: '<span class="badge badge--base badge--regular badge--success">Drop-in until 10:00 PM</span>',
     available: '<span class="badge badge--base badge--regular badge--primary">Drop-in available</span>'
   };
@@ -1267,7 +1267,7 @@ html:has(.modal[open]) { overflow: hidden; }
     if (at > 0) { depts.splice(at, 1); depts.unshift(st.dept); }
     var line = "", cta = "";
     if (c.kind === "appointment") {
-      line = fact(ICONS.schedule, SERVICES[c.si].minutes + " min") + vbadge("violet", "By appointment");
+      line = fact(ICONS.schedule, SERVICES[c.si].minutes + " min") + vbadge("violet", "Appointment");
       cta = '<button type="button" class="btn btn--tint btn--base ss-item__cta" data-pick="' + c.si + '">Pick a time</button>';
     } else if (c.kind === "dropin") {
       var h = c.hours;
