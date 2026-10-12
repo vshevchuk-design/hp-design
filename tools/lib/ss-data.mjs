@@ -246,3 +246,19 @@ export const WORKSHOPS = [
     ],
   },
 ];
+
+// Drop-in visits already behind the student (seed) — what a finished visit
+// looks like: who, when, and the advisor's summary with an attachment.
+export const VISITS = [
+  {
+    id: "v1", name: "Writing Center", dept: "Tutoring Center", date: "2026-09-24", min: 14 * 60 + 10, end: 14 * 60 + 32,
+    advisor: "Jonathan Rehm", state: "done",
+    summary: {
+      text: "We worked on your thesis statement and the order of your body paragraphs. Notes on the draft are attached — revise paragraphs 2 and 3, then come back to check the conclusion.",
+      files: [{ name: "Thesis feedback.pdf", meta: "PDF · 180 KB" }],
+    },
+  },
+];
+// The prototype's queue moves on its own: one student ahead is served every
+// QUEUE_TICK_MS (a stand-in for DROPIN_MINUTES_PER_STUDENT of real time).
+export const QUEUE_TICK_MS = 4000;

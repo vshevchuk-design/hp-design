@@ -344,6 +344,8 @@ const ICONS = {
   file: icon("insert_drive_file", "attachment__icon"),
   download: icon("download", "attachment__action-glyph"),
   accChevron: icon("expand_more", "accordion__chevron"),
+  alertInfo: icon("info", "alert__icon"),
+  alertCall: icon("campaign", "alert__icon"),
 };
 
 const UNDERLINE_NAV = `<nav class="ss-sections" aria-label="Scheduling sections">
@@ -456,6 +458,36 @@ const V6_VIEWS = `<!-- ============ Workshop ============ -->
       <div class="ss-cta-bar" id="ss-ws-bar"><button class="btn btn--primary btn--base btn--block" id="ss-ws-register-bar" type="button" disabled>Register</button></div>
     </section>
 
+    <!-- ============ Drop-in visit — the queue page ============ -->
+    <!-- One page for a drop-in from joining to done: the status Card (your
+         place / stepped away / in a meeting / done) or, when an advisor calls,
+         a success Alert with "I'm on my way"; then the advisor's summary and a
+         rating once it's over, and the visit's facts. -->
+    <section class="ss-view" data-view="visit">
+      <button class="btn btn--ghost btn--sm ss-back" id="ss-v-back" type="button">${icon("arrow_back", "btn__icon")}<span>Book</span></button>
+      <div class="ss-head">
+        <div class="ss-detail__title"><h2 class="ss-title" id="ss-v-name"></h2><span class="ss-ws-badges" id="ss-v-badges"></span></div>
+        <p class="ss-sub" id="ss-v-dept"></p>
+      </div>
+      <div class="ss-detail">
+        <div id="ss-v-status"></div>
+        <div class="ss-step is-hidden" id="ss-v-summary-step">
+          <h3 class="ss-step__title">Summary</h3>
+          <div class="card"><div class="card__body" id="ss-v-summary"></div></div>
+        </div>
+        <div class="ss-step is-hidden" id="ss-v-rate-step">
+          <h3 class="ss-step__title" id="ss-v-rate-title">How was this visit?</h3>
+          <div class="ss-v-rate" id="ss-v-rate" role="group" aria-labelledby="ss-v-rate-title">
+            <button class="chip" type="button" aria-pressed="false" data-rate="3">Very helpful</button>
+            <button class="chip" type="button" aria-pressed="false" data-rate="2">Somewhat helpful</button>
+            <button class="chip" type="button" aria-pressed="false" data-rate="1">Not helpful</button>
+          </div>
+          <p class="ss-note is-hidden" id="ss-v-rate-thanks"></p>
+        </div>
+        <div class="card"><div class="card__body"><dl class="ss-dl" id="ss-v-facts"></dl></div></div>
+      </div>
+    </section>
+
     <!-- ============ My workshop — a workshop you're registered for ============ -->
     <!-- Where a registration lives: how far along you are, the next session
          (check in / can't make it), what's coming, what happened — attendance
@@ -537,8 +569,22 @@ const LEAVE_DIALOG = `<dialog class="modal modal--alert" id="ss-leave-modal" dat
 </dialog>
 `;
 
+// While you're in a drop-in queue (or hold a seat), every other screen shows
+// where you are: an Alert band at the top of the page column — info while
+// waiting, success when an advisor calls you.
+const QUEUE_BANNER = `<div class="alert ss-banner is-hidden" id="ss-banner" role="status">
+      <span id="ss-banner-icon"></span>
+      <div class="alert__stack"><p class="alert__message"><span class="alert__title" id="ss-banner-title"></span> <span id="ss-banner-text"></span></p></div>
+      <button class="btn btn--secondary btn--sm" id="ss-banner-view" type="button">View</button>
+    </div>
+`;
+const MAIN_OPEN = `<main class="ss__main">
+`;
+if (!markup.includes(MAIN_OPEN)) throw new Error("v6: markup drifted — update MAIN_OPEN");
+
 const markupV6 = () =>
   markupFor()
+    .replace(MAIN_OPEN, MAIN_OPEN + "    " + QUEUE_BANNER)
     .replace(CANCELLED_TAB, "")
     .replace(LISTBOX_EL, LEAVE_DIALOG + LISTBOX_EL)
     .replace(SEGMENTED_NAV, SEGMENTED_NAV_V6)
@@ -548,7 +594,7 @@ const markupV6 = () =>
     .replace(DROP_CHIP, "")
     .replace(DEPT_CHIP, TYPE_CHIP + "\n          " + DEPT_CHIP)
     .replace(APPTS_HEAD, `<h2 class="ss-title">My schedule</h2>
-        <p class="ss-sub ss-sub--sm">Everything you've booked — appointments and workshops. Check in, reschedule or cancel here.</p>`)
+        <p class="ss-sub ss-sub--sm">Everything you've booked — appointments, drop-ins and workshops.</p>`)
     .replace(APPTS_BACK, `<span>My schedule</span></button>`)
     .replace(">Go to Drop-Ins<", ">See drop-in hours<")
     .replace(PLACEHOLDER, V6_VIEWS + PLACEHOLDER);
@@ -581,7 +627,7 @@ const viewerHtml = renderDesignViewer({
   activeKey: "student-scheduling",
   title: "Student Scheduling",
   heading: "Student Scheduling",
-  sub: `The student side of Scheduling — browse services, pick a time, confirm. Same flow and content as the live app, rebuilt strictly from hp-design components. <b>What changed is the UI, not the flow:</b> sort is a ghost Button + Listbox on the results line instead of a third filter-looking dropdown; "Drop-in available" is a toggle Chip that clears itself (no separate Clear button); Department is the dropdown chip. <b>v6 (current)</b> folds the live app's six tabs into two — <b>Book</b> and <b>My schedule</b>. Book is one catalogue of appointments (Pick a time), drop-in desks (Join queue while open, Reserve a seat before it opens) and workshops (Register), narrowed by a Type dropdown chip beside Department. A workshop page lists every schedule as a ChoiceTile (no carousel), the chosen schedule's sessions, and a sticky registration card — on a phone, Register sits in a bar at the bottom. Every booking ends on one success screen. Try <b>Resume Writing Workshop</b> (three schedules, one full), <b>Interview Prep</b> (pick one date) and <b>Time Management Essentials</b> (full). <b>My schedule</b> is Upcoming / Past (Done, Missed and Cancelled as neutral badges in Past): appointments plus each workshop's next session. A registered workshop opens its own page — progress (sessions done, attended), the next session with check-in and Can't make it, what's coming up, past sessions as an Accordion with attendance and the organizer's note and files, materials, and Leave workshop behind an AlertDialog. Try <b>First-Year Success Seminar</b> (in progress) and, under Past, <b>Library Research Basics</b> (finished). <b>v5</b> is cards on a phone and list rows from 768px: the 16px service name, the departments that offer it as plain comma-separated text right under it, then duration and the booking-mode Badge (base, regular weight; Appointment in violet), then Pick a time in the Button <b>tint</b> variant. The department is chosen on the pick-a-time page — pre-set when the browse filter already named one. <b>v1</b> wears the same shell but picks the department in the list: a Select in the row when several departments offer the service, an outline Badge when only one does, and Pick a time in Button secondary. Picking a time is one page — day and time ChoiceTiles on the left, a sticky <b>Your appointment</b> Card on the right with the advisor RadioGroup and the one Confirm — instead of a time popup followed by a side drawer. Try <b>Academic Difficulty</b> for the no-openings state, <b>Career Counseling</b> or <b>Degree Planning</b> for a service offered by several departments. <b>Appointments</b> is built too: Upcoming (with a count) / Past / Cancelled as segmented Tabs, rows grouped by day, check-in that opens 15 minutes ahead (the 10:30 one today is open — the prototype's clock is 10:20 AM), a details page with the advisor's questions in a Modal, Reschedule back into pick-a-time, and Cancel behind an AlertDialog. Booking on Browse lands in Upcoming. Drop-Ins, Workshops, Reserve a Seat and Calendar are placeholders.`,
+  sub: `The student side of Scheduling — browse services, pick a time, confirm. Same flow and content as the live app, rebuilt strictly from hp-design components. <b>What changed is the UI, not the flow:</b> sort is a ghost Button + Listbox on the results line instead of a third filter-looking dropdown; "Drop-in available" is a toggle Chip that clears itself (no separate Clear button); Department is the dropdown chip. <b>v6 (current)</b> folds the live app's six tabs into two — <b>Book</b> and <b>My schedule</b>. Book is one catalogue of appointments (Pick a time), drop-in desks (Join queue while open, Reserve a seat before it opens) and workshops (Register), narrowed by a Type dropdown chip beside Department. A workshop page lists every schedule as a ChoiceTile (no carousel), the chosen schedule's sessions, and a sticky registration card — on a phone, Register sits in a bar at the bottom. Every booking ends on one success screen. Try <b>Resume Writing Workshop</b> (three schedules, one full), <b>Interview Prep</b> (pick one date) and <b>Time Management Essentials</b> (full). <b>My schedule</b> is Upcoming / Past (Done, Missed and Cancelled as neutral badges in Past): appointments plus each workshop's next session. A registered workshop opens its own page — progress (sessions done, attended), the next session with check-in and Can't make it, what's coming up, past sessions as an Accordion with attendance and the organizer's note and files, materials, and Leave workshop behind an AlertDialog. Try <b>First-Year Success Seminar</b> (in progress) and, under Past, <b>Library Research Basics</b> (finished). <b>Drop-ins</b>: Join queue opens the queue page — your place and wait with a Progress bar, Step away / I'm back, Leave queue (AlertDialog). The prototype's clock is frozen, so the line moves on its own (one student every 4 seconds): the advisor calls you (success Alert, "I'm on my way"), the meeting starts, and it ends with the advisor's summary and a three-chip rating. While you're in line or holding a seat, every other screen shows a banner at the top. Reserve a seat holds your place before the desk opens. A past drop-in with a summary and attachment: <b>Writing Center</b> under Past. <b>v5</b> is cards on a phone and list rows from 768px: the 16px service name, the departments that offer it as plain comma-separated text right under it, then duration and the booking-mode Badge (base, regular weight; Appointment in violet), then Pick a time in the Button <b>tint</b> variant. The department is chosen on the pick-a-time page — pre-set when the browse filter already named one. <b>v1</b> wears the same shell but picks the department in the list: a Select in the row when several departments offer the service, an outline Badge when only one does, and Pick a time in Button secondary. Picking a time is one page — day and time ChoiceTiles on the left, a sticky <b>Your appointment</b> Card on the right with the advisor RadioGroup and the one Confirm — instead of a time popup followed by a side drawer. Try <b>Academic Difficulty</b> for the no-openings state, <b>Career Counseling</b> or <b>Degree Planning</b> for a service offered by several departments. <b>Appointments</b> is built too: Upcoming (with a count) / Past / Cancelled as segmented Tabs, rows grouped by day, check-in that opens 15 minutes ahead (the 10:30 one today is open — the prototype's clock is 10:20 AM), a details page with the advisor's questions in a Modal, Reschedule back into pick-a-time, and Cancel behind an AlertDialog. Booking on Browse lands in Upcoming. Drop-Ins, Workshops, Reserve a Seat and Calendar are placeholders.`,
   versions: [
     { label: "v6", note: "Book + My schedule · workshops · current", file: "student-scheduling-v6-app.html" },
     { label: "v5", note: "departments as text", file: "student-scheduling-app.html" },

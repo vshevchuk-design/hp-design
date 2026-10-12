@@ -27,6 +27,8 @@ export function ssAppJs(d) {
   var WORKSHOPS = ${JSON.stringify(d.WORKSHOPS || [])};
   var DROPIN_HOURS = ${JSON.stringify(d.DROPIN_HOURS || {})};
   var PER_STUDENT = ${d.DROPIN_MINUTES_PER_STUDENT || 8};
+  var VISITS = ${JSON.stringify(d.VISITS || [])};
+  var QUEUE_TICK_MS = ${d.QUEUE_TICK_MS || 4000};
   // "list" (v1: rows in one Card).
   var LAYOUT = ${JSON.stringify(d.LAYOUT || "list")};
   // "text" (v5): a flush divided list on a phone, list rows in a Card from
@@ -112,6 +114,7 @@ export function ssAppJs(d) {
   function showView(name) {
     views.forEach(function (v) { v.classList.toggle("is-active", v.dataset.view === name); });
     window.scrollTo(0, 0);
+    if (V6) updateBanner();
   }
   var sectionTabs = document.querySelectorAll(".ss-sections .tab");
   function goSection(i) {
@@ -324,7 +327,7 @@ export function ssAppJs(d) {
     });
     WORKSHOPS.forEach(function (w, wi) { CATALOG.push({ kind: "workshop", wi: wi, name: w.name, depts: [w.dept] }); });
   }
-  var QUEUE = {}, RESERVED = {}, WS_REG = {};
+  var WS_REG = {};
   // registrations the student already has (seed): skipped = sessions marked
   // "can't make it", checkedIn = sessions checked in to.
   WORKSHOPS.forEach(function (w) { if (w.reg) WS_REG[w.id] = { sched: w.reg.sched, sess: null, skipped: {}, checkedIn: {} }; });
@@ -362,13 +365,15 @@ export function ssAppJs(d) {
       if (dropinOpen(h)) {
         var n = h.waiting;
         line = fact(ICONS.people, n ? n + " waiting · about " + n * PER_STUDENT + " min" : "No wait right now") + vbadge("success", "Drop-in · open until " + fmtTime(h.until));
-        cta = QUEUE[c.key]
-          ? '<button type="button" class="btn btn--secondary btn--base ss-item__cta" disabled>You\u2019re in line</button>'
+        var qv = visitFor(c.key, "queue");
+        cta = qv
+          ? '<button type="button" class="btn btn--secondary btn--base ss-item__cta" data-visit="' + qv.id + '">You\u2019re in line</button>'
           : '<button type="button" class="btn btn--tint btn--base ss-item__cta" data-queue="' + x.i + '">Join queue</button>';
       } else {
         line = fact(ICONS.schedule, "Today " + fmtTime(h.opens) + " – " + fmtTime(h.until)) + vbadge("primary", "Drop-in · opens " + fmtTime(h.opens));
-        cta = RESERVED[c.key]
-          ? '<button type="button" class="btn btn--secondary btn--base ss-item__cta" disabled>Seat reserved</button>'
+        var rv = visitFor(c.key, "reserved");
+        cta = rv
+          ? '<button type="button" class="btn btn--secondary btn--base ss-item__cta" data-visit="' + rv.id + '">Seat reserved</button>'
           : '<button type="button" class="btn btn--tint btn--base ss-item__cta" data-reserve="' + x.i + '">Reserve a seat</button>';
       }
     } else {
@@ -412,6 +417,8 @@ export function ssAppJs(d) {
     if (q) { joinQueue(CATALOG[+q.dataset.queue]); return; }
     var r = e.target.closest("[data-reserve]");
     if (r) { reserveSeat(CATALOG[+r.dataset.reserve]); return; }
+    var vb = e.target.closest("[data-visit]");
+    if (vb) { openVisit(vb.dataset.visit, "book"); return; }
     var w = e.target.closest("[data-ws]");
     if (w) openWorkshop(+w.dataset.ws);
   });
@@ -732,7 +739,7 @@ export function ssAppJs(d) {
     return '<span class="ss-note ss-note--icon">' + ICONS.noteClock + "Check-in opens at " + fmtTime(a.min - CHECKIN_BEFORE) + "</span>";
   }
   function updateUpcomingCount() {
-    $("ss-upcoming-count").textContent = APPTS.filter(function (a) { return a.status === "upcoming"; }).length + (V6 ? workshopEntries("upcoming").length : 0);
+    $("ss-upcoming-count").textContent = APPTS.filter(function (a) { return a.status === "upcoming"; }).length + (V6 ? workshopEntries("upcoming").length + visitEntries("upcoming").length : 0);
   }
   function apptRow(a) {
     var actions = "";
@@ -767,7 +774,7 @@ export function ssAppJs(d) {
       if (apptTab === "past") return a.status === "completed" || a.status === "noshow" || (V6 && a.status === "cancelled");
       return a.status === "cancelled";
     }).map(function (a) { return { date: a.date, min: a.min, html: apptRow(a) }; });
-    if (V6) list = list.concat(workshopEntries(apptTab));
+    if (V6) list = list.concat(workshopEntries(apptTab), visitEntries(apptTab));
     list.sort(function (x, y) {
       var k = x.date < y.date ? -1 : x.date > y.date ? 1 : x.min - y.min;
       return apptTab === "upcoming" ? k : -k;
@@ -799,6 +806,8 @@ export function ssAppJs(d) {
     if (mc) { var p = mc.dataset.wsCheckin.split(":"); wsCheckIn(+p[0], +p[1]); renderAppts(); return; }
     var mw = e.target.closest("[data-myws]");
     if (mw) { openMyWorkshop(+mw.dataset.myws, "schedule"); return; }
+    var vv = e.target.closest("[data-visit]");
+    if (vv) { openVisit(vv.dataset.visit, "schedule"); return; }
     var d = e.target.closest("[data-appt]");
     if (d) openAppt(d.dataset.appt);
   });
@@ -897,25 +906,222 @@ export function ssAppJs(d) {
     renderAppt();
   });
 
-  // ---------------- v6: drop-in queue / reserve (the queue page is next) ----------------
+  // ---------------- v6: drop-in visits — queue, reserved seat, done ----------------
+  // A visit: state reserved → (opens) → waiting ⇄ away → called → onway →
+  // meeting → done. The prototype's clock is frozen, so the queue moves on a
+  // timer: one student ahead is served per tick; a meeting lasts two ticks.
+  var LIVE = { waiting: 1, away: 1, called: 1, onway: 1, meeting: 1 };
+  function visitById(id) { return VISITS.filter(function (v) { return v.id === id; })[0]; }
+  // kind "queue": a live visit at this desk; "reserved": a held seat
+  function visitFor(key, kind) {
+    return VISITS.filter(function (v) { return v.key === key && (kind === "reserved" ? v.state === "reserved" : LIVE[v.state]); })[0];
+  }
+  function liveVisit() { return VISITS.filter(function (v) { return LIVE[v.state]; })[0]; }
+  function pickAdvisor(name) { return ADVISORS.slice().sort(function (a, b) { return hash(name + a) - hash(name + b); })[0]; }
   function joinQueue(c) {
-    var h = c.hours, pos = h.waiting + 1, dept = c.depts[0];
-    QUEUE[c.key] = pos;
-    showDone({
-      title: "You\u2019re in line",
-      text: "You\u2019re number " + pos + " for " + c.name + (h.waiting ? " — about " + h.waiting * PER_STUDENT + " minutes. " : " — you\u2019re next. ") + "Stay nearby: we\u2019ll let you know when an advisor is ready for you.",
-      facts: [["Drop-in", esc(c.name)], ["Department", esc(dept)], ["Where", esc(LOCATIONS[dept])], ["Open until", fmtTime(h.until)]],
-      actions: [{ label: "Done", primary: true, fn: function () { goSection(0); } }]
-    });
+    var cur = liveVisit();
+    // one queue at a time — the desk calls you; you can't be in two rooms
+    if (cur) { showToast("You\u2019re already in line for " + cur.name + " — leave that queue first"); openVisit(cur.id, "book"); return; }
+    var h = c.hours;
+    var v = { id: "q" + Date.now(), key: c.key, name: c.name, dept: c.depts[0], date: TODAY, min: NOW_MIN, until: h.until,
+      state: "waiting", pos: h.waiting + 1, startPos: h.waiting + 1, ticks: 0, advisor: pickAdvisor(c.name) };
+    VISITS.push(v);
+    startQueueClock();
+    openVisit(v.id, "book");
   }
   function reserveSeat(c) {
-    var h = c.hours, dept = c.depts[0];
-    RESERVED[c.key] = true;
-    showDone({
-      title: "Seat reserved",
-      text: "Your place for " + c.name + " is held for when drop-in opens at " + fmtTime(h.opens) + ". Check in at the desk by " + fmtTime(h.opens + 15) + " to keep it.",
-      facts: [["Drop-in", esc(c.name)], ["Department", esc(dept)], ["Where", esc(LOCATIONS[dept])], ["Hours", "Today " + fmtTime(h.opens) + " – " + fmtTime(h.until)]],
-      actions: [{ label: "Done", primary: true, fn: function () { goSection(0); } }]
+    var h = c.hours;
+    var v = { id: "r" + Date.now(), key: c.key, name: c.name, dept: c.depts[0], date: TODAY, min: h.opens, opens: h.opens, until: h.until, state: "reserved" };
+    VISITS.push(v);
+    openVisit(v.id, "book");
+    showToast("Seat reserved for " + c.name + " at " + fmtTime(h.opens));
+  }
+
+  var queueTimer = null;
+  function startQueueClock() { if (!queueTimer) queueTimer = setInterval(queueTick, QUEUE_TICK_MS); }
+  function queueTick() {
+    var changed = false;
+    VISITS.forEach(function (v) {
+      if (!LIVE[v.state]) return;
+      v.ticks = (v.ticks || 0) + 1;
+      // your clock for this visit: joined + PER_STUDENT a tick
+      v.clock = v.min + v.ticks * PER_STUDENT;
+      if (v.state === "waiting" || v.state === "away") {
+        // stepped away: the line keeps moving, but you stop at "next"
+        if (v.pos > 1 || v.state === "waiting") v.pos--;
+        if (v.pos <= 0) { v.pos = 0; v.state = "called"; v.calledAt = v.clock; showToast(v.advisor + " is ready for you — " + v.name); changed = true; }
+      } else if (v.state === "onway") { v.state = "meeting"; v.startAt = v.clock; changed = true; }
+      else if (v.state === "meeting" && v.clock - v.startAt >= 2 * PER_STUDENT) {
+        v.state = "done"; v.end = v.clock; v.date = TODAY;
+        v.summary = { text: "We went over your " + v.name.toLowerCase() + " questions and agreed on next steps. If you need more time, book a follow-up appointment with " + v.dept + "." };
+        showToast("Your visit with " + v.advisor + " is done — the summary is in My schedule");
+        changed = true;
+      }
+    });
+    if (!liveVisit()) { clearInterval(queueTimer); queueTimer = null; }
+    refreshVisitViews(changed);
+  }
+  function activeViewName() { var a = document.querySelector(".ss-view.is-active"); return a ? a.dataset.view : ""; }
+  function refreshVisitViews(changed) {
+    var view = activeViewName();
+    if (view === "visit") renderVisit();
+    if (view === "appointments") renderAppts();
+    else updateUpcomingCount();
+    if (changed && view === "browse") renderBrowse();
+    updateBanner();
+  }
+
+  // ---- the queue page ----
+  var vw = { id: null, from: "book" };
+  function openVisit(id, from) {
+    vw.id = id; vw.from = from || "book";
+    $("ss-v-back").querySelector("span").textContent = vw.from === "book" ? "Book" : "My schedule";
+    renderVisit();
+    showView("visit");
+  }
+  on("ss-v-back", "click", function () { goSection(vw.from === "book" ? 0 : 1); });
+  function visitWhere(v) { return LOCATIONS[v.dept]; }
+  function visitStatusBadge(v) {
+    return {
+      reserved: badge("neutral", "Seat reserved"),
+      waiting: badge("neutral", v.pos === 1 ? "You\u2019re next" : "#" + v.pos + " in line"),
+      away: badge("neutral", "Stepped away"),
+      called: badge("success", "Ready for you"),
+      onway: badge("success", "On your way"),
+      meeting: badge("success", "In meeting"),
+      done: badge("neutral", "Done")
+    }[v.state];
+  }
+  function statusCard(eyebrow, title, text, extra, actions) {
+    return '<div class="card"><div class="card__body ss-visit">' +
+      (eyebrow ? '<span class="ss-eyebrow">' + esc(eyebrow) + "</span>" : "") +
+      '<h3 class="ss-visit__title">' + esc(title) + "</h3>" +
+      (text ? '<p class="ss-visit__text">' + esc(text) + "</p>" : "") + (extra || "") + "</div>" +
+      (actions ? '<div class="card__foot ss-detail__actions">' + actions + "</div>" : "") + "</div>";
+  }
+  function renderVisit() {
+    var v = visitById(vw.id);
+    if (!v) return;
+    var first = v.advisor ? v.advisor.split(" ")[0] : "";
+    $("ss-v-name").textContent = v.name;
+    $("ss-v-badges").innerHTML = vbadge("primary", "Drop-in") + visitStatusBadge(v);
+    $("ss-v-dept").textContent = v.dept;
+    var leaveBtn = '<button type="button" class="btn btn--secondary btn--base ss-push" data-v-leave>Leave queue</button>';
+    var html = "";
+    if (v.state === "reserved") {
+      html = statusCard("Your seat", "Held for when drop-in opens at " + fmtTime(v.opens),
+        "You\u2019ll be first in line. Check in at the desk by " + fmtTime(v.opens + 15) + " to keep your seat — after that it goes to the next student.", "",
+        '<button type="button" class="btn btn--secondary btn--base ss-push" data-v-leave>Cancel reservation</button>');
+    } else if (v.state === "waiting") {
+      var ahead = v.pos - 1;
+      html = statusCard("Your place in line", ahead ? "You\u2019re #" + v.pos + " — about " + ahead * PER_STUDENT + " minutes" : "You\u2019re next",
+        "Stay nearby. This page updates by itself, and we\u2019ll notify you the moment an advisor is ready.",
+        '<div class="progress progress--base" role="progressbar" aria-label="Your progress in line" aria-valuemin="0" aria-valuemax="' + v.startPos + '" aria-valuenow="' + (v.startPos - v.pos) + '"><span class="progress__bar" style="width:' + Math.max(4, Math.round((v.startPos - v.pos + 1) / (v.startPos + 1) * 100)) + '%"></span></div>',
+        '<button type="button" class="btn btn--secondary btn--base" data-v-away>Step away</button>' + leaveBtn);
+    } else if (v.state === "away") {
+      html = statusCard("You stepped away", v.pos > 1 ? "You\u2019re still #" + v.pos : "You\u2019re next — come back to be called",
+        "Your place is held. If your turn comes while you\u2019re away, the next student goes first and you stay at the front.", "",
+        '<button type="button" class="btn btn--primary btn--base" data-v-back>I\u2019m back</button>' + leaveBtn);
+    } else if (v.state === "called" || v.state === "onway") {
+      var onway = v.state === "onway";
+      html = '<div class="alert alert--success" role="alert">' + ICONS.alertCall +
+        '<div class="alert__stack"><p class="alert__message"><span class="alert__title">' + esc(v.advisor) + " is ready for you.</span> Go to " + esc(visitWhere(v)) + ".</p>" +
+        '<p class="alert__detail">' + (onway ? esc(first) + " knows you\u2019re coming." : "Let " + esc(first) + " know you\u2019re on the way — if you don\u2019t show up in 5 minutes, the next student is called.") + "</p>" +
+        (onway ? "" : '<div class="alert__actions"><button type="button" class="btn btn--primary btn--sm" data-v-onway>I\u2019m on my way</button></div>') + "</div></div>";
+    } else if (v.state === "meeting") {
+      html = statusCard("In meeting", "With " + v.advisor, "Started at " + fmtTime(v.startAt) + ". When it\u2019s over, " + first + "\u2019s summary shows up here.", "", "");
+    } else {
+      html = statusCard("Visit done", "With " + v.advisor, (v.date === TODAY ? "Today" : fmtDate(new Date(v.date + "T00:00:00"))) + ", " + fmtRange(v.startAt || v.min, (v.end || v.min) - (v.startAt || v.min)) + ".", "", "");
+    }
+    $("ss-v-status").innerHTML = html;
+
+    var done = v.state === "done";
+    $("ss-v-summary-step").classList.toggle("is-hidden", !done || !v.summary);
+    if (done && v.summary) {
+      $("ss-v-summary").innerHTML = '<span class="ss-eyebrow">From ' + esc(v.advisor) + '</span><p class="ss-mw-note">' + esc(v.summary.text) + "</p>" +
+        (v.summary.files ? '<div class="ss-files">' + v.summary.files.map(fileHtml).join("") + "</div>" : "");
+    }
+    $("ss-v-rate-step").classList.toggle("is-hidden", !done);
+    document.querySelectorAll("#ss-v-rate .chip").forEach(function (c) { c.setAttribute("aria-pressed", String(+c.dataset.rate === v.rating)); });
+    $("ss-v-rate-thanks").classList.toggle("is-hidden", !v.rating);
+    $("ss-v-rate-thanks").textContent = "Thanks — your answer goes to " + v.dept + ", not to " + first + " directly.";
+
+    var facts = [["Department", esc(v.dept)], ["Where", esc(visitWhere(v))]];
+    if (v.state === "reserved") facts.push(["Hours", "Today " + fmtTime(v.opens) + " – " + fmtTime(v.until)]);
+    else if (done) facts.push(["Date", esc(fmtDate(new Date(v.date + "T00:00:00")))]);
+    else facts.push(["Joined", fmtTime(v.min)], ["Open until", fmtTime(v.until)]);
+    if (v.advisor && (done || v.state === "meeting" || v.state === "called" || v.state === "onway")) facts.push(["Advisor", esc(v.advisor)]);
+    $("ss-v-facts").innerHTML = facts.map(function (f) { return "<dt>" + f[0] + "</dt><dd>" + f[1] + "</dd>"; }).join("");
+  }
+  if (V6) document.querySelector('[data-view="visit"]').addEventListener("click", function (e) {
+    var v = visitById(vw.id);
+    if (!v) return;
+    var file = e.target.closest("[data-file]");
+    if (file) { e.preventDefault(); showToast("Downloading " + file.dataset.file); return; }
+    if (e.target.closest("[data-v-away]")) { v.state = "away"; renderVisit(); updateBanner(); return; }
+    if (e.target.closest("[data-v-back]")) {
+      v.state = v.pos <= 1 ? "called" : "waiting";
+      if (v.state === "called") { v.pos = 0; v.calledAt = v.clock || v.min; }
+      renderVisit(); updateBanner(); return;
+    }
+    if (e.target.closest("[data-v-onway]")) { v.state = "onway"; renderVisit(); updateBanner(); return; }
+    var rate = e.target.closest("[data-rate]");
+    if (rate) { v.rating = +rate.dataset.rate; renderVisit(); return; }
+    if (e.target.closest("[data-v-leave]")) {
+      var reserved = v.state === "reserved";
+      openLeave({
+        title: reserved ? "Cancel your reserved seat?" : "Leave the queue?",
+        text: reserved
+          ? "Your seat for " + v.name + " at " + fmtTime(v.opens) + " goes to the next student."
+          : "You\u2019ll lose your place for " + v.name + ". If you join again, you start at the back of the line.",
+        keep: reserved ? "Keep my seat" : "Stay in line",
+        confirm: reserved ? "Cancel reservation" : "Leave queue",
+        fn: function () {
+          VISITS.splice(VISITS.indexOf(v), 1);
+          showToast(reserved ? "Reservation for " + v.name + " cancelled" : "You left the queue for " + v.name);
+          updateUpcomingCount();
+          goSection(vw.from === "book" ? 0 : 1);
+        }
+      });
+    }
+  });
+
+  // ---- the banner: where you are in line, on every other screen ----
+  function updateBanner() {
+    var bn = $("ss-banner");
+    if (!bn) return;
+    var v = liveVisit() || VISITS.filter(function (x) { return x.state === "reserved"; })[0];
+    var hide = !v || (activeViewName() === "visit" && vw.id === v.id);
+    bn.classList.toggle("is-hidden", hide);
+    if (hide) return;
+    var called = v.state === "called" || v.state === "onway";
+    bn.classList.toggle("alert--success", called);
+    $("ss-banner-icon").innerHTML = called ? ICONS.alertCall : ICONS.alertInfo;
+    var t = {
+      reserved: ["Seat reserved.", v.name + " — drop-in opens at " + fmtTime(v.opens || 0) + "."],
+      waiting: [v.pos === 1 ? "You\u2019re next." : "You\u2019re #" + v.pos + " in line.", v.name + (v.pos > 1 ? " — about " + (v.pos - 1) * PER_STUDENT + " min." : ".")],
+      away: ["You stepped away.", v.name + " — your place is held."],
+      called: [v.advisor + " is ready for you.", "Go to " + visitWhere(v) + "."],
+      onway: [v.advisor + " is expecting you.", "Go to " + visitWhere(v) + "."],
+      meeting: ["In meeting.", v.name + " with " + v.advisor + "."]
+    }[v.state];
+    $("ss-banner-title").textContent = t[0];
+    $("ss-banner-text").textContent = t[1];
+    bn.dataset.visit = v.id;
+  }
+  on("ss-banner-view", "click", function () { openVisit($("ss-banner").dataset.visit, activeViewName() === "appointments" ? "schedule" : "book"); });
+
+  // My schedule rows for drop-ins: live / reserved in Upcoming, done in Past
+  function visitEntries(tab) {
+    return VISITS.filter(function (v) { return tab === "upcoming" ? v.state !== "done" : v.state === "done"; }).map(function (v) {
+      var meta = fact(ICONS.person, v.state === "done" || v.advisor && !LIVE[v.state] ? "With " + v.advisor + " · " + v.dept : v.dept) +
+        '<span class="ss-fact">' + ICONS.group + '<span class="ss-fact__text">' + esc("In person — " + visitWhere(v)) + "</span></span>";
+      var html = '<article class="ss-appt">' +
+        '<div class="ss-appt__time"><span class="ss-appt__clock">' + fmtTime(v.state === "done" ? v.startAt || v.min : v.min) + '</span><span class="ss-appt__dur">' + (v.state === "reserved" ? "Opens" : v.state === "done" ? (v.end - (v.startAt || v.min)) + " min" : "Joined") + "</span></div>" +
+        '<div class="ss-appt__main"><div class="ss-appt__title"><h3 class="ss-appt__name">' + esc(v.name) + "</h3>" + vbadge("primary", "Drop-in") + visitStatusBadge(v) + "</div>" +
+        '<div class="ss-appt__meta">' + meta + "</div></div>" +
+        '<div class="ss-appt__actions"><div class="ss-appt__btns"><button type="button" class="btn btn--secondary btn--sm" data-visit="' + v.id + '">Details</button></div></div></article>';
+      return { date: v.date, min: v.min, html: html };
     });
   }
 
@@ -1312,30 +1518,40 @@ export function ssAppJs(d) {
     if (b) { wsCheckIn(mw.wi, +b.dataset.mwCheckin); renderMyWorkshop(); }
   });
 
-  // leave — AlertDialog
-  var leaveDlg = $("ss-leave-modal");
+  // leave / cancel — one AlertDialog, worded by whoever opens it
+  var leaveDlg = $("ss-leave-modal"), leaveFn = null;
+  function openLeave(o) {
+    $("ss-leave-title").textContent = o.title;
+    $("ss-leave-text").textContent = o.text;
+    $("ss-leave-keep").textContent = o.keep;
+    $("ss-leave-confirm").textContent = o.confirm;
+    leaveFn = o.fn;
+    leaveDlg.showModal();
+  }
   if (leaveDlg) {
     leaveDlg.addEventListener("cancel", function (e) { e.preventDefault(); });
+    on("ss-leave-keep", "click", function () { leaveDlg.close(); });
+    on("ss-leave-confirm", "click", function () { leaveDlg.close(); if (leaveFn) leaveFn(); });
     on("ss-mw-leave", "click", function () {
       var w = WORKSHOPS[mw.wi], r = WS_REG[w.id], single = w.mode === "single";
       var all = sessionsOf(w.schedules[r.sched]);
       var left = myIdx(w, r).filter(function (k) { return !sessPast(w, all[k]); }).length;
-      $("ss-leave-title").textContent = single ? "Cancel this registration?" : "Leave this workshop?";
-      $("ss-leave-text").textContent = single
-        ? "You\u2019ll give up your seat in " + w.name + " on " + fmtDate(all[r.sess].date) + ". The seat goes back to other students."
-        : "You\u2019ll give up your seat for the " + left + " remaining sessions of " + w.name + ". If it fills up, you may not get it back.";
-      $("ss-leave-confirm").textContent = single ? "Cancel registration" : "Leave workshop";
-      leaveDlg.showModal();
-    });
-    on("ss-leave-keep", "click", function () { leaveDlg.close(); });
-    on("ss-leave-confirm", "click", function () {
-      var w = WORKSHOPS[mw.wi], r = WS_REG[w.id], sc = w.schedules[r.sched];
-      if (w.mode === "single") sc.takenBy[r.sess]--; else sc.taken--;
-      delete WS_REG[w.id];
-      updateUpcomingCount();
-      leaveDlg.close();
-      showToast(w.mode === "single" ? "Registration for " + w.name + " cancelled" : "You left " + w.name);
-      goSection(mw.from === "book" ? 0 : 1);
+      openLeave({
+        title: single ? "Cancel this registration?" : "Leave this workshop?",
+        text: single
+          ? "You\u2019ll give up your seat in " + w.name + " on " + fmtDate(all[r.sess].date) + ". The seat goes back to other students."
+          : "You\u2019ll give up your seat for the " + left + " remaining sessions of " + w.name + ". If it fills up, you may not get it back.",
+        keep: "Stay registered",
+        confirm: single ? "Cancel registration" : "Leave workshop",
+        fn: function () {
+          var sc = w.schedules[r.sched];
+          if (single) sc.takenBy[r.sess]--; else sc.taken--;
+          delete WS_REG[w.id];
+          updateUpcomingCount();
+          showToast(single ? "Registration for " + w.name + " cancelled" : "You left " + w.name);
+          goSection(mw.from === "book" ? 0 : 1);
+        }
+      });
     });
   }
 

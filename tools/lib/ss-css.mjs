@@ -627,6 +627,20 @@ html:has(.modal[open]) { overflow: hidden; }
 .ss-mw-past__num { color: ${cv("text.muted")}; }
 .ss-mw-note { margin: 0; color: ${cv("text.default")}; ${typoCss(style("body-base"))} }
 @media (max-width: 559px) { .ss-mw-past__num { display: none; } }
+
+/* ============ v6 — drop-in visit + queue banner ============ */
+/* Alert success: an advisor is calling you */
+.alert--success { background: ${R(alert.role.success.bg)}; border-color: ${R(alert.role.success.border)}; }
+.alert--success .alert__icon { color: ${R(alert.role.success.icon)}; }
+/* the banner: one line — status + desk, View on the right */
+.ss-banner { align-items: center; }
+.ss-banner .alert__stack { flex: 1; }
+.ss-banner > .btn { flex-shrink: 0; }
+.ss-visit { gap: ${dim(2)}; }
+.ss-visit__title { margin: 0; color: ${cv("text.default")}; ${typoCss(style("heading-lg"))} }
+.ss-visit__text { margin: 0; color: ${cv("text.secondary")}; ${typoCss(style("body-base"))} }
+.ss-visit .progress { margin-top: ${dim(2)}; }
+.ss-v-rate { display: flex; flex-wrap: wrap; gap: ${dim(2)}; }
 .is-hidden { display: none !important; }
 `;
 }
