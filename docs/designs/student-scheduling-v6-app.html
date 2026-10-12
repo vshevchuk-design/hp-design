@@ -102,6 +102,7 @@
   --tok-status-danger: #de394b;
   --tok-surface-inverse: #242c36;
   --tok-surface-overlay: rgba(21, 25, 30, 0.5);
+  --tok-icon-muted: #8e99a7;
   --tok-family-sans: 'Sora', sans-serif;
 }
 /* ---- portal app shell (tools/lib/app-shell.mjs) ---- */
@@ -405,7 +406,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 @media (hover: hover) { .tooltip-wrapper:hover .tooltip { opacity: 1; transition: opacity 0.12s ease 400ms; } }
 
 /* ============ Toast ============ */
-.toast { position: fixed; inset: auto; top: 24px; left: 50%; transform: translateX(-50%); margin: 0; display: flex; align-items: center; gap: 8px; padding: 12px 16px; border-radius: 8px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); box-shadow: 0px 2px 8px 0px rgba(21, 25, 30, 0.10); font-family: var(--tok-family-sans); max-width: calc(100vw - 32px); }
+.toast { position: fixed; inset: auto; top: 24px; left: 50%; transform: translateX(-50%); margin: 0; width: max-content; display: flex; align-items: center; gap: 8px; padding: 12px 16px; border-radius: 8px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); box-shadow: 0px 2px 8px 0px rgba(21, 25, 30, 0.10); font-family: var(--tok-family-sans); max-width: calc(100vw - 32px); }
 .toast__icon { flex-shrink: 0; width: 20px; height: 20px; color: var(--tok-status-success); }
 .toast__label { color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; }
 .toast:popover-open { opacity: 1; translate: 0 0; transition: opacity 0.18s ease, translate 0.18s ease; }
@@ -451,6 +452,9 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .ss-item__name { margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 16px; line-height: 1.4; }
 .ss-item__line { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .ss-item__line .ss-fact { margin-inline-end: 4px; }
+/* a long fact (a workshop's schedule) wraps instead of running under the button */
+.ss-item__line .ss-fact__text { white-space: normal; }
+.ss-item__line .ss-fact { align-items: flex-start; }
 /* duration: 16px icon + body-sm text */
 .ss-fact { display: flex; align-items: center; gap: 6px; min-width: 0; }
 .ss-fact > svg { flex-shrink: 0; width: 16px; height: 16px; color: var(--tok-icon-secondary); }
@@ -647,6 +651,60 @@ html:has(.modal[open]) { overflow: hidden; }
 .ss-done__facts { border-top: 1px solid var(--tok-border-default); }
 .ss-done__actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
 @media (max-width: 559px) { .ss-done__actions > .btn { flex: 1 1 100%; } }
+
+/* ============ Progress (determinate, base) ============ */
+.progress { display: block; width: 100%; height: 8px; overflow: hidden; border-radius: 999px; background: var(--tok-bg-neutral); }
+.progress__bar { display: block; height: 100%; border-radius: 999px; background: var(--tok-fill-primary); }
+
+/* ============ Attachment (done — a file to download) ============ */
+.attachment { box-sizing: border-box; display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: 8px; background: var(--tok-surface-dim); border: 1px solid var(--tok-border-default); text-decoration: none; min-width: 0; }
+.attachment__media { flex-shrink: 0; width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; background: var(--tok-surface-default); }
+.attachment__icon { width: 20px; height: 20px; color: var(--tok-icon-secondary); }
+.attachment__content { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.attachment__title { color: var(--tok-text-default); font-weight: 600; font-size: 12px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.attachment__description { color: var(--tok-text-muted); font-weight: 400; font-size: 10px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.attachment__action-glyph { flex-shrink: 0; width: 16px; height: 16px; color: var(--tok-icon-secondary); }
+.attachment--done { cursor: pointer; }
+@media (hover: hover) { .attachment--done:hover { border-color: var(--tok-fill-primary); } }
+.attachment--done:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
+/* files sit in a grid: two across from 560, one on a phone */
+.ss-files { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr)); gap: 8px; }
+
+/* ============ Accordion (past sessions, inside a Card) ============ */
+.accordion__item { border-bottom: 1px solid var(--tok-border-default); }
+.accordion__item:last-child { border-bottom: none; }
+.accordion__summary, .accordion__row { display: flex; align-items: center; gap: 8px; padding: 12px 16px; }
+.accordion__summary { list-style: none; cursor: pointer; }
+.accordion__summary::-webkit-details-marker { display: none; }
+@media (hover: hover) { .accordion__summary:hover { background: var(--tok-fill-neutral-hover); } }
+.accordion__summary:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: -4px; }
+.accordion__item:first-child .accordion__summary { border-radius: 8px 8px 0 0; }
+.accordion__item:last-child:not([open]) .accordion__summary { border-radius: 0 0 8px 8px; }
+.accordion__title { flex: 1; min-width: 0; color: var(--tok-text-default); font-weight: 600; font-size: 14px; line-height: 1.4; }
+.accordion__title--quiet { font-weight: 400; font-size: 14px; line-height: 1.4; }
+.accordion__meta { flex-shrink: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.accordion__chevron { flex-shrink: 0; width: 20px; height: 20px; color: var(--tok-icon-muted); transition: transform 0.12s ease; }
+.accordion__item[open] > .accordion__summary .accordion__chevron { transform: rotate(180deg); }
+.accordion__body { display: flex; flex-direction: column; gap: 8px; padding: 0 16px 16px; }
+/* a row with nothing to open keeps the chevron's column, so badges line up */
+.ss-acc-spacer { flex-shrink: 0; width: 20px; }
+
+/* ============ v6 — my workshop ============ */
+.ss-mw-progress .card__body { gap: 12px; }
+.ss-mw-next { gap: 12px; }
+.ss-mw-next__when { display: flex; flex-direction: column; gap: 2px; }
+.ss-mw-next__date { color: var(--tok-text-default); font-weight: 600; font-size: 16px; line-height: 1.4; }
+.ss-mw-next .ss-fact__text { white-space: normal; }
+.ss-mw-next__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.ss-mw-next__actions .ss-push { margin-left: auto; }
+/* coming-up rows: number · date over time · the row's action */
+.ss-session--act { grid-template-columns: 24px minmax(0, 1fr) auto; }
+.ss-session__main { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.ss-session__act { display: flex; align-items: center; gap: 8px; }
+.ss-session--act .ss-session__act .btn--ghost { margin-inline-end: -8px; }
+.ss-mw-past__num { color: var(--tok-text-muted); }
+.ss-mw-note { margin: 0; color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; }
+@media (max-width: 559px) { .ss-mw-past__num { display: none; } }
 .is-hidden { display: none !important; }
 
 </style>
@@ -799,12 +857,11 @@ html:has(.modal[open]) { overflow: hidden; }
     <section class="ss-view" data-view="appointments">
       <div class="ss-head">
         <h2 class="ss-title">My schedule</h2>
-        <p class="ss-sub ss-sub--sm">Your appointments with advisors — check in, reschedule or cancel here.</p>
+        <p class="ss-sub ss-sub--sm">Everything you've booked — appointments and workshops. Check in, reschedule or cancel here.</p>
       </div>
       <div class="tabs--segmented" id="ss-appt-tabs" role="tablist" aria-label="Appointments" style="align-self:flex-start">
         <button class="tab tab--sm tab--active" type="button" role="tab" aria-selected="true" data-appt-tab="upcoming">Upcoming <span class="counter" id="ss-upcoming-count">0</span></button>
         <button class="tab tab--sm" type="button" role="tab" aria-selected="false" data-appt-tab="past">Past</button>
-        <button class="tab tab--sm" type="button" role="tab" aria-selected="false" data-appt-tab="cancelled">Cancelled</button>
       </div>
       <div class="ss-appts" id="ss-appts"></div>
       <div class="card is-hidden" id="ss-appts-empty">
@@ -890,6 +947,61 @@ html:has(.modal[open]) { overflow: hidden; }
       <div class="ss-cta-bar" id="ss-ws-bar"><button class="btn btn--primary btn--base btn--block" id="ss-ws-register-bar" type="button" disabled>Register</button></div>
     </section>
 
+    <!-- ============ My workshop — a workshop you're registered for ============ -->
+    <!-- Where a registration lives: how far along you are, the next session
+         (check in / can't make it), what's coming, what happened — attendance
+         and the organizer's notes and files per past session — and the
+         workshop's materials. Leave sits in the details card's foot. -->
+    <section class="ss-view" data-view="myws">
+      <button class="btn btn--ghost btn--sm ss-back" id="ss-mw-back" type="button"><svg class="btn__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg><span>My schedule</span></button>
+      <div class="ss-head">
+        <div class="ss-detail__title"><h2 class="ss-title" id="ss-mw-name"></h2><span class="ss-ws-badges" id="ss-mw-badges"></span></div>
+        <p class="ss-sub" id="ss-mw-meta"></p>
+      </div>
+      <div class="ss-pick">
+        <div class="ss-choose ss-choose--ws">
+          <div class="card ss-mw-progress" id="ss-mw-progress">
+            <div class="card__body">
+              <div class="ss-step__head"><h3 class="ss-step__title">Progress</h3><span class="ss-note" id="ss-mw-progress-text"></span></div>
+              <div class="progress progress--base" role="progressbar" aria-labelledby="ss-mw-progress-text" id="ss-mw-bar"><span class="progress__bar" id="ss-mw-bar-fill"></span></div>
+            </div>
+          </div>
+          <div class="ss-step" id="ss-mw-next-step">
+            <h3 class="ss-step__title" id="ss-mw-next-title">Next session</h3>
+            <div class="card"><div class="card__body ss-mw-next" id="ss-mw-next"></div></div>
+          </div>
+          <div class="ss-step" id="ss-mw-up-step">
+            <div class="ss-step__head"><h3 class="ss-step__title">Coming up</h3><span class="ss-note" id="ss-mw-up-count"></span></div>
+            <ol class="ss-sessions" id="ss-mw-up"></ol>
+            <button class="btn btn--ghost btn--sm ss-sessions__more is-hidden" id="ss-mw-more" type="button"></button>
+          </div>
+          <div class="ss-step" id="ss-mw-past-step">
+            <div class="ss-step__head"><h3 class="ss-step__title">Past sessions</h3><span class="ss-note" id="ss-mw-past-count"></span></div>
+            <div class="card accordion" id="ss-mw-past"></div>
+          </div>
+          <div class="ss-step" id="ss-mw-mat-step">
+            <h3 class="ss-step__title">Materials</h3>
+            <div class="ss-files" id="ss-mw-materials"></div>
+          </div>
+          <div class="ss-detail__section"><h3>About this workshop</h3><p id="ss-mw-about"></p></div>
+        </div>
+        <aside class="card ss-summary" aria-label="Workshop details">
+          <div class="card__head"><h3 class="card__title">Your workshop</h3></div>
+          <div class="card__body">
+            <dl class="ss-facts" id="ss-mw-facts"></dl>
+            <div class="ss-rule"></div>
+            <div class="ss-loc">
+              <span class="ss-eyebrow">Location</span>
+              <p class="ss-loc__text" id="ss-mw-location"></p>
+            </div>
+          </div>
+          <div class="card__foot" id="ss-mw-foot">
+            <button class="btn btn--secondary btn--base btn--block" id="ss-mw-leave" type="button">Leave workshop</button>
+          </div>
+        </aside>
+      </div>
+    </section>
+
     <!-- ============ Done — every booking ends here ============ -->
     <section class="ss-view" data-view="done">
       <div class="card ss-done">
@@ -909,6 +1021,14 @@ html:has(.modal[open]) { overflow: hidden; }
     </section>
   </main>
 </div>
+<dialog class="modal modal--alert" id="ss-leave-modal" data-alert aria-labelledby="ss-leave-title">
+  <div class="modal__head"><h2 class="modal__title" id="ss-leave-title"></h2></div>
+  <div class="modal__body"><p id="ss-leave-text"></p></div>
+  <div class="modal__foot">
+    <button class="btn btn--secondary btn--base" type="button" id="ss-leave-keep">Stay registered</button>
+    <button class="btn btn--danger btn--base" type="button" id="ss-leave-confirm"></button>
+  </div>
+</dialog>
 <div class="listbox" id="ss-lb" popover role="listbox"><div class="listbox__list"></div></div>
 <!-- Questions the advisor asked before the meeting — Modal -->
 <dialog class="modal" id="ss-q-modal" aria-labelledby="ss-q-title">
@@ -938,14 +1058,14 @@ html:has(.modal[open]) { overflow: hidden; }
   var DEPARTMENTS = ["Academic Advising","Admissions & Records","Career and Talent Development","Counseling","English Dept","Grad - Admissions","Liberal Arts","Office of the Registrar","Student Mentoring","Tutoring Center"];
   var TODAY = "2026-10-02";
   var WEEKS_AHEAD = 3;
-  var ICONS = {"check":"<svg class=\"listbox__checkmark\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z\"/></svg>","chevron":"<svg class=\"select__chevron\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z\"/></svg>","chevronLeft":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z\"/></svg>","chevronRight":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z\"/></svg>","checkCircle":"<svg class=\"toast__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z\"/></svg>","group":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z\"/></svg>","call":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M20.01 15.38c-1.23 0-2.42-.2-3.53-.56-.35-.12-.74-.03-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z\"/></svg>","videocam":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z\"/></svg>","schedule":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z\"/><path d=\"M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z\"/></svg>","person":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z\"/></svg>","copy":"<svg class=\"btn__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z\"/></svg>","noteClock":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z\"/><path d=\"M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z\"/></svg>","dateRange":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z\"/></svg>","today":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z\"/></svg>","people":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z\"/></svg>"};
+  var ICONS = {"check":"<svg class=\"listbox__checkmark\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z\"/></svg>","chevron":"<svg class=\"select__chevron\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z\"/></svg>","chevronLeft":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z\"/></svg>","chevronRight":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z\"/></svg>","checkCircle":"<svg class=\"toast__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z\"/></svg>","group":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z\"/></svg>","call":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M20.01 15.38c-1.23 0-2.42-.2-3.53-.56-.35-.12-.74-.03-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z\"/></svg>","videocam":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z\"/></svg>","schedule":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z\"/><path d=\"M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z\"/></svg>","person":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z\"/></svg>","copy":"<svg class=\"btn__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z\"/></svg>","noteClock":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z\"/><path d=\"M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z\"/></svg>","dateRange":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z\"/></svg>","today":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z\"/></svg>","people":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z\"/></svg>","file":"<svg class=\"attachment__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M6 2c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6H6zm7 7V3.5L18.5 9H13z\"/></svg>","download":"<svg class=\"attachment__action-glyph\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" enable-background=\"new 0 0 24 24\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><g><rect fill=\"none\" height=\"24\" width=\"24\"/></g><g><path d=\"M5,20h14v-2H5V20z M19,9h-4V3H9v6H5l7,7L19,9z\"/></g></svg>","accChevron":"<svg class=\"accordion__chevron\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z\"/></svg>"};
   var APPTS = [{"id":"a1","ref":"5098","service":"Ed Plan Review","dept":"Counseling","date":"2026-10-02","min":630,"advisor":"Caitlin Moore","format":"inPerson","status":"upcoming"},{"id":"a2","ref":"5121","service":"Change of Major","dept":"Academic Advising","date":"2026-10-07","min":840,"advisor":"Ava Robinson","format":"phone","status":"upcoming","questions":["Which major are you thinking of switching to, and why?","Have you already taken any classes toward it?"]},{"id":"a3","ref":"5140","service":"Career Counseling","dept":"Career and Talent Development","date":"2026-10-12","min":690,"advisor":"Eric Lynch","format":"video","status":"upcoming"},{"id":"a4","ref":"4301","service":"Comprehensive Ed Plan","dept":"Counseling","date":"2026-09-28","min":540,"advisor":"George Amalor","format":"inPerson","status":"completed"},{"id":"a5","ref":"4122","service":"Degree Planning","dept":"English Dept","date":"2026-09-15","min":915,"advisor":"Ava Robinson","format":"inPerson","status":"noshow"},{"id":"a6","ref":"3987","service":"Financial Aid Petition","dept":"Office of the Registrar","date":"2026-08-20","min":780,"advisor":"Jonathan Rehm","format":"phone","status":"completed"},{"id":"a7","ref":"4410","service":"Transcript Evaluation","dept":"Office of the Registrar","date":"2026-09-30","min":600,"advisor":"Priya Natarajan","format":"video","status":"cancelled"}];
   var ABOUT = {"Change of Major":"Talk through switching majors: what transfers, what changes in your plan, and how long it adds.","Comprehensive Ed Plan":"Build a full semester-by-semester education plan to your degree or transfer goal.","Ed Plan Review":"A short check of your existing education plan — after a change, or once a year.","Career Counseling":"Explore careers that fit your interests, and the programs that lead there.","Degree Planning":"Map the requirements left for your degree and the order to take them in.","Financial Aid Petition":"Get help preparing a petition to restore or extend your financial aid.","Transcript Evaluation":"Have transcripts from other schools evaluated for credit here."};
   var NOW_MIN = 620, CHECKIN_BEFORE = 15;
   var STUDENT_PHONE = "(555) 555-1234";
   // v6: Book is one catalogue — appointments, drop-in desks, workshops.
   var V6 = true;
-  var WORKSHOPS = [{"id":"w1","name":"Study Skills Bootcamp","dept":"Tutoring Center","mode":"series","minutes":90,"about":"Eight short sessions on note-taking, reading for retention, planning your week and preparing for exams. Bring a current syllabus.","schedules":[{"id":"w1a","days":[[1,600],[3,600]],"start":"2026-10-05","count":8,"format":"inPerson","room":"Learning Commons, Room 110","organizer":"Denny Petersen","seats":24,"taken":12}]},{"id":"w2","name":"Resume Writing Workshop","dept":"Career and Talent Development","mode":"series","minutes":60,"about":"Turn your experience into a one-page resume that gets read. You leave with a finished draft and a reviewer's notes on it.","schedules":[{"id":"w2a","days":[[2,600],[4,840],[6,600]],"start":"2026-10-06","count":6,"format":"video","organizer":"Eric Lynch","seats":20,"taken":17},{"id":"w2b","days":[[1,960],[3,960]],"start":"2026-10-12","count":4,"format":"inPerson","room":"Career Center, Library 2nd floor","organizer":"Ava Robinson","seats":15,"taken":5},{"id":"w2c","days":[[5,540]],"start":"2026-10-09","count":3,"format":"inPerson","room":"Career Center, Library 2nd floor","organizer":"Caitlin Moore","seats":12,"taken":12}]},{"id":"w3","name":"Interview Prep","dept":"Career and Talent Development","mode":"single","minutes":90,"about":"One evening of mock interviews in small groups — common questions, how to answer them, and feedback on how you came across.","schedules":[{"id":"w3a","days":[[3,780]],"start":"2026-10-07","count":5,"format":"inPerson","room":"Career Center, Library 2nd floor","organizer":"Eric Lynch","seats":10,"takenBy":[10,7,4,1,0]}]},{"id":"w4","name":"College Writing Lab","dept":"English Dept","course":"ENGL 101","mode":"series","minutes":60,"about":"Guided writing time alongside ENGL 101: thesis statements, structure, citations, revision. A tutor reads a page of your draft each week.","schedules":[{"id":"w4a","days":[[2,780],[4,780]],"start":"2026-10-06","count":10,"format":"inPerson","room":"Humanities Hall, Room 214","organizer":"Jonathan Rehm","seats":18,"taken":9},{"id":"w4b","days":[[3,1080]],"start":"2026-10-07","count":5,"format":"video","organizer":"Priya Natarajan","seats":25,"taken":11}]},{"id":"w5","name":"Financial Literacy 101","dept":"Academic Advising","mode":"series","minutes":60,"about":"Budgeting on a student income, how aid and loans actually work, and building credit without debt — six evenings, online.","schedules":[{"id":"w5a","days":[[4,1020]],"start":"2026-10-08","count":6,"format":"video","organizer":"Andy Hernandez","seats":40,"taken":22}]},{"id":"w6","name":"Transfer Application Night","dept":"Counseling","mode":"single","minutes":120,"about":"University representatives walk through this year's transfer applications and personal-insight questions, then answer yours.","schedules":[{"id":"w6a","days":[[4,1080]],"start":"2026-10-15","count":1,"format":"inPerson","room":"Student Union, Main Hall","organizer":"George Amalor","seats":60,"takenBy":[31]}]},{"id":"w7","name":"Time Management Essentials","dept":"Student Mentoring","mode":"series","minutes":45,"about":"Four sessions on planning a semester, a week and a day — with a mentor checking in between them.","schedules":[{"id":"w7a","days":[[2,720]],"start":"2026-10-06","count":4,"format":"inPerson","room":"Student Union, Room 3","organizer":"Craig Millett","seats":16,"taken":16}]}];
+  var WORKSHOPS = [{"id":"w1","name":"Study Skills Bootcamp","dept":"Tutoring Center","mode":"series","minutes":90,"about":"Eight short sessions on note-taking, reading for retention, planning your week and preparing for exams. Bring a current syllabus.","schedules":[{"id":"w1a","days":[[1,600],[3,600]],"start":"2026-10-05","count":8,"format":"inPerson","room":"Learning Commons, Room 110","organizer":"Denny Petersen","seats":24,"taken":12}]},{"id":"w2","name":"Resume Writing Workshop","dept":"Career and Talent Development","mode":"series","minutes":60,"about":"Turn your experience into a one-page resume that gets read. You leave with a finished draft and a reviewer's notes on it.","schedules":[{"id":"w2a","days":[[2,600],[4,840],[6,600]],"start":"2026-10-06","count":6,"format":"video","organizer":"Eric Lynch","seats":20,"taken":17},{"id":"w2b","days":[[1,960],[3,960]],"start":"2026-10-12","count":4,"format":"inPerson","room":"Career Center, Library 2nd floor","organizer":"Ava Robinson","seats":15,"taken":5},{"id":"w2c","days":[[5,540]],"start":"2026-10-09","count":3,"format":"inPerson","room":"Career Center, Library 2nd floor","organizer":"Caitlin Moore","seats":12,"taken":12}]},{"id":"w3","name":"Interview Prep","dept":"Career and Talent Development","mode":"single","minutes":90,"about":"One evening of mock interviews in small groups — common questions, how to answer them, and feedback on how you came across.","schedules":[{"id":"w3a","days":[[3,780]],"start":"2026-10-07","count":5,"format":"inPerson","room":"Career Center, Library 2nd floor","organizer":"Eric Lynch","seats":10,"takenBy":[10,7,4,1,0]}]},{"id":"w4","name":"College Writing Lab","dept":"English Dept","course":"ENGL 101","mode":"series","minutes":60,"about":"Guided writing time alongside ENGL 101: thesis statements, structure, citations, revision. A tutor reads a page of your draft each week.","schedules":[{"id":"w4a","days":[[2,780],[4,780]],"start":"2026-10-06","count":10,"format":"inPerson","room":"Humanities Hall, Room 214","organizer":"Jonathan Rehm","seats":18,"taken":9},{"id":"w4b","days":[[3,1080]],"start":"2026-10-07","count":5,"format":"video","organizer":"Priya Natarajan","seats":25,"taken":11}]},{"id":"w5","name":"Financial Literacy 101","dept":"Academic Advising","mode":"series","minutes":60,"about":"Budgeting on a student income, how aid and loans actually work, and building credit without debt — six evenings, online.","schedules":[{"id":"w5a","days":[[4,1020]],"start":"2026-10-08","count":6,"format":"video","organizer":"Andy Hernandez","seats":40,"taken":22}]},{"id":"w6","name":"Transfer Application Night","dept":"Counseling","mode":"single","minutes":120,"about":"University representatives walk through this year's transfer applications and personal-insight questions, then answer yours.","schedules":[{"id":"w6a","days":[[4,1080]],"start":"2026-10-15","count":1,"format":"inPerson","room":"Student Union, Main Hall","organizer":"George Amalor","seats":60,"takenBy":[31]}]},{"id":"w8","name":"First-Year Success Seminar","dept":"Academic Advising","mode":"series","minutes":60,"about":"Ten sessions through your first term: campus resources, study habits, planning your schedule, and a mentor to check in with.","schedules":[{"id":"w8a","days":[[2,780],[5,780]],"start":"2026-09-15","count":10,"format":"inPerson","room":"Student Services Building, Room 120","organizer":"Caitlin Moore","seats":30,"taken":24}],"materials":[{"name":"Seminar syllabus.pdf","meta":"PDF · 240 KB"},{"name":"Semester planner.xlsx","meta":"XLSX · 36 KB"}],"reg":{"sched":0,"attendance":["attended","attended","missed","attended","attended"],"notes":{"0":{"text":"Thanks for coming to the first session! The syllabus and the goal-setting worksheet we started are attached — finish the worksheet before Friday.","files":[{"name":"Seminar syllabus.pdf","meta":"PDF · 240 KB"},{"name":"Goal-setting worksheet.docx","meta":"DOCX · 58 KB"}]},"2":{"text":"We walked through campus resources — tutoring, counseling, the career center. Since you missed it, the slides are attached.","files":[{"name":"Campus resources.pdf","meta":"PDF · 1.1 MB"}]},"4":{"text":"Good discussion on weekly study schedules. No homework this week — bring your planner on Friday."}}}},{"id":"w9","name":"Library Research Basics","dept":"Tutoring Center","mode":"series","minutes":60,"about":"Three sessions on finding, judging and citing sources with the library's databases.","schedules":[{"id":"w9a","days":[[2,900],[4,900]],"start":"2026-09-08","count":3,"format":"inPerson","room":"Library, Room 204","organizer":"Priya Natarajan","seats":20,"taken":14}],"reg":{"sched":0,"attendance":["attended","attended","attended"],"notes":{"2":{"text":"You finished all three sessions — your certificate is attached. Nice work!","files":[{"name":"Certificate of completion.pdf","meta":"PDF · 90 KB"}]}}}},{"id":"w7","name":"Time Management Essentials","dept":"Student Mentoring","mode":"series","minutes":45,"about":"Four sessions on planning a semester, a week and a day — with a mentor checking in between them.","schedules":[{"id":"w7a","days":[[2,720]],"start":"2026-10-06","count":4,"format":"inPerson","room":"Student Union, Room 3","organizer":"Craig Millett","seats":16,"taken":16}]}];
   var DROPIN_HOURS = {"Academic Probation":{"until":960,"waiting":2},"Assessment / Placement":{"until":900,"waiting":0},"Comprehensive Ed Plan":{"until":1320,"waiting":4},"Ed Plan Review":{"until":1320,"waiting":1},"EOPS Appointment":{"until":1020,"waiting":3},"Math Tutoring":{"until":1200,"waiting":5},"Resume Review":{"until":840,"waiting":1},"Writing Center":{"until":1140,"waiting":2},"Degree Planning":{"opens":780,"until":1020},"Financial Aid Petition":{"opens":840,"until":960},"Graduation":{"opens":900,"until":1080},"Peer Mentoring":{"opens":1080,"until":1260},"Records Request":{"opens":810,"until":960}};
   var PER_STUDENT = 8;
   // "list" (v1: rows in one Card).
@@ -1246,11 +1366,20 @@ html:has(.modal[open]) { overflow: hidden; }
     WORKSHOPS.forEach(function (w, wi) { CATALOG.push({ kind: "workshop", wi: wi, name: w.name, depts: [w.dept] }); });
   }
   var QUEUE = {}, RESERVED = {}, WS_REG = {};
+  // registrations the student already has (seed): skipped = sessions marked
+  // "can't make it", checkedIn = sessions checked in to.
+  WORKSHOPS.forEach(function (w) { if (w.reg) WS_REG[w.id] = { sched: w.reg.sched, sess: null, skipped: {}, checkedIn: {} }; });
   function filteredV6() {
     var list = CATALOG.map(function (c, i) { return { c: c, i: i }; }).filter(function (x) {
       if (st.q && x.c.name.toLowerCase().indexOf(st.q) === -1) return false;
       if (st.dept && x.c.depts.indexOf(st.dept) === -1) return false;
       if (st.type && x.c.kind !== st.type) return false;
+      // a workshop that's already under way (every schedule has had its first
+      // session) is closed to new students; yours stays listed until it ends
+      if (x.c.kind === "workshop") {
+        var w = WORKSHOPS[x.c.wi];
+        if (WS_REG[w.id] ? wsFinished(w) : wsStarted(w)) return false;
+      }
       return true;
     });
     list.sort(function (a, b) {
@@ -1627,6 +1756,9 @@ html:has(.modal[open]) { overflow: hidden; }
   function badge(role, text) { return '<span class="badge badge--base badge--regular badge--' + role + '">' + esc(text) + "</span>"; }
   function statusBadges(a) {
     var out = [];
+    // v6: what happened is quiet — Done / Missed / Cancelled, all neutral
+    // (a missed visit isn't an error state the student can act on).
+    if (V6 && a.status !== "upcoming") return badge("neutral", { completed: "Done", noshow: "Missed", cancelled: "Cancelled" }[a.status]);
     if (a.status === "completed") out.push(badge("success", "Completed"));
     else if (a.status === "noshow") out.push(badge("danger", "No-show"));
     else if (a.status === "cancelled") out.push(badge("neutral", "Cancelled"));
@@ -1641,7 +1773,7 @@ html:has(.modal[open]) { overflow: hidden; }
     return '<span class="ss-note ss-note--icon">' + ICONS.noteClock + "Check-in opens at " + fmtTime(a.min - CHECKIN_BEFORE) + "</span>";
   }
   function updateUpcomingCount() {
-    $("ss-upcoming-count").textContent = APPTS.filter(function (a) { return a.status === "upcoming"; }).length;
+    $("ss-upcoming-count").textContent = APPTS.filter(function (a) { return a.status === "upcoming"; }).length + (V6 ? workshopEntries("upcoming").length : 0);
   }
   function apptRow(a) {
     var actions = "";
@@ -1669,12 +1801,16 @@ html:has(.modal[open]) { overflow: hidden; }
       t.classList.toggle("tab--active", on);
       t.setAttribute("aria-selected", on ? "true" : "false");
     });
+    // Entries: appointments, plus (v6) each registered workshop's next
+    // session in Upcoming and each finished workshop in Past.
     var list = APPTS.filter(function (a) {
       if (apptTab === "upcoming") return a.status === "upcoming";
-      if (apptTab === "past") return a.status === "completed" || a.status === "noshow";
+      if (apptTab === "past") return a.status === "completed" || a.status === "noshow" || (V6 && a.status === "cancelled");
       return a.status === "cancelled";
-    }).sort(function (x, y) {
-      var k = (x.date + x.min).localeCompare(y.date + y.min);
+    }).map(function (a) { return { date: a.date, min: a.min, html: apptRow(a) }; });
+    if (V6) list = list.concat(workshopEntries(apptTab));
+    list.sort(function (x, y) {
+      var k = x.date < y.date ? -1 : x.date > y.date ? 1 : x.min - y.min;
       return apptTab === "upcoming" ? k : -k;
     });
     var groups = [], byKey = {};
@@ -1683,12 +1819,14 @@ html:has(.modal[open]) { overflow: hidden; }
       byKey[a.date].items.push(a);
     });
     $("ss-appts").innerHTML = groups.map(function (g) {
-      return '<section class="ss-appt-group"><h3 class="ss-eyebrow">' + esc(g.label) + '</h3><div class="ss-hybrid ss-hybrid--flush">' + g.items.map(apptRow).join("") + "</div></section>";
+      return '<section class="ss-appt-group"><h3 class="ss-eyebrow">' + esc(g.label) + '</h3><div class="ss-hybrid ss-hybrid--flush">' + g.items.map(function (e) { return e.html; }).join("") + "</div></section>";
     }).join("");
     var empty = !list.length;
     $("ss-appts").classList.toggle("is-hidden", empty);
     $("ss-appts-empty").classList.toggle("is-hidden", !empty);
-    $("ss-appts-empty-text").textContent = { upcoming: "No upcoming appointments", past: "No past appointments yet", cancelled: "Nothing cancelled" }[apptTab];
+    $("ss-appts-empty-text").textContent = V6
+      ? { upcoming: "Nothing booked yet", past: "Nothing here yet" }[apptTab]
+      : { upcoming: "No upcoming appointments", past: "No past appointments yet", cancelled: "Nothing cancelled" }[apptTab];
     $("ss-appts-browse").classList.toggle("is-hidden", apptTab !== "upcoming");
   }
   document.querySelectorAll("#ss-appt-tabs .tab").forEach(function (t) {
@@ -1698,6 +1836,10 @@ html:has(.modal[open]) { overflow: hidden; }
   $("ss-appts").addEventListener("click", function (e) {
     var c = e.target.closest("[data-checkin]");
     if (c) { checkIn(apptById(c.dataset.checkin)); renderAppts(); return; }
+    var mc = e.target.closest("[data-ws-checkin]");
+    if (mc) { var p = mc.dataset.wsCheckin.split(":"); wsCheckIn(+p[0], +p[1]); renderAppts(); return; }
+    var mw = e.target.closest("[data-myws]");
+    if (mw) { openMyWorkshop(+mw.dataset.myws, "schedule"); return; }
     var d = e.target.closest("[data-appt]");
     if (d) openAppt(d.dataset.appt);
   });
@@ -1871,6 +2013,8 @@ html:has(.modal[open]) { overflow: hidden; }
   var ws = { wi: 0, sched: null, sess: null, showAll: false };
   function openWorkshop(wi) {
     var w = WORKSHOPS[wi];
+    // registered: the workshop's page is the "my workshop" one
+    if (WS_REG[w.id]) { openMyWorkshop(wi, "book"); return; }
     ws.wi = wi; ws.showAll = false; ws.sess = null;
     // one schedule: nothing to choose; several: the student picks one
     ws.sched = w.mode === "single" || (w.schedules.length === 1 && seatsLeftSchedule(w.schedules[0]) > 0) ? 0 : null;
@@ -2007,7 +2151,8 @@ html:has(.modal[open]) { overflow: hidden; }
   function registerWorkshop() {
     var w = WORKSHOPS[ws.wi], single = w.mode === "single", sc = w.schedules[single ? 0 : ws.sched];
     if (single) sc.takenBy[ws.sess]++; else sc.taken++;
-    WS_REG[w.id] = { sched: single ? 0 : ws.sched, sess: single ? ws.sess : null };
+    WS_REG[w.id] = { sched: single ? 0 : ws.sched, sess: single ? ws.sess : null, skipped: {}, checkedIn: {} };
+    updateUpcomingCount();
     var first = single ? sessionsOf(sc)[ws.sess] : sessionsOf(sc)[0];
     var facts = single
       ? [["Date", esc(fmtDate(first.date))], ["Time", esc(fmtRange(first.min, w.minutes))]]
@@ -2021,12 +2166,219 @@ html:has(.modal[open]) { overflow: hidden; }
       facts: facts,
       actions: [
         { label: "Done", primary: true, fn: function () { goSection(0); } },
-        { label: "View workshop", fn: function () { openWorkshop(ws.wi); } }
+        { label: "View workshop", fn: function () { openMyWorkshop(ws.wi, "book"); } }
       ]
     });
   }
   on("ss-ws-register", "click", registerWorkshop);
   on("ss-ws-register-bar", "click", registerWorkshop);
+
+  // ---------------- v6: my workshops ----------------
+  function isoDate(dt) { return iso(dt); }
+  function sessPast(w, x) { var k = isoDate(x.date); return k < TODAY || (k === TODAY && x.min + w.minutes <= NOW_MIN); }
+  function sessCheckinOpen(w, x) { return isoDate(x.date) === TODAY && NOW_MIN >= x.min - CHECKIN_BEFORE && NOW_MIN < x.min + w.minutes; }
+  function wsStarted(w) { return w.schedules.every(function (sc) { return sessPast(w, sessionsOf(sc)[0]); }); }
+  function wsFinished(w) { return w.schedules.every(function (sc) { var a = sessionsOf(sc); return sessPast(w, a[a.length - 1]); }); }
+  // the sessions that are yours: every one of the schedule, or the one date
+  function myIdx(w, r) {
+    if (w.mode === "single") return [r.sess];
+    return sessionsOf(w.schedules[r.sched]).map(function (x, k) { return k; });
+  }
+  function attendanceOf(w, k) { return (w.reg && w.reg.attendance && w.reg.attendance[k]) || "attended"; }
+  function wsWhere(sc) { return sc.format === "video" ? "Online — the link is in your email" : "In person — " + sc.room; }
+  function dayLabel(dt) { return (isoDate(dt) === TODAY ? "Today · " : "") + fmtDate(dt); }
+
+  // My schedule rows for workshops: the next session you're going to (Upcoming),
+  // or the whole workshop once it's over (Past).
+  function workshopEntries(tab) {
+    var out = [];
+    WORKSHOPS.forEach(function (w, wi) {
+      var r = WS_REG[w.id];
+      if (!r) return;
+      var sc = w.schedules[r.sched], all = sessionsOf(sc), mine = myIdx(w, r);
+      var ahead = mine.filter(function (k) { return !sessPast(w, all[k]); });
+      if (tab === "upcoming") {
+        var next = ahead.filter(function (k) { return !r.skipped[k]; })[0];
+        if (next !== undefined) out.push(wsEntry(w, wi, r, next, false));
+      } else if (tab === "past" && !ahead.length) {
+        out.push(wsEntry(w, wi, r, mine[mine.length - 1], true));
+      }
+    });
+    return out;
+  }
+  function wsEntry(w, wi, r, k, past) {
+    var sc = w.schedules[r.sched], x = sessionsOf(sc)[k], single = w.mode === "single";
+    var badges = vbadge("teal", "Workshop");
+    if (past) badges += badge("neutral", "Done");
+    else if (r.checkedIn[k]) badges += badge("success", "Checked in");
+    else if (sessCheckinOpen(w, x)) badges += badge("success", "Check-in open");
+    var mine = myIdx(w, r);
+    var attended = mine.filter(function (j) { return attendanceOf(w, j) === "attended"; }).length;
+    var first = past
+      ? (single ? "One session" : "Attended " + attended + " of " + mine.length + " sessions")
+      : (single ? "One session" : "Session " + (k + 1) + " of " + sc.count);
+    var btns = (!past && sessCheckinOpen(w, x) && !r.checkedIn[k] ? '<button type="button" class="btn btn--primary btn--sm" data-ws-checkin="' + wi + ":" + k + '">Check in</button>' : "") +
+      '<button type="button" class="btn btn--secondary btn--sm" data-myws="' + wi + '">Details</button>';
+    var note = !past && !r.checkedIn[k] && !sessCheckinOpen(w, x) ? '<span class="ss-note ss-note--icon">' + ICONS.noteClock + "Check-in opens at " + fmtTime(x.min - CHECKIN_BEFORE) + "</span>" : "";
+    var html = '<article class="ss-appt">' +
+      '<div class="ss-appt__time"><span class="ss-appt__clock">' + fmtTime(x.min) + '</span><span class="ss-appt__dur">' + w.minutes + " min</span></div>" +
+      '<div class="ss-appt__main"><div class="ss-appt__title"><h3 class="ss-appt__name">' + esc(w.name) + "</h3>" + badges + "</div>" +
+      '<div class="ss-appt__meta">' +
+      fact(ICONS.dateRange, first) +
+      fact(ICONS.person, sc.organizer + " · " + w.dept) +
+      '<span class="ss-fact">' + WS_FORMAT[sc.format].icon + '<span class="ss-fact__text">' + esc(wsWhere(sc)) + "</span></span>" +
+      "</div></div>" +
+      '<div class="ss-appt__actions"><div class="ss-appt__btns">' + btns + "</div>" + note + "</div></article>";
+    return { date: isoDate(x.date), min: x.min, html: html };
+  }
+  function wsCheckIn(wi, k) {
+    var w = WORKSHOPS[wi];
+    WS_REG[w.id].checkedIn[k] = true;
+    showToast("Checked in to " + w.name);
+  }
+
+  var mw = { wi: 0, from: "schedule", showAll: false };
+  function openMyWorkshop(wi, from) {
+    mw.wi = wi; mw.from = from || "schedule"; mw.showAll = false;
+    $("ss-mw-back").querySelector("span").textContent = mw.from === "book" ? "Book" : "My schedule";
+    renderMyWorkshop();
+    showView("myws");
+  }
+  on("ss-mw-back", "click", function () { goSection(mw.from === "book" ? 0 : 1); });
+  function fileHtml(f) {
+    return '<a class="attachment attachment--done" href="#" data-file="' + esc(f.name) + '"><span class="attachment__media">' + ICONS.file + '</span><span class="attachment__content"><span class="attachment__title">' + esc(f.name) + '</span><span class="attachment__description">' + esc(f.meta) + "</span></span>" + ICONS.download + "</a>";
+  }
+  function renderMyWorkshop() {
+    var w = WORKSHOPS[mw.wi], r = WS_REG[w.id], single = w.mode === "single";
+    var sc = w.schedules[r.sched], all = sessionsOf(sc), mine = myIdx(w, r);
+    var past = mine.filter(function (k) { return sessPast(w, all[k]); });
+    var ahead = mine.filter(function (k) { return !sessPast(w, all[k]); });
+    var finished = !ahead.length;
+    var notes = (w.reg && w.reg.notes) || {};
+
+    $("ss-mw-name").textContent = w.name;
+    $("ss-mw-badges").innerHTML = vbadge("teal", "Workshop") + (w.course ? '<span class="badge badge--base badge--outline badge--regular">' + esc(w.course) + "</span>" : "") + (finished ? vbadge("neutral", "Completed") : vbadge("success", "Registered"));
+    $("ss-mw-meta").textContent = w.dept + " · " + (single ? fmtDate(all[r.sess].date) + " at " + fmtTime(all[r.sess].min) : daysLabel(sc));
+
+    // progress — series only: sessions done of all, and how many you attended
+    var attended = past.filter(function (k) { return attendanceOf(w, k) === "attended"; }).length;
+    $("ss-mw-progress").classList.toggle("is-hidden", single);
+    if (!single) {
+      $("ss-mw-progress-text").textContent = finished
+        ? "Finished · you attended " + attended + " of " + all.length
+        : past.length + " of " + all.length + " sessions done · you attended " + attended;
+      $("ss-mw-bar-fill").style.width = Math.round(past.length / all.length * 100) + "%";
+      $("ss-mw-bar").setAttribute("aria-valuenow", past.length);
+      $("ss-mw-bar").setAttribute("aria-valuemax", all.length);
+    }
+
+    // next session
+    $("ss-mw-next-step").classList.toggle("is-hidden", finished);
+    if (!finished) {
+      var k = ahead[0], x = all[k], skipped = !!r.skipped[k];
+      $("ss-mw-next-title").textContent = single ? "Your session" : "Next session";
+      var act = "";
+      if (skipped) act = badge("neutral", "Not going") + '<button type="button" class="btn btn--secondary btn--sm ss-push" data-mw-undo="' + k + '">I can make it</button>';
+      else {
+        if (r.checkedIn[k]) act += badge("success", "Checked in");
+        else if (sessCheckinOpen(w, x)) act += '<button type="button" class="btn btn--primary btn--sm" data-mw-checkin="' + k + '">Check in</button>';
+        else if (isoDate(x.date) === TODAY) act += '<span class="ss-note ss-note--icon">' + ICONS.noteClock + "Check-in opens at " + fmtTime(x.min - CHECKIN_BEFORE) + "</span>";
+        act += '<button type="button" class="btn btn--secondary btn--sm ss-push" data-mw-skip="' + k + '">Can’t make it</button>';
+      }
+      $("ss-mw-next").innerHTML =
+        '<div class="ss-mw-next__when"><span class="ss-mw-next__date">' + esc(dayLabel(x.date)) + '</span><span class="ss-note">' + esc(fmtRange(x.min, w.minutes) + (single ? "" : " · Session " + (k + 1) + " of " + all.length)) + "</span></div>" +
+        '<span class="ss-fact">' + WS_FORMAT[sc.format].icon + '<span class="ss-fact__text">' + esc(wsWhere(sc)) + "</span></span>" +
+        '<div class="ss-mw-next__actions">' + act + "</div>";
+    }
+
+    // coming up — the rest of the sessions ahead
+    var rest = ahead.slice(1), SHOW = 3;
+    $("ss-mw-up-step").classList.toggle("is-hidden", !rest.length);
+    if (rest.length) {
+      var shown = mw.showAll ? rest : rest.slice(0, SHOW);
+      $("ss-mw-up-count").textContent = rest.length + (rest.length === 1 ? " session" : " sessions");
+      $("ss-mw-up").innerHTML = shown.map(function (k) {
+        var x = all[k], sk = !!r.skipped[k];
+        return '<li class="ss-session ss-session--act"><span class="ss-session__num">' + (k + 1) + '</span><span class="ss-session__main"><span class="ss-session__date">' + esc(fmtDate(x.date)) + '</span><span class="ss-session__time">' + esc(fmtRange(x.min, w.minutes)) + "</span></span>" +
+          '<span class="ss-session__act">' + (sk ? badge("neutral", "Not going") + '<button type="button" class="btn btn--ghost btn--sm" data-mw-undo="' + k + '">Undo</button>' : '<button type="button" class="btn btn--ghost btn--sm" data-mw-skip="' + k + '">Can’t make it</button>') + "</span></li>";
+      }).join("");
+      var more = $("ss-mw-more");
+      more.classList.toggle("is-hidden", rest.length <= SHOW);
+      more.textContent = mw.showAll ? "Show fewer" : "Show all " + rest.length;
+    }
+
+    // past sessions — newest first; attendance, and the organizer's note
+    // and files when there are any (an Accordion item that opens)
+    $("ss-mw-past-step").classList.toggle("is-hidden", !past.length);
+    $("ss-mw-past-count").textContent = past.length ? "Attended " + attended + " of " + past.length : "";
+    $("ss-mw-past").innerHTML = past.slice().reverse().map(function (k) {
+      var x = all[k], n = notes[k], att = attendanceOf(w, k) === "attended";
+      var title = '<span class="accordion__title accordion__title--quiet">' + esc(fmtDate(x.date)) + (single ? "" : '<span class="ss-mw-past__num"> · Session ' + (k + 1) + "</span>") + "</span>";
+      var b = att ? badge("success", "Attended") : badge("neutral", "Missed");
+      if (!n) return '<div class="accordion__item"><div class="accordion__row">' + title + b + '<span class="ss-acc-spacer"></span></div></div>';
+      var meta = n.files ? "Note · " + n.files.length + (n.files.length === 1 ? " file" : " files") : "Note";
+      return '<details class="accordion__item"><summary class="accordion__summary">' + title + '<span class="accordion__meta">' + meta + "</span>" + b + ICONS.accChevron + "</summary>" +
+        '<div class="accordion__body"><span class="ss-eyebrow">From ' + esc(sc.organizer) + '</span><p class="ss-mw-note">' + esc(n.text) + "</p>" +
+        (n.files ? '<div class="ss-files">' + n.files.map(fileHtml).join("") + "</div>" : "") + "</div></details>";
+    }).join("");
+
+    // materials
+    $("ss-mw-mat-step").classList.toggle("is-hidden", !w.materials);
+    $("ss-mw-materials").innerHTML = (w.materials || []).map(fileHtml).join("");
+    $("ss-mw-about").textContent = w.about;
+
+    // details card
+    var facts = single
+      ? [["Date", fmtDate(all[r.sess].date)], ["Time", fmtRange(all[r.sess].min, w.minutes)]]
+      : [["Schedule", daysLabel(sc)], ["Sessions", all.length + " · " + MON[all[0].date.getMonth()] + " " + all[0].date.getDate() + " – " + MON[all[all.length - 1].date.getMonth()] + " " + all[all.length - 1].date.getDate()]];
+    facts.push(["Format", WS_FORMAT[sc.format].label], ["Organizer", sc.organizer]);
+    $("ss-mw-facts").innerHTML = facts.map(function (f) { return "<dt>" + f[0] + "</dt><dd>" + esc(f[1]) + "</dd>"; }).join("");
+    $("ss-mw-location").textContent = scheduleLocation(sc);
+    $("ss-mw-foot").classList.toggle("is-hidden", finished);
+    $("ss-mw-leave").textContent = single ? "Cancel registration" : "Leave workshop";
+  }
+  on("ss-mw-more", "click", function () { mw.showAll = !mw.showAll; renderMyWorkshop(); });
+  // can't make it / undo / check in — from the next-session card or the list
+  if (V6) document.querySelector('[data-view="myws"]').addEventListener("click", function (e) {
+    var w = WORKSHOPS[mw.wi], r = WS_REG[w.id];
+    var file = e.target.closest("[data-file]");
+    if (file) { e.preventDefault(); showToast("Downloading " + file.dataset.file); return; }
+    if (!r) return;
+    var all = sessionsOf(w.schedules[r.sched]), who = w.schedules[r.sched].organizer.split(" ")[0];
+    var b = e.target.closest("[data-mw-skip]");
+    if (b) { var k = +b.dataset.mwSkip; r.skipped[k] = true; showToast("Got it — " + who + " knows you can’t make it on " + fmtDate(all[k].date)); renderMyWorkshop(); return; }
+    b = e.target.closest("[data-mw-undo]");
+    if (b) { var u = +b.dataset.mwUndo; delete r.skipped[u]; showToast("You’re back on for " + fmtDate(all[u].date)); renderMyWorkshop(); return; }
+    b = e.target.closest("[data-mw-checkin]");
+    if (b) { wsCheckIn(mw.wi, +b.dataset.mwCheckin); renderMyWorkshop(); }
+  });
+
+  // leave — AlertDialog
+  var leaveDlg = $("ss-leave-modal");
+  if (leaveDlg) {
+    leaveDlg.addEventListener("cancel", function (e) { e.preventDefault(); });
+    on("ss-mw-leave", "click", function () {
+      var w = WORKSHOPS[mw.wi], r = WS_REG[w.id], single = w.mode === "single";
+      var all = sessionsOf(w.schedules[r.sched]);
+      var left = myIdx(w, r).filter(function (k) { return !sessPast(w, all[k]); }).length;
+      $("ss-leave-title").textContent = single ? "Cancel this registration?" : "Leave this workshop?";
+      $("ss-leave-text").textContent = single
+        ? "You’ll give up your seat in " + w.name + " on " + fmtDate(all[r.sess].date) + ". The seat goes back to other students."
+        : "You’ll give up your seat for the " + left + " remaining sessions of " + w.name + ". If it fills up, you may not get it back.";
+      $("ss-leave-confirm").textContent = single ? "Cancel registration" : "Leave workshop";
+      leaveDlg.showModal();
+    });
+    on("ss-leave-keep", "click", function () { leaveDlg.close(); });
+    on("ss-leave-confirm", "click", function () {
+      var w = WORKSHOPS[mw.wi], r = WS_REG[w.id], sc = w.schedules[r.sched];
+      if (w.mode === "single") sc.takenBy[r.sess]--; else sc.taken--;
+      delete WS_REG[w.id];
+      updateUpcomingCount();
+      leaveDlg.close();
+      showToast(w.mode === "single" ? "Registration for " + w.name + " cancelled" : "You left " + w.name);
+      goSection(mw.from === "book" ? 0 : 1);
+    });
+  }
 
   // ---------------- v6: done — the one screen every booking ends on ----------------
   var doneActions = [];

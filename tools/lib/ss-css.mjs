@@ -19,7 +19,7 @@ export function ssCss(h) {
     return `${px(s.offsetX)} ${px(s.offsetY)} ${px(s.blur)} ${px(s.spread)} ${s.color}`;
   };
 
-  const { tabs, button, select, search, chip, listbox: lb, card, badge, pagination: pg, choiceTile: ct, radio, alert, toast, tooltip: tt, emptyState: es, modal, input, counter } = t;
+  const { tabs, button, select, search, chip, listbox: lb, card, badge, pagination: pg, choiceTile: ct, radio, alert, toast, tooltip: tt, emptyState: es, modal, input, counter, progress, attachment: att, accordion: acc } = t;
 
   const btn = (variant, size) => ({
     height: D(button[variant].size[size].height),
@@ -328,7 +328,7 @@ ${["neutral", "primary", "success", "warning", "danger"].map((r) => `.badge--${r
 .tooltip-wrapper:hover .tooltip { opacity: 1; transition: opacity 0.12s ease ${ttShow.value}${ttShow.unit}; }
 
 /* ============ Toast ============ */
-.toast { position: fixed; inset: auto; top: ${D(toast.offsetTop)}; left: 50%; transform: translateX(-50%); margin: 0; display: flex; align-items: center; gap: ${D(toast.gap)}; padding: ${D(toast.paddingY)} ${D(toast.paddingX)}; border-radius: ${D(toast.radius)}; background: ${R(toast.bg)}; border: 1px solid ${R(toast.border)}; box-shadow: ${shadowCss(toast.shadow)}; font-family: ${cv("family.sans")}; max-width: calc(100vw - ${dim(8)}); }
+.toast { position: fixed; inset: auto; top: ${D(toast.offsetTop)}; left: 50%; transform: translateX(-50%); margin: 0; width: max-content; display: flex; align-items: center; gap: ${D(toast.gap)}; padding: ${D(toast.paddingY)} ${D(toast.paddingX)}; border-radius: ${D(toast.radius)}; background: ${R(toast.bg)}; border: 1px solid ${R(toast.border)}; box-shadow: ${shadowCss(toast.shadow)}; font-family: ${cv("family.sans")}; max-width: calc(100vw - ${dim(8)}); }
 .toast__icon { flex-shrink: 0; width: ${D(toast.iconSize)}; height: ${D(toast.iconSize)}; color: ${R(toast.role.success.icon)}; }
 .toast__label { color: ${R(toast.labelColor)}; ${typoCss(T(toast.label))} }
 .toast:popover-open { opacity: 1; translate: 0 0; transition: opacity 0.18s ease, translate 0.18s ease; }
@@ -374,6 +374,9 @@ ${["neutral", "primary", "success", "warning", "danger"].map((r) => `.badge--${r
 .ss-item__name { margin: 0; color: ${cv("text.default")}; ${typoCss(style("heading-md"))} }
 .ss-item__line { display: flex; flex-wrap: wrap; align-items: center; gap: ${dim(2)}; }
 .ss-item__line .ss-fact { margin-inline-end: ${dim(1)}; }
+/* a long fact (a workshop's schedule) wraps instead of running under the button */
+.ss-item__line .ss-fact__text { white-space: normal; }
+.ss-item__line .ss-fact { align-items: flex-start; }
 /* duration: 16px icon + body-sm text */
 .ss-fact { display: flex; align-items: center; gap: ${dim("1_5")}; min-width: 0; }
 .ss-fact > svg { flex-shrink: 0; width: ${dim(4)}; height: ${dim(4)}; color: ${cv("icon.secondary")}; }
@@ -570,6 +573,60 @@ html:has(.modal[open]) { overflow: hidden; }
 .ss-done__facts { border-top: 1px solid ${R(card.divider)}; }
 .ss-done__actions { display: flex; flex-wrap: wrap; justify-content: center; gap: ${dim(2)}; }
 @media (max-width: 559px) { .ss-done__actions > .btn { flex: 1 1 100%; } }
+
+/* ============ Progress (determinate, base) ============ */
+.progress { display: block; width: 100%; height: ${D(progress.sizes.base.height)}; overflow: hidden; border-radius: ${D(progress.radius)}; background: ${R(progress.track)}; }
+.progress__bar { display: block; height: 100%; border-radius: ${D(progress.radius)}; background: ${R(progress.indicator)}; }
+
+/* ============ Attachment (done — a file to download) ============ */
+.attachment { box-sizing: border-box; display: flex; align-items: center; gap: ${D(att.gap)}; padding: ${D(att.padding)}; border-radius: ${D(att.radius)}; background: ${R(att.bg)}; border: 1px solid ${R(att.border)}; text-decoration: none; min-width: 0; }
+.attachment__media { flex-shrink: 0; width: ${D(att.media.size)}; height: ${D(att.media.size)}; border-radius: ${D(att.media.radius)}; display: flex; align-items: center; justify-content: center; background: ${R(att.media.iconBg)}; }
+.attachment__icon { width: ${D(att.media.iconSize)}; height: ${D(att.media.iconSize)}; color: ${R(att.media.iconColor)}; }
+.attachment__content { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: ${dim("0_5")}; }
+.attachment__title { color: ${R(att.titleColor)}; ${typoCss(T(att.title))} white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.attachment__description { color: ${R(att.descriptionColor)}; ${typoCss(T(att.description))} white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.attachment__action-glyph { flex-shrink: 0; width: ${D(att.compact.iconSize)}; height: ${D(att.compact.iconSize)}; color: ${R(att.action.icon)}; }
+.attachment--done { cursor: pointer; }
+.attachment--done:hover { border-color: ${R(att.state.done.hoverBorder)}; }
+.attachment--done:focus-visible { outline: ${D(att.state.done.ringWidth)} solid ${R(att.state.done.ringColor)}; outline-offset: ${D(att.state.done.ringOffset)}; }
+/* files sit in a grid: two across from 560, one on a phone */
+.ss-files { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(${dim(60)}, 100%), 1fr)); gap: ${dim(2)}; }
+
+/* ============ Accordion (past sessions, inside a Card) ============ */
+.accordion__item { border-bottom: 1px solid ${R(acc.item.divider)}; }
+.accordion__item:last-child { border-bottom: none; }
+.accordion__summary, .accordion__row { display: flex; align-items: center; gap: ${D(acc.item.gap)}; padding: ${D(acc.item.paddingY)} ${D(acc.item.paddingX)}; }
+.accordion__summary { list-style: none; cursor: pointer; }
+.accordion__summary::-webkit-details-marker { display: none; }
+.accordion__summary:hover { background: ${R(acc.state.hover.bg)}; }
+.accordion__summary:focus-visible { outline: ${D(acc.state.focused.ringWidth)} solid ${R(acc.state.focused.ringColor)}; outline-offset: -${D(acc.state.focused.ringWidth)}; }
+.accordion__item:first-child .accordion__summary { border-radius: ${D(card.radius)} ${D(card.radius)} 0 0; }
+.accordion__item:last-child:not([open]) .accordion__summary { border-radius: 0 0 ${D(card.radius)} ${D(card.radius)}; }
+.accordion__title { flex: 1; min-width: 0; color: ${R(acc.titleColor)}; ${typoCss(T(acc.title))} }
+.accordion__title--quiet { ${typoCss(T(acc.titleQuiet))} }
+.accordion__meta { flex-shrink: 0; color: ${R(acc.metaColor)}; ${typoCss(T(acc.meta))} }
+.accordion__chevron { flex-shrink: 0; width: ${D(acc.chevron.size)}; height: ${D(acc.chevron.size)}; color: ${R(acc.chevron.color)}; transition: transform 0.12s ease; }
+.accordion__item[open] > .accordion__summary .accordion__chevron { transform: rotate(180deg); }
+.accordion__body { display: flex; flex-direction: column; gap: ${D(acc.body.gap)}; padding: 0 ${D(acc.item.paddingX)} ${D(acc.body.paddingBottom)}; }
+/* a row with nothing to open keeps the chevron's column, so badges line up */
+.ss-acc-spacer { flex-shrink: 0; width: ${D(acc.chevron.size)}; }
+
+/* ============ v6 — my workshop ============ */
+.ss-mw-progress .card__body { gap: ${dim(3)}; }
+.ss-mw-next { gap: ${dim(3)}; }
+.ss-mw-next__when { display: flex; flex-direction: column; gap: ${dim("0_5")}; }
+.ss-mw-next__date { color: ${cv("text.default")}; ${typoCss(style("heading-md"))} }
+.ss-mw-next .ss-fact__text { white-space: normal; }
+.ss-mw-next__actions { display: flex; flex-wrap: wrap; align-items: center; gap: ${dim(2)}; }
+.ss-mw-next__actions .ss-push { margin-left: auto; }
+/* coming-up rows: number · date over time · the row's action */
+.ss-session--act { grid-template-columns: ${dim(6)} minmax(0, 1fr) auto; }
+.ss-session__main { display: flex; flex-direction: column; gap: ${dim("0_5")}; min-width: 0; }
+.ss-session__act { display: flex; align-items: center; gap: ${dim(2)}; }
+.ss-session--act .ss-session__act .btn--ghost { margin-inline-end: -${bSm.paddingX}; }
+.ss-mw-past__num { color: ${cv("text.muted")}; }
+.ss-mw-note { margin: 0; color: ${cv("text.default")}; ${typoCss(style("body-base"))} }
+@media (max-width: 559px) { .ss-mw-past__num { display: none; } }
 .is-hidden { display: none !important; }
 `;
 }

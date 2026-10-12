@@ -325,11 +325,20 @@ export function ssAppJs(d) {
     WORKSHOPS.forEach(function (w, wi) { CATALOG.push({ kind: "workshop", wi: wi, name: w.name, depts: [w.dept] }); });
   }
   var QUEUE = {}, RESERVED = {}, WS_REG = {};
+  // registrations the student already has (seed): skipped = sessions marked
+  // "can't make it", checkedIn = sessions checked in to.
+  WORKSHOPS.forEach(function (w) { if (w.reg) WS_REG[w.id] = { sched: w.reg.sched, sess: null, skipped: {}, checkedIn: {} }; });
   function filteredV6() {
     var list = CATALOG.map(function (c, i) { return { c: c, i: i }; }).filter(function (x) {
       if (st.q && x.c.name.toLowerCase().indexOf(st.q) === -1) return false;
       if (st.dept && x.c.depts.indexOf(st.dept) === -1) return false;
       if (st.type && x.c.kind !== st.type) return false;
+      // a workshop that's already under way (every schedule has had its first
+      // session) is closed to new students; yours stays listed until it ends
+      if (x.c.kind === "workshop") {
+        var w = WORKSHOPS[x.c.wi];
+        if (WS_REG[w.id] ? wsFinished(w) : wsStarted(w)) return false;
+      }
       return true;
     });
     list.sort(function (a, b) {
@@ -706,6 +715,9 @@ export function ssAppJs(d) {
   function badge(role, text) { return '<span class="badge badge--base badge--regular badge--' + role + '">' + esc(text) + "</span>"; }
   function statusBadges(a) {
     var out = [];
+    // v6: what happened is quiet — Done / Missed / Cancelled, all neutral
+    // (a missed visit isn't an error state the student can act on).
+    if (V6 && a.status !== "upcoming") return badge("neutral", { completed: "Done", noshow: "Missed", cancelled: "Cancelled" }[a.status]);
     if (a.status === "completed") out.push(badge("success", "Completed"));
     else if (a.status === "noshow") out.push(badge("danger", "No-show"));
     else if (a.status === "cancelled") out.push(badge("neutral", "Cancelled"));
@@ -720,7 +732,7 @@ export function ssAppJs(d) {
     return '<span class="ss-note ss-note--icon">' + ICONS.noteClock + "Check-in opens at " + fmtTime(a.min - CHECKIN_BEFORE) + "</span>";
   }
   function updateUpcomingCount() {
-    $("ss-upcoming-count").textContent = APPTS.filter(function (a) { return a.status === "upcoming"; }).length;
+    $("ss-upcoming-count").textContent = APPTS.filter(function (a) { return a.status === "upcoming"; }).length + (V6 ? workshopEntries("upcoming").length : 0);
   }
   function apptRow(a) {
     var actions = "";
@@ -748,12 +760,16 @@ export function ssAppJs(d) {
       t.classList.toggle("tab--active", on);
       t.setAttribute("aria-selected", on ? "true" : "false");
     });
+    // Entries: appointments, plus (v6) each registered workshop's next
+    // session in Upcoming and each finished workshop in Past.
     var list = APPTS.filter(function (a) {
       if (apptTab === "upcoming") return a.status === "upcoming";
-      if (apptTab === "past") return a.status === "completed" || a.status === "noshow";
+      if (apptTab === "past") return a.status === "completed" || a.status === "noshow" || (V6 && a.status === "cancelled");
       return a.status === "cancelled";
-    }).sort(function (x, y) {
-      var k = (x.date + x.min).localeCompare(y.date + y.min);
+    }).map(function (a) { return { date: a.date, min: a.min, html: apptRow(a) }; });
+    if (V6) list = list.concat(workshopEntries(apptTab));
+    list.sort(function (x, y) {
+      var k = x.date < y.date ? -1 : x.date > y.date ? 1 : x.min - y.min;
       return apptTab === "upcoming" ? k : -k;
     });
     var groups = [], byKey = {};
@@ -762,12 +778,14 @@ export function ssAppJs(d) {
       byKey[a.date].items.push(a);
     });
     $("ss-appts").innerHTML = groups.map(function (g) {
-      return '<section class="ss-appt-group"><h3 class="ss-eyebrow">' + esc(g.label) + '</h3><div class="ss-hybrid ss-hybrid--flush">' + g.items.map(apptRow).join("") + "</div></section>";
+      return '<section class="ss-appt-group"><h3 class="ss-eyebrow">' + esc(g.label) + '</h3><div class="ss-hybrid ss-hybrid--flush">' + g.items.map(function (e) { return e.html; }).join("") + "</div></section>";
     }).join("");
     var empty = !list.length;
     $("ss-appts").classList.toggle("is-hidden", empty);
     $("ss-appts-empty").classList.toggle("is-hidden", !empty);
-    $("ss-appts-empty-text").textContent = { upcoming: "No upcoming appointments", past: "No past appointments yet", cancelled: "Nothing cancelled" }[apptTab];
+    $("ss-appts-empty-text").textContent = V6
+      ? { upcoming: "Nothing booked yet", past: "Nothing here yet" }[apptTab]
+      : { upcoming: "No upcoming appointments", past: "No past appointments yet", cancelled: "Nothing cancelled" }[apptTab];
     $("ss-appts-browse").classList.toggle("is-hidden", apptTab !== "upcoming");
   }
   document.querySelectorAll("#ss-appt-tabs .tab").forEach(function (t) {
@@ -777,6 +795,10 @@ export function ssAppJs(d) {
   $("ss-appts").addEventListener("click", function (e) {
     var c = e.target.closest("[data-checkin]");
     if (c) { checkIn(apptById(c.dataset.checkin)); renderAppts(); return; }
+    var mc = e.target.closest("[data-ws-checkin]");
+    if (mc) { var p = mc.dataset.wsCheckin.split(":"); wsCheckIn(+p[0], +p[1]); renderAppts(); return; }
+    var mw = e.target.closest("[data-myws]");
+    if (mw) { openMyWorkshop(+mw.dataset.myws, "schedule"); return; }
     var d = e.target.closest("[data-appt]");
     if (d) openAppt(d.dataset.appt);
   });
@@ -950,6 +972,8 @@ export function ssAppJs(d) {
   var ws = { wi: 0, sched: null, sess: null, showAll: false };
   function openWorkshop(wi) {
     var w = WORKSHOPS[wi];
+    // registered: the workshop's page is the "my workshop" one
+    if (WS_REG[w.id]) { openMyWorkshop(wi, "book"); return; }
     ws.wi = wi; ws.showAll = false; ws.sess = null;
     // one schedule: nothing to choose; several: the student picks one
     ws.sched = w.mode === "single" || (w.schedules.length === 1 && seatsLeftSchedule(w.schedules[0]) > 0) ? 0 : null;
@@ -1086,7 +1110,8 @@ export function ssAppJs(d) {
   function registerWorkshop() {
     var w = WORKSHOPS[ws.wi], single = w.mode === "single", sc = w.schedules[single ? 0 : ws.sched];
     if (single) sc.takenBy[ws.sess]++; else sc.taken++;
-    WS_REG[w.id] = { sched: single ? 0 : ws.sched, sess: single ? ws.sess : null };
+    WS_REG[w.id] = { sched: single ? 0 : ws.sched, sess: single ? ws.sess : null, skipped: {}, checkedIn: {} };
+    updateUpcomingCount();
     var first = single ? sessionsOf(sc)[ws.sess] : sessionsOf(sc)[0];
     var facts = single
       ? [["Date", esc(fmtDate(first.date))], ["Time", esc(fmtRange(first.min, w.minutes))]]
@@ -1100,12 +1125,219 @@ export function ssAppJs(d) {
       facts: facts,
       actions: [
         { label: "Done", primary: true, fn: function () { goSection(0); } },
-        { label: "View workshop", fn: function () { openWorkshop(ws.wi); } }
+        { label: "View workshop", fn: function () { openMyWorkshop(ws.wi, "book"); } }
       ]
     });
   }
   on("ss-ws-register", "click", registerWorkshop);
   on("ss-ws-register-bar", "click", registerWorkshop);
+
+  // ---------------- v6: my workshops ----------------
+  function isoDate(dt) { return iso(dt); }
+  function sessPast(w, x) { var k = isoDate(x.date); return k < TODAY || (k === TODAY && x.min + w.minutes <= NOW_MIN); }
+  function sessCheckinOpen(w, x) { return isoDate(x.date) === TODAY && NOW_MIN >= x.min - CHECKIN_BEFORE && NOW_MIN < x.min + w.minutes; }
+  function wsStarted(w) { return w.schedules.every(function (sc) { return sessPast(w, sessionsOf(sc)[0]); }); }
+  function wsFinished(w) { return w.schedules.every(function (sc) { var a = sessionsOf(sc); return sessPast(w, a[a.length - 1]); }); }
+  // the sessions that are yours: every one of the schedule, or the one date
+  function myIdx(w, r) {
+    if (w.mode === "single") return [r.sess];
+    return sessionsOf(w.schedules[r.sched]).map(function (x, k) { return k; });
+  }
+  function attendanceOf(w, k) { return (w.reg && w.reg.attendance && w.reg.attendance[k]) || "attended"; }
+  function wsWhere(sc) { return sc.format === "video" ? "Online — the link is in your email" : "In person — " + sc.room; }
+  function dayLabel(dt) { return (isoDate(dt) === TODAY ? "Today · " : "") + fmtDate(dt); }
+
+  // My schedule rows for workshops: the next session you're going to (Upcoming),
+  // or the whole workshop once it's over (Past).
+  function workshopEntries(tab) {
+    var out = [];
+    WORKSHOPS.forEach(function (w, wi) {
+      var r = WS_REG[w.id];
+      if (!r) return;
+      var sc = w.schedules[r.sched], all = sessionsOf(sc), mine = myIdx(w, r);
+      var ahead = mine.filter(function (k) { return !sessPast(w, all[k]); });
+      if (tab === "upcoming") {
+        var next = ahead.filter(function (k) { return !r.skipped[k]; })[0];
+        if (next !== undefined) out.push(wsEntry(w, wi, r, next, false));
+      } else if (tab === "past" && !ahead.length) {
+        out.push(wsEntry(w, wi, r, mine[mine.length - 1], true));
+      }
+    });
+    return out;
+  }
+  function wsEntry(w, wi, r, k, past) {
+    var sc = w.schedules[r.sched], x = sessionsOf(sc)[k], single = w.mode === "single";
+    var badges = vbadge("teal", "Workshop");
+    if (past) badges += badge("neutral", "Done");
+    else if (r.checkedIn[k]) badges += badge("success", "Checked in");
+    else if (sessCheckinOpen(w, x)) badges += badge("success", "Check-in open");
+    var mine = myIdx(w, r);
+    var attended = mine.filter(function (j) { return attendanceOf(w, j) === "attended"; }).length;
+    var first = past
+      ? (single ? "One session" : "Attended " + attended + " of " + mine.length + " sessions")
+      : (single ? "One session" : "Session " + (k + 1) + " of " + sc.count);
+    var btns = (!past && sessCheckinOpen(w, x) && !r.checkedIn[k] ? '<button type="button" class="btn btn--primary btn--sm" data-ws-checkin="' + wi + ":" + k + '">Check in</button>' : "") +
+      '<button type="button" class="btn btn--secondary btn--sm" data-myws="' + wi + '">Details</button>';
+    var note = !past && !r.checkedIn[k] && !sessCheckinOpen(w, x) ? '<span class="ss-note ss-note--icon">' + ICONS.noteClock + "Check-in opens at " + fmtTime(x.min - CHECKIN_BEFORE) + "</span>" : "";
+    var html = '<article class="ss-appt">' +
+      '<div class="ss-appt__time"><span class="ss-appt__clock">' + fmtTime(x.min) + '</span><span class="ss-appt__dur">' + w.minutes + " min</span></div>" +
+      '<div class="ss-appt__main"><div class="ss-appt__title"><h3 class="ss-appt__name">' + esc(w.name) + "</h3>" + badges + "</div>" +
+      '<div class="ss-appt__meta">' +
+      fact(ICONS.dateRange, first) +
+      fact(ICONS.person, sc.organizer + " · " + w.dept) +
+      '<span class="ss-fact">' + WS_FORMAT[sc.format].icon + '<span class="ss-fact__text">' + esc(wsWhere(sc)) + "</span></span>" +
+      "</div></div>" +
+      '<div class="ss-appt__actions"><div class="ss-appt__btns">' + btns + "</div>" + note + "</div></article>";
+    return { date: isoDate(x.date), min: x.min, html: html };
+  }
+  function wsCheckIn(wi, k) {
+    var w = WORKSHOPS[wi];
+    WS_REG[w.id].checkedIn[k] = true;
+    showToast("Checked in to " + w.name);
+  }
+
+  var mw = { wi: 0, from: "schedule", showAll: false };
+  function openMyWorkshop(wi, from) {
+    mw.wi = wi; mw.from = from || "schedule"; mw.showAll = false;
+    $("ss-mw-back").querySelector("span").textContent = mw.from === "book" ? "Book" : "My schedule";
+    renderMyWorkshop();
+    showView("myws");
+  }
+  on("ss-mw-back", "click", function () { goSection(mw.from === "book" ? 0 : 1); });
+  function fileHtml(f) {
+    return '<a class="attachment attachment--done" href="#" data-file="' + esc(f.name) + '"><span class="attachment__media">' + ICONS.file + '</span><span class="attachment__content"><span class="attachment__title">' + esc(f.name) + '</span><span class="attachment__description">' + esc(f.meta) + "</span></span>" + ICONS.download + "</a>";
+  }
+  function renderMyWorkshop() {
+    var w = WORKSHOPS[mw.wi], r = WS_REG[w.id], single = w.mode === "single";
+    var sc = w.schedules[r.sched], all = sessionsOf(sc), mine = myIdx(w, r);
+    var past = mine.filter(function (k) { return sessPast(w, all[k]); });
+    var ahead = mine.filter(function (k) { return !sessPast(w, all[k]); });
+    var finished = !ahead.length;
+    var notes = (w.reg && w.reg.notes) || {};
+
+    $("ss-mw-name").textContent = w.name;
+    $("ss-mw-badges").innerHTML = vbadge("teal", "Workshop") + (w.course ? '<span class="badge badge--base badge--outline badge--regular">' + esc(w.course) + "</span>" : "") + (finished ? vbadge("neutral", "Completed") : vbadge("success", "Registered"));
+    $("ss-mw-meta").textContent = w.dept + " · " + (single ? fmtDate(all[r.sess].date) + " at " + fmtTime(all[r.sess].min) : daysLabel(sc));
+
+    // progress — series only: sessions done of all, and how many you attended
+    var attended = past.filter(function (k) { return attendanceOf(w, k) === "attended"; }).length;
+    $("ss-mw-progress").classList.toggle("is-hidden", single);
+    if (!single) {
+      $("ss-mw-progress-text").textContent = finished
+        ? "Finished · you attended " + attended + " of " + all.length
+        : past.length + " of " + all.length + " sessions done · you attended " + attended;
+      $("ss-mw-bar-fill").style.width = Math.round(past.length / all.length * 100) + "%";
+      $("ss-mw-bar").setAttribute("aria-valuenow", past.length);
+      $("ss-mw-bar").setAttribute("aria-valuemax", all.length);
+    }
+
+    // next session
+    $("ss-mw-next-step").classList.toggle("is-hidden", finished);
+    if (!finished) {
+      var k = ahead[0], x = all[k], skipped = !!r.skipped[k];
+      $("ss-mw-next-title").textContent = single ? "Your session" : "Next session";
+      var act = "";
+      if (skipped) act = badge("neutral", "Not going") + '<button type="button" class="btn btn--secondary btn--sm ss-push" data-mw-undo="' + k + '">I can make it</button>';
+      else {
+        if (r.checkedIn[k]) act += badge("success", "Checked in");
+        else if (sessCheckinOpen(w, x)) act += '<button type="button" class="btn btn--primary btn--sm" data-mw-checkin="' + k + '">Check in</button>';
+        else if (isoDate(x.date) === TODAY) act += '<span class="ss-note ss-note--icon">' + ICONS.noteClock + "Check-in opens at " + fmtTime(x.min - CHECKIN_BEFORE) + "</span>";
+        act += '<button type="button" class="btn btn--secondary btn--sm ss-push" data-mw-skip="' + k + '">Can\u2019t make it</button>';
+      }
+      $("ss-mw-next").innerHTML =
+        '<div class="ss-mw-next__when"><span class="ss-mw-next__date">' + esc(dayLabel(x.date)) + '</span><span class="ss-note">' + esc(fmtRange(x.min, w.minutes) + (single ? "" : " · Session " + (k + 1) + " of " + all.length)) + "</span></div>" +
+        '<span class="ss-fact">' + WS_FORMAT[sc.format].icon + '<span class="ss-fact__text">' + esc(wsWhere(sc)) + "</span></span>" +
+        '<div class="ss-mw-next__actions">' + act + "</div>";
+    }
+
+    // coming up — the rest of the sessions ahead
+    var rest = ahead.slice(1), SHOW = 3;
+    $("ss-mw-up-step").classList.toggle("is-hidden", !rest.length);
+    if (rest.length) {
+      var shown = mw.showAll ? rest : rest.slice(0, SHOW);
+      $("ss-mw-up-count").textContent = rest.length + (rest.length === 1 ? " session" : " sessions");
+      $("ss-mw-up").innerHTML = shown.map(function (k) {
+        var x = all[k], sk = !!r.skipped[k];
+        return '<li class="ss-session ss-session--act"><span class="ss-session__num">' + (k + 1) + '</span><span class="ss-session__main"><span class="ss-session__date">' + esc(fmtDate(x.date)) + '</span><span class="ss-session__time">' + esc(fmtRange(x.min, w.minutes)) + "</span></span>" +
+          '<span class="ss-session__act">' + (sk ? badge("neutral", "Not going") + '<button type="button" class="btn btn--ghost btn--sm" data-mw-undo="' + k + '">Undo</button>' : '<button type="button" class="btn btn--ghost btn--sm" data-mw-skip="' + k + '">Can\u2019t make it</button>') + "</span></li>";
+      }).join("");
+      var more = $("ss-mw-more");
+      more.classList.toggle("is-hidden", rest.length <= SHOW);
+      more.textContent = mw.showAll ? "Show fewer" : "Show all " + rest.length;
+    }
+
+    // past sessions — newest first; attendance, and the organizer's note
+    // and files when there are any (an Accordion item that opens)
+    $("ss-mw-past-step").classList.toggle("is-hidden", !past.length);
+    $("ss-mw-past-count").textContent = past.length ? "Attended " + attended + " of " + past.length : "";
+    $("ss-mw-past").innerHTML = past.slice().reverse().map(function (k) {
+      var x = all[k], n = notes[k], att = attendanceOf(w, k) === "attended";
+      var title = '<span class="accordion__title accordion__title--quiet">' + esc(fmtDate(x.date)) + (single ? "" : '<span class="ss-mw-past__num"> · Session ' + (k + 1) + "</span>") + "</span>";
+      var b = att ? badge("success", "Attended") : badge("neutral", "Missed");
+      if (!n) return '<div class="accordion__item"><div class="accordion__row">' + title + b + '<span class="ss-acc-spacer"></span></div></div>';
+      var meta = n.files ? "Note · " + n.files.length + (n.files.length === 1 ? " file" : " files") : "Note";
+      return '<details class="accordion__item"><summary class="accordion__summary">' + title + '<span class="accordion__meta">' + meta + "</span>" + b + ICONS.accChevron + "</summary>" +
+        '<div class="accordion__body"><span class="ss-eyebrow">From ' + esc(sc.organizer) + '</span><p class="ss-mw-note">' + esc(n.text) + "</p>" +
+        (n.files ? '<div class="ss-files">' + n.files.map(fileHtml).join("") + "</div>" : "") + "</div></details>";
+    }).join("");
+
+    // materials
+    $("ss-mw-mat-step").classList.toggle("is-hidden", !w.materials);
+    $("ss-mw-materials").innerHTML = (w.materials || []).map(fileHtml).join("");
+    $("ss-mw-about").textContent = w.about;
+
+    // details card
+    var facts = single
+      ? [["Date", fmtDate(all[r.sess].date)], ["Time", fmtRange(all[r.sess].min, w.minutes)]]
+      : [["Schedule", daysLabel(sc)], ["Sessions", all.length + " · " + MON[all[0].date.getMonth()] + " " + all[0].date.getDate() + " – " + MON[all[all.length - 1].date.getMonth()] + " " + all[all.length - 1].date.getDate()]];
+    facts.push(["Format", WS_FORMAT[sc.format].label], ["Organizer", sc.organizer]);
+    $("ss-mw-facts").innerHTML = facts.map(function (f) { return "<dt>" + f[0] + "</dt><dd>" + esc(f[1]) + "</dd>"; }).join("");
+    $("ss-mw-location").textContent = scheduleLocation(sc);
+    $("ss-mw-foot").classList.toggle("is-hidden", finished);
+    $("ss-mw-leave").textContent = single ? "Cancel registration" : "Leave workshop";
+  }
+  on("ss-mw-more", "click", function () { mw.showAll = !mw.showAll; renderMyWorkshop(); });
+  // can't make it / undo / check in — from the next-session card or the list
+  if (V6) document.querySelector('[data-view="myws"]').addEventListener("click", function (e) {
+    var w = WORKSHOPS[mw.wi], r = WS_REG[w.id];
+    var file = e.target.closest("[data-file]");
+    if (file) { e.preventDefault(); showToast("Downloading " + file.dataset.file); return; }
+    if (!r) return;
+    var all = sessionsOf(w.schedules[r.sched]), who = w.schedules[r.sched].organizer.split(" ")[0];
+    var b = e.target.closest("[data-mw-skip]");
+    if (b) { var k = +b.dataset.mwSkip; r.skipped[k] = true; showToast("Got it — " + who + " knows you can\u2019t make it on " + fmtDate(all[k].date)); renderMyWorkshop(); return; }
+    b = e.target.closest("[data-mw-undo]");
+    if (b) { var u = +b.dataset.mwUndo; delete r.skipped[u]; showToast("You\u2019re back on for " + fmtDate(all[u].date)); renderMyWorkshop(); return; }
+    b = e.target.closest("[data-mw-checkin]");
+    if (b) { wsCheckIn(mw.wi, +b.dataset.mwCheckin); renderMyWorkshop(); }
+  });
+
+  // leave — AlertDialog
+  var leaveDlg = $("ss-leave-modal");
+  if (leaveDlg) {
+    leaveDlg.addEventListener("cancel", function (e) { e.preventDefault(); });
+    on("ss-mw-leave", "click", function () {
+      var w = WORKSHOPS[mw.wi], r = WS_REG[w.id], single = w.mode === "single";
+      var all = sessionsOf(w.schedules[r.sched]);
+      var left = myIdx(w, r).filter(function (k) { return !sessPast(w, all[k]); }).length;
+      $("ss-leave-title").textContent = single ? "Cancel this registration?" : "Leave this workshop?";
+      $("ss-leave-text").textContent = single
+        ? "You\u2019ll give up your seat in " + w.name + " on " + fmtDate(all[r.sess].date) + ". The seat goes back to other students."
+        : "You\u2019ll give up your seat for the " + left + " remaining sessions of " + w.name + ". If it fills up, you may not get it back.";
+      $("ss-leave-confirm").textContent = single ? "Cancel registration" : "Leave workshop";
+      leaveDlg.showModal();
+    });
+    on("ss-leave-keep", "click", function () { leaveDlg.close(); });
+    on("ss-leave-confirm", "click", function () {
+      var w = WORKSHOPS[mw.wi], r = WS_REG[w.id], sc = w.schedules[r.sched];
+      if (w.mode === "single") sc.takenBy[r.sess]--; else sc.taken--;
+      delete WS_REG[w.id];
+      updateUpcomingCount();
+      leaveDlg.close();
+      showToast(w.mode === "single" ? "Registration for " + w.name + " cancelled" : "You left " + w.name);
+      goSection(mw.from === "book" ? 0 : 1);
+    });
+  }
 
   // ---------------- v6: done — the one screen every booking ends on ----------------
   var doneActions = [];

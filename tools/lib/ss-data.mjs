@@ -199,6 +199,45 @@ export const WORKSHOPS = [
       { id: "w6a", days: [[4, 1080]], start: "2026-10-15", count: 1, format: "inPerson", room: "Student Union, Main Hall", organizer: "George Amalor", seats: 60, takenBy: [31] },
     ],
   },
+  // Already registered (seed `reg`): attendance for the sessions that have
+  // happened, the organizer's notes after some of them (text + files), and
+  // materials for the whole workshop. w8 is in progress — its 6th session is
+  // today at 1:00 PM; w9 finished in September. Workshops whose last session
+  // is past stay out of Book.
+  {
+    id: "w8", name: "First-Year Success Seminar", dept: "Academic Advising", mode: "series", minutes: 60,
+    about: "Ten sessions through your first term: campus resources, study habits, planning your schedule, and a mentor to check in with.",
+    schedules: [
+      { id: "w8a", days: [[2, 780], [5, 780]], start: "2026-09-15", count: 10, format: "inPerson", room: "Student Services Building, Room 120", organizer: "Caitlin Moore", seats: 30, taken: 24 },
+    ],
+    materials: [
+      { name: "Seminar syllabus.pdf", meta: "PDF · 240 KB" },
+      { name: "Semester planner.xlsx", meta: "XLSX · 36 KB" },
+    ],
+    reg: {
+      sched: 0,
+      attendance: ["attended", "attended", "missed", "attended", "attended"],
+      notes: {
+        0: { text: "Thanks for coming to the first session! The syllabus and the goal-setting worksheet we started are attached — finish the worksheet before Friday.", files: [{ name: "Seminar syllabus.pdf", meta: "PDF · 240 KB" }, { name: "Goal-setting worksheet.docx", meta: "DOCX · 58 KB" }] },
+        2: { text: "We walked through campus resources — tutoring, counseling, the career center. Since you missed it, the slides are attached.", files: [{ name: "Campus resources.pdf", meta: "PDF · 1.1 MB" }] },
+        4: { text: "Good discussion on weekly study schedules. No homework this week — bring your planner on Friday." },
+      },
+    },
+  },
+  {
+    id: "w9", name: "Library Research Basics", dept: "Tutoring Center", mode: "series", minutes: 60,
+    about: "Three sessions on finding, judging and citing sources with the library's databases.",
+    schedules: [
+      { id: "w9a", days: [[2, 900], [4, 900]], start: "2026-09-08", count: 3, format: "inPerson", room: "Library, Room 204", organizer: "Priya Natarajan", seats: 20, taken: 14 },
+    ],
+    reg: {
+      sched: 0,
+      attendance: ["attended", "attended", "attended"],
+      notes: {
+        2: { text: "You finished all three sessions — your certificate is attached. Nice work!", files: [{ name: "Certificate of completion.pdf", meta: "PDF · 90 KB" }] },
+      },
+    },
+  },
   {
     id: "w7", name: "Time Management Essentials", dept: "Student Mentoring", mode: "series", minutes: 45,
     about: "Four sessions on planning a semester, a week and a day — with a mentor checking in between them.",
