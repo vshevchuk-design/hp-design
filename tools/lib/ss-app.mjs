@@ -22,6 +22,11 @@ export function ssAppJs(d) {
   var ABOUT = ${JSON.stringify(d.ABOUT)};
   var NOW_MIN = ${d.NOW_MINUTES}, CHECKIN_BEFORE = ${d.CHECKIN_MINUTES_BEFORE};
   var STUDENT_PHONE = ${JSON.stringify(d.STUDENT_PHONE)};
+  // v6: Book is one catalogue — appointments, drop-in desks, workshops.
+  var V6 = ${!!d.V6};
+  var WORKSHOPS = ${JSON.stringify(d.WORKSHOPS || [])};
+  var DROPIN_HOURS = ${JSON.stringify(d.DROPIN_HOURS || {})};
+  var PER_STUDENT = ${d.DROPIN_MINUTES_PER_STUDENT || 8};
   // "list" (v1: rows in one Card).
   var LAYOUT = ${JSON.stringify(d.LAYOUT || "list")};
   // "text" (v5): a flush divided list on a phone, list rows in a Card from
@@ -41,6 +46,8 @@ export function ssAppJs(d) {
   };
 
   function $(id) { return document.getElementById(id); }
+  // listen only if the element exists — v6's views aren't in v5/v1's markup
+  function on(id, type, fn) { var el = $(id); if (el) el.addEventListener(type, fn); }
   function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
   function hash(s) { var h = 2166136261; for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
 
@@ -112,7 +119,7 @@ export function ssAppJs(d) {
       t.classList.toggle("tab--active", i === j);
       t.setAttribute("aria-selected", i === j ? "true" : "false");
     });
-    if (i === 0) { showView("browse"); return; }
+    if (i === 0) { renderBrowse(); showView("browse"); return; }
     if (i === 1) { renderAppts(); showView("appointments"); return; }
     $("ss-placeholder-text").textContent = sectionTabs[i].textContent + " — not designed yet";
     showView("placeholder");
@@ -211,19 +218,34 @@ export function ssAppJs(d) {
       renderBrowse();
     });
   });
-  var dropChip = $("ss-drop-chip");
+  // v6 has no drop-in toggle — the Type chip covers it.
+  var dropChip = $("ss-drop-chip") || document.createElement("button");
   dropChip.addEventListener("click", function () {
     st.dropOnly = !st.dropOnly;
     dropChip.setAttribute("aria-pressed", st.dropOnly ? "true" : "false");
     st.page = 0; renderBrowse();
   });
 
-  var SORTS = [{ value: "name", label: "Name (A–Z)" }, { value: "duration", label: "Duration (shortest first)" }];
+  // v6 — Type: All / Appointments / Drop-ins / Workshops (dropdown chip).
+  var TYPES = [{ value: "", label: "All types" }, { value: "appointment", label: "Appointments" }, { value: "dropin", label: "Drop-ins" }, { value: "workshop", label: "Workshops" }];
+  var typeChip = $("ss-type-chip");
+  function setType(v) {
+    st.type = v; st.page = 0;
+    $("ss-type-label").textContent = v ? TYPES.filter(function (x) { return x.value === v; })[0].label : "Type";
+    typeChip.classList.toggle("chip--checked-outline", !!v);
+  }
+  if (typeChip) typeChip.addEventListener("click", function () {
+    openListbox(typeChip, TYPES, st.type, function (v) { setType(v); renderBrowse(); });
+  });
+
+  var SORTS = V6
+    ? [{ value: "name", label: "Name (A–Z)" }, { value: "kind", label: "Type" }]
+    : [{ value: "name", label: "Name (A–Z)" }, { value: "duration", label: "Duration (shortest first)" }];
   var sortBtn = $("ss-sort");
   sortBtn.addEventListener("click", function () {
     openListbox(sortBtn, SORTS, st.sort, function (v) {
       st.sort = v;
-      $("ss-sort-label").textContent = v === "name" ? "Name (A–Z)" : "Duration";
+      $("ss-sort-label").textContent = v === "name" ? "Name (A–Z)" : v === "kind" ? "Type" : "Duration";
       renderBrowse();
     });
   });
@@ -234,10 +256,12 @@ export function ssAppJs(d) {
     $("ss-dept-label").textContent = "Department";
     deptChip.classList.remove("chip--checked-outline");
     dropChip.setAttribute("aria-pressed", "false");
+    if (typeChip) setType("");
     renderBrowse();
   });
 
   function filtered() {
+    if (V6) return filteredV6();
     var list = SERVICES.map(function (s, i) { return { s: s, i: i }; }).filter(function (x) {
       if (st.q && x.s.name.toLowerCase().indexOf(st.q) === -1) return false;
       if (st.dept && x.s.depts.indexOf(st.dept) === -1) return false;
@@ -287,6 +311,70 @@ export function ssAppJs(d) {
       "</article>";
   }
 
+  // ---------------- v6 catalogue ----------------
+  // One entry per thing you can book: every service by appointment; a drop-in
+  // desk for each service that runs one (at its first department); every
+  // workshop. Same name sorts appointment → drop-in → workshop.
+  var KIND_ORDER = { appointment: 0, dropin: 1, workshop: 2 };
+  var CATALOG = [];
+  if (V6) {
+    SERVICES.forEach(function (s, i) {
+      CATALOG.push({ kind: "appointment", si: i, name: s.name, depts: s.depts });
+      if (DROPIN_HOURS[s.name]) CATALOG.push({ kind: "dropin", si: i, key: "d" + i, name: s.name, depts: [s.depts[0]], hours: DROPIN_HOURS[s.name] });
+    });
+    WORKSHOPS.forEach(function (w, wi) { CATALOG.push({ kind: "workshop", wi: wi, name: w.name, depts: [w.dept] }); });
+  }
+  var QUEUE = {}, RESERVED = {}, WS_REG = {};
+  function filteredV6() {
+    var list = CATALOG.map(function (c, i) { return { c: c, i: i }; }).filter(function (x) {
+      if (st.q && x.c.name.toLowerCase().indexOf(st.q) === -1) return false;
+      if (st.dept && x.c.depts.indexOf(st.dept) === -1) return false;
+      if (st.type && x.c.kind !== st.type) return false;
+      return true;
+    });
+    list.sort(function (a, b) {
+      if (st.sort === "kind" && a.c.kind !== b.c.kind) return KIND_ORDER[a.c.kind] - KIND_ORDER[b.c.kind];
+      return a.c.name.localeCompare(b.c.name) || KIND_ORDER[a.c.kind] - KIND_ORDER[b.c.kind];
+    });
+    return list;
+  }
+  function fact(icon, text) { return '<span class="ss-fact">' + icon + '<span class="ss-fact__text">' + esc(text) + "</span></span>"; }
+  function vbadge(role, text) { return '<span class="badge badge--base badge--regular badge--' + role + '">' + esc(text) + "</span>"; }
+  function dropinOpen(h) { return !h.opens || NOW_MIN >= h.opens; }
+  function catalogItemHtml(x) {
+    var c = x.c, depts = c.depts.slice(), at = st.dept ? depts.indexOf(st.dept) : -1;
+    if (at > 0) { depts.splice(at, 1); depts.unshift(st.dept); }
+    var line = "", cta = "";
+    if (c.kind === "appointment") {
+      line = fact(ICONS.schedule, SERVICES[c.si].minutes + " min") + vbadge("violet", "By appointment");
+      cta = '<button type="button" class="btn btn--tint btn--base ss-item__cta" data-pick="' + c.si + '">Pick a time</button>';
+    } else if (c.kind === "dropin") {
+      var h = c.hours;
+      if (dropinOpen(h)) {
+        var n = h.waiting;
+        line = fact(ICONS.people, n ? n + " waiting · about " + n * PER_STUDENT + " min" : "No wait right now") + vbadge("success", "Drop-in · open until " + fmtTime(h.until));
+        cta = QUEUE[c.key]
+          ? '<button type="button" class="btn btn--secondary btn--base ss-item__cta" disabled>You\u2019re in line</button>'
+          : '<button type="button" class="btn btn--tint btn--base ss-item__cta" data-queue="' + x.i + '">Join queue</button>';
+      } else {
+        line = fact(ICONS.schedule, "Today " + fmtTime(h.opens) + " – " + fmtTime(h.until)) + vbadge("primary", "Drop-in · opens " + fmtTime(h.opens));
+        cta = RESERVED[c.key]
+          ? '<button type="button" class="btn btn--secondary btn--base ss-item__cta" disabled>Seat reserved</button>'
+          : '<button type="button" class="btn btn--tint btn--base ss-item__cta" data-reserve="' + x.i + '">Reserve a seat</button>';
+      }
+    } else {
+      var w = WORKSHOPS[c.wi], reg = WS_REG[w.id], full = wsFull(w);
+      line = fact(ICONS.dateRange, wsPatternLabel(w)) + vbadge("teal", "Workshop") +
+        (w.course ? '<span class="badge badge--base badge--outline badge--regular">' + esc(w.course) + "</span>" : "") +
+        (reg ? vbadge("success", "Registered") : full ? vbadge("neutral", "Full") : "");
+      cta = '<button type="button" class="btn ' + (reg || full ? "btn--secondary" : "btn--tint") + ' btn--base ss-item__cta" data-ws="' + c.wi + '">' + (reg || full ? "View" : "Register") + "</button>";
+    }
+    return '<article class="ss-item ss-item--text">' +
+      '<div class="ss-item__main"><h3 class="ss-item__name">' + esc(c.name) + "</h3>" +
+      '<p class="ss-item__depts">' + esc(depts.join(", ")) + "</p>" +
+      '<div class="ss-item__line">' + line + "</div></div>" + cta + "</article>";
+  }
+
   function renderBrowse() {
     var list = filtered();
     var pages = Math.max(1, Math.ceil(list.length / PAGE_SIZE));
@@ -295,7 +383,7 @@ export function ssAppJs(d) {
     var any = list.length > 0;
     $("ss-results").classList.toggle("is-hidden", !any);
     $("ss-empty").classList.toggle("is-hidden", any);
-    $("ss-list").innerHTML = slice.map(LAYOUT === "text" ? textItemHtml : rowHtml).join("");
+    $("ss-list").innerHTML = slice.map(V6 ? catalogItemHtml : LAYOUT === "text" ? textItemHtml : rowHtml).join("");
     $("ss-range").textContent = any ? "Showing " + (from + 1) + "–" + (from + slice.length) + " of " + list.length : "";
     renderPager(pages);
   }
@@ -310,7 +398,13 @@ export function ssAppJs(d) {
       return;
     }
     var pick = e.target.closest("[data-pick]");
-    if (pick) openPick(+pick.dataset.pick);
+    if (pick) { openPick(+pick.dataset.pick); return; }
+    var q = e.target.closest("[data-queue]");
+    if (q) { joinQueue(CATALOG[+q.dataset.queue]); return; }
+    var r = e.target.closest("[data-reserve]");
+    if (r) { reserveSeat(CATALOG[+r.dataset.reserve]); return; }
+    var w = e.target.closest("[data-ws]");
+    if (w) openWorkshop(+w.dataset.ws);
   });
 
   function renderPager(pages) {
@@ -557,6 +651,20 @@ export function ssAppJs(d) {
     }
     APPTS.push({ id: "n" + Date.now(), ref: String(5200 + APPTS.length), service: SERVICES[pk.si].name, dept: pk.dept, date: iso(dt), min: pk.slot.min, advisor: pk.advisor, format: pk.slot.formats[0], status: "upcoming" });
     updateUpcomingCount();
+    if (V6) {
+      var na = APPTS[APPTS.length - 1];
+      pk.slot = null; pk.advisor = null;
+      showDone({
+        title: "You\u2019re booked",
+        text: na.service + " with " + na.advisor + ", " + whenShort(na) + ". Check-in opens " + CHECKIN_BEFORE + " minutes before.",
+        facts: [["When", esc(whenLong(na))], ["Advisor", esc(na.advisor)], ["Department", esc(na.dept)], ["Meeting", esc(where(na))], ["Reference", "#" + esc(na.ref)]],
+        actions: [
+          { label: "Go to My schedule", primary: true, fn: function () { goSection(1); } },
+          { label: "Book something else", fn: function () { goSection(0); } }
+        ]
+      });
+      return;
+    }
     showToast("Booked: " + SERVICES[pk.si].name + ", " + when + " — it's in My appointments");
     pk.slot = null; pk.advisor = null;
     renderPick();
@@ -566,7 +674,15 @@ export function ssAppJs(d) {
     showToast("We'll email you when a time opens for " + SERVICES[pk.si].name);
     renderPick();
   });
-  $("ss-dropins").addEventListener("click", function () { goSection(2); });
+  $("ss-dropins").addEventListener("click", function () {
+    if (!V6) { goSection(2); return; }
+    // v6: no Drop-Ins tab — Book, narrowed to this service's drop-in desk.
+    var name = SERVICES[pk.si].name;
+    setType("dropin");
+    searchInput.value = name; st.q = name.toLowerCase(); searchBox.classList.add("is-populated");
+    if (head && window.matchMedia("(max-width: 767px)").matches) { head.classList.add("is-search-open"); openBtn.setAttribute("aria-expanded", "true"); }
+    goSection(0);
+  });
 
   // ---------------- my appointments ----------------
   var apptTab = "upcoming";
@@ -757,6 +873,255 @@ export function ssAppJs(d) {
     a.answered = true;
     showToast("Answers sent to " + a.advisor);
     renderAppt();
+  });
+
+  // ---------------- v6: drop-in queue / reserve (the queue page is next) ----------------
+  function joinQueue(c) {
+    var h = c.hours, pos = h.waiting + 1, dept = c.depts[0];
+    QUEUE[c.key] = pos;
+    showDone({
+      title: "You\u2019re in line",
+      text: "You\u2019re number " + pos + " for " + c.name + (h.waiting ? " — about " + h.waiting * PER_STUDENT + " minutes. " : " — you\u2019re next. ") + "Stay nearby: we\u2019ll let you know when an advisor is ready for you.",
+      facts: [["Drop-in", esc(c.name)], ["Department", esc(dept)], ["Where", esc(LOCATIONS[dept])], ["Open until", fmtTime(h.until)]],
+      actions: [{ label: "Done", primary: true, fn: function () { goSection(0); } }]
+    });
+  }
+  function reserveSeat(c) {
+    var h = c.hours, dept = c.depts[0];
+    RESERVED[c.key] = true;
+    showDone({
+      title: "Seat reserved",
+      text: "Your place for " + c.name + " is held for when drop-in opens at " + fmtTime(h.opens) + ". Check in at the desk by " + fmtTime(h.opens + 15) + " to keep it.",
+      facts: [["Drop-in", esc(c.name)], ["Department", esc(dept)], ["Where", esc(LOCATIONS[dept])], ["Hours", "Today " + fmtTime(h.opens) + " – " + fmtTime(h.until)]],
+      actions: [{ label: "Done", primary: true, fn: function () { goSection(0); } }]
+    });
+  }
+
+  // ---------------- v6: workshops ----------------
+  var DOW_PLURAL = ["Sundays", "Mondays", "Tuesdays", "Wednesdays", "Thursdays", "Fridays", "Saturdays"];
+  var WS_FORMAT = { inPerson: { label: "In person", icon: ICONS.group }, video: { label: "Online", icon: ICONS.videocam } };
+  function fmtDate(dt) { return DOW[dt.getDay()] + ", " + MON[dt.getMonth()] + " " + dt.getDate(); }
+  function fmtRange(min, minutes) {
+    var a = fmtTime(min), b = fmtTime(min + minutes);
+    // "10:00 – 11:30 AM" when both ends share AM/PM
+    return a.slice(-2) === b.slice(-2) ? a.slice(0, -3) + " – " + b : a + " – " + b;
+  }
+  var sessCache = {};
+  function sessionsOf(sc) {
+    if (sessCache[sc.id]) return sessCache[sc.id];
+    var out = [], dt = new Date(sc.start + "T00:00:00");
+    for (var guard = 0; out.length < sc.count && guard < 400; guard++) {
+      for (var j = 0; j < sc.days.length; j++) if (sc.days[j][0] === dt.getDay()) out.push({ date: new Date(dt), min: sc.days[j][1] });
+      dt = addDays(dt, 1);
+    }
+    return (sessCache[sc.id] = out);
+  }
+  // "Mon & Wed · 10:00 AM" when every day starts at the same time, else each
+  // day with its own: "Tue 10:00 AM · Thu 2:00 PM · Sat 10:00 AM".
+  function daysLabel(sc) {
+    var same = sc.days.every(function (x) { return x[1] === sc.days[0][1]; });
+    if (!same) return sc.days.map(function (x) { return DOW[x[0]] + " " + fmtTime(x[1]); }).join(" · ");
+    var names = sc.days.map(function (x) { return DOW[x[0]]; });
+    var joined = names.length === 1 ? DOW_PLURAL[sc.days[0][0]] : names.slice(0, -1).join(", ") + " & " + names[names.length - 1];
+    return joined + " · " + fmtTime(sc.days[0][1]);
+  }
+  function seatsLeftSchedule(sc) { return sc.seats - sc.taken; }
+  function seatsLeftSession(sc, k) { return sc.seats - sc.takenBy[k]; }
+  function wsFull(w) {
+    if (w.mode === "single") { var sc = w.schedules[0]; return sc.takenBy.every(function (t) { return t >= sc.seats; }); }
+    return w.schedules.every(function (sc) { return seatsLeftSchedule(sc) <= 0; });
+  }
+  function seatsText(n) { return n <= 0 ? "Full" : n + (n === 1 ? " seat left" : " seats left"); }
+  // The catalogue line: the pattern, and when it starts.
+  function wsPatternLabel(w) {
+    var sc = w.schedules[0], first = sessionsOf(sc)[0];
+    if (w.mode === "single") {
+      if (sc.count === 1) return fmtDate(first.date) + " · " + fmtTime(first.min);
+      return daysLabel(sc) + " · " + sc.count + " dates from " + MON[first.date.getMonth()] + " " + first.date.getDate();
+    }
+    if (w.schedules.length > 1) {
+      var starts = w.schedules.map(function (x) { return sessionsOf(x)[0].date; }).sort(function (a, b) { return a - b; });
+      return w.schedules.length + " schedules · from " + MON[starts[0].getMonth()] + " " + starts[0].getDate();
+    }
+    return daysLabel(sc) + " · " + sc.count + " sessions from " + MON[first.date.getMonth()] + " " + first.date.getDate();
+  }
+  function scheduleLocation(sc) { return sc.format === "video" ? "Online — the link arrives by email once you\u2019re registered" : sc.room; }
+
+  var ws = { wi: 0, sched: null, sess: null, showAll: false };
+  function openWorkshop(wi) {
+    var w = WORKSHOPS[wi];
+    ws.wi = wi; ws.showAll = false; ws.sess = null;
+    // one schedule: nothing to choose; several: the student picks one
+    ws.sched = w.mode === "single" || (w.schedules.length === 1 && seatsLeftSchedule(w.schedules[0]) > 0) ? 0 : null;
+    if (w.mode === "single" && w.schedules[0].count === 1 && seatsLeftSession(w.schedules[0], 0) > 0) ws.sess = 0;
+    renderWorkshop();
+    showView("workshop");
+  }
+  on("ss-ws-back", "click", function () { goSection(0); });
+
+  function wsOptionTile(name, value, checked, label, desc, left) {
+    var full = left <= 0;
+    return '<label class="choice-tile ss-ws-option"><input class="choice-tile__input" type="radio" name="' + name + '" value="' + value + '"' + (checked ? " checked" : "") + (full ? " disabled" : "") + ">" +
+      '<span class="choice-tile__box"><span class="choice-tile__text"><span class="choice-tile__label">' + esc(label) + '</span><span class="choice-tile__description">' + desc + "</span></span>" +
+      '<span class="ss-ws-option__seats">' + (full ? vbadge("neutral", "Full") : esc(seatsText(left))) + "</span></span></label>";
+  }
+  function scheduleDesc(w, sc) {
+    var first = sessionsOf(sc)[0];
+    return esc(WS_FORMAT[sc.format].label + " · " + sc.organizer + " · " + sc.count + " sessions from " + fmtDate(first.date));
+  }
+
+  function renderWorkshop() {
+    var w = WORKSHOPS[ws.wi], reg = WS_REG[w.id], full = wsFull(w), single = w.mode === "single";
+    var sc = ws.sched === null ? null : w.schedules[ws.sched];
+    $("ss-ws-name").textContent = w.name;
+    $("ss-ws-badges").innerHTML = vbadge("teal", "Workshop") + (w.course ? '<span class="badge badge--base badge--outline badge--regular">' + esc(w.course) + "</span>" : "") + (reg ? vbadge("success", "Registered") : full ? vbadge("neutral", "Full") : "");
+    $("ss-ws-meta").textContent = w.dept + " · " + w.minutes + "-minute sessions";
+    $("ss-ws-about").textContent = w.about;
+
+    // the note above the page: registered, or full
+    var note = $("ss-ws-note");
+    note.classList.toggle("is-hidden", !reg && !full);
+    $("ss-ws-note-actions").innerHTML = "";
+    if (reg) {
+      var rsc = w.schedules[reg.sched];
+      $("ss-ws-note-title").textContent = "You\u2019re registered.";
+      $("ss-ws-note-text").textContent = single
+        ? fmtDate(sessionsOf(rsc)[reg.sess].date) + " at " + fmtTime(sessionsOf(rsc)[reg.sess].min) + "."
+        : daysLabel(rsc) + ", " + rsc.count + " sessions starting " + fmtDate(sessionsOf(rsc)[0].date) + ".";
+    } else if (full) {
+      $("ss-ws-note-title").textContent = "This workshop is full.";
+      $("ss-ws-note-text").textContent = "Every seat is taken. We can email you if one opens up.";
+      var done = !!wsNotified[w.id];
+      $("ss-ws-note-actions").innerHTML = '<button class="btn btn--secondary btn--sm" type="button" id="ss-ws-notify"' + (done ? " disabled" : "") + ">" + (done ? "We\u2019ll let you know" : "Notify me when a seat opens") + "</button>";
+    }
+
+    // the choice
+    var opts = $("ss-ws-options"), fixed = $("ss-ws-fixed"), hint = $("ss-ws-choose-hint"), title = $("ss-ws-choose-title");
+    var sessions0 = sessionsOf(w.schedules[0]);
+    var fixedOnly = reg || (single ? w.schedules[0].count === 1 : w.schedules.length === 1);
+    opts.classList.toggle("is-hidden", fixedOnly);
+    fixed.classList.toggle("is-hidden", !fixedOnly);
+    hint.textContent = "";
+    if (single) {
+      title.textContent = fixedOnly ? "Date" : "Choose a date";
+      if (!fixedOnly) {
+        hint.textContent = "Every date is the same session";
+        opts.innerHTML = sessions0.map(function (x, k) {
+          return wsOptionTile("ss-ws-sess", k, ws.sess === k, fmtDate(x.date), esc(fmtRange(x.min, w.minutes)), seatsLeftSession(w.schedules[0], k));
+        }).join("");
+      } else {
+        var k0 = reg ? reg.sess : 0, x0 = sessions0[k0];
+        fixed.innerHTML = '<p class="ss-ws-fixed__label">' + esc(fmtDate(x0.date)) + '</p><p class="ss-ws-fixed__desc">' + esc(fmtRange(x0.min, w.minutes) + " · " + WS_FORMAT[w.schedules[0].format].label + " · " + w.schedules[0].organizer) + "</p>" +
+          (reg ? "" : '<p class="ss-ws-fixed__desc">' + esc(seatsText(seatsLeftSession(w.schedules[0], k0))) + "</p>");
+      }
+    } else {
+      title.textContent = fixedOnly ? "Schedule" : "Choose a schedule";
+      if (!fixedOnly) {
+        hint.textContent = "Same workshop on different days";
+        opts.innerHTML = w.schedules.map(function (x, k) {
+          return wsOptionTile("ss-ws-sched", k, ws.sched === k, daysLabel(x), scheduleDesc(w, x), seatsLeftSchedule(x));
+        }).join("");
+      } else {
+        var fsc = w.schedules[reg ? reg.sched : 0];
+        fixed.innerHTML = '<p class="ss-ws-fixed__label">' + esc(daysLabel(fsc)) + '</p><p class="ss-ws-fixed__desc">' + scheduleDesc(w, fsc) + "</p>" +
+          (reg ? "" : '<p class="ss-ws-fixed__desc">' + esc(seatsText(seatsLeftSchedule(fsc))) + "</p>");
+      }
+    }
+
+    // sessions of the chosen (or registered) schedule — series only
+    var listSc = reg ? w.schedules[reg.sched] : sc;
+    var showSessions = !single && !!listSc;
+    $("ss-ws-sessions-step").classList.toggle("is-hidden", !showSessions);
+    if (showSessions) {
+      var all = sessionsOf(listSc), SHOW = 4;
+      var shown = ws.showAll ? all : all.slice(0, SHOW);
+      $("ss-ws-sessions-count").textContent = all.length + " sessions";
+      $("ss-ws-sessions").innerHTML = shown.map(function (x, k) {
+        return '<li class="ss-session"><span class="ss-session__num">' + (k + 1) + '</span><span class="ss-session__date">' + esc(fmtDate(x.date)) + '</span><span class="ss-session__time">' + esc(fmtRange(x.min, w.minutes)) + "</span></li>";
+      }).join("");
+      var more = $("ss-ws-more");
+      more.classList.toggle("is-hidden", all.length <= SHOW);
+      more.textContent = ws.showAll ? "Show fewer" : "Show all " + all.length + " sessions";
+    }
+
+    // summary card
+    var useSc = listSc || (single ? w.schedules[0] : null);
+    var facts = [];
+    if (single) {
+      var k = reg ? reg.sess : ws.sess;
+      facts.push(["Date", k === null ? null : fmtDate(sessions0[k].date)]);
+      facts.push(["Time", k === null ? null : fmtRange(sessions0[k].min, w.minutes)]);
+    } else {
+      facts.push(["Schedule", useSc ? daysLabel(useSc) : null]);
+      facts.push(["Sessions", useSc ? String(useSc.count) : null]);
+      facts.push(["Starts", useSc ? fmtDate(sessionsOf(useSc)[0].date) : null]);
+    }
+    facts.push(["Format", useSc ? WS_FORMAT[useSc.format].label : null]);
+    facts.push(["Organizer", useSc ? useSc.organizer : null]);
+    $("ss-ws-facts").innerHTML = facts.map(function (f) {
+      return "<dt>" + f[0] + "</dt><dd" + (f[1] === null ? ' class="is-empty">' + (single ? "Choose a date" : "Choose a schedule") : ">" + esc(f[1])) + "</dd>";
+    }).join("");
+    $("ss-ws-location").textContent = useSc ? scheduleLocation(useSc) : w.schedules.some(function (x) { return x.format === "video"; }) && w.schedules.some(function (x) { return x.format === "inPerson"; }) ? "In person or online — depends on the schedule" : scheduleLocation(w.schedules[0]);
+
+    var canRegister = !reg && !full && (single ? ws.sess !== null : !!sc);
+    var label = single ? "Register" : sc ? "Register for all " + sc.count + " sessions" : "Register";
+    ["ss-ws-register", "ss-ws-register-bar"].forEach(function (id) { $(id).disabled = !canRegister; $(id).textContent = label; });
+    document.querySelector(".ss-ws-foot").classList.toggle("is-hidden", !!reg || full);
+    $("ss-ws-bar").classList.toggle("is-hidden", !!reg || full);
+  }
+  var wsNotified = {};
+  on("ss-ws-options", "change", function (e) {
+    if (e.target.name === "ss-ws-sched") { ws.sched = +e.target.value; ws.showAll = false; }
+    else ws.sess = +e.target.value;
+    renderWorkshop();
+  });
+  on("ss-ws-more", "click", function () { ws.showAll = !ws.showAll; renderWorkshop(); });
+  on("ss-ws-note-actions", "click", function (e) {
+    if (!e.target.closest("#ss-ws-notify")) return;
+    var w = WORKSHOPS[ws.wi];
+    wsNotified[w.id] = true;
+    showToast("We\u2019ll email you if a seat opens in " + w.name);
+    renderWorkshop();
+  });
+  function registerWorkshop() {
+    var w = WORKSHOPS[ws.wi], single = w.mode === "single", sc = w.schedules[single ? 0 : ws.sched];
+    if (single) sc.takenBy[ws.sess]++; else sc.taken++;
+    WS_REG[w.id] = { sched: single ? 0 : ws.sched, sess: single ? ws.sess : null };
+    var first = single ? sessionsOf(sc)[ws.sess] : sessionsOf(sc)[0];
+    var facts = single
+      ? [["Date", esc(fmtDate(first.date))], ["Time", esc(fmtRange(first.min, w.minutes))]]
+      : [["Schedule", esc(daysLabel(sc))], ["Sessions", sc.count + ", starting " + esc(fmtDate(first.date))]];
+    facts.push(["Organizer", esc(sc.organizer)], ["Location", esc(scheduleLocation(sc))]);
+    showDone({
+      title: "You\u2019re registered",
+      text: single
+        ? w.name + " on " + fmtDate(first.date) + " at " + fmtTime(first.min) + ". We\u2019ll remind you the day before."
+        : w.name + " — all " + sc.count + " sessions. The first is " + fmtDate(first.date) + " at " + fmtTime(first.min) + "; we\u2019ll remind you the day before each one.",
+      facts: facts,
+      actions: [
+        { label: "Done", primary: true, fn: function () { goSection(0); } },
+        { label: "View workshop", fn: function () { openWorkshop(ws.wi); } }
+      ]
+    });
+  }
+  on("ss-ws-register", "click", registerWorkshop);
+  on("ss-ws-register-bar", "click", registerWorkshop);
+
+  // ---------------- v6: done — the one screen every booking ends on ----------------
+  var doneActions = [];
+  function showDone(o) {
+    $("ss-done-title").textContent = o.title;
+    $("ss-done-text").textContent = o.text;
+    $("ss-done-facts").innerHTML = o.facts.map(function (f) { return "<dt>" + f[0] + "</dt><dd>" + f[1] + "</dd>"; }).join("");
+    doneActions = o.actions;
+    $("ss-done-actions").innerHTML = o.actions.map(function (a, i) {
+      return '<button type="button" class="btn ' + (a.primary ? "btn--primary" : "btn--secondary") + ' btn--base" data-done="' + i + '">' + esc(a.label) + "</button>";
+    }).join("");
+    showView("done");
+  }
+  if (V6) $("ss-done-actions").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-done]");
+    if (b) doneActions[+b.dataset.done].fn();
   });
 
   updateUpcomingCount();

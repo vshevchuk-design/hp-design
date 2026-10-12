@@ -120,3 +120,90 @@ export const APPOINTMENTS = [
   { id: "a6", ref: "3987", service: "Financial Aid Petition", dept: "Office of the Registrar", date: "2026-08-20", min: 13 * 60, advisor: "Jonathan Rehm", format: "phone", status: "completed" },
   { id: "a7", ref: "4410", service: "Transcript Evaluation", dept: "Office of the Registrar", date: "2026-09-30", min: 10 * 60, advisor: "Priya Natarajan", format: "video", status: "cancelled" },
 ];
+
+// ---------------- v6: Book (one catalogue) ----------------
+// v6 folds the six live tabs into two: Book and My schedule.
+export const SECTIONS_V6 = ["Book", "My schedule"];
+
+// Drop-in hours for the services that offer them (drop "open" / "available"
+// above) — one desk per service, at its first department. Open now: until
+// `until`; not open yet: opens later today at `opens`, and a seat can be
+// reserved before then. waiting = students already in the queue.
+export const DROPIN_HOURS = {
+  "Academic Probation": { until: 16 * 60, waiting: 2 },
+  "Assessment / Placement": { until: 15 * 60, waiting: 0 },
+  "Comprehensive Ed Plan": { until: 22 * 60, waiting: 4 },
+  "Ed Plan Review": { until: 22 * 60, waiting: 1 },
+  "EOPS Appointment": { until: 17 * 60, waiting: 3 },
+  "Math Tutoring": { until: 20 * 60, waiting: 5 },
+  "Resume Review": { until: 14 * 60, waiting: 1 },
+  "Writing Center": { until: 19 * 60, waiting: 2 },
+  "Degree Planning": { opens: 13 * 60, until: 17 * 60 },
+  "Financial Aid Petition": { opens: 14 * 60, until: 16 * 60 },
+  Graduation: { opens: 15 * 60, until: 18 * 60 },
+  "Peer Mentoring": { opens: 18 * 60, until: 21 * 60 },
+  "Records Request": { opens: 13 * 60 + 30, until: 16 * 60 },
+};
+// A drop-in visit takes about this long per student ahead of you.
+export const DROPIN_MINUTES_PER_STUDENT = 8;
+
+// Workshops. A workshop has one or more schedules (the live app's
+// "Schedule 1/2/3" carousel); a schedule is a weekly pattern — days[] of
+// [weekday 0–6, start minute] — from `start`, `count` sessions long.
+// mode "series": you register for every session of one schedule.
+// mode "single": each session is its own date — you register for one.
+// seats/taken per schedule (series) or takenBy[] per session (single).
+export const WORKSHOPS = [
+  {
+    id: "w1", name: "Study Skills Bootcamp", dept: "Tutoring Center", mode: "series", minutes: 90,
+    about: "Eight short sessions on note-taking, reading for retention, planning your week and preparing for exams. Bring a current syllabus.",
+    schedules: [
+      { id: "w1a", days: [[1, 600], [3, 600]], start: "2026-10-05", count: 8, format: "inPerson", room: "Learning Commons, Room 110", organizer: "Denny Petersen", seats: 24, taken: 12 },
+    ],
+  },
+  {
+    id: "w2", name: "Resume Writing Workshop", dept: "Career and Talent Development", mode: "series", minutes: 60,
+    about: "Turn your experience into a one-page resume that gets read. You leave with a finished draft and a reviewer's notes on it.",
+    schedules: [
+      { id: "w2a", days: [[2, 600], [4, 840], [6, 600]], start: "2026-10-06", count: 6, format: "video", organizer: "Eric Lynch", seats: 20, taken: 17 },
+      { id: "w2b", days: [[1, 960], [3, 960]], start: "2026-10-12", count: 4, format: "inPerson", room: "Career Center, Library 2nd floor", organizer: "Ava Robinson", seats: 15, taken: 5 },
+      { id: "w2c", days: [[5, 540]], start: "2026-10-09", count: 3, format: "inPerson", room: "Career Center, Library 2nd floor", organizer: "Caitlin Moore", seats: 12, taken: 12 },
+    ],
+  },
+  {
+    id: "w3", name: "Interview Prep", dept: "Career and Talent Development", mode: "single", minutes: 90,
+    about: "One evening of mock interviews in small groups — common questions, how to answer them, and feedback on how you came across.",
+    schedules: [
+      { id: "w3a", days: [[3, 780]], start: "2026-10-07", count: 5, format: "inPerson", room: "Career Center, Library 2nd floor", organizer: "Eric Lynch", seats: 10, takenBy: [10, 7, 4, 1, 0] },
+    ],
+  },
+  {
+    id: "w4", name: "College Writing Lab", dept: "English Dept", course: "ENGL 101", mode: "series", minutes: 60,
+    about: "Guided writing time alongside ENGL 101: thesis statements, structure, citations, revision. A tutor reads a page of your draft each week.",
+    schedules: [
+      { id: "w4a", days: [[2, 780], [4, 780]], start: "2026-10-06", count: 10, format: "inPerson", room: "Humanities Hall, Room 214", organizer: "Jonathan Rehm", seats: 18, taken: 9 },
+      { id: "w4b", days: [[3, 1080]], start: "2026-10-07", count: 5, format: "video", organizer: "Priya Natarajan", seats: 25, taken: 11 },
+    ],
+  },
+  {
+    id: "w5", name: "Financial Literacy 101", dept: "Academic Advising", mode: "series", minutes: 60,
+    about: "Budgeting on a student income, how aid and loans actually work, and building credit without debt — six evenings, online.",
+    schedules: [
+      { id: "w5a", days: [[4, 1020]], start: "2026-10-08", count: 6, format: "video", organizer: "Andy Hernandez", seats: 40, taken: 22 },
+    ],
+  },
+  {
+    id: "w6", name: "Transfer Application Night", dept: "Counseling", mode: "single", minutes: 120,
+    about: "University representatives walk through this year's transfer applications and personal-insight questions, then answer yours.",
+    schedules: [
+      { id: "w6a", days: [[4, 1080]], start: "2026-10-15", count: 1, format: "inPerson", room: "Student Union, Main Hall", organizer: "George Amalor", seats: 60, takenBy: [31] },
+    ],
+  },
+  {
+    id: "w7", name: "Time Management Essentials", dept: "Student Mentoring", mode: "series", minutes: 45,
+    about: "Four sessions on planning a semester, a week and a day — with a mentor checking in between them.",
+    schedules: [
+      { id: "w7a", days: [[2, 720]], start: "2026-10-06", count: 4, format: "inPerson", room: "Student Union, Room 3", organizer: "Craig Millett", seats: 16, taken: 16 },
+    ],
+  },
+];

@@ -526,6 +526,50 @@ html:has(.modal[open]) { overflow: hidden; }
 .ss-detail__actions { display: flex; flex-wrap: wrap; align-items: center; gap: ${dim(2)}; }
 .ss-detail__actions .ss-push { margin-left: auto; }
 @media (max-width: 559px) { .ss-detail__actions > .btn { flex: 1 1 100%; } .ss-detail__actions .ss-push { margin-left: 0; } }
+
+/* ============ v6 — Book catalogue, workshop page, done screen ============ */
+/* Workshop is the catalogue's third kind — the teal tag hue, so the three
+   booking modes read apart: violet (appointment), green/blue (drop-in), teal. */
+.badge--teal { background: ${R(badge.color.teal.tint.bg)}; color: ${R(badge.color.teal.tint.text)}; }
+.ss-ws-badges { display: flex; flex-wrap: wrap; align-items: center; gap: ${dim(2)}; }
+.ss-choose--ws { gap: ${dim(6)}; }
+.ss-step__head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: ${dim(1)} ${dim(3)}; }
+/* Schedules / dates: ChoiceTiles in a column — every option visible at once
+   (the live app's dot carousel hid Schedule 2 and 3 behind a swipe). Seats
+   left on the right; a full option is disabled with a Full badge. */
+.ss-ws-options { display: flex; flex-direction: column; gap: ${dim(2)}; }
+.ss-ws-option .choice-tile__text { flex: 1; }
+.ss-ws-option .choice-tile__description { white-space: normal; }
+.ss-ws-option__seats { flex-shrink: 0; align-self: flex-start; color: ${cv("text.secondary")}; ${typoCss(style("body-sm"))} white-space: nowrap; }
+/* Nothing to choose (one schedule / one date): the same facts, read-only. */
+.ss-ws-fixed { padding: ${D(ct.paddingY)} ${D(ct.paddingX)}; display: flex; flex-direction: column; gap: ${D(ct.textGap)}; }
+.ss-ws-fixed__label { margin: 0; color: ${R(ct.labelColor)}; ${typoCss(T(ct.label))} }
+.ss-ws-fixed__desc { margin: 0; color: ${R(ct.descriptionColor)}; ${typoCss(T(ct.description))} }
+/* The sessions of the chosen schedule: a numbered flush list in a Card. */
+.ss-sessions { list-style: none; margin: 0; padding: 0; background: ${R(card.bg)}; border: 1px solid ${R(card.border)}; border-radius: ${D(card.radius)}; }
+.ss-session { display: grid; grid-template-columns: ${dim(6)} minmax(0, 1fr) auto; align-items: center; gap: ${dim(3)}; padding: ${dim(3)} ${D(card.padding)}; border-bottom: 1px solid ${R(card.divider)}; }
+.ss-session:last-child { border-bottom: none; }
+.ss-session__num { color: ${cv("text.muted")}; ${typoCss(style("body-sm"))} }
+.ss-session__date { color: ${cv("text.default")}; ${typoCss(style("heading-sm"))} }
+.ss-session__time { color: ${cv("text.secondary")}; ${typoCss(style("body-sm"))} white-space: nowrap; }
+.ss-sessions__more { align-self: flex-start; margin-inline-start: -${bSm.paddingX}; }
+/* Below 1024 the summary card falls under the choices, so Register rides in
+   a bar pinned to the bottom of the screen instead of in the card's foot. */
+.ss-cta-bar { display: none; }
+@media (max-width: 1023px) {
+  .ss-view[data-view="workshop"].is-active .ss-cta-bar { display: block; position: fixed; left: 0; right: 0; bottom: 0; z-index: 2; padding: ${dim(3)} ${dim(4)} calc(${dim(3)} + env(safe-area-inset-bottom)); background: ${cv("surface.default")}; border-top: 1px solid ${cv("border.default")}; }
+  .ss-view[data-view="workshop"] .ss-ws-foot { display: none; }
+  .ss-view[data-view="workshop"].is-active { padding-bottom: ${dim(16)}; }
+}
+@media (min-width: 768px) and (max-width: 1023px) { .ss-view[data-view="workshop"].is-active .ss-cta-bar { padding-inline: ${dim(6)}; } }
+/* Done: one centred Card — the check, what happened, the facts, what next. */
+.ss-done { width: 100%; max-width: 560px; align-self: center; }
+.ss-done__body { align-items: center; text-align: center; gap: ${dim(2)}; padding-top: ${dim(8)}; }
+.ss-done__icon { display: flex; margin-bottom: ${dim(2)}; }
+.ss-done__icon svg { width: ${dim(12)}; height: ${dim(12)}; color: ${cv("icon.success")}; }
+.ss-done__facts { border-top: 1px solid ${R(card.divider)}; }
+.ss-done__actions { display: flex; flex-wrap: wrap; justify-content: center; gap: ${dim(2)}; }
+@media (max-width: 559px) { .ss-done__actions > .btn { flex: 1 1 100%; } }
 .is-hidden { display: none !important; }
 `;
 }
@@ -535,5 +579,5 @@ html:has(.modal[open]) { overflow: hidden; }
 export const SS_COLOR_PATHS = [
   "surface.page", "surface.default", "border.default", "border.focus",
   "text.default", "text.secondary", "text.muted", "icon.secondary", "fill.neutralHover",
-  "fill.danger", "fill.dangerHover", "text.onFill",
+  "fill.danger", "fill.dangerHover", "text.onFill", "icon.success",
 ];

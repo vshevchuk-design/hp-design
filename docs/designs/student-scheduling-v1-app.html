@@ -23,6 +23,7 @@
   --tok-fill-danger: #de394b;
   --tok-fill-danger-hover: #c11435;
   --tok-text-on-fill: #ffffff;
+  --tok-icon-success: #0a994e;
   --tok-surface-sunken: #e6e8eb;
   --tok-text-disabled: #adb5be;
   --tok-fill-primary: #077fec;
@@ -602,6 +603,50 @@ html:has(.modal[open]) { overflow: hidden; }
 .ss-detail__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .ss-detail__actions .ss-push { margin-left: auto; }
 @media (max-width: 559px) { .ss-detail__actions > .btn { flex: 1 1 100%; } .ss-detail__actions .ss-push { margin-left: 0; } }
+
+/* ============ v6 — Book catalogue, workshop page, done screen ============ */
+/* Workshop is the catalogue's third kind — the teal tag hue, so the three
+   booking modes read apart: violet (appointment), green/blue (drop-in), teal. */
+.badge--teal { background: var(--tok-tag-teal-tint-bg); color: var(--tok-tag-teal-tint-text); }
+.ss-ws-badges { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.ss-choose--ws { gap: 24px; }
+.ss-step__head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 12px; }
+/* Schedules / dates: ChoiceTiles in a column — every option visible at once
+   (the live app's dot carousel hid Schedule 2 and 3 behind a swipe). Seats
+   left on the right; a full option is disabled with a Full badge. */
+.ss-ws-options { display: flex; flex-direction: column; gap: 8px; }
+.ss-ws-option .choice-tile__text { flex: 1; }
+.ss-ws-option .choice-tile__description { white-space: normal; }
+.ss-ws-option__seats { flex-shrink: 0; align-self: flex-start; color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; white-space: nowrap; }
+/* Nothing to choose (one schedule / one date): the same facts, read-only. */
+.ss-ws-fixed { padding: 12px 12px; display: flex; flex-direction: column; gap: 2px; }
+.ss-ws-fixed__label { margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 14px; line-height: 1.4; }
+.ss-ws-fixed__desc { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
+/* The sessions of the chosen schedule: a numbered flush list in a Card. */
+.ss-sessions { list-style: none; margin: 0; padding: 0; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); border-radius: 8px; }
+.ss-session { display: grid; grid-template-columns: 24px minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--tok-border-default); }
+.ss-session:last-child { border-bottom: none; }
+.ss-session__num { color: var(--tok-text-muted); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.ss-session__date { color: var(--tok-text-default); font-weight: 600; font-size: 12px; line-height: 1.4; }
+.ss-session__time { color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; white-space: nowrap; }
+.ss-sessions__more { align-self: flex-start; margin-inline-start: -8px; }
+/* Below 1024 the summary card falls under the choices, so Register rides in
+   a bar pinned to the bottom of the screen instead of in the card's foot. */
+.ss-cta-bar { display: none; }
+@media (max-width: 1023px) {
+  .ss-view[data-view="workshop"].is-active .ss-cta-bar { display: block; position: fixed; left: 0; right: 0; bottom: 0; z-index: 2; padding: 12px 16px calc(12px + env(safe-area-inset-bottom)); background: var(--tok-surface-default); border-top: 1px solid var(--tok-border-default); }
+  .ss-view[data-view="workshop"] .ss-ws-foot { display: none; }
+  .ss-view[data-view="workshop"].is-active { padding-bottom: 64px; }
+}
+@media (min-width: 768px) and (max-width: 1023px) { .ss-view[data-view="workshop"].is-active .ss-cta-bar { padding-inline: 24px; } }
+/* Done: one centred Card — the check, what happened, the facts, what next. */
+.ss-done { width: 100%; max-width: 560px; align-self: center; }
+.ss-done__body { align-items: center; text-align: center; gap: 8px; padding-top: 32px; }
+.ss-done__icon { display: flex; margin-bottom: 8px; }
+.ss-done__icon svg { width: 48px; height: 48px; color: var(--tok-icon-success); }
+.ss-done__facts { border-top: 1px solid var(--tok-border-default); }
+.ss-done__actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+@media (max-width: 559px) { .ss-done__actions > .btn { flex: 1 1 100%; } }
 .is-hidden { display: none !important; }
 
 </style>
@@ -833,11 +878,16 @@ html:has(.modal[open]) { overflow: hidden; }
   var DEPARTMENTS = ["Academic Advising","Admissions & Records","Career and Talent Development","Counseling","English Dept","Grad - Admissions","Liberal Arts","Office of the Registrar","Student Mentoring","Tutoring Center"];
   var TODAY = "2026-10-02";
   var WEEKS_AHEAD = 3;
-  var ICONS = {"check":"<svg class=\"listbox__checkmark\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z\"/></svg>","chevron":"<svg class=\"select__chevron\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z\"/></svg>","chevronLeft":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z\"/></svg>","chevronRight":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z\"/></svg>","checkCircle":"<svg class=\"toast__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z\"/></svg>","group":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z\"/></svg>","call":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M20.01 15.38c-1.23 0-2.42-.2-3.53-.56-.35-.12-.74-.03-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z\"/></svg>","videocam":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z\"/></svg>","schedule":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z\"/><path d=\"M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z\"/></svg>","person":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z\"/></svg>","copy":"<svg class=\"btn__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z\"/></svg>","noteClock":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z\"/><path d=\"M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z\"/></svg>"};
+  var ICONS = {"check":"<svg class=\"listbox__checkmark\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z\"/></svg>","chevron":"<svg class=\"select__chevron\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z\"/></svg>","chevronLeft":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z\"/></svg>","chevronRight":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z\"/></svg>","checkCircle":"<svg class=\"toast__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z\"/></svg>","group":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z\"/></svg>","call":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M20.01 15.38c-1.23 0-2.42-.2-3.53-.56-.35-.12-.74-.03-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z\"/></svg>","videocam":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z\"/></svg>","schedule":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z\"/><path d=\"M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z\"/></svg>","person":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z\"/></svg>","copy":"<svg class=\"btn__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z\"/></svg>","noteClock":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z\"/><path d=\"M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z\"/></svg>","dateRange":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z\"/></svg>","today":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z\"/></svg>","people":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z\"/></svg>"};
   var APPTS = [{"id":"a1","ref":"5098","service":"Ed Plan Review","dept":"Counseling","date":"2026-10-02","min":630,"advisor":"Caitlin Moore","format":"inPerson","status":"upcoming"},{"id":"a2","ref":"5121","service":"Change of Major","dept":"Academic Advising","date":"2026-10-07","min":840,"advisor":"Ava Robinson","format":"phone","status":"upcoming","questions":["Which major are you thinking of switching to, and why?","Have you already taken any classes toward it?"]},{"id":"a3","ref":"5140","service":"Career Counseling","dept":"Career and Talent Development","date":"2026-10-12","min":690,"advisor":"Eric Lynch","format":"video","status":"upcoming"},{"id":"a4","ref":"4301","service":"Comprehensive Ed Plan","dept":"Counseling","date":"2026-09-28","min":540,"advisor":"George Amalor","format":"inPerson","status":"completed"},{"id":"a5","ref":"4122","service":"Degree Planning","dept":"English Dept","date":"2026-09-15","min":915,"advisor":"Ava Robinson","format":"inPerson","status":"noshow"},{"id":"a6","ref":"3987","service":"Financial Aid Petition","dept":"Office of the Registrar","date":"2026-08-20","min":780,"advisor":"Jonathan Rehm","format":"phone","status":"completed"},{"id":"a7","ref":"4410","service":"Transcript Evaluation","dept":"Office of the Registrar","date":"2026-09-30","min":600,"advisor":"Priya Natarajan","format":"video","status":"cancelled"}];
   var ABOUT = {"Change of Major":"Talk through switching majors: what transfers, what changes in your plan, and how long it adds.","Comprehensive Ed Plan":"Build a full semester-by-semester education plan to your degree or transfer goal.","Ed Plan Review":"A short check of your existing education plan — after a change, or once a year.","Career Counseling":"Explore careers that fit your interests, and the programs that lead there.","Degree Planning":"Map the requirements left for your degree and the order to take them in.","Financial Aid Petition":"Get help preparing a petition to restore or extend your financial aid.","Transcript Evaluation":"Have transcripts from other schools evaluated for credit here."};
   var NOW_MIN = 620, CHECKIN_BEFORE = 15;
   var STUDENT_PHONE = "(555) 555-1234";
+  // v6: Book is one catalogue — appointments, drop-in desks, workshops.
+  var V6 = false;
+  var WORKSHOPS = [{"id":"w1","name":"Study Skills Bootcamp","dept":"Tutoring Center","mode":"series","minutes":90,"about":"Eight short sessions on note-taking, reading for retention, planning your week and preparing for exams. Bring a current syllabus.","schedules":[{"id":"w1a","days":[[1,600],[3,600]],"start":"2026-10-05","count":8,"format":"inPerson","room":"Learning Commons, Room 110","organizer":"Denny Petersen","seats":24,"taken":12}]},{"id":"w2","name":"Resume Writing Workshop","dept":"Career and Talent Development","mode":"series","minutes":60,"about":"Turn your experience into a one-page resume that gets read. You leave with a finished draft and a reviewer's notes on it.","schedules":[{"id":"w2a","days":[[2,600],[4,840],[6,600]],"start":"2026-10-06","count":6,"format":"video","organizer":"Eric Lynch","seats":20,"taken":17},{"id":"w2b","days":[[1,960],[3,960]],"start":"2026-10-12","count":4,"format":"inPerson","room":"Career Center, Library 2nd floor","organizer":"Ava Robinson","seats":15,"taken":5},{"id":"w2c","days":[[5,540]],"start":"2026-10-09","count":3,"format":"inPerson","room":"Career Center, Library 2nd floor","organizer":"Caitlin Moore","seats":12,"taken":12}]},{"id":"w3","name":"Interview Prep","dept":"Career and Talent Development","mode":"single","minutes":90,"about":"One evening of mock interviews in small groups — common questions, how to answer them, and feedback on how you came across.","schedules":[{"id":"w3a","days":[[3,780]],"start":"2026-10-07","count":5,"format":"inPerson","room":"Career Center, Library 2nd floor","organizer":"Eric Lynch","seats":10,"takenBy":[10,7,4,1,0]}]},{"id":"w4","name":"College Writing Lab","dept":"English Dept","course":"ENGL 101","mode":"series","minutes":60,"about":"Guided writing time alongside ENGL 101: thesis statements, structure, citations, revision. A tutor reads a page of your draft each week.","schedules":[{"id":"w4a","days":[[2,780],[4,780]],"start":"2026-10-06","count":10,"format":"inPerson","room":"Humanities Hall, Room 214","organizer":"Jonathan Rehm","seats":18,"taken":9},{"id":"w4b","days":[[3,1080]],"start":"2026-10-07","count":5,"format":"video","organizer":"Priya Natarajan","seats":25,"taken":11}]},{"id":"w5","name":"Financial Literacy 101","dept":"Academic Advising","mode":"series","minutes":60,"about":"Budgeting on a student income, how aid and loans actually work, and building credit without debt — six evenings, online.","schedules":[{"id":"w5a","days":[[4,1020]],"start":"2026-10-08","count":6,"format":"video","organizer":"Andy Hernandez","seats":40,"taken":22}]},{"id":"w6","name":"Transfer Application Night","dept":"Counseling","mode":"single","minutes":120,"about":"University representatives walk through this year's transfer applications and personal-insight questions, then answer yours.","schedules":[{"id":"w6a","days":[[4,1080]],"start":"2026-10-15","count":1,"format":"inPerson","room":"Student Union, Main Hall","organizer":"George Amalor","seats":60,"takenBy":[31]}]},{"id":"w7","name":"Time Management Essentials","dept":"Student Mentoring","mode":"series","minutes":45,"about":"Four sessions on planning a semester, a week and a day — with a mentor checking in between them.","schedules":[{"id":"w7a","days":[[2,720]],"start":"2026-10-06","count":4,"format":"inPerson","room":"Student Union, Room 3","organizer":"Craig Millett","seats":16,"taken":16}]}];
+  var DROPIN_HOURS = {"Academic Probation":{"until":960,"waiting":2},"Assessment / Placement":{"until":900,"waiting":0},"Comprehensive Ed Plan":{"until":1320,"waiting":4},"Ed Plan Review":{"until":1320,"waiting":1},"EOPS Appointment":{"until":1020,"waiting":3},"Math Tutoring":{"until":1200,"waiting":5},"Resume Review":{"until":840,"waiting":1},"Writing Center":{"until":1140,"waiting":2},"Degree Planning":{"opens":780,"until":1020},"Financial Aid Petition":{"opens":840,"until":960},"Graduation":{"opens":900,"until":1080},"Peer Mentoring":{"opens":1080,"until":1260},"Records Request":{"opens":810,"until":960}};
+  var PER_STUDENT = 8;
   // "list" (v1: rows in one Card).
   var LAYOUT = "list";
   // "text" (v5): a flush divided list on a phone, list rows in a Card from
@@ -857,6 +907,8 @@ html:has(.modal[open]) { overflow: hidden; }
   };
 
   function $(id) { return document.getElementById(id); }
+  // listen only if the element exists — v6's views aren't in v5/v1's markup
+  function on(id, type, fn) { var el = $(id); if (el) el.addEventListener(type, fn); }
   function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
   function hash(s) { var h = 2166136261; for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
 
@@ -928,7 +980,7 @@ html:has(.modal[open]) { overflow: hidden; }
       t.classList.toggle("tab--active", i === j);
       t.setAttribute("aria-selected", i === j ? "true" : "false");
     });
-    if (i === 0) { showView("browse"); return; }
+    if (i === 0) { renderBrowse(); showView("browse"); return; }
     if (i === 1) { renderAppts(); showView("appointments"); return; }
     $("ss-placeholder-text").textContent = sectionTabs[i].textContent + " — not designed yet";
     showView("placeholder");
@@ -1027,19 +1079,34 @@ html:has(.modal[open]) { overflow: hidden; }
       renderBrowse();
     });
   });
-  var dropChip = $("ss-drop-chip");
+  // v6 has no drop-in toggle — the Type chip covers it.
+  var dropChip = $("ss-drop-chip") || document.createElement("button");
   dropChip.addEventListener("click", function () {
     st.dropOnly = !st.dropOnly;
     dropChip.setAttribute("aria-pressed", st.dropOnly ? "true" : "false");
     st.page = 0; renderBrowse();
   });
 
-  var SORTS = [{ value: "name", label: "Name (A–Z)" }, { value: "duration", label: "Duration (shortest first)" }];
+  // v6 — Type: All / Appointments / Drop-ins / Workshops (dropdown chip).
+  var TYPES = [{ value: "", label: "All types" }, { value: "appointment", label: "Appointments" }, { value: "dropin", label: "Drop-ins" }, { value: "workshop", label: "Workshops" }];
+  var typeChip = $("ss-type-chip");
+  function setType(v) {
+    st.type = v; st.page = 0;
+    $("ss-type-label").textContent = v ? TYPES.filter(function (x) { return x.value === v; })[0].label : "Type";
+    typeChip.classList.toggle("chip--checked-outline", !!v);
+  }
+  if (typeChip) typeChip.addEventListener("click", function () {
+    openListbox(typeChip, TYPES, st.type, function (v) { setType(v); renderBrowse(); });
+  });
+
+  var SORTS = V6
+    ? [{ value: "name", label: "Name (A–Z)" }, { value: "kind", label: "Type" }]
+    : [{ value: "name", label: "Name (A–Z)" }, { value: "duration", label: "Duration (shortest first)" }];
   var sortBtn = $("ss-sort");
   sortBtn.addEventListener("click", function () {
     openListbox(sortBtn, SORTS, st.sort, function (v) {
       st.sort = v;
-      $("ss-sort-label").textContent = v === "name" ? "Name (A–Z)" : "Duration";
+      $("ss-sort-label").textContent = v === "name" ? "Name (A–Z)" : v === "kind" ? "Type" : "Duration";
       renderBrowse();
     });
   });
@@ -1050,10 +1117,12 @@ html:has(.modal[open]) { overflow: hidden; }
     $("ss-dept-label").textContent = "Department";
     deptChip.classList.remove("chip--checked-outline");
     dropChip.setAttribute("aria-pressed", "false");
+    if (typeChip) setType("");
     renderBrowse();
   });
 
   function filtered() {
+    if (V6) return filteredV6();
     var list = SERVICES.map(function (s, i) { return { s: s, i: i }; }).filter(function (x) {
       if (st.q && x.s.name.toLowerCase().indexOf(st.q) === -1) return false;
       if (st.dept && x.s.depts.indexOf(st.dept) === -1) return false;
@@ -1103,6 +1172,70 @@ html:has(.modal[open]) { overflow: hidden; }
       "</article>";
   }
 
+  // ---------------- v6 catalogue ----------------
+  // One entry per thing you can book: every service by appointment; a drop-in
+  // desk for each service that runs one (at its first department); every
+  // workshop. Same name sorts appointment → drop-in → workshop.
+  var KIND_ORDER = { appointment: 0, dropin: 1, workshop: 2 };
+  var CATALOG = [];
+  if (V6) {
+    SERVICES.forEach(function (s, i) {
+      CATALOG.push({ kind: "appointment", si: i, name: s.name, depts: s.depts });
+      if (DROPIN_HOURS[s.name]) CATALOG.push({ kind: "dropin", si: i, key: "d" + i, name: s.name, depts: [s.depts[0]], hours: DROPIN_HOURS[s.name] });
+    });
+    WORKSHOPS.forEach(function (w, wi) { CATALOG.push({ kind: "workshop", wi: wi, name: w.name, depts: [w.dept] }); });
+  }
+  var QUEUE = {}, RESERVED = {}, WS_REG = {};
+  function filteredV6() {
+    var list = CATALOG.map(function (c, i) { return { c: c, i: i }; }).filter(function (x) {
+      if (st.q && x.c.name.toLowerCase().indexOf(st.q) === -1) return false;
+      if (st.dept && x.c.depts.indexOf(st.dept) === -1) return false;
+      if (st.type && x.c.kind !== st.type) return false;
+      return true;
+    });
+    list.sort(function (a, b) {
+      if (st.sort === "kind" && a.c.kind !== b.c.kind) return KIND_ORDER[a.c.kind] - KIND_ORDER[b.c.kind];
+      return a.c.name.localeCompare(b.c.name) || KIND_ORDER[a.c.kind] - KIND_ORDER[b.c.kind];
+    });
+    return list;
+  }
+  function fact(icon, text) { return '<span class="ss-fact">' + icon + '<span class="ss-fact__text">' + esc(text) + "</span></span>"; }
+  function vbadge(role, text) { return '<span class="badge badge--base badge--regular badge--' + role + '">' + esc(text) + "</span>"; }
+  function dropinOpen(h) { return !h.opens || NOW_MIN >= h.opens; }
+  function catalogItemHtml(x) {
+    var c = x.c, depts = c.depts.slice(), at = st.dept ? depts.indexOf(st.dept) : -1;
+    if (at > 0) { depts.splice(at, 1); depts.unshift(st.dept); }
+    var line = "", cta = "";
+    if (c.kind === "appointment") {
+      line = fact(ICONS.schedule, SERVICES[c.si].minutes + " min") + vbadge("violet", "By appointment");
+      cta = '<button type="button" class="btn btn--tint btn--base ss-item__cta" data-pick="' + c.si + '">Pick a time</button>';
+    } else if (c.kind === "dropin") {
+      var h = c.hours;
+      if (dropinOpen(h)) {
+        var n = h.waiting;
+        line = fact(ICONS.people, n ? n + " waiting · about " + n * PER_STUDENT + " min" : "No wait right now") + vbadge("success", "Drop-in · open until " + fmtTime(h.until));
+        cta = QUEUE[c.key]
+          ? '<button type="button" class="btn btn--secondary btn--base ss-item__cta" disabled>You’re in line</button>'
+          : '<button type="button" class="btn btn--tint btn--base ss-item__cta" data-queue="' + x.i + '">Join queue</button>';
+      } else {
+        line = fact(ICONS.schedule, "Today " + fmtTime(h.opens) + " – " + fmtTime(h.until)) + vbadge("primary", "Drop-in · opens " + fmtTime(h.opens));
+        cta = RESERVED[c.key]
+          ? '<button type="button" class="btn btn--secondary btn--base ss-item__cta" disabled>Seat reserved</button>'
+          : '<button type="button" class="btn btn--tint btn--base ss-item__cta" data-reserve="' + x.i + '">Reserve a seat</button>';
+      }
+    } else {
+      var w = WORKSHOPS[c.wi], reg = WS_REG[w.id], full = wsFull(w);
+      line = fact(ICONS.dateRange, wsPatternLabel(w)) + vbadge("teal", "Workshop") +
+        (w.course ? '<span class="badge badge--base badge--outline badge--regular">' + esc(w.course) + "</span>" : "") +
+        (reg ? vbadge("success", "Registered") : full ? vbadge("neutral", "Full") : "");
+      cta = '<button type="button" class="btn ' + (reg || full ? "btn--secondary" : "btn--tint") + ' btn--base ss-item__cta" data-ws="' + c.wi + '">' + (reg || full ? "View" : "Register") + "</button>";
+    }
+    return '<article class="ss-item ss-item--text">' +
+      '<div class="ss-item__main"><h3 class="ss-item__name">' + esc(c.name) + "</h3>" +
+      '<p class="ss-item__depts">' + esc(depts.join(", ")) + "</p>" +
+      '<div class="ss-item__line">' + line + "</div></div>" + cta + "</article>";
+  }
+
   function renderBrowse() {
     var list = filtered();
     var pages = Math.max(1, Math.ceil(list.length / PAGE_SIZE));
@@ -1111,7 +1244,7 @@ html:has(.modal[open]) { overflow: hidden; }
     var any = list.length > 0;
     $("ss-results").classList.toggle("is-hidden", !any);
     $("ss-empty").classList.toggle("is-hidden", any);
-    $("ss-list").innerHTML = slice.map(LAYOUT === "text" ? textItemHtml : rowHtml).join("");
+    $("ss-list").innerHTML = slice.map(V6 ? catalogItemHtml : LAYOUT === "text" ? textItemHtml : rowHtml).join("");
     $("ss-range").textContent = any ? "Showing " + (from + 1) + "–" + (from + slice.length) + " of " + list.length : "";
     renderPager(pages);
   }
@@ -1126,7 +1259,13 @@ html:has(.modal[open]) { overflow: hidden; }
       return;
     }
     var pick = e.target.closest("[data-pick]");
-    if (pick) openPick(+pick.dataset.pick);
+    if (pick) { openPick(+pick.dataset.pick); return; }
+    var q = e.target.closest("[data-queue]");
+    if (q) { joinQueue(CATALOG[+q.dataset.queue]); return; }
+    var r = e.target.closest("[data-reserve]");
+    if (r) { reserveSeat(CATALOG[+r.dataset.reserve]); return; }
+    var w = e.target.closest("[data-ws]");
+    if (w) openWorkshop(+w.dataset.ws);
   });
 
   function renderPager(pages) {
@@ -1373,6 +1512,20 @@ html:has(.modal[open]) { overflow: hidden; }
     }
     APPTS.push({ id: "n" + Date.now(), ref: String(5200 + APPTS.length), service: SERVICES[pk.si].name, dept: pk.dept, date: iso(dt), min: pk.slot.min, advisor: pk.advisor, format: pk.slot.formats[0], status: "upcoming" });
     updateUpcomingCount();
+    if (V6) {
+      var na = APPTS[APPTS.length - 1];
+      pk.slot = null; pk.advisor = null;
+      showDone({
+        title: "You’re booked",
+        text: na.service + " with " + na.advisor + ", " + whenShort(na) + ". Check-in opens " + CHECKIN_BEFORE + " minutes before.",
+        facts: [["When", esc(whenLong(na))], ["Advisor", esc(na.advisor)], ["Department", esc(na.dept)], ["Meeting", esc(where(na))], ["Reference", "#" + esc(na.ref)]],
+        actions: [
+          { label: "Go to My schedule", primary: true, fn: function () { goSection(1); } },
+          { label: "Book something else", fn: function () { goSection(0); } }
+        ]
+      });
+      return;
+    }
     showToast("Booked: " + SERVICES[pk.si].name + ", " + when + " — it's in My appointments");
     pk.slot = null; pk.advisor = null;
     renderPick();
@@ -1382,7 +1535,15 @@ html:has(.modal[open]) { overflow: hidden; }
     showToast("We'll email you when a time opens for " + SERVICES[pk.si].name);
     renderPick();
   });
-  $("ss-dropins").addEventListener("click", function () { goSection(2); });
+  $("ss-dropins").addEventListener("click", function () {
+    if (!V6) { goSection(2); return; }
+    // v6: no Drop-Ins tab — Book, narrowed to this service's drop-in desk.
+    var name = SERVICES[pk.si].name;
+    setType("dropin");
+    searchInput.value = name; st.q = name.toLowerCase(); searchBox.classList.add("is-populated");
+    if (head && window.matchMedia("(max-width: 767px)").matches) { head.classList.add("is-search-open"); openBtn.setAttribute("aria-expanded", "true"); }
+    goSection(0);
+  });
 
   // ---------------- my appointments ----------------
   var apptTab = "upcoming";
@@ -1573,6 +1734,255 @@ html:has(.modal[open]) { overflow: hidden; }
     a.answered = true;
     showToast("Answers sent to " + a.advisor);
     renderAppt();
+  });
+
+  // ---------------- v6: drop-in queue / reserve (the queue page is next) ----------------
+  function joinQueue(c) {
+    var h = c.hours, pos = h.waiting + 1, dept = c.depts[0];
+    QUEUE[c.key] = pos;
+    showDone({
+      title: "You’re in line",
+      text: "You’re number " + pos + " for " + c.name + (h.waiting ? " — about " + h.waiting * PER_STUDENT + " minutes. " : " — you’re next. ") + "Stay nearby: we’ll let you know when an advisor is ready for you.",
+      facts: [["Drop-in", esc(c.name)], ["Department", esc(dept)], ["Where", esc(LOCATIONS[dept])], ["Open until", fmtTime(h.until)]],
+      actions: [{ label: "Done", primary: true, fn: function () { goSection(0); } }]
+    });
+  }
+  function reserveSeat(c) {
+    var h = c.hours, dept = c.depts[0];
+    RESERVED[c.key] = true;
+    showDone({
+      title: "Seat reserved",
+      text: "Your place for " + c.name + " is held for when drop-in opens at " + fmtTime(h.opens) + ". Check in at the desk by " + fmtTime(h.opens + 15) + " to keep it.",
+      facts: [["Drop-in", esc(c.name)], ["Department", esc(dept)], ["Where", esc(LOCATIONS[dept])], ["Hours", "Today " + fmtTime(h.opens) + " – " + fmtTime(h.until)]],
+      actions: [{ label: "Done", primary: true, fn: function () { goSection(0); } }]
+    });
+  }
+
+  // ---------------- v6: workshops ----------------
+  var DOW_PLURAL = ["Sundays", "Mondays", "Tuesdays", "Wednesdays", "Thursdays", "Fridays", "Saturdays"];
+  var WS_FORMAT = { inPerson: { label: "In person", icon: ICONS.group }, video: { label: "Online", icon: ICONS.videocam } };
+  function fmtDate(dt) { return DOW[dt.getDay()] + ", " + MON[dt.getMonth()] + " " + dt.getDate(); }
+  function fmtRange(min, minutes) {
+    var a = fmtTime(min), b = fmtTime(min + minutes);
+    // "10:00 – 11:30 AM" when both ends share AM/PM
+    return a.slice(-2) === b.slice(-2) ? a.slice(0, -3) + " – " + b : a + " – " + b;
+  }
+  var sessCache = {};
+  function sessionsOf(sc) {
+    if (sessCache[sc.id]) return sessCache[sc.id];
+    var out = [], dt = new Date(sc.start + "T00:00:00");
+    for (var guard = 0; out.length < sc.count && guard < 400; guard++) {
+      for (var j = 0; j < sc.days.length; j++) if (sc.days[j][0] === dt.getDay()) out.push({ date: new Date(dt), min: sc.days[j][1] });
+      dt = addDays(dt, 1);
+    }
+    return (sessCache[sc.id] = out);
+  }
+  // "Mon & Wed · 10:00 AM" when every day starts at the same time, else each
+  // day with its own: "Tue 10:00 AM · Thu 2:00 PM · Sat 10:00 AM".
+  function daysLabel(sc) {
+    var same = sc.days.every(function (x) { return x[1] === sc.days[0][1]; });
+    if (!same) return sc.days.map(function (x) { return DOW[x[0]] + " " + fmtTime(x[1]); }).join(" · ");
+    var names = sc.days.map(function (x) { return DOW[x[0]]; });
+    var joined = names.length === 1 ? DOW_PLURAL[sc.days[0][0]] : names.slice(0, -1).join(", ") + " & " + names[names.length - 1];
+    return joined + " · " + fmtTime(sc.days[0][1]);
+  }
+  function seatsLeftSchedule(sc) { return sc.seats - sc.taken; }
+  function seatsLeftSession(sc, k) { return sc.seats - sc.takenBy[k]; }
+  function wsFull(w) {
+    if (w.mode === "single") { var sc = w.schedules[0]; return sc.takenBy.every(function (t) { return t >= sc.seats; }); }
+    return w.schedules.every(function (sc) { return seatsLeftSchedule(sc) <= 0; });
+  }
+  function seatsText(n) { return n <= 0 ? "Full" : n + (n === 1 ? " seat left" : " seats left"); }
+  // The catalogue line: the pattern, and when it starts.
+  function wsPatternLabel(w) {
+    var sc = w.schedules[0], first = sessionsOf(sc)[0];
+    if (w.mode === "single") {
+      if (sc.count === 1) return fmtDate(first.date) + " · " + fmtTime(first.min);
+      return daysLabel(sc) + " · " + sc.count + " dates from " + MON[first.date.getMonth()] + " " + first.date.getDate();
+    }
+    if (w.schedules.length > 1) {
+      var starts = w.schedules.map(function (x) { return sessionsOf(x)[0].date; }).sort(function (a, b) { return a - b; });
+      return w.schedules.length + " schedules · from " + MON[starts[0].getMonth()] + " " + starts[0].getDate();
+    }
+    return daysLabel(sc) + " · " + sc.count + " sessions from " + MON[first.date.getMonth()] + " " + first.date.getDate();
+  }
+  function scheduleLocation(sc) { return sc.format === "video" ? "Online — the link arrives by email once you’re registered" : sc.room; }
+
+  var ws = { wi: 0, sched: null, sess: null, showAll: false };
+  function openWorkshop(wi) {
+    var w = WORKSHOPS[wi];
+    ws.wi = wi; ws.showAll = false; ws.sess = null;
+    // one schedule: nothing to choose; several: the student picks one
+    ws.sched = w.mode === "single" || (w.schedules.length === 1 && seatsLeftSchedule(w.schedules[0]) > 0) ? 0 : null;
+    if (w.mode === "single" && w.schedules[0].count === 1 && seatsLeftSession(w.schedules[0], 0) > 0) ws.sess = 0;
+    renderWorkshop();
+    showView("workshop");
+  }
+  on("ss-ws-back", "click", function () { goSection(0); });
+
+  function wsOptionTile(name, value, checked, label, desc, left) {
+    var full = left <= 0;
+    return '<label class="choice-tile ss-ws-option"><input class="choice-tile__input" type="radio" name="' + name + '" value="' + value + '"' + (checked ? " checked" : "") + (full ? " disabled" : "") + ">" +
+      '<span class="choice-tile__box"><span class="choice-tile__text"><span class="choice-tile__label">' + esc(label) + '</span><span class="choice-tile__description">' + desc + "</span></span>" +
+      '<span class="ss-ws-option__seats">' + (full ? vbadge("neutral", "Full") : esc(seatsText(left))) + "</span></span></label>";
+  }
+  function scheduleDesc(w, sc) {
+    var first = sessionsOf(sc)[0];
+    return esc(WS_FORMAT[sc.format].label + " · " + sc.organizer + " · " + sc.count + " sessions from " + fmtDate(first.date));
+  }
+
+  function renderWorkshop() {
+    var w = WORKSHOPS[ws.wi], reg = WS_REG[w.id], full = wsFull(w), single = w.mode === "single";
+    var sc = ws.sched === null ? null : w.schedules[ws.sched];
+    $("ss-ws-name").textContent = w.name;
+    $("ss-ws-badges").innerHTML = vbadge("teal", "Workshop") + (w.course ? '<span class="badge badge--base badge--outline badge--regular">' + esc(w.course) + "</span>" : "") + (reg ? vbadge("success", "Registered") : full ? vbadge("neutral", "Full") : "");
+    $("ss-ws-meta").textContent = w.dept + " · " + w.minutes + "-minute sessions";
+    $("ss-ws-about").textContent = w.about;
+
+    // the note above the page: registered, or full
+    var note = $("ss-ws-note");
+    note.classList.toggle("is-hidden", !reg && !full);
+    $("ss-ws-note-actions").innerHTML = "";
+    if (reg) {
+      var rsc = w.schedules[reg.sched];
+      $("ss-ws-note-title").textContent = "You’re registered.";
+      $("ss-ws-note-text").textContent = single
+        ? fmtDate(sessionsOf(rsc)[reg.sess].date) + " at " + fmtTime(sessionsOf(rsc)[reg.sess].min) + "."
+        : daysLabel(rsc) + ", " + rsc.count + " sessions starting " + fmtDate(sessionsOf(rsc)[0].date) + ".";
+    } else if (full) {
+      $("ss-ws-note-title").textContent = "This workshop is full.";
+      $("ss-ws-note-text").textContent = "Every seat is taken. We can email you if one opens up.";
+      var done = !!wsNotified[w.id];
+      $("ss-ws-note-actions").innerHTML = '<button class="btn btn--secondary btn--sm" type="button" id="ss-ws-notify"' + (done ? " disabled" : "") + ">" + (done ? "We’ll let you know" : "Notify me when a seat opens") + "</button>";
+    }
+
+    // the choice
+    var opts = $("ss-ws-options"), fixed = $("ss-ws-fixed"), hint = $("ss-ws-choose-hint"), title = $("ss-ws-choose-title");
+    var sessions0 = sessionsOf(w.schedules[0]);
+    var fixedOnly = reg || (single ? w.schedules[0].count === 1 : w.schedules.length === 1);
+    opts.classList.toggle("is-hidden", fixedOnly);
+    fixed.classList.toggle("is-hidden", !fixedOnly);
+    hint.textContent = "";
+    if (single) {
+      title.textContent = fixedOnly ? "Date" : "Choose a date";
+      if (!fixedOnly) {
+        hint.textContent = "Every date is the same session";
+        opts.innerHTML = sessions0.map(function (x, k) {
+          return wsOptionTile("ss-ws-sess", k, ws.sess === k, fmtDate(x.date), esc(fmtRange(x.min, w.minutes)), seatsLeftSession(w.schedules[0], k));
+        }).join("");
+      } else {
+        var k0 = reg ? reg.sess : 0, x0 = sessions0[k0];
+        fixed.innerHTML = '<p class="ss-ws-fixed__label">' + esc(fmtDate(x0.date)) + '</p><p class="ss-ws-fixed__desc">' + esc(fmtRange(x0.min, w.minutes) + " · " + WS_FORMAT[w.schedules[0].format].label + " · " + w.schedules[0].organizer) + "</p>" +
+          (reg ? "" : '<p class="ss-ws-fixed__desc">' + esc(seatsText(seatsLeftSession(w.schedules[0], k0))) + "</p>");
+      }
+    } else {
+      title.textContent = fixedOnly ? "Schedule" : "Choose a schedule";
+      if (!fixedOnly) {
+        hint.textContent = "Same workshop on different days";
+        opts.innerHTML = w.schedules.map(function (x, k) {
+          return wsOptionTile("ss-ws-sched", k, ws.sched === k, daysLabel(x), scheduleDesc(w, x), seatsLeftSchedule(x));
+        }).join("");
+      } else {
+        var fsc = w.schedules[reg ? reg.sched : 0];
+        fixed.innerHTML = '<p class="ss-ws-fixed__label">' + esc(daysLabel(fsc)) + '</p><p class="ss-ws-fixed__desc">' + scheduleDesc(w, fsc) + "</p>" +
+          (reg ? "" : '<p class="ss-ws-fixed__desc">' + esc(seatsText(seatsLeftSchedule(fsc))) + "</p>");
+      }
+    }
+
+    // sessions of the chosen (or registered) schedule — series only
+    var listSc = reg ? w.schedules[reg.sched] : sc;
+    var showSessions = !single && !!listSc;
+    $("ss-ws-sessions-step").classList.toggle("is-hidden", !showSessions);
+    if (showSessions) {
+      var all = sessionsOf(listSc), SHOW = 4;
+      var shown = ws.showAll ? all : all.slice(0, SHOW);
+      $("ss-ws-sessions-count").textContent = all.length + " sessions";
+      $("ss-ws-sessions").innerHTML = shown.map(function (x, k) {
+        return '<li class="ss-session"><span class="ss-session__num">' + (k + 1) + '</span><span class="ss-session__date">' + esc(fmtDate(x.date)) + '</span><span class="ss-session__time">' + esc(fmtRange(x.min, w.minutes)) + "</span></li>";
+      }).join("");
+      var more = $("ss-ws-more");
+      more.classList.toggle("is-hidden", all.length <= SHOW);
+      more.textContent = ws.showAll ? "Show fewer" : "Show all " + all.length + " sessions";
+    }
+
+    // summary card
+    var useSc = listSc || (single ? w.schedules[0] : null);
+    var facts = [];
+    if (single) {
+      var k = reg ? reg.sess : ws.sess;
+      facts.push(["Date", k === null ? null : fmtDate(sessions0[k].date)]);
+      facts.push(["Time", k === null ? null : fmtRange(sessions0[k].min, w.minutes)]);
+    } else {
+      facts.push(["Schedule", useSc ? daysLabel(useSc) : null]);
+      facts.push(["Sessions", useSc ? String(useSc.count) : null]);
+      facts.push(["Starts", useSc ? fmtDate(sessionsOf(useSc)[0].date) : null]);
+    }
+    facts.push(["Format", useSc ? WS_FORMAT[useSc.format].label : null]);
+    facts.push(["Organizer", useSc ? useSc.organizer : null]);
+    $("ss-ws-facts").innerHTML = facts.map(function (f) {
+      return "<dt>" + f[0] + "</dt><dd" + (f[1] === null ? ' class="is-empty">' + (single ? "Choose a date" : "Choose a schedule") : ">" + esc(f[1])) + "</dd>";
+    }).join("");
+    $("ss-ws-location").textContent = useSc ? scheduleLocation(useSc) : w.schedules.some(function (x) { return x.format === "video"; }) && w.schedules.some(function (x) { return x.format === "inPerson"; }) ? "In person or online — depends on the schedule" : scheduleLocation(w.schedules[0]);
+
+    var canRegister = !reg && !full && (single ? ws.sess !== null : !!sc);
+    var label = single ? "Register" : sc ? "Register for all " + sc.count + " sessions" : "Register";
+    ["ss-ws-register", "ss-ws-register-bar"].forEach(function (id) { $(id).disabled = !canRegister; $(id).textContent = label; });
+    document.querySelector(".ss-ws-foot").classList.toggle("is-hidden", !!reg || full);
+    $("ss-ws-bar").classList.toggle("is-hidden", !!reg || full);
+  }
+  var wsNotified = {};
+  on("ss-ws-options", "change", function (e) {
+    if (e.target.name === "ss-ws-sched") { ws.sched = +e.target.value; ws.showAll = false; }
+    else ws.sess = +e.target.value;
+    renderWorkshop();
+  });
+  on("ss-ws-more", "click", function () { ws.showAll = !ws.showAll; renderWorkshop(); });
+  on("ss-ws-note-actions", "click", function (e) {
+    if (!e.target.closest("#ss-ws-notify")) return;
+    var w = WORKSHOPS[ws.wi];
+    wsNotified[w.id] = true;
+    showToast("We’ll email you if a seat opens in " + w.name);
+    renderWorkshop();
+  });
+  function registerWorkshop() {
+    var w = WORKSHOPS[ws.wi], single = w.mode === "single", sc = w.schedules[single ? 0 : ws.sched];
+    if (single) sc.takenBy[ws.sess]++; else sc.taken++;
+    WS_REG[w.id] = { sched: single ? 0 : ws.sched, sess: single ? ws.sess : null };
+    var first = single ? sessionsOf(sc)[ws.sess] : sessionsOf(sc)[0];
+    var facts = single
+      ? [["Date", esc(fmtDate(first.date))], ["Time", esc(fmtRange(first.min, w.minutes))]]
+      : [["Schedule", esc(daysLabel(sc))], ["Sessions", sc.count + ", starting " + esc(fmtDate(first.date))]];
+    facts.push(["Organizer", esc(sc.organizer)], ["Location", esc(scheduleLocation(sc))]);
+    showDone({
+      title: "You’re registered",
+      text: single
+        ? w.name + " on " + fmtDate(first.date) + " at " + fmtTime(first.min) + ". We’ll remind you the day before."
+        : w.name + " — all " + sc.count + " sessions. The first is " + fmtDate(first.date) + " at " + fmtTime(first.min) + "; we’ll remind you the day before each one.",
+      facts: facts,
+      actions: [
+        { label: "Done", primary: true, fn: function () { goSection(0); } },
+        { label: "View workshop", fn: function () { openWorkshop(ws.wi); } }
+      ]
+    });
+  }
+  on("ss-ws-register", "click", registerWorkshop);
+  on("ss-ws-register-bar", "click", registerWorkshop);
+
+  // ---------------- v6: done — the one screen every booking ends on ----------------
+  var doneActions = [];
+  function showDone(o) {
+    $("ss-done-title").textContent = o.title;
+    $("ss-done-text").textContent = o.text;
+    $("ss-done-facts").innerHTML = o.facts.map(function (f) { return "<dt>" + f[0] + "</dt><dd>" + f[1] + "</dd>"; }).join("");
+    doneActions = o.actions;
+    $("ss-done-actions").innerHTML = o.actions.map(function (a, i) {
+      return '<button type="button" class="btn ' + (a.primary ? "btn--primary" : "btn--secondary") + ' btn--base" data-done="' + i + '">' + esc(a.label) + "</button>";
+    }).join("");
+    showView("done");
+  }
+  if (V6) $("ss-done-actions").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-done]");
+    if (b) doneActions[+b.dataset.done].fn();
   });
 
   updateUpcomingCount();

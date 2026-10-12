@@ -338,6 +338,9 @@ const ICONS = {
   person: icon("person", ""),
   copy: icon("content_copy", "btn__icon"),
   noteClock: icon("schedule", ""),
+  dateRange: icon("date_range", ""),
+  today: icon("today", ""),
+  people: icon("group", ""),
 };
 
 const UNDERLINE_NAV = `<nav class="ss-sections" aria-label="Scheduling sections">
@@ -375,6 +378,106 @@ const markupFor = () =>
     .replace(UNDERLINE_NAV, SEGMENTED_NAV)
     .replace(BROWSE_HEAD, BROWSE_HEAD_V5);
 
+// ---------------- v6: Book + My schedule ----------------
+// Six live tabs fold into two. Book is one catalogue — appointments, drop-in
+// desks and workshops — narrowed by a Type dropdown chip next to Department
+// (the drop-in toggle chip is gone: Type covers it). Two new views: the
+// workshop page (choose a schedule or a date, register) and the success
+// screen every booking ends on.
+const sectionsV6 = DATA.SECTIONS_V6.map(
+  (s, i) => `<button class="tab tab--base${i === 0 ? " tab--active" : ""}" type="button" role="tab" aria-selected="${i === 0}">${s}</button>`
+).join("\n      ");
+const SEGMENTED_NAV_V6 = SEGMENTED_NAV.replace(sectionsSeg, sectionsV6);
+const DROP_CHIP = `<button class="chip chip--lg" id="ss-drop-chip" type="button" aria-pressed="false">Drop-in available</button>`;
+const DEPT_CHIP = `<button class="chip chip--lg chip--dropdown" id="ss-dept-chip" type="button" aria-haspopup="listbox" aria-expanded="false"><span class="chip__label" id="ss-dept-label">Department</span>${chevronDown}</button>`;
+const TYPE_CHIP = `<button class="chip chip--lg chip--dropdown" id="ss-type-chip" type="button" aria-haspopup="listbox" aria-expanded="false"><span class="chip__label" id="ss-type-label">Type</span>${chevronDown}</button>`;
+const APPTS_HEAD = `<h2 class="ss-title">My appointments</h2>
+        <p class="ss-sub ss-sub--sm">Your visits with advisors — check in, reschedule or cancel here.</p>`;
+const APPTS_BACK = `<span>My appointments</span></button>`;
+const PLACEHOLDER = `<!-- ============ other sections (not designed yet) ============ -->`;
+for (const [name, frag] of Object.entries({ DROP_CHIP, DEPT_CHIP, APPTS_HEAD, APPTS_BACK, PLACEHOLDER })) {
+  if (!markup.includes(frag)) throw new Error(`v6: markup drifted — update ${name}`);
+}
+
+const V6_VIEWS = `<!-- ============ Workshop ============ -->
+    <!-- One page for every workshop: what it is, then the choice the workshop
+         needs — a schedule (series with several), nothing (series with one),
+         or a date (single sessions) — and the registration summary beside it.
+         On a phone the Register button rides in a bar at the bottom. -->
+    <section class="ss-view" data-view="workshop">
+      <button class="btn btn--ghost btn--sm ss-back" id="ss-ws-back" type="button">${icon("arrow_back", "btn__icon")}<span>Book</span></button>
+      <div class="ss-head">
+        <div class="ss-detail__title"><h2 class="ss-title" id="ss-ws-name"></h2><span class="ss-ws-badges" id="ss-ws-badges"></span></div>
+        <p class="ss-sub" id="ss-ws-meta"></p>
+      </div>
+      <div class="alert is-hidden" id="ss-ws-note" role="status">
+        ${icon("info", "alert__icon")}
+        <div class="alert__stack">
+          <p class="alert__message"><span class="alert__title" id="ss-ws-note-title"></span> <span id="ss-ws-note-text"></span></p>
+          <div class="alert__actions" id="ss-ws-note-actions"></div>
+        </div>
+      </div>
+      <div class="ss-pick">
+        <div class="ss-choose ss-choose--ws">
+          <div class="ss-detail__section"><h3>About this workshop</h3><p id="ss-ws-about"></p></div>
+          <div class="ss-step" id="ss-ws-choose">
+            <div class="ss-step__head"><h3 class="ss-step__title" id="ss-ws-choose-title"></h3><span class="ss-note" id="ss-ws-choose-hint"></span></div>
+            <div class="ss-ws-options" id="ss-ws-options" role="radiogroup" aria-labelledby="ss-ws-choose-title"></div>
+            <div class="ss-ws-fixed card is-hidden" id="ss-ws-fixed"></div>
+          </div>
+          <div class="ss-step is-hidden" id="ss-ws-sessions-step">
+            <div class="ss-step__head"><h3 class="ss-step__title">Sessions</h3><span class="ss-note" id="ss-ws-sessions-count"></span></div>
+            <ol class="ss-sessions" id="ss-ws-sessions"></ol>
+            <button class="btn btn--ghost btn--sm ss-sessions__more is-hidden" id="ss-ws-more" type="button"></button>
+          </div>
+        </div>
+        <aside class="card ss-summary" id="ss-ws-summary" aria-label="Your registration">
+          <div class="card__head"><h3 class="card__title">Your registration</h3></div>
+          <div class="card__body">
+            <dl class="ss-facts" id="ss-ws-facts"></dl>
+            <div class="ss-rule"></div>
+            <div class="ss-loc">
+              <span class="ss-eyebrow">Location</span>
+              <p class="ss-loc__text" id="ss-ws-location"></p>
+            </div>
+          </div>
+          <div class="card__foot ss-ws-foot">
+            <button class="btn btn--primary btn--base btn--block" id="ss-ws-register" type="button" disabled>Register</button>
+          </div>
+        </aside>
+      </div>
+      <div class="ss-cta-bar" id="ss-ws-bar"><button class="btn btn--primary btn--base btn--block" id="ss-ws-register-bar" type="button" disabled>Register</button></div>
+    </section>
+
+    <!-- ============ Done — every booking ends here ============ -->
+    <section class="ss-view" data-view="done">
+      <div class="card ss-done">
+        <div class="card__body ss-done__body">
+          <span class="ss-done__icon">${icon("check_circle", "")}</span>
+          <h2 class="ss-title" id="ss-done-title"></h2>
+          <p class="ss-sub" id="ss-done-text"></p>
+        </div>
+        <div class="card__body ss-done__facts"><dl class="ss-dl" id="ss-done-facts"></dl></div>
+        <div class="card__foot ss-done__actions" id="ss-done-actions"></div>
+      </div>
+    </section>
+
+    `;
+
+const markupV6 = () =>
+  markupFor()
+    .replace(SEGMENTED_NAV, SEGMENTED_NAV_V6)
+    .replace('<h2 class="ss-title">Browse services</h2>', '<h2 class="ss-title">Book</h2>')
+    .replace("Book time with an advisor: find the service you need, then pick a time that works for you.", "Appointments with an advisor, drop-in hours and workshops — find what you need and book it here.")
+    .replace(/Search services/g, "Search")
+    .replace(DROP_CHIP, "")
+    .replace(DEPT_CHIP, TYPE_CHIP + "\n          " + DEPT_CHIP)
+    .replace(APPTS_HEAD, `<h2 class="ss-title">My schedule</h2>
+        <p class="ss-sub ss-sub--sm">Your appointments with advisors — check in, reschedule or cancel here.</p>`)
+    .replace(APPTS_BACK, `<span>My schedule</span></button>`)
+    .replace(">Go to Drop-Ins<", ">See drop-in hours<")
+    .replace(PLACEHOLDER, V6_VIEWS + PLACEHOLDER);
+
 // Two layouts of the same app, both kept buildable rather than frozen as
 // copies: v5 (departments as text under the name) is current, v1 (the
 // original list) stays comparable in the viewer's Versions dropdown.
@@ -391,9 +494,9 @@ ${appCss}
 </style>
 </head>
 <body>
-${markupFor(layout)}
+${layout === "v6" ? markupV6() : markupFor(layout)}
 <script>
-${ssAppJs({ ...DATA, ICONS, LAYOUT: layout })}
+${ssAppJs({ ...DATA, ICONS, LAYOUT: layout === "v6" ? "text" : layout, V6: layout === "v6" })}
 </script>
 </body>
 </html>
@@ -403,9 +506,10 @@ const viewerHtml = renderDesignViewer({
   activeKey: "student-scheduling",
   title: "Student Scheduling",
   heading: "Student Scheduling",
-  sub: `The student side of Scheduling — browse services, pick a time, confirm. Same flow and content as the live app, rebuilt strictly from hp-design components. <b>What changed is the UI, not the flow:</b> sort is a ghost Button + Listbox on the results line instead of a third filter-looking dropdown; "Drop-in available" is a toggle Chip that clears itself (no separate Clear button); Department is the dropdown chip. <b>v5 (current)</b> is cards on a phone and list rows from 768px: the 16px service name, the departments that offer it as plain comma-separated text right under it, then duration and the booking-mode Badge (base, regular weight; By appointment in violet), then Pick a time in the Button <b>tint</b> variant. The department is chosen on the pick-a-time page — pre-set when the browse filter already named one. <b>v1</b> wears the same shell but picks the department in the list: a Select in the row when several departments offer the service, an outline Badge when only one does, and Pick a time in Button secondary. Picking a time is one page — day and time ChoiceTiles on the left, a sticky <b>Your appointment</b> Card on the right with the advisor RadioGroup and the one Confirm — instead of a time popup followed by a side drawer. Try <b>Academic Difficulty</b> for the no-openings state, <b>Career Counseling</b> or <b>Degree Planning</b> for a service offered by several departments. <b>Appointments</b> is built too: Upcoming (with a count) / Past / Cancelled as segmented Tabs, rows grouped by day, check-in that opens 15 minutes ahead (the 10:30 one today is open — the prototype's clock is 10:20 AM), a details page with the advisor's questions in a Modal, Reschedule back into pick-a-time, and Cancel behind an AlertDialog. Booking on Browse lands in Upcoming. Drop-Ins, Workshops, Reserve a Seat and Calendar are placeholders.`,
+  sub: `The student side of Scheduling — browse services, pick a time, confirm. Same flow and content as the live app, rebuilt strictly from hp-design components. <b>What changed is the UI, not the flow:</b> sort is a ghost Button + Listbox on the results line instead of a third filter-looking dropdown; "Drop-in available" is a toggle Chip that clears itself (no separate Clear button); Department is the dropdown chip. <b>v6 (current)</b> folds the live app's six tabs into two — <b>Book</b> and <b>My schedule</b>. Book is one catalogue of appointments (Pick a time), drop-in desks (Join queue while open, Reserve a seat before it opens) and workshops (Register), narrowed by a Type dropdown chip beside Department. A workshop page lists every schedule as a ChoiceTile (no carousel), the chosen schedule's sessions, and a sticky registration card — on a phone, Register sits in a bar at the bottom. Every booking ends on one success screen. Try <b>Resume Writing Workshop</b> (three schedules, one full), <b>Interview Prep</b> (pick one date) and <b>Time Management Essentials</b> (full). My schedule is still v5's appointments list for now. <b>v5</b> is cards on a phone and list rows from 768px: the 16px service name, the departments that offer it as plain comma-separated text right under it, then duration and the booking-mode Badge (base, regular weight; By appointment in violet), then Pick a time in the Button <b>tint</b> variant. The department is chosen on the pick-a-time page — pre-set when the browse filter already named one. <b>v1</b> wears the same shell but picks the department in the list: a Select in the row when several departments offer the service, an outline Badge when only one does, and Pick a time in Button secondary. Picking a time is one page — day and time ChoiceTiles on the left, a sticky <b>Your appointment</b> Card on the right with the advisor RadioGroup and the one Confirm — instead of a time popup followed by a side drawer. Try <b>Academic Difficulty</b> for the no-openings state, <b>Career Counseling</b> or <b>Degree Planning</b> for a service offered by several departments. <b>Appointments</b> is built too: Upcoming (with a count) / Past / Cancelled as segmented Tabs, rows grouped by day, check-in that opens 15 minutes ahead (the 10:30 one today is open — the prototype's clock is 10:20 AM), a details page with the advisor's questions in a Modal, Reschedule back into pick-a-time, and Cancel behind an AlertDialog. Booking on Browse lands in Upcoming. Drop-Ins, Workshops, Reserve a Seat and Calendar are placeholders.`,
   versions: [
-    { label: "v5", note: "departments as text · current", file: "student-scheduling-app.html" },
+    { label: "v6", note: "Book + My schedule · workshops · current", file: "student-scheduling-v6-app.html" },
+    { label: "v5", note: "departments as text", file: "student-scheduling-app.html" },
     { label: "v1", note: "department picked in the list", file: "student-scheduling-v1-app.html" },
   ],
 });
@@ -413,7 +517,9 @@ const viewerHtml = renderDesignViewer({
 fs.mkdirSync(path.join(root, "docs/designs"), { recursive: true });
 fs.writeFileSync(path.join(root, "docs/designs/student-scheduling-app.html"), appHtmlFor("text"));
 fs.writeFileSync(path.join(root, "docs/designs/student-scheduling-v1-app.html"), appHtmlFor("list"));
+fs.writeFileSync(path.join(root, "docs/designs/student-scheduling-v6-app.html"), appHtmlFor("v6"));
 fs.writeFileSync(path.join(root, "docs/designs/student-scheduling.html"), viewerHtml);
 console.log("wrote docs/designs/student-scheduling-app.html (v5, departments as text)");
 console.log("wrote docs/designs/student-scheduling-v1-app.html (v1, list)");
+console.log("wrote docs/designs/student-scheduling-v6-app.html (v6, Book + My schedule)");
 console.log("wrote docs/designs/student-scheduling.html");
