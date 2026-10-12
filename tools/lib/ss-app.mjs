@@ -762,6 +762,22 @@ export function ssAppJs(d) {
   }
   function renderAppts() {
     updateUpcomingCount();
+    if (V6) {
+      var calMode = schedMode === "calendar";
+      document.querySelectorAll("#ss-sched-mode .tab").forEach(function (t) {
+        var on = t.dataset.mode === schedMode;
+        t.classList.toggle("tab--active", on);
+        t.setAttribute("aria-selected", on ? "true" : "false");
+      });
+      $("ss-appt-tabs").classList.toggle("is-hidden", calMode);
+      $("ss-cal").classList.toggle("is-hidden", !calMode);
+      if (calMode) {
+        $("ss-appts").classList.add("is-hidden");
+        $("ss-appts-empty").classList.add("is-hidden");
+        renderCal();
+        return;
+      }
+    }
     document.querySelectorAll("#ss-appt-tabs .tab").forEach(function (t) {
       var on = t.dataset.apptTab === apptTab;
       t.classList.toggle("tab--active", on);
@@ -799,7 +815,7 @@ export function ssAppJs(d) {
     t.addEventListener("click", function () { apptTab = t.dataset.apptTab; renderAppts(); });
   });
   $("ss-appts-browse").addEventListener("click", function () { goSection(0); });
-  $("ss-appts").addEventListener("click", function (e) {
+  function scheduleClick(e) {
     var c = e.target.closest("[data-checkin]");
     if (c) { checkIn(apptById(c.dataset.checkin)); renderAppts(); return; }
     var mc = e.target.closest("[data-ws-checkin]");
@@ -810,7 +826,9 @@ export function ssAppJs(d) {
     if (vv) { openVisit(vv.dataset.visit, "schedule"); return; }
     var d = e.target.closest("[data-appt]");
     if (d) openAppt(d.dataset.appt);
-  });
+  }
+  $("ss-appts").addEventListener("click", scheduleClick);
+  on("ss-cal-day", "click", scheduleClick);
   function checkIn(a) {
     a.checkedIn = true;
     var first = a.advisor.split(" ")[0];
@@ -1113,16 +1131,17 @@ export function ssAppJs(d) {
 
   // My schedule rows for drop-ins: live / reserved in Upcoming, done in Past
   function visitEntries(tab) {
-    return VISITS.filter(function (v) { return tab === "upcoming" ? v.state !== "done" : v.state === "done"; }).map(function (v) {
-      var meta = fact(ICONS.person, v.state === "done" || v.advisor && !LIVE[v.state] ? "With " + v.advisor + " · " + v.dept : v.dept) +
-        '<span class="ss-fact">' + ICONS.group + '<span class="ss-fact__text">' + esc("In person — " + visitWhere(v)) + "</span></span>";
-      var html = '<article class="ss-appt">' +
-        '<div class="ss-appt__time"><span class="ss-appt__clock">' + fmtTime(v.state === "done" ? v.startAt || v.min : v.min) + '</span><span class="ss-appt__dur">' + (v.state === "reserved" ? "Opens" : v.state === "done" ? (v.end - (v.startAt || v.min)) + " min" : "Joined") + "</span></div>" +
-        '<div class="ss-appt__main"><div class="ss-appt__title"><h3 class="ss-appt__name">' + esc(v.name) + "</h3>" + vbadge("primary", "Drop-in") + visitStatusBadge(v) + "</div>" +
-        '<div class="ss-appt__meta">' + meta + "</div></div>" +
-        '<div class="ss-appt__actions"><div class="ss-appt__btns"><button type="button" class="btn btn--secondary btn--sm" data-visit="' + v.id + '">Details</button></div></div></article>';
-      return { date: v.date, min: v.min, html: html };
-    });
+    return VISITS.filter(function (v) { return tab === "upcoming" ? v.state !== "done" : v.state === "done"; }).map(visitEntry);
+  }
+  function visitEntry(v) {
+    var meta = fact(ICONS.person, v.state === "done" || v.advisor && !LIVE[v.state] ? "With " + v.advisor + " · " + v.dept : v.dept) +
+      '<span class="ss-fact">' + ICONS.group + '<span class="ss-fact__text">' + esc("In person — " + visitWhere(v)) + "</span></span>";
+    var html = '<article class="ss-appt">' +
+      '<div class="ss-appt__time"><span class="ss-appt__clock">' + fmtTime(v.state === "done" ? v.startAt || v.min : v.min) + '</span><span class="ss-appt__dur">' + (v.state === "reserved" ? "Opens" : v.state === "done" ? (v.end - (v.startAt || v.min)) + " min" : "Joined") + "</span></div>" +
+      '<div class="ss-appt__main"><div class="ss-appt__title"><h3 class="ss-appt__name">' + esc(v.name) + "</h3>" + vbadge("primary", "Drop-in") + visitStatusBadge(v) + "</div>" +
+      '<div class="ss-appt__meta">' + meta + "</div></div>" +
+      '<div class="ss-appt__actions"><div class="ss-appt__btns"><button type="button" class="btn btn--secondary btn--sm" data-visit="' + v.id + '">Details</button></div></div></article>';
+    return { date: v.date, min: v.min, html: html };
   }
 
   // ---------------- v6: workshops ----------------
@@ -1554,6 +1573,104 @@ export function ssAppJs(d) {
       });
     });
   }
+
+  // ---------------- v6: My schedule — calendar ----------------
+  var schedMode = "list";
+  document.querySelectorAll("#ss-sched-mode .tab").forEach(function (t) {
+    t.addEventListener("click", function () { schedMode = t.dataset.mode; renderAppts(); });
+  });
+  var cal = { y: today.getFullYear(), m: today.getMonth(), sel: TODAY };
+  // Every dated thing: appointments (not cancelled), every session of each
+  // registered workshop (not just the next), drop-in visits.
+  function calEvents() {
+    var out = [];
+    APPTS.forEach(function (a) {
+      if (a.status === "cancelled") return;
+      out.push({ date: a.date, min: a.min, kind: "appointment", title: a.service, entry: function () { return { html: apptRow(a) }; } });
+    });
+    WORKSHOPS.forEach(function (w, wi) {
+      var r = WS_REG[w.id];
+      if (!r) return;
+      var all = sessionsOf(w.schedules[r.sched]);
+      myIdx(w, r).forEach(function (k) {
+        out.push({ date: isoDate(all[k].date), min: all[k].min, kind: "workshop", title: w.name, entry: function () { return calSessionEntry(w, wi, r, k); } });
+      });
+    });
+    VISITS.forEach(function (v) {
+      out.push({ date: v.date, min: v.state === "done" ? v.startAt || v.min : v.min, kind: "dropin", title: v.name, entry: function () { return visitEntry(v); } });
+    });
+    return out.sort(function (a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : a.min - b.min; });
+  }
+  // One workshop session as a row: its own status — attended / missed if it
+  // has happened, not going if skipped, check-in on the day.
+  function calSessionEntry(w, wi, r, k) {
+    var sc = w.schedules[r.sched], x = sessionsOf(sc)[k], past = sessPast(w, x), single = w.mode === "single";
+    var b = vbadge("teal", "Workshop");
+    if (past) b += attendanceOf(w, k) === "attended" ? badge("success", "Attended") : badge("neutral", "Missed");
+    else if (r.skipped[k]) b += badge("neutral", "Not going");
+    else if (r.checkedIn[k]) b += badge("success", "Checked in");
+    else if (sessCheckinOpen(w, x)) b += badge("success", "Check-in open");
+    var html = '<article class="ss-appt">' +
+      '<div class="ss-appt__time"><span class="ss-appt__clock">' + fmtTime(x.min) + '</span><span class="ss-appt__dur">' + w.minutes + " min</span></div>" +
+      '<div class="ss-appt__main"><div class="ss-appt__title"><h3 class="ss-appt__name">' + esc(w.name) + "</h3>" + b + "</div>" +
+      '<div class="ss-appt__meta">' + fact(ICONS.dateRange, single ? "One session" : "Session " + (k + 1) + " of " + sc.count) +
+      fact(ICONS.person, sc.organizer + " · " + w.dept) +
+      '<span class="ss-fact">' + WS_FORMAT[sc.format].icon + '<span class="ss-fact__text">' + esc(wsWhere(sc)) + "</span></span></div></div>" +
+      '<div class="ss-appt__actions"><div class="ss-appt__btns">' +
+      (!past && sessCheckinOpen(w, x) && !r.checkedIn[k] && !r.skipped[k] ? '<button type="button" class="btn btn--primary btn--sm" data-ws-checkin="' + wi + ":" + k + '">Check in</button>' : "") +
+      '<button type="button" class="btn btn--secondary btn--sm" data-myws="' + wi + '">Details</button></div></div></article>';
+    return { html: html };
+  }
+  function renderCal() {
+    var events = calEvents(), byDay = {};
+    events.forEach(function (e) { (byDay[e.date] = byDay[e.date] || []).push(e); });
+    var first = new Date(cal.y, cal.m, 1);
+    $("ss-cal-label").textContent = MON_LONG[cal.m] + " " + cal.y;
+    // six-week grid from the Sunday on or before the 1st
+    var start = addDays(first, -first.getDay());
+    var weeks = Math.ceil((first.getDay() + new Date(cal.y, cal.m + 1, 0).getDate()) / 7);
+    var h = DOW.map(function (d) { return '<span class="ss-cal__dow" aria-hidden="true">' + d.slice(0, 2) + "</span>"; }).join("");
+    for (var i = 0; i < weeks * 7; i++) {
+      var dt = addDays(start, i), k = isoDate(dt), ev = byDay[k] || [];
+      var cls = "ss-cal__cell" + (dt.getMonth() !== cal.m ? " is-outside" : "") + (k === TODAY ? " is-today" : "") + (k === cal.sel ? " is-selected" : "");
+      var label = DOW_LONG[dt.getDay()] + ", " + MON_LONG[dt.getMonth()] + " " + dt.getDate() + (ev.length ? ", " + ev.length + (ev.length === 1 ? " event" : " events") : "");
+      var chips = ev.slice(0, 2).map(function (e) { return '<span class="ss-cal__ev ss-cal__ev--' + e.kind + '">' + esc(fmtTime(e.min).replace(":00", "").replace(" ", "").toLowerCase() + " " + e.title) + "</span>"; }).join("") +
+        (ev.length > 2 ? '<span class="ss-cal__more">+' + (ev.length - 2) + " more</span>" : "");
+      var dots = ev.slice(0, 3).map(function (e) { return '<span class="ss-cal__dot ss-cal__dot--' + e.kind + '"></span>'; }).join("");
+      h += '<button type="button" class="' + cls + '" data-cal-date="' + k + '" aria-label="' + label + '"' + (k === cal.sel ? ' aria-pressed="true"' : ' aria-pressed="false"') + ">" +
+        '<span class="ss-cal__num">' + dt.getDate() + "</span>" +
+        '<span class="ss-cal__dots">' + dots + "</span>" +
+        '<span class="ss-cal__evs">' + chips + "</span></button>";
+    }
+    $("ss-cal-grid").innerHTML = h;
+    // the chosen day
+    var sel = new Date(cal.sel + "T00:00:00"), list = byDay[cal.sel] || [];
+    $("ss-cal-day-title").textContent = (cal.sel === TODAY ? "Today · " : "") + DOW[sel.getDay()] + ", " + MON[sel.getMonth()] + " " + sel.getDate();
+    $("ss-cal-day").innerHTML = list.map(function (e) { return e.entry().html; }).join("");
+    $("ss-cal-day").classList.toggle("is-hidden", !list.length);
+    $("ss-cal-empty").classList.toggle("is-hidden", !!list.length);
+  }
+  on("ss-cal-grid", "click", function (e) {
+    var c = e.target.closest("[data-cal-date]");
+    if (!c) return;
+    var d = new Date(c.dataset.calDate + "T00:00:00");
+    cal.sel = c.dataset.calDate;
+    // a day from the next/previous month brings that month in
+    cal.y = d.getFullYear(); cal.m = d.getMonth();
+    renderCal();
+    var btn = document.querySelector('[data-cal-date="' + cal.sel + '"]');
+    if (btn) btn.focus();
+  });
+  function calShift(n) {
+    var d = new Date(cal.y, cal.m + n, 1);
+    cal.y = d.getFullYear(); cal.m = d.getMonth();
+    // keep a day of the shown month selected: today if it's here, else the 1st
+    var t = new Date(TODAY + "T00:00:00");
+    cal.sel = t.getFullYear() === cal.y && t.getMonth() === cal.m ? TODAY : isoDate(d);
+    renderCal();
+  }
+  on("ss-cal-prev", "click", function () { calShift(-1); });
+  on("ss-cal-next", "click", function () { calShift(1); });
 
   // ---------------- v6: done — the one screen every booking ends on ----------------
   var doneActions = [];

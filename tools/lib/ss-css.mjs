@@ -19,7 +19,7 @@ export function ssCss(h) {
     return `${px(s.offsetX)} ${px(s.offsetY)} ${px(s.blur)} ${px(s.spread)} ${s.color}`;
   };
 
-  const { tabs, button, select, search, chip, listbox: lb, card, badge, pagination: pg, choiceTile: ct, radio, alert, toast, tooltip: tt, emptyState: es, modal, input, counter, progress, attachment: att, accordion: acc } = t;
+  const { tabs, button, select, search, chip, listbox: lb, card, badge, pagination: pg, choiceTile: ct, radio, alert, toast, tooltip: tt, emptyState: es, modal, input, counter, progress, attachment: att, accordion: acc, datePicker: dp } = t;
 
   const btn = (variant, size) => ({
     height: D(button[variant].size[size].height),
@@ -641,6 +641,47 @@ html:has(.modal[open]) { overflow: hidden; }
 .ss-visit__text { margin: 0; color: ${cv("text.secondary")}; ${typoCss(style("body-base"))} }
 .ss-visit .progress { margin-top: ${dim(2)}; }
 .ss-v-rate { display: flex; flex-wrap: wrap; gap: ${dim(2)}; }
+
+/* ============ v6 — My schedule: List / Calendar ============ */
+/* Tabs icon: segmented Tabs have no icon role of their own — the icon takes
+   the label's colour in every state (state.*.label), by design. */
+.tab__icon { flex-shrink: 0; width: ${D(tabs.size.sm.iconSize)}; height: ${D(tabs.size.sm.iconSize)}; color: currentColor; }
+.ss-sched-row .tabs--segmented { flex-shrink: 0; }
+.ss-cal { display: flex; flex-direction: column; gap: ${dim(5)}; }
+.ss-cal__month { padding: ${D(card.padding)}; display: flex; flex-direction: column; gap: ${dim(3)}; }
+.ss-cal__head { display: flex; align-items: center; justify-content: space-between; gap: ${dim(3)}; }
+/* the month: 7 columns, DatePicker's weekday + day recipe, stretched */
+.ss-cal__grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: ${dim(1)}; }
+.ss-cal__dow { text-align: center; color: ${R(dp.weekday.color)}; ${typoCss(T(dp.weekday.label))} text-transform: ${labelSmCase}; letter-spacing: ${labelSm.letterSpacing}; padding-bottom: ${dim(1)}; }
+.ss-cal__cell { display: flex; flex-direction: column; align-items: center; gap: ${dim(1)}; min-width: 0; min-height: ${dim(14)}; padding: ${dim(1)} 0; border: none; border-radius: ${D(dp.day.radius)}; background: transparent; cursor: pointer; font-family: inherit; }
+.ss-cal__cell:hover { background: ${R(dp.day.hoverBg)}; }
+.ss-cal__cell:focus-visible { outline: ${ringW} solid ${cv("border.focus")}; outline-offset: -${ringW}; }
+.ss-cal__num { display: inline-flex; align-items: center; justify-content: center; width: ${D(dp.day.size)}; height: ${D(dp.day.size)}; border-radius: ${D(dp.day.radius)}; color: ${R(dp.day.color)}; ${typoCss(T(dp.day.label))} }
+.ss-cal__cell.is-outside .ss-cal__num { color: ${R(dp.day.outsideColor)}; }
+.ss-cal__cell.is-today .ss-cal__num { box-shadow: inset 0 0 0 1px ${R(dp.day.todayBorder)}; }
+.ss-cal__cell.is-selected .ss-cal__num { background: ${R(dp.day.selectedBg)}; color: ${R(dp.day.selectedText)}; box-shadow: none; }
+.ss-cal__dots { display: flex; gap: ${dim(1)}; height: ${dim("1_5")}; }
+.ss-cal__dot { width: ${dim("1_5")}; height: ${dim("1_5")}; border-radius: 50%; flex-shrink: 0; }
+/* event colours = the Badges each kind wears elsewhere: violet, blue, teal */
+.ss-cal__dot--appointment { background: ${R(badge.color.violet.solid.bg)}; }
+.ss-cal__dot--dropin { background: ${R(badge.role.primary.solid.bg)}; }
+.ss-cal__dot--workshop { background: ${R(badge.color.teal.solid.bg)}; }
+.ss-cal__evs { display: none; }
+.ss-cal__legend { display: flex; flex-wrap: wrap; gap: ${dim(2)} ${dim(4)}; border-top: 1px solid ${R(card.divider)}; padding-top: ${dim(3)}; }
+.ss-cal__key { display: inline-flex; align-items: center; gap: ${dim("1_5")}; color: ${cv("text.secondary")}; ${typoCss(style("body-sm"))} }
+.ss-cal__key .ss-cal__dot { width: ${dim(2)}; height: ${dim(2)}; }
+/* from 768 a day shows its first two events as chips (time + title) */
+@media (min-width: 768px) {
+  .ss-cal__cell { align-items: stretch; min-height: ${dim(24)}; padding: ${dim(1)}; }
+  .ss-cal__num { align-self: flex-start; }
+  .ss-cal__dots { display: none; }
+  .ss-cal__evs { display: flex; flex-direction: column; gap: ${dim("0_5")}; min-width: 0; }
+  .ss-cal__ev { display: block; padding: 0 ${dim(1)}; border-radius: ${D(badge.radius)}; ${typoCss(style("body-xs"))} line-height: ${dim(4)}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: left; }
+  .ss-cal__ev--appointment { background: ${R(badge.color.violet.tint.bg)}; color: ${R(badge.color.violet.tint.text)}; }
+  .ss-cal__ev--dropin { background: ${R(badge.role.primary.tint.bg)}; color: ${R(badge.role.primary.tint.text)}; }
+  .ss-cal__ev--workshop { background: ${R(badge.color.teal.tint.bg)}; color: ${R(badge.color.teal.tint.text)}; }
+  .ss-cal__more { padding: 0 ${dim(1)}; color: ${cv("text.secondary")}; ${typoCss(style("body-xs"))} text-align: left; }
+}
 .is-hidden { display: none !important; }
 `;
 }
