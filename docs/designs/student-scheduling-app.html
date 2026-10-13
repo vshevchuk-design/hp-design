@@ -494,6 +494,14 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   .ss-item:last-child { border-bottom: none; }
   .ss-item__cta { width: auto; }
 }
+/* v6: sort sits at the end of the filter row, after Department; pulled
+   in by the ghost button's padding so its label lines up with the edge. */
+.ss-filters .ss-sort-inline { margin-inline-start: auto; margin-inline-end: -8px; flex-shrink: 0; }
+@media (min-width: 768px) { .ss-tools:has(.ss-sort-inline) .ss-filters { flex: 1; } }
+/* v6: Type tabs under the filter row, full width (scrolls on a narrow phone) */
+.ss-type-tabs { width: 100%; }
+/* on a phone all four fit: Tabs sm's horizontal padding, extra width shared */
+@media (max-width: 767px) { .ss-type-tabs { gap: 0; } .ss-type-tabs .tab { flex: 1 1 auto; padding: 0 8px; } }
 .ss-pager { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
 
 /* ============ pick a time (ss-*) ============ */
@@ -1213,17 +1221,17 @@ html:has(.modal[open]) { overflow: hidden; }
     st.page = 0; renderBrowse();
   });
 
-  // v6 — Type: All / Appointments / Drop-ins / Workshops (dropdown chip).
-  var TYPES = [{ value: "", label: "All types" }, { value: "appointment", label: "Appointments" }, { value: "dropin", label: "Drop-ins" }, { value: "workshop", label: "Workshops" }];
-  var typeChip = $("ss-type-chip");
+  // v6 — Type: underline Tabs All / Appointments / Drop-ins / Workshops.
+  var typeTabs = document.querySelectorAll("#ss-type-tabs .tab");
   function setType(v) {
     st.type = v; st.page = 0;
-    $("ss-type-label").textContent = v ? TYPES.filter(function (x) { return x.value === v; })[0].label : "Type";
-    typeChip.classList.toggle("chip--checked-outline", !!v);
+    typeTabs.forEach(function (t) {
+      var on = t.dataset.type === v;
+      t.classList.toggle("tab--active", on);
+      t.setAttribute("aria-selected", on ? "true" : "false");
+    });
   }
-  if (typeChip) typeChip.addEventListener("click", function () {
-    openListbox(typeChip, TYPES, st.type, function (v) { setType(v); renderBrowse(); });
-  });
+  typeTabs.forEach(function (t) { t.addEventListener("click", function () { setType(t.dataset.type); renderBrowse(); }); });
 
   var SORTS = V6
     ? [{ value: "name", label: "Name (A–Z)" }, { value: "kind", label: "Type" }]
@@ -1243,7 +1251,7 @@ html:has(.modal[open]) { overflow: hidden; }
     $("ss-dept-label").textContent = "Department";
     deptChip.classList.remove("chip--checked-outline");
     dropChip.setAttribute("aria-pressed", "false");
-    if (typeChip) setType("");
+    if (V6) setType("");
     renderBrowse();
   });
 

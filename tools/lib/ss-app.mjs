@@ -230,17 +230,17 @@ export function ssAppJs(d) {
     st.page = 0; renderBrowse();
   });
 
-  // v6 — Type: All / Appointments / Drop-ins / Workshops (dropdown chip).
-  var TYPES = [{ value: "", label: "All types" }, { value: "appointment", label: "Appointments" }, { value: "dropin", label: "Drop-ins" }, { value: "workshop", label: "Workshops" }];
-  var typeChip = $("ss-type-chip");
+  // v6 — Type: underline Tabs All / Appointments / Drop-ins / Workshops.
+  var typeTabs = document.querySelectorAll("#ss-type-tabs .tab");
   function setType(v) {
     st.type = v; st.page = 0;
-    $("ss-type-label").textContent = v ? TYPES.filter(function (x) { return x.value === v; })[0].label : "Type";
-    typeChip.classList.toggle("chip--checked-outline", !!v);
+    typeTabs.forEach(function (t) {
+      var on = t.dataset.type === v;
+      t.classList.toggle("tab--active", on);
+      t.setAttribute("aria-selected", on ? "true" : "false");
+    });
   }
-  if (typeChip) typeChip.addEventListener("click", function () {
-    openListbox(typeChip, TYPES, st.type, function (v) { setType(v); renderBrowse(); });
-  });
+  typeTabs.forEach(function (t) { t.addEventListener("click", function () { setType(t.dataset.type); renderBrowse(); }); });
 
   var SORTS = V6
     ? [{ value: "name", label: "Name (A–Z)" }, { value: "kind", label: "Type" }]
@@ -260,7 +260,7 @@ export function ssAppJs(d) {
     $("ss-dept-label").textContent = "Department";
     deptChip.classList.remove("chip--checked-outline");
     dropChip.setAttribute("aria-pressed", "false");
-    if (typeChip) setType("");
+    if (V6) setType("");
     renderBrowse();
   });
 

@@ -416,6 +416,14 @@ ${["neutral", "primary", "success", "warning", "danger"].map((r) => `.badge--${r
   .ss-item:last-child { border-bottom: none; }
   .ss-item__cta { width: auto; }
 }
+/* v6: sort sits at the end of the filter row, after Department; pulled
+   in by the ghost button's padding so its label lines up with the edge. */
+.ss-filters .ss-sort-inline { margin-inline-start: auto; margin-inline-end: -${bSm.paddingX}; flex-shrink: 0; }
+@media (min-width: 768px) { .ss-tools:has(.ss-sort-inline) .ss-filters { flex: 1; } }
+/* v6: Type tabs under the filter row, full width (scrolls on a narrow phone) */
+.ss-type-tabs { width: 100%; }
+/* on a phone all four fit: Tabs sm's horizontal padding, extra width shared */
+@media (max-width: 767px) { .ss-type-tabs { gap: 0; } .ss-type-tabs .tab { flex: 1 1 auto; padding: 0 ${D(tabs.size.sm.paddingX)}; } }
 .ss-pager { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: ${dim(3)}; }
 
 /* ============ pick a time (ss-*) ============ */

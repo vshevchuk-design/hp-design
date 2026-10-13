@@ -494,6 +494,14 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   .ss-item:last-child { border-bottom: none; }
   .ss-item__cta { width: auto; }
 }
+/* v6: sort sits at the end of the filter row, after Department; pulled
+   in by the ghost button's padding so its label lines up with the edge. */
+.ss-filters .ss-sort-inline { margin-inline-start: auto; margin-inline-end: -8px; flex-shrink: 0; }
+@media (min-width: 768px) { .ss-tools:has(.ss-sort-inline) .ss-filters { flex: 1; } }
+/* v6: Type tabs under the filter row, full width (scrolls on a narrow phone) */
+.ss-type-tabs { width: 100%; }
+/* on a phone all four fit: Tabs sm's horizontal padding, extra width shared */
+@media (max-width: 767px) { .ss-type-tabs { gap: 0; } .ss-type-tabs .tab { flex: 1 1 auto; padding: 0 8px; } }
 .ss-pager { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
 
 /* ============ pick a time (ss-*) ============ */
@@ -808,16 +816,19 @@ html:has(.modal[open]) { overflow: hidden; }
           <button class="search__clear" id="ss-search-clear" type="button" aria-label="Clear search"><svg class="" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
         </label>
         <div class="ss-filters">
-          <button class="chip chip--lg chip--dropdown" id="ss-type-chip" type="button" aria-haspopup="listbox" aria-expanded="false"><span class="chip__label" id="ss-type-label">Type</span><svg class="chip__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
           <button class="chip chip--lg chip--dropdown" id="ss-dept-chip" type="button" aria-haspopup="listbox" aria-expanded="false"><span class="chip__label" id="ss-dept-label">Department</span><svg class="chip__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+          <button class="btn btn--ghost btn--sm ss-sort-inline" id="ss-sort" type="button" aria-haspopup="listbox" aria-expanded="false"><svg class="btn__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3 18h6v-2H3v2zM3 6v2h18V6H3zm0 7h12v-2H3v2z"/></svg><span id="ss-sort-label">Name (A–Z)</span></button>
           
         </div>
       </div>
+      <div class="tabs--underline ss-type-tabs" id="ss-type-tabs" role="tablist" aria-label="Type">
+        <button class="tab tab--base tab--active" type="button" role="tab" aria-selected="true" data-type="">All</button>
+        <button class="tab tab--base" type="button" role="tab" aria-selected="false" data-type="appointment">Appointments</button>
+        <button class="tab tab--base" type="button" role="tab" aria-selected="false" data-type="dropin">Drop-ins</button>
+        <button class="tab tab--base" type="button" role="tab" aria-selected="false" data-type="workshop">Workshops</button>
+      </div>
 
       <div class="ss-results" id="ss-results">
-        <div class="ss-results__bar">
-          <button class="btn btn--ghost btn--sm" id="ss-sort" type="button" aria-haspopup="listbox" aria-expanded="false"><svg class="btn__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3 18h6v-2H3v2zM3 6v2h18V6H3zm0 7h12v-2H3v2z"/></svg><span id="ss-sort-label">Name (A–Z)</span></button>
-        </div>
         <div class="ss-hybrid ss-hybrid--flush" id="ss-list"></div>
         <div class="ss-pager" id="ss-pager">
           <span class="ss-note" id="ss-range"></span>
@@ -1397,17 +1408,17 @@ html:has(.modal[open]) { overflow: hidden; }
     st.page = 0; renderBrowse();
   });
 
-  // v6 — Type: All / Appointments / Drop-ins / Workshops (dropdown chip).
-  var TYPES = [{ value: "", label: "All types" }, { value: "appointment", label: "Appointments" }, { value: "dropin", label: "Drop-ins" }, { value: "workshop", label: "Workshops" }];
-  var typeChip = $("ss-type-chip");
+  // v6 — Type: underline Tabs All / Appointments / Drop-ins / Workshops.
+  var typeTabs = document.querySelectorAll("#ss-type-tabs .tab");
   function setType(v) {
     st.type = v; st.page = 0;
-    $("ss-type-label").textContent = v ? TYPES.filter(function (x) { return x.value === v; })[0].label : "Type";
-    typeChip.classList.toggle("chip--checked-outline", !!v);
+    typeTabs.forEach(function (t) {
+      var on = t.dataset.type === v;
+      t.classList.toggle("tab--active", on);
+      t.setAttribute("aria-selected", on ? "true" : "false");
+    });
   }
-  if (typeChip) typeChip.addEventListener("click", function () {
-    openListbox(typeChip, TYPES, st.type, function (v) { setType(v); renderBrowse(); });
-  });
+  typeTabs.forEach(function (t) { t.addEventListener("click", function () { setType(t.dataset.type); renderBrowse(); }); });
 
   var SORTS = V6
     ? [{ value: "name", label: "Name (A–Z)" }, { value: "kind", label: "Type" }]
@@ -1427,7 +1438,7 @@ html:has(.modal[open]) { overflow: hidden; }
     $("ss-dept-label").textContent = "Department";
     deptChip.classList.remove("chip--checked-outline");
     dropChip.setAttribute("aria-pressed", "false");
-    if (typeChip) setType("");
+    if (V6) setType("");
     renderBrowse();
   });
 
