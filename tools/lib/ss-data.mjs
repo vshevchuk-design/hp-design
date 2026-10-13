@@ -262,3 +262,17 @@ export const VISITS = [
 // The prototype's queue moves on its own: one student ahead is served every
 // QUEUE_TICK_MS (a stand-in for DROPIN_MINUTES_PER_STUDENT of real time).
 export const QUEUE_TICK_MS = 4000;
+
+// Before joining a drop-in queue (or reserving a seat): what the visit is
+// about — optional, so the advisor can come prepared. The live app asked
+// this twice ("What would you like help with?" + a "Visit type" list that
+// repeated the service names); one field covers it.
+export const DROPIN_TOPICS = [
+  "Choosing or changing classes",
+  "My education plan",
+  "Academic standing or probation",
+  "Transfer",
+  "Financial aid",
+  "Graduation check",
+  "Something else",
+];

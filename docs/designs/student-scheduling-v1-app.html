@@ -719,6 +719,15 @@ html:has(.modal[open]) { overflow: hidden; }
 .ss-visit__text { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 14px; line-height: 1.4; }
 .ss-visit .progress { margin-top: 8px; }
 .ss-v-rate { display: flex; flex-wrap: wrap; gap: 8px; }
+/* before joining: the optional fields, in their own band of the card */
+.ss-pre-fields { border-top: 1px solid var(--tok-border-default); gap: 16px; }
+.ss-field { display: flex; flex-direction: column; gap: 8px; }
+.ss-field__label { color: var(--tok-text-default); font-weight: 600; font-size: 12px; line-height: 1.4; }
+.ss-field__opt { color: var(--tok-text-muted); font-weight: 400; font-size: 12px; line-height: 1.4; margin-inline-start: 4px; }
+.ss-field__select { width: min(100%, 400px); }
+.ss-field__select .select__value { flex: 1; }
+.ss-pre-go { min-width: 160px; }
+@media (max-width: 559px) { .ss-pre-go { flex: 1 1 100%; } }
 
 /* ============ v6 — My schedule: List / Calendar ============ */
 /* Tabs icon: segmented Tabs have no icon role of their own — the icon takes
@@ -1003,6 +1012,7 @@ html:has(.modal[open]) { overflow: hidden; }
   var PER_STUDENT = 8;
   var VISITS = [{"id":"v1","name":"Writing Center","dept":"Tutoring Center","date":"2026-09-24","min":850,"end":872,"advisor":"Jonathan Rehm","state":"done","summary":{"text":"We worked on your thesis statement and the order of your body paragraphs. Notes on the draft are attached — revise paragraphs 2 and 3, then come back to check the conclusion.","files":[{"name":"Thesis feedback.pdf","meta":"PDF · 180 KB"}]}}];
   var QUEUE_TICK_MS = 4000;
+  var DROPIN_TOPICS = ["Choosing or changing classes","My education plan","Academic standing or probation","Transfer","Financial aid","Graduation check","Something else"];
   // "list" (v1: rows in one Card).
   var LAYOUT = "list";
   // "text" (v5): a flush divided list on a phone, list rows in a Card from
@@ -1388,9 +1398,9 @@ html:has(.modal[open]) { overflow: hidden; }
     var pick = e.target.closest("[data-pick]");
     if (pick) { openPick(+pick.dataset.pick); return; }
     var q = e.target.closest("[data-queue]");
-    if (q) { joinQueue(CATALOG[+q.dataset.queue]); return; }
+    if (q) { openDropin(CATALOG[+q.dataset.queue]); return; }
     var r = e.target.closest("[data-reserve]");
-    if (r) { reserveSeat(CATALOG[+r.dataset.reserve]); return; }
+    if (r) { openDropin(CATALOG[+r.dataset.reserve]); return; }
     var vb = e.target.closest("[data-visit]");
     if (vb) { openVisit(vb.dataset.visit, "book"); return; }
     var w = e.target.closest("[data-ws]");
@@ -1910,23 +1920,31 @@ html:has(.modal[open]) { overflow: hidden; }
   }
   function liveVisit() { return VISITS.filter(function (v) { return LIVE[v.state]; })[0]; }
   function pickAdvisor(name) { return ADVISORS.slice().sort(function (a, b) { return hash(name + a) - hash(name + b); })[0]; }
-  function joinQueue(c) {
-    var cur = liveVisit();
-    // one queue at a time — the desk calls you; you can't be in two rooms
-    if (cur) { showToast("You’re already in line for " + cur.name + " — leave that queue first"); openVisit(cur.id, "book"); return; }
+  // Book's Join queue / Reserve a seat opens the desk's page first — hours,
+  // who's waiting, the optional "what is it about" fields — and the student
+  // commits with the button there. Nothing happens from the list row alone.
+  function openDropin(c) {
+    vw.id = null; vw.from = "book";
+    vw.pre = { c: c, topic: "", note: "" };
+    $("ss-v-back").querySelector("span").textContent = "Book";
+    renderVisit();
+    showView("visit");
+  }
+  function joinQueue(c, pre) {
     var h = c.hours;
     var v = { id: "q" + Date.now(), key: c.key, name: c.name, dept: c.depts[0], date: TODAY, min: NOW_MIN, until: h.until,
-      state: "waiting", pos: h.waiting + 1, startPos: h.waiting + 1, ticks: 0, advisor: pickAdvisor(c.name) };
+      state: "waiting", pos: h.waiting + 1, startPos: h.waiting + 1, ticks: 0, advisor: pickAdvisor(c.name), topic: pre.topic, note: pre.note };
     VISITS.push(v);
     startQueueClock();
+    showToast("You’re in line for " + c.name);
     openVisit(v.id, "book");
   }
-  function reserveSeat(c) {
+  function reserveSeat(c, pre) {
     var h = c.hours;
-    var v = { id: "r" + Date.now(), key: c.key, name: c.name, dept: c.depts[0], date: TODAY, min: h.opens, opens: h.opens, until: h.until, state: "reserved" };
+    var v = { id: "r" + Date.now(), key: c.key, name: c.name, dept: c.depts[0], date: TODAY, min: h.opens, opens: h.opens, until: h.until, state: "reserved", topic: pre.topic, note: pre.note };
     VISITS.push(v);
-    openVisit(v.id, "book");
     showToast("Seat reserved for " + c.name + " at " + fmtTime(h.opens));
+    openVisit(v.id, "book");
   }
 
   var queueTimer = null;
@@ -1964,9 +1982,9 @@ html:has(.modal[open]) { overflow: hidden; }
   }
 
   // ---- the queue page ----
-  var vw = { id: null, from: "book" };
+  var vw = { id: null, from: "book", pre: null };
   function openVisit(id, from) {
-    vw.id = id; vw.from = from || "book";
+    vw.id = id; vw.from = from || "book"; vw.pre = null;
     $("ss-v-back").querySelector("span").textContent = vw.from === "book" ? "Book" : "My schedule";
     renderVisit();
     showView("visit");
@@ -1991,7 +2009,40 @@ html:has(.modal[open]) { overflow: hidden; }
       (text ? '<p class="ss-visit__text">' + esc(text) + "</p>" : "") + (extra || "") + "</div>" +
       (actions ? '<div class="card__foot ss-detail__actions">' + actions + "</div>" : "") + "</div>";
   }
+  // before joining / reserving
+  function renderDropinPre() {
+    var p = vw.pre, c = p.c, h = c.hours, dept = c.depts[0], open = dropinOpen(h), cur = open ? liveVisit() : null;
+    $("ss-v-name").textContent = c.name;
+    $("ss-v-badges").innerHTML = open ? vbadge("success", "Drop-in · open until " + fmtTime(h.until)) : vbadge("primary", "Drop-in · opens " + fmtTime(h.opens));
+    $("ss-v-dept").textContent = dept;
+    var title, text;
+    if (open) {
+      title = h.waiting ? h.waiting + (h.waiting === 1 ? " student" : " students") + " waiting" : "No one’s waiting";
+      text = h.waiting ? "If you join now you’d be #" + (h.waiting + 1) + " — about " + h.waiting * PER_STUDENT + " minutes. Stay nearby: this page tells you when an advisor is ready." : "Join now and you’d be first. Stay nearby: this page tells you when an advisor is ready.";
+    } else {
+      title = "Opens today at " + fmtTime(h.opens);
+      text = "Reserve a seat now and you’ll be first in line when it opens. Check in at the desk by " + fmtTime(h.opens + 15) + " to keep it.";
+    }
+    var busy = cur ? '<div class="alert" role="status">' + ICONS.alertInfo + '<div class="alert__stack"><p class="alert__message"><span class="alert__title">You’re already in line for ' + esc(cur.name) + ".</span> Leave that queue first — you can only wait in one at a time.</p>" +
+      '<div class="alert__actions"><button type="button" class="btn btn--secondary btn--sm" data-pre-view="' + cur.id + '">View my queue</button></div></div></div>' : "";
+    var fields =
+      '<div class="ss-field"><span class="ss-field__label" id="ss-pre-topic-label">What would you like help with? <span class="ss-field__opt">Optional</span></span>' +
+      '<button type="button" class="select' + (p.topic ? "" : " is-placeholder") + ' ss-field__select" data-pre-topic aria-haspopup="listbox" aria-expanded="false" aria-labelledby="ss-pre-topic-label ss-pre-topic-value"><span class="select__value" id="ss-pre-topic-value">' + esc(p.topic || "Choose a topic") + "</span>" + ICONS.chevron + "</button></div>" +
+      '<label class="ss-field"><span class="ss-field__label">Anything the advisor should know? <span class="ss-field__opt">Optional</span></span>' +
+      '<textarea class="ss-q__field" rows="3" data-pre-note placeholder="A question, a document you’ll bring…">' + esc(p.note) + "</textarea></label>";
+    $("ss-v-status").innerHTML = busy + '<div class="card"><div class="card__body ss-visit">' +
+      '<span class="ss-eyebrow">' + (open ? "Open now" : "Not open yet") + "</span>" +
+      '<h3 class="ss-visit__title">' + esc(title) + '</h3><p class="ss-visit__text">' + esc(text) + "</p></div>" +
+      '<div class="card__body ss-pre-fields">' + fields + "</div>" +
+      '<div class="card__foot ss-detail__actions"><button type="button" class="btn btn--primary btn--base ss-pre-go" data-pre-go' + (cur ? " disabled" : "") + ">" + (open ? "Join queue" : "Reserve a seat") + "</button></div></div>";
+    $("ss-v-summary-step").classList.add("is-hidden");
+    $("ss-v-rate-step").classList.add("is-hidden");
+    var facts = [["Department", esc(dept)], ["Where", esc(LOCATIONS[dept])], ["Hours", open ? "Today until " + fmtTime(h.until) : "Today " + fmtTime(h.opens) + " – " + fmtTime(h.until)]];
+    $("ss-v-facts").innerHTML = facts.map(function (f) { return "<dt>" + f[0] + "</dt><dd>" + f[1] + "</dd>"; }).join("");
+  }
+
   function renderVisit() {
+    if (vw.pre) { renderDropinPre(); return; }
     var v = visitById(vw.id);
     if (!v) return;
     var first = v.advisor ? v.advisor.split(" ")[0] : "";
@@ -2043,9 +2094,28 @@ html:has(.modal[open]) { overflow: hidden; }
     else if (done) facts.push(["Date", esc(fmtDate(new Date(v.date + "T00:00:00")))]);
     else facts.push(["Joined", fmtTime(v.min)], ["Open until", fmtTime(v.until)]);
     if (v.advisor && (done || v.state === "meeting" || v.state === "called" || v.state === "onway")) facts.push(["Advisor", esc(v.advisor)]);
+    if (v.topic) facts.push(["Help with", esc(v.topic)]);
+    if (v.note) facts.push(["Your note", esc(v.note)]);
     $("ss-v-facts").innerHTML = facts.map(function (f) { return "<dt>" + f[0] + "</dt><dd>" + f[1] + "</dd>"; }).join("");
   }
+  if (V6) document.querySelector('[data-view="visit"]').addEventListener("input", function (e) {
+    if (vw.pre && e.target.closest("[data-pre-note]")) vw.pre.note = e.target.value;
+  });
   if (V6) document.querySelector('[data-view="visit"]').addEventListener("click", function (e) {
+    if (vw.pre) {
+      var tp = e.target.closest("[data-pre-topic]");
+      if (tp) {
+        openListbox(tp, DROPIN_TOPICS.map(function (x) { return { value: x, label: x }; }), vw.pre.topic, function (val) { vw.pre.topic = val; renderVisit(); });
+        return;
+      }
+      var pv = e.target.closest("[data-pre-view]");
+      if (pv) { openVisit(pv.dataset.preView, "book"); return; }
+      if (e.target.closest("[data-pre-go]")) {
+        var c = vw.pre.c;
+        if (dropinOpen(c.hours)) joinQueue(c, vw.pre); else reserveSeat(c, vw.pre);
+      }
+      return;
+    }
     var v = visitById(vw.id);
     if (!v) return;
     var file = e.target.closest("[data-file]");
@@ -2083,7 +2153,7 @@ html:has(.modal[open]) { overflow: hidden; }
     var bn = $("ss-banner");
     if (!bn) return;
     var v = liveVisit() || VISITS.filter(function (x) { return x.state === "reserved"; })[0];
-    var hide = !v || (activeViewName() === "visit" && vw.id === v.id);
+    var hide = !v || (activeViewName() === "visit" && !vw.pre && vw.id === v.id);
     bn.classList.toggle("is-hidden", hide);
     if (hide) return;
     var called = v.state === "called" || v.state === "onway";

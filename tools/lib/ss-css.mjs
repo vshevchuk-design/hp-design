@@ -641,6 +641,15 @@ html:has(.modal[open]) { overflow: hidden; }
 .ss-visit__text { margin: 0; color: ${cv("text.secondary")}; ${typoCss(style("body-base"))} }
 .ss-visit .progress { margin-top: ${dim(2)}; }
 .ss-v-rate { display: flex; flex-wrap: wrap; gap: ${dim(2)}; }
+/* before joining: the optional fields, in their own band of the card */
+.ss-pre-fields { border-top: 1px solid ${R(card.divider)}; gap: ${dim(4)}; }
+.ss-field { display: flex; flex-direction: column; gap: ${dim(2)}; }
+.ss-field__label { color: ${cv("text.default")}; ${typoCss(style("heading-sm"))} }
+.ss-field__opt { color: ${cv("text.muted")}; ${typoCss(style("body-sm"))} margin-inline-start: ${dim(1)}; }
+.ss-field__select { width: min(100%, 400px); }
+.ss-field__select .select__value { flex: 1; }
+.ss-pre-go { min-width: ${dim(40)}; }
+@media (max-width: 559px) { .ss-pre-go { flex: 1 1 100%; } }
 
 /* ============ v6 — My schedule: List / Calendar ============ */
 /* Tabs icon: segmented Tabs have no icon role of their own — the icon takes
