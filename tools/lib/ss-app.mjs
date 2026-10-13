@@ -740,7 +740,12 @@ export function ssAppJs(d) {
     return '<span class="ss-note ss-note--icon">' + ICONS.noteClock + "Check-in opens at " + fmtTime(a.min - CHECKIN_BEFORE) + "</span>";
   }
   function updateUpcomingCount() {
-    $("ss-upcoming-count").textContent = APPTS.filter(function (a) { return a.status === "upcoming"; }).length + (V6 ? workshopEntries("upcoming").length + visitEntries("upcoming").length : 0);
+    if (!V6) { $("ss-upcoming-count").textContent = APPTS.filter(function (a) { return a.status === "upcoming"; }).length; return; }
+    // v6: the count follows the type tab — it counts what Upcoming shows
+    var n = (!schedType || schedType === "appointment" ? APPTS.filter(function (a) { return a.status === "upcoming"; }).length : 0) +
+      (!schedType || schedType === "workshop" ? workshopEntries("upcoming").length : 0) +
+      (!schedType || schedType === "dropin" ? visitEntries("upcoming").length : 0);
+    $("ss-upcoming-count").textContent = n;
   }
   function apptRow(a) {
     var actions = "";
@@ -790,8 +795,8 @@ export function ssAppJs(d) {
       if (apptTab === "upcoming") return a.status === "upcoming";
       if (apptTab === "past") return a.status === "completed" || a.status === "noshow" || (V6 && a.status === "cancelled");
       return a.status === "cancelled";
-    }).map(function (a) { return { date: a.date, min: a.min, html: apptRow(a) }; });
-    if (V6) list = list.concat(workshopEntries(apptTab), visitEntries(apptTab));
+    }).map(function (a) { return { date: a.date, min: a.min, kind: "appointment", html: apptRow(a) }; });
+    if (V6) list = list.concat(workshopEntries(apptTab), visitEntries(apptTab)).filter(function (e) { return !schedType || e.kind === schedType; });
     list.sort(function (x, y) {
       var k = x.date < y.date ? -1 : x.date > y.date ? 1 : x.min - y.min;
       return apptTab === "upcoming" ? k : -k;
@@ -808,7 +813,7 @@ export function ssAppJs(d) {
     $("ss-appts").classList.toggle("is-hidden", empty);
     $("ss-appts-empty").classList.toggle("is-hidden", !empty);
     $("ss-appts-empty-text").textContent = V6
-      ? { upcoming: "Nothing booked yet", past: "Nothing here yet" }[apptTab]
+      ? (schedType ? (apptTab === "upcoming" ? "No upcoming " : "No past ") + SCHED_TYPE_LABEL[schedType] : { upcoming: "Nothing booked yet", past: "Nothing here yet" }[apptTab])
       : { upcoming: "No upcoming appointments", past: "No past appointments yet", cancelled: "Nothing cancelled" }[apptTab];
     $("ss-appts-browse").classList.toggle("is-hidden", apptTab !== "upcoming");
   }
@@ -1202,7 +1207,7 @@ export function ssAppJs(d) {
       '<div class="ss-appt__main"><div class="ss-appt__title"><h3 class="ss-appt__name">' + esc(v.name) + "</h3>" + vbadge("primary", "Drop-in") + visitStatusBadge(v) + "</div>" +
       '<div class="ss-appt__meta">' + meta + "</div></div>" +
       '<div class="ss-appt__actions"><div class="ss-appt__btns"><button type="button" class="btn btn--secondary btn--sm" data-visit="' + v.id + '">Details</button></div></div></article>';
-    return { date: v.date, min: v.min, html: html };
+    return { date: v.date, min: v.min, kind: "dropin", html: html };
   }
 
   // ---------------- v6: workshops ----------------
@@ -1474,7 +1479,7 @@ export function ssAppJs(d) {
       '<span class="ss-fact">' + WS_FORMAT[sc.format].icon + '<span class="ss-fact__text">' + esc(wsWhere(sc)) + "</span></span>" +
       "</div></div>" +
       '<div class="ss-appt__actions"><div class="ss-appt__btns">' + btns + "</div>" + note + "</div></article>";
-    return { date: isoDate(x.date), min: x.min, html: html };
+    return { date: isoDate(x.date), min: x.min, kind: "workshop", html: html };
   }
   function wsCheckIn(wi, k) {
     var w = WORKSHOPS[wi];
@@ -1637,6 +1642,20 @@ export function ssAppJs(d) {
 
   // ---------------- v6: My schedule — calendar ----------------
   var schedMode = "list";
+  // type filter — same four kinds as Book's tabs; applies to List and Calendar
+  var schedType = "";
+  var SCHED_TYPE_LABEL = { appointment: "appointments", dropin: "drop-ins", workshop: "workshops" };
+  document.querySelectorAll("#ss-sched-type .tab").forEach(function (t) {
+    t.addEventListener("click", function () {
+      schedType = t.dataset.type;
+      document.querySelectorAll("#ss-sched-type .tab").forEach(function (x) {
+        var on = x === t;
+        x.classList.toggle("tab--active", on);
+        x.setAttribute("aria-selected", on ? "true" : "false");
+      });
+      renderAppts();
+    });
+  });
   document.querySelectorAll("#ss-sched-mode .tab").forEach(function (t) {
     t.addEventListener("click", function () { schedMode = t.dataset.mode; renderAppts(); });
   });
@@ -1683,7 +1702,7 @@ export function ssAppJs(d) {
     return { html: html };
   }
   function renderCal() {
-    var events = calEvents(), byDay = {};
+    var events = calEvents().filter(function (e) { return !schedType || e.kind === schedType; }), byDay = {};
     events.forEach(function (e) { (byDay[e.date] = byDay[e.date] || []).push(e); });
     var first = new Date(cal.y, cal.m, 1);
     $("ss-cal-label").textContent = MON_LONG[cal.m] + " " + cal.y;

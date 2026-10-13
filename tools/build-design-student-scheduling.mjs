@@ -636,8 +636,16 @@ const SCHED_TITLE = `<div class="ss-head__row ss-sched-row"><h2 class="ss-title"
           </div>
         </div>`;
 
+// My schedule gets Book's Type tabs too, under Upcoming / Past.
+const SCHED_LIST = `      <div class="ss-appts" id="ss-appts"></div>`;
+const SCHED_TYPE_TABS = `      <div class="tabs--underline ss-type-tabs" id="ss-sched-type" role="tablist" aria-label="Type">
+        ${[["", "All"], ["appointment", "Appointments"], ["dropin", "Drop-ins"], ["workshop", "Workshops"]].map(([v, l], i) => `<button class="tab tab--base${i === 0 ? " tab--active" : ""}" type="button" role="tab" aria-selected="${i === 0}" data-type="${v}">${l}</button>`).join("\n        ")}
+      </div>
+`;
+
 const markupV6 = () =>
   markupFor()
+    .replace(SCHED_LIST, SCHED_TYPE_TABS + SCHED_LIST)
     .replace(APPTS_EMPTY_END, APPTS_EMPTY_END + CALENDAR)
     .replace(MAIN_OPEN, MAIN_OPEN + "    " + QUEUE_BANNER)
     .replace(CANCELLED_TAB, "")
