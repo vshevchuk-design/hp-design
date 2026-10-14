@@ -1,0 +1,61 @@
+{
+  "component": {
+    "sidebar": {
+      "$description": "The app's primary navigation — the brand-blue panel on the left of every CX page (Dashboard, Advising, Advisor, Class Information…). Built 2026-10-15 from the live HighPoint CX sidebar, restyled: same structure (logo, flat links, collapsible groups with nested links, a count on a group, the signed-in person at the foot) but on the DS grid and roles. What changed from the live one: an open group no longer turns into a white panel with dark text — its children stay on the blue, indented under the parent's label, and only the CURRENT page wears the white pill; the group header doesn't get a black outline when open; hover is one surface step (brandHover), not a darker band. Three shapes on one recipe: expanded (default, 288px), collapsed rail (64px — icons only, labels in a Tooltip), and on a phone the expanded panel as a left Drawer behind the topbar's menu button. Deferred: section headings inside the nav, drag-to-reorder, search-in-nav — the live app has none of them.",
+      "width": { "$type": "dimension", "$value": "{dim.72}", "$description": "288px expanded — at 256 the longest live labels ('Graduation Processing' beside its chevron, 'Appointment Campaigns', 'Setup Deg Progress Exceptions') ellipsized at 14px." },
+      "collapsedWidth": { "$type": "dimension", "$value": "{dim.16}", "$description": "64px rail: the 40px item centred in 12px side padding." },
+      "padding": { "$type": "dimension", "$value": "{dim.3}", "$description": "Panel inset around the item list (12px). Items are full-width inside it." },
+      "gap": { "$type": "dimension", "$value": "{dim.0_5}", "$description": "Between items (2px) — enough that two hovered/active pills never touch." },
+      "bg": { "$type": "color", "$value": "{surface.brand}" },
+      "divider": { "$type": "color", "$value": "{border.onBrand}", "$description": "Under the header and above the account footer." },
+      "header": {
+        "height": { "$type": "dimension", "$value": "{dim.16}", "$description": "64px — the same height as every app shell's topbar, so the logo row and the topbar line up." }
+      },
+      "item": {
+        "height": { "$type": "dimension", "$value": "{dim.10}", "$description": "40px — the control height used everywhere else; also the touch target in the phone drawer." },
+        "paddingX": { "$type": "dimension", "$value": "{dim.3}" },
+        "gap": { "$type": "dimension", "$value": "{dim.3}", "$description": "Icon → label." },
+        "iconSize": { "$type": "dimension", "$value": "{dim.5}" },
+        "radius": { "$type": "dimension", "$value": "{radius.default}" },
+        "label": { "$type": "typography", "$value": "{text-style.body-base}", "$description": "14px regular. The current page goes semibold (activeLabel)." },
+        "activeLabel": { "$type": "typography", "$value": "{text-style.heading-sm}" },
+        "childIndent": { "$type": "dimension", "$value": "{dim.11}", "$description": "44px = item paddingX 12 + icon 20 + gap 12: a nested link's text starts exactly under its parent's label." }
+      },
+      "chevron": {
+        "size": { "$type": "dimension", "$value": "{dim.5}" },
+        "color": { "$type": "color", "$value": "{text.onBrandMuted}" }
+      },
+      "state": {
+        "default": {
+          "text": { "$type": "color", "$value": "{text.onFill}" },
+          "icon": { "$type": "color", "$value": "{icon.onFill}" }
+        },
+        "child": {
+          "text": { "$type": "color", "$value": "{text.onBrandMuted}", "$description": "Nested links rest a step quieter than top-level ones; hover brings them to white." }
+        },
+        "hover": {
+          "bg": { "$type": "color", "$value": "{surface.brandHover}" },
+          "text": { "$type": "color", "$value": "{text.onFill}" }
+        },
+        "active": {
+          "$description": "The current page: a white pill with brand text — the one loud thing in the panel (kept from the live app).",
+          "bg": { "$type": "color", "$value": "{surface.default}" },
+          "text": { "$type": "color", "$value": "{text.primary}" },
+          "icon": { "$type": "color", "$value": "{icon.primary}" }
+        },
+        "focused": {
+          "$description": "border.focus is blue.600 — invisible on a blue.700 panel. The ring on this surface is white, 2px, inset.",
+          "ringColor": { "$type": "color", "$value": "{text.onFill}" },
+          "ringWidth": { "$type": "dimension", "$value": "{dim.0_5}" }
+        }
+      },
+      "count": {
+        "$description": "A group's count (Advisor · 3) is Counter sm in its onPrimary ACTIVE colours (white chip, brand text) — the onPrimary inactive chip is fill.primaryActive (blue.700), the same colour as this panel, so it would vanish."
+      },
+      "account": {
+        "$description": "The signed-in person at the foot: Avatar sm + name + chevron (opens a Menu: profile, sign out). Same row recipe as an item, taller for the avatar.",
+        "height": { "$type": "dimension", "$value": "{dim.14}", "$description": "56px — Avatar sm (32) with 12px above and below." }
+      }
+    }
+  }
+}

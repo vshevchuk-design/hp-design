@@ -39,6 +39,7 @@ export const NAV_ITEMS = {
   pagination: { label: "Pagination", href: "pagination.html" },
   separator: { label: "Separator", href: "separator.html" },
   tabs: { label: "Tabs", href: "tabs.html" },
+  sidebar: { label: "Sidebar", href: "sidebar.html" },
   accordion: { label: "Accordion", href: "accordion.html" },
   checkbox: { label: "Checkbox", href: "checkbox.html" },
   radio: { label: "Radio", href: "radio.html" },
@@ -97,6 +98,12 @@ export const DESIGN_PRODUCTS = {
     label: "Academics",
     items: {
       "degree-progress": { label: "Degree Progress", href: "designs/degree-progress.html" },
+    },
+  },
+  cx: {
+    label: "CX",
+    items: {
+      "cx-dashboard": { label: "Dashboard", href: "designs/cx-dashboard.html" },
     },
   },
   scheduling: {
@@ -176,6 +183,7 @@ export function renderNav(activeKey, { basePath = "" } = {}) {
     ${link("pagination")}
     ${link("separator")}
     ${link("tabs")}
+    ${link("sidebar")}
     ${link("accordion")}
     ${link("checkbox")}
     ${link("radio")}

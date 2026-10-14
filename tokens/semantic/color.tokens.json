@@ -40,6 +40,16 @@
       "$type": "color",
       "$value": "{color.gray.900}",
       "$description": "The one dark surface role in an otherwise light-themed system — Tooltip's background. Pair with text.onFill/icon.onFill (white), never text.default. Added 2026-07-21 for the overlay-family components; not a general 'dark mode' token, scoped to small inverse-context UI."
+    },
+    "brand": {
+      "$type": "color",
+      "$value": "{color.blue.700}",
+      "$description": "The brand-blue surface — the app's navigation sidebar (Sidebar). Added 2026-10-15 for the CX shell: the live app's nav is a saturated blue panel, and no existing surface role was dark *and* brand. Pair with text.onFill / icon.onFill (white) and text.onBrandMuted, never text.default. Not a general 'dark theme' — scoped to the one navigation surface, same bar surface.inverse was added under."
+    },
+    "brandHover": {
+      "$type": "color",
+      "$value": "{color.blue.600}",
+      "$description": "Hover on surface.brand — one step lighter, so a hovered nav row lifts off the panel. Added with surface.brand."
     }
   },
   "bg": {
@@ -107,6 +117,11 @@
     "warning": {
       "$type": "color",
       "$value": "{color.amber.200}"
+    },
+    "onBrand": {
+      "$type": "color",
+      "$value": "{color.blue.600}",
+      "$description": "Hairlines on surface.brand (the sidebar's header/footer dividers). Added with surface.brand."
     }
   },
   "text": {
@@ -155,6 +170,11 @@
       "$type": "color",
       "$value": "{color.violet.600}",
       "$description": "Pairs with bg.ai — same 600-step AA-safe convention every other text.* role already uses."
+    },
+    "onBrandMuted": {
+      "$type": "color",
+      "$value": "{color.blue.100}",
+      "$description": "Secondary text and icons on surface.brand — a sidebar's nested items and chevrons. blue.100 on blue.700 keeps AA for 14px text while reading quieter than white. Added with surface.brand."
     }
   },
   "icon": {

@@ -109,6 +109,7 @@
     <a class="navlink" href="pagination.html">Pagination</a>
     <a class="navlink" href="separator.html">Separator</a>
     <a class="navlink" href="tabs.html">Tabs</a>
+    <a class="navlink" href="sidebar.html">Sidebar</a>
     <a class="navlink" href="accordion.html">Accordion</a>
     <a class="navlink" href="checkbox.html">Checkbox</a>
     <a class="navlink" href="radio.html">Radio</a>
@@ -158,6 +159,10 @@
     <details class="nav-acc" open>
       <summary>Academics</summary>
       <a class="navlink" href="designs/degree-progress.html">Degree Progress</a>
+    </details>
+    <details class="nav-acc" open>
+      <summary>CX</summary>
+      <a class="navlink" href="designs/cx-dashboard.html">Dashboard</a>
     </details>
     <details class="nav-acc" open>
       <summary>Scheduling</summary>
@@ -220,6 +225,16 @@
         <span class="tok-alias">color.gray.900</span>
         <span class="tok-hex">#242c36</span>
       </div><div class="tok-desc-wrap"><p class="tok-desc">The one dark surface role in an otherwise light-themed system — Tooltip's background. Pair with text.onFill/icon.onFill (white), never text.default. Added 2026-07-21 for the overlay-family components; not a general 'dark mode' token, scoped to small inverse-context UI.</p></div>
+      <div class="tok-card" style="background:#01519c;color:#fdfdfd">
+        <code class="tok-name">surface.brand</code>
+        <span class="tok-alias">color.blue.700</span>
+        <span class="tok-hex">#01519c</span>
+      </div><div class="tok-desc-wrap"><p class="tok-desc">The brand-blue surface — the app's navigation sidebar (Sidebar). Added 2026-10-15 for the CX shell: the live app's nav is a saturated blue panel, and no existing surface role was dark *and* brand. Pair with text.onFill / icon.onFill (white) and text.onBrandMuted, never text.default. Not a general 'dark theme' — scoped to the one navigation surface, same bar surface.inverse was added under.</p></div>
+      <div class="tok-card" style="background:#0468c4;color:#fdfdfd">
+        <code class="tok-name">surface.brandHover</code>
+        <span class="tok-alias">color.blue.600</span>
+        <span class="tok-hex">#0468c4</span>
+      </div><div class="tok-desc-wrap"><p class="tok-desc">Hover on surface.brand — one step lighter, so a hovered nav row lifts off the panel. Added with surface.brand.</p></div>
     </div>
 
     <h3 class="sub-section">bg</h3>
@@ -300,6 +315,11 @@
         <span class="tok-alias">color.amber.200</span>
         <span class="tok-hex">#fec486</span>
       </div>
+      <div class="tok-card" style="background:#0468c4;color:#fdfdfd">
+        <code class="tok-name">border.onBrand</code>
+        <span class="tok-alias">color.blue.600</span>
+        <span class="tok-hex">#0468c4</span>
+      </div><div class="tok-desc-wrap"><p class="tok-desc">Hairlines on surface.brand (the sidebar's header/footer dividers). Added with surface.brand.</p></div>
     </div>
 
     <h3 class="sub-section">text</h3>
@@ -355,6 +375,11 @@
         <span class="tok-alias">color.violet.600</span>
         <span class="tok-hex">#743ed8</span>
       </div><div class="tok-desc-wrap"><p class="tok-desc">Pairs with bg.ai — same 600-step AA-safe convention every other text.* role already uses.</p></div>
+      <div class="tok-card" style="background:#d9eaff;color:#141414">
+        <code class="tok-name">text.onBrandMuted</code>
+        <span class="tok-alias">color.blue.100</span>
+        <span class="tok-hex">#d9eaff</span>
+      </div><div class="tok-desc-wrap"><p class="tok-desc">Secondary text and icons on surface.brand — a sidebar's nested items and chevrons. blue.100 on blue.700 keeps AA for 14px text while reading quieter than white. Added with surface.brand.</p></div>
     </div>
 
     <h3 class="sub-section">icon</h3>
