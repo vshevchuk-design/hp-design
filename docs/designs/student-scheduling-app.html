@@ -103,6 +103,7 @@
   --tok-surface-inverse: #242c36;
   --tok-surface-overlay: rgba(21, 25, 30, 0.5);
   --tok-icon-muted: #8e99a7;
+  --tok-icon-danger: #de394b;
   --tok-family-sans: 'Sora', sans-serif;
 }
 /* ---- portal app shell (tools/lib/app-shell.mjs) ---- */
@@ -616,6 +617,20 @@ html:has(.modal[open]) { overflow: hidden; }
 .ss-detail__section { display: flex; flex-direction: column; gap: 4px; }
 .ss-detail__section h3 { margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 12px; line-height: 1.4; }
 .ss-detail__section p { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 14px; line-height: 1.4; }
+/* A card head with an action on the right: the ghost icon button's 32px is
+   pulled into the title's line box, so the head keeps its height. */
+.ss-card-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.ss-card-head__more { margin-block: -6px; margin-inline-end: -8px; }
+/* ============ Menu (popover; one destructive item) ============ */
+.menu { margin: 0; padding: 4px; border-radius: 8px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); box-shadow: 0px 2px 8px 0px rgba(21, 25, 30, 0.10); font-family: var(--tok-family-sans); min-width: 192px; }
+.menu__list { display: flex; flex-direction: column; gap: 2px; }
+.menu__item { width: 100%; display: flex; align-items: center; gap: 8px; padding: 8px 8px; border: none; background: none; border-radius: 4px; cursor: pointer; text-align: left; white-space: nowrap; color: var(--tok-text-default); font-family: inherit; font-weight: 400; font-size: 14px; line-height: 1.4; }
+.menu__icon { flex-shrink: 0; width: 16px; height: 16px; color: var(--tok-icon-secondary); }
+@media (hover: hover) { .menu__item:hover { background: var(--tok-fill-neutral-hover); } }
+.menu__item:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: -4px; }
+.menu__item--destructive { color: var(--tok-text-danger); }
+.menu__item--destructive .menu__icon { color: var(--tok-icon-danger); }
+@media (hover: hover) { .menu__item--destructive:hover { background: var(--tok-bg-danger); } }
 /* Box: sunken surface, md padding, the card's radius */
 .ss-about { padding: 16px; background: var(--tok-surface-sunken); border-radius: 8px; }
 .ss-detail__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
@@ -715,7 +730,6 @@ html:has(.modal[open]) { overflow: hidden; }
 .ss-session--act { grid-template-columns: 24px minmax(0, 1fr) auto; }
 .ss-session__main { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .ss-session__act { display: flex; align-items: center; gap: 8px; }
-.ss-session--act .ss-session__act .btn--ghost { margin-inline-end: -8px; }
 .ss-mw-past__num { color: var(--tok-text-muted); }
 .ss-mw-note { margin: 0; color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; }
 @media (max-width: 559px) { .ss-mw-past__num { display: none; } }
@@ -2609,7 +2623,7 @@ html:has(.ss-drawer[open]) { overflow: hidden; }
       $("ss-mw-up").innerHTML = shown.map(function (k) {
         var x = all[k], sk = !!r.skipped[k];
         return '<li class="ss-session ss-session--act"><span class="ss-session__num">' + (k + 1) + '</span><span class="ss-session__main"><span class="ss-session__date">' + esc(fmtDate(x.date)) + '</span><span class="ss-session__time">' + esc(fmtRange(x.min, w.minutes)) + "</span></span>" +
-          '<span class="ss-session__act">' + (sk ? badge("neutral", "Not going") + '<button type="button" class="btn btn--ghost btn--sm" data-mw-undo="' + k + '">Undo</button>' : '<button type="button" class="btn btn--ghost btn--sm" data-mw-skip="' + k + '">Can’t make it</button>') + "</span></li>";
+          '<span class="ss-session__act">' + (sk ? badge("neutral", "Not going") + '<button type="button" class="btn btn--secondary btn--sm" data-mw-undo="' + k + '">Undo</button>' : '<button type="button" class="btn btn--secondary btn--sm" data-mw-skip="' + k + '">Can’t make it</button>') + "</span></li>";
       }).join("");
       var more = $("ss-mw-more");
       more.classList.toggle("is-hidden", rest.length <= SHOW);
@@ -2643,8 +2657,9 @@ html:has(.ss-drawer[open]) { overflow: hidden; }
     facts.push(["Format", WS_FORMAT[sc.format].label], ["Organizer", sc.organizer]);
     $("ss-mw-facts").innerHTML = facts.map(function (f) { return "<dt>" + f[0] + "</dt><dd>" + esc(f[1]) + "</dd>"; }).join("");
     $("ss-mw-location").textContent = scheduleLocation(sc);
-    $("ss-mw-foot").classList.toggle("is-hidden", finished);
-    $("ss-mw-leave").textContent = single ? "Cancel registration" : "Leave workshop";
+    // nothing to leave once it's over: no ⋯ menu
+    $("ss-mw-more-btn").classList.toggle("is-hidden", finished);
+    $("ss-mw-leave-label").textContent = single ? "Cancel registration" : "Leave workshop";
   }
   on("ss-mw-more", "click", function () { mw.showAll = !mw.showAll; renderMyWorkshop(); });
   // can't make it / undo / check in — from the next-session card or the list
@@ -2693,6 +2708,19 @@ html:has(.ss-drawer[open]) { overflow: hidden; }
     });
   }
 
+  // the ⋯ menu: native popover (popovertarget toggles it); placed under its
+  // button, right edges aligned
+  var mwMenu = $("ss-mw-menu");
+  if (mwMenu) mwMenu.addEventListener("toggle", function (e) {
+    if (e.newState !== "open") return;
+    var r = $("ss-mw-more-btn").getBoundingClientRect();
+    mwMenu.style.position = "fixed";
+    mwMenu.style.top = r.bottom + 4 + "px";
+    mwMenu.style.left = Math.max(8, r.right - mwMenu.offsetWidth) + "px";
+    var first = mwMenu.querySelector(".menu__item");
+    if (first) first.focus();
+  });
+
   // leave / cancel — one AlertDialog, worded by whoever opens it
   var leaveDlg = $("ss-leave-modal"), leaveFn = null;
   function openLeave(o) {
@@ -2712,6 +2740,7 @@ html:has(.ss-drawer[open]) { overflow: hidden; }
     on("ss-leave-keep", "click", function () { leaveDlg.close(); });
     on("ss-leave-confirm", "click", function () { leaveDlg.close(); if (leaveFn) leaveFn(); });
     on("ss-mw-leave", "click", function () {
+      $("ss-mw-menu").hidePopover();
       var w = WORKSHOPS[mw.wi], r = WS_REG[w.id], single = w.mode === "single";
       var all = sessionsOf(w.schedules[r.sched]);
       var left = myIdx(w, r).filter(function (k) { return !sessPast(w, all[k]); }).length;

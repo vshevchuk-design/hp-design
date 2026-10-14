@@ -19,7 +19,7 @@ export function ssCss(h) {
     return `${px(s.offsetX)} ${px(s.offsetY)} ${px(s.blur)} ${px(s.spread)} ${s.color}`;
   };
 
-  const { tabs, button, select, search, chip, listbox: lb, card, badge, pagination: pg, choiceTile: ct, radio, alert, toast, tooltip: tt, emptyState: es, modal, input, counter, progress, attachment: att, accordion: acc, datePicker: dp, drawer, box } = t;
+  const { tabs, button, select, search, chip, listbox: lb, card, badge, pagination: pg, choiceTile: ct, radio, alert, toast, tooltip: tt, emptyState: es, modal, input, counter, progress, attachment: att, accordion: acc, datePicker: dp, drawer, box, menu } = t;
 
   const btn = (variant, size) => ({
     height: D(button[variant].size[size].height),
@@ -538,6 +538,20 @@ html:has(.modal[open]) { overflow: hidden; }
 .ss-detail__section { display: flex; flex-direction: column; gap: ${dim(1)}; }
 .ss-detail__section h3 { margin: 0; color: ${cv("text.default")}; ${typoCss(style("heading-sm"))} }
 .ss-detail__section p { margin: 0; color: ${cv("text.secondary")}; ${typoCss(style("body-base"))} }
+/* A card head with an action on the right: the ghost icon button's 32px is
+   pulled into the title's line box, so the head keeps its height. */
+.ss-card-head { display: flex; align-items: center; justify-content: space-between; gap: ${dim(2)}; }
+.ss-card-head__more { margin-block: -${dim("1_5")}; margin-inline-end: -${dim(2)}; }
+/* ============ Menu (popover; one destructive item) ============ */
+.menu { margin: 0; padding: ${D(menu.padding)}; border-radius: ${D(menu.radius)}; background: ${R(menu.bg)}; border: 1px solid ${R(menu.border)}; box-shadow: ${shadowCss(menu.shadow)}; font-family: ${cv("family.sans")}; min-width: ${dim(48)}; }
+.menu__list { display: flex; flex-direction: column; gap: ${D(menu.gap)}; }
+.menu__item { width: 100%; display: flex; align-items: center; gap: ${D(menu.itemGap)}; padding: ${D(menu.itemPaddingY)} ${D(menu.itemPaddingX)}; border: none; background: none; border-radius: ${D(menu.itemRadius)}; cursor: pointer; text-align: left; white-space: nowrap; color: ${R(menu.state.default.text)}; font-family: inherit; ${typoCss(T(menu.label))} }
+.menu__icon { flex-shrink: 0; width: ${D(menu.iconSize)}; height: ${D(menu.iconSize)}; color: ${R(menu.state.default.icon)}; }
+.menu__item:hover { background: ${R(menu.state.hover.bg)}; }
+.menu__item:focus-visible { outline: ${ringW} solid ${cv("border.focus")}; outline-offset: -${ringW}; }
+.menu__item--destructive { color: ${R(menu.state.destructive.text)}; }
+.menu__item--destructive .menu__icon { color: ${R(menu.state.destructive.icon)}; }
+.menu__item--destructive:hover { background: ${R(menu.state.destructive.hoverBg)}; }
 /* Box: sunken surface, md padding, the card's radius */
 .ss-about { padding: ${D(box.padding.md)}; background: ${R(box.surface.sunken)}; border-radius: ${D(card.radius)}; }
 .ss-detail__actions { display: flex; flex-wrap: wrap; align-items: center; gap: ${dim(2)}; }
@@ -637,7 +651,6 @@ html:has(.modal[open]) { overflow: hidden; }
 .ss-session--act { grid-template-columns: ${dim(6)} minmax(0, 1fr) auto; }
 .ss-session__main { display: flex; flex-direction: column; gap: ${dim("0_5")}; min-width: 0; }
 .ss-session__act { display: flex; align-items: center; gap: ${dim(2)}; }
-.ss-session--act .ss-session__act .btn--ghost { margin-inline-end: -${bSm.paddingX}; }
 .ss-mw-past__num { color: ${cv("text.muted")}; }
 .ss-mw-note { margin: 0; color: ${cv("text.default")}; ${typoCss(style("body-base"))} }
 @media (max-width: 559px) { .ss-mw-past__num { display: none; } }

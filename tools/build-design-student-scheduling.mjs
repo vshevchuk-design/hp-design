@@ -49,7 +49,7 @@ const registry = {
   ...load("tokens/semantic/color.tokens.json"),
 };
 
-const COMPONENTS = ["tabs", "button", "select", "search", "chip", "listbox", "card", "badge", "pagination", "choice-tile", "radio", "alert", "toast", "tooltip", "empty-state", "modal", "input", "counter", "progress", "attachment", "accordion", "date-picker", "drawer", "box"];
+const COMPONENTS = ["tabs", "button", "select", "search", "chip", "listbox", "card", "badge", "pagination", "choice-tile", "radio", "alert", "toast", "tooltip", "empty-state", "modal", "input", "counter", "progress", "attachment", "accordion", "date-picker", "drawer", "box", "menu"];
 const comp = (name) => load(`tokens/components/${name}.tokens.json`).component;
 const tokens = Object.assign({}, ...COMPONENTS.map(comp));
 
@@ -453,7 +453,6 @@ const V6_VIEWS = `<!-- ============ Workshop ============ -->
       </div>
       <div class="ss-pick">
         <div class="ss-choose ss-choose--ws">
-          <div class="ss-detail__section"><h3>About this workshop</h3><p id="ss-ws-about"></p></div>
           <div class="ss-step" id="ss-ws-choose">
             <div class="ss-step__head"><h3 class="ss-step__title" id="ss-ws-choose-title"></h3><span class="ss-note" id="ss-ws-choose-hint"></span></div>
             <div class="ss-ws-options" id="ss-ws-options" role="radiogroup" aria-labelledby="ss-ws-choose-title"></div>
@@ -469,6 +468,7 @@ const V6_VIEWS = `<!-- ============ Workshop ============ -->
           <div class="card__head"><h3 class="card__title">Your registration</h3></div>
           <div class="card__body">
             <dl class="ss-facts" id="ss-ws-facts"></dl>
+            <div class="ss-detail__section ss-about"><h3>About this workshop</h3><p id="ss-ws-about"></p></div>
             <div class="ss-rule"></div>
             <div class="ss-loc">
               <span class="ss-eyebrow">Location</span>
@@ -549,20 +549,18 @@ const V6_VIEWS = `<!-- ============ Workshop ============ -->
             <h3 class="ss-step__title">Materials</h3>
             <div class="ss-files" id="ss-mw-materials"></div>
           </div>
-          <div class="ss-detail__section"><h3>About this workshop</h3><p id="ss-mw-about"></p></div>
         </div>
         <aside class="card ss-summary" aria-label="Workshop details">
-          <div class="card__head"><h3 class="card__title">Your workshop</h3></div>
+          <!-- Leave is rare and final: it lives in the ⋯ menu, not as a button -->
+          <div class="card__head ss-card-head"><h3 class="card__title">Your workshop</h3><button class="btn btn--ghost btn--sm btn--icon-only ss-card-head__more" id="ss-mw-more-btn" type="button" popovertarget="ss-mw-menu" aria-haspopup="menu" aria-label="More actions">${icon("more_horiz", "btn__icon")}</button></div>
           <div class="card__body">
             <dl class="ss-facts" id="ss-mw-facts"></dl>
+            <div class="ss-detail__section ss-about"><h3>About this workshop</h3><p id="ss-mw-about"></p></div>
             <div class="ss-rule"></div>
             <div class="ss-loc">
               <span class="ss-eyebrow">Location</span>
               <p class="ss-loc__text" id="ss-mw-location"></p>
             </div>
-          </div>
-          <div class="card__foot" id="ss-mw-foot">
-            <button class="btn btn--secondary btn--base btn--block" id="ss-mw-leave" type="button">Leave workshop</button>
           </div>
         </aside>
       </div>
@@ -585,6 +583,11 @@ const V6_VIEWS = `<!-- ============ Workshop ============ -->
 
 // Leaving a workshop — AlertDialog, like cancelling an appointment.
 // Tablet: the chosen day in a Drawer, bottom placement.
+// The my-workshop card's ⋯ menu (Menu, one destructive item).
+const MW_MENU = `<div class="menu" id="ss-mw-menu" popover role="menu" aria-label="Workshop actions">
+  <div class="menu__list"><button class="menu__item menu__item--destructive" type="button" role="menuitem" id="ss-mw-leave">${icon("logout", "menu__icon")}<span id="ss-mw-leave-label">Leave workshop</span></button></div>
+</div>
+`;
 const CAL_DRAWER = `<dialog class="ss-drawer" id="ss-cal-drawer" aria-labelledby="ss-cal-drawer-title">
   <div class="ss-drawer__head"><h2 class="ss-drawer__title" id="ss-cal-drawer-title"></h2><button class="btn btn--ghost btn--sm btn--icon-only" type="button" id="ss-cal-drawer-close" aria-label="Close">${icon("close", "btn__icon")}</button></div>
   <div class="ss-drawer__body">
@@ -672,7 +675,7 @@ const markupV6 = () =>
 
     .replace(MAIN_OPEN, MAIN_OPEN + "    " + QUEUE_BANNER)
     .replace(CANCELLED_TAB, "")
-    .replace(LISTBOX_EL, LEAVE_DIALOG + CAL_DRAWER + LISTBOX_EL)
+    .replace(LISTBOX_EL, LEAVE_DIALOG + CAL_DRAWER + MW_MENU + LISTBOX_EL)
     .replace(SEGMENTED_NAV, SEGMENTED_NAV_V6)
     .replace('<h2 class="ss-title">Browse services</h2>', '<h2 class="ss-title">Book</h2>')
     .replace("Book time with an advisor: find the service you need, then pick a time that works for you.", "Appointments with an advisor, drop-in hours and workshops — find what you need and book it here.")

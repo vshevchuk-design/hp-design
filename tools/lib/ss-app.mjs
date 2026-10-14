@@ -1570,7 +1570,7 @@ export function ssAppJs(d) {
       $("ss-mw-up").innerHTML = shown.map(function (k) {
         var x = all[k], sk = !!r.skipped[k];
         return '<li class="ss-session ss-session--act"><span class="ss-session__num">' + (k + 1) + '</span><span class="ss-session__main"><span class="ss-session__date">' + esc(fmtDate(x.date)) + '</span><span class="ss-session__time">' + esc(fmtRange(x.min, w.minutes)) + "</span></span>" +
-          '<span class="ss-session__act">' + (sk ? badge("neutral", "Not going") + '<button type="button" class="btn btn--ghost btn--sm" data-mw-undo="' + k + '">Undo</button>' : '<button type="button" class="btn btn--ghost btn--sm" data-mw-skip="' + k + '">Can\u2019t make it</button>') + "</span></li>";
+          '<span class="ss-session__act">' + (sk ? badge("neutral", "Not going") + '<button type="button" class="btn btn--secondary btn--sm" data-mw-undo="' + k + '">Undo</button>' : '<button type="button" class="btn btn--secondary btn--sm" data-mw-skip="' + k + '">Can\u2019t make it</button>') + "</span></li>";
       }).join("");
       var more = $("ss-mw-more");
       more.classList.toggle("is-hidden", rest.length <= SHOW);
@@ -1604,8 +1604,9 @@ export function ssAppJs(d) {
     facts.push(["Format", WS_FORMAT[sc.format].label], ["Organizer", sc.organizer]);
     $("ss-mw-facts").innerHTML = facts.map(function (f) { return "<dt>" + f[0] + "</dt><dd>" + esc(f[1]) + "</dd>"; }).join("");
     $("ss-mw-location").textContent = scheduleLocation(sc);
-    $("ss-mw-foot").classList.toggle("is-hidden", finished);
-    $("ss-mw-leave").textContent = single ? "Cancel registration" : "Leave workshop";
+    // nothing to leave once it's over: no ⋯ menu
+    $("ss-mw-more-btn").classList.toggle("is-hidden", finished);
+    $("ss-mw-leave-label").textContent = single ? "Cancel registration" : "Leave workshop";
   }
   on("ss-mw-more", "click", function () { mw.showAll = !mw.showAll; renderMyWorkshop(); });
   // can't make it / undo / check in — from the next-session card or the list
@@ -1654,6 +1655,19 @@ export function ssAppJs(d) {
     });
   }
 
+  // the ⋯ menu: native popover (popovertarget toggles it); placed under its
+  // button, right edges aligned
+  var mwMenu = $("ss-mw-menu");
+  if (mwMenu) mwMenu.addEventListener("toggle", function (e) {
+    if (e.newState !== "open") return;
+    var r = $("ss-mw-more-btn").getBoundingClientRect();
+    mwMenu.style.position = "fixed";
+    mwMenu.style.top = r.bottom + 4 + "px";
+    mwMenu.style.left = Math.max(8, r.right - mwMenu.offsetWidth) + "px";
+    var first = mwMenu.querySelector(".menu__item");
+    if (first) first.focus();
+  });
+
   // leave / cancel — one AlertDialog, worded by whoever opens it
   var leaveDlg = $("ss-leave-modal"), leaveFn = null;
   function openLeave(o) {
@@ -1673,6 +1687,7 @@ export function ssAppJs(d) {
     on("ss-leave-keep", "click", function () { leaveDlg.close(); });
     on("ss-leave-confirm", "click", function () { leaveDlg.close(); if (leaveFn) leaveFn(); });
     on("ss-mw-leave", "click", function () {
+      $("ss-mw-menu").hidePopover();
       var w = WORKSHOPS[mw.wi], r = WS_REG[w.id], single = w.mode === "single";
       var all = sessionsOf(w.schedules[r.sched]);
       var left = myIdx(w, r).filter(function (k) { return !sessPast(w, all[k]); }).length;
