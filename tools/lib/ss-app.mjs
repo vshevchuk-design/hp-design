@@ -885,10 +885,11 @@ export function ssAppJs(d) {
     $("ss-d-facts").innerHTML = rows.map(function (r) { return "<dt>" + r[0] + "</dt><dd>" + r[1] + "</dd>"; }).join("");
     var act = "";
     if (up) {
-      if (checkinOpen(a)) act += '<button type="button" class="btn btn--primary btn--base" id="ss-d-checkin">Check in</button>';
-      else if (!a.checkedIn) act += checkinNote(a);
-      act += '<button type="button" class="btn btn--secondary btn--base ss-push" id="ss-d-resched">Reschedule</button>' +
-        '<button type="button" class="btn btn--secondary btn--base" id="ss-d-cancel">Cancel appointment</button>';
+      // Cancel · Reschedule on the left, the primary Check in alone on the right
+      act += '<button type="button" class="btn btn--secondary btn--base" id="ss-d-cancel">Cancel appointment</button>' +
+        '<button type="button" class="btn btn--secondary btn--base" id="ss-d-resched">Reschedule</button>';
+      if (checkinOpen(a)) act += '<button type="button" class="btn btn--primary btn--base ss-push" id="ss-d-checkin">Check in</button>';
+      else if (!a.checkedIn) act += '<span class="ss-push">' + checkinNote(a) + "</span>";
     } else {
       act += '<button type="button" class="btn btn--secondary btn--base" id="ss-d-again">Book again</button>';
     }
