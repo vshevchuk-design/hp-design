@@ -19,7 +19,7 @@ export function ssCss(h) {
     return `${px(s.offsetX)} ${px(s.offsetY)} ${px(s.blur)} ${px(s.spread)} ${s.color}`;
   };
 
-  const { tabs, button, select, search, chip, listbox: lb, card, badge, pagination: pg, choiceTile: ct, radio, alert, toast, tooltip: tt, emptyState: es, modal, input, counter, progress, attachment: att, accordion: acc, datePicker: dp } = t;
+  const { tabs, button, select, search, chip, listbox: lb, card, badge, pagination: pg, choiceTile: ct, radio, alert, toast, tooltip: tt, emptyState: es, modal, input, counter, progress, attachment: att, accordion: acc, datePicker: dp, drawer } = t;
 
   const btn = (variant, size) => ({
     height: D(button[variant].size[size].height),
@@ -691,6 +691,37 @@ html:has(.modal[open]) { overflow: hidden; }
 .ss-cal__legend { display: flex; flex-wrap: wrap; gap: ${dim(2)} ${dim(4)}; border-top: 1px solid ${R(card.divider)}; padding-top: ${dim(3)}; }
 .ss-cal__key { display: inline-flex; align-items: center; gap: ${dim("1_5")}; color: ${cv("text.secondary")}; ${typoCss(style("body-sm"))} }
 .ss-cal__key .ss-cal__dot { width: ${dim(2)}; height: ${dim(2)}; }
+/* The chosen day's rows in the 320px side card: the list's phone shape (one
+   column, time inline, buttons stretched). The tablet drawer is full width,
+   so it keeps the ordinary row. */
+.ss-cal__side .ss-appt { grid-template-columns: minmax(0, 1fr); gap: ${dim(3)}; }
+.ss-cal__side .ss-appt__time { flex-direction: row; align-items: baseline; gap: ${dim(2)}; }
+.ss-cal__side .ss-appt__actions { align-items: stretch; }
+.ss-cal__side .ss-appt__btns > .btn { flex: 1; }
+.ss-cal__side .empty-state { padding: ${dim(6)} ${D(card.padding)}; }
+/* The Calendar page is wider than the rest (1280, not 1040): beside the day
+   card, the month still gets cells wide enough for its event chips. */
+.ss__main:has(.ss-view[data-view="calendar"].is-active) { max-width: 1280px; }
+/* Desktop: the month and the day side by side; the day card stays put. */
+.ss-cal__side { display: none; }
+@media (min-width: 1024px) {
+  .ss-cal { display: grid; grid-template-columns: minmax(0, 1fr) ${dim(80)}; align-items: start; gap: ${dim(6)}; }
+  .ss-cal__side { display: block; position: sticky; top: calc(${dim(16)} + ${D(tabs.size.base.height)} + ${dim(6)}); max-height: calc(100dvh - ${dim(16)} - ${D(tabs.size.base.height)} - ${dim(12)}); overflow-y: auto; }
+}
+/* Tablet: the day in a Drawer, bottom placement — edge-attached, Drawer's
+   own (zero) radius, shadow, scrim and 250ms slide; as tall as its rows, up
+   to 80% of the screen. */
+.ss-drawer { border: none; padding: 0; margin: 0; position: fixed; inset: auto 0 0 0; width: 100%; max-width: 100%; max-height: 80dvh; border-radius: ${D(drawer.radius)}; background: ${R(drawer.bg)}; box-shadow: ${shadowCss(drawer.shadow)}; font-family: ${cv("family.sans")}; }
+.ss-drawer[open] { display: flex; flex-direction: column; transform: translateY(0); transition: transform ${px(h.resolveToken(drawer.transitionDuration))} ease; }
+@starting-style { .ss-drawer[open] { transform: translateY(100%); } }
+.ss-drawer::backdrop { background: ${R(drawer.overlay)}; }
+html:has(.ss-drawer[open]) { overflow: hidden; }
+.ss-drawer__head { flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: ${D(drawer.gap)}; padding: ${dim(4)} ${D(drawer.padding)}; border-bottom: 1px solid ${R(drawer.divider)}; }
+.ss-drawer__title { margin: 0; color: ${R(drawer.titleColor)}; ${typoCss(T(drawer.title))} }
+.ss-drawer__head .btn--ghost { margin-inline-end: -${dim(2)}; }
+.ss-drawer__body { flex: 1; min-height: 0; overflow-y: auto; padding-bottom: env(safe-area-inset-bottom); }
+.ss-drawer .ss-appt { padding-inline: ${D(drawer.padding)}; }
+@media (prefers-reduced-motion: reduce) { .ss-drawer[open] { transition: none; } }
 /* from 768 a day shows its first two events as chips (time + title) */
 @media (min-width: 768px) {
   .ss-cal__cell { align-items: stretch; min-height: ${dim(24)}; padding: ${dim(1)}; }

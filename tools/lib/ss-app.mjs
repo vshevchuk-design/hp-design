@@ -812,7 +812,10 @@ export function ssAppJs(d) {
   var FROM_LABEL = { book: "Book", schedule: "My schedule", calendar: "Calendar" };
   function rerenderSchedule() { if (activeViewName() === "calendar") renderCal(); else renderAppts(); }
   function scheduleClick(e) {
-    var from = e.currentTarget.id === "ss-cal-day" ? "calendar" : "schedule";
+    var from = e.currentTarget.id === "ss-appts" ? "schedule" : "calendar";
+    // leaving the drawer for a details page closes it
+    var dr = $("ss-cal-drawer");
+    if (dr && dr.open && e.target.closest("[data-myws], [data-visit], [data-appt]")) dr.close();
     var c = e.target.closest("[data-checkin]");
     if (c) { checkIn(apptById(c.dataset.checkin)); rerenderSchedule(); return; }
     var mc = e.target.closest("[data-ws-checkin]");
@@ -827,6 +830,7 @@ export function ssAppJs(d) {
   var apptFrom = "schedule";
   $("ss-appts").addEventListener("click", scheduleClick);
   on("ss-cal-day", "click", scheduleClick);
+  on("ss-cal-drawer-day", "click", scheduleClick);
   function checkIn(a) {
     a.checkedIn = true;
     var first = a.advisor.split(" ")[0];
@@ -1723,11 +1727,23 @@ export function ssAppJs(d) {
     }
     $("ss-cal-grid").innerHTML = h;
     // the chosen day
+    // the chosen day — into the side card (desktop) and the drawer (tablet)
     var sel = new Date(cal.sel + "T00:00:00"), list = byDay[cal.sel] || [];
-    $("ss-cal-day-title").textContent = (cal.sel === TODAY ? "Today · " : "") + DOW[sel.getDay()] + ", " + MON[sel.getMonth()] + " " + sel.getDate();
-    $("ss-cal-day").innerHTML = list.map(function (e) { return e.entry().html; }).join("");
-    $("ss-cal-day").classList.toggle("is-hidden", !list.length);
-    $("ss-cal-empty").classList.toggle("is-hidden", !!list.length);
+    var title = (cal.sel === TODAY ? "Today · " : "") + DOW_LONG[sel.getDay()] + ", " + MON[sel.getMonth()] + " " + sel.getDate();
+    var rows = list.map(function (e) { return e.entry().html; }).join("");
+    $("ss-cal-day-title").textContent = title;
+    $("ss-cal-drawer-title").textContent = title;
+    ["ss-cal-day", "ss-cal-drawer-day"].forEach(function (id) { $(id).innerHTML = rows; $(id).classList.toggle("is-hidden", !list.length); });
+    ["ss-cal-empty", "ss-cal-drawer-empty"].forEach(function (id) { $(id).classList.toggle("is-hidden", !!list.length); });
+  }
+  var calDrawer = $("ss-cal-drawer");
+  var calTablet = window.matchMedia("(min-width: 768px) and (max-width: 1023px)");
+  if (calDrawer) {
+    on("ss-cal-drawer-close", "click", function () { calDrawer.close(); });
+    // the scrim closes it (a click that lands on the dialog box itself)
+    calDrawer.addEventListener("click", function (e) { if (e.target === calDrawer) calDrawer.close(); });
+    // grown to desktop while open: the side card shows the same day
+    calTablet.addEventListener("change", function () { if (!calTablet.matches && calDrawer.open) calDrawer.close(); });
   }
   on("ss-cal-grid", "click", function (e) {
     var c = e.target.closest("[data-cal-date]");
@@ -1737,6 +1753,7 @@ export function ssAppJs(d) {
     // a day from the next/previous month brings that month in
     cal.y = d.getFullYear(); cal.m = d.getMonth();
     renderCal();
+    if (calTablet.matches) { calDrawer.showModal(); return; }
     var btn = document.querySelector('[data-cal-date="' + cal.sel + '"]');
     if (btn) btn.focus();
   });

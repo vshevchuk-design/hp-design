@@ -769,6 +769,37 @@ html:has(.modal[open]) { overflow: hidden; }
 .ss-cal__legend { display: flex; flex-wrap: wrap; gap: 8px 16px; border-top: 1px solid var(--tok-border-default); padding-top: 12px; }
 .ss-cal__key { display: inline-flex; align-items: center; gap: 6px; color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
 .ss-cal__key .ss-cal__dot { width: 8px; height: 8px; }
+/* The chosen day's rows in the 320px side card: the list's phone shape (one
+   column, time inline, buttons stretched). The tablet drawer is full width,
+   so it keeps the ordinary row. */
+.ss-cal__side .ss-appt { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+.ss-cal__side .ss-appt__time { flex-direction: row; align-items: baseline; gap: 8px; }
+.ss-cal__side .ss-appt__actions { align-items: stretch; }
+.ss-cal__side .ss-appt__btns > .btn { flex: 1; }
+.ss-cal__side .empty-state { padding: 24px 16px; }
+/* The Calendar page is wider than the rest (1280, not 1040): beside the day
+   card, the month still gets cells wide enough for its event chips. */
+.ss__main:has(.ss-view[data-view="calendar"].is-active) { max-width: 1280px; }
+/* Desktop: the month and the day side by side; the day card stays put. */
+.ss-cal__side { display: none; }
+@media (min-width: 1024px) {
+  .ss-cal { display: grid; grid-template-columns: minmax(0, 1fr) 320px; align-items: start; gap: 24px; }
+  .ss-cal__side { display: block; position: sticky; top: calc(64px + 40px + 24px); max-height: calc(100dvh - 64px - 40px - 48px); overflow-y: auto; }
+}
+/* Tablet: the day in a Drawer, bottom placement — edge-attached, Drawer's
+   own (zero) radius, shadow, scrim and 250ms slide; as tall as its rows, up
+   to 80% of the screen. */
+.ss-drawer { border: none; padding: 0; margin: 0; position: fixed; inset: auto 0 0 0; width: 100%; max-width: 100%; max-height: 80dvh; border-radius: 0px; background: var(--tok-surface-default); box-shadow: 0px 4px 16px 0px rgba(21, 25, 30, 0.12); font-family: var(--tok-family-sans); }
+.ss-drawer[open] { display: flex; flex-direction: column; transform: translateY(0); transition: transform 250ms ease; }
+@starting-style { .ss-drawer[open] { transform: translateY(100%); } }
+.ss-drawer::backdrop { background: var(--tok-surface-overlay); }
+html:has(.ss-drawer[open]) { overflow: hidden; }
+.ss-drawer__head { flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 24px; border-bottom: 1px solid var(--tok-border-default); }
+.ss-drawer__title { margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 14px; line-height: 1.4; }
+.ss-drawer__head .btn--ghost { margin-inline-end: -8px; }
+.ss-drawer__body { flex: 1; min-height: 0; overflow-y: auto; padding-bottom: env(safe-area-inset-bottom); }
+.ss-drawer .ss-appt { padding-inline: 24px; }
+@media (prefers-reduced-motion: reduce) { .ss-drawer[open] { transition: none; } }
 /* from 768 a day shows its first two events as chips (time + title) */
 @media (min-width: 768px) {
   .ss-cal__cell { align-items: stretch; min-height: 96px; padding: 4px; }
@@ -1807,7 +1838,10 @@ html:has(.modal[open]) { overflow: hidden; }
   var FROM_LABEL = { book: "Book", schedule: "My schedule", calendar: "Calendar" };
   function rerenderSchedule() { if (activeViewName() === "calendar") renderCal(); else renderAppts(); }
   function scheduleClick(e) {
-    var from = e.currentTarget.id === "ss-cal-day" ? "calendar" : "schedule";
+    var from = e.currentTarget.id === "ss-appts" ? "schedule" : "calendar";
+    // leaving the drawer for a details page closes it
+    var dr = $("ss-cal-drawer");
+    if (dr && dr.open && e.target.closest("[data-myws], [data-visit], [data-appt]")) dr.close();
     var c = e.target.closest("[data-checkin]");
     if (c) { checkIn(apptById(c.dataset.checkin)); rerenderSchedule(); return; }
     var mc = e.target.closest("[data-ws-checkin]");
@@ -1822,6 +1856,7 @@ html:has(.modal[open]) { overflow: hidden; }
   var apptFrom = "schedule";
   $("ss-appts").addEventListener("click", scheduleClick);
   on("ss-cal-day", "click", scheduleClick);
+  on("ss-cal-drawer-day", "click", scheduleClick);
   function checkIn(a) {
     a.checkedIn = true;
     var first = a.advisor.split(" ")[0];
@@ -2718,11 +2753,23 @@ html:has(.modal[open]) { overflow: hidden; }
     }
     $("ss-cal-grid").innerHTML = h;
     // the chosen day
+    // the chosen day — into the side card (desktop) and the drawer (tablet)
     var sel = new Date(cal.sel + "T00:00:00"), list = byDay[cal.sel] || [];
-    $("ss-cal-day-title").textContent = (cal.sel === TODAY ? "Today · " : "") + DOW[sel.getDay()] + ", " + MON[sel.getMonth()] + " " + sel.getDate();
-    $("ss-cal-day").innerHTML = list.map(function (e) { return e.entry().html; }).join("");
-    $("ss-cal-day").classList.toggle("is-hidden", !list.length);
-    $("ss-cal-empty").classList.toggle("is-hidden", !!list.length);
+    var title = (cal.sel === TODAY ? "Today · " : "") + DOW_LONG[sel.getDay()] + ", " + MON[sel.getMonth()] + " " + sel.getDate();
+    var rows = list.map(function (e) { return e.entry().html; }).join("");
+    $("ss-cal-day-title").textContent = title;
+    $("ss-cal-drawer-title").textContent = title;
+    ["ss-cal-day", "ss-cal-drawer-day"].forEach(function (id) { $(id).innerHTML = rows; $(id).classList.toggle("is-hidden", !list.length); });
+    ["ss-cal-empty", "ss-cal-drawer-empty"].forEach(function (id) { $(id).classList.toggle("is-hidden", !!list.length); });
+  }
+  var calDrawer = $("ss-cal-drawer");
+  var calTablet = window.matchMedia("(min-width: 768px) and (max-width: 1023px)");
+  if (calDrawer) {
+    on("ss-cal-drawer-close", "click", function () { calDrawer.close(); });
+    // the scrim closes it (a click that lands on the dialog box itself)
+    calDrawer.addEventListener("click", function (e) { if (e.target === calDrawer) calDrawer.close(); });
+    // grown to desktop while open: the side card shows the same day
+    calTablet.addEventListener("change", function () { if (!calTablet.matches && calDrawer.open) calDrawer.close(); });
   }
   on("ss-cal-grid", "click", function (e) {
     var c = e.target.closest("[data-cal-date]");
@@ -2732,6 +2779,7 @@ html:has(.modal[open]) { overflow: hidden; }
     // a day from the next/previous month brings that month in
     cal.y = d.getFullYear(); cal.m = d.getMonth();
     renderCal();
+    if (calTablet.matches) { calDrawer.showModal(); return; }
     var btn = document.querySelector('[data-cal-date="' + cal.sel + '"]');
     if (btn) btn.focus();
   });
