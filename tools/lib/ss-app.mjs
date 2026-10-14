@@ -817,9 +817,17 @@ export function ssAppJs(d) {
     var dr = $("ss-cal-drawer");
     if (dr && dr.open && e.target.closest("[data-myws], [data-visit], [data-appt]")) dr.close();
     var c = e.target.closest("[data-checkin]");
-    if (c) { confirmCheckinAppt(apptById(c.dataset.checkin), rerenderSchedule); return; }
+    if (c) {
+      var ca = apptById(c.dataset.checkin);
+      confirmCheckinAppt(ca, V6 ? function () { if (dr && dr.open) dr.close(); apptFrom = from; openAppt(ca.id); } : rerenderSchedule);
+      return;
+    }
     var mc = e.target.closest("[data-ws-checkin]");
-    if (mc) { var p = mc.dataset.wsCheckin.split(":"); confirmCheckinSession(+p[0], +p[1], rerenderSchedule); return; }
+    if (mc) {
+      var p = mc.dataset.wsCheckin.split(":");
+      confirmCheckinSession(+p[0], +p[1], function () { if (dr && dr.open) dr.close(); openMyWorkshop(+p[0], from); });
+      return;
+    }
     var mw = e.target.closest("[data-myws]");
     if (mw) { openMyWorkshop(+mw.dataset.myws, from); return; }
     var vv = e.target.closest("[data-visit]");
@@ -833,6 +841,8 @@ export function ssAppJs(d) {
   on("ss-cal-drawer-day", "click", scheduleClick);
   function checkIn(a) {
     a.checkedIn = true;
+    // v6 lands on the appointment page, whose success Alert says what's next
+    if (V6) return;
     var first = a.advisor.split(" ")[0];
     showToast(a.format === "phone" ? "Checked in — " + first + " will call you at " + STUDENT_PHONE
       : a.format === "video" ? "Checked in — join with the link in your email"
@@ -851,6 +861,13 @@ export function ssAppJs(d) {
     $("ss-d-name").textContent = a.service;
     $("ss-d-status").innerHTML = statusBadges(a);
     $("ss-d-dept").textContent = a.dept;
+    var here = V6 && up && a.checkedIn, first = a.advisor.split(" ")[0];
+    $("ss-d-here").classList.toggle("is-hidden", !here);
+    if (here) $("ss-d-here-text").textContent = a.format === "phone"
+      ? "Keep your phone close — " + first + " will call " + STUDENT_PHONE + " at " + fmtTime(a.min) + "."
+      : a.format === "video"
+        ? "Open the link in your email — " + first + " will let you in at " + fmtTime(a.min) + "."
+        : "Wait in the " + LOCATIONS[a.dept].split(",")[0] + " — " + first + " will come and get you at " + fmtTime(a.min) + ".";
     var askQ = up && a.questions && !a.answered;
     $("ss-d-questions").classList.toggle("is-hidden", !askQ);
     if (askQ) {
@@ -1488,7 +1505,6 @@ export function ssAppJs(d) {
   function wsCheckIn(wi, k) {
     var w = WORKSHOPS[wi];
     WS_REG[w.id].checkedIn[k] = true;
-    showToast("Checked in to " + w.name);
   }
 
   var mw = { wi: 0, from: "schedule", showAll: false };
@@ -1534,7 +1550,7 @@ export function ssAppJs(d) {
       var act = "";
       if (skipped) act = badge("neutral", "Not going") + '<button type="button" class="btn btn--secondary btn--sm ss-push" data-mw-undo="' + k + '">I can make it</button>';
       else {
-        if (r.checkedIn[k]) act += badge("success", "Checked in");
+        if (r.checkedIn[k]) act += badge("success", "Checked in") + '<span class="ss-note">' + esc(sc.format === "video" ? sc.organizer.split(" ")[0] + " sees you\u2019re here — stay in the session." : sc.organizer.split(" ")[0] + " knows you\u2019re here — take a seat in " + sc.room.split(",").pop().trim() + ".") + "</span>";
         else if (sessCheckinOpen(w, x)) act += '<button type="button" class="btn btn--primary btn--sm" data-mw-checkin="' + k + '">Check in</button>';
         else if (isoDate(x.date) === TODAY) act += '<span class="ss-note ss-note--icon">' + ICONS.noteClock + "Check-in opens at " + fmtTime(x.min - CHECKIN_BEFORE) + "</span>";
         act += '<button type="button" class="btn btn--secondary btn--sm ss-push" data-mw-skip="' + k + '">Can\u2019t make it</button>';

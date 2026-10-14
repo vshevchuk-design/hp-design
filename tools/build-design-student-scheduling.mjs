@@ -280,6 +280,11 @@ ${shellTopbar({ title: "Scheduling", actions: settingsBtn })}
           <div class="ss-detail__title"><h2 class="ss-title" id="ss-d-name"></h2><span id="ss-d-status"></span></div>
           <p class="ss-sub" id="ss-d-dept"></p>
         </div>
+        <!-- v6: after Check in — what happens next, by meeting format -->
+        <div class="alert alert--success is-hidden" id="ss-d-here" role="status">
+          ${icon("check_circle", "alert__icon")}
+          <div class="alert__stack"><p class="alert__message"><span class="alert__title">You're checked in.</span> <span id="ss-d-here-text"></span></p></div>
+        </div>
         <div class="alert is-hidden" id="ss-d-questions" role="status">
           ${icon("info", "alert__icon")}
           <div class="alert__stack">
