@@ -21,6 +21,8 @@ export function ssAppJs(d) {
   var APPTS = ${JSON.stringify(d.APPOINTMENTS)};
   var ABOUT = ${JSON.stringify(d.ABOUT)};
   var NOW_MIN = ${d.NOW_MINUTES}, CHECKIN_BEFORE = ${d.CHECKIN_MINUTES_BEFORE};
+  // workshops open check-in earlier — a room of students signs in over time
+  var WS_CHECKIN_BEFORE = ${d.WS_CHECKIN_MINUTES_BEFORE || d.CHECKIN_MINUTES_BEFORE};
   var STUDENT_PHONE = ${JSON.stringify(d.STUDENT_PHONE)};
   // v6: Book is one catalogue — appointments, drop-in desks, workshops.
   var V6 = ${!!d.V6};
@@ -1447,7 +1449,7 @@ export function ssAppJs(d) {
   // ---------------- v6: my workshops ----------------
   function isoDate(dt) { return iso(dt); }
   function sessPast(w, x) { var k = isoDate(x.date); return k < TODAY || (k === TODAY && x.min + w.minutes <= NOW_MIN); }
-  function sessCheckinOpen(w, x) { return isoDate(x.date) === TODAY && NOW_MIN >= x.min - CHECKIN_BEFORE && NOW_MIN < x.min + w.minutes; }
+  function sessCheckinOpen(w, x) { return isoDate(x.date) === TODAY && NOW_MIN >= x.min - WS_CHECKIN_BEFORE && NOW_MIN < x.min + w.minutes; }
   function wsStarted(w) { return w.schedules.every(function (sc) { return sessPast(w, sessionsOf(sc)[0]); }); }
   function wsFinished(w) { return w.schedules.every(function (sc) { var a = sessionsOf(sc); return sessPast(w, a[a.length - 1]); }); }
   // the sessions that are yours: every one of the schedule, or the one date
@@ -1490,7 +1492,7 @@ export function ssAppJs(d) {
       : (single ? "One session" : "Session " + (k + 1) + " of " + sc.count);
     var btns = (!past && sessCheckinOpen(w, x) && !r.checkedIn[k] ? '<button type="button" class="btn btn--primary btn--sm" data-ws-checkin="' + wi + ":" + k + '">Check in</button>' : "") +
       '<button type="button" class="btn btn--secondary btn--sm" data-myws="' + wi + '">Details</button>';
-    var note = !past && !r.checkedIn[k] && !sessCheckinOpen(w, x) ? '<span class="ss-note ss-note--icon">' + ICONS.noteClock + "Check-in opens at " + fmtTime(x.min - CHECKIN_BEFORE) + "</span>" : "";
+    var note = !past && !r.checkedIn[k] && !sessCheckinOpen(w, x) ? '<span class="ss-note ss-note--icon">' + ICONS.noteClock + "Check-in opens at " + fmtTime(x.min - WS_CHECKIN_BEFORE) + "</span>" : "";
     var html = '<article class="ss-appt">' +
       '<div class="ss-appt__time"><span class="ss-appt__clock">' + fmtTime(x.min) + '</span><span class="ss-appt__dur">' + w.minutes + " min</span></div>" +
       '<div class="ss-appt__main"><div class="ss-appt__title"><h3 class="ss-appt__name">' + esc(w.name) + "</h3>" + badges + "</div>" +
@@ -1552,8 +1554,9 @@ export function ssAppJs(d) {
       else {
         if (r.checkedIn[k]) act += badge("success", "Checked in") + '<span class="ss-note">' + esc(sc.format === "video" ? sc.organizer.split(" ")[0] + " sees you\u2019re here — stay in the session." : sc.organizer.split(" ")[0] + " knows you\u2019re here — take a seat in " + sc.room.split(",").pop().trim() + ".") + "</span>";
         else if (sessCheckinOpen(w, x)) act += '<button type="button" class="btn btn--primary btn--sm" data-mw-checkin="' + k + '">Check in</button>';
-        else if (isoDate(x.date) === TODAY) act += '<span class="ss-note ss-note--icon">' + ICONS.noteClock + "Check-in opens at " + fmtTime(x.min - CHECKIN_BEFORE) + "</span>";
-        act += '<button type="button" class="btn btn--secondary btn--sm ss-push" data-mw-skip="' + k + '">Can\u2019t make it</button>';
+        else if (isoDate(x.date) === TODAY) act += '<span class="ss-note ss-note--icon">' + ICONS.noteClock + "Check-in opens at " + fmtTime(x.min - WS_CHECKIN_BEFORE) + "</span>";
+        // already here: nothing to skip
+        if (!r.checkedIn[k]) act += '<button type="button" class="btn btn--secondary btn--sm ss-push" data-mw-skip="' + k + '">Can\u2019t make it</button>';
       }
       $("ss-mw-next").innerHTML =
         '<div class="ss-mw-next__when"><span class="ss-mw-next__date">' + esc(dayLabel(x.date)) + '</span><span class="ss-note">' + esc(fmtRange(x.min, w.minutes) + (single ? "" : " · Session " + (k + 1) + " of " + all.length)) + "</span></div>" +

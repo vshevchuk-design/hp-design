@@ -93,6 +93,8 @@ export const SECTIONS = ["Browse", "Appointments", "Drop-Ins", "Workshops", "Res
 // is inside its check-in window (opens 15 minutes before).
 export const NOW_MINUTES = 10 * 60 + 20;
 export const CHECKIN_MINUTES_BEFORE = 15;
+// Workshop sessions open check-in an hour ahead (a room signs in over time).
+export const WS_CHECKIN_MINUTES_BEFORE = 60;
 // The student's own number, for phone appointments ("we'll call you at…").
 export const STUDENT_PHONE = "(555) 555-1234";
 
@@ -202,13 +204,14 @@ export const WORKSHOPS = [
   // Already registered (seed `reg`): attendance for the sessions that have
   // happened, the organizer's notes after some of them (text + files), and
   // materials for the whole workshop. w8 is in progress — its 6th session is
-  // today at 1:00 PM; w9 finished in September. Workshops whose last session
+  // today at 11:00 AM (Fridays; Tuesdays are 1:00 PM), right after the 10:30
+  // appointment, so both check-ins are open at the prototype's 10:20; w9 finished in September. Workshops whose last session
   // is past stay out of Book.
   {
     id: "w8", name: "First-Year Success Seminar", dept: "Academic Advising", mode: "series", minutes: 60,
     about: "Ten sessions through your first term: campus resources, study habits, planning your schedule, and a mentor to check in with.",
     schedules: [
-      { id: "w8a", days: [[2, 780], [5, 780]], start: "2026-09-15", count: 10, format: "inPerson", room: "Student Services Building, Room 120", organizer: "Caitlin Moore", seats: 30, taken: 24 },
+      { id: "w8a", days: [[2, 780], [5, 660]], start: "2026-09-15", count: 10, format: "inPerson", room: "Student Services Building, Room 120", organizer: "Caitlin Moore", seats: 30, taken: 24 },
     ],
     materials: [
       { name: "Seminar syllabus.pdf", meta: "PDF · 240 KB" },
