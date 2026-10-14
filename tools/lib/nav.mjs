@@ -104,6 +104,7 @@ export const DESIGN_PRODUCTS = {
     label: "CX",
     items: {
       "cx-dashboard": { label: "Dashboard", href: "designs/cx-dashboard.html" },
+      "cx-browse-classes": { label: "Browse Classes", href: "designs/cx-browse-classes.html" },
     },
   },
   scheduling: {

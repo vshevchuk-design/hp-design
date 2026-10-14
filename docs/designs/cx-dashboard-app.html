@@ -880,7 +880,7 @@ html, body { height: auto; min-height: 100%; }
 .cx__main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
 /* topbar: 64px declared (the app-shell height), hairline inside it */
 .cx-topbar { position: sticky; top: 0; z-index: 5; height: 64px; display: flex; align-items: center; gap: 12px; padding: 0 24px; background: var(--tok-surface-default); border-bottom: 1px solid var(--tok-border-default); }
-.cx-topbar__title { margin: 0; flex: 1; min-width: 0; color: var(--tok-text-default); font-weight: 600; font-size: 16px; line-height: 1.4; }
+.cx-topbar__title { margin: 0; flex: 1; min-width: 0; color: var(--tok-text-default); font-weight: 600; font-size: 16px; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .cx-topbar .sidebar-open { display: none; }
 @media (max-width: 1023px) { .cx-topbar .sidebar-open { display: inline-flex; } .cx-topbar { padding: 0 16px; } }
 .cx-page { flex: 1; width: 100%; max-width: 1280px; margin: 0 auto; padding: 32px 32px 48px; display: flex; flex-direction: column; gap: 24px; }
@@ -891,6 +891,50 @@ html, body { height: auto; min-height: 100%; }
 .cx-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 16px; }
 .cx-head__text { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 .cx-head__actions { display: flex; gap: 8px; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.cx-link { align-self: flex-start; margin-inline-start: -12px; }
+
+/* ============ Checkbox (box only — for a ChoiceTile or a row) ============ */
+.cx-check { flex-shrink: 0; width: 20px; height: 20px; border-radius: 4px; border: 2px solid var(--tok-border-default); background: var(--tok-surface-default); display: inline-flex; align-items: center; justify-content: center; color: var(--tok-icon-on-fill); }
+.cx-check svg { width: 16px; height: 16px; opacity: 0; }
+.choice-tile__input:checked ~ .choice-tile__box .cx-check { background: var(--tok-fill-primary); border-color: var(--tok-fill-primary); }
+.choice-tile__input:checked ~ .choice-tile__box .cx-check svg { opacity: 1; }
+@media (hover: hover) { .choice-tile:hover .choice-tile__input:checked ~ .choice-tile__box .cx-check { background: var(--tok-fill-primary-hover); border-color: var(--tok-fill-primary-hover); } }
+
+/* ============ Table (container + header + rows; columns are the page's grid) ============ */
+.table { background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); border-radius: 8px; overflow: hidden; }
+.table__row { display: grid; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--tok-border-default); color: var(--tok-text-default); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.table__row:last-child { border-bottom: none; }
+.table__row--head { padding: 12px 16px; color: var(--tok-text-muted); font-weight: 700; font-size: 12px; line-height: 1.4; text-transform: uppercase; letter-spacing: [object Object]; border-bottom-color: var(--tok-border-default); }
+.table__row--link { cursor: pointer; }
+@media (hover: hover) { .table__row--link:hover { background: var(--tok-surface-dim); } }
+.table__muted { color: var(--tok-text-muted); }
+
+/* ============ footer ============ */
+.cx-foot { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 20px; padding-top: 16px; }
+.cx-foot a { color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; text-decoration: none; }
+@media (hover: hover) { .cx-foot a:hover { color: var(--tok-text-default); text-decoration: underline; } }
+
+/* ============ Assistant: a floating button → a right-hand Drawer ============ */
+.cx-fab { position: fixed; right: 24px; bottom: 24px; z-index: 7; box-shadow: 0px 4px 16px 0px rgba(21, 25, 30, 0.12); }
+@media (max-width: 767px) { .cx-fab { right: 16px; bottom: 16px; width: 40px; padding: 0; } .cx-fab span { display: none; } }
+.cx-assistant { border: none; padding: 0; margin: 0 0 0 auto; height: 100dvh; max-height: 100dvh; width: min(384px, 100vw); background: var(--tok-surface-default); box-shadow: 0px 4px 16px 0px rgba(21, 25, 30, 0.12); font-family: var(--tok-family-sans); }
+.cx-assistant[open] { display: flex; flex-direction: column; transform: none; transition: transform 250ms ease; }
+@starting-style { .cx-assistant[open] { transform: translateX(100%); } }
+.cx-assistant::backdrop { background: var(--tok-surface-overlay); }
+.cx-assistant .ss-drawer__head { padding: 0 16px 0 24px; height: 64px; }
+.cx-assistant__body { flex: 1; min-height: 0; overflow-y: auto; padding: 24px; display: flex; flex-direction: column; gap: 16px; }
+.cx-assistant__intro { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 14px; line-height: 1.4; }
+.cx-prompts { display: flex; flex-wrap: wrap; gap: 8px; }
+.cx-prompts .chip { height: auto; min-height: 32px; padding-block: 4px; white-space: normal; text-align: left; }
+.cx-msg { max-width: 85%; padding: 8px 12px; border-radius: 8px; font-weight: 400; font-size: 14px; line-height: 1.4; }
+.cx-msg--me { align-self: flex-end; background: var(--tok-bg-primary); color: var(--tok-text-default); }
+.cx-msg--bot { align-self: flex-start; background: var(--tok-surface-sunken); color: var(--tok-text-default); }
+.cx-assistant__foot { flex-shrink: 0; display: flex; flex-direction: column; gap: 8px; padding: 12px 24px calc(12px + env(safe-area-inset-bottom)); border-top: 1px solid var(--tok-border-default); }
+.cx-compose { display: flex; align-items: flex-end; gap: 8px; }
+.cx-compose .ss-q__field { min-height: 40px; height: 40px; resize: none; }
+.cx-compose__count { align-self: flex-end; color: var(--tok-text-muted); font-weight: 400; font-size: 10px; line-height: 1.4; }
+
 
 /* ============ widgets ============ */
 .cx-tabs { width: 100%; }
@@ -934,13 +978,6 @@ html, body { height: auto; min-height: 100%; }
 .cx-link { align-self: flex-start; margin-inline-start: -12px; }
 .cx-empty-tab { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 40px 0; }
 
-/* ============ Checkbox (the widget picker's box) ============ */
-.cx-check { flex-shrink: 0; width: 20px; height: 20px; border-radius: 4px; border: 2px solid var(--tok-border-default); background: var(--tok-surface-default); display: inline-flex; align-items: center; justify-content: center; color: var(--tok-icon-on-fill); }
-.cx-check svg { width: 16px; height: 16px; opacity: 0; }
-.choice-tile__input:checked ~ .choice-tile__box .cx-check { background: var(--tok-fill-primary); border-color: var(--tok-fill-primary); }
-.choice-tile__input:checked ~ .choice-tile__box .cx-check svg { opacity: 1; }
-@media (hover: hover) { .choice-tile:hover .choice-tile__input:checked ~ .choice-tile__box .cx-check { background: var(--tok-fill-primary-hover); border-color: var(--tok-fill-primary-hover); } }
-
 /* ============ Edit my widgets ============ */
 .cx-pick { display: flex; flex-direction: column; gap: 12px; }
 .cx-pick__title { margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 14px; line-height: 1.4; }
@@ -954,31 +991,6 @@ html, body { height: auto; min-height: 100%; }
   .cx-view[data-view="edit"] .cx-head__actions { position: fixed; left: 0; right: 0; bottom: 0; z-index: 6; padding: 12px 16px calc(12px + env(safe-area-inset-bottom)); background: var(--tok-surface-default); border-top: 1px solid var(--tok-border-default); }
   .cx-view[data-view="edit"] .cx-head__actions .btn { flex: 1; }
 }
-
-/* ============ footer ============ */
-.cx-foot { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 20px; padding-top: 16px; }
-.cx-foot a { color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; text-decoration: none; }
-@media (hover: hover) { .cx-foot a:hover { color: var(--tok-text-default); text-decoration: underline; } }
-
-/* ============ Assistant: a floating button → a right-hand Drawer ============ */
-.cx-fab { position: fixed; right: 24px; bottom: 24px; z-index: 7; box-shadow: 0px 4px 16px 0px rgba(21, 25, 30, 0.12); }
-@media (max-width: 767px) { .cx-fab { right: 16px; bottom: 16px; width: 40px; padding: 0; } .cx-fab span { display: none; } }
-.cx-assistant { border: none; padding: 0; margin: 0 0 0 auto; height: 100dvh; max-height: 100dvh; width: min(384px, 100vw); background: var(--tok-surface-default); box-shadow: 0px 4px 16px 0px rgba(21, 25, 30, 0.12); font-family: var(--tok-family-sans); }
-.cx-assistant[open] { display: flex; flex-direction: column; transform: none; transition: transform 250ms ease; }
-@starting-style { .cx-assistant[open] { transform: translateX(100%); } }
-.cx-assistant::backdrop { background: var(--tok-surface-overlay); }
-.cx-assistant .ss-drawer__head { padding: 0 16px 0 24px; height: 64px; }
-.cx-assistant__body { flex: 1; min-height: 0; overflow-y: auto; padding: 24px; display: flex; flex-direction: column; gap: 16px; }
-.cx-assistant__intro { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 14px; line-height: 1.4; }
-.cx-prompts { display: flex; flex-wrap: wrap; gap: 8px; }
-.cx-prompts .chip { height: auto; min-height: 32px; padding-block: 4px; white-space: normal; text-align: left; }
-.cx-msg { max-width: 85%; padding: 8px 12px; border-radius: 8px; font-weight: 400; font-size: 14px; line-height: 1.4; }
-.cx-msg--me { align-self: flex-end; background: var(--tok-bg-primary); color: var(--tok-text-default); }
-.cx-msg--bot { align-self: flex-start; background: var(--tok-surface-sunken); color: var(--tok-text-default); }
-.cx-assistant__foot { flex-shrink: 0; display: flex; flex-direction: column; gap: 8px; padding: 12px 24px calc(12px + env(safe-area-inset-bottom)); border-top: 1px solid var(--tok-border-default); }
-.cx-compose { display: flex; align-items: flex-end; gap: 8px; }
-.cx-compose .ss-q__field { min-height: 40px; height: 40px; resize: none; }
-.cx-compose__count { align-self: flex-end; color: var(--tok-text-muted); font-weight: 400; font-size: 10px; line-height: 1.4; }
 
 </style>
 </head>
@@ -1069,7 +1081,7 @@ html, body { height: auto; min-height: 100%; }
 <dialog class="cx-assistant" id="cx-assistant" aria-labelledby="cx-assistant-title">
   <div class="ss-drawer__head"><h2 class="ss-drawer__title" id="cx-assistant-title">Assistant</h2><button class="btn btn--ghost btn--sm btn--icon-only" type="button" id="cx-assistant-close" aria-label="Close"><svg class="btn__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button></div>
   <div class="cx-assistant__body" id="cx-assistant-body">
-    <p class="cx-assistant__intro">Ask about your classes, holds, balance or deadlines — or start with one of these.</p>
+    <p class="cx-assistant__intro">Ask a question — or start with one of these.</p>
     <div class="cx-prompts"><button class="chip" type="button" data-prompt>What can you assist me with?</button><button class="chip" type="button" data-prompt>Do I have any holds on my account?</button><button class="chip" type="button" data-prompt>What's on my to-do list?</button><button class="chip" type="button" data-prompt>Who is my academic advisor?</button><button class="chip" type="button" data-prompt>What's my current account balance?</button><button class="chip" type="button" data-prompt>When does enrollment open for the next term?</button></div>
   </div>
   <form class="cx-assistant__foot" id="cx-assistant-form">
@@ -1080,10 +1092,49 @@ html, body { height: auto; min-height: 100%; }
     <span class="cx-compose__count" id="cx-assistant-count">0/8000</span>
   </form>
 </dialog>
+
 <script>
+window.cx = (function () {
+  function $(id) { return document.getElementById(id); }
+  function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+  var CHECK = "<svg class=\"toast__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z\"/></svg>";
+  function toast(text) {
+    var t = document.createElement("div");
+    t.className = "toast"; t.setAttribute("popover", "manual"); t.setAttribute("role", "status");
+    t.innerHTML = CHECK + '<span class="toast__label"></span>';
+    t.querySelector(".toast__label").textContent = text;
+    document.body.appendChild(t); t.showPopover();
+    setTimeout(function () { t.hidePopover(); t.remove(); }, 3200);
+  }
+  function notDesigned() { toast("Prototype — this page isn\u2019t designed yet"); }
+  // nav links outside this page, the account row, footer links
+  document.querySelector(".sidebar").addEventListener("click", function (e) {
+    var a = e.target.closest("[data-nav]");
+    if (a) { e.preventDefault(); if (a.getAttribute("aria-current") !== "page") notDesigned(); return; }
+    if (e.target.closest(".sidebar__account")) toast("Profile and sign out live here");
+  });
+  document.querySelectorAll("[data-foot]").forEach(function (a) { a.addEventListener("click", function (e) { e.preventDefault(); notDesigned(); }); });
+  // Assistant
+  var dlg = $("cx-assistant"), inp = $("cx-assistant-input");
+  $("cx-fab").addEventListener("click", function () { dlg.showModal(); inp.focus(); });
+  $("cx-assistant-close").addEventListener("click", function () { dlg.close(); });
+  dlg.addEventListener("click", function (e) { if (e.target === dlg) dlg.close(); });
+  inp.addEventListener("input", function () { $("cx-assistant-count").textContent = inp.value.length + "/8000"; });
+  $("cx-assistant-body").addEventListener("click", function (e) { var p = e.target.closest("[data-prompt]"); if (p) { inp.value = p.textContent; inp.dispatchEvent(new Event("input")); inp.focus(); } });
+  $("cx-assistant-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var q = inp.value.trim(); if (!q) return;
+    var body = $("cx-assistant-body");
+    body.insertAdjacentHTML("beforeend", '<div class="cx-msg cx-msg--me">' + esc(q) + '</div><div class="cx-msg cx-msg--bot">This prototype isn\u2019t connected to an assistant — in the app, the answer would appear here.</div>');
+    inp.value = ""; inp.dispatchEvent(new Event("input"));
+    body.scrollTop = body.scrollHeight;
+  });
+  inp.addEventListener("keydown", function (e) { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); $("cx-assistant-form").requestSubmit(); } });
+  return { toast: toast, notDesigned: notDesigned };
+})();
 (function () {
   var D = {"CX_ADVISEES":{"total":42,"holds":5,"notRegistered":11},"CX_ADVISEE_LIST":[{"name":"Jordan Lee","program":"Psychology, AA","standing":"Good standing"},{"name":"Priya Shah","program":"Business Administration, AS-T","standing":"Hold: transcript"},{"name":"Sam Ortiz","program":"Undeclared","standing":"Not registered for Spring"},{"name":"Mia Chen","program":"Computer Science, AS","standing":"Good standing"}],"CX_ADVISOR_APPTS":[{"min":630,"student":"Jordan Lee","service":"Ed Plan Review","format":"In person"},{"min":840,"student":"Sam Ortiz","service":"Change of Major","format":"Phone"},{"min":930,"student":"Mia Chen","service":"Career Counseling","format":"Video"}],"CX_ASSISTANT_PROMPTS":["What can you assist me with?","Do I have any holds on my account?","What's on my to-do list?","Who is my academic advisor?","What's my current account balance?","When does enrollment open for the next term?"],"CX_CLASSES":[{"code":"ENGL 101","title":"Composition I","days":[1,3],"start":540,"end":615,"room":"Humanities Hall 214"},{"code":"MATH 140","title":"Introductory Statistics","days":[1,3],"start":780,"end":855,"room":"Science Building 110"},{"code":"HIST 110","title":"U.S. History to 1877","days":[2,4],"start":630,"end":705,"room":"Liberal Arts 305"},{"code":"BIOL 101","title":"General Biology","days":[2,4],"start":840,"end":915,"room":"Science Building 204"},{"code":"BIOL 101L","title":"General Biology Lab","days":[5],"start":540,"end":710,"room":"Science Building 012"}],"CX_EXAMS":[{"code":"MATH 140","title":"Midterm","date":"2026-10-21","start":780,"end":855,"room":"Science Building 110"},{"code":"HIST 110","title":"Midterm","date":"2026-10-22","start":630,"end":705,"room":"Liberal Arts 305"},{"code":"ENGL 101","title":"Final exam","date":"2026-12-14","start":540,"end":660,"room":"Humanities Hall 214"}],"CX_FOOTER_LINKS":["Preferences","Institution","About","Leave Feedback"],"CX_INBOX":[{"from":"Jordan Lee","subject":"Question about dropping MATH 140","when":"9:42 AM","unread":true},{"from":"Priya Shah","subject":"Transfer plan — can we meet this week?","when":"Yesterday","unread":true},{"from":"Office of the Registrar","subject":"Grade change deadline is Oct 30","when":"Mon","unread":false}],"CX_TAB_LABEL":{"academics":"Academics","teaching":"Teaching","advisor":"Advisor"},"CX_TEACHING":[{"code":"COUN 100-02","title":"College Success","days":[2,4],"start":540,"end":615,"room":"Student Services 120","enrolled":28,"cap":30},{"code":"COUN 120-01","title":"Career Planning","days":[3],"start":960,"end":1110,"room":"Career Center","enrolled":19,"cap":25}],"CX_TEACHING_EXAMS":[{"code":"COUN 100-02","title":"Final exam","date":"2026-12-15","start":540,"end":660,"room":"Student Services 120"},{"code":"COUN 120-01","title":"Final project due","date":"2026-12-16","start":960,"end":1110,"room":"Career Center"}],"CX_TERM":"2026 Fall","CX_TODAY":"2026-10-14","CX_USER":{"name":"Ava Robinson","initials":"AR"},"CX_WIDGETS":{"academics":[{"key":"today","label":"Today's Schedule","icon":"today","desc":"Your classes for one day, with rooms"},{"key":"classes","label":"Class Schedule","icon":"insert_invitation","desc":"Everything you're enrolled in this term"},{"key":"exams","label":"Student Exams","icon":"event_note","desc":"Your exam dates, times and rooms"}],"teaching":[{"key":"teach-exams","label":"Teaching Exams","icon":"event_note","desc":"Exams for the classes you teach"},{"key":"teach-schedule","label":"Teaching Schedule","icon":"list_alt","desc":"Your sections, times and enrolment"}],"advisor":[{"key":"inbox","label":"Inbox","icon":"mail","desc":"Latest messages from your advisees"},{"key":"appointments","label":"Appointments","icon":"insert_invitation","desc":"Who you're seeing today"},{"key":"mc2","label":"Message Center v2","icon":"message","desc":"Unread count and a shortcut"},{"key":"my-advisees","label":"My Advisees","icon":"supervisor_account","desc":"Your caseload at a glance"},{"key":"view-advisees","label":"View Advisees","icon":"portrait","desc":"The full advisee list","off":true}]}};
-  var ICONS = {"prev":"<svg class=\"btn__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z\"/></svg>","next":"<svg class=\"btn__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z\"/></svg>","arrow":"<svg class=\"btn__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z\"/></svg>","check":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z\"/></svg>","checkCircle":"<svg class=\"toast__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z\"/></svg>","widget":{"today":"<svg class=\"cx-tile__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z\"/></svg>","classes":"<svg class=\"cx-tile__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z\"/></svg>","exams":"<svg class=\"cx-tile__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M17 10H7v2h10v-2zm2-7h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zm-5-5H7v2h7v-2z\"/></svg>","teach-exams":"<svg class=\"cx-tile__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M17 10H7v2h10v-2zm2-7h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zm-5-5H7v2h7v-2z\"/></svg>","teach-schedule":"<svg class=\"cx-tile__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M19 5v14H5V5h14m1.1-2H3.9c-.5 0-.9.4-.9.9v16.2c0 .4.4.9.9.9h16.2c.4 0 .9-.5.9-.9V3.9c0-.5-.5-.9-.9-.9zM11 7h6v2h-6V7zm0 4h6v2h-6v-2zm0 4h6v2h-6zM7 7h2v2H7zm0 4h2v2H7zm0 4h2v2H7z\"/></svg>","inbox":"<svg class=\"cx-tile__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z\"/></svg>","appointments":"<svg class=\"cx-tile__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z\"/></svg>","mc2":"<svg class=\"cx-tile__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z\"/></svg>","my-advisees":"<svg class=\"cx-tile__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M16.5 12c1.38 0 2.49-1.12 2.49-2.5S17.88 7 16.5 7C15.12 7 14 8.12 14 9.5s1.12 2.5 2.5 2.5zM9 11c1.66 0 2.99-1.34 2.99-3S10.66 5 9 5C7.34 5 6 6.34 6 8s1.34 3 3 3zm7.5 3c-1.83 0-5.5.92-5.5 2.75V19h11v-2.25c0-1.83-3.67-2.75-5.5-2.75zM9 13c-2.33 0-7 1.17-7 3.5V19h7v-2.25c0-.85.33-2.34 2.37-3.47C10.5 13.1 9.66 13 9 13z\"/></svg>","view-advisees":"<svg class=\"cx-tile__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M12 12.25c1.24 0 2.25-1.01 2.25-2.25S13.24 7.75 12 7.75 9.75 8.76 9.75 10s1.01 2.25 2.25 2.25zm4.5 4c0-1.5-3-2.25-4.5-2.25s-4.5.75-4.5 2.25V17h9v-.75zM19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z\"/></svg>"}};
+  var ICONS = {"prev":"<svg class=\"btn__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z\"/></svg>","next":"<svg class=\"btn__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z\"/></svg>","arrow":"<svg class=\"btn__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z\"/></svg>","check":"<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z\"/></svg>","widget":{"today":"<svg class=\"cx-tile__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z\"/></svg>","classes":"<svg class=\"cx-tile__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z\"/></svg>","exams":"<svg class=\"cx-tile__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M17 10H7v2h10v-2zm2-7h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zm-5-5H7v2h7v-2z\"/></svg>","teach-exams":"<svg class=\"cx-tile__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M17 10H7v2h10v-2zm2-7h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zm-5-5H7v2h7v-2z\"/></svg>","teach-schedule":"<svg class=\"cx-tile__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M19 5v14H5V5h14m1.1-2H3.9c-.5 0-.9.4-.9.9v16.2c0 .4.4.9.9.9h16.2c.4 0 .9-.5.9-.9V3.9c0-.5-.5-.9-.9-.9zM11 7h6v2h-6V7zm0 4h6v2h-6v-2zm0 4h6v2h-6zM7 7h2v2H7zm0 4h2v2H7zm0 4h2v2H7z\"/></svg>","inbox":"<svg class=\"cx-tile__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z\"/></svg>","appointments":"<svg class=\"cx-tile__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z\"/></svg>","mc2":"<svg class=\"cx-tile__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z\"/></svg>","my-advisees":"<svg class=\"cx-tile__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M16.5 12c1.38 0 2.49-1.12 2.49-2.5S17.88 7 16.5 7C15.12 7 14 8.12 14 9.5s1.12 2.5 2.5 2.5zM9 11c1.66 0 2.99-1.34 2.99-3S10.66 5 9 5C7.34 5 6 6.34 6 8s1.34 3 3 3zm7.5 3c-1.83 0-5.5.92-5.5 2.75V19h11v-2.25c0-1.83-3.67-2.75-5.5-2.75zM9 13c-2.33 0-7 1.17-7 3.5V19h7v-2.25c0-.85.33-2.34 2.37-3.47C10.5 13.1 9.66 13 9 13z\"/></svg>","view-advisees":"<svg class=\"cx-tile__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M12 12.25c1.24 0 2.25-1.01 2.25-2.25S13.24 7.75 12 7.75 9.75 8.76 9.75 10s1.01 2.25 2.25 2.25zm4.5 4c0-1.5-3-2.25-4.5-2.25s-4.5.75-4.5 2.25V17h9v-.75zM19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z\"/></svg>"}};
   function $(id) { return document.getElementById(id); }
   function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
   var DOW = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"], MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -1092,14 +1143,7 @@ html, body { height: auto; min-height: 100%; }
   function addDays(d, n) { var x = new Date(d); x.setDate(x.getDate() + n); return x; }
   var today = new Date(D.CX_TODAY + "T00:00:00");
 
-  function toast(text) {
-    var t = document.createElement("div");
-    t.className = "toast"; t.setAttribute("popover", "manual"); t.setAttribute("role", "status");
-    t.innerHTML = ICONS.checkCircle + '<span class="toast__label"></span>';
-    t.querySelector(".toast__label").textContent = text;
-    document.body.appendChild(t); t.showPopover();
-    setTimeout(function () { t.hidePopover(); t.remove(); }, 3200);
-  }
+  var toast = window.cx.toast;
 
   // which widgets are on — the live defaults (everything but View Advisees)
   var on = {};
@@ -1178,7 +1222,7 @@ html, body { height: auto; min-height: 100%; }
     var d = e.target.closest("[data-day]");
     if (d) { st.dayOffset = d.dataset.day === "0" ? 0 : st.dayOffset + (+d.dataset.day); renderDash(); return; }
     if (e.target.closest("[data-edit]")) { openEdit(); return; }
-    if (e.target.closest("[data-go]")) toast("Prototype — only the Dashboard is designed so far");
+    if (e.target.closest("[data-go]")) window.cx.notDesigned();
   });
 
   // ---- views ----
@@ -1205,33 +1249,12 @@ html, body { height: auto; min-height: 100%; }
   $("cx-edit-cancel").addEventListener("click", function () { show("dash"); });
   $("cx-edit-save").addEventListener("click", function () { on = draft; renderDash(); show("dash"); toast("Dashboard updated"); });
 
-  // ---- shell: other nav links, footer, account ----
-  document.querySelector(".sidebar").addEventListener("click", function (e) {
-    var a = e.target.closest("[data-nav]");
-    if (a) { e.preventDefault(); if (a.dataset.nav === "dashboard") { show("dash"); return; } toast("Prototype — only the Dashboard is designed so far"); return; }
-    if (e.target.closest(".sidebar__account")) toast("Profile and sign out live here");
-  });
-  document.querySelectorAll("[data-foot]").forEach(function (a) { a.addEventListener("click", function (e) { e.preventDefault(); toast("Prototype — only the Dashboard is designed so far"); }); });
-
-  // ---- Assistant ----
-  var dlg = $("cx-assistant"), inp = $("cx-assistant-input");
-  $("cx-fab").addEventListener("click", function () { dlg.showModal(); inp.focus(); });
-  $("cx-assistant-close").addEventListener("click", function () { dlg.close(); });
-  dlg.addEventListener("click", function (e) { if (e.target === dlg) dlg.close(); });
-  inp.addEventListener("input", function () { $("cx-assistant-count").textContent = inp.value.length + "/8000"; });
-  $("cx-assistant-body").addEventListener("click", function (e) { var p = e.target.closest("[data-prompt]"); if (p) { inp.value = p.textContent; inp.dispatchEvent(new Event("input")); inp.focus(); } });
-  $("cx-assistant-form").addEventListener("submit", function (e) {
-    e.preventDefault();
-    var q = inp.value.trim(); if (!q) return;
-    var body = $("cx-assistant-body");
-    body.insertAdjacentHTML("beforeend", '<div class="cx-msg cx-msg--me">' + esc(q) + '</div><div class="cx-msg cx-msg--bot">This prototype isn\u2019t connected to an assistant — in the app, the answer would appear here.</div>');
-    inp.value = ""; inp.dispatchEvent(new Event("input"));
-    body.scrollTop = body.scrollHeight;
-  });
-  inp.addEventListener("keydown", function (e) { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); $("cx-assistant-form").requestSubmit(); } });
+  // the Dashboard link brings the dashboard view back (e.g. from Edit)
+  document.querySelector(".sidebar").addEventListener("click", function (e) { var a = e.target.closest('[data-nav="dashboard"]'); if (a) show("dash"); });
 
   renderDash();
 })();
+
 (function () {
   document.querySelectorAll(".sidebar").forEach(function (nav) {
     nav.addEventListener("click", function (e) {
