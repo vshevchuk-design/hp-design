@@ -47,7 +47,12 @@
   main { flex: 1; padding: 3rem 3rem 4rem; max-width: 1400px; }
 
   h1 { font-size: 36px; font-weight: 700; margin: 0 0 10px; letter-spacing: -0.02em; }
-  .sub { font-size: 14px; color: var(--text-secondary); margin: 0 0 2rem; max-width: 78ch; line-height: 1.6; }
+  .sub { font-size: 14px; color: var(--text-secondary); margin: 0; max-width: 78ch; line-height: 1.6; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; }
+  .sub.is-open { display: block; -webkit-line-clamp: unset; overflow: visible; }
+  .sub-wrap { margin: 0 0 2rem; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
+  .sub-more { padding: 0; border: none; background: none; font: inherit; font-size: 14px; font-weight: 600; color: var(--accent); cursor: pointer; }
+  .sub-more:hover { text-decoration: underline; }
+  .sub-more:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
 
   :root {
   --tok-surface-sunken: #e6e8eb;
@@ -222,7 +227,10 @@
   </nav>
   <main>
     <h1>Explore Degrees</h1>
-    <p class="sub">The public <b>Explore Your Degree</b> wizard behind the Springboard's own tile — a no-login estimator: pick a programme, a start term and any prior college credits, and it reports what transfers and what's left. Four steps plus results, everything interactive. <b>All the branches are real:</b> focus areas appear only for majors that have them (try Psychology), Yes/No on prior credits, N previous schools, and the AI transcript reader runs its full path — the first file is rejected with the reference's own message ("a photograph of a house and pool"), the second imports ten classes. Two endings too: pick <b>Riverside Community College</b> to get the "we couldn't check your credits online" fallback, and answer <b>No, starting fresh</b> to see the results with no transfer tab at all. The header is the standard portal bar in its titled mode — the same 64px white bar and heading as the Message Center, with the page's name where the wordmark sits on the Springboard, the &ldquo;No account needed&rdquo; note beside it and settings on the right. The school switcher in the reference only exists in a demo environment and is gone here. A prototype switch on the results screen turns the school's Degree Planner on and off; results are always rendered and the planner is a button, never a redirect, since a redirect would discard both the estimate and the print path. Built from 32 programmes and 3 previous schools of sample data.</p>
+    <div class="sub-wrap">
+      <p class="sub" id="viewer-sub">The public <b>Explore Your Degree</b> wizard behind the Springboard's own tile — a no-login estimator: pick a programme, a start term and any prior college credits, and it reports what transfers and what's left. Four steps plus results, everything interactive. <b>All the branches are real:</b> focus areas appear only for majors that have them (try Psychology), Yes/No on prior credits, N previous schools, and the AI transcript reader runs its full path — the first file is rejected with the reference's own message ("a photograph of a house and pool"), the second imports ten classes. Two endings too: pick <b>Riverside Community College</b> to get the "we couldn't check your credits online" fallback, and answer <b>No, starting fresh</b> to see the results with no transfer tab at all. The header is the standard portal bar in its titled mode — the same 64px white bar and heading as the Message Center, with the page's name where the wordmark sits on the Springboard, the &ldquo;No account needed&rdquo; note beside it and settings on the right. The school switcher in the reference only exists in a demo environment and is gone here. A prototype switch on the results screen turns the school's Degree Planner on and off; results are always rendered and the planner is a button, never a redirect, since a redirect would discard both the estimate and the print path. Built from 32 programmes and 3 previous schools of sample data.</p>
+      <button class="sub-more" type="button" aria-expanded="false" aria-controls="viewer-sub" hidden>Read more</button>
+    </div>
 
     <div class="device-bar">
       <div class="device-bar__group">
@@ -296,6 +304,25 @@ document.querySelectorAll(".device-bar .tab").forEach((tab) => {
       panel.hidePopover();
     });
   });
+})();
+
+// The intro paragraph: clamped to three lines with "Read more" — shown only
+// when the text is actually longer than that (re-checked on resize).
+(function () {
+  var sub = document.querySelector(".sub"), more = document.querySelector(".sub-more");
+  if (!sub || !more) return;
+  function fit() {
+    if (sub.classList.contains("is-open")) return;
+    more.hidden = sub.scrollHeight <= sub.clientHeight + 1;
+  }
+  more.addEventListener("click", function () {
+    var open = sub.classList.toggle("is-open");
+    more.textContent = open ? "Show less" : "Read more";
+    more.setAttribute("aria-expanded", open ? "true" : "false");
+  });
+  window.addEventListener("resize", fit);
+  if (document.fonts) document.fonts.ready.then(fit);
+  fit();
 })();
 </script>
 </body>
