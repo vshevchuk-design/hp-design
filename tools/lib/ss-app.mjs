@@ -817,9 +817,9 @@ export function ssAppJs(d) {
     var dr = $("ss-cal-drawer");
     if (dr && dr.open && e.target.closest("[data-myws], [data-visit], [data-appt]")) dr.close();
     var c = e.target.closest("[data-checkin]");
-    if (c) { checkIn(apptById(c.dataset.checkin)); rerenderSchedule(); return; }
+    if (c) { confirmCheckinAppt(apptById(c.dataset.checkin), rerenderSchedule); return; }
     var mc = e.target.closest("[data-ws-checkin]");
-    if (mc) { var p = mc.dataset.wsCheckin.split(":"); wsCheckIn(+p[0], +p[1]); rerenderSchedule(); return; }
+    if (mc) { var p = mc.dataset.wsCheckin.split(":"); confirmCheckinSession(+p[0], +p[1], rerenderSchedule); return; }
     var mw = e.target.closest("[data-myws]");
     if (mw) { openMyWorkshop(+mw.dataset.myws, from); return; }
     var vv = e.target.closest("[data-visit]");
@@ -891,7 +891,7 @@ export function ssAppJs(d) {
   });
   $("ss-d-actions").addEventListener("click", function (e) {
     var a = apptById(openId);
-    if (e.target.closest("#ss-d-checkin")) { checkIn(a); renderAppt(); }
+    if (e.target.closest("#ss-d-checkin")) confirmCheckinAppt(a, renderAppt);
     else if (e.target.closest("#ss-d-resched")) openPick(svcIndex(a.service), { dept: a.dept, reschedule: a.id });
     else if (e.target.closest("#ss-d-again")) openPick(svcIndex(a.service), { dept: a.dept });
     else if (e.target.closest("#ss-d-cancel")) {
@@ -1604,12 +1604,47 @@ export function ssAppJs(d) {
     b = e.target.closest("[data-mw-undo]");
     if (b) { var u = +b.dataset.mwUndo; delete r.skipped[u]; showToast("You\u2019re back on for " + fmtDate(all[u].date)); renderMyWorkshop(); return; }
     b = e.target.closest("[data-mw-checkin]");
-    if (b) { wsCheckIn(mw.wi, +b.dataset.mwCheckin); renderMyWorkshop(); }
+    if (b) confirmCheckinSession(mw.wi, +b.dataset.mwCheckin, renderMyWorkshop);
   });
+
+  // v6: Check in goes through a confirmation that says what it does — a tap
+  // just to see what "check in" means shouldn't tell the advisor you've arrived.
+  function confirmCheckinAppt(a, after) {
+    if (!V6) { checkIn(a); after(); return; }
+    var first = a.advisor.split(" ")[0];
+    openLeave({
+      tone: "primary",
+      title: "Check in for " + fmtTime(a.min) + "?",
+      text: a.format === "phone"
+        ? "Only check in when you\u2019re ready to talk — " + first + " is counting on you and will call " + STUDENT_PHONE + " for your " + a.service + "."
+        : a.format === "video"
+          ? "Only check in when you\u2019re about to join — " + first + " is counting on you and will let you in from the video waiting room for your " + a.service + "."
+          : "Only check in once you\u2019ve arrived at " + LOCATIONS[a.dept] + " — " + first + " is counting on you and comes to get you for your " + a.service + ".",
+      keep: "Not yet",
+      confirm: "Check in",
+      fn: function () { checkIn(a); after(); }
+    });
+  }
+  function confirmCheckinSession(wi, k, after) {
+    var w = WORKSHOPS[wi], sc = w.schedules[WS_REG[w.id].sched], x = sessionsOf(sc)[k], first = sc.organizer.split(" ")[0];
+    openLeave({
+      tone: "primary",
+      title: "Check in for " + fmtTime(x.min) + "?",
+      text: (sc.format === "video" ? "Only check in once you\u2019ve joined online" : "Only check in once you\u2019re at " + sc.room) +
+        " — it tells " + first + " you\u2019re attending " + w.name + (w.mode === "single" ? "" : ", session " + (k + 1) + " of " + sc.count) + ".",
+      keep: "Not yet",
+      confirm: "Check in",
+      fn: function () { wsCheckIn(wi, k); after(); }
+    });
+  }
 
   // leave / cancel — one AlertDialog, worded by whoever opens it
   var leaveDlg = $("ss-leave-modal"), leaveFn = null;
   function openLeave(o) {
+    // tone: "danger" (leave / cancel, the default) or "primary" (check in)
+    var btn = $("ss-leave-confirm");
+    btn.classList.toggle("btn--danger", o.tone !== "primary");
+    btn.classList.toggle("btn--primary", o.tone === "primary");
     $("ss-leave-title").textContent = o.title;
     $("ss-leave-text").textContent = o.text;
     $("ss-leave-keep").textContent = o.keep;
