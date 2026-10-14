@@ -643,7 +643,7 @@ const CALENDAR_VIEW = () => `<!-- ============ Calendar (from 768) ============ 
         <h2 class="ss-title">Calendar</h2>
         <p class="ss-sub ss-sub--sm">Everything you've booked, by day — every workshop session included.</p>
       </div>
-${typeTabs("ss-cal-type")}${CALENDAR}
+${CALENDAR}
     </section>
 
     `;

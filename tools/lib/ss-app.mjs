@@ -1641,11 +1641,11 @@ export function ssAppJs(d) {
   }
 
   // ---------------- v6: My schedule — calendar ----------------
-  // type filter — same four kinds as Book's tabs, on My schedule and on the
-  // Calendar; one choice shared by both
+  // type filter — same four kinds as Book's tabs (My schedule only; the
+  // Calendar shows everything)
   var schedType = "";
   var SCHED_TYPE_LABEL = { appointment: "appointments", dropin: "drop-ins", workshop: "workshops" };
-  var schedTypeTabs = document.querySelectorAll("#ss-sched-type .tab, #ss-cal-type .tab");
+  var schedTypeTabs = document.querySelectorAll("#ss-sched-type .tab");
   schedTypeTabs.forEach(function (t) {
     t.addEventListener("click", function () {
       schedType = t.dataset.type;
@@ -1700,7 +1700,8 @@ export function ssAppJs(d) {
     return { html: html };
   }
   function renderCal() {
-    var events = calEvents().filter(function (e) { return !schedType || e.kind === schedType; }), byDay = {};
+    // the calendar always shows everything — the legend tells the kinds apart
+    var events = calEvents(), byDay = {};
     events.forEach(function (e) { (byDay[e.date] = byDay[e.date] || []).push(e); });
     var first = new Date(cal.y, cal.m, 1);
     $("ss-cal-label").textContent = MON_LONG[cal.m] + " " + cal.y;
