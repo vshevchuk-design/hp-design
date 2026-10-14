@@ -19,7 +19,7 @@ export function ssCss(h) {
     return `${px(s.offsetX)} ${px(s.offsetY)} ${px(s.blur)} ${px(s.spread)} ${s.color}`;
   };
 
-  const { tabs, button, select, search, chip, listbox: lb, card, badge, pagination: pg, choiceTile: ct, radio, alert, toast, tooltip: tt, emptyState: es, modal, input, counter, progress, attachment: att, accordion: acc, datePicker: dp, drawer } = t;
+  const { tabs, button, select, search, chip, listbox: lb, card, badge, pagination: pg, choiceTile: ct, radio, alert, toast, tooltip: tt, emptyState: es, modal, input, counter, progress, attachment: att, accordion: acc, datePicker: dp, drawer, box } = t;
 
   const btn = (variant, size) => ({
     height: D(button[variant].size[size].height),
@@ -524,6 +524,10 @@ html:has(.modal[open]) { overflow: hidden; }
 
 /* ---- details page ---- */
 .ss-detail { display: flex; flex-direction: column; gap: ${dim(4)}; max-width: 720px; }
+/* The single-column detail pages (appointment, drop-in visit) are 720 wide —
+   centred in the page column with their back link and title, not pinned to
+   its left edge with 320px of nothing on the right. */
+.ss-view[data-view="appt"], .ss-view[data-view="visit"] { width: 100%; max-width: 720px; margin-inline: auto; }
 .ss-detail__title { display: flex; flex-wrap: wrap; align-items: center; gap: ${dim(3)}; }
 .ss-dl { display: grid; grid-template-columns: ${dim(28)} minmax(0, 1fr); gap: ${dim(3)} ${dim(4)}; margin: 0; }
 .ss-dl dt { color: ${cv("text.secondary")}; ${typoCss(style("body-sm"))} padding-top: 1px; }
@@ -534,6 +538,8 @@ html:has(.modal[open]) { overflow: hidden; }
 .ss-detail__section { display: flex; flex-direction: column; gap: ${dim(1)}; }
 .ss-detail__section h3 { margin: 0; color: ${cv("text.default")}; ${typoCss(style("heading-sm"))} }
 .ss-detail__section p { margin: 0; color: ${cv("text.secondary")}; ${typoCss(style("body-base"))} }
+/* Box: sunken surface, md padding, the card's radius */
+.ss-about { padding: ${D(box.padding.md)}; background: ${R(box.surface.sunken)}; border-radius: ${D(card.radius)}; }
 .ss-detail__actions { display: flex; flex-wrap: wrap; align-items: center; gap: ${dim(2)}; }
 .ss-detail__actions .ss-push { margin-left: auto; }
 @media (max-width: 559px) { .ss-detail__actions > .btn { flex: 1 1 100%; } .ss-detail__actions .ss-push { margin-left: 0; } }

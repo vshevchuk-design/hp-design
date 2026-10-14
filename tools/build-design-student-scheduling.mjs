@@ -49,7 +49,7 @@ const registry = {
   ...load("tokens/semantic/color.tokens.json"),
 };
 
-const COMPONENTS = ["tabs", "button", "select", "search", "chip", "listbox", "card", "badge", "pagination", "choice-tile", "radio", "alert", "toast", "tooltip", "empty-state", "modal", "input", "counter", "progress", "attachment", "accordion", "date-picker", "drawer"];
+const COMPONENTS = ["tabs", "button", "select", "search", "chip", "listbox", "card", "badge", "pagination", "choice-tile", "radio", "alert", "toast", "tooltip", "empty-state", "modal", "input", "counter", "progress", "attachment", "accordion", "date-picker", "drawer", "box"];
 const comp = (name) => load(`tokens/components/${name}.tokens.json`).component;
 const tokens = Object.assign({}, ...COMPONENTS.map(comp));
 
@@ -294,11 +294,13 @@ ${shellTopbar({ title: "Scheduling", actions: settingsBtn })}
         </div>
         <div class="card">
           <div class="card__body">
+            <!-- what the service is: a sunken Box at the top of the card, part
+                 of the appointment rather than a caption under it -->
+            <div class="ss-detail__section ss-about" id="ss-d-about"><h3>About this service</h3><p id="ss-d-about-text"></p></div>
             <dl class="ss-dl" id="ss-d-facts"></dl>
           </div>
           <div class="card__foot ss-detail__actions" id="ss-d-actions"></div>
         </div>
-        <div class="ss-detail__section" id="ss-d-about"><h3>About this service</h3><p id="ss-d-about-text"></p></div>
       </div>
     </section>
 
