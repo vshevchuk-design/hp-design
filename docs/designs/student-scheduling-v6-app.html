@@ -741,7 +741,11 @@ html:has(.modal[open]) { overflow: hidden; }
 /* Tabs icon: segmented Tabs have no icon role of their own — the icon takes
    the label's colour in every state (state.*.label), by design. */
 .tab__icon { flex-shrink: 0; width: 16px; height: 16px; color: currentColor; }
-.ss-sched-row .tabs--segmented { flex-shrink: 0; }
+/* v6 top nav: three sections, centred in the band (the row still scrolls if
+   it ever overflows). Calendar's tab exists from 768 only. */
+.ss-sections--center { justify-content: center; }
+.ss-sections--center .tabs--segmented { flex: 0 1 auto; }
+@media (max-width: 767px) { .ss-tab--wide { display: none; } }
 .ss-cal { display: flex; flex-direction: column; gap: 20px; }
 .ss-cal__month { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
 .ss-cal__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
@@ -787,10 +791,11 @@ html:has(.modal[open]) { overflow: hidden; }
     <div class="app__brand"><h1 class="app__title">Scheduling</h1></div>
     <button class="btn btn--secondary btn--base btn--icon-only" type="button" aria-label="Settings"><svg class="btn__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"><g><path d="M0,0h24v24H0V0z" fill="none"/><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></g></svg></button>
   </header>
-  <nav class="ss-sections ss-sections--seg" aria-label="Scheduling sections">
+  <nav class="ss-sections ss-sections--seg ss-sections--center" aria-label="Scheduling sections">
     <div class="tabs--segmented" role="tablist">
       <button class="tab tab--base tab--active" type="button" role="tab" aria-selected="true">Book</button>
       <button class="tab tab--base" type="button" role="tab" aria-selected="false">My schedule</button>
+      <button class="tab tab--base ss-tab--wide" type="button" role="tab" aria-selected="false">Calendar</button>
     </div>
   </nav>
   <main class="ss__main">
@@ -936,12 +941,7 @@ html:has(.modal[open]) { overflow: hidden; }
          one tap away in the section bar. The empty state keeps that path. -->
     <section class="ss-view" data-view="appointments">
       <div class="ss-head">
-        <div class="ss-head__row ss-sched-row"><h2 class="ss-title">My schedule</h2>
-          <div class="tabs--segmented" id="ss-sched-mode" role="tablist" aria-label="View">
-            <button class="tab tab--sm tab--active" type="button" role="tab" aria-selected="true" data-mode="list"><svg class="tab__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"><rect fill="none" height="24" width="24"/><path d="M3,14h4v-4H3V14z M3,19h4v-4H3V19z M3,9h4V5H3V9z M8,14h13v-4H8V14z M8,19h13v-4H8V19z M8,5v4h13V5H8z"/></svg>List</button>
-            <button class="tab tab--sm" type="button" role="tab" aria-selected="false" data-mode="calendar"><svg class="tab__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 3h-1V1h-2v2H7V1H5v2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H4V8h16v13z"/></svg>Calendar</button>
-          </div>
-        </div>
+        <h2 class="ss-title">My schedule</h2>
         <p class="ss-sub ss-sub--sm">Everything you've booked — appointments, drop-ins and workshops.</p>
       </div>
       <div class="tabs--segmented" id="ss-appt-tabs" role="tablist" aria-label="Appointments" style="align-self:flex-start">
@@ -960,28 +960,6 @@ html:has(.modal[open]) { overflow: hidden; }
           <div class="empty-state"><span class="empty-state__text" id="ss-appts-empty-text"></span></div>
           <button class="btn btn--secondary btn--sm is-hidden" id="ss-appts-browse" type="button" style="align-self:center">Browse services</button>
         </div>
-      </div>
-      <div class="ss-cal is-hidden" id="ss-cal">
-        <div class="card ss-cal__month">
-          <div class="ss-cal__head">
-            <h3 class="ss-week__label" id="ss-cal-label"></h3>
-            <div class="ss-week__nav">
-              <button class="btn btn--secondary btn--sm btn--icon-only" id="ss-cal-prev" type="button" aria-label="Previous month"><svg class="btn__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg></button>
-              <button class="btn btn--secondary btn--sm btn--icon-only" id="ss-cal-next" type="button" aria-label="Next month"><svg class="btn__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button>
-            </div>
-          </div>
-          <div class="ss-cal__grid" id="ss-cal-grid"></div>
-          <div class="ss-cal__legend">
-            <span class="ss-cal__key"><span class="ss-cal__dot ss-cal__dot--appointment"></span>Appointment</span>
-            <span class="ss-cal__key"><span class="ss-cal__dot ss-cal__dot--dropin"></span>Drop-in</span>
-            <span class="ss-cal__key"><span class="ss-cal__dot ss-cal__dot--workshop"></span>Workshop</span>
-          </div>
-        </div>
-        <section class="ss-appt-group">
-          <h3 class="ss-eyebrow" id="ss-cal-day-title"></h3>
-          <div class="ss-hybrid ss-hybrid--flush" id="ss-cal-day"></div>
-          <div class="card is-hidden" id="ss-cal-empty"><div class="card__body"><div class="empty-state"><span class="empty-state__text">Nothing on this day</span></div></div></div>
-        </section>
       </div>
     </section>
 
@@ -1158,6 +1136,43 @@ html:has(.modal[open]) { overflow: hidden; }
       </div>
     </section>
 
+    <!-- ============ Calendar (from 768) ============ -->
+    <section class="ss-view" data-view="calendar">
+      <div class="ss-head">
+        <h2 class="ss-title">Calendar</h2>
+        <p class="ss-sub ss-sub--sm">Everything you've booked, by day — every workshop session included.</p>
+      </div>
+      <div class="tabs--underline ss-type-tabs" id="ss-cal-type" role="tablist" aria-label="Type">
+        <button class="tab tab--base tab--active" type="button" role="tab" aria-selected="true" data-type="">All</button>
+        <button class="tab tab--base" type="button" role="tab" aria-selected="false" data-type="appointment">Appointments</button>
+        <button class="tab tab--base" type="button" role="tab" aria-selected="false" data-type="dropin">Drop-ins</button>
+        <button class="tab tab--base" type="button" role="tab" aria-selected="false" data-type="workshop">Workshops</button>
+      </div>
+
+      <div class="ss-cal" id="ss-cal">
+        <div class="card ss-cal__month">
+          <div class="ss-cal__head">
+            <h3 class="ss-week__label" id="ss-cal-label"></h3>
+            <div class="ss-week__nav">
+              <button class="btn btn--secondary btn--sm btn--icon-only" id="ss-cal-prev" type="button" aria-label="Previous month"><svg class="btn__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg></button>
+              <button class="btn btn--secondary btn--sm btn--icon-only" id="ss-cal-next" type="button" aria-label="Next month"><svg class="btn__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button>
+            </div>
+          </div>
+          <div class="ss-cal__grid" id="ss-cal-grid"></div>
+          <div class="ss-cal__legend">
+            <span class="ss-cal__key"><span class="ss-cal__dot ss-cal__dot--appointment"></span>Appointment</span>
+            <span class="ss-cal__key"><span class="ss-cal__dot ss-cal__dot--dropin"></span>Drop-in</span>
+            <span class="ss-cal__key"><span class="ss-cal__dot ss-cal__dot--workshop"></span>Workshop</span>
+          </div>
+        </div>
+        <section class="ss-appt-group">
+          <h3 class="ss-eyebrow" id="ss-cal-day-title"></h3>
+          <div class="ss-hybrid ss-hybrid--flush" id="ss-cal-day"></div>
+          <div class="card is-hidden" id="ss-cal-empty"><div class="card__body"><div class="empty-state"><span class="empty-state__text">Nothing on this day</span></div></div></div>
+        </section>
+      </div>
+    </section>
+
     <!-- ============ other sections (not designed yet) ============ -->
     <section class="ss-view" data-view="placeholder">
       <div class="empty-state"><span class="empty-state__text" id="ss-placeholder-text"></span></div>
@@ -1309,6 +1324,7 @@ html:has(.modal[open]) { overflow: hidden; }
     });
     if (i === 0) { renderBrowse(); showView("browse"); return; }
     if (i === 1) { renderAppts(); showView("appointments"); return; }
+    if (V6 && i === 2) { renderCal(); showView("calendar"); return; }
     $("ss-placeholder-text").textContent = sectionTabs[i].textContent + " — not designed yet";
     showView("placeholder");
   }
@@ -1952,22 +1968,6 @@ html:has(.modal[open]) { overflow: hidden; }
   }
   function renderAppts() {
     updateUpcomingCount();
-    if (V6) {
-      var calMode = schedMode === "calendar";
-      document.querySelectorAll("#ss-sched-mode .tab").forEach(function (t) {
-        var on = t.dataset.mode === schedMode;
-        t.classList.toggle("tab--active", on);
-        t.setAttribute("aria-selected", on ? "true" : "false");
-      });
-      $("ss-appt-tabs").classList.toggle("is-hidden", calMode);
-      $("ss-cal").classList.toggle("is-hidden", !calMode);
-      if (calMode) {
-        $("ss-appts").classList.add("is-hidden");
-        $("ss-appts-empty").classList.add("is-hidden");
-        renderCal();
-        return;
-      }
-    }
     document.querySelectorAll("#ss-appt-tabs .tab").forEach(function (t) {
       var on = t.dataset.apptTab === apptTab;
       t.classList.toggle("tab--active", on);
@@ -2005,18 +2005,25 @@ html:has(.modal[open]) { overflow: hidden; }
     t.addEventListener("click", function () { apptTab = t.dataset.apptTab; renderAppts(); });
   });
   $("ss-appts-browse").addEventListener("click", function () { goSection(0); });
+  // Rows live in two places — My schedule and the Calendar's day — and a
+  // details page goes back to whichever it was opened from.
+  var FROM_SECTION = { book: 0, schedule: 1, calendar: 2 };
+  var FROM_LABEL = { book: "Book", schedule: "My schedule", calendar: "Calendar" };
+  function rerenderSchedule() { if (activeViewName() === "calendar") renderCal(); else renderAppts(); }
   function scheduleClick(e) {
+    var from = e.currentTarget.id === "ss-cal-day" ? "calendar" : "schedule";
     var c = e.target.closest("[data-checkin]");
-    if (c) { checkIn(apptById(c.dataset.checkin)); renderAppts(); return; }
+    if (c) { checkIn(apptById(c.dataset.checkin)); rerenderSchedule(); return; }
     var mc = e.target.closest("[data-ws-checkin]");
-    if (mc) { var p = mc.dataset.wsCheckin.split(":"); wsCheckIn(+p[0], +p[1]); renderAppts(); return; }
+    if (mc) { var p = mc.dataset.wsCheckin.split(":"); wsCheckIn(+p[0], +p[1]); rerenderSchedule(); return; }
     var mw = e.target.closest("[data-myws]");
-    if (mw) { openMyWorkshop(+mw.dataset.myws, "schedule"); return; }
+    if (mw) { openMyWorkshop(+mw.dataset.myws, from); return; }
     var vv = e.target.closest("[data-visit]");
-    if (vv) { openVisit(vv.dataset.visit, "schedule"); return; }
+    if (vv) { openVisit(vv.dataset.visit, from); return; }
     var d = e.target.closest("[data-appt]");
-    if (d) openAppt(d.dataset.appt);
+    if (d) { apptFrom = from; openAppt(d.dataset.appt); }
   }
+  var apptFrom = "schedule";
   $("ss-appts").addEventListener("click", scheduleClick);
   on("ss-cal-day", "click", scheduleClick);
   function checkIn(a) {
@@ -2029,7 +2036,11 @@ html:has(.modal[open]) { overflow: hidden; }
 
   // ---- details ----
   var openId = null;
-  function openAppt(id) { openId = id; renderAppt(); showView("appt"); }
+  function openAppt(id) {
+    openId = id;
+    if (V6) $("ss-appt-back").querySelector("span").textContent = FROM_LABEL[apptFrom];
+    renderAppt(); showView("appt");
+  }
   function renderAppt() {
     var a = apptById(openId), up = a.status === "upcoming";
     $("ss-d-name").textContent = a.service;
@@ -2063,7 +2074,10 @@ html:has(.modal[open]) { overflow: hidden; }
     $("ss-d-about").classList.toggle("is-hidden", !ABOUT[a.service]);
     $("ss-d-about-text").textContent = ABOUT[a.service] || "";
   }
-  $("ss-appt-back").addEventListener("click", function () { renderAppts(); showView("appointments"); });
+  $("ss-appt-back").addEventListener("click", function () {
+    if (V6) { goSection(FROM_SECTION[apptFrom]); return; }
+    renderAppts(); showView("appointments");
+  });
   $("ss-d-facts").addEventListener("click", function (e) {
     if (!e.target.closest("#ss-d-copy")) return;
     var ref = "#" + apptById(openId).ref;
@@ -2183,6 +2197,7 @@ html:has(.modal[open]) { overflow: hidden; }
     if (view === "visit") renderVisit();
     if (view === "appointments") renderAppts();
     else updateUpcomingCount();
+    if (view === "calendar") renderCal();
     if (changed && view === "browse") renderBrowse();
     updateBanner();
   }
@@ -2191,11 +2206,11 @@ html:has(.modal[open]) { overflow: hidden; }
   var vw = { id: null, from: "book", pre: null };
   function openVisit(id, from) {
     vw.id = id; vw.from = from || "book"; vw.pre = null;
-    $("ss-v-back").querySelector("span").textContent = vw.from === "book" ? "Book" : "My schedule";
+    $("ss-v-back").querySelector("span").textContent = FROM_LABEL[vw.from];
     renderVisit();
     showView("visit");
   }
-  on("ss-v-back", "click", function () { goSection(vw.from === "book" ? 0 : 1); });
+  on("ss-v-back", "click", function () { goSection(FROM_SECTION[vw.from]); });
   function visitWhere(v) { return LOCATIONS[v.dept]; }
   function visitStatusBadge(v) {
     return {
@@ -2348,7 +2363,7 @@ html:has(.modal[open]) { overflow: hidden; }
           VISITS.splice(VISITS.indexOf(v), 1);
           showToast(reserved ? "Reservation for " + v.name + " cancelled" : "You left the queue for " + v.name);
           updateUpcomingCount();
-          goSection(vw.from === "book" ? 0 : 1);
+          goSection(FROM_SECTION[vw.from]);
         }
       });
     }
@@ -2377,7 +2392,7 @@ html:has(.modal[open]) { overflow: hidden; }
     $("ss-banner-text").textContent = t[1];
     bn.dataset.visit = v.id;
   }
-  on("ss-banner-view", "click", function () { openVisit($("ss-banner").dataset.visit, activeViewName() === "appointments" ? "schedule" : "book"); });
+  on("ss-banner-view", "click", function () { openVisit($("ss-banner").dataset.visit, activeViewName() === "appointments" ? "schedule" : activeViewName() === "calendar" ? "calendar" : "book"); });
 
   // My schedule rows for drop-ins: live / reserved in Upcoming, done in Past
   function visitEntries(tab) {
@@ -2674,11 +2689,11 @@ html:has(.modal[open]) { overflow: hidden; }
   var mw = { wi: 0, from: "schedule", showAll: false };
   function openMyWorkshop(wi, from) {
     mw.wi = wi; mw.from = from || "schedule"; mw.showAll = false;
-    $("ss-mw-back").querySelector("span").textContent = mw.from === "book" ? "Book" : "My schedule";
+    $("ss-mw-back").querySelector("span").textContent = FROM_LABEL[mw.from];
     renderMyWorkshop();
     showView("myws");
   }
-  on("ss-mw-back", "click", function () { goSection(mw.from === "book" ? 0 : 1); });
+  on("ss-mw-back", "click", function () { goSection(FROM_SECTION[mw.from]); });
   function fileHtml(f) {
     return '<a class="attachment attachment--done" href="#" data-file="' + esc(f.name) + '"><span class="attachment__media">' + ICONS.file + '</span><span class="attachment__content"><span class="attachment__title">' + esc(f.name) + '</span><span class="attachment__description">' + esc(f.meta) + "</span></span>" + ICONS.download + "</a>";
   }
@@ -2818,30 +2833,28 @@ html:has(.modal[open]) { overflow: hidden; }
           delete WS_REG[w.id];
           updateUpcomingCount();
           showToast(single ? "Registration for " + w.name + " cancelled" : "You left " + w.name);
-          goSection(mw.from === "book" ? 0 : 1);
+          goSection(FROM_SECTION[mw.from]);
         }
       });
     });
   }
 
   // ---------------- v6: My schedule — calendar ----------------
-  var schedMode = "list";
-  // type filter — same four kinds as Book's tabs; applies to List and Calendar
+  // type filter — same four kinds as Book's tabs, on My schedule and on the
+  // Calendar; one choice shared by both
   var schedType = "";
   var SCHED_TYPE_LABEL = { appointment: "appointments", dropin: "drop-ins", workshop: "workshops" };
-  document.querySelectorAll("#ss-sched-type .tab").forEach(function (t) {
+  var schedTypeTabs = document.querySelectorAll("#ss-sched-type .tab, #ss-cal-type .tab");
+  schedTypeTabs.forEach(function (t) {
     t.addEventListener("click", function () {
       schedType = t.dataset.type;
-      document.querySelectorAll("#ss-sched-type .tab").forEach(function (x) {
-        var on = x === t;
+      schedTypeTabs.forEach(function (x) {
+        var on = x.dataset.type === schedType;
         x.classList.toggle("tab--active", on);
         x.setAttribute("aria-selected", on ? "true" : "false");
       });
-      renderAppts();
+      rerenderSchedule();
     });
-  });
-  document.querySelectorAll("#ss-sched-mode .tab").forEach(function (t) {
-    t.addEventListener("click", function () { schedMode = t.dataset.mode; renderAppts(); });
   });
   var cal = { y: today.getFullYear(), m: today.getMonth(), sel: TODAY };
   // Every dated thing: appointments (not cancelled), every session of each
@@ -2935,6 +2948,14 @@ html:has(.modal[open]) { overflow: hidden; }
   }
   on("ss-cal-prev", "click", function () { calShift(-1); });
   on("ss-cal-next", "click", function () { calShift(1); });
+
+  // The Calendar tab is hidden on a phone (a month grid doesn't earn its
+  // space there; My schedule's list is the phone view). Narrowing the window
+  // while it's open moves to My schedule.
+  if (V6) {
+    var calPhone = window.matchMedia("(max-width: 767px)");
+    calPhone.addEventListener("change", function () { if (calPhone.matches && activeViewName() === "calendar") goSection(1); });
+  }
 
   // ---------------- v6: done — the one screen every booking ends on ----------------
   var doneActions = [];

@@ -125,6 +125,7 @@ export function ssAppJs(d) {
     });
     if (i === 0) { renderBrowse(); showView("browse"); return; }
     if (i === 1) { renderAppts(); showView("appointments"); return; }
+    if (V6 && i === 2) { renderCal(); showView("calendar"); return; }
     $("ss-placeholder-text").textContent = sectionTabs[i].textContent + " — not designed yet";
     showView("placeholder");
   }
@@ -768,22 +769,6 @@ export function ssAppJs(d) {
   }
   function renderAppts() {
     updateUpcomingCount();
-    if (V6) {
-      var calMode = schedMode === "calendar";
-      document.querySelectorAll("#ss-sched-mode .tab").forEach(function (t) {
-        var on = t.dataset.mode === schedMode;
-        t.classList.toggle("tab--active", on);
-        t.setAttribute("aria-selected", on ? "true" : "false");
-      });
-      $("ss-appt-tabs").classList.toggle("is-hidden", calMode);
-      $("ss-cal").classList.toggle("is-hidden", !calMode);
-      if (calMode) {
-        $("ss-appts").classList.add("is-hidden");
-        $("ss-appts-empty").classList.add("is-hidden");
-        renderCal();
-        return;
-      }
-    }
     document.querySelectorAll("#ss-appt-tabs .tab").forEach(function (t) {
       var on = t.dataset.apptTab === apptTab;
       t.classList.toggle("tab--active", on);
@@ -821,18 +806,25 @@ export function ssAppJs(d) {
     t.addEventListener("click", function () { apptTab = t.dataset.apptTab; renderAppts(); });
   });
   $("ss-appts-browse").addEventListener("click", function () { goSection(0); });
+  // Rows live in two places — My schedule and the Calendar's day — and a
+  // details page goes back to whichever it was opened from.
+  var FROM_SECTION = { book: 0, schedule: 1, calendar: 2 };
+  var FROM_LABEL = { book: "Book", schedule: "My schedule", calendar: "Calendar" };
+  function rerenderSchedule() { if (activeViewName() === "calendar") renderCal(); else renderAppts(); }
   function scheduleClick(e) {
+    var from = e.currentTarget.id === "ss-cal-day" ? "calendar" : "schedule";
     var c = e.target.closest("[data-checkin]");
-    if (c) { checkIn(apptById(c.dataset.checkin)); renderAppts(); return; }
+    if (c) { checkIn(apptById(c.dataset.checkin)); rerenderSchedule(); return; }
     var mc = e.target.closest("[data-ws-checkin]");
-    if (mc) { var p = mc.dataset.wsCheckin.split(":"); wsCheckIn(+p[0], +p[1]); renderAppts(); return; }
+    if (mc) { var p = mc.dataset.wsCheckin.split(":"); wsCheckIn(+p[0], +p[1]); rerenderSchedule(); return; }
     var mw = e.target.closest("[data-myws]");
-    if (mw) { openMyWorkshop(+mw.dataset.myws, "schedule"); return; }
+    if (mw) { openMyWorkshop(+mw.dataset.myws, from); return; }
     var vv = e.target.closest("[data-visit]");
-    if (vv) { openVisit(vv.dataset.visit, "schedule"); return; }
+    if (vv) { openVisit(vv.dataset.visit, from); return; }
     var d = e.target.closest("[data-appt]");
-    if (d) openAppt(d.dataset.appt);
+    if (d) { apptFrom = from; openAppt(d.dataset.appt); }
   }
+  var apptFrom = "schedule";
   $("ss-appts").addEventListener("click", scheduleClick);
   on("ss-cal-day", "click", scheduleClick);
   function checkIn(a) {
@@ -845,7 +837,11 @@ export function ssAppJs(d) {
 
   // ---- details ----
   var openId = null;
-  function openAppt(id) { openId = id; renderAppt(); showView("appt"); }
+  function openAppt(id) {
+    openId = id;
+    if (V6) $("ss-appt-back").querySelector("span").textContent = FROM_LABEL[apptFrom];
+    renderAppt(); showView("appt");
+  }
   function renderAppt() {
     var a = apptById(openId), up = a.status === "upcoming";
     $("ss-d-name").textContent = a.service;
@@ -879,7 +875,10 @@ export function ssAppJs(d) {
     $("ss-d-about").classList.toggle("is-hidden", !ABOUT[a.service]);
     $("ss-d-about-text").textContent = ABOUT[a.service] || "";
   }
-  $("ss-appt-back").addEventListener("click", function () { renderAppts(); showView("appointments"); });
+  $("ss-appt-back").addEventListener("click", function () {
+    if (V6) { goSection(FROM_SECTION[apptFrom]); return; }
+    renderAppts(); showView("appointments");
+  });
   $("ss-d-facts").addEventListener("click", function (e) {
     if (!e.target.closest("#ss-d-copy")) return;
     var ref = "#" + apptById(openId).ref;
@@ -999,6 +998,7 @@ export function ssAppJs(d) {
     if (view === "visit") renderVisit();
     if (view === "appointments") renderAppts();
     else updateUpcomingCount();
+    if (view === "calendar") renderCal();
     if (changed && view === "browse") renderBrowse();
     updateBanner();
   }
@@ -1007,11 +1007,11 @@ export function ssAppJs(d) {
   var vw = { id: null, from: "book", pre: null };
   function openVisit(id, from) {
     vw.id = id; vw.from = from || "book"; vw.pre = null;
-    $("ss-v-back").querySelector("span").textContent = vw.from === "book" ? "Book" : "My schedule";
+    $("ss-v-back").querySelector("span").textContent = FROM_LABEL[vw.from];
     renderVisit();
     showView("visit");
   }
-  on("ss-v-back", "click", function () { goSection(vw.from === "book" ? 0 : 1); });
+  on("ss-v-back", "click", function () { goSection(FROM_SECTION[vw.from]); });
   function visitWhere(v) { return LOCATIONS[v.dept]; }
   function visitStatusBadge(v) {
     return {
@@ -1164,7 +1164,7 @@ export function ssAppJs(d) {
           VISITS.splice(VISITS.indexOf(v), 1);
           showToast(reserved ? "Reservation for " + v.name + " cancelled" : "You left the queue for " + v.name);
           updateUpcomingCount();
-          goSection(vw.from === "book" ? 0 : 1);
+          goSection(FROM_SECTION[vw.from]);
         }
       });
     }
@@ -1193,7 +1193,7 @@ export function ssAppJs(d) {
     $("ss-banner-text").textContent = t[1];
     bn.dataset.visit = v.id;
   }
-  on("ss-banner-view", "click", function () { openVisit($("ss-banner").dataset.visit, activeViewName() === "appointments" ? "schedule" : "book"); });
+  on("ss-banner-view", "click", function () { openVisit($("ss-banner").dataset.visit, activeViewName() === "appointments" ? "schedule" : activeViewName() === "calendar" ? "calendar" : "book"); });
 
   // My schedule rows for drop-ins: live / reserved in Upcoming, done in Past
   function visitEntries(tab) {
@@ -1490,11 +1490,11 @@ export function ssAppJs(d) {
   var mw = { wi: 0, from: "schedule", showAll: false };
   function openMyWorkshop(wi, from) {
     mw.wi = wi; mw.from = from || "schedule"; mw.showAll = false;
-    $("ss-mw-back").querySelector("span").textContent = mw.from === "book" ? "Book" : "My schedule";
+    $("ss-mw-back").querySelector("span").textContent = FROM_LABEL[mw.from];
     renderMyWorkshop();
     showView("myws");
   }
-  on("ss-mw-back", "click", function () { goSection(mw.from === "book" ? 0 : 1); });
+  on("ss-mw-back", "click", function () { goSection(FROM_SECTION[mw.from]); });
   function fileHtml(f) {
     return '<a class="attachment attachment--done" href="#" data-file="' + esc(f.name) + '"><span class="attachment__media">' + ICONS.file + '</span><span class="attachment__content"><span class="attachment__title">' + esc(f.name) + '</span><span class="attachment__description">' + esc(f.meta) + "</span></span>" + ICONS.download + "</a>";
   }
@@ -1634,30 +1634,28 @@ export function ssAppJs(d) {
           delete WS_REG[w.id];
           updateUpcomingCount();
           showToast(single ? "Registration for " + w.name + " cancelled" : "You left " + w.name);
-          goSection(mw.from === "book" ? 0 : 1);
+          goSection(FROM_SECTION[mw.from]);
         }
       });
     });
   }
 
   // ---------------- v6: My schedule — calendar ----------------
-  var schedMode = "list";
-  // type filter — same four kinds as Book's tabs; applies to List and Calendar
+  // type filter — same four kinds as Book's tabs, on My schedule and on the
+  // Calendar; one choice shared by both
   var schedType = "";
   var SCHED_TYPE_LABEL = { appointment: "appointments", dropin: "drop-ins", workshop: "workshops" };
-  document.querySelectorAll("#ss-sched-type .tab").forEach(function (t) {
+  var schedTypeTabs = document.querySelectorAll("#ss-sched-type .tab, #ss-cal-type .tab");
+  schedTypeTabs.forEach(function (t) {
     t.addEventListener("click", function () {
       schedType = t.dataset.type;
-      document.querySelectorAll("#ss-sched-type .tab").forEach(function (x) {
-        var on = x === t;
+      schedTypeTabs.forEach(function (x) {
+        var on = x.dataset.type === schedType;
         x.classList.toggle("tab--active", on);
         x.setAttribute("aria-selected", on ? "true" : "false");
       });
-      renderAppts();
+      rerenderSchedule();
     });
-  });
-  document.querySelectorAll("#ss-sched-mode .tab").forEach(function (t) {
-    t.addEventListener("click", function () { schedMode = t.dataset.mode; renderAppts(); });
   });
   var cal = { y: today.getFullYear(), m: today.getMonth(), sel: TODAY };
   // Every dated thing: appointments (not cancelled), every session of each
@@ -1751,6 +1749,14 @@ export function ssAppJs(d) {
   }
   on("ss-cal-prev", "click", function () { calShift(-1); });
   on("ss-cal-next", "click", function () { calShift(1); });
+
+  // The Calendar tab is hidden on a phone (a month grid doesn't earn its
+  // space there; My schedule's list is the phone view). Narrowing the window
+  // while it's open moves to My schedule.
+  if (V6) {
+    var calPhone = window.matchMedia("(max-width: 767px)");
+    calPhone.addEventListener("change", function () { if (calPhone.matches && activeViewName() === "calendar") goSection(1); });
+  }
 
   // ---------------- v6: done — the one screen every booking ends on ----------------
   var doneActions = [];

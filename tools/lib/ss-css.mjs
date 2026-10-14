@@ -663,7 +663,11 @@ html:has(.modal[open]) { overflow: hidden; }
 /* Tabs icon: segmented Tabs have no icon role of their own — the icon takes
    the label's colour in every state (state.*.label), by design. */
 .tab__icon { flex-shrink: 0; width: ${D(tabs.size.sm.iconSize)}; height: ${D(tabs.size.sm.iconSize)}; color: currentColor; }
-.ss-sched-row .tabs--segmented { flex-shrink: 0; }
+/* v6 top nav: three sections, centred in the band (the row still scrolls if
+   it ever overflows). Calendar's tab exists from 768 only. */
+.ss-sections--center { justify-content: center; }
+.ss-sections--center .tabs--segmented { flex: 0 1 auto; }
+@media (max-width: 767px) { .ss-tab--wide { display: none; } }
 .ss-cal { display: flex; flex-direction: column; gap: ${dim(5)}; }
 .ss-cal__month { padding: ${D(card.padding)}; display: flex; flex-direction: column; gap: ${dim(3)}; }
 .ss-cal__head { display: flex; align-items: center; justify-content: space-between; gap: ${dim(3)}; }

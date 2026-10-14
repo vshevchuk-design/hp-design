@@ -123,7 +123,7 @@ export const APPOINTMENTS = [
 
 // ---------------- v6: Book (one catalogue) ----------------
 // v6 folds the six live tabs into two: Book and My schedule.
-export const SECTIONS_V6 = ["Book", "My schedule"];
+export const SECTIONS_V6 = ["Book", "My schedule", "Calendar"];
 
 // Drop-in hours for the services that offer them (drop "open" / "available"
 // above) — one desk per service, at its first department. Open now: until
