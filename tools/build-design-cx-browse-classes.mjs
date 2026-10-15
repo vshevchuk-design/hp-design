@@ -69,7 +69,10 @@ const pageCss = ({ tokens, R, D, dim, cv, typoCss, style, textExt }) => {
 .cb-status { display: flex; align-items: center; gap: ${dim(2)}; white-space: nowrap; }
 .cb-cell-label { display: none; }
 /* the open section's details — a band under its row */
-.cb-detail { padding: ${dim(4)} ${D(tb.row.paddingX)} ${dim(4)}; border-bottom: 1px solid ${R(tb.row.divider)}; background: ${cv("surface.page")}; display: flex; flex-direction: column; gap: ${dim(4)}; }
+/* white, and joined to its row: no hairline between the two — the line
+   comes after the details, before the next section */
+.cb-detail { padding: 0 ${D(tb.row.paddingX)} ${dim(4)}; border-bottom: 1px solid ${R(tb.row.divider)}; background: ${R(tb.surface)}; display: flex; flex-direction: column; gap: ${dim(4)}; }
+.cb-sections .table__row:has(+ .cb-detail:not([hidden])) { border-bottom: none; }
 .cb-detail[hidden] { display: none; }
 .cb-detail:last-child { border-bottom: none; }
 .cb-groups { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(${dim(72)}, 100%), 1fr)); gap: ${dim(3)}; }

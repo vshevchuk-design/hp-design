@@ -971,7 +971,10 @@ html, body { height: auto; min-height: 100%; }
 .cb-status { display: flex; align-items: center; gap: 8px; white-space: nowrap; }
 .cb-cell-label { display: none; }
 /* the open section's details — a band under its row */
-.cb-detail { padding: 16px 16px 16px; border-bottom: 1px solid var(--tok-border-default); background: var(--tok-surface-page); display: flex; flex-direction: column; gap: 16px; }
+/* white, and joined to its row: no hairline between the two — the line
+   comes after the details, before the next section */
+.cb-detail { padding: 0 16px 16px; border-bottom: 1px solid var(--tok-border-default); background: var(--tok-surface-default); display: flex; flex-direction: column; gap: 16px; }
+.cb-sections .table__row:has(+ .cb-detail:not([hidden])) { border-bottom: none; }
 .cb-detail[hidden] { display: none; }
 .cb-detail:last-child { border-bottom: none; }
 .cb-groups { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(288px, 100%), 1fr)); gap: 12px; }
