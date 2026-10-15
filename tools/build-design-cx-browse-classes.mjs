@@ -11,7 +11,7 @@
 //   · the three filters are Select base with floating labels, and "Any …" is
 //     an option instead of a × inside the field;
 //   · results get a count beside the in-table Search;
-//   · View Sections is Button secondary sm (the live solid blue button on
+//   · View Sections is Button tint base (40px — the live solid blue button on
 //     every one of eleven rows made the column the loudest thing on screen);
 //   · Start and End are one Time column; Session moves under the section;
 //   · seven equal buttons under an open section → Add to cart (primary),
@@ -218,7 +218,7 @@ const pageJs = `(function () {
     $("cb-courses").innerHTML = '<div class="table__row table__row--head" role="row"><span role="columnheader">Class</span><span role="columnheader">Description</span><span role="columnheader"><span class="visually-hidden">Actions</span></span></div>' +
       (list.length ? list.map(function (c) {
         var id = c[0] + " " + c[1];
-        return '<div class="table__row table__row--link" role="row" data-course="' + esc(id) + '"><span class="cb-code" role="cell">' + esc(id) + '</span><span class="cb-desc" role="cell">' + esc(c[2]) + '</span><span class="cb-act" role="cell"><button type="button" class="btn btn--secondary btn--sm" data-course="' + esc(id) + '" aria-label="View sections for ' + esc(id) + '">View sections</button></span></div>';
+        return '<div class="table__row table__row--link" role="row" data-course="' + esc(id) + '"><span class="cb-code" role="cell">' + esc(id) + '</span><span class="cb-desc" role="cell">' + esc(c[2]) + '</span><span class="cb-act" role="cell"><button type="button" class="btn btn--tint btn--base" data-course="' + esc(id) + '" aria-label="View sections for ' + esc(id) + '">View sections</button></span></div>';
       }).join("") : '<div class="empty-state"><span class="empty-state__text">No classes match “' + esc(st.q) + '”</span></div>');
   }
   $("cb-go").addEventListener("click", function () { st.searched = true; st.q = ""; $("cb-q").value = ""; $("cb-q-box").classList.remove("is-populated"); renderResults(); });
@@ -365,7 +365,7 @@ const viewerHtml = renderDesignViewer({
   activeKey: "cx-browse-classes",
   title: "CX Browse Classes",
   heading: "Browse Classes",
-  sub: `Browse Classes, restyled on hp-design components in the CX shell — same flow and content as the live page (read off three saved copies): <b>Term</b> (required), <b>Career</b> and <b>Subject</b> → Search → a Class · Description table → a course's sections, each opening into Information / Details / Availability / Textbooks / Additional links with the section actions. What changed is the UI: the filters are Select base with floating labels ("Any …" is an option, not a × in the field); results get a count beside the table's own Search; <b>View sections</b> is a secondary button, not eleven solid blue ones; Start and End are one Time column and Session sits under the section; the seven equal buttons under an open section become <b>Add to cart</b>, Enroll, Add to planner and a ⋯ Menu (the row's ⋮ opens the same Menu); below 1180px the sections table stacks. Try 2027 Spring + ACCT, then <b>ACCT C2003</b> — its section 2000 is the live one, verbatim. Other subjects and sections are sample data.`,
+  sub: `Browse Classes, restyled on hp-design components in the CX shell — same flow and content as the live page (read off three saved copies): <b>Term</b> (required), <b>Career</b> and <b>Subject</b> → Search → a Class · Description table → a course's sections, each opening into Information / Details / Availability / Textbooks / Additional links with the section actions. What changed is the UI: the filters are Select base with floating labels ("Any …" is an option, not a × in the field); results get a count beside the table's own Search; <b>View sections</b> is Button tint (pale blue), not eleven solid blue ones; Start and End are one Time column and Session sits under the section; the seven equal buttons under an open section become <b>Add to cart</b>, Enroll, Add to planner and a ⋯ Menu (the row's ⋮ opens the same Menu); below 1180px the sections table stacks. Try 2027 Spring + ACCT, then <b>ACCT C2003</b> — its section 2000 is the live one, verbatim. Other subjects and sections are sample data.`,
   versions: [{ label: "v1", note: "restyle of the live page", file: "cx-browse-classes-app.html" }],
 });
 
