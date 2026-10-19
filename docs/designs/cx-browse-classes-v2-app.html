@@ -1011,7 +1011,7 @@ html, body { height: auto; min-height: 100%; }
 @container (min-width: 760px) {
   .cb-shead { grid-template-columns: auto auto minmax(0, 1fr) minmax(224px, 320px); grid-template-areas: "title code . q" "meta meta meta ."; row-gap: 4px; }
 }
-.cb-sections .table__row { grid-template-columns: minmax(144px, 1.2fr) 64px 144px minmax(80px, 1fr) minmax(112px, 1.2fr) 144px 112px; }
+.cb-sections .table__row { grid-template-columns: minmax(144px, 1.2fr) 64px 144px minmax(80px, 1fr) minmax(112px, 1.2fr) 144px 128px; }
 /* every row is its own grid, so every column must be sized the same way in
    the header and the rows — an "auto" Actions column sized to the button in
    the rows but to nothing in the header, and shifted every column */
@@ -1346,7 +1346,7 @@ window.cx = (function () {
           '<span class="cb-room" role="cell">' + esc(s.room) + "</span>" +
           '<span class="cb-who" role="cell">' + esc(s.instructor) + "</span>" +
           '<span class="cb-status" role="cell">' + statusHtml(s) + "</span>" +
-          '<span class="cb-kebab" role="cell"><button type="button" class="btn btn--tint btn--sm" data-menu="' + s.classNumber + '" aria-haspopup="menu" aria-label="Actions for section ' + s.section + '"><span>Actions</span>' + ICONS.expand + "</button></span>" +
+          '<span class="cb-kebab" role="cell"><button type="button" class="btn btn--tint btn--base" data-menu="' + s.classNumber + '" aria-haspopup="menu" aria-label="Actions for section ' + s.section + '"><span>Actions</span>' + ICONS.expand + "</button></span>" +
           "</div>" +
           '<div class="cb-detail" id="' + did + '"' + (open ? "" : " hidden") + ">" + detailHtml(s) + "</div>";
       }).join("") : '<div class="empty-state"><span class="empty-state__text">No sections match “' + esc(st.sq) + '”</span></div>');
