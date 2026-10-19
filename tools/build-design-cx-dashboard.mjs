@@ -10,7 +10,7 @@
 // Sidebar component (tools/lib/sidebar.mjs) + a 64px topbar; below 1024 the
 // sidebar becomes a drawer behind the topbar's menu button.
 //
-// The shell (sidebar, topbar, footer, Assistant, resolved component recipes)
+// The shell (sidebar, topbar, Assistant, resolved component recipes)
 // is tools/lib/cx-shell.mjs, shared by every CX page; this file is only the
 // dashboard's own views, CSS layer and script.
 // Run: node tools/build-design-cx-dashboard.mjs
