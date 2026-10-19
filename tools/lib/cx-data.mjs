@@ -180,4 +180,3 @@ export const CX_ASSISTANT_PROMPTS = [
   "What's my current account balance?",
   "When does enrollment open for the next term?",
 ];
-export const CX_FOOTER_LINKS = ["Preferences", "Institution", "About", "Leave Feedback"];

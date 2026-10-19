@@ -48,6 +48,9 @@ const pageCss = ({ tokens, R, D, dim, cv, typoCss, style, textExt }) => {
 .cb-filters > #cb-term { grid-area: term; } .cb-filters > #cb-career { grid-area: career; } .cb-filters > #cb-subject { grid-area: subject; }
 .cb-filters > #cb-go { grid-area: go; } .cb-filters > .search { grid-area: q; }
 .cb-filters .select { width: 100%; }
+/* the results' search field keeps its place but stays hidden until there
+   are results to search (visibility, not display — the layout doesn't jump) */
+.cb-filters > .search.is-concealed { visibility: hidden; }
 .cb-filters .select__value { flex: 1; }
 @container (min-width: 960px) {
   .cb-filters { grid-template-columns: repeat(3, minmax(0, ${dim(60)})) auto 1fr minmax(${dim(56)}, ${dim(80)}); grid-template-areas: "term career subject go . q"; }
@@ -144,7 +147,7 @@ const views = `
           ${selectHtml("cb-career", "Career", "Career", false)}
           ${selectHtml("cb-subject", "Subject", "Subject", false)}
           <button class="btn btn--primary btn--base" id="cb-go" type="button" disabled>Search</button>
-          <label class="search" id="cb-q-box">${ICONS.search}<input class="search__input" id="cb-q" type="search" placeholder="Search" aria-label="Search these classes" autocomplete="off" /><button class="search__clear" id="cb-q-clear" type="button" aria-label="Clear search">${ICONS.close}</button></label>
+          <label class="search is-concealed" id="cb-q-box">${ICONS.search}<input class="search__input" id="cb-q" type="search" placeholder="Search" aria-label="Search these classes" autocomplete="off" /><button class="search__clear" id="cb-q-clear" type="button" aria-label="Clear search">${ICONS.close}</button></label>
         </div>
         <div class="card" id="cb-hint"><div class="card__body"><div class="empty-state"><span class="empty-state__text">Select at least one criteria to view classes.</span></div></div></div>
         <div class="cx-view" id="cb-results" style="gap:12px">
@@ -232,6 +235,7 @@ const pageJs = `(function () {
   }
   function renderResults() {
     $("cb-hint").classList.toggle("is-hidden", st.searched);
+    $("cb-q-box").classList.toggle("is-concealed", !st.searched);
     $("cb-results").classList.toggle("is-active", st.searched);
     if (!st.searched) return;
     var list = courses();

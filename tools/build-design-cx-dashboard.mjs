@@ -6,7 +6,7 @@
 // (2026-10-15): same content and flow — "Hello Ava! 👋", the Academics /
 // Teaching / Advisor tabs, widgets per tab, Edit My Widgets with its
 // checkbox list and Save changes, the Assistant with its six suggested
-// questions, the footer links — on DS components. The shell is the new
+// questions — on DS components. The shell is the new
 // Sidebar component (tools/lib/sidebar.mjs) + a 64px topbar; below 1024 the
 // sidebar becomes a drawer behind the topbar's menu button.
 //
@@ -257,7 +257,7 @@ const viewerHtml = renderDesignViewer({
   activeKey: "cx-dashboard",
   title: "CX Dashboard",
   heading: "Dashboard",
-  sub: `The CX Dashboard, restyled on hp-design components — same content and flow as the live app (read off a saved copy of it): the greeting, the <b>Academics / Teaching / Advisor</b> tabs with their widgets, <b>Edit my widgets</b> (every widget as a checkbox tile, applied on Save changes), the <b>Assistant</b> with the live app's six suggested questions, and the footer links. The shell is the new DS <b>Sidebar</b> — the brand-blue navigation, item for item from the live app; only the current page is a white pill, open groups stay on the blue. Below 1024px the sidebar leaves the layout and opens as a drawer from the topbar's menu button. The live copy's widgets were empty ("You have no classes on this day"), so classes, exams, messages and advisees here are sample data; step through days in Today's Schedule to reach an empty one. Only the Dashboard is designed — other nav links show a toast.`,
+  sub: `The CX Dashboard, restyled on hp-design components — same content and flow as the live app (read off a saved copy of it): the greeting, the <b>Academics / Teaching / Advisor</b> tabs with their widgets, <b>Edit my widgets</b> (every widget as a checkbox tile, applied on Save changes), the <b>Assistant</b> with the live app's six suggested questions. The shell is the new DS <b>Sidebar</b> — the brand-blue navigation, item for item from the live app; only the current page is a white pill, open groups stay on the blue. Below 1024px the sidebar leaves the layout and opens as a drawer from the topbar's menu button. The live copy's widgets were empty ("You have no classes on this day"), so classes, exams, messages and advisees here are sample data; step through days in Today's Schedule to reach an empty one. Only the Dashboard is designed — other nav links show a toast.`,
   versions: [{ label: "v1", note: "restyle of the live dashboard", file: "cx-dashboard-app.html" }],
 });
 

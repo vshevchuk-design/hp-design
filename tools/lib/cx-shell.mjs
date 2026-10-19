@@ -18,7 +18,7 @@ import { renderRootVars, cssVarName } from "./css-vars.mjs";
 import { ssCss, SS_COLOR_PATHS } from "./ss-css.mjs";
 import { hoverGuard } from "./hover-guard.mjs";
 import { SIDEBAR_CSS, SIDEBAR_COLOR_PATHS, SIDEBAR_JS, SIDEBAR_MENU_BUTTON, sidebarHtml } from "./sidebar.mjs";
-import { CX_NAV, CX_USER, CX_FOOTER_LINKS } from "./cx-data.mjs";
+import { CX_NAV, CX_USER } from "./cx-data.mjs";
 
 const root = path.dirname(path.dirname(path.dirname(fileURLToPath(import.meta.url))));
 const load = (p) => JSON.parse(fs.readFileSync(path.join(root, p)));
@@ -133,11 +133,6 @@ html, body { height: auto; min-height: 100%; }
 .table__row--link:hover { background: ${R(tb.row.hoverBg)}; }
 .table__muted { color: ${R(tb.cell.mutedColor)}; }
 
-/* ============ footer ============ */
-.cx-foot { display: flex; flex-wrap: wrap; justify-content: center; gap: ${dim(1)} ${dim(5)}; padding-top: ${dim(4)}; }
-.cx-foot a { color: ${cv("text.secondary")}; ${typoCss(style("body-sm"))} text-decoration: none; }
-.cx-foot a:hover { color: ${cv("text.default")}; text-decoration: underline; }
-
 /* ============ Assistant: a floating button → a right-hand Drawer ============ */
 .cx-fab { position: fixed; right: ${dim(6)}; bottom: ${dim(6)}; z-index: 7; box-shadow: ${X.shadow(drawer.shadow)}; }
 @media (max-width: 767px) { .cx-fab { right: ${dim(4)}; bottom: ${dim(4)}; width: ${D(bBase.height)}; padding: 0; } .cx-fab span { display: none; } }
@@ -178,7 +173,6 @@ const SHELL_JS = `window.cx = (function () {
     if (a) { e.preventDefault(); if (a.getAttribute("aria-current") !== "page") notDesigned(); return; }
     if (e.target.closest(".sidebar__account")) toast("Profile and sign out live here");
   });
-  document.querySelectorAll("[data-foot]").forEach(function (a) { a.addEventListener("click", function (e) { e.preventDefault(); notDesigned(); }); });
   // Assistant
   var dlg = $("cx-assistant"), inp = $("cx-assistant-input");
   $("cx-fab").addEventListener("click", function () { dlg.showModal(); inp.focus(); });
@@ -240,7 +234,6 @@ ${css}
     </header>
     <main class="cx-page">
 ${views}
-      <nav class="cx-foot" aria-label="More">${CX_FOOTER_LINKS.map((l) => `<a href="#" data-foot>${l}</a>`).join("")}</nav>
     </main>
   </div>
 </div>

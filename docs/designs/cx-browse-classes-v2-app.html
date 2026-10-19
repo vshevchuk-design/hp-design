@@ -942,11 +942,6 @@ html, body { height: auto; min-height: 100%; }
 @media (hover: hover) { .table__row--link:hover { background: var(--tok-surface-dim); } }
 .table__muted { color: var(--tok-text-muted); }
 
-/* ============ footer ============ */
-.cx-foot { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 20px; padding-top: 16px; }
-.cx-foot a { color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; text-decoration: none; }
-@media (hover: hover) { .cx-foot a:hover { color: var(--tok-text-default); text-decoration: underline; } }
-
 /* ============ Assistant: a floating button → a right-hand Drawer ============ */
 .cx-fab { position: fixed; right: 24px; bottom: 24px; z-index: 7; box-shadow: 0px 4px 16px 0px rgba(21, 25, 30, 0.12); }
 @media (max-width: 767px) { .cx-fab { right: 16px; bottom: 16px; width: 40px; padding: 0; } .cx-fab span { display: none; } }
@@ -980,6 +975,9 @@ html, body { height: auto; min-height: 100%; }
 .cb-filters > #cb-term { grid-area: term; } .cb-filters > #cb-career { grid-area: career; } .cb-filters > #cb-subject { grid-area: subject; }
 .cb-filters > #cb-go { grid-area: go; } .cb-filters > .search { grid-area: q; }
 .cb-filters .select { width: 100%; }
+/* the results' search field keeps its place but stays hidden until there
+   are results to search (visibility, not display — the layout doesn't jump) */
+.cb-filters > .search.is-concealed { visibility: hidden; }
 .cb-filters .select__value { flex: 1; }
 @container (min-width: 960px) {
   .cb-filters { grid-template-columns: repeat(3, minmax(0, 240px)) auto 1fr minmax(224px, 320px); grid-template-areas: "term career subject go . q"; }
@@ -1110,7 +1108,7 @@ html, body { height: auto; min-height: 100%; }
           <button class="select is-placeholder" id="cb-career" type="button" aria-haspopup="listbox" aria-expanded="false"><span class="select__stack"><span class="select__label">Career</span><span class="select__value">Career</span></span><svg class="select__chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
           <button class="select is-placeholder" id="cb-subject" type="button" aria-haspopup="listbox" aria-expanded="false"><span class="select__stack"><span class="select__label">Subject</span><span class="select__value">Subject</span></span><svg class="select__chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
           <button class="btn btn--primary btn--base" id="cb-go" type="button" disabled>Search</button>
-          <label class="search" id="cb-q-box"><svg class="search__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg><input class="search__input" id="cb-q" type="search" placeholder="Search" aria-label="Search these classes" autocomplete="off" /><button class="search__clear" id="cb-q-clear" type="button" aria-label="Clear search"><svg class="" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button></label>
+          <label class="search is-concealed" id="cb-q-box"><svg class="search__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg><input class="search__input" id="cb-q" type="search" placeholder="Search" aria-label="Search these classes" autocomplete="off" /><button class="search__clear" id="cb-q-clear" type="button" aria-label="Clear search"><svg class="" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button></label>
         </div>
         <div class="card" id="cb-hint"><div class="card__body"><div class="empty-state"><span class="empty-state__text">Select at least one criteria to view classes.</span></div></div></div>
         <div class="cx-view" id="cb-results" style="gap:12px">
@@ -1137,7 +1135,6 @@ html, body { height: auto; min-height: 100%; }
         <div class="table cb-sections" id="cb-sections" role="table" aria-label="Sections"></div>
       </section>
 
-      <nav class="cx-foot" aria-label="More"><a href="#" data-foot>Preferences</a><a href="#" data-foot>Institution</a><a href="#" data-foot>About</a><a href="#" data-foot>Leave Feedback</a></nav>
     </main>
   </div>
 </div>
@@ -1178,7 +1175,6 @@ window.cx = (function () {
     if (a) { e.preventDefault(); if (a.getAttribute("aria-current") !== "page") notDesigned(); return; }
     if (e.target.closest(".sidebar__account")) toast("Profile and sign out live here");
   });
-  document.querySelectorAll("[data-foot]").forEach(function (a) { a.addEventListener("click", function (e) { e.preventDefault(); notDesigned(); }); });
   // Assistant
   var dlg = $("cx-assistant"), inp = $("cx-assistant-input");
   $("cx-fab").addEventListener("click", function () { dlg.showModal(); inp.focus(); });
@@ -1254,6 +1250,7 @@ window.cx = (function () {
   }
   function renderResults() {
     $("cb-hint").classList.toggle("is-hidden", st.searched);
+    $("cb-q-box").classList.toggle("is-concealed", !st.searched);
     $("cb-results").classList.toggle("is-active", st.searched);
     if (!st.searched) return;
     var list = courses();
