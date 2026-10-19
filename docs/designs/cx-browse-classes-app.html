@@ -992,9 +992,6 @@ html, body { height: auto; min-height: 100%; }
 .cb-req { color: var(--tok-text-danger); }
 
 /* ============ results ============ */
-.cb-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
-.cb-bar .search { width: min(100%, 288px); }
-.cb-count { color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
 .cb-courses .table__row { grid-template-columns: 144px minmax(0, 1fr) auto; }
 .cb-code { color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; font-weight: 600; white-space: nowrap; }
 @container (max-width: 559px) {
@@ -1005,8 +1002,15 @@ html, body { height: auto; min-height: 100%; }
 
 /* ============ sections ============ */
 .cb-back { align-self: flex-start; margin-inline-start: -8px; margin-block-end: -12px; }
-.cb-title { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; }
-.cb-title .ss-title { margin: 0; }
+/* the course head — by the page column's width, like the filters */
+.cb-shead { display: grid; align-items: center; gap: 8px 12px; grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "title title" "code meta" "q q"; }
+.cb-shead > .ss-title { grid-area: title; margin: 0; }
+.cb-shead > .badge { grid-area: code; justify-self: start; }
+.cb-shead > .ss-sub { grid-area: meta; margin: 0; }
+.cb-shead > .search { grid-area: q; }
+@container (min-width: 760px) {
+  .cb-shead { grid-template-columns: auto auto minmax(0, 1fr) minmax(224px, 320px); grid-template-areas: "title code . q" "meta meta meta ."; row-gap: 4px; }
+}
 .cb-sections .table__row { grid-template-columns: minmax(144px, 1.2fr) 64px 144px minmax(80px, 1fr) minmax(112px, 1.2fr) 144px auto; }
 .cb-sec__main { display: flex; align-items: center; gap: 8px; min-width: 0; }
 .cb-sec__toggle { margin-inline-start: -8px; }
@@ -1115,9 +1119,6 @@ html, body { height: auto; min-height: 100%; }
         <!-- the hint is EmptyState on its own — no Card round it -->
         <div class="empty-state" id="cb-hint"><span class="empty-state__text">Select at least one criteria to view classes.</span></div>
         <div class="cx-view" id="cb-results" style="gap:12px">
-          <div class="cb-bar">
-            <span class="cb-count" id="cb-count"></span>
-          </div>
           <div class="table cb-courses" id="cb-courses" role="table" aria-label="Classes"></div>
         </div>
       </section>
@@ -1125,14 +1126,12 @@ html, body { height: auto; min-height: 100%; }
       <!-- ============ A course's sections ============ -->
       <section class="cx-view" data-view="sections">
         <button class="btn btn--ghost btn--sm cb-back" id="cb-back" type="button"><svg class="btn__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg><span>Browse classes</span></button>
-        <div class="cx-head">
-          <div class="cx-head__text">
-            <div class="cb-title"><h2 class="ss-title" id="cb-s-title"></h2><span class="badge badge--base badge--outline badge--regular" id="cb-s-code"></span></div>
-            <p class="ss-sub ss-sub--sm" id="cb-s-meta"></p>
-          </div>
-        </div>
-        <div class="cb-bar">
-          <span class="cb-count" id="cb-s-count"></span>
+        <!-- wide: title + code · search on the title's row, meta under it.
+             narrow: title / code + meta on one row / search -->
+        <div class="cb-shead">
+          <h2 class="ss-title" id="cb-s-title"></h2>
+          <span class="badge badge--base badge--outline badge--regular" id="cb-s-code"></span>
+          <p class="ss-sub ss-sub--sm" id="cb-s-meta"></p>
           <label class="search" id="cb-sq-box"><svg class="search__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg><input class="search__input" id="cb-sq" type="search" placeholder="Search" aria-label="Search sections" autocomplete="off" /><button class="search__clear" id="cb-sq-clear" type="button" aria-label="Clear search"><svg class="" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button></label>
         </div>
         <div class="table cb-sections" id="cb-sections" role="table" aria-label="Sections"></div>
@@ -1257,7 +1256,6 @@ window.cx = (function () {
     $("cb-results").classList.toggle("is-active", st.searched);
     if (!st.searched) return;
     var list = courses();
-    $("cb-count").textContent = list.length + (list.length === 1 ? " class" : " classes") + " · " + st.term + (st.career ? " · " + st.career : "") + (st.subject ? " · " + st.subject : "");
     $("cb-courses").innerHTML = '<div class="table__row table__row--head" role="row"><span role="columnheader">Class</span><span role="columnheader">Description</span><span role="columnheader"><span class="visually-hidden">Actions</span></span></div>' +
       (list.length ? list.map(function (c) {
         var id = c[0] + " " + c[1];
@@ -1332,7 +1330,6 @@ window.cx = (function () {
   function renderSections() {
     var q = st.sq.toLowerCase();
     var list = secs.filter(function (s) { return !q || [s.section, s.component, s.classNumber, s.days, s.room, s.instructor, s.status].join(" ").toLowerCase().indexOf(q) !== -1; });
-    $("cb-s-count").textContent = list.length + (list.length === 1 ? " section" : " sections");
     $("cb-sections").innerHTML = '<div class="table__row table__row--head" role="row"><span role="columnheader">Section</span><span role="columnheader">Days</span><span role="columnheader">Time</span><span role="columnheader">Room</span><span role="columnheader">Instructor</span><span role="columnheader">Status</span><span role="columnheader"><span class="visually-hidden">Actions</span></span></div>' +
       (list.length ? list.map(function (s) {
         var open = !!st.open[s.classNumber], did = "cb-d-" + s.classNumber;

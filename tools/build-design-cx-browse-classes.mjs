@@ -10,7 +10,6 @@
 // CX shell (tools/lib/cx-shell.mjs). What changed is the UI:
 //   · the three filters are Select base with floating labels, and "Any …" is
 //     an option instead of a × inside the field;
-//   · results get a count beside the in-table Search;
 //   · View Sections is Button tint base (40px — the live solid blue button on
 //     every one of eleven rows made the column the loudest thing on screen);
 //   · Start and End are one Time column; Session moves under the section;
@@ -63,9 +62,6 @@ const pageCss = ({ tokens, R, D, dim, cv, typoCss, style, textExt }) => {
 .cb-req { color: ${cv("text.danger")}; }
 
 /* ============ results ============ */
-.cb-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: ${dim(3)}; }
-.cb-bar .search { width: min(100%, ${dim(72)}); }
-.cb-count { color: ${cv("text.secondary")}; ${typoCss(style("body-sm"))} }
 .cb-courses .table__row { grid-template-columns: ${dim(36)} minmax(0, 1fr) auto; }
 .cb-code { color: ${cv("text.default")}; ${typoCss(style("body-base"))} font-weight: ${style("heading-sm").fontWeight}; white-space: nowrap; }
 @container (max-width: 559px) {
@@ -76,8 +72,15 @@ const pageCss = ({ tokens, R, D, dim, cv, typoCss, style, textExt }) => {
 
 /* ============ sections ============ */
 .cb-back { align-self: flex-start; margin-inline-start: -${D(bSm.paddingX)}; margin-block-end: -${dim(3)}; }
-.cb-title { display: flex; flex-wrap: wrap; align-items: baseline; gap: ${dim(1)} ${dim(3)}; }
-.cb-title .ss-title { margin: 0; }
+/* the course head — by the page column's width, like the filters */
+.cb-shead { display: grid; align-items: center; gap: ${dim(2)} ${dim(3)}; grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "title title" "code meta" "q q"; }
+.cb-shead > .ss-title { grid-area: title; margin: 0; }
+.cb-shead > .badge { grid-area: code; justify-self: start; }
+.cb-shead > .ss-sub { grid-area: meta; margin: 0; }
+.cb-shead > .search { grid-area: q; }
+@container (min-width: 760px) {
+  .cb-shead { grid-template-columns: auto auto minmax(0, 1fr) minmax(${dim(56)}, ${dim(80)}); grid-template-areas: "title code . q" "meta meta meta ."; row-gap: ${dim(1)}; }
+}
 .cb-sections .table__row { grid-template-columns: minmax(${dim(36)}, 1.2fr) ${dim(16)} ${dim(36)} minmax(${dim(20)}, 1fr) minmax(${dim(28)}, 1.2fr) ${dim(36)} auto; }
 .cb-sec__main { display: flex; align-items: center; gap: ${dim(2)}; min-width: 0; }
 .cb-sec__toggle { margin-inline-start: -${dim(2)}; }
@@ -152,9 +155,6 @@ const views = `
         <!-- the hint is EmptyState on its own — no Card round it -->
         <div class="empty-state" id="cb-hint"><span class="empty-state__text">Select at least one criteria to view classes.</span></div>
         <div class="cx-view" id="cb-results" style="gap:12px">
-          <div class="cb-bar">
-            <span class="cb-count" id="cb-count"></span>
-          </div>
           <div class="table cb-courses" id="cb-courses" role="table" aria-label="Classes"></div>
         </div>
       </section>
@@ -162,14 +162,12 @@ const views = `
       <!-- ============ A course's sections ============ -->
       <section class="cx-view" data-view="sections">
         <button class="btn btn--ghost btn--sm cb-back" id="cb-back" type="button">${ICONS.back}<span>Browse classes</span></button>
-        <div class="cx-head">
-          <div class="cx-head__text">
-            <div class="cb-title"><h2 class="ss-title" id="cb-s-title"></h2><span class="badge badge--base badge--outline badge--regular" id="cb-s-code"></span></div>
-            <p class="ss-sub ss-sub--sm" id="cb-s-meta"></p>
-          </div>
-        </div>
-        <div class="cb-bar">
-          <span class="cb-count" id="cb-s-count"></span>
+        <!-- wide: title + code · search on the title's row, meta under it.
+             narrow: title / code + meta on one row / search -->
+        <div class="cb-shead">
+          <h2 class="ss-title" id="cb-s-title"></h2>
+          <span class="badge badge--base badge--outline badge--regular" id="cb-s-code"></span>
+          <p class="ss-sub ss-sub--sm" id="cb-s-meta"></p>
           <label class="search" id="cb-sq-box">${ICONS.search}<input class="search__input" id="cb-sq" type="search" placeholder="Search" aria-label="Search sections" autocomplete="off" /><button class="search__clear" id="cb-sq-clear" type="button" aria-label="Clear search">${ICONS.close}</button></label>
         </div>
         <div class="table cb-sections" id="cb-sections" role="table" aria-label="Sections"></div>
@@ -240,7 +238,6 @@ const pageJs = `(function () {
     $("cb-results").classList.toggle("is-active", st.searched);
     if (!st.searched) return;
     var list = courses();
-    $("cb-count").textContent = list.length + (list.length === 1 ? " class" : " classes") + " · " + st.term + (st.career ? " · " + st.career : "") + (st.subject ? " · " + st.subject : "");
     $("cb-courses").innerHTML = '<div class="table__row table__row--head" role="row"><span role="columnheader">Class</span><span role="columnheader">Description</span><span role="columnheader"><span class="visually-hidden">Actions</span></span></div>' +
       (list.length ? list.map(function (c) {
         var id = c[0] + " " + c[1];
@@ -315,7 +312,6 @@ const pageJs = `(function () {
   function renderSections() {
     var q = st.sq.toLowerCase();
     var list = secs.filter(function (s) { return !q || [s.section, s.component, s.classNumber, s.days, s.room, s.instructor, s.status].join(" ").toLowerCase().indexOf(q) !== -1; });
-    $("cb-s-count").textContent = list.length + (list.length === 1 ? " section" : " sections");
     $("cb-sections").innerHTML = '<div class="table__row table__row--head" role="row"><span role="columnheader">Section</span><span role="columnheader">Days</span><span role="columnheader">Time</span><span role="columnheader">Room</span><span role="columnheader">Instructor</span><span role="columnheader">Status</span><span role="columnheader"><span class="visually-hidden">Actions</span></span></div>' +
       (list.length ? list.map(function (s) {
         var open = !!st.open[s.classNumber], did = "cb-d-" + s.classNumber;
