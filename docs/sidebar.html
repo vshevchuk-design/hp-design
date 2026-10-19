@@ -117,7 +117,7 @@
 .sidebar--neutral .sidebar__chevron { color: var(--tok-icon-muted); }
 .sidebar--neutral .sidebar__item:hover { background: var(--tok-fill-neutral-hover); color: var(--tok-text-default); }
 .sidebar--neutral .sidebar__item:focus-visible { outline: 2px solid var(--tok-border-focus); outline-offset: -2px; }
-.sidebar--neutral .sidebar__item[aria-current="page"] { background: var(--tok-surface-default); color: var(--tok-text-primary); box-shadow: inset 0 0 0 1px var(--tok-border-default); }
+.sidebar--neutral .sidebar__item[aria-current="page"] { background: var(--tok-surface-default); color: var(--tok-text-primary); }
 .sidebar--neutral .sidebar__item[aria-current="page"] .sidebar__icon { color: var(--tok-icon-primary); }
 .sidebar--neutral .sidebar__count { background: var(--tok-fill-primary); color: var(--tok-text-on-fill); }
 /* gray: Counter onNeutral INACTIVE for an open group's total */
@@ -409,7 +409,7 @@
     </div>
 
     <h2 class="big-section">Neutral (gray)</h2>
-    <p class="section-desc"><code class="tok">.sidebar--neutral</code> — the same recipe on <code class="tok">surface.dim</code> (gray.50 — still a step darker than the gray.25 page) with dark text and a hairline right edge. Hover is the wash tier (<code class="tok">fill.neutralHover</code>); the current page is the same white pill, outlined with <code class="tok">border.default</code> so it reads on the light panel; focus is the system ring; counts are Counter <code class="tok">onNeutral</code> active (brand chip). The logo keeps its normal colours.</p>
+    <p class="section-desc"><code class="tok">.sidebar--neutral</code> — the same recipe on <code class="tok">surface.dim</code> (gray.50 — still a step darker than the gray.25 page) with dark text and a hairline right edge. Hover is the wash tier (<code class="tok">fill.neutralHover</code>); the current page is the same white pill, no outline; focus is the system ring; counts are Counter <code class="tok">onNeutral</code> active (brand chip). The logo keeps its normal colours.</p>
     <div class="story-grid">
       <div class="story"><h3>Expanded</h3><div class="story-preview"><div class="sb-frame"><nav class="sidebar sidebar--neutral" aria-label="Main">
     <div class="sidebar__head">
@@ -617,7 +617,7 @@
 .sidebar--neutral .sidebar__chevron { color: var(--tok-icon-muted); }
 .sidebar--neutral .sidebar__item:hover { background: var(--tok-fill-neutral-hover); color: var(--tok-text-default); }
 .sidebar--neutral .sidebar__item:focus-visible { outline: 2px solid var(--tok-border-focus); outline-offset: -2px; }
-.sidebar--neutral .sidebar__item[aria-current="page"] { background: var(--tok-surface-default); color: var(--tok-text-primary); box-shadow: inset 0 0 0 1px var(--tok-border-default); }
+.sidebar--neutral .sidebar__item[aria-current="page"] { background: var(--tok-surface-default); color: var(--tok-text-primary); }
 .sidebar--neutral .sidebar__item[aria-current="page"] .sidebar__icon { color: var(--tok-icon-primary); }
 .sidebar--neutral .sidebar__count { background: var(--tok-fill-primary); color: var(--tok-text-on-fill); }
 /* gray: Counter onNeutral INACTIVE for an open group's total */

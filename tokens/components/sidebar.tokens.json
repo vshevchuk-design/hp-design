@@ -160,7 +160,7 @@
         }
       },
       "neutral": {
-        "$description": "The gray variant (.sidebar--neutral), added 2026-10-19: the same recipe on surface.dim (gray.50 — lighter than the first cut's gray.100, still a step under the gray.25 page) with dark text and a hairline right edge. Hover is the wash tier (fill.neutralHover); the white current-page pill gets a border.default hairline. Counter onNeutral active still reads on gray.50. The current page is the same white pill with brand text as on blue. Focus goes back to the system ring (border.focus) — it's visible on gray. Counts are Counter onNeutral ACTIVE (brand blue chip, white label) — the onNeutral pair exists exactly for chips on gray.100. The logo keeps its normal colours.",
+        "$description": "The gray variant (.sidebar--neutral), added 2026-10-19: the same recipe on surface.dim (gray.50 — lighter than the first cut's gray.100, still a step under the gray.25 page) with dark text and a hairline right edge. Hover is the wash tier (fill.neutralHover); the current page is the same white pill, no outline (user, 2026-10-19 — an outlined first pass was rejected). Counter onNeutral active still reads on gray.50. The current page is the same white pill with brand text as on blue. Focus goes back to the system ring (border.focus) — it's visible on gray. Counts are Counter onNeutral ACTIVE (brand blue chip, white label) — the onNeutral pair exists exactly for chips on gray.100. The logo keeps its normal colours.",
         "bg": {
           "$type": "color",
           "$value": "{surface.dim}",
@@ -202,11 +202,6 @@
         "ringWidth": {
           "$type": "dimension",
           "$value": "{dim.0_5}"
-        },
-        "activeBorder": {
-          "$type": "color",
-          "$value": "{border.default}",
-          "$description": "A hairline round the white current-page pill — white on gray.50 is too close to read as a shape on its own."
         },
         "edge": {
           "$type": "color",

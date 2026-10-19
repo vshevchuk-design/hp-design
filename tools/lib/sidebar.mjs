@@ -80,7 +80,7 @@ const colorNodes = [
   counter.onPrimary.state.active.bg, counter.onPrimary.state.active.label,
   avatar.fallback.identity.blue.bg, avatar.fallback.identity.blue.text,
   // neutral theme
-  ...["bg", "divider", "text", "icon", "childText", "chevron", "hoverBg", "hoverText", "ringColor", "activeBorder", "edge"].map((k) => sb.neutral[k]),
+  ...["bg", "divider", "text", "icon", "childText", "chevron", "hoverBg", "hoverText", "ringColor", "edge"].map((k) => sb.neutral[k]),
   counter.onNeutral.state.active.bg, counter.onNeutral.state.active.label,
   counter.onNeutral.state.inactive.bg, counter.onNeutral.state.inactive.label,
 ];
@@ -151,7 +151,7 @@ export const SIDEBAR_CSS = `
 .sidebar--neutral .sidebar__chevron { color: ${R(sb.neutral.chevron)}; }
 .sidebar--neutral .sidebar__item:hover { background: ${R(sb.neutral.hoverBg)}; color: ${R(sb.neutral.hoverText)}; }
 .sidebar--neutral .sidebar__item:focus-visible { outline: ${D(sb.neutral.ringWidth)} solid ${R(sb.neutral.ringColor)}; outline-offset: -${D(sb.neutral.ringWidth)}; }
-.sidebar--neutral .sidebar__item[aria-current="page"] { background: ${R(sb.state.active.bg)}; color: ${R(sb.state.active.text)}; box-shadow: inset 0 0 0 1px ${R(sb.neutral.activeBorder)}; }
+.sidebar--neutral .sidebar__item[aria-current="page"] { background: ${R(sb.state.active.bg)}; color: ${R(sb.state.active.text)}; }
 .sidebar--neutral .sidebar__item[aria-current="page"] .sidebar__icon { color: ${R(sb.state.active.icon)}; }
 .sidebar--neutral .sidebar__count { background: ${R(counter.onNeutral.state.active.bg)}; color: ${R(counter.onNeutral.state.active.label)}; }
 /* gray: Counter onNeutral INACTIVE for an open group's total */
