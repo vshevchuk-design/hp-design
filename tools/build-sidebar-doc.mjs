@@ -82,6 +82,7 @@ const html = `<!doctype html>
 
     <div class="legend">
       <div class="row"><b>From the live app</b><span>Same structure, item for item (read off a saved copy of the live Dashboard). What changed: an open group no longer becomes a white panel with dark text and a black outline — its links stay on the blue, indented under the parent's label; only the <i>current page</i> is a white pill. Hover is one surface step (<code class="tok">surface.brandHover</code>), not a darker band.</span></div>
+      <div class="row"><b>Themes</b><span>Brand blue (default) and neutral gray (<code class="tok">.sidebar--neutral</code>, below). Same sizes, states and behaviour; only the colour roles change.</span></div>
       <div class="row"><b>Surface</b><span>New semantic roles, added for this: <code class="tok">surface.brand</code> (blue.700), <code class="tok">surface.brandHover</code> (blue.600), <code class="tok">text.onBrandMuted</code> (blue.100) for nested links and chevrons, <code class="tok">border.onBrand</code> for the dividers. Text and icons are <code class="tok">text.onFill</code> / <code class="tok">icon.onFill</code>.</span></div>
       <div class="row"><b>Current page</b><span><code class="tok">aria-current="page"</code> → white pill (<code class="tok">surface.default</code>), brand text and icon, semibold. A closed group that holds the current page keeps a semibold label so you can find your way back.</span></div>
       <div class="row"><b>Groups</b><span>A <code class="tok">button</code> with <code class="tok">aria-expanded</code> + <code class="tok">aria-controls</code>; the list is <code class="tok">hidden</code> when closed. Nested links are indented 44px — their text starts under the parent's label.</span></div>
@@ -96,6 +97,14 @@ const html = `<!doctype html>
       ${storyCard("Expanded", frame({ active: "dashboard", id: "sb1" }), "Dashboard current. Groups closed.")}
       ${storyCard("Group open, nested page current", frame({ active: "advisor-action-items", id: "sb2" }), "Advisor → Action Items. The group's count and the item's own count both show.")}
       ${storyCard("Collapsed rail", frame({ active: "dashboard", id: "sb3", collapsed: true }), "64px, icons only; Advisor's count is a dot. Click a group icon to expand.")}
+    </div>
+
+    <h2 class="big-section">Neutral (gray)</h2>
+    <p class="section-desc"><code class="tok">.sidebar--neutral</code> — the same recipe on <code class="tok">surface.sunken</code> (gray.100, a step darker than the page) with dark text. Hover is the Strong neutral tier (the panel already rests on gray.100); the current page is the same white pill; focus is the system ring; counts are Counter <code class="tok">onNeutral</code> active (brand chip). The logo keeps its normal colours.</p>
+    <div class="story-grid">
+      ${storyCard("Expanded", frame({ active: "dashboard", id: "sb4", theme: "neutral" }), "Dashboard current. Groups closed.")}
+      ${storyCard("Group open, nested page current", frame({ active: "advisor-action-items", id: "sb5", theme: "neutral" }), "Advisor → Action Items.")}
+      ${storyCard("Collapsed rail", frame({ active: "dashboard", id: "sb6", collapsed: true, theme: "neutral" }), "64px, icons only.")}
     </div>
 
     <h2 class="big-section">CSS</h2>

@@ -79,8 +79,11 @@ const colorNodes = [
   sb.state.focused.ringColor,
   counter.onPrimary.state.active.bg, counter.onPrimary.state.active.label,
   avatar.fallback.identity.blue.bg, avatar.fallback.identity.blue.text,
+  // neutral theme
+  ...["bg", "divider", "text", "icon", "childText", "chevron", "hoverBg", "hoverText", "ringColor"].map((k) => sb.neutral[k]),
+  counter.onNeutral.state.active.bg, counter.onNeutral.state.active.label,
 ];
-export const SIDEBAR_COLOR_PATHS = [...new Set([...colorNodes.map((n) => refPath(n.$value)), "surface.overlay"])];
+export const SIDEBAR_COLOR_PATHS = [...new Set([...colorNodes.map((n) => refPath(n.$value)), "surface.overlay", "surface.brand", "text.onFill", "text.primary", "text.default"])];
 
 const ringW = D(sb.state.focused.ringWidth);
 const cSm = counter.size.sm;
@@ -92,6 +95,11 @@ export const SIDEBAR_CSS = `
 .sidebar__head { flex-shrink: 0; height: ${D(sb.header.height)}; display: flex; align-items: center; justify-content: space-between; gap: ${dim(2)}; padding: 0 ${D(sb.padding)} 0 calc(${D(sb.padding)} + ${D(sb.item.paddingX)}); border-bottom: 1px solid ${R(sb.divider)}; }
 .sidebar__logo { display: flex; color: ${R(sb.state.default.text)}; }
 .sidebar__logo svg { display: block; height: ${dim(6)}; width: auto; }
+/* the logo's three parts, painted per theme: on blue it inverts (white
+   square, brand glyph, white wordmark); on gray it's the normal logo */
+.sidebar__logo-mark { fill: ${R(sb.state.default.text)}; }
+.sidebar__logo-glyph { fill: var(${cssVarName("surface.brand")}); }
+.sidebar__logo-word { fill: ${R(sb.state.default.text)}; }
 /* the 24px square mark alone, for the rail */
 .sidebar__mark { display: none; }
 .sidebar__list, .sidebar__sub { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: ${D(sb.gap)}; }
@@ -116,11 +124,34 @@ export const SIDEBAR_CSS = `
 .sidebar__item.has-current { ${typoCss(T(sb.item.activeLabel))} }
 /* group count: Counter sm, onPrimary ACTIVE colours (inactive = the panel's own blue) */
 .sidebar__count { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; height: ${D(cSm.height)}; min-width: ${D(cSm.minWidth)}; padding: 0 ${D(cSm.paddingX)}; border-radius: ${px(resolveToken(get("radius.full")))}; background: ${R(counter.onPrimary.state.active.bg)}; color: ${R(counter.onPrimary.state.active.label)}; ${typoCss(T(cSm.label))} }
+/* an open group shows its children's own counts — the header's total would
+   repeat them, so it hides (the rail, where the children aren't visible,
+   keeps it as a dot) */
+.sidebar:not(.sidebar--collapsed) .sidebar__item[aria-expanded="true"] > .sidebar__count { display: none; }
 .sidebar__foot { flex-shrink: 0; padding: ${D(sb.padding)}; border-top: 1px solid ${R(sb.divider)}; }
 .sidebar__account { height: ${D(sb.account.height)}; }
 .sidebar__avatar { flex-shrink: 0; width: ${D(avSm.diameter)}; height: ${D(avSm.diameter)}; margin-left: -${dim(1)}; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; background: ${R(avatar.fallback.identity.blue.bg)}; color: ${R(avatar.fallback.identity.blue.text)}; ${typoCss(T(avSm.initials))} }
 .sidebar__collapse { width: ${D(sb.item.height)}; padding: 0; justify-content: center; flex-shrink: 0; }
 .sidebar__collapse .sidebar__icon { transition: transform 0.2s ease; }
+
+/* ---- neutral theme: the same recipe on gray ---- */
+.sidebar--neutral { background: ${R(sb.neutral.bg)}; color: ${R(sb.neutral.text)}; scrollbar-color: ${R(sb.neutral.hoverBg)} transparent; }
+.sidebar--neutral .sidebar__head { border-bottom-color: ${R(sb.neutral.divider)}; }
+.sidebar--neutral .sidebar__foot { border-top-color: ${R(sb.neutral.divider)}; }
+.sidebar--neutral .sidebar__body { scrollbar-color: ${R(sb.neutral.hoverBg)} transparent; }
+.sidebar--neutral .sidebar__logo { color: ${R(sb.neutral.text)}; }
+.sidebar--neutral .sidebar__logo-mark { fill: ${R(sb.state.active.text)}; }
+.sidebar--neutral .sidebar__logo-glyph { fill: ${R(sb.state.default.text)}; }
+.sidebar--neutral .sidebar__logo-word { fill: ${R(sb.neutral.text)}; }
+.sidebar--neutral .sidebar__item { color: ${R(sb.neutral.text)}; }
+.sidebar--neutral .sidebar__icon { color: ${R(sb.neutral.icon)}; }
+.sidebar--neutral .sidebar__item--child { color: ${R(sb.neutral.childText)}; }
+.sidebar--neutral .sidebar__chevron { color: ${R(sb.neutral.chevron)}; }
+.sidebar--neutral .sidebar__item:hover { background: ${R(sb.neutral.hoverBg)}; color: ${R(sb.neutral.hoverText)}; }
+.sidebar--neutral .sidebar__item:focus-visible { outline: ${D(sb.neutral.ringWidth)} solid ${R(sb.neutral.ringColor)}; outline-offset: -${D(sb.neutral.ringWidth)}; }
+.sidebar--neutral .sidebar__item[aria-current="page"] { background: ${R(sb.state.active.bg)}; color: ${R(sb.state.active.text)}; }
+.sidebar--neutral .sidebar__item[aria-current="page"] .sidebar__icon { color: ${R(sb.state.active.icon)}; }
+.sidebar--neutral .sidebar__count { background: ${R(counter.onNeutral.state.active.bg)}; color: ${R(counter.onNeutral.state.active.label)}; }
 
 /* ---- collapsed rail: icons only (desktop; below 1024 the panel is a drawer) ---- */
 @media (min-width: 1024px) {
@@ -150,9 +181,9 @@ export const SIDEBAR_CSS = `
 const LOGO = fs
   .readFileSync(path.join(root, "assets/highpoint-logo.svg"), "utf8")
   // on the brand panel the logo inverts: white square, brand glyph, white wordmark
-  .replace('<rect width="24" height="24" fill="#0468C4"/>', '<rect width="24" height="24" fill="currentColor"/>')
-  .replace('fill="white"/>', `style="fill: var(${cssVarName("surface.brand")})"/>`)
-  .replace(/fill="#090D19"/g, 'fill="currentColor"')
+  .replace('<rect width="24" height="24" fill="#0468C4"/>', '<rect class="sidebar__logo-mark" width="24" height="24"/>')
+  .replace('fill="white"/>', 'class="sidebar__logo-glyph"/>')
+  .replace(/fill="#090D19"/g, 'class="sidebar__logo-word"')
   .replace("<svg ", '<svg aria-hidden="true" ');
 
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -164,8 +195,9 @@ const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replac
  * @param user    { name, initials }
  * @param id      prefix for group ids (several sidebars on one docs page)
  * @param collapsed  render as the rail
+ * @param theme   "brand" (blue, default) or "neutral" (gray)
  */
-export function sidebarHtml({ nav, active, open = [], user, id = "sb", collapsed = false }) {
+export function sidebarHtml({ nav, active, open = [], user, id = "sb", collapsed = false, theme = "brand" }) {
   const rows = nav
     .map((it) => {
       if (!it.children) {
@@ -181,7 +213,7 @@ export function sidebarHtml({ nav, active, open = [], user, id = "sb", collapsed
       return `<li><button class="sidebar__item${holds ? " has-current" : ""}" type="button" aria-expanded="${isOpen}" aria-controls="${gid}" title="${esc(it.label)}">${icon(it.icon, "sidebar__icon")}<span class="sidebar__label">${esc(it.label)}</span>${it.count ? `<span class="sidebar__count" aria-label="${it.count} new">${it.count}</span>` : ""}${icon("expand_more", "sidebar__chevron")}</button><ul class="sidebar__sub" id="${gid}"${isOpen ? "" : " hidden"}>${kids}</ul></li>`;
     })
     .join("\n      ");
-  return `<nav class="sidebar${collapsed ? " sidebar--collapsed" : ""}" aria-label="Main">
+  return `<nav class="sidebar${theme === "neutral" ? " sidebar--neutral" : ""}${collapsed ? " sidebar--collapsed" : ""}" aria-label="Main">
     <div class="sidebar__head">
       <a class="sidebar__logo" href="#" aria-label="HighPoint — Dashboard">${LOGO}</a>
       <button class="sidebar__item sidebar__collapse" type="button" aria-label="${collapsed ? "Expand" : "Collapse"} navigation" aria-expanded="${!collapsed}">${icon("first_page", "sidebar__icon")}</button>
