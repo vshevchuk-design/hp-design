@@ -353,7 +353,9 @@ const pageJs = `(function () {
   $("cb-back").addEventListener("click", function () { show("browse"); });
 })();`;
 
-const appHtml = cxApp({
+// Two builds of one page: v2 wears the neutral (gray) Sidebar, v1 the blue one.
+const appHtmlFor = (navTheme) => cxApp({
+  navTheme,
   title: "Browse Classes",
   active: "class-browse",
   views,
@@ -368,12 +370,17 @@ const viewerHtml = renderDesignViewer({
   activeKey: "cx-browse-classes",
   title: "CX Browse Classes",
   heading: "Browse Classes",
-  sub: `Browse Classes, restyled on hp-design components in the CX shell — same flow and content as the live page (read off three saved copies): <b>Term</b> (required), <b>Career</b> and <b>Subject</b> → Search → a Class · Description table → a course's sections, each opening into Information / Details / Availability / Textbooks / Additional links with the section actions. What changed is the UI: the filters are Select base with floating labels ("Any …" is an option, not a × in the field); results get a count beside the table's own Search; <b>View sections</b> is Button tint (pale blue), not eleven solid blue ones; Start and End are one Time column and Session sits under the section; the seven equal buttons under an open section become <b>Add to cart</b>, Enroll, Add to planner and a ⋯ Menu (the row's ⋮ opens the same Menu); below 1180px the sections table stacks. Try 2027 Spring + ACCT, then <b>ACCT C2003</b> — its section 2000 is the live one, verbatim. Other subjects and sections are sample data.`,
-  versions: [{ label: "v1", note: "restyle of the live page", file: "cx-browse-classes-app.html" }],
+  sub: `Browse Classes, restyled on hp-design components in the CX shell — same flow and content as the live page (read off three saved copies): <b>Term</b> (required), <b>Career</b> and <b>Subject</b> → Search → a Class · Description table → a course's sections, each opening into Information / Details / Availability / Textbooks / Additional links with the section actions. What changed is the UI: the filters are Select base with floating labels ("Any …" is an option, not a × in the field); results get a count beside the table's own Search; <b>View sections</b> is Button tint (pale blue), not eleven solid blue ones; Start and End are one Time column and Session sits under the section; the seven equal buttons under an open section become <b>Add to cart</b>, Enroll, Add to planner and a ⋯ Menu (the row's ⋮ opens the same Menu); below 1180px the sections table stacks. Try 2027 Spring + ACCT, then <b>ACCT C2003</b> — its section 2000 is the live one, verbatim. Other subjects and sections are sample data. <b>v2 (current)</b> wears the Sidebar's neutral theme — gray.100 panel, dark text, the same white current-page pill; <b>v1</b> the brand-blue one.`,
+  versions: [
+    { label: "v2", note: "gray sidebar · current", file: "cx-browse-classes-v2-app.html" },
+    { label: "v1", note: "blue sidebar", file: "cx-browse-classes-app.html" },
+  ],
 });
 
 fs.mkdirSync(path.join(root, "docs/designs"), { recursive: true });
-fs.writeFileSync(path.join(root, "docs/designs/cx-browse-classes-app.html"), appHtml);
+fs.writeFileSync(path.join(root, "docs/designs/cx-browse-classes-app.html"), appHtmlFor("brand"));
+fs.writeFileSync(path.join(root, "docs/designs/cx-browse-classes-v2-app.html"), appHtmlFor("neutral"));
 fs.writeFileSync(path.join(root, "docs/designs/cx-browse-classes.html"), viewerHtml);
-console.log("wrote docs/designs/cx-browse-classes-app.html");
+console.log("wrote docs/designs/cx-browse-classes-app.html (v1, blue sidebar)");
+console.log("wrote docs/designs/cx-browse-classes-v2-app.html (v2, gray sidebar)");
 console.log("wrote docs/designs/cx-browse-classes.html");

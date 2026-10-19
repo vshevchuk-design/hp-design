@@ -207,8 +207,9 @@ const SHELL_JS = `window.cx = (function () {
  * @param pageJs    the page's script (runs after the shell script)
  * @param prompts   the Assistant's suggested questions on this page (live text)
  * @param colorPaths extra colour roles the page CSS uses directly
+ * @param navTheme  the Sidebar's theme: "brand" (blue, default) or "neutral" (gray)
  */
-export function cxApp({ title, active, views, after = "", pageCss = () => "", pageJs = "", prompts, colorPaths = [] }) {
+export function cxApp({ title, active, views, after = "", pageCss = () => "", pageJs = "", prompts, colorPaths = [], navTheme = "brand" }) {
   const paths = [...new Set([...SS_COLOR_PATHS, ...SIDEBAR_COLOR_PATHS, ...componentColorPaths, ...SHELL_COLOR_PATHS, ...colorPaths])];
   const rootVars = renderRootVars([...paths.map((p) => [p, resolve(p)]), ["family.sans", `'${resolve("family.sans")}', sans-serif`]]);
   const css = hoverGuard(`${rootVars}
@@ -229,7 +230,7 @@ ${css}
 </head>
 <body>
 <div class="cx has-sidebar">
-  ${sidebarHtml({ nav: CX_NAV, active, user: CX_USER, id: "cx" })}
+  ${sidebarHtml({ nav: CX_NAV, active, user: CX_USER, id: "cx", theme: navTheme })}
   <div class="sidebar-scrim"></div>
   <div class="cx__main">
     <header class="cx-topbar">

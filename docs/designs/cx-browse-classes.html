@@ -234,7 +234,7 @@
   <main>
     <h1>Browse Classes</h1>
     <div class="sub-wrap">
-      <p class="sub" id="viewer-sub">Browse Classes, restyled on hp-design components in the CX shell — same flow and content as the live page (read off three saved copies): <b>Term</b> (required), <b>Career</b> and <b>Subject</b> → Search → a Class · Description table → a course's sections, each opening into Information / Details / Availability / Textbooks / Additional links with the section actions. What changed is the UI: the filters are Select base with floating labels ("Any …" is an option, not a × in the field); results get a count beside the table's own Search; <b>View sections</b> is Button tint (pale blue), not eleven solid blue ones; Start and End are one Time column and Session sits under the section; the seven equal buttons under an open section become <b>Add to cart</b>, Enroll, Add to planner and a ⋯ Menu (the row's ⋮ opens the same Menu); below 1180px the sections table stacks. Try 2027 Spring + ACCT, then <b>ACCT C2003</b> — its section 2000 is the live one, verbatim. Other subjects and sections are sample data.</p>
+      <p class="sub" id="viewer-sub">Browse Classes, restyled on hp-design components in the CX shell — same flow and content as the live page (read off three saved copies): <b>Term</b> (required), <b>Career</b> and <b>Subject</b> → Search → a Class · Description table → a course's sections, each opening into Information / Details / Availability / Textbooks / Additional links with the section actions. What changed is the UI: the filters are Select base with floating labels ("Any …" is an option, not a × in the field); results get a count beside the table's own Search; <b>View sections</b> is Button tint (pale blue), not eleven solid blue ones; Start and End are one Time column and Session sits under the section; the seven equal buttons under an open section become <b>Add to cart</b>, Enroll, Add to planner and a ⋯ Menu (the row's ⋮ opens the same Menu); below 1180px the sections table stacks. Try 2027 Spring + ACCT, then <b>ACCT C2003</b> — its section 2000 is the live one, verbatim. Other subjects and sections are sample data. <b>v2 (current)</b> wears the Sidebar's neutral theme — gray.100 panel, dark text, the same white current-page pill; <b>v1</b> the brand-blue one.</p>
       <button class="sub-more" type="button" aria-expanded="false" aria-controls="viewer-sub" hidden>Read more</button>
     </div>
 
@@ -247,22 +247,25 @@
         </div>
         <span class="device-bar__label">Version</span>
         <button class="select select--base" id="viewer-version-trigger" type="button" popovertarget="viewer-version-lb" aria-haspopup="listbox" aria-expanded="false" aria-label="Prototype version">
-          <span class="select__value" id="viewer-version-value">v1 · restyle of the live page</span>
+          <span class="select__value" id="viewer-version-value">v2 · gray sidebar · current</span>
           <svg class="select__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>
         </button>
         <div class="listbox" id="viewer-version-lb" popover>
           <ul class="listbox__list" role="listbox" aria-label="Prototype version">
-        <li role="none"><button type="button" class="listbox__option listbox__option--selected" role="option" aria-selected="true" data-version-file="cx-browse-classes-app.html" data-version-label="v1 · restyle of the live page">
-          <span>v1 <span class="listbox__note">· restyle of the live page</span></span><svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+        <li role="none"><button type="button" class="listbox__option listbox__option--selected" role="option" aria-selected="true" data-version-file="cx-browse-classes-v2-app.html" data-version-label="v2 · gray sidebar · current">
+          <span>v2 <span class="listbox__note">· gray sidebar · current</span></span><svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+        </button></li>
+        <li role="none"><button type="button" class="listbox__option" role="option" aria-selected="false" data-version-file="cx-browse-classes-app.html" data-version-label="v1 · blue sidebar">
+          <span>v1 <span class="listbox__note">· blue sidebar</span></span><svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
         </button></li>
           </ul>
         </div>
       </div>
-      <a class="open-standalone" id="viewer-standalone" href="cx-browse-classes-app.html" target="_blank" rel="noopener">Open standalone ↗</a>
+      <a class="open-standalone" id="viewer-standalone" href="cx-browse-classes-v2-app.html" target="_blank" rel="noopener">Open standalone ↗</a>
     </div>
     <div class="frame-wrap">
       <div class="device device--mobile" id="device">
-        <iframe id="device-frame" src="cx-browse-classes-app.html" title="Browse Classes prototype"></iframe>
+        <iframe id="device-frame" src="cx-browse-classes-v2-app.html" title="Browse Classes prototype"></iframe>
       </div>
     </div>
   </main>
