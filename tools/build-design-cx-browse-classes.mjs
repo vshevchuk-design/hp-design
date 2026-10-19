@@ -149,7 +149,8 @@ const views = `
           <button class="btn btn--primary btn--base" id="cb-go" type="button" disabled>Search</button>
           <label class="search is-concealed" id="cb-q-box">${ICONS.search}<input class="search__input" id="cb-q" type="search" placeholder="Search" aria-label="Search these classes" autocomplete="off" /><button class="search__clear" id="cb-q-clear" type="button" aria-label="Clear search">${ICONS.close}</button></label>
         </div>
-        <div class="card" id="cb-hint"><div class="card__body"><div class="empty-state"><span class="empty-state__text">Select at least one criteria to view classes.</span></div></div></div>
+        <!-- the hint is EmptyState on its own — no Card round it -->
+        <div class="empty-state" id="cb-hint"><span class="empty-state__text">Select at least one criteria to view classes.</span></div>
         <div class="cx-view" id="cb-results" style="gap:12px">
           <div class="cb-bar">
             <span class="cb-count" id="cb-count"></span>
