@@ -100,7 +100,7 @@ const html = `<!doctype html>
     </div>
 
     <h2 class="big-section">Neutral (gray)</h2>
-    <p class="section-desc"><code class="tok">.sidebar--neutral</code> — the same recipe on <code class="tok">surface.sunken</code> (gray.100, a step darker than the page) with dark text. Hover is the Strong neutral tier (the panel already rests on gray.100); the current page is the same white pill; focus is the system ring; counts are Counter <code class="tok">onNeutral</code> active (brand chip). The logo keeps its normal colours.</p>
+    <p class="section-desc"><code class="tok">.sidebar--neutral</code> — the same recipe on <code class="tok">surface.dim</code> (gray.50 — still a step darker than the gray.25 page) with dark text and a hairline right edge. Hover is the wash tier (<code class="tok">fill.neutralHover</code>); the current page is the same white pill, outlined with <code class="tok">border.default</code> so it reads on the light panel; focus is the system ring; counts are Counter <code class="tok">onNeutral</code> active (brand chip). The logo keeps its normal colours.</p>
     <div class="story-grid">
       ${storyCard("Expanded", frame({ active: "dashboard", id: "sb4", theme: "neutral" }), "Dashboard current. Groups closed.")}
       ${storyCard("Group open, nested page current", frame({ active: "advisor-action-items", id: "sb5", theme: "neutral" }), "Advisor → Action Items.")}

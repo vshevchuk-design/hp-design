@@ -43,13 +43,13 @@
   --tok-icon-primary: #077fec;
   --tok-avatar-blue-bg: #d9eaff;
   --tok-avatar-blue-text: #0468c4;
-  --tok-surface-sunken: #e6e8eb;
+  --tok-surface-dim: #f4f5f7;
   --tok-border-default: #dadde0;
   --tok-text-default: #121921;
   --tok-icon-secondary: #758191;
   --tok-text-secondary: #5d6a7a;
   --tok-icon-muted: #8e99a7;
-  --tok-fill-neutral-hover-strong: #cdd1d6;
+  --tok-fill-neutral-hover: #e6e8eb;
   --tok-border-focus: #0468c4;
   --tok-fill-primary: #077fec;
   --tok-surface-overlay: rgba(21, 25, 30, 0.5);
@@ -101,10 +101,10 @@
 .sidebar__collapse .sidebar__icon { transition: transform 0.2s ease; }
 
 /* ---- neutral theme: the same recipe on gray ---- */
-.sidebar--neutral { background: var(--tok-surface-sunken); color: var(--tok-text-default); scrollbar-color: var(--tok-fill-neutral-hover-strong) transparent; }
+.sidebar--neutral { background: var(--tok-surface-dim); color: var(--tok-text-default); scrollbar-color: var(--tok-fill-neutral-hover) transparent; box-shadow: inset -1px 0 0 var(--tok-border-default); }
 .sidebar--neutral .sidebar__head { border-bottom-color: var(--tok-border-default); }
 .sidebar--neutral .sidebar__foot { border-top-color: var(--tok-border-default); }
-.sidebar--neutral .sidebar__body { scrollbar-color: var(--tok-fill-neutral-hover-strong) transparent; }
+.sidebar--neutral .sidebar__body { scrollbar-color: var(--tok-fill-neutral-hover) transparent; }
 .sidebar--neutral .sidebar__logo { color: var(--tok-text-default); }
 .sidebar--neutral .sidebar__logo-mark { fill: var(--tok-text-primary); }
 .sidebar--neutral .sidebar__logo-glyph { fill: var(--tok-text-on-fill); }
@@ -113,9 +113,9 @@
 .sidebar--neutral .sidebar__icon { color: var(--tok-icon-secondary); }
 .sidebar--neutral .sidebar__item--child { color: var(--tok-text-secondary); }
 .sidebar--neutral .sidebar__chevron { color: var(--tok-icon-muted); }
-.sidebar--neutral .sidebar__item:hover { background: var(--tok-fill-neutral-hover-strong); color: var(--tok-text-default); }
+.sidebar--neutral .sidebar__item:hover { background: var(--tok-fill-neutral-hover); color: var(--tok-text-default); }
 .sidebar--neutral .sidebar__item:focus-visible { outline: 2px solid var(--tok-border-focus); outline-offset: -2px; }
-.sidebar--neutral .sidebar__item[aria-current="page"] { background: var(--tok-surface-default); color: var(--tok-text-primary); }
+.sidebar--neutral .sidebar__item[aria-current="page"] { background: var(--tok-surface-default); color: var(--tok-text-primary); box-shadow: inset 0 0 0 1px var(--tok-border-default); }
 .sidebar--neutral .sidebar__item[aria-current="page"] .sidebar__icon { color: var(--tok-icon-primary); }
 .sidebar--neutral .sidebar__count { background: var(--tok-fill-primary); color: var(--tok-text-on-fill); }
 
@@ -405,7 +405,7 @@
     </div>
 
     <h2 class="big-section">Neutral (gray)</h2>
-    <p class="section-desc"><code class="tok">.sidebar--neutral</code> — the same recipe on <code class="tok">surface.sunken</code> (gray.100, a step darker than the page) with dark text. Hover is the Strong neutral tier (the panel already rests on gray.100); the current page is the same white pill; focus is the system ring; counts are Counter <code class="tok">onNeutral</code> active (brand chip). The logo keeps its normal colours.</p>
+    <p class="section-desc"><code class="tok">.sidebar--neutral</code> — the same recipe on <code class="tok">surface.dim</code> (gray.50 — still a step darker than the gray.25 page) with dark text and a hairline right edge. Hover is the wash tier (<code class="tok">fill.neutralHover</code>); the current page is the same white pill, outlined with <code class="tok">border.default</code> so it reads on the light panel; focus is the system ring; counts are Counter <code class="tok">onNeutral</code> active (brand chip). The logo keeps its normal colours.</p>
     <div class="story-grid">
       <div class="story"><h3>Expanded</h3><div class="story-preview"><div class="sb-frame"><nav class="sidebar sidebar--neutral" aria-label="Main">
     <div class="sidebar__head">
@@ -539,13 +539,13 @@
   --tok-icon-primary: #077fec;
   --tok-avatar-blue-bg: #d9eaff;
   --tok-avatar-blue-text: #0468c4;
-  --tok-surface-sunken: #e6e8eb;
+  --tok-surface-dim: #f4f5f7;
   --tok-border-default: #dadde0;
   --tok-text-default: #121921;
   --tok-icon-secondary: #758191;
   --tok-text-secondary: #5d6a7a;
   --tok-icon-muted: #8e99a7;
-  --tok-fill-neutral-hover-strong: #cdd1d6;
+  --tok-fill-neutral-hover: #e6e8eb;
   --tok-border-focus: #0468c4;
   --tok-fill-primary: #077fec;
   --tok-surface-overlay: rgba(21, 25, 30, 0.5);
@@ -597,10 +597,10 @@
 .sidebar__collapse .sidebar__icon { transition: transform 0.2s ease; }
 
 /* ---- neutral theme: the same recipe on gray ---- */
-.sidebar--neutral { background: var(--tok-surface-sunken); color: var(--tok-text-default); scrollbar-color: var(--tok-fill-neutral-hover-strong) transparent; }
+.sidebar--neutral { background: var(--tok-surface-dim); color: var(--tok-text-default); scrollbar-color: var(--tok-fill-neutral-hover) transparent; box-shadow: inset -1px 0 0 var(--tok-border-default); }
 .sidebar--neutral .sidebar__head { border-bottom-color: var(--tok-border-default); }
 .sidebar--neutral .sidebar__foot { border-top-color: var(--tok-border-default); }
-.sidebar--neutral .sidebar__body { scrollbar-color: var(--tok-fill-neutral-hover-strong) transparent; }
+.sidebar--neutral .sidebar__body { scrollbar-color: var(--tok-fill-neutral-hover) transparent; }
 .sidebar--neutral .sidebar__logo { color: var(--tok-text-default); }
 .sidebar--neutral .sidebar__logo-mark { fill: var(--tok-text-primary); }
 .sidebar--neutral .sidebar__logo-glyph { fill: var(--tok-text-on-fill); }
@@ -609,9 +609,9 @@
 .sidebar--neutral .sidebar__icon { color: var(--tok-icon-secondary); }
 .sidebar--neutral .sidebar__item--child { color: var(--tok-text-secondary); }
 .sidebar--neutral .sidebar__chevron { color: var(--tok-icon-muted); }
-.sidebar--neutral .sidebar__item:hover { background: var(--tok-fill-neutral-hover-strong); color: var(--tok-text-default); }
+.sidebar--neutral .sidebar__item:hover { background: var(--tok-fill-neutral-hover); color: var(--tok-text-default); }
 .sidebar--neutral .sidebar__item:focus-visible { outline: 2px solid var(--tok-border-focus); outline-offset: -2px; }
-.sidebar--neutral .sidebar__item[aria-current="page"] { background: var(--tok-surface-default); color: var(--tok-text-primary); }
+.sidebar--neutral .sidebar__item[aria-current="page"] { background: var(--tok-surface-default); color: var(--tok-text-primary); box-shadow: inset 0 0 0 1px var(--tok-border-default); }
 .sidebar--neutral .sidebar__item[aria-current="page"] .sidebar__icon { color: var(--tok-icon-primary); }
 .sidebar--neutral .sidebar__count { background: var(--tok-fill-primary); color: var(--tok-text-on-fill); }
 

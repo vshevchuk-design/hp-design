@@ -80,7 +80,7 @@ const colorNodes = [
   counter.onPrimary.state.active.bg, counter.onPrimary.state.active.label,
   avatar.fallback.identity.blue.bg, avatar.fallback.identity.blue.text,
   // neutral theme
-  ...["bg", "divider", "text", "icon", "childText", "chevron", "hoverBg", "hoverText", "ringColor"].map((k) => sb.neutral[k]),
+  ...["bg", "divider", "text", "icon", "childText", "chevron", "hoverBg", "hoverText", "ringColor", "activeBorder", "edge"].map((k) => sb.neutral[k]),
   counter.onNeutral.state.active.bg, counter.onNeutral.state.active.label,
 ];
 export const SIDEBAR_COLOR_PATHS = [...new Set([...colorNodes.map((n) => refPath(n.$value)), "surface.overlay", "surface.brand", "text.onFill", "text.primary", "text.default"])];
@@ -135,7 +135,7 @@ export const SIDEBAR_CSS = `
 .sidebar__collapse .sidebar__icon { transition: transform 0.2s ease; }
 
 /* ---- neutral theme: the same recipe on gray ---- */
-.sidebar--neutral { background: ${R(sb.neutral.bg)}; color: ${R(sb.neutral.text)}; scrollbar-color: ${R(sb.neutral.hoverBg)} transparent; }
+.sidebar--neutral { background: ${R(sb.neutral.bg)}; color: ${R(sb.neutral.text)}; scrollbar-color: ${R(sb.neutral.hoverBg)} transparent; box-shadow: inset -1px 0 0 ${R(sb.neutral.edge)}; }
 .sidebar--neutral .sidebar__head { border-bottom-color: ${R(sb.neutral.divider)}; }
 .sidebar--neutral .sidebar__foot { border-top-color: ${R(sb.neutral.divider)}; }
 .sidebar--neutral .sidebar__body { scrollbar-color: ${R(sb.neutral.hoverBg)} transparent; }
@@ -149,7 +149,7 @@ export const SIDEBAR_CSS = `
 .sidebar--neutral .sidebar__chevron { color: ${R(sb.neutral.chevron)}; }
 .sidebar--neutral .sidebar__item:hover { background: ${R(sb.neutral.hoverBg)}; color: ${R(sb.neutral.hoverText)}; }
 .sidebar--neutral .sidebar__item:focus-visible { outline: ${D(sb.neutral.ringWidth)} solid ${R(sb.neutral.ringColor)}; outline-offset: -${D(sb.neutral.ringWidth)}; }
-.sidebar--neutral .sidebar__item[aria-current="page"] { background: ${R(sb.state.active.bg)}; color: ${R(sb.state.active.text)}; }
+.sidebar--neutral .sidebar__item[aria-current="page"] { background: ${R(sb.state.active.bg)}; color: ${R(sb.state.active.text)}; box-shadow: inset 0 0 0 1px ${R(sb.neutral.activeBorder)}; }
 .sidebar--neutral .sidebar__item[aria-current="page"] .sidebar__icon { color: ${R(sb.state.active.icon)}; }
 .sidebar--neutral .sidebar__count { background: ${R(counter.onNeutral.state.active.bg)}; color: ${R(counter.onNeutral.state.active.label)}; }
 

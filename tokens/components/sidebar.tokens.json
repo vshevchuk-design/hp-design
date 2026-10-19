@@ -160,10 +160,11 @@
         }
       },
       "neutral": {
-        "$description": "The gray variant (.sidebar--neutral), added 2026-10-19: the same recipe on surface.sunken (gray.100) — one step darker than the gray.25 page, so the panel still reads as its own column — with dark text. Hover is the Strong neutral tier (fill.neutralHoverStrong), because the panel already rests on gray.100 and the wash would vanish. The current page is the same white pill with brand text as on blue. Focus goes back to the system ring (border.focus) — it's visible on gray. Counts are Counter onNeutral ACTIVE (brand blue chip, white label) — the onNeutral pair exists exactly for chips on gray.100. The logo keeps its normal colours.",
+        "$description": "The gray variant (.sidebar--neutral), added 2026-10-19: the same recipe on surface.dim (gray.50 — lighter than the first cut's gray.100, still a step under the gray.25 page) with dark text and a hairline right edge. Hover is the wash tier (fill.neutralHover); the white current-page pill gets a border.default hairline. Counter onNeutral active still reads on gray.50. The current page is the same white pill with brand text as on blue. Focus goes back to the system ring (border.focus) — it's visible on gray. Counts are Counter onNeutral ACTIVE (brand blue chip, white label) — the onNeutral pair exists exactly for chips on gray.100. The logo keeps its normal colours.",
         "bg": {
           "$type": "color",
-          "$value": "{surface.sunken}"
+          "$value": "{surface.dim}",
+          "$description": "gray.50 — a step lighter than the first cut's gray.100 (user, 2026-10-19: 'a bit lighter, but still darker than the page'); still one step under the gray.25 page."
         },
         "divider": {
           "$type": "color",
@@ -187,7 +188,8 @@
         },
         "hoverBg": {
           "$type": "color",
-          "$value": "{fill.neutralHoverStrong}"
+          "$value": "{fill.neutralHover}",
+          "$description": "Wash tier (gray.100): on a gray.50 panel the Strong tier (gray.200) was heavier than the hover needs."
         },
         "hoverText": {
           "$type": "color",
@@ -200,6 +202,16 @@
         "ringWidth": {
           "$type": "dimension",
           "$value": "{dim.0_5}"
+        },
+        "activeBorder": {
+          "$type": "color",
+          "$value": "{border.default}",
+          "$description": "A hairline round the white current-page pill — white on gray.50 is too close to read as a shape on its own."
+        },
+        "edge": {
+          "$type": "color",
+          "$value": "{border.default}",
+          "$description": "The panel's right edge: gray.50 against the gray.25 page needs the hairline to read as a column."
         }
       }
     }
