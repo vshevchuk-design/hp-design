@@ -324,7 +324,8 @@ const pageJs = `(function () {
       (list.length ? list.map(function (s) {
         var open = !!st.open[s.classNumber], did = "cb-d-" + s.classNumber;
         var time = s.start ? s.start + " – " + s.end : "—";
-        return '<div class="table__row" role="row">' +
+        // the whole row opens/closes its details, so it hovers like a link row
+        return '<div class="table__row table__row--link" role="row">' +
           '<span class="cb-sec__main" role="cell"><button type="button" class="btn btn--ghost btn--sm btn--icon-only cb-sec__toggle" data-toggle="' + s.classNumber + '" aria-expanded="' + open + '" aria-controls="' + did + '" aria-label="Details for section ' + s.section + '">' + ICONS.expand + '</button><span class="cb-sec__name"><b>' + esc(s.section) + " · " + esc(s.component) + "</b><span>Class " + esc(s.classNumber) + " · " + esc(s.session) + "</span></span></span>" +
           '<span class="cb-days" role="cell">' + (s.days ? esc(s.days) : "—") + "</span>" +
           '<span class="cb-time" role="cell">' + esc(time) + "</span>" +
