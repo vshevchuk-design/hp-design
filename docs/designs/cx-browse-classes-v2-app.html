@@ -32,6 +32,7 @@
   --tok-surface-dim: #f4f5f7;
   --tok-icon-muted: #8e99a7;
   --tok-fill-primary: #077fec;
+  --tok-fill-neutral-active-strong: #adb5be;
   --tok-surface-overlay: rgba(21, 25, 30, 0.5);
   --tok-surface-sunken: #e6e8eb;
   --tok-fill-neutral-hover-strong: #cdd1d6;
@@ -42,7 +43,6 @@
   --tok-icon-disabled: #adb5be;
   --tok-fill-neutral: #e6e8eb;
   --tok-icon-default: #485462;
-  --tok-fill-neutral-active-strong: #adb5be;
   --tok-fill-primary-tint: #d9eaff;
   --tok-fill-primary-tint-hover: #c7dffc;
   --tok-fill-primary-tint-active: #b2d4fe;
@@ -848,10 +848,11 @@ html:has(.ss-drawer[open]) { overflow: hidden; }
 .sidebar__item.has-current { font-weight: 600; font-size: 14px; line-height: 1.4; }
 /* group count: Counter sm, onPrimary ACTIVE colours (inactive = the panel's own blue) */
 .sidebar__count { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; height: 16px; min-width: 16px; padding: 0 4px; border-radius: 999px; background: var(--tok-surface-default); color: var(--tok-text-primary); font-weight: 700; font-size: 10px; line-height: 1; }
-/* an open group shows its children's own counts — the header's total would
-   repeat them, so it hides (the rail, where the children aren't visible,
-   keeps it as a dot) */
-.sidebar:not(.sidebar--collapsed) .sidebar__item[aria-expanded="true"] > .sidebar__count { display: none; }
+/* an open group keeps its total, but quiet — the loud count belongs to the
+   child that actually has the items. (The rail keeps the loud dot: the
+   children aren't visible there.) Blue: one surface step up, white label —
+   the inactive onPrimary chip is the panel's own blue and would vanish. */
+.sidebar:not(.sidebar--collapsed) .sidebar__item[aria-expanded="true"] > .sidebar__count { background: var(--tok-surface-brand-hover); color: var(--tok-text-on-fill); }
 .sidebar__foot { flex-shrink: 0; padding: 12px; border-top: 1px solid var(--tok-border-on-brand); }
 .sidebar__account { height: 56px; }
 .sidebar__avatar { flex-shrink: 0; width: 32px; height: 32px; margin-left: -4px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; background: var(--tok-avatar-blue-bg); color: var(--tok-avatar-blue-text); font-weight: 600; font-size: 12px; line-height: 1; }
@@ -876,6 +877,8 @@ html:has(.ss-drawer[open]) { overflow: hidden; }
 .sidebar--neutral .sidebar__item[aria-current="page"] { background: var(--tok-surface-default); color: var(--tok-text-primary); box-shadow: inset 0 0 0 1px var(--tok-border-default); }
 .sidebar--neutral .sidebar__item[aria-current="page"] .sidebar__icon { color: var(--tok-icon-primary); }
 .sidebar--neutral .sidebar__count { background: var(--tok-fill-primary); color: var(--tok-text-on-fill); }
+/* gray: Counter onNeutral INACTIVE for an open group's total */
+.sidebar--neutral:not(.sidebar--collapsed) .sidebar__item[aria-expanded="true"] > .sidebar__count { background: var(--tok-fill-neutral-active-strong); color: var(--tok-text-default); }
 
 /* ---- collapsed rail: icons only (desktop; below 1024 the panel is a drawer) ---- */
 @media (min-width: 1024px) {

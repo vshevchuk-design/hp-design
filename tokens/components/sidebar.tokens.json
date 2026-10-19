@@ -149,7 +149,7 @@
         }
       },
       "count": {
-        "$description": "A group's count (Advisor · 3) shows only while the group is CLOSED — open, its children carry their own counts and the header's total would repeat them (user, 2026-10-19); in the rail it stays as a dot. It is Counter sm in its onPrimary ACTIVE colours (white chip, brand text) — the onPrimary inactive chip is fill.primaryActive (blue.700), the same colour as this panel, so it would vanish."
+        "$description": "A group's count (Advisor · 3) stays when the group opens but goes QUIET — the loud count belongs to the child that has the items (user, 2026-10-19; a first pass hid it entirely). Quiet = Counter onNeutral INACTIVE on the gray theme; on blue, surface.brandHover + white (the onPrimary inactive chip is the panel's own blue). In the rail it stays loud, as a dot. It is Counter sm in its onPrimary ACTIVE colours (white chip, brand text) — the onPrimary inactive chip is fill.primaryActive (blue.700), the same colour as this panel, so it would vanish."
       },
       "account": {
         "$description": "The signed-in person at the foot: Avatar sm + name + chevron (opens a Menu: profile, sign out). Same row recipe as an item, taller for the avatar.",

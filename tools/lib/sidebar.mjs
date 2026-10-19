@@ -82,6 +82,7 @@ const colorNodes = [
   // neutral theme
   ...["bg", "divider", "text", "icon", "childText", "chevron", "hoverBg", "hoverText", "ringColor", "activeBorder", "edge"].map((k) => sb.neutral[k]),
   counter.onNeutral.state.active.bg, counter.onNeutral.state.active.label,
+  counter.onNeutral.state.inactive.bg, counter.onNeutral.state.inactive.label,
 ];
 export const SIDEBAR_COLOR_PATHS = [...new Set([...colorNodes.map((n) => refPath(n.$value)), "surface.overlay", "surface.brand", "text.onFill", "text.primary", "text.default"])];
 
@@ -124,10 +125,11 @@ export const SIDEBAR_CSS = `
 .sidebar__item.has-current { ${typoCss(T(sb.item.activeLabel))} }
 /* group count: Counter sm, onPrimary ACTIVE colours (inactive = the panel's own blue) */
 .sidebar__count { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; height: ${D(cSm.height)}; min-width: ${D(cSm.minWidth)}; padding: 0 ${D(cSm.paddingX)}; border-radius: ${px(resolveToken(get("radius.full")))}; background: ${R(counter.onPrimary.state.active.bg)}; color: ${R(counter.onPrimary.state.active.label)}; ${typoCss(T(cSm.label))} }
-/* an open group shows its children's own counts — the header's total would
-   repeat them, so it hides (the rail, where the children aren't visible,
-   keeps it as a dot) */
-.sidebar:not(.sidebar--collapsed) .sidebar__item[aria-expanded="true"] > .sidebar__count { display: none; }
+/* an open group keeps its total, but quiet — the loud count belongs to the
+   child that actually has the items. (The rail keeps the loud dot: the
+   children aren't visible there.) Blue: one surface step up, white label —
+   the inactive onPrimary chip is the panel's own blue and would vanish. */
+.sidebar:not(.sidebar--collapsed) .sidebar__item[aria-expanded="true"] > .sidebar__count { background: ${R(sb.state.hover.bg)}; color: ${R(sb.state.hover.text)}; }
 .sidebar__foot { flex-shrink: 0; padding: ${D(sb.padding)}; border-top: 1px solid ${R(sb.divider)}; }
 .sidebar__account { height: ${D(sb.account.height)}; }
 .sidebar__avatar { flex-shrink: 0; width: ${D(avSm.diameter)}; height: ${D(avSm.diameter)}; margin-left: -${dim(1)}; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; background: ${R(avatar.fallback.identity.blue.bg)}; color: ${R(avatar.fallback.identity.blue.text)}; ${typoCss(T(avSm.initials))} }
@@ -152,6 +154,8 @@ export const SIDEBAR_CSS = `
 .sidebar--neutral .sidebar__item[aria-current="page"] { background: ${R(sb.state.active.bg)}; color: ${R(sb.state.active.text)}; box-shadow: inset 0 0 0 1px ${R(sb.neutral.activeBorder)}; }
 .sidebar--neutral .sidebar__item[aria-current="page"] .sidebar__icon { color: ${R(sb.state.active.icon)}; }
 .sidebar--neutral .sidebar__count { background: ${R(counter.onNeutral.state.active.bg)}; color: ${R(counter.onNeutral.state.active.label)}; }
+/* gray: Counter onNeutral INACTIVE for an open group's total */
+.sidebar--neutral:not(.sidebar--collapsed) .sidebar__item[aria-expanded="true"] > .sidebar__count { background: ${R(counter.onNeutral.state.inactive.bg)}; color: ${R(counter.onNeutral.state.inactive.label)}; }
 
 /* ---- collapsed rail: icons only (desktop; below 1024 the panel is a drawer) ---- */
 @media (min-width: 1024px) {
