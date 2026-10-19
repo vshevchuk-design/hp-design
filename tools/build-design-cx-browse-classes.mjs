@@ -81,7 +81,11 @@ const pageCss = ({ tokens, R, D, dim, cv, typoCss, style, textExt }) => {
 @container (min-width: 760px) {
   .cb-shead { grid-template-columns: auto auto minmax(0, 1fr) minmax(${dim(56)}, ${dim(80)}); grid-template-areas: "title code . q" "meta meta meta ."; row-gap: ${dim(1)}; }
 }
-.cb-sections .table__row { grid-template-columns: minmax(${dim(36)}, 1.2fr) ${dim(16)} ${dim(36)} minmax(${dim(20)}, 1fr) minmax(${dim(28)}, 1.2fr) ${dim(36)} auto; }
+.cb-sections .table__row { grid-template-columns: minmax(${dim(36)}, 1.2fr) ${dim(16)} ${dim(36)} minmax(${dim(20)}, 1fr) minmax(${dim(28)}, 1.2fr) ${dim(36)} ${dim(28)}; }
+/* every row is its own grid, so every column must be sized the same way in
+   the header and the rows — an "auto" Actions column sized to the button in
+   the rows but to nothing in the header, and shifted every column */
+.cb-sections .cb-kebab { justify-self: end; }
 .cb-sec__main { display: flex; align-items: center; gap: ${dim(2)}; min-width: 0; }
 .cb-sec__toggle { margin-inline-start: -${dim(2)}; }
 .cb-sec__toggle .btn__icon { transition: transform 0.15s ease; }
