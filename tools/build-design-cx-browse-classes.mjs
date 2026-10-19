@@ -61,6 +61,10 @@ const pageCss = ({ tokens, R, D, dim, cv, typoCss, style, textExt }) => {
 /* a required field's mark */
 .cb-req { color: ${cv("text.danger")}; }
 
+/* before a search the hint sits in the middle of the free space under the
+   filters (as live): the view takes the page's height, the hint the rest */
+.cx-view[data-view="browse"].is-active { flex: 1; }
+#cb-hint { flex: 1; }
 /* ============ results ============ */
 .cb-courses .table__row { grid-template-columns: ${dim(36)} minmax(0, 1fr) auto; }
 .cb-code { color: ${cv("text.default")}; ${typoCss(style("body-base"))} font-weight: ${style("heading-sm").fontWeight}; white-space: nowrap; }
