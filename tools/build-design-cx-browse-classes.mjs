@@ -16,7 +16,7 @@
 //   · Start and End are one Time column; Session moves under the section;
 //   · seven equal buttons under an open section → Add to cart (primary),
 //     Enroll and Add to planner (secondary), and the rest in a ⋯ Menu — the
-//     same Menu the row's ⋮ opens;
+//     same Menu the row's Actions button (tint sm) opens;
 //   · filters reflow in the live page's three steps (one row → search field
 //     on its own row → two columns), by the page column's width; the
 //     sections table stacks when the column is under 860px.
@@ -67,7 +67,7 @@ const pageCss = ({ tokens, R, D, dim, cv, typoCss, style, textExt }) => {
 .cb-bar .search { width: min(100%, ${dim(72)}); }
 .cb-count { color: ${cv("text.secondary")}; ${typoCss(style("body-sm"))} }
 .cb-courses .table__row { grid-template-columns: ${dim(36)} minmax(0, 1fr) auto; }
-.cb-code { color: ${cv("text.default")}; ${typoCss(style("heading-sm"))} white-space: nowrap; }
+.cb-code { color: ${cv("text.default")}; ${typoCss(style("body-base"))} font-weight: ${style("heading-sm").fontWeight}; white-space: nowrap; }
 @container (max-width: 559px) {
   .cb-courses .table__row--head { display: none; }
   .cb-courses .table__row { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "code act" "desc act"; row-gap: ${dim("0_5")}; }
@@ -78,14 +78,14 @@ const pageCss = ({ tokens, R, D, dim, cv, typoCss, style, textExt }) => {
 .cb-back { align-self: flex-start; margin-inline-start: -${D(bSm.paddingX)}; margin-block-end: -${dim(3)}; }
 .cb-title { display: flex; flex-wrap: wrap; align-items: baseline; gap: ${dim(1)} ${dim(3)}; }
 .cb-title .ss-title { margin: 0; }
-.cb-sections .table__row { grid-template-columns: minmax(${dim(36)}, 1.2fr) ${dim(16)} ${dim(36)} minmax(${dim(20)}, 1fr) minmax(${dim(28)}, 1.2fr) ${dim(36)} ${D(bSm.height)}; }
+.cb-sections .table__row { grid-template-columns: minmax(${dim(36)}, 1.2fr) ${dim(16)} ${dim(36)} minmax(${dim(20)}, 1fr) minmax(${dim(28)}, 1.2fr) ${dim(36)} auto; }
 .cb-sec__main { display: flex; align-items: center; gap: ${dim(2)}; min-width: 0; }
 .cb-sec__toggle { margin-inline-start: -${dim(2)}; }
 .cb-sec__toggle .btn__icon { transition: transform 0.15s ease; }
 .cb-sec[aria-expanded="true"] .cb-sec__toggle .btn__icon, .cb-sec__toggle[aria-expanded="true"] .btn__icon { transform: rotate(180deg); }
 .cb-sec__name { display: flex; flex-direction: column; min-width: 0; }
-.cb-sec__name b { color: ${cv("text.default")}; ${typoCss(style("heading-sm"))} }
-.cb-sec__name span { color: ${R(tb.cell.mutedColor)}; ${typoCss(style("body-xs"))} }
+.cb-sec__name b { color: ${cv("text.default")}; ${typoCss(style("body-base"))} font-weight: ${style("heading-sm").fontWeight}; }
+.cb-sec__name span { color: ${R(tb.cell.mutedColor)}; ${typoCss(style("body-sm"))} }
 .cb-status { display: flex; align-items: center; gap: ${dim(2)}; white-space: nowrap; }
 .cb-cell-label { display: none; }
 /* the open section's details — a band under its row */
@@ -116,7 +116,7 @@ const pageCss = ({ tokens, R, D, dim, cv, typoCss, style, textExt }) => {
   .cb-sections .cb-when { display: block !important; grid-area: when; }
   .cb-sections .cb-room { display: none; }
   .cb-sections .cb-who { grid-area: who; color: ${cv("text.secondary")}; }
-  .cb-sections .cb-kebab { display: none; }
+  .cb-sections .cb-kebab { grid-area: more; padding-left: calc(${D(bSm.height)} + ${dim(2)} - ${dim(2)}); padding-top: ${dim(1)}; }
   .cb-sections .cb-when { padding-left: calc(${D(bSm.height)} + ${dim(2)} - ${dim(2)}); }
   .cb-sections .cb-who { padding-left: calc(${D(bSm.height)} + ${dim(2)} - ${dim(2)}); }
 }
@@ -287,8 +287,7 @@ const pageJs = `(function () {
   function openCourse(id) {
     course = B.COURSES.filter(function (c) { return c[0] + " " + c[1] === id; })[0];
     secs = sectionsFor(id); st.open = {}; st.sq = ""; $("cb-sq").value = ""; $("cb-sq-box").classList.remove("is-populated");
-    // the live copy opened with the first section expanded
-    if (secs.length) st.open[secs[0].classNumber] = true;
+    // every section starts closed (the live copy opened the first — user asked not to)
     $("cb-s-title").textContent = course[2];
     $("cb-s-code").textContent = id;
     $("cb-s-meta").textContent = st.term + " · " + course[3];
@@ -328,7 +327,7 @@ const pageJs = `(function () {
           '<span class="cb-room" role="cell">' + esc(s.room) + "</span>" +
           '<span class="cb-who" role="cell">' + esc(s.instructor) + "</span>" +
           '<span class="cb-status" role="cell">' + statusHtml(s) + "</span>" +
-          '<span class="cb-kebab" role="cell"><button type="button" class="btn btn--ghost btn--sm btn--icon-only" data-menu="' + s.classNumber + '" aria-haspopup="menu" aria-label="Actions for section ' + s.section + '">' + ICONS.more + "</button></span>" +
+          '<span class="cb-kebab" role="cell"><button type="button" class="btn btn--tint btn--sm" data-menu="' + s.classNumber + '" aria-haspopup="menu" aria-label="Actions for section ' + s.section + '"><span>Actions</span>' + ICONS.expand + "</button></span>" +
           "</div>" +
           '<div class="cb-detail" id="' + did + '"' + (open ? "" : " hidden") + ">" + detailHtml(s) + "</div>";
       }).join("") : '<div class="empty-state"><span class="empty-state__text">No sections match “' + esc(st.sq) + '”</span></div>');
@@ -392,7 +391,7 @@ const viewerHtml = renderDesignViewer({
   activeKey: "cx-browse-classes",
   title: "CX Browse Classes",
   heading: "Browse Classes",
-  sub: `Browse Classes, restyled on hp-design components in the CX shell — same flow and content as the live page (read off three saved copies): <b>Term</b> (required), <b>Career</b> and <b>Subject</b> → Search → a Class · Description table → a course's sections, each opening into Information / Details / Availability / Textbooks / Additional links with the section actions. What changed is the UI: the filters are Select base with floating labels ("Any …" is an option, not a × in the field); results get a count beside the table's own Search; <b>View sections</b> is Button tint (pale blue), not eleven solid blue ones; Start and End are one Time column and Session sits under the section; the seven equal buttons under an open section become <b>Add to cart</b>, Enroll, Add to planner and a ⋯ Menu (the row's ⋮ opens the same Menu); the filters reflow like the live page (one row → the search field on its own row → two columns; below 1280 the sidebar folds to icons first), and the sections table stacks in a narrow column. Try 2027 Spring + ACCT, then <b>ACCT C2003</b> — its section 2000 is the live one, verbatim. Other subjects and sections are sample data. <b>v2 (current)</b> wears the Sidebar's neutral theme — gray.100 panel, dark text, the same white current-page pill; <b>v1</b> the brand-blue one.`,
+  sub: `Browse Classes, restyled on hp-design components in the CX shell — same flow and content as the live page (read off three saved copies): <b>Term</b> (required), <b>Career</b> and <b>Subject</b> → Search → a Class · Description table → a course's sections, each opening into Information / Details / Availability / Textbooks / Additional links with the section actions. What changed is the UI: the filters are Select base with floating labels ("Any …" is an option, not a × in the field); results get a count beside the table's own Search; <b>View sections</b> is Button tint (pale blue), not eleven solid blue ones; Start and End are one Time column and Session sits under the section; the seven equal buttons under an open section become <b>Add to cart</b>, Enroll, Add to planner and a ⋯ Menu (the row's <b>Actions</b> button opens the full Menu); the filters reflow like the live page (one row → the search field on its own row → two columns; below 1280 the sidebar folds to icons first), and the sections table stacks in a narrow column. Try 2027 Spring + ACCT, then <b>ACCT C2003</b> — its section 2000 is the live one, verbatim. Other subjects and sections are sample data. <b>v2 (current)</b> wears the Sidebar's neutral theme — gray.100 panel, dark text, the same white current-page pill; <b>v1</b> the brand-blue one.`,
   versions: [
     { label: "v2", note: "gray sidebar · current", file: "cx-browse-classes-v2-app.html" },
     { label: "v1", note: "blue sidebar", file: "cx-browse-classes-app.html" },

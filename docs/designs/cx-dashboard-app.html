@@ -935,7 +935,9 @@ html, body { height: auto; min-height: 100%; }
 
 /* ============ Table (container + header + rows; columns are the page's grid) ============ */
 .table { background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); border-radius: 8px; overflow: hidden; }
-.table__row { display: grid; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--tok-border-default); color: var(--tok-text-default); font-weight: 400; font-size: 12px; line-height: 1.4; }
+/* CX tables read at 14px (body-base), not the DS Table's 12px cell style —
+   user, 2026-10-19: these are the page's main content, not a dense console */
+.table__row { display: grid; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--tok-border-default); color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; }
 .table__row:last-child { border-bottom: none; }
 .table__row--head { padding: 12px 16px; color: var(--tok-text-muted); font-weight: 700; font-size: 12px; line-height: 1.4; text-transform: uppercase; letter-spacing: [object Object]; border-bottom-color: var(--tok-border-default); }
 .table__row--link { cursor: pointer; }

@@ -935,7 +935,9 @@ html, body { height: auto; min-height: 100%; }
 
 /* ============ Table (container + header + rows; columns are the page's grid) ============ */
 .table { background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); border-radius: 8px; overflow: hidden; }
-.table__row { display: grid; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--tok-border-default); color: var(--tok-text-default); font-weight: 400; font-size: 12px; line-height: 1.4; }
+/* CX tables read at 14px (body-base), not the DS Table's 12px cell style —
+   user, 2026-10-19: these are the page's main content, not a dense console */
+.table__row { display: grid; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--tok-border-default); color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; }
 .table__row:last-child { border-bottom: none; }
 .table__row--head { padding: 12px 16px; color: var(--tok-text-muted); font-weight: 700; font-size: 12px; line-height: 1.4; text-transform: uppercase; letter-spacing: [object Object]; border-bottom-color: var(--tok-border-default); }
 .table__row--link { cursor: pointer; }
@@ -994,7 +996,7 @@ html, body { height: auto; min-height: 100%; }
 .cb-bar .search { width: min(100%, 288px); }
 .cb-count { color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
 .cb-courses .table__row { grid-template-columns: 144px minmax(0, 1fr) auto; }
-.cb-code { color: var(--tok-text-default); font-weight: 600; font-size: 12px; line-height: 1.4; white-space: nowrap; }
+.cb-code { color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; font-weight: 600; white-space: nowrap; }
 @container (max-width: 559px) {
   .cb-courses .table__row--head { display: none; }
   .cb-courses .table__row { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "code act" "desc act"; row-gap: 2px; }
@@ -1005,14 +1007,14 @@ html, body { height: auto; min-height: 100%; }
 .cb-back { align-self: flex-start; margin-inline-start: -8px; margin-block-end: -12px; }
 .cb-title { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; }
 .cb-title .ss-title { margin: 0; }
-.cb-sections .table__row { grid-template-columns: minmax(144px, 1.2fr) 64px 144px minmax(80px, 1fr) minmax(112px, 1.2fr) 144px 32px; }
+.cb-sections .table__row { grid-template-columns: minmax(144px, 1.2fr) 64px 144px minmax(80px, 1fr) minmax(112px, 1.2fr) 144px auto; }
 .cb-sec__main { display: flex; align-items: center; gap: 8px; min-width: 0; }
 .cb-sec__toggle { margin-inline-start: -8px; }
 .cb-sec__toggle .btn__icon { transition: transform 0.15s ease; }
 .cb-sec[aria-expanded="true"] .cb-sec__toggle .btn__icon, .cb-sec__toggle[aria-expanded="true"] .btn__icon { transform: rotate(180deg); }
 .cb-sec__name { display: flex; flex-direction: column; min-width: 0; }
-.cb-sec__name b { color: var(--tok-text-default); font-weight: 600; font-size: 12px; line-height: 1.4; }
-.cb-sec__name span { color: var(--tok-text-muted); font-weight: 400; font-size: 10px; line-height: 1.4; }
+.cb-sec__name b { color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; font-weight: 600; }
+.cb-sec__name span { color: var(--tok-text-muted); font-weight: 400; font-size: 12px; line-height: 1.4; }
 .cb-status { display: flex; align-items: center; gap: 8px; white-space: nowrap; }
 .cb-cell-label { display: none; }
 /* the open section's details — a band under its row */
@@ -1043,7 +1045,7 @@ html, body { height: auto; min-height: 100%; }
   .cb-sections .cb-when { display: block !important; grid-area: when; }
   .cb-sections .cb-room { display: none; }
   .cb-sections .cb-who { grid-area: who; color: var(--tok-text-secondary); }
-  .cb-sections .cb-kebab { display: none; }
+  .cb-sections .cb-kebab { grid-area: more; padding-left: calc(32px + 8px - 8px); padding-top: 4px; }
   .cb-sections .cb-when { padding-left: calc(32px + 8px - 8px); }
   .cb-sections .cb-who { padding-left: calc(32px + 8px - 8px); }
 }
@@ -1302,8 +1304,7 @@ window.cx = (function () {
   function openCourse(id) {
     course = B.COURSES.filter(function (c) { return c[0] + " " + c[1] === id; })[0];
     secs = sectionsFor(id); st.open = {}; st.sq = ""; $("cb-sq").value = ""; $("cb-sq-box").classList.remove("is-populated");
-    // the live copy opened with the first section expanded
-    if (secs.length) st.open[secs[0].classNumber] = true;
+    // every section starts closed (the live copy opened the first — user asked not to)
     $("cb-s-title").textContent = course[2];
     $("cb-s-code").textContent = id;
     $("cb-s-meta").textContent = st.term + " · " + course[3];
@@ -1343,7 +1344,7 @@ window.cx = (function () {
           '<span class="cb-room" role="cell">' + esc(s.room) + "</span>" +
           '<span class="cb-who" role="cell">' + esc(s.instructor) + "</span>" +
           '<span class="cb-status" role="cell">' + statusHtml(s) + "</span>" +
-          '<span class="cb-kebab" role="cell"><button type="button" class="btn btn--ghost btn--sm btn--icon-only" data-menu="' + s.classNumber + '" aria-haspopup="menu" aria-label="Actions for section ' + s.section + '">' + ICONS.more + "</button></span>" +
+          '<span class="cb-kebab" role="cell"><button type="button" class="btn btn--tint btn--sm" data-menu="' + s.classNumber + '" aria-haspopup="menu" aria-label="Actions for section ' + s.section + '"><span>Actions</span>' + ICONS.expand + "</button></span>" +
           "</div>" +
           '<div class="cb-detail" id="' + did + '"' + (open ? "" : " hidden") + ">" + detailHtml(s) + "</div>";
       }).join("") : '<div class="empty-state"><span class="empty-state__text">No sections match “' + esc(st.sq) + '”</span></div>');

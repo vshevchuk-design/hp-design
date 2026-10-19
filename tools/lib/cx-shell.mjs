@@ -126,7 +126,9 @@ html, body { height: auto; min-height: 100%; }
 
 /* ============ Table (container + header + rows; columns are the page's grid) ============ */
 .table { background: ${R(tb.surface)}; border: 1px solid ${R(tb.border)}; border-radius: ${D(tb.radius)}; overflow: hidden; }
-.table__row { display: grid; align-items: center; gap: ${D(tb.row.gap)}; padding: ${D(tb.row.paddingY)} ${D(tb.row.paddingX)}; border-bottom: 1px solid ${R(tb.row.divider)}; color: ${R(tb.cell.textColor)}; ${typoCss(T(tb.cell.text))} }
+/* CX tables read at 14px (body-base), not the DS Table's 12px cell style —
+   user, 2026-10-19: these are the page's main content, not a dense console */
+.table__row { display: grid; align-items: center; gap: ${D(tb.row.gap)}; padding: ${D(tb.row.paddingY)} ${D(tb.row.paddingX)}; border-bottom: 1px solid ${R(tb.row.divider)}; color: ${R(tb.cell.textColor)}; ${typoCss(style("body-base"))} }
 .table__row:last-child { border-bottom: none; }
 .table__row--head { padding: ${D(tb.header.paddingY)} ${D(tb.header.paddingX)}; color: ${R(tb.header.labelColor)}; ${typoCss(headLabel)} text-transform: ${headCase}; letter-spacing: ${headLabel.letterSpacing}; border-bottom-color: ${R(tb.header.divider)}; }
 .table__row--link { cursor: pointer; }
