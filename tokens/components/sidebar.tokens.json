@@ -19,8 +19,8 @@
       },
       "gap": {
         "$type": "dimension",
-        "$value": "{dim.0_5}",
-        "$description": "Between items (2px) — enough that two hovered/active pills never touch."
+        "$value": "{dim.1}",
+        "$description": "Between items (4px — user, 2026-10-19; was 2px). The items stay 40px; only the air between them grows."
       },
       "bg": {
         "$type": "color",
@@ -152,11 +152,11 @@
         "$description": "A group's count (Advisor · 3) stays when the group opens but goes QUIET — the loud count belongs to the child that has the items (user, 2026-10-19; a first pass hid it entirely). Quiet = Counter onNeutral INACTIVE on the gray theme; on blue, surface.brandHover + white (the onPrimary inactive chip is the panel's own blue). In the rail it stays loud, as a dot. It is Counter sm in its onPrimary ACTIVE colours (white chip, brand text) — the onPrimary inactive chip is fill.primaryActive (blue.700), the same colour as this panel, so it would vanish."
       },
       "account": {
-        "$description": "The signed-in person at the foot: Avatar sm + name + chevron (opens a Menu: profile, sign out). Same row recipe as an item, taller for the avatar.",
+        "$description": "The signed-in person at the foot: Avatar sm + name + chevron (opens a Menu: profile, sign out), one 40px row in a footer band the same 64px as the header (user, 2026-10-19 — it was 80px + the hairline).",
         "height": {
           "$type": "dimension",
-          "$value": "{dim.14}",
-          "$description": "56px — Avatar sm (32) with 12px above and below."
+          "$value": "{dim.10}",
+          "$description": "40px — an ordinary item's height, with Avatar sm (32) inside."
         }
       },
       "neutral": {

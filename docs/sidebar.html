@@ -69,9 +69,9 @@
 .sidebar__logo-word { fill: var(--tok-text-on-fill); }
 /* the 24px square mark alone, for the rail */
 .sidebar__mark { display: none; }
-.sidebar__list, .sidebar__sub { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.sidebar__list, .sidebar__sub { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
 .sidebar__body { flex: 1; min-height: 0; overflow-y: auto; padding: 12px; scrollbar-width: thin; scrollbar-color: var(--tok-surface-brand-hover) transparent; }
-.sidebar__sub { margin-top: 2px; }
+.sidebar__sub { margin-top: 4px; }
 .sidebar__sub[hidden] { display: none; }
 /* one row recipe for links, group headers, the account button and the
    collapse button */
@@ -96,8 +96,9 @@
    children aren't visible there.) Blue: one surface step up, white label —
    the inactive onPrimary chip is the panel's own blue and would vanish. */
 .sidebar:not(.sidebar--collapsed) .sidebar__item[aria-expanded="true"] > .sidebar__count { background: var(--tok-surface-brand-hover); color: var(--tok-text-on-fill); }
-.sidebar__foot { flex-shrink: 0; padding: 12px; border-top: 1px solid var(--tok-border-on-brand); }
-.sidebar__account { height: 56px; }
+/* the footer band matches the header: 64px declared, hairline inside it */
+.sidebar__foot { flex-shrink: 0; height: 64px; display: flex; align-items: center; padding: 0 12px; border-top: 1px solid var(--tok-border-on-brand); }
+.sidebar__account { height: 40px; }
 .sidebar__avatar { flex-shrink: 0; width: 32px; height: 32px; margin-left: -4px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; background: var(--tok-avatar-blue-bg); color: var(--tok-avatar-blue-text); font-weight: 600; font-size: 12px; line-height: 1; }
 .sidebar__collapse { width: 40px; padding: 0; justify-content: center; flex-shrink: 0; }
 .sidebar__collapse .sidebar__icon { transition: transform 0.2s ease; }
@@ -569,9 +570,9 @@
 .sidebar__logo-word { fill: var(--tok-text-on-fill); }
 /* the 24px square mark alone, for the rail */
 .sidebar__mark { display: none; }
-.sidebar__list, .sidebar__sub { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.sidebar__list, .sidebar__sub { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
 .sidebar__body { flex: 1; min-height: 0; overflow-y: auto; padding: 12px; scrollbar-width: thin; scrollbar-color: var(--tok-surface-brand-hover) transparent; }
-.sidebar__sub { margin-top: 2px; }
+.sidebar__sub { margin-top: 4px; }
 .sidebar__sub[hidden] { display: none; }
 /* one row recipe for links, group headers, the account button and the
    collapse button */
@@ -596,8 +597,9 @@
    children aren't visible there.) Blue: one surface step up, white label —
    the inactive onPrimary chip is the panel's own blue and would vanish. */
 .sidebar:not(.sidebar--collapsed) .sidebar__item[aria-expanded="true"] &gt; .sidebar__count { background: var(--tok-surface-brand-hover); color: var(--tok-text-on-fill); }
-.sidebar__foot { flex-shrink: 0; padding: 12px; border-top: 1px solid var(--tok-border-on-brand); }
-.sidebar__account { height: 56px; }
+/* the footer band matches the header: 64px declared, hairline inside it */
+.sidebar__foot { flex-shrink: 0; height: 64px; display: flex; align-items: center; padding: 0 12px; border-top: 1px solid var(--tok-border-on-brand); }
+.sidebar__account { height: 40px; }
 .sidebar__avatar { flex-shrink: 0; width: 32px; height: 32px; margin-left: -4px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; background: var(--tok-avatar-blue-bg); color: var(--tok-avatar-blue-text); font-weight: 600; font-size: 12px; line-height: 1; }
 .sidebar__collapse { width: 40px; padding: 0; justify-content: center; flex-shrink: 0; }
 .sidebar__collapse .sidebar__icon { transition: transform 0.2s ease; }

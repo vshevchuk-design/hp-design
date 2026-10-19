@@ -130,7 +130,8 @@ export const SIDEBAR_CSS = `
    children aren't visible there.) Blue: one surface step up, white label —
    the inactive onPrimary chip is the panel's own blue and would vanish. */
 .sidebar:not(.sidebar--collapsed) .sidebar__item[aria-expanded="true"] > .sidebar__count { background: ${R(sb.state.hover.bg)}; color: ${R(sb.state.hover.text)}; }
-.sidebar__foot { flex-shrink: 0; padding: ${D(sb.padding)}; border-top: 1px solid ${R(sb.divider)}; }
+/* the footer band matches the header: 64px declared, hairline inside it */
+.sidebar__foot { flex-shrink: 0; height: ${D(sb.header.height)}; display: flex; align-items: center; padding: 0 ${D(sb.padding)}; border-top: 1px solid ${R(sb.divider)}; }
 .sidebar__account { height: ${D(sb.account.height)}; }
 .sidebar__avatar { flex-shrink: 0; width: ${D(avSm.diameter)}; height: ${D(avSm.diameter)}; margin-left: -${dim(1)}; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; background: ${R(avatar.fallback.identity.blue.bg)}; color: ${R(avatar.fallback.identity.blue.text)}; ${typoCss(T(avSm.initials))} }
 .sidebar__collapse { width: ${D(sb.item.height)}; padding: 0; justify-content: center; flex-shrink: 0; }
