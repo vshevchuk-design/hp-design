@@ -78,7 +78,7 @@ const html = `<!doctype html>
   <nav class="side">${renderNav("sidebar")}</nav>
   <main>
     <h1>Sidebar</h1>
-    <p class="sub">tokens/components/sidebar.tokens.json · generated — the CX app's primary navigation: a brand-blue panel with flat links, collapsible groups, counts, and the signed-in person at the foot. One recipe, three shapes: expanded (288px), the collapsed rail (64px), and below 1024px an off-canvas drawer. Shared with the CX prototypes through <code class="tok">tools/lib/sidebar.mjs</code>.</p>
+    <p class="sub">tokens/components/sidebar.tokens.json · generated — the CX app's primary navigation: a brand-blue panel with flat links, collapsible groups, counts, and the signed-in person at the foot. One recipe, three shapes: expanded (288px), the collapsed rail (64px), the rail automatically between 768 and 1279px, and below 768px an off-canvas drawer. Shared with the CX prototypes through <code class="tok">tools/lib/sidebar.mjs</code>.</p>
 
     <div class="legend">
       <div class="row"><b>From the live app</b><span>Same structure, item for item (read off a saved copy of the live Dashboard). What changed: an open group no longer becomes a white panel with dark text and a black outline — its links stay on the blue, indented under the parent's label; only the <i>current page</i> is a white pill. Hover is one surface step (<code class="tok">surface.brandHover</code>), not a darker band.</span></div>
@@ -89,7 +89,8 @@ const html = `<!doctype html>
       <div class="row"><b>Counts</b><span>Counter sm in its <code class="tok">onPrimary</code> <i>active</i> colours (white chip, brand text). The inactive onPrimary chip is blue.700 — the panel's own colour — so it would vanish. In the rail a count becomes a dot.</span></div>
       <div class="row"><b>Focus</b><span><code class="tok">border.focus</code> is blue.600, invisible on this panel — the ring here is white, 2px, inset.</span></div>
       <div class="row"><b>Rail</b><span>The collapse button (top right) shrinks the panel to its icons; each item's label is its native <code class="tok">title</code>. Opening a group from the rail expands the panel first.</span></div>
-      <div class="row"><b>Below 1024px</b><span>The panel leaves the layout and slides in from the left over a scrim (<code class="tok">surface.overlay</code>), opened by a menu button in the topbar; the scrim, Escape or choosing a link closes it. See it in the CX Dashboard prototype.</span></div>
+      <div class="row"><b>768–1279px</b><span>In an app (<code class="tok">.has-sidebar</code>) the panel folds to the rail by itself, as the live app does — the page gets the room first. The collapse button still opens it; crossing the breakpoint re-applies the rail.</span></div>
+      <div class="row"><b>Below 768px</b><span>The panel leaves the layout and slides in from the left over a scrim (<code class="tok">surface.overlay</code>), opened by a menu button in the topbar; the scrim, Escape or choosing a link closes it. See it in the CX prototypes.</span></div>
     </div>
 
     <h2 class="big-section">Shapes</h2>

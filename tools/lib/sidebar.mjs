@@ -12,7 +12,10 @@
 //   collapsed rail      — .sidebar--collapsed, 64px, icons only (native title
 //                         as the label); opening a group from the rail
 //                         expands the panel first
-//   drawer (< 1024px)   — off-canvas from the left behind a scrim, opened by
+//   auto rail (768–1279) — in an app (.has-sidebar) the panel folds to the
+//                         rail by itself below 1280, as the live app does;
+//                         the collapse button still toggles it
+//   drawer (< 768px)    — off-canvas from the left behind a scrim, opened by
 //                         the topbar's menu button (.has-nav-open on the app)
 import fs from "node:fs";
 import path from "node:path";
@@ -159,7 +162,7 @@ export const SIDEBAR_CSS = `
 .sidebar--neutral:not(.sidebar--collapsed) .sidebar__item[aria-expanded="true"] > .sidebar__count { background: ${R(counter.onNeutral.state.inactive.bg)}; color: ${R(counter.onNeutral.state.inactive.label)}; }
 
 /* ---- collapsed rail: icons only (desktop; below 1024 the panel is a drawer) ---- */
-@media (min-width: 1024px) {
+@media (min-width: 768px) {
   .sidebar--collapsed { width: ${D(sb.collapsedWidth)}; }
   .sidebar--collapsed .sidebar__head { flex-direction: column; justify-content: center; padding: 0; }
   .sidebar--collapsed .sidebar__logo { display: none; }
@@ -174,7 +177,7 @@ export const SIDEBAR_CSS = `
 
 /* ---- below 1024: an off-canvas drawer behind the topbar's menu button ---- */
 .sidebar-scrim { display: none; }
-@media (max-width: 1023px) {
+@media (max-width: 767px) {
   .sidebar, .sidebar.sidebar--collapsed { position: fixed; left: 0; top: 0; bottom: 0; z-index: 20; width: ${D(sb.width)}; transform: translateX(-100%); transition: transform 0.25s ease; }
   .sidebar__collapse { display: none; }
   .has-nav-open .sidebar { transform: none; }
@@ -277,5 +280,17 @@ export const SIDEBAR_JS = `(function () {
   var scrim = app.querySelector(".sidebar-scrim");
   if (scrim) scrim.addEventListener("click", function () { setOpen(false); });
   document.addEventListener("keydown", function (e) { if (e.key === "Escape" && app.classList.contains("has-nav-open")) { setOpen(false); if (openBtn) openBtn.focus(); } });
-  app.querySelector(".sidebar").addEventListener("click", function (e) { if (e.target.closest("[data-nav]") && window.innerWidth < 1024) setOpen(false); });
-})();`;
+  app.querySelector(".sidebar").addEventListener("click", function (e) { if (e.target.closest("[data-nav]") && window.innerWidth < 768) setOpen(false); });
+  // 768–1279: the panel folds to the rail by itself (the live app does);
+  // crossing the breakpoint re-applies it, the collapse button overrides
+  // until then.
+  var nav = app.querySelector(".sidebar"), mid = window.matchMedia("(min-width: 768px) and (max-width: 1279px)");
+  function autoRail() {
+    var c = mid.matches;
+    nav.classList.toggle("sidebar--collapsed", c);
+    var cb = nav.querySelector(".sidebar__collapse");
+    if (cb) { cb.setAttribute("aria-label", (c ? "Expand" : "Collapse") + " navigation"); cb.setAttribute("aria-expanded", c ? "false" : "true"); }
+  }
+  mid.addEventListener("change", autoRail);
+  autoRail();
+})();`

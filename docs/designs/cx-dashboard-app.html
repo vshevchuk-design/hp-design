@@ -882,7 +882,7 @@ html:has(.ss-drawer[open]) { overflow: hidden; }
 .sidebar--neutral:not(.sidebar--collapsed) .sidebar__item[aria-expanded="true"] > .sidebar__count { background: var(--tok-fill-neutral-active-strong); color: var(--tok-text-default); }
 
 /* ---- collapsed rail: icons only (desktop; below 1024 the panel is a drawer) ---- */
-@media (min-width: 1024px) {
+@media (min-width: 768px) {
   .sidebar--collapsed { width: 64px; }
   .sidebar--collapsed .sidebar__head { flex-direction: column; justify-content: center; padding: 0; }
   .sidebar--collapsed .sidebar__logo { display: none; }
@@ -897,7 +897,7 @@ html:has(.ss-drawer[open]) { overflow: hidden; }
 
 /* ---- below 1024: an off-canvas drawer behind the topbar's menu button ---- */
 .sidebar-scrim { display: none; }
-@media (max-width: 1023px) {
+@media (max-width: 767px) {
   .sidebar, .sidebar.sidebar--collapsed { position: fixed; left: 0; top: 0; bottom: 0; z-index: 20; width: 288px; transform: translateX(-100%); transition: transform 0.25s ease; }
   .sidebar__collapse { display: none; }
   .has-nav-open .sidebar { transform: none; }
@@ -914,8 +914,8 @@ html, body { height: auto; min-height: 100%; }
 .cx-topbar { position: sticky; top: 0; z-index: 5; height: 64px; display: flex; align-items: center; gap: 12px; padding: 0 24px; background: var(--tok-surface-default); border-bottom: 1px solid var(--tok-border-default); }
 .cx-topbar__title { margin: 0; flex: 1; min-width: 0; color: var(--tok-text-default); font-weight: 600; font-size: 16px; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .cx-topbar .sidebar-open { display: none; }
-@media (max-width: 1023px) { .cx-topbar .sidebar-open { display: inline-flex; } .cx-topbar { padding: 0 16px; } }
-.cx-page { flex: 1; width: 100%; max-width: 1280px; margin: 0 auto; padding: 32px 32px 48px; display: flex; flex-direction: column; gap: 24px; }
+@media (max-width: 767px) { .cx-topbar .sidebar-open { display: inline-flex; } .cx-topbar { padding: 0 16px; } }
+.cx-page { container-type: inline-size; flex: 1; width: 100%; max-width: 1280px; margin: 0 auto; padding: 32px 32px 48px; display: flex; flex-direction: column; gap: 24px; }
 @media (max-width: 1023px) { .cx-page { padding: 24px 24px 48px; } }
 @media (max-width: 767px) { .cx-page { padding: 20px 16px 96px; gap: 20px; } }
 .cx-view { display: none; flex-direction: column; gap: 24px; }
@@ -1322,7 +1322,19 @@ window.cx = (function () {
   var scrim = app.querySelector(".sidebar-scrim");
   if (scrim) scrim.addEventListener("click", function () { setOpen(false); });
   document.addEventListener("keydown", function (e) { if (e.key === "Escape" && app.classList.contains("has-nav-open")) { setOpen(false); if (openBtn) openBtn.focus(); } });
-  app.querySelector(".sidebar").addEventListener("click", function (e) { if (e.target.closest("[data-nav]") && window.innerWidth < 1024) setOpen(false); });
+  app.querySelector(".sidebar").addEventListener("click", function (e) { if (e.target.closest("[data-nav]") && window.innerWidth < 768) setOpen(false); });
+  // 768–1279: the panel folds to the rail by itself (the live app does);
+  // crossing the breakpoint re-applies it, the collapse button overrides
+  // until then.
+  var nav = app.querySelector(".sidebar"), mid = window.matchMedia("(min-width: 768px) and (max-width: 1279px)");
+  function autoRail() {
+    var c = mid.matches;
+    nav.classList.toggle("sidebar--collapsed", c);
+    var cb = nav.querySelector(".sidebar__collapse");
+    if (cb) { cb.setAttribute("aria-label", (c ? "Expand" : "Collapse") + " navigation"); cb.setAttribute("aria-expanded", c ? "false" : "true"); }
+  }
+  mid.addEventListener("change", autoRail);
+  autoRail();
 })();
 </script>
 </body>
