@@ -89,8 +89,8 @@ const html = `<!doctype html>
       <div class="row"><b>Counts</b><span>Counter sm in its <code class="tok">onPrimary</code> <i>active</i> colours (white chip, brand text). The inactive onPrimary chip is blue.700 — the panel's own colour — so it would vanish. In the rail a count becomes a dot.</span></div>
       <div class="row"><b>Focus</b><span><code class="tok">border.focus</code> is blue.600, invisible on this panel — the ring here is white, 2px, inset.</span></div>
       <div class="row"><b>Rail</b><span>The collapse button (top right) shrinks the panel to its icons; each item's label is its native <code class="tok">title</code>. Opening a group from the rail expands the panel first.</span></div>
-      <div class="row"><b>768–1279px</b><span>In an app (<code class="tok">.has-sidebar</code>) the panel folds to the rail by itself, as the live app does — the page gets the room first. The collapse button still opens it; crossing the breakpoint re-applies the rail.</span></div>
-      <div class="row"><b>Below 768px</b><span>The panel leaves the layout and slides in from the left over a scrim (<code class="tok">surface.overlay</code>), opened by a menu button in the topbar; the scrim, Escape or choosing a link closes it. See it in the CX prototypes.</span></div>
+      <div class="row"><b>768–1279px</b><span>In an app (<code class="tok">.has-sidebar</code>) the panel folds to the rail by itself, as the live app does. Expanding it (the button, or a group) opens a <b>320px panel over the page</b> with a close button and a scrim — the content keeps the rail's 64px and doesn't move. ✕, the scrim, Escape or choosing a link closes it back to the rail.</span></div>
+      <div class="row"><b>Below 768px</b><span>Off-canvas; the topbar's menu button opens it <b>full screen</b> with a close button in the header. See it in the CX prototypes.</span></div>
     </div>
 
     <h2 class="big-section">Shapes</h2>

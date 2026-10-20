@@ -895,13 +895,27 @@ html:has(.ss-drawer[open]) { overflow: hidden; }
   .sidebar--collapsed .sidebar__count { position: absolute; top: 4px; right: 4px; min-width: 0; width: 8px; height: 8px; padding: 0; font-size: 0; }
 }
 
-/* ---- below 1024: an off-canvas drawer behind the topbar's menu button ---- */
+/* ---- the panel opened over the page (tablet overlay, phone full screen) ---- */
+/* its close button replaces the collapse button while it's open */
+.sidebar__close { display: none; }
 .sidebar-scrim { display: none; }
+@media (max-width: 1279px) {
+  .has-nav-open .sidebar__close { display: inline-flex; width: 40px; padding: 0; justify-content: center; flex-shrink: 0; }
+  .has-nav-open .sidebar__collapse { display: none; }
+  .has-nav-open .sidebar-scrim { display: block; position: fixed; inset: 0; z-index: 19; background: var(--tok-surface-overlay); }
+}
+/* tablet (768–1279): the rail stays in the page; opening it lays a 320px
+   panel over the content — the content keeps the rail's 64px, so nothing
+   underneath moves */
+@media (min-width: 768px) and (max-width: 1279px) {
+  .has-nav-open .sidebar { position: fixed; left: 0; top: 0; bottom: 0; z-index: 20; height: auto; width: 320px; box-shadow: 0 0 0 1px var(--tok-border-on-brand); }
+  .has-nav-open > .sidebar-scrim + * { margin-left: 64px; }
+}
+/* phone (< 768): off-canvas, opened full screen by the topbar's menu button */
 @media (max-width: 767px) {
-  .sidebar, .sidebar.sidebar--collapsed { position: fixed; left: 0; top: 0; bottom: 0; z-index: 20; width: 288px; transform: translateX(-100%); transition: transform 0.25s ease; }
+  .sidebar, .sidebar.sidebar--collapsed { position: fixed; left: 0; top: 0; bottom: 0; z-index: 20; width: 100vw; transform: translateX(-100%); transition: transform 0.25s ease; }
   .sidebar__collapse { display: none; }
   .has-nav-open .sidebar { transform: none; }
-  .has-nav-open .sidebar-scrim { display: block; position: fixed; inset: 0; z-index: 19; background: var(--tok-surface-overlay); }
 }
 @media (prefers-reduced-motion: reduce) { .sidebar, .sidebar__chevron, .sidebar__collapse .sidebar__icon { transition: none; } }
 
@@ -1095,6 +1109,7 @@ html:has(.cb-sheet[open]) { overflow: hidden; }
 <path transform="translate(0 2)" d="M57.2855 6.6813C59.048 6.68139 60.3655 7.51419 61.0148 9.04954V6.9958H63.0558V15.857C63.0558 19.5199 61.2184 21 57.1364 21C56.1532 21 55.1145 20.9258 54.2611 20.7964V18.6506C55.1331 18.7616 56.2278 18.8543 57.1183 18.8543C59.6045 18.8543 60.6253 17.9842 60.6253 16.0048V15.0991C59.9573 16.4124 58.7135 17.1151 57.1364 17.1151C54.3534 17.1149 52.5348 14.8951 52.5348 12.0649V11.6765C52.5348 8.82757 54.4652 6.6813 57.2855 6.6813ZM92.5843 6.64434C95.9983 6.64437 98.0762 9.08678 98.0762 11.8432V12.2316C98.0761 14.8954 96.1095 17.3926 92.5843 17.3926C89.0405 17.3926 87.0736 14.8954 87.0734 12.2316V11.8432C87.0734 9.08677 89.1517 6.64434 92.5843 6.64434ZM118.901 6.9958H122V8.88285H118.883V13.4338C118.883 14.4142 119.439 14.9693 120.423 14.9693H122V17.1709H120.552C117.769 17.1708 116.47 16.2083 116.47 13.2671V8.88285H114.875V6.9958H116.489V4.16606H118.901V6.9958ZM36.6339 9.12345H42.8869V3.53704H45.5217V17.0411H42.8869V11.4359H36.6339V17.0411H34V3.53704H36.6339V9.12345ZM50.9732 17.0411H48.3936V8.9198H46.9836V6.9958H50.9732V17.0411ZM67.7059 8.6792C68.2441 7.38445 69.246 6.6813 70.7674 6.6813H70.8785C73.1792 6.6813 74.3855 8.3094 74.3855 11.3061V17.0411H71.8059V11.0655C71.8058 9.7893 71.0084 8.99373 69.821 8.9937C68.5408 8.9937 67.706 9.90035 67.7059 11.2322V17.0411H65.1264V3.53704H67.7059V8.6792ZM81.2957 3.44425C84.7097 3.44425 86.6582 5.183 86.6583 8.01323V8.30967C86.6583 11.1215 84.7097 12.8975 81.2957 12.8975H79.2548V17.0411H76.62V3.44425H81.2957ZM102.654 17.0411H100.075V8.9198H98.6651V6.9958H102.654V17.0411ZM110.487 6.6813C112.881 6.6813 114.143 8.23567 114.143 11.288V17.0411H111.564V11.0655C111.564 9.82627 110.803 8.9937 109.578 8.9937C108.317 8.99388 107.463 9.84542 107.463 11.1402V17.0411H104.884V6.9958H106.925V9.47491C107.352 7.62506 108.502 6.68134 110.376 6.6813H110.487ZM92.5843 8.84589C90.7474 8.84589 89.6522 10.1965 89.6522 12.0279C89.6522 13.8408 90.6918 15.1911 92.5843 15.1911C94.4582 15.191 95.4974 13.8408 95.4975 12.0279C95.4975 10.1965 94.4026 8.84593 92.5843 8.84589ZM57.8793 8.80894C56.2465 8.80894 55.1144 10.0117 55.1144 11.8801C55.1145 13.7484 56.2651 14.9135 57.8793 14.9135C59.3635 14.9133 60.5882 13.8776 60.5882 12.1018V11.4547C60.5882 9.75297 59.3078 8.80911 57.8793 8.80894ZM79.2548 10.6221H81.5181C83.0951 10.6221 83.9864 9.60461 83.9865 8.16186C83.9865 6.70042 83.0952 5.71971 81.5181 5.71971H79.2548V10.6221ZM49.34 3C50.3419 3 50.806 3.57381 50.806 4.38777C50.806 5.20168 50.3419 5.79361 49.34 5.79361C48.3197 5.79353 47.8559 5.20162 47.8558 4.38777C47.8558 3.57386 48.3196 3.00008 49.34 3ZM101.021 3C102.023 3.00011 102.487 3.57388 102.487 4.38777C102.487 5.2016 102.023 5.7935 101.021 5.79361C100.001 5.79361 99.5366 5.20168 99.5365 4.38777C99.5365 3.57381 100.001 3 101.021 3Z" class="sidebar__logo-word"/>
 </svg>
 </a>
+      <button class="sidebar__item sidebar__close" type="button" aria-label="Close navigation"><svg class="sidebar__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
       <button class="sidebar__item sidebar__collapse" type="button" aria-label="Collapse navigation" aria-expanded="true"><svg class="sidebar__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M18.41 16.59L13.82 12l4.59-4.59L17 6l-6 6 6 6zM6 6h2v12H6z"/><path d="M24 24H0V0h24v24z" fill="none"/></svg></button>
     </div>
     <div class="sidebar__body">
@@ -1138,7 +1153,7 @@ html:has(.cb-sheet[open]) { overflow: hidden; }
       <!-- ============ Search + results ============ -->
       <section class="cx-view is-active" data-view="browse">
         <div class="cb-filters" role="search">
-          <button class="select is-placeholder" id="cb-term" type="button" aria-haspopup="listbox" aria-expanded="false"><span class="select__stack"><span class="select__label">Term <span class="cb-req" aria-hidden="true">*</span></span><span class="select__value">Term *</span></span><svg class="select__chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+          <button class="select is-placeholder" id="cb-term" type="button" aria-haspopup="listbox" aria-expanded="false"><span class="select__stack"><span class="select__label">Term <span class="cb-req" aria-hidden="true">*</span></span><span class="select__value">Term <span class="cb-req" aria-hidden="true">*</span></span></span><svg class="select__chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
           <button class="select is-placeholder" id="cb-career" type="button" aria-haspopup="listbox" aria-expanded="false"><span class="select__stack"><span class="select__label">Career</span><span class="select__value">Career</span></span><svg class="select__chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
           <button class="select is-placeholder" id="cb-subject" type="button" aria-haspopup="listbox" aria-expanded="false"><span class="select__stack"><span class="select__label">Subject</span><span class="select__value">Subject</span></span><svg class="select__chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
           <button class="btn btn--primary btn--base" id="cb-go" type="button" disabled>Search</button>
@@ -1258,7 +1273,9 @@ window.cx = (function () {
   var st = { term: "", career: "", subject: "", q: "", searched: false, course: null, sq: "", open: {} };
   function setSelect(el, value, placeholder) {
     el.classList.toggle("is-placeholder", !value);
-    el.querySelector(".select__value").textContent = value || placeholder;
+    // the placeholder may carry markup (Term's red required mark)
+    if (value) el.querySelector(".select__value").textContent = value;
+    else el.querySelector(".select__value").innerHTML = placeholder;
   }
   function filterSelect(id, key, options, anyLabel, placeholder) {
     var el = $(id);
@@ -1272,7 +1289,7 @@ window.cx = (function () {
       });
     });
   }
-  filterSelect("cb-term", "term", B.TERMS.map(function (t) { return { value: t, label: t }; }), "", "Term *");
+  filterSelect("cb-term", "term", B.TERMS.map(function (t) { return { value: t, label: t }; }), "", 'Term <span class="cb-req" aria-hidden="true">*</span>');
   filterSelect("cb-career", "career", B.CAREERS.map(function (t) { return { value: t, label: t }; }), "Any career", "Career");
   filterSelect("cb-subject", "subject", B.SUBJECTS.map(function (s) { return { value: s.code, label: s.code + " - " + s.name }; }), "Any subject", "Subject");
 
@@ -1462,53 +1479,62 @@ window.cx = (function () {
   $("cb-back").addEventListener("click", function () { show("browse"); });
 })();
 (function () {
+  // In an app (.has-sidebar) the panel has three behaviours by width:
+  //   ≥1280  in the page; collapse button toggles the rail
+  //   768–1279  the rail by itself; expanding opens a 320px panel OVER the
+  //             page (scrim, ✕, Escape) instead of pushing the content
+  //   <768   off-canvas; the topbar's menu button opens it full screen
+  var app = document.querySelector(".has-sidebar");
+  var mid = window.matchMedia("(min-width: 768px) and (max-width: 1279px)");
+  var openBtn = app && app.querySelector(".sidebar-open");
+  function isOverlay() { return !!app && (mid.matches || window.innerWidth < 768); }
+  function setCollapsed(nav, c) {
+    nav.classList.toggle("sidebar--collapsed", c);
+    var cb = nav.querySelector(".sidebar__collapse");
+    if (cb) { cb.setAttribute("aria-label", (c ? "Expand" : "Collapse") + " navigation"); cb.setAttribute("aria-expanded", c ? "false" : "true"); }
+  }
+  function setOpen(o) {
+    if (!app) return;
+    var nav = app.querySelector(".sidebar");
+    app.classList.toggle("has-nav-open", o);
+    if (mid.matches) setCollapsed(nav, !o);
+    if (openBtn) openBtn.setAttribute("aria-expanded", o ? "true" : "false");
+  }
   document.querySelectorAll(".sidebar").forEach(function (nav) {
+    var inApp = !!app && app.contains(nav);
     nav.addEventListener("click", function (e) {
+      if (e.target.closest(".sidebar__close")) { setOpen(false); return; }
       var col = e.target.closest(".sidebar__collapse");
       if (col) {
-        var c = nav.classList.toggle("sidebar--collapsed");
-        col.setAttribute("aria-label", (c ? "Expand" : "Collapse") + " navigation");
-        col.setAttribute("aria-expanded", c ? "false" : "true");
+        if (inApp && mid.matches) { setOpen(true); return; }
+        setCollapsed(nav, !nav.classList.contains("sidebar--collapsed"));
         return;
       }
       var g = e.target.closest("[aria-controls]");
       if (g && nav.contains(g)) {
         if (nav.classList.contains("sidebar--collapsed")) {
-          nav.classList.remove("sidebar--collapsed");
-          var cb = nav.querySelector(".sidebar__collapse");
-          if (cb) { cb.setAttribute("aria-label", "Collapse navigation"); cb.setAttribute("aria-expanded", "true"); }
+          if (inApp && mid.matches) setOpen(true); else setCollapsed(nav, false);
           g.setAttribute("aria-expanded", "true");
         } else {
           g.setAttribute("aria-expanded", g.getAttribute("aria-expanded") === "true" ? "false" : "true");
         }
         document.getElementById(g.getAttribute("aria-controls")).hidden = g.getAttribute("aria-expanded") !== "true";
+        return;
       }
+      // picking a page closes an open overlay / phone panel
+      if (inApp && e.target.closest("[data-nav]") && isOverlay()) setOpen(false);
     });
   });
-  var app = document.querySelector(".has-sidebar");
   if (!app) return;
-  var openBtn = app.querySelector(".sidebar-open");
-  function setOpen(o) {
-    app.classList.toggle("has-nav-open", o);
-    if (openBtn) openBtn.setAttribute("aria-expanded", o ? "true" : "false");
-  }
-  if (openBtn) openBtn.addEventListener("click", function () { setOpen(true); var f = app.querySelector(".sidebar a, .sidebar button:not(.sidebar__collapse)"); if (f) f.focus(); });
+  if (openBtn) openBtn.addEventListener("click", function () { setOpen(true); var f = app.querySelector(".sidebar__close"); if (f) f.focus(); });
   var scrim = app.querySelector(".sidebar-scrim");
   if (scrim) scrim.addEventListener("click", function () { setOpen(false); });
-  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && app.classList.contains("has-nav-open")) { setOpen(false); if (openBtn) openBtn.focus(); } });
-  app.querySelector(".sidebar").addEventListener("click", function (e) { if (e.target.closest("[data-nav]") && window.innerWidth < 768) setOpen(false); });
-  // 768–1279: the panel folds to the rail by itself (the live app does);
-  // crossing the breakpoint re-applies it, the collapse button overrides
-  // until then.
-  var nav = app.querySelector(".sidebar"), mid = window.matchMedia("(min-width: 768px) and (max-width: 1279px)");
-  function autoRail() {
-    var c = mid.matches;
-    nav.classList.toggle("sidebar--collapsed", c);
-    var cb = nav.querySelector(".sidebar__collapse");
-    if (cb) { cb.setAttribute("aria-label", (c ? "Expand" : "Collapse") + " navigation"); cb.setAttribute("aria-expanded", c ? "false" : "true"); }
-  }
-  mid.addEventListener("change", autoRail);
-  autoRail();
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && app.classList.contains("has-nav-open")) { setOpen(false); if (openBtn && window.innerWidth < 768) openBtn.focus(); } });
+  // crossing a breakpoint resets: closed, and the rail in the middle band
+  function reset() { app.classList.remove("has-nav-open"); if (openBtn) openBtn.setAttribute("aria-expanded", "false"); setCollapsed(app.querySelector(".sidebar"), mid.matches); }
+  mid.addEventListener("change", reset);
+  window.matchMedia("(max-width: 767px)").addEventListener("change", reset);
+  reset();
 })();
 </script>
 </body>

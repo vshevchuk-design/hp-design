@@ -176,7 +176,7 @@ const views = `
       <!-- ============ Search + results ============ -->
       <section class="cx-view is-active" data-view="browse">
         <div class="cb-filters" role="search">
-          ${selectHtml("cb-term", "Term", "Term *", true)}
+          ${selectHtml("cb-term", "Term", 'Term <span class="cb-req" aria-hidden="true">*</span>', true)}
           ${selectHtml("cb-career", "Career", "Career", false)}
           ${selectHtml("cb-subject", "Subject", "Subject", false)}
           <button class="btn btn--primary btn--base" id="cb-go" type="button" disabled>Search</button>
@@ -242,7 +242,9 @@ const pageJs = `(function () {
   var st = { term: "", career: "", subject: "", q: "", searched: false, course: null, sq: "", open: {} };
   function setSelect(el, value, placeholder) {
     el.classList.toggle("is-placeholder", !value);
-    el.querySelector(".select__value").textContent = value || placeholder;
+    // the placeholder may carry markup (Term's red required mark)
+    if (value) el.querySelector(".select__value").textContent = value;
+    else el.querySelector(".select__value").innerHTML = placeholder;
   }
   function filterSelect(id, key, options, anyLabel, placeholder) {
     var el = $(id);
@@ -256,7 +258,7 @@ const pageJs = `(function () {
       });
     });
   }
-  filterSelect("cb-term", "term", B.TERMS.map(function (t) { return { value: t, label: t }; }), "", "Term *");
+  filterSelect("cb-term", "term", B.TERMS.map(function (t) { return { value: t, label: t }; }), "", 'Term <span class="cb-req" aria-hidden="true">*</span>');
   filterSelect("cb-career", "career", B.CAREERS.map(function (t) { return { value: t, label: t }; }), "Any career", "Career");
   filterSelect("cb-subject", "subject", B.SUBJECTS.map(function (s) { return { value: s.code, label: s.code + " - " + s.name }; }), "Any subject", "Subject");
 

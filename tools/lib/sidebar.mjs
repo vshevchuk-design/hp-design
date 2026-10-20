@@ -14,8 +14,9 @@
 //                         expands the panel first
 //   auto rail (768–1279) — in an app (.has-sidebar) the panel folds to the
 //                         rail by itself below 1280, as the live app does;
-//                         the collapse button still toggles it
-//   drawer (< 768px)    — off-canvas from the left behind a scrim, opened by
+//                         expanding it opens a 320px panel OVER the page
+//                         (scrim + close button), the content stays put
+//   phone (< 768px)     — off-canvas, full screen with a close button, opened by
 //                         the topbar's menu button (.has-nav-open on the app)
 import fs from "node:fs";
 import path from "node:path";
@@ -175,13 +176,27 @@ export const SIDEBAR_CSS = `
   .sidebar--collapsed .sidebar__count { position: absolute; top: ${dim(1)}; right: ${dim(1)}; min-width: 0; width: ${dim(2)}; height: ${dim(2)}; padding: 0; font-size: 0; }
 }
 
-/* ---- below 1024: an off-canvas drawer behind the topbar's menu button ---- */
+/* ---- the panel opened over the page (tablet overlay, phone full screen) ---- */
+/* its close button replaces the collapse button while it's open */
+.sidebar__close { display: none; }
 .sidebar-scrim { display: none; }
+@media (max-width: 1279px) {
+  .has-nav-open .sidebar__close { display: inline-flex; width: ${D(sb.item.height)}; padding: 0; justify-content: center; flex-shrink: 0; }
+  .has-nav-open .sidebar__collapse { display: none; }
+  .has-nav-open .sidebar-scrim { display: block; position: fixed; inset: 0; z-index: 19; background: var(${cssVarName("surface.overlay")}); }
+}
+/* tablet (768–1279): the rail stays in the page; opening it lays a 320px
+   panel over the content — the content keeps the rail's 64px, so nothing
+   underneath moves */
+@media (min-width: 768px) and (max-width: 1279px) {
+  .has-nav-open .sidebar { position: fixed; left: 0; top: 0; bottom: 0; z-index: 20; height: auto; width: ${D(sb.overlayWidth)}; box-shadow: 0 0 0 1px ${R(sb.divider)}; }
+  .has-nav-open > .sidebar-scrim + * { margin-left: ${D(sb.collapsedWidth)}; }
+}
+/* phone (< 768): off-canvas, opened full screen by the topbar's menu button */
 @media (max-width: 767px) {
-  .sidebar, .sidebar.sidebar--collapsed { position: fixed; left: 0; top: 0; bottom: 0; z-index: 20; width: ${D(sb.width)}; transform: translateX(-100%); transition: transform 0.25s ease; }
+  .sidebar, .sidebar.sidebar--collapsed { position: fixed; left: 0; top: 0; bottom: 0; z-index: 20; width: 100vw; transform: translateX(-100%); transition: transform 0.25s ease; }
   .sidebar__collapse { display: none; }
   .has-nav-open .sidebar { transform: none; }
-  .has-nav-open .sidebar-scrim { display: block; position: fixed; inset: 0; z-index: 19; background: var(${cssVarName("surface.overlay")}); }
 }
 @media (prefers-reduced-motion: reduce) { .sidebar, .sidebar__chevron, .sidebar__collapse .sidebar__icon { transition: none; } }
 `;
@@ -224,6 +239,7 @@ export function sidebarHtml({ nav, active, open = [], user, id = "sb", collapsed
   return `<nav class="sidebar${theme === "neutral" ? " sidebar--neutral" : ""}${collapsed ? " sidebar--collapsed" : ""}" aria-label="Main">
     <div class="sidebar__head">
       <a class="sidebar__logo" href="#" aria-label="HighPoint — Dashboard">${LOGO}</a>
+      <button class="sidebar__item sidebar__close" type="button" aria-label="Close navigation">${icon("close", "sidebar__icon")}</button>
       <button class="sidebar__item sidebar__collapse" type="button" aria-label="${collapsed ? "Expand" : "Collapse"} navigation" aria-expanded="${!collapsed}">${icon("first_page", "sidebar__icon")}</button>
     </div>
     <div class="sidebar__body">
@@ -246,51 +262,60 @@ export const SIDEBAR_MENU_BUTTON = (cls) => `<button class="${cls} sidebar-open"
 //  · below 1024 the topbar's .sidebar-open shows the drawer; the scrim,
 //    Escape or picking a link closes it
 export const SIDEBAR_JS = `(function () {
+  // In an app (.has-sidebar) the panel has three behaviours by width:
+  //   ≥1280  in the page; collapse button toggles the rail
+  //   768–1279  the rail by itself; expanding opens a 320px panel OVER the
+  //             page (scrim, ✕, Escape) instead of pushing the content
+  //   <768   off-canvas; the topbar's menu button opens it full screen
+  var app = document.querySelector(".has-sidebar");
+  var mid = window.matchMedia("(min-width: 768px) and (max-width: 1279px)");
+  var openBtn = app && app.querySelector(".sidebar-open");
+  function isOverlay() { return !!app && (mid.matches || window.innerWidth < 768); }
+  function setCollapsed(nav, c) {
+    nav.classList.toggle("sidebar--collapsed", c);
+    var cb = nav.querySelector(".sidebar__collapse");
+    if (cb) { cb.setAttribute("aria-label", (c ? "Expand" : "Collapse") + " navigation"); cb.setAttribute("aria-expanded", c ? "false" : "true"); }
+  }
+  function setOpen(o) {
+    if (!app) return;
+    var nav = app.querySelector(".sidebar");
+    app.classList.toggle("has-nav-open", o);
+    if (mid.matches) setCollapsed(nav, !o);
+    if (openBtn) openBtn.setAttribute("aria-expanded", o ? "true" : "false");
+  }
   document.querySelectorAll(".sidebar").forEach(function (nav) {
+    var inApp = !!app && app.contains(nav);
     nav.addEventListener("click", function (e) {
+      if (e.target.closest(".sidebar__close")) { setOpen(false); return; }
       var col = e.target.closest(".sidebar__collapse");
       if (col) {
-        var c = nav.classList.toggle("sidebar--collapsed");
-        col.setAttribute("aria-label", (c ? "Expand" : "Collapse") + " navigation");
-        col.setAttribute("aria-expanded", c ? "false" : "true");
+        if (inApp && mid.matches) { setOpen(true); return; }
+        setCollapsed(nav, !nav.classList.contains("sidebar--collapsed"));
         return;
       }
       var g = e.target.closest("[aria-controls]");
       if (g && nav.contains(g)) {
         if (nav.classList.contains("sidebar--collapsed")) {
-          nav.classList.remove("sidebar--collapsed");
-          var cb = nav.querySelector(".sidebar__collapse");
-          if (cb) { cb.setAttribute("aria-label", "Collapse navigation"); cb.setAttribute("aria-expanded", "true"); }
+          if (inApp && mid.matches) setOpen(true); else setCollapsed(nav, false);
           g.setAttribute("aria-expanded", "true");
         } else {
           g.setAttribute("aria-expanded", g.getAttribute("aria-expanded") === "true" ? "false" : "true");
         }
         document.getElementById(g.getAttribute("aria-controls")).hidden = g.getAttribute("aria-expanded") !== "true";
+        return;
       }
+      // picking a page closes an open overlay / phone panel
+      if (inApp && e.target.closest("[data-nav]") && isOverlay()) setOpen(false);
     });
   });
-  var app = document.querySelector(".has-sidebar");
   if (!app) return;
-  var openBtn = app.querySelector(".sidebar-open");
-  function setOpen(o) {
-    app.classList.toggle("has-nav-open", o);
-    if (openBtn) openBtn.setAttribute("aria-expanded", o ? "true" : "false");
-  }
-  if (openBtn) openBtn.addEventListener("click", function () { setOpen(true); var f = app.querySelector(".sidebar a, .sidebar button:not(.sidebar__collapse)"); if (f) f.focus(); });
+  if (openBtn) openBtn.addEventListener("click", function () { setOpen(true); var f = app.querySelector(".sidebar__close"); if (f) f.focus(); });
   var scrim = app.querySelector(".sidebar-scrim");
   if (scrim) scrim.addEventListener("click", function () { setOpen(false); });
-  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && app.classList.contains("has-nav-open")) { setOpen(false); if (openBtn) openBtn.focus(); } });
-  app.querySelector(".sidebar").addEventListener("click", function (e) { if (e.target.closest("[data-nav]") && window.innerWidth < 768) setOpen(false); });
-  // 768–1279: the panel folds to the rail by itself (the live app does);
-  // crossing the breakpoint re-applies it, the collapse button overrides
-  // until then.
-  var nav = app.querySelector(".sidebar"), mid = window.matchMedia("(min-width: 768px) and (max-width: 1279px)");
-  function autoRail() {
-    var c = mid.matches;
-    nav.classList.toggle("sidebar--collapsed", c);
-    var cb = nav.querySelector(".sidebar__collapse");
-    if (cb) { cb.setAttribute("aria-label", (c ? "Expand" : "Collapse") + " navigation"); cb.setAttribute("aria-expanded", c ? "false" : "true"); }
-  }
-  mid.addEventListener("change", autoRail);
-  autoRail();
-})();`
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && app.classList.contains("has-nav-open")) { setOpen(false); if (openBtn && window.innerWidth < 768) openBtn.focus(); } });
+  // crossing a breakpoint resets: closed, and the rail in the middle band
+  function reset() { app.classList.remove("has-nav-open"); if (openBtn) openBtn.setAttribute("aria-expanded", "false"); setCollapsed(app.querySelector(".sidebar"), mid.matches); }
+  mid.addEventListener("change", reset);
+  window.matchMedia("(max-width: 767px)").addEventListener("change", reset);
+  reset();
+})();`;

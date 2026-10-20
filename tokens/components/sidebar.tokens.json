@@ -208,6 +208,11 @@
           "$value": "{border.default}",
           "$description": "The panel's right edge: gray.50 against the gray.25 page needs the hairline to read as a column."
         }
+      },
+      "overlayWidth": {
+        "$type": "dimension",
+        "$value": "{dim.80}",
+        "$description": "320px — the panel opened OVER the page from the tablet rail (768–1279), with a close button and a scrim (user, 2026-10-20). On a phone the panel is full screen instead."
       }
     }
   }
