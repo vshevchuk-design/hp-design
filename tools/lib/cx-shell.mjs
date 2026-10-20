@@ -145,6 +145,14 @@ html, body { height: auto; min-height: 100%; }
 .cx-assistant { border: none; padding: 0; margin: 0 0 0 auto; position: fixed; inset: 0 0 auto auto; height: 100lvh; max-height: none; width: min(${dim(96)}, 100vw); max-width: 100vw; background: ${R(drawer.bg)}; box-shadow: ${X.shadow(drawer.shadow)}; font-family: ${cv("family.sans")}; }
 .cx-assistant[open] { display: flex; flex-direction: column; transform: none; transition: transform ${px(resolveToken(drawer.transitionDuration))} ease; }
 @starting-style { .cx-assistant[open] { transform: translateX(100%); } }
+/* On a phone the full-screen panels need no scrim — and iOS Safari shows
+   whatever is under its floating bottom bar, so a dark scrim turned the bar
+   dark. The page behind is gray.25 there instead (html + theme-color). */
+html { background: ${cv("surface.page")}; }
+@media (max-width: 767px) {
+  .cx-assistant::backdrop, .cb-sheet::backdrop { background: transparent; }
+  .has-nav-open .sidebar-scrim { background: transparent; }
+}
 .cx-assistant::backdrop { background: ${R(drawer.overlay)}; }
 .cx-assistant .ss-drawer__head { padding: 0 ${dim(4)} 0 ${D(drawer.padding)}; height: ${dim(16)}; }
 .cx-assistant__body { flex: 1; min-height: 0; overflow-y: auto; padding: ${D(drawer.padding)}; display: flex; flex-direction: column; gap: ${dim(4)}; }
@@ -224,6 +232,7 @@ ${pageCss(X)}`);
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="${(() => { const v = resolve("surface.page"); return typeof v === "string" ? v : v.hex; })()}" />
 <title>${title}</title>
 <link rel="stylesheet" href="../../assets/fonts/sora/sora.css" />
 <style>
