@@ -961,8 +961,10 @@ html, body { height: auto; min-height: 100%; }
 .table__muted { color: var(--tok-text-muted); }
 
 /* ============ Assistant: a floating button → a right-hand Drawer ============ */
-.cx-fab { position: fixed; right: 24px; bottom: 24px; z-index: 7; box-shadow: 0px 4px 16px 0px rgba(21, 25, 30, 0.12); }
-@media (max-width: 767px) { .cx-fab { right: 16px; bottom: 16px; width: 40px; padding: 0; } .cx-fab span { display: none; } }
+/* a 64px round icon button, the same on every width (user, 2026-10-20) */
+.cx-fab { position: fixed; right: 24px; bottom: calc(24px + env(safe-area-inset-bottom)); z-index: 7; width: 64px; height: 64px; padding: 0; border-radius: 50%; box-shadow: 0px 4px 16px 0px rgba(21, 25, 30, 0.12); }
+.cx-fab .btn__icon { width: 28px; height: 28px; }
+@media (max-width: 767px) { .cx-fab { right: 16px; bottom: calc(16px + env(safe-area-inset-bottom)); } }
 /* pinned to the top and bottom of the visible area, not a 100dvh height —
    iOS Safari's bottom toolbar hid the foot of a 100dvh panel */
 .cx-assistant { border: none; padding: 0; margin: 0 0 0 auto; position: fixed; inset: 0 0 0 auto; height: auto; max-height: none; width: min(384px, 100vw); max-width: 100vw; background: var(--tok-surface-default); box-shadow: 0px 4px 16px 0px rgba(21, 25, 30, 0.12); font-family: var(--tok-family-sans); }
@@ -1124,7 +1126,7 @@ html, body { height: auto; min-height: 100%; }
     </main>
   </div>
 </div>
-<button class="btn btn--primary btn--base cx-fab" id="cx-fab" type="button" aria-haspopup="dialog"><svg class="btn__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg><span>Assistant</span></button>
+<button class="btn btn--primary btn--base cx-fab" id="cx-fab" type="button" aria-haspopup="dialog" aria-label="Assistant" title="Assistant"><svg class="btn__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg></button>
 <dialog class="cx-assistant" id="cx-assistant" aria-labelledby="cx-assistant-title">
   <div class="ss-drawer__head"><h2 class="ss-drawer__title" id="cx-assistant-title">Assistant</h2><button class="btn btn--ghost btn--sm btn--icon-only" type="button" id="cx-assistant-close" aria-label="Close"><svg class="btn__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button></div>
   <div class="cx-assistant__body" id="cx-assistant-body">

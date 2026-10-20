@@ -136,8 +136,10 @@ html, body { height: auto; min-height: 100%; }
 .table__muted { color: ${R(tb.cell.mutedColor)}; }
 
 /* ============ Assistant: a floating button → a right-hand Drawer ============ */
-.cx-fab { position: fixed; right: ${dim(6)}; bottom: ${dim(6)}; z-index: 7; box-shadow: ${X.shadow(drawer.shadow)}; }
-@media (max-width: 767px) { .cx-fab { right: ${dim(4)}; bottom: ${dim(4)}; width: ${D(bBase.height)}; padding: 0; } .cx-fab span { display: none; } }
+/* a 64px round icon button, the same on every width (user, 2026-10-20) */
+.cx-fab { position: fixed; right: ${dim(6)}; bottom: calc(${dim(6)} + env(safe-area-inset-bottom)); z-index: 7; width: ${dim(16)}; height: ${dim(16)}; padding: 0; border-radius: 50%; box-shadow: ${X.shadow(drawer.shadow)}; }
+.cx-fab .btn__icon { width: ${dim(7)}; height: ${dim(7)}; }
+@media (max-width: 767px) { .cx-fab { right: ${dim(4)}; bottom: calc(${dim(4)} + env(safe-area-inset-bottom)); } }
 /* pinned to the top and bottom of the visible area, not a 100dvh height —
    iOS Safari's bottom toolbar hid the foot of a 100dvh panel */
 .cx-assistant { border: none; padding: 0; margin: 0 0 0 auto; position: fixed; inset: 0 0 0 auto; height: auto; max-height: none; width: min(${dim(96)}, 100vw); max-width: 100vw; background: ${R(drawer.bg)}; box-shadow: ${X.shadow(drawer.shadow)}; font-family: ${cv("family.sans")}; }
@@ -241,7 +243,7 @@ ${views}
     </main>
   </div>
 </div>
-<button class="btn btn--primary btn--base cx-fab" id="cx-fab" type="button" aria-haspopup="dialog">${icon("auto_awesome", "btn__icon")}<span>Assistant</span></button>
+<button class="btn btn--primary btn--base cx-fab" id="cx-fab" type="button" aria-haspopup="dialog" aria-label="Assistant" title="Assistant">${icon("auto_awesome", "btn__icon")}</button>
 <dialog class="cx-assistant" id="cx-assistant" aria-labelledby="cx-assistant-title">
   <div class="ss-drawer__head"><h2 class="ss-drawer__title" id="cx-assistant-title">Assistant</h2><button class="btn btn--ghost btn--sm btn--icon-only" type="button" id="cx-assistant-close" aria-label="Close">${icon("close", "btn__icon")}</button></div>
   <div class="cx-assistant__body" id="cx-assistant-body">
