@@ -1051,6 +1051,10 @@ html, body { height: auto; min-height: 100%; }
    (by the page column's width, like the filters) — 2 columns, 1 on a phone.
    No accordion: View opens the details in a sheet; View and Actions share
    the card's width. */
+/* the table row carries a combined "day · time · room" cell that only the
+   old stacked layout used — never shown, but it must stay out of the grid
+   or every column after it shifts by one */
+.cb-when { display: none; }
 .cb-cards { display: none; }
 .cb-card { display: flex; flex-direction: column; gap: 8px; padding: 16px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); border-radius: 8px; min-width: 0; }
 .cb-card__top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }

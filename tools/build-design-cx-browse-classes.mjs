@@ -123,6 +123,10 @@ const pageCss = (X) => {
    (by the page column's width, like the filters) — 2 columns, 1 on a phone.
    No accordion: View opens the details in a sheet; View and Actions share
    the card's width. */
+/* the table row carries a combined "day · time · room" cell that only the
+   old stacked layout used — never shown, but it must stay out of the grid
+   or every column after it shifts by one */
+.cb-when { display: none; }
 .cb-cards { display: none; }
 .cb-card { display: flex; flex-direction: column; gap: ${dim(2)}; padding: ${D(card.padding)}; background: ${R(card.bg)}; border: 1px solid ${R(card.border)}; border-radius: ${D(card.radius)}; min-width: 0; }
 .cb-card__top { display: flex; align-items: flex-start; justify-content: space-between; gap: ${dim(3)}; }
