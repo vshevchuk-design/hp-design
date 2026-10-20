@@ -40,6 +40,9 @@ const pageCss = (X) => {
 /* Browse Classes uses the whole width on a desktop (the shell caps the page
    column at 1280 — a table of classes and sections earns the room) */
 .cx-page { max-width: none; }
+/* the course page starts 12px under the topbar — the back link sits right
+   under it, not after the page's usual 20–32px top padding */
+.cx-page:has(.cx-view[data-view="sections"].is-active) { padding-top: ${dim(3)}; }
 
 /* ============ filters ============ */
 /* The live page's three steps, by the room the page column actually has
@@ -148,7 +151,7 @@ const pageCss = (X) => {
 @container (max-width: 559px) { .cb-cards { grid-template-columns: minmax(0, 1fr); } }
 
 /* ---- the section sheet: a right-hand panel; full screen on a phone ---- */
-.cb-sheet { border: none; padding: 0; margin: 0 0 0 auto; position: fixed; inset: 0 0 0 auto; height: auto; max-height: none; width: min(480px /* composition literal: two-column detail lists need more than the 384px top of the dim scale */, 100vw); max-width: 100vw; background: ${cv("surface.page")}; box-shadow: ${X.shadow(drawer.shadow)}; font-family: ${cv("family.sans")}; }
+.cb-sheet { border: none; padding: 0; margin: 0 0 0 auto; position: fixed; inset: 0 0 auto auto; height: 100lvh; max-height: none; width: min(480px /* composition literal: two-column detail lists need more than the 384px top of the dim scale */, 100vw); max-width: 100vw; background: ${cv("surface.page")}; box-shadow: ${X.shadow(drawer.shadow)}; font-family: ${cv("family.sans")}; }
 .cb-sheet[open] { display: flex; flex-direction: column; transform: none; transition: transform ${px(h.resolveToken(drawer.transitionDuration))} ease; }
 @starting-style { .cb-sheet[open] { transform: translateX(100%); } }
 .cb-sheet::backdrop { background: ${R(drawer.overlay)}; }
@@ -159,7 +162,7 @@ html:has(.cb-sheet[open]) { overflow: hidden; }
 .cb-sheet__sub { color: ${cv("text.secondary")}; ${typoCss(style("body-sm"))} }
 .cb-sheet__body { flex: 1; min-height: 0; overflow-y: auto; padding: ${D(card.padding)}; }
 .cb-sheet__body .cb-groups { grid-template-columns: minmax(0, 1fr); }
-.cb-sheet__foot { flex-shrink: 0; display: flex; gap: ${dim(2)}; padding: ${dim(3)} ${D(card.padding)} calc(${dim(3)} + env(safe-area-inset-bottom)); background: ${cv("surface.default")}; border-top: 1px solid ${R(drawer.divider)}; }
+.cb-sheet__foot { flex-shrink: 0; display: flex; gap: ${dim(2)}; padding: ${dim(3)} ${D(card.padding)} calc(${dim(3)} + env(safe-area-inset-bottom) + 100lvh - 100dvh); background: ${cv("surface.default")}; border-top: 1px solid ${R(drawer.divider)}; }
 .cb-sheet__foot .btn--primary { flex: 1; }
 `;
 };
