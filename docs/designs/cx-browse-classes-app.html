@@ -983,6 +983,10 @@ html, body { height: auto; min-height: 100%; }
 .cx-compose__count { align-self: flex-end; color: var(--tok-text-muted); font-weight: 400; font-size: 10px; line-height: 1.4; }
 
 
+/* Browse Classes uses the whole width on a desktop (the shell caps the page
+   column at 1280 — a table of classes and sections earns the room) */
+.cx-page { max-width: none; }
+
 /* ============ filters ============ */
 /* The live page's three steps, by the room the page column actually has
    (it changes with the sidebar: full / rail / drawer — so container

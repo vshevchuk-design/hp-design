@@ -37,6 +37,10 @@ const pageCss = (X) => {
   const lbl = style("label-sm");
   const lblCase = textExt("text-style.label-sm").textTransform || "none";
   return `
+/* Browse Classes uses the whole width on a desktop (the shell caps the page
+   column at 1280 — a table of classes and sections earns the room) */
+.cx-page { max-width: none; }
+
 /* ============ filters ============ */
 /* The live page's three steps, by the room the page column actually has
    (it changes with the sidebar: full / rail / drawer — so container
