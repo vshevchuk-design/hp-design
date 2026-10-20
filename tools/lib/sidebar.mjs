@@ -194,7 +194,9 @@ export const SIDEBAR_CSS = `
 }
 /* phone (< 768): off-canvas, opened full screen by the topbar's menu button */
 @media (max-width: 767px) {
-  .sidebar, .sidebar.sidebar--collapsed { position: fixed; left: 0; top: 0; bottom: 0; z-index: 20; width: 100vw; transform: translateX(-100%); transition: transform 0.25s ease; }
+  .sidebar, .sidebar.sidebar--collapsed { position: fixed; left: 0; top: 0; bottom: 0; z-index: 20; width: 100vw; height: auto; transform: translateX(-100%); transition: transform 0.25s ease; }
+  /* the account row stays clear of the iPhone home bar (needs viewport-fit=cover) */
+  .sidebar__foot { height: calc(${D(sb.header.height)} + env(safe-area-inset-bottom)); padding-bottom: env(safe-area-inset-bottom); }
   .sidebar__collapse { display: none; }
   .has-nav-open .sidebar { transform: none; }
 }

@@ -138,7 +138,9 @@ html, body { height: auto; min-height: 100%; }
 /* ============ Assistant: a floating button → a right-hand Drawer ============ */
 .cx-fab { position: fixed; right: ${dim(6)}; bottom: ${dim(6)}; z-index: 7; box-shadow: ${X.shadow(drawer.shadow)}; }
 @media (max-width: 767px) { .cx-fab { right: ${dim(4)}; bottom: ${dim(4)}; width: ${D(bBase.height)}; padding: 0; } .cx-fab span { display: none; } }
-.cx-assistant { border: none; padding: 0; margin: 0 0 0 auto; height: 100dvh; max-height: 100dvh; width: min(${dim(96)}, 100vw); background: ${R(drawer.bg)}; box-shadow: ${X.shadow(drawer.shadow)}; font-family: ${cv("family.sans")}; }
+/* pinned to the top and bottom of the visible area, not a 100dvh height —
+   iOS Safari's bottom toolbar hid the foot of a 100dvh panel */
+.cx-assistant { border: none; padding: 0; margin: 0 0 0 auto; position: fixed; inset: 0 0 0 auto; height: auto; max-height: none; width: min(${dim(96)}, 100vw); max-width: 100vw; background: ${R(drawer.bg)}; box-shadow: ${X.shadow(drawer.shadow)}; font-family: ${cv("family.sans")}; }
 .cx-assistant[open] { display: flex; flex-direction: column; transform: none; transition: transform ${px(resolveToken(drawer.transitionDuration))} ease; }
 @starting-style { .cx-assistant[open] { transform: translateX(100%); } }
 .cx-assistant::backdrop { background: ${R(drawer.overlay)}; }
@@ -217,7 +219,7 @@ ${pageCss(X)}`);
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>${title}</title>
 <link rel="stylesheet" href="../../assets/fonts/sora/sora.css" />
 <style>

@@ -141,7 +141,7 @@ const pageCss = (X) => {
 @container (max-width: 559px) { .cb-cards { grid-template-columns: minmax(0, 1fr); } }
 
 /* ---- the section sheet: a right-hand panel; full screen on a phone ---- */
-.cb-sheet { border: none; padding: 0; margin: 0 0 0 auto; height: 100dvh; max-height: 100dvh; width: min(480px /* composition literal: two-column detail lists need more than the 384px top of the dim scale */, 100vw); max-width: 100vw; background: ${cv("surface.page")}; box-shadow: ${X.shadow(drawer.shadow)}; font-family: ${cv("family.sans")}; }
+.cb-sheet { border: none; padding: 0; margin: 0 0 0 auto; position: fixed; inset: 0 0 0 auto; height: auto; max-height: none; width: min(480px /* composition literal: two-column detail lists need more than the 384px top of the dim scale */, 100vw); max-width: 100vw; background: ${cv("surface.page")}; box-shadow: ${X.shadow(drawer.shadow)}; font-family: ${cv("family.sans")}; }
 .cb-sheet[open] { display: flex; flex-direction: column; transform: none; transition: transform ${px(h.resolveToken(drawer.transitionDuration))} ease; }
 @starting-style { .cb-sheet[open] { transform: translateX(100%); } }
 .cb-sheet::backdrop { background: ${R(drawer.overlay)}; }
