@@ -90,6 +90,9 @@ const pageCss = (X) => {
 .cb-shead > .search { grid-area: q; }
 @container (min-width: 760px) {
   .cb-shead { grid-template-columns: auto auto minmax(0, 1fr) minmax(${dim(56)}, ${dim(80)}); grid-template-areas: "title code . q" "meta meta meta ."; row-gap: ${dim(1)}; }
+  /* the 40px field sits centred on the 24px title line without making the
+     row taller — so the back link → title gap stays 12, same as narrow */
+  .cb-shead > .search { margin-block: -${dim(2)}; }
 }
 .cb-sections .table__row { grid-template-columns: minmax(${dim(36)}, 1.2fr) ${dim(16)} ${dim(36)} minmax(${dim(20)}, 1fr) minmax(${dim(28)}, 1.2fr) ${dim(36)} ${dim(32)}; }
 /* every row is its own grid, so every column must be sized the same way in

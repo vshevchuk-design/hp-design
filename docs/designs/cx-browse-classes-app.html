@@ -1036,6 +1036,9 @@ html, body { height: auto; min-height: 100%; }
 .cb-shead > .search { grid-area: q; }
 @container (min-width: 760px) {
   .cb-shead { grid-template-columns: auto auto minmax(0, 1fr) minmax(224px, 320px); grid-template-areas: "title code . q" "meta meta meta ."; row-gap: 4px; }
+  /* the 40px field sits centred on the 24px title line without making the
+     row taller — so the back link → title gap stays 12, same as narrow */
+  .cb-shead > .search { margin-block: -8px; }
 }
 .cb-sections .table__row { grid-template-columns: minmax(144px, 1.2fr) 64px 144px minmax(80px, 1fr) minmax(112px, 1.2fr) 144px 128px; }
 /* every row is its own grid, so every column must be sized the same way in
