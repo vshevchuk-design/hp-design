@@ -136,8 +136,8 @@ html, body { height: auto; min-height: 100%; }
 .table__muted { color: ${R(tb.cell.mutedColor)}; }
 
 /* ============ Assistant: a floating button → a right-hand Drawer ============ */
-/* a 56px round icon button, the same on every width (user, 2026-10-20; 64 was too big) */
-.cx-fab { position: fixed; right: ${dim(6)}; bottom: calc(${dim(6)} + env(safe-area-inset-bottom)); z-index: 7; width: ${dim(14)}; height: ${dim(14)}; padding: 0; border-radius: 50%; box-shadow: ${X.shadow(drawer.shadow)}; }
+/* a 48px round icon button, the same on every width (user, 2026-10-20; 64, then 56 were too big) */
+.cx-fab { position: fixed; right: ${dim(6)}; bottom: calc(${dim(6)} + env(safe-area-inset-bottom)); z-index: 7; width: ${dim(12)}; height: ${dim(12)}; padding: 0; border-radius: 50%; box-shadow: ${X.shadow(drawer.shadow)}; }
 .cx-fab .btn__icon { width: ${dim(6)}; height: ${dim(6)}; }
 @media (max-width: 767px) { .cx-fab { right: ${dim(4)}; bottom: calc(${dim(4)} + env(safe-area-inset-bottom)); } }
 /* pinned to the top and bottom of the visible area, not a 100dvh height —

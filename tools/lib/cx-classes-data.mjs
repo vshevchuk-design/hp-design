@@ -71,3 +71,39 @@ export const BROWSE_PROMPTS = [
   "Which classes still have open seats?",
   "What days and times does a class meet?",
 ];
+
+// ACCT 100Y's sections, verbatim from the live screens (2026-10-20). A
+// section can meet on more than one pattern — section 1 has two meetings,
+// each with its own days, times, room and instructors. The live app masks an
+// unassigned room as "***"; the prototype shows it as TBA. "-" = no
+// instructor assigned.
+export const ACCT_100Y_SECTIONS = [
+  {
+    section: "1", component: "LEC", classNumber: "1832", session: "1", sessionName: "Regular Academic Session",
+    meetings: [
+      { days: "Mo", start: "10:00 am", end: "12:30 pm", room: "***", instructors: ["Trisha Tang", "Stanley Star"] },
+      { days: "MoWeFr", start: "9:00 am", end: "9:50 am", room: "***", instructors: [] },
+    ],
+    status: "Open", seats: [50, 50], waitlist: [0, 0],
+    career: "Undergraduate", units: "3 units", grading: "Graded",
+    dates: "08/30/2026 - 12/12/2026", mode: "In Person", campus: "Hacienda Campus - Test", location: "Hacienda", components: "Lecture Required",
+    textbooks: "Textbooks to be determined", links: ["HighPoint - test"],
+  },
+  {
+    section: "2", component: "LEC", classNumber: "1833", session: "1", sessionName: "Regular Academic Session",
+    meetings: [{ days: "MoWeFr", start: "10:30 am", end: "11:20 am", room: "***", instructors: [] }],
+    status: "Open", seats: [49, 50], waitlist: [0, 0],
+    career: "Undergraduate", units: "3 units", grading: "Graded", consent: "Department Consent Required",
+    description: "This is a general accounting course that must be taken by first year accounting majors. Department permission is required to enroll in this course.",
+    dates: "08/30/2026 - 12/12/2026", mode: "In Person", campus: "Hacienda Campus - Test", location: "Hacienda", components: "Lecture Required",
+    textbooks: "Textbooks to be determined", links: ["HighPoint - test"],
+  },
+  {
+    section: "3", component: "LEC", classNumber: "1834", session: "1", sessionName: "Regular Academic Session",
+    meetings: [{ days: "MoWeFr", start: "7:30 am", end: "8:20 am", room: "***", instructors: ["Stanley Star"] }],
+    status: "Open", seats: [49, 50], waitlist: [0, 0],
+    career: "Undergraduate", units: "3 units", grading: "Graded",
+    dates: "08/30/2026 - 12/12/2026", mode: "In Person", campus: "Hacienda Campus - Test", location: "Hacienda", components: "Lecture Required",
+    textbooks: "Textbooks to be determined", links: ["HighPoint - test"],
+  },
+];

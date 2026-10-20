@@ -142,15 +142,15 @@
 /* its close button replaces the collapse button while it's open */
 .sidebar__close { display: none; }
 .sidebar-scrim { display: none; }
-@media (max-width: 1279px) {
+@media (max-width: 1023px) {
   .has-nav-open .sidebar__close { display: inline-flex; width: 40px; padding: 0; justify-content: center; flex-shrink: 0; }
   .has-nav-open .sidebar__collapse { display: none; }
   .has-nav-open .sidebar-scrim { display: block; position: fixed; inset: 0; z-index: 19; background: var(--tok-surface-overlay); }
 }
-/* tablet (768–1279): the rail stays in the page; opening it lays a 320px
+/* tablet (768–1023): the rail stays in the page; opening it lays a 320px
    panel over the content — the content keeps the rail's 64px, so nothing
-   underneath moves */
-@media (min-width: 768px) and (max-width: 1279px) {
+   underneath moves. (1024–1279 is a desktop: the rail expands in place.) */
+@media (min-width: 768px) and (max-width: 1023px) {
   .has-nav-open .sidebar { position: fixed; left: 0; top: 0; bottom: 0; z-index: 20; height: auto; width: 320px; box-shadow: 0 0 0 1px var(--tok-border-on-brand); }
   .has-nav-open > .sidebar-scrim + * { margin-left: 64px; }
 }
@@ -667,15 +667,15 @@
 /* its close button replaces the collapse button while it's open */
 .sidebar__close { display: none; }
 .sidebar-scrim { display: none; }
-@media (max-width: 1279px) {
+@media (max-width: 1023px) {
   .has-nav-open .sidebar__close { display: inline-flex; width: 40px; padding: 0; justify-content: center; flex-shrink: 0; }
   .has-nav-open .sidebar__collapse { display: none; }
   .has-nav-open .sidebar-scrim { display: block; position: fixed; inset: 0; z-index: 19; background: var(--tok-surface-overlay); }
 }
-/* tablet (768–1279): the rail stays in the page; opening it lays a 320px
+/* tablet (768–1023): the rail stays in the page; opening it lays a 320px
    panel over the content — the content keeps the rail's 64px, so nothing
-   underneath moves */
-@media (min-width: 768px) and (max-width: 1279px) {
+   underneath moves. (1024–1279 is a desktop: the rail expands in place.) */
+@media (min-width: 768px) and (max-width: 1023px) {
   .has-nav-open .sidebar { position: fixed; left: 0; top: 0; bottom: 0; z-index: 20; height: auto; width: 320px; box-shadow: 0 0 0 1px var(--tok-border-on-brand); }
   .has-nav-open &gt; .sidebar-scrim + * { margin-left: 64px; }
 }
@@ -696,11 +696,13 @@
 (function () {
   // In an app (.has-sidebar) the panel has three behaviours by width:
   //   ≥1280  in the page; collapse button toggles the rail
-  //   768–1279  the rail by itself; expanding opens a 320px panel OVER the
+  //   1024–1279 the rail by itself; expanding pushes the content (desktop)
+  //   768–1023  the rail by itself; expanding opens a 320px panel OVER the
   //             page (scrim, ✕, Escape) instead of pushing the content
   //   <768   off-canvas; the topbar's menu button opens it full screen
   var app = document.querySelector(".has-sidebar");
-  var mid = window.matchMedia("(min-width: 768px) and (max-width: 1279px)");
+  var rail = window.matchMedia("(min-width: 768px) and (max-width: 1279px)");   // starts as the rail
+  var mid = window.matchMedia("(min-width: 768px) and (max-width: 1023px)");    // expands as an overlay
   var openBtn = app && app.querySelector(".sidebar-open");
   function isOverlay() { return !!app && (mid.matches || window.innerWidth < 768); }
   function setCollapsed(nav, c) {
@@ -746,7 +748,8 @@
   if (scrim) scrim.addEventListener("click", function () { setOpen(false); });
   document.addEventListener("keydown", function (e) { if (e.key === "Escape" && app.classList.contains("has-nav-open")) { setOpen(false); if (openBtn && window.innerWidth < 768) openBtn.focus(); } });
   // crossing a breakpoint resets: closed, and the rail in the middle band
-  function reset() { app.classList.remove("has-nav-open"); if (openBtn) openBtn.setAttribute("aria-expanded", "false"); setCollapsed(app.querySelector(".sidebar"), mid.matches); }
+  function reset() { app.classList.remove("has-nav-open"); if (openBtn) openBtn.setAttribute("aria-expanded", "false"); setCollapsed(app.querySelector(".sidebar"), rail.matches); }
+  rail.addEventListener("change", reset);
   mid.addEventListener("change", reset);
   window.matchMedia("(max-width: 767px)").addEventListener("change", reset);
   reset();

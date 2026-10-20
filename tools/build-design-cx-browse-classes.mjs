@@ -97,7 +97,7 @@ const pageCss = (X) => {
      row taller — so the back link → title gap stays 12, same as narrow */
   .cb-shead > .search { margin-block: -${dim(2)}; }
 }
-.cb-sections .table__row { grid-template-columns: minmax(${dim(36)}, 1.2fr) ${dim(16)} ${dim(36)} minmax(${dim(20)}, 1fr) minmax(${dim(28)}, 1.2fr) ${dim(36)} ${dim(32)}; }
+.cb-sections .table__row { grid-template-columns: minmax(${dim(36)}, 1.2fr) ${dim(24)} ${dim(40)} minmax(${dim(20)}, 1fr) minmax(${dim(28)}, 1.2fr) ${dim(36)} ${dim(32)}; }
 /* every row is its own grid, so every column must be sized the same way in
    the header and the rows — an "auto" Actions column sized to the button in
    the rows but to nothing in the header, and shifted every column */
@@ -108,7 +108,11 @@ const pageCss = (X) => {
 .cb-sec[aria-expanded="true"] .cb-sec__toggle .btn__icon, .cb-sec__toggle[aria-expanded="true"] .btn__icon { transform: rotate(180deg); }
 .cb-sec__name { display: flex; flex-direction: column; min-width: 0; }
 .cb-sec__name b { color: ${cv("text.default")}; ${typoCss(style("body-base"))} font-weight: ${style("heading-sm").fontWeight}; }
-.cb-sec__name span { color: ${R(tb.cell.mutedColor)}; ${typoCss(style("body-sm"))} }
+/* one line per meeting, aligned across Days / Time / Room — no rule between
+   them (that made one section read as two rows) */
+.cb-line { display: block; white-space: nowrap; }
+.cb-sections .table__row:not(.table__row--head) { align-items: start; }
+.cb-sections .table__row:not(.table__row--head) > .cb-sec__main, .cb-sections .table__row:not(.table__row--head) > .cb-status, .cb-sections .table__row:not(.table__row--head) > .cb-kebab { align-self: center; }
 .cb-status { display: flex; align-items: center; gap: ${dim(2)}; white-space: nowrap; }
 .cb-cell-label { display: none; }
 /* the open section's details — a band under its row */
@@ -133,10 +137,6 @@ const pageCss = (X) => {
    (by the page column's width, like the filters) — 2 columns, 1 on a phone.
    No accordion: View opens the details in a sheet; View and Actions share
    the card's width. */
-/* the table row carries a combined "day · time · room" cell that only the
-   old stacked layout used — never shown, but it must stay out of the grid
-   or every column after it shifts by one */
-.cb-when { display: none; }
 .cb-cards { display: none; }
 .cb-card { display: flex; flex-direction: column; gap: ${dim(2)}; padding: ${D(card.padding)}; background: ${R(card.bg)}; border: 1px solid ${R(card.border)}; border-radius: ${D(card.radius)}; min-width: 0; }
 .cb-card__top { display: flex; align-items: flex-start; justify-content: space-between; gap: ${dim(3)}; }
@@ -308,6 +308,7 @@ const pageJs = `(function () {
   function fmt(m) { var h = Math.floor(m / 60), mm = m % 60; return (h % 12 || 12) + ":" + (mm < 10 ? "0" : "") + mm + " " + (h >= 12 ? "pm" : "am"); }
   function sectionsFor(id) {
     var out = [];
+    if (id === "ACCT 100Y") return B.ACCT_100Y_SECTIONS;
     if (id === "ACCT C2003") out.push(B.ACCT_C2003_SECTION);
     var n = (id === "ACCT C2003" ? 1 : 1) + hash(id) % 3;
     for (var i = 0; i < n; i++) {
@@ -342,15 +343,35 @@ const pageJs = `(function () {
     renderSections();
     show("sections");
   }
+  // A section meets on one or more patterns; older records carry one flat.
+  function meetings(s) {
+    return s.meetings || [{ days: s.days, start: s.start, end: s.end, room: s.room, instructors: s.instructor && s.instructor !== "Staff" ? [s.instructor] : [] }];
+  }
+  function spaced(days) { return (days || "").replace(/([a-z])(?=[A-Z])/g, "$1 "); }  // MoWeFr → Mo We Fr
+  function roomHtml(r) { return !r || r === "***" ? '<span class="table__muted">TBA</span>' : esc(r); }
+  function roomText(r) { return !r || r === "***" ? "TBA" : r; }
+  function timeText(m) { return m.start ? m.start + " – " + m.end : "—"; }
+  // every instructor of the section, once
+  function instructors(s) {
+    var seen = {}, out = [];
+    meetings(s).forEach(function (m) { (m.instructors || []).forEach(function (n) { if (!seen[n]) { seen[n] = 1; out.push(n); } }); });
+    return out;
+  }
+  function whoText(s) { var w = instructors(s); return w.length ? w.join(", ") : "TBA"; }
+  function whoHtml(s) { var w = instructors(s); return w.length ? esc(w.join(", ")) : '<span class="table__muted">TBA</span>'; }
+  function lines(arr) { return arr.map(function (x) { return '<span class="cb-line">' + x + "</span>"; }).join(""); }
   function statusHtml(s) {
     var b = s.status === "Open" ? '<span class="badge badge--base badge--regular badge--success">Open</span>' : '<span class="badge badge--base badge--regular badge--neutral">Waitlist</span>';
     return b + '<span class="table__muted">' + s.seats[0] + "/" + s.seats[1] + "</span>";
   }
+  // rows whose values are already HTML (several meetings → several lines)
+  function dlHtml(rows) { return '<dl class="cb-dl">' + rows.map(function (r) { return "<dt>" + r[0] + "</dt><dd>" + r[1] + "</dd>"; }).join("") + "</dl>"; }
   function dl(rows) { return '<dl class="cb-dl">' + rows.map(function (r) { return "<dt>" + r[0] + "</dt><dd>" + esc(r[1]) + "</dd>"; }).join("") + "</dl>"; }
   function groupsHtml(s) {
     return '<div class="cb-groups">' +
-      '<section class="cb-group"><h4>Information</h4>' + dl([["Class number", s.classNumber], ["Career", s.career], ["Session", s.sessionName], ["Units", s.units], ["Grading", s.grading]]) + "</section>" +
-      '<section class="cb-group"><h4>Details</h4>' + dl([["Instructor", s.instructor], ["Dates", s.dates], ["Meets", s.meets], ["Instruction mode", s.mode], ["Room", s.room], ["Campus", s.campus], ["Location", s.location], ["Components", s.components]]) + '<button type="button" class="btn btn--secondary btn--sm" data-act="See Location" data-n="' + s.classNumber + '">See location</button></section>' +
+      '<section class="cb-group"><h4>Information</h4>' + dl([["Section", s.section + " - " + s.component + " (" + s.classNumber + ")"], ["Session", s.sessionName], ["Class number", s.classNumber], ["Career", s.career], ["Units", s.units], ["Grading", s.grading]].concat(s.consent ? [["Add consent", s.consent]] : [])) + "</section>" +
+      (s.description ? '<section class="cb-group"><h4>Description</h4><p>' + esc(s.description) + "</p></section>" : "") +
+      '<section class="cb-group"><h4>Details</h4>' + dlHtml([["Instructor", esc(whoText(s))], ["Dates", esc(s.dates)], ["Meets", meetings(s).map(function (m) { return esc((m.days ? spaced(m.days) + " " : "") + timeText(m)); }).join("<br>")], ["Instruction mode", esc(s.mode)], ["Room", meetings(s).map(function (m) { return roomHtml(m.room); }).join("<br>")], ["Campus", esc(s.campus)], ["Location", esc(s.location)], ["Components", esc(s.components)]]) + '<button type="button" class="btn btn--secondary btn--sm" data-act="See Location" data-n="' + s.classNumber + '">See location</button></section>' +
       '<section class="cb-group"><h4>Availability</h4>' + dl([["Status", s.status], ["Seats open", s.seats[0] + "/" + s.seats[1]], ["Wait list open", s.waitlist[0] + "/" + s.waitlist[1]]]) + "</section>" +
       '<section class="cb-group"><h4>Textbooks / course materials</h4><p>' + esc(s.textbooks) + '</p><button type="button" class="btn btn--secondary btn--sm" data-act="Buy Books" data-n="' + s.classNumber + '">Buy books</button></section>' +
       '<section class="cb-group"><h4>Additional links</h4><ul>' + s.links.map(function (l) { return '<li><a href="#" data-act="' + esc(l) + '" data-n="' + s.classNumber + '">' + esc(l) + "</a></li>"; }).join("") + "</ul></section>" +
@@ -363,19 +384,18 @@ const pageJs = `(function () {
   }
   function renderSections() {
     var q = st.sq.toLowerCase();
-    var list = secs.filter(function (s) { return !q || [s.section, s.component, s.classNumber, s.days, s.room, s.instructor, s.status].join(" ").toLowerCase().indexOf(q) !== -1; });
+    var list = secs.filter(function (s) { return !q || [s.section, s.component, s.classNumber, s.status, whoText(s)].concat(meetings(s).map(function (m) { return m.days + " " + roomText(m.room); })).join(" ").toLowerCase().indexOf(q) !== -1; });
     $("cb-sections").innerHTML = '<div class="table__row table__row--head" role="row"><span role="columnheader">Section</span><span role="columnheader">Days</span><span role="columnheader">Time</span><span role="columnheader">Room</span><span role="columnheader">Instructor</span><span role="columnheader">Status</span><span role="columnheader"><span class="visually-hidden">Actions</span></span></div>' +
       (list.length ? list.map(function (s) {
         var open = !!st.open[s.classNumber], did = "cb-d-" + s.classNumber;
-        var time = s.start ? s.start + " – " + s.end : "—";
+        var ms = meetings(s);
         // the whole row opens/closes its details, so it hovers like a link row
         return '<div class="table__row table__row--link" role="row">' +
-          '<span class="cb-sec__main" role="cell"><button type="button" class="btn btn--ghost btn--sm btn--icon-only cb-sec__toggle" data-toggle="' + s.classNumber + '" aria-expanded="' + open + '" aria-controls="' + did + '" aria-label="Details for section ' + s.section + '">' + ICONS.expand + '</button><span class="cb-sec__name"><b>' + esc(s.section) + " · " + esc(s.component) + "</b><span>Class " + esc(s.classNumber) + " · " + esc(s.session) + "</span></span></span>" +
-          '<span class="cb-days" role="cell">' + (s.days ? esc(s.days) : "—") + "</span>" +
-          '<span class="cb-time" role="cell">' + esc(time) + "</span>" +
-          '<span class="cb-when" role="cell">' + (s.days ? esc(s.days) + " · " + esc(time) + " · " : "") + esc(s.room) + "</span>" +
-          '<span class="cb-room" role="cell">' + esc(s.room) + "</span>" +
-          '<span class="cb-who" role="cell">' + esc(s.instructor) + "</span>" +
+          '<span class="cb-sec__main" role="cell"><button type="button" class="btn btn--ghost btn--sm btn--icon-only cb-sec__toggle" data-toggle="' + s.classNumber + '" aria-expanded="' + open + '" aria-controls="' + did + '" aria-label="Details for section ' + s.section + '">' + ICONS.expand + '</button><span class="cb-sec__name"><b>' + esc(s.section) + " - " + esc(s.component) + " (" + esc(s.classNumber) + ")</b></span></span>" +
+          '<span class="cb-days" role="cell">' + lines(ms.map(function (m) { return m.days ? esc(spaced(m.days)) : "—"; })) + "</span>" +
+          '<span class="cb-time" role="cell">' + lines(ms.map(function (m) { return esc(timeText(m)); })) + "</span>" +
+          '<span class="cb-room" role="cell">' + lines(ms.map(function (m) { return roomHtml(m.room); })) + "</span>" +
+          '<span class="cb-who" role="cell">' + whoHtml(s) + "</span>" +
           '<span class="cb-status" role="cell">' + statusHtml(s) + "</span>" +
           '<span class="cb-kebab" role="cell"><button type="button" class="btn btn--tint btn--base" data-menu="' + s.classNumber + '" aria-haspopup="menu" aria-label="Actions for section ' + s.section + '"><span>Actions</span>' + ICONS.expand + "</button></span>" +
           "</div>" +
@@ -383,11 +403,10 @@ const pageJs = `(function () {
       }).join("") : '<div class="empty-state"><span class="empty-state__text">No sections match “' + esc(st.sq) + '”</span></div>');
     // the same sections as cards (tablet / phone)
     $("cb-cards").innerHTML = list.length ? list.map(function (s) {
-      var time = s.start ? s.start + " – " + s.end : "";
       return '<article class="cb-card">' +
-        '<div class="cb-card__top"><span class="cb-sec__name"><b>' + esc(s.section) + " · " + esc(s.component) + "</b><span>Class " + esc(s.classNumber) + " · " + esc(s.session) + '</span></span><span class="cb-status">' + statusHtml(s) + "</span></div>" +
-        '<p class="cb-card__when">' + (s.days ? esc(s.days) + " · " + esc(time) + " · " : "") + esc(s.room) + "</p>" +
-        '<p class="cb-card__who">' + esc(s.instructor) + "</p>" +
+        '<div class="cb-card__top"><span class="cb-sec__name"><b>' + esc(s.section) + " - " + esc(s.component) + " (" + esc(s.classNumber) + ')</b></span><span class="cb-status">' + statusHtml(s) + "</span></div>" +
+        meetings(s).map(function (m) { return '<p class="cb-card__when">' + (m.days ? esc(spaced(m.days)) + " · " + esc(timeText(m)) + " · " : "") + roomHtml(m.room) + "</p>"; }).join("") +
+        '<p class="cb-card__who">' + whoHtml(s) + "</p>" +
         '<div class="cb-card__btns"><button type="button" class="btn btn--tint btn--base" data-sec="' + s.classNumber + '">View</button><button type="button" class="btn btn--secondary btn--base" data-menu="' + s.classNumber + '" aria-haspopup="menu" aria-label="Actions for section ' + s.section + '"><span>Actions</span>' + ICONS.expand + "</button></div></article>";
     }).join("") : '<div class="empty-state"><span class="empty-state__text">No sections match “' + esc(st.sq) + '”</span></div>';
   }
