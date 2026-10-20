@@ -29,8 +29,10 @@ import * as B from "./lib/cx-classes-data.mjs";
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 
-const pageCss = ({ tokens, R, D, dim, cv, typoCss, style, textExt }) => {
-  const { card, table: tb, button, select } = tokens;
+const pageCss = (X) => {
+  const { tokens, R, D, T, dim, cv, typoCss, style, textExt, px } = X;
+  const h = X;
+  const { card, table: tb, button, select, drawer } = tokens;
   const bSm = button.secondary.size.sm;
   const lbl = style("label-sm");
   const lblCase = textExt("text-style.label-sm").textTransform || "none";
@@ -117,21 +119,37 @@ const pageCss = ({ tokens, R, D, dim, cv, typoCss, style, textExt }) => {
 .cb-group ul { margin: 0; padding-left: ${dim(4)}; }
 .cb-group a { color: ${cv("text.primary")}; ${typoCss(style("body-sm"))} }
 .cb-actions { display: flex; flex-wrap: wrap; align-items: center; gap: ${dim(2)}; }
-/* stacked rows when the page column is under 860px (by the column's own
-   width — the sidebar's state changes it) */
+/* ---- tablet / phone: section cards instead of the table ----
+   (by the page column's width, like the filters) — 2 columns, 1 on a phone.
+   No accordion: View opens the details in a sheet; View and Actions share
+   the card's width. */
+.cb-cards { display: none; }
+.cb-card { display: flex; flex-direction: column; gap: ${dim(2)}; padding: ${D(card.padding)}; background: ${R(card.bg)}; border: 1px solid ${R(card.border)}; border-radius: ${D(card.radius)}; min-width: 0; }
+.cb-card__top { display: flex; align-items: flex-start; justify-content: space-between; gap: ${dim(3)}; }
+.cb-card__when { margin: 0; color: ${cv("text.default")}; ${typoCss(style("body-base"))} }
+.cb-card__who { margin: 0; color: ${cv("text.secondary")}; ${typoCss(style("body-base"))} }
+.cb-card__btns { display: flex; gap: ${dim(2)}; margin-top: auto; padding-top: ${dim(2)}; }
+.cb-card__btns .btn { flex: 1; min-width: 0; }
 @container (max-width: 859px) {
-  .cb-sections .table__row--head { display: none; }
-  .cb-sections .table__row:not(.table__row--head) { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "main status" "when when" "who who" "more more"; align-items: start; row-gap: ${dim(1)}; }
-  .cb-sections .cb-sec__main { grid-area: main; } .cb-sections .cb-status { grid-area: status; justify-self: end; }
-  .cb-sections .cb-days, .cb-sections .cb-time { display: none; }
-  .cb-sections .cb-when { display: block !important; grid-area: when; }
-  .cb-sections .cb-room { display: none; }
-  .cb-sections .cb-who { grid-area: who; color: ${cv("text.secondary")}; }
-  .cb-sections .cb-kebab { grid-area: more; padding-left: calc(${D(bSm.height)} + ${dim(2)} - ${dim(2)}); padding-top: ${dim(1)}; }
-  .cb-sections .cb-when { padding-left: calc(${D(bSm.height)} + ${dim(2)} - ${dim(2)}); }
-  .cb-sections .cb-who { padding-left: calc(${D(bSm.height)} + ${dim(2)} - ${dim(2)}); }
+  .cb-sections { display: none; }
+  .cb-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: ${dim(3)}; }
 }
-.cb-when { display: none; color: ${cv("text.default")}; }
+@container (max-width: 559px) { .cb-cards { grid-template-columns: minmax(0, 1fr); } }
+
+/* ---- the section sheet: a right-hand panel; full screen on a phone ---- */
+.cb-sheet { border: none; padding: 0; margin: 0 0 0 auto; height: 100dvh; max-height: 100dvh; width: min(480px /* composition literal: two-column detail lists need more than the 384px top of the dim scale */, 100vw); max-width: 100vw; background: ${cv("surface.page")}; box-shadow: ${X.shadow(drawer.shadow)}; font-family: ${cv("family.sans")}; }
+.cb-sheet[open] { display: flex; flex-direction: column; transform: none; transition: transform ${px(h.resolveToken(drawer.transitionDuration))} ease; }
+@starting-style { .cb-sheet[open] { transform: translateX(100%); } }
+.cb-sheet::backdrop { background: ${R(drawer.overlay)}; }
+html:has(.cb-sheet[open]) { overflow: hidden; }
+.cb-sheet__head { flex-shrink: 0; height: ${dim(16)}; display: flex; align-items: center; justify-content: space-between; gap: ${dim(3)}; padding: 0 ${dim(4)} 0 ${D(card.padding)}; background: ${cv("surface.default")}; border-bottom: 1px solid ${R(drawer.divider)}; }
+.cb-sheet__titles { display: flex; flex-direction: column; min-width: 0; }
+.cb-sheet__title { margin: 0; color: ${R(drawer.titleColor)}; ${typoCss(T(drawer.title))} white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cb-sheet__sub { color: ${cv("text.secondary")}; ${typoCss(style("body-sm"))} }
+.cb-sheet__body { flex: 1; min-height: 0; overflow-y: auto; padding: ${D(card.padding)}; }
+.cb-sheet__body .cb-groups { grid-template-columns: minmax(0, 1fr); }
+.cb-sheet__foot { flex-shrink: 0; display: flex; gap: ${dim(2)}; padding: ${dim(3)} ${D(card.padding)} calc(${dim(3)} + env(safe-area-inset-bottom)); background: ${cv("surface.default")}; border-top: 1px solid ${R(drawer.divider)}; }
+.cb-sheet__foot .btn--primary { flex: 1; }
 `;
 };
 
@@ -179,10 +197,17 @@ const views = `
           <label class="search" id="cb-sq-box">${ICONS.search}<input class="search__input" id="cb-sq" type="search" placeholder="Search" aria-label="Search sections" autocomplete="off" /><button class="search__clear" id="cb-sq-clear" type="button" aria-label="Clear search">${ICONS.close}</button></label>
         </div>
         <div class="table cb-sections" id="cb-sections" role="table" aria-label="Sections"></div>
+        <!-- tablet / phone: a card per section; View opens the details sheet -->
+        <div class="cb-cards" id="cb-cards"></div>
       </section>
 `;
 
-const after = `<div class="listbox" id="cb-lb" popover role="listbox"><div class="listbox__list"></div></div>
+const after = `<dialog class="cb-sheet" id="cb-sheet" aria-labelledby="cb-sheet-title">
+  <div class="cb-sheet__head"><div class="cb-sheet__titles"><h2 class="cb-sheet__title" id="cb-sheet-title"></h2><span class="cb-sheet__sub" id="cb-sheet-sub"></span></div><button class="btn btn--ghost btn--sm btn--icon-only" type="button" id="cb-sheet-close" aria-label="Close">${ICONS.close.replace("<svg ", '<svg class="btn__icon" ')}</button></div>
+  <div class="cb-sheet__body" id="cb-sheet-body"></div>
+  <div class="cb-sheet__foot" id="cb-sheet-foot"></div>
+</dialog>
+<div class="listbox" id="cb-lb" popover role="listbox"><div class="listbox__list"></div></div>
 <div class="menu" id="cb-menu" popover role="menu" aria-label="Section actions"><div class="menu__list" id="cb-menu-list"></div></div>`;
 
 const pageJs = `(function () {
@@ -306,15 +331,18 @@ const pageJs = `(function () {
     return b + '<span class="table__muted">' + s.seats[0] + "/" + s.seats[1] + "</span>";
   }
   function dl(rows) { return '<dl class="cb-dl">' + rows.map(function (r) { return "<dt>" + r[0] + "</dt><dd>" + esc(r[1]) + "</dd>"; }).join("") + "</dl>"; }
-  function detailHtml(s) {
+  function groupsHtml(s) {
     return '<div class="cb-groups">' +
       '<section class="cb-group"><h4>Information</h4>' + dl([["Class number", s.classNumber], ["Career", s.career], ["Session", s.sessionName], ["Units", s.units], ["Grading", s.grading]]) + "</section>" +
-      '<section class="cb-group"><h4>Details</h4>' + dl([["Instructor", s.instructor], ["Dates", s.dates], ["Meets", s.meets], ["Instruction mode", s.mode], ["Room", s.room], ["Campus", s.campus], ["Location", s.location], ["Components", s.components]]) + '<button type="button" class="btn btn--secondary btn--sm" data-act="See Location">See location</button></section>' +
+      '<section class="cb-group"><h4>Details</h4>' + dl([["Instructor", s.instructor], ["Dates", s.dates], ["Meets", s.meets], ["Instruction mode", s.mode], ["Room", s.room], ["Campus", s.campus], ["Location", s.location], ["Components", s.components]]) + '<button type="button" class="btn btn--secondary btn--sm" data-act="See Location" data-n="' + s.classNumber + '">See location</button></section>' +
       '<section class="cb-group"><h4>Availability</h4>' + dl([["Status", s.status], ["Seats open", s.seats[0] + "/" + s.seats[1]], ["Wait list open", s.waitlist[0] + "/" + s.waitlist[1]]]) + "</section>" +
-      '<section class="cb-group"><h4>Textbooks / course materials</h4><p>' + esc(s.textbooks) + '</p><button type="button" class="btn btn--secondary btn--sm" data-act="Buy Books">Buy books</button></section>' +
-      '<section class="cb-group"><h4>Additional links</h4><ul>' + s.links.map(function (l) { return '<li><a href="#" data-act="' + esc(l) + '">' + esc(l) + "</a></li>"; }).join("") + "</ul></section>" +
-      "</div>" +
-      '<div class="cb-actions"><button type="button" class="btn btn--primary btn--base" data-act="Add to Cart">Add to cart</button><button type="button" class="btn btn--secondary btn--base" data-act="Enroll">Enroll</button><button type="button" class="btn btn--secondary btn--base" data-act="Add to Planner">Add to planner</button>' +
+      '<section class="cb-group"><h4>Textbooks / course materials</h4><p>' + esc(s.textbooks) + '</p><button type="button" class="btn btn--secondary btn--sm" data-act="Buy Books" data-n="' + s.classNumber + '">Buy books</button></section>' +
+      '<section class="cb-group"><h4>Additional links</h4><ul>' + s.links.map(function (l) { return '<li><a href="#" data-act="' + esc(l) + '" data-n="' + s.classNumber + '">' + esc(l) + "</a></li>"; }).join("") + "</ul></section>" +
+      "</div>";
+  }
+  function detailHtml(s) {
+    return groupsHtml(s) +
+      '<div class="cb-actions"><button type="button" class="btn btn--primary btn--base" data-act="Add to Cart" data-n="' + s.classNumber + '">Add to cart</button><button type="button" class="btn btn--secondary btn--base" data-act="Enroll" data-n="' + s.classNumber + '">Enroll</button><button type="button" class="btn btn--secondary btn--base" data-act="Add to Planner" data-n="' + s.classNumber + '">Add to planner</button>' +
       '<button type="button" class="btn btn--secondary btn--base btn--icon-only" data-menu="' + s.classNumber + '" data-menu-rest aria-haspopup="menu" aria-label="More actions">' + ICONS.moreH + "</button></div>";
   }
   function renderSections() {
@@ -337,7 +365,42 @@ const pageJs = `(function () {
           "</div>" +
           '<div class="cb-detail" id="' + did + '"' + (open ? "" : " hidden") + ">" + detailHtml(s) + "</div>";
       }).join("") : '<div class="empty-state"><span class="empty-state__text">No sections match “' + esc(st.sq) + '”</span></div>');
+    // the same sections as cards (tablet / phone)
+    $("cb-cards").innerHTML = list.length ? list.map(function (s) {
+      var time = s.start ? s.start + " – " + s.end : "";
+      return '<article class="cb-card">' +
+        '<div class="cb-card__top"><span class="cb-sec__name"><b>' + esc(s.section) + " · " + esc(s.component) + "</b><span>Class " + esc(s.classNumber) + " · " + esc(s.session) + '</span></span><span class="cb-status">' + statusHtml(s) + "</span></div>" +
+        '<p class="cb-card__when">' + (s.days ? esc(s.days) + " · " + esc(time) + " · " : "") + esc(s.room) + "</p>" +
+        '<p class="cb-card__who">' + esc(s.instructor) + "</p>" +
+        '<div class="cb-card__btns"><button type="button" class="btn btn--tint btn--base" data-sec="' + s.classNumber + '">View</button><button type="button" class="btn btn--secondary btn--base" data-menu="' + s.classNumber + '" aria-haspopup="menu" aria-label="Actions for section ' + s.section + '"><span>Actions</span>' + ICONS.expand + "</button></div></article>";
+    }).join("") : '<div class="empty-state"><span class="empty-state__text">No sections match “' + esc(st.sq) + '”</span></div>';
   }
+  // ---- the section sheet (cards' View) ----
+  var sheet = $("cb-sheet"), sheetN = null;
+  function openSheet(n) {
+    var s = secByNumber(n); sheetN = n;
+    $("cb-sheet-title").textContent = "Section " + s.section + " · " + s.component;
+    $("cb-sheet-sub").textContent = course[0] + " " + course[1] + " · Class " + s.classNumber;
+    $("cb-sheet-body").innerHTML = groupsHtml(s);
+    $("cb-sheet-foot").innerHTML = '<button type="button" class="btn btn--primary btn--base" data-act="Add to Cart" data-n="' + n + '">Add to cart</button><button type="button" class="btn btn--secondary btn--base" data-act="Enroll" data-n="' + n + '">Enroll</button>' +
+      '<button type="button" class="btn btn--secondary btn--base btn--icon-only" data-menu="' + n + '" data-menu-sheet aria-haspopup="menu" aria-label="More actions">' + ICONS.moreH + "</button>";
+    sheet.showModal();
+  }
+  $("cb-sheet-close").addEventListener("click", function () { sheet.close(); });
+  sheet.addEventListener("click", function (e) {
+    if (e.target === sheet) { sheet.close(); return; }
+    var m = e.target.closest("[data-menu]");
+    if (m) { openMenu(m); return; }
+    var a = e.target.closest("[data-act]");
+    if (a) { e.preventDefault(); act(a.dataset.act, a.dataset.n); }
+  });
+  $("cb-cards").addEventListener("click", function (e) {
+    // (data-sec, not data-view — that one names the page's views)
+    var v = e.target.closest("[data-sec]");
+    if (v) { openSheet(v.dataset.sec); return; }
+    var m = e.target.closest("[data-menu]");
+    if (m) openMenu(m);
+  });
   searchBox("cb-sq", "cb-sq-box", "cb-sq-clear", "sq", renderSections);
   // the whole row toggles too (except its buttons)
   $("cb-sections").addEventListener("click", function (e) {
@@ -347,7 +410,7 @@ const pageJs = `(function () {
     var m = e.target.closest("[data-menu]");
     if (m) { openMenu(m); return; }
     var a = e.target.closest("[data-act]");
-    if (a) { e.preventDefault(); act(a.dataset.act, a.closest(".cb-detail").id.slice(5)); }
+    if (a) { e.preventDefault(); act(a.dataset.act, a.dataset.n); }
   });
   function secByNumber(n) { return secs.filter(function (s) { return s.classNumber === n; })[0]; }
   function act(what, n) {
@@ -360,8 +423,7 @@ const pageJs = `(function () {
   function openMenu(btn) {
     if (menu.matches(":popover-open") && menuBtn === btn) { menu.hidePopover(); return; }
     menuFor = btn.dataset.menu; menuBtn = btn;
-    var rest = btn.hasAttribute("data-menu-rest");
-    var acts = rest ? B.SECTION_ACTIONS.slice(3) : B.SECTION_ACTIONS;
+    var acts = btn.hasAttribute("data-menu-rest") ? B.SECTION_ACTIONS.slice(3) : btn.hasAttribute("data-menu-sheet") ? B.SECTION_ACTIONS.slice(2) : B.SECTION_ACTIONS;
     $("cb-menu-list").innerHTML = acts.map(function (a) { return '<button type="button" class="menu__item" role="menuitem" data-mact="' + esc(a) + '">' + esc(a) + "</button>"; }).join("");
     menu.showPopover();
     var r = btn.getBoundingClientRect();
@@ -397,7 +459,7 @@ const viewerHtml = renderDesignViewer({
   activeKey: "cx-browse-classes",
   title: "CX Browse Classes",
   heading: "Browse Classes",
-  sub: `Browse Classes, restyled on hp-design components in the CX shell — same flow and content as the live page (read off three saved copies): <b>Term</b> (required), <b>Career</b> and <b>Subject</b> → Search → a Class · Description table → a course's sections, each opening into Information / Details / Availability / Textbooks / Additional links with the section actions. What changed is the UI: the filters are Select base with floating labels ("Any …" is an option, not a × in the field); results get a count beside the table's own Search; <b>View sections</b> is Button tint (pale blue), not eleven solid blue ones; Start and End are one Time column and Session sits under the section; the seven equal buttons under an open section become <b>Add to cart</b>, Enroll, Add to planner and a ⋯ Menu (the row's <b>Actions</b> button opens the full Menu); the filters reflow like the live page (one row → the search field on its own row → two columns; below 1280 the sidebar folds to icons first), and the sections table stacks in a narrow column. Try 2027 Spring + ACCT, then <b>ACCT C2003</b> — its section 2000 is the live one, verbatim. Other subjects and sections are sample data. <b>v2 (current)</b> wears the Sidebar's neutral theme — gray.100 panel, dark text, the same white current-page pill; <b>v1</b> the brand-blue one.`,
+  sub: `Browse Classes, restyled on hp-design components in the CX shell — same flow and content as the live page (read off three saved copies): <b>Term</b> (required), <b>Career</b> and <b>Subject</b> → Search → a Class · Description table → a course's sections, each opening into Information / Details / Availability / Textbooks / Additional links with the section actions. What changed is the UI: the filters are Select base with floating labels ("Any …" is an option, not a × in the field); results get a count beside the table's own Search; <b>View sections</b> is Button tint (pale blue), not eleven solid blue ones; Start and End are one Time column and Session sits under the section; the seven equal buttons under an open section become <b>Add to cart</b>, Enroll, Add to planner and a ⋯ Menu (the row's <b>Actions</b> button opens the full Menu); the filters reflow like the live page (one row → the search field on its own row → two columns; below 1280 the sidebar folds to icons first); on a tablet or phone the sections are cards (two columns on a tablet) with <b>View</b> — a details sheet with a pinned Add to cart — and <b>Actions</b>. Try 2027 Spring + ACCT, then <b>ACCT C2003</b> — its section 2000 is the live one, verbatim. Other subjects and sections are sample data. <b>v2 (current)</b> wears the Sidebar's neutral theme — gray.100 panel, dark text, the same white current-page pill; <b>v1</b> the brand-blue one.`,
   versions: [
     { label: "v2", note: "gray sidebar · current", file: "cx-browse-classes-v2-app.html" },
     { label: "v1", note: "blue sidebar", file: "cx-browse-classes-app.html" },

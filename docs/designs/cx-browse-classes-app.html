@@ -1047,21 +1047,37 @@ html, body { height: auto; min-height: 100%; }
 .cb-group ul { margin: 0; padding-left: 16px; }
 .cb-group a { color: var(--tok-text-primary); font-weight: 400; font-size: 12px; line-height: 1.4; }
 .cb-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-/* stacked rows when the page column is under 860px (by the column's own
-   width — the sidebar's state changes it) */
+/* ---- tablet / phone: section cards instead of the table ----
+   (by the page column's width, like the filters) — 2 columns, 1 on a phone.
+   No accordion: View opens the details in a sheet; View and Actions share
+   the card's width. */
+.cb-cards { display: none; }
+.cb-card { display: flex; flex-direction: column; gap: 8px; padding: 16px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); border-radius: 8px; min-width: 0; }
+.cb-card__top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.cb-card__when { margin: 0; color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; }
+.cb-card__who { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 14px; line-height: 1.4; }
+.cb-card__btns { display: flex; gap: 8px; margin-top: auto; padding-top: 8px; }
+.cb-card__btns .btn { flex: 1; min-width: 0; }
 @container (max-width: 859px) {
-  .cb-sections .table__row--head { display: none; }
-  .cb-sections .table__row:not(.table__row--head) { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "main status" "when when" "who who" "more more"; align-items: start; row-gap: 4px; }
-  .cb-sections .cb-sec__main { grid-area: main; } .cb-sections .cb-status { grid-area: status; justify-self: end; }
-  .cb-sections .cb-days, .cb-sections .cb-time { display: none; }
-  .cb-sections .cb-when { display: block !important; grid-area: when; }
-  .cb-sections .cb-room { display: none; }
-  .cb-sections .cb-who { grid-area: who; color: var(--tok-text-secondary); }
-  .cb-sections .cb-kebab { grid-area: more; padding-left: calc(32px + 8px - 8px); padding-top: 4px; }
-  .cb-sections .cb-when { padding-left: calc(32px + 8px - 8px); }
-  .cb-sections .cb-who { padding-left: calc(32px + 8px - 8px); }
+  .cb-sections { display: none; }
+  .cb-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 }
-.cb-when { display: none; color: var(--tok-text-default); }
+@container (max-width: 559px) { .cb-cards { grid-template-columns: minmax(0, 1fr); } }
+
+/* ---- the section sheet: a right-hand panel; full screen on a phone ---- */
+.cb-sheet { border: none; padding: 0; margin: 0 0 0 auto; height: 100dvh; max-height: 100dvh; width: min(480px /* composition literal: two-column detail lists need more than the 384px top of the dim scale */, 100vw); max-width: 100vw; background: var(--tok-surface-page); box-shadow: 0px 4px 16px 0px rgba(21, 25, 30, 0.12); font-family: var(--tok-family-sans); }
+.cb-sheet[open] { display: flex; flex-direction: column; transform: none; transition: transform 250ms ease; }
+@starting-style { .cb-sheet[open] { transform: translateX(100%); } }
+.cb-sheet::backdrop { background: var(--tok-surface-overlay); }
+html:has(.cb-sheet[open]) { overflow: hidden; }
+.cb-sheet__head { flex-shrink: 0; height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 16px 0 16px; background: var(--tok-surface-default); border-bottom: 1px solid var(--tok-border-default); }
+.cb-sheet__titles { display: flex; flex-direction: column; min-width: 0; }
+.cb-sheet__title { margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 14px; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cb-sheet__sub { color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.cb-sheet__body { flex: 1; min-height: 0; overflow-y: auto; padding: 16px; }
+.cb-sheet__body .cb-groups { grid-template-columns: minmax(0, 1fr); }
+.cb-sheet__foot { flex-shrink: 0; display: flex; gap: 8px; padding: 12px 16px calc(12px + env(safe-area-inset-bottom)); background: var(--tok-surface-default); border-top: 1px solid var(--tok-border-default); }
+.cb-sheet__foot .btn--primary { flex: 1; }
 
 </style>
 </head>
@@ -1143,6 +1159,8 @@ html, body { height: auto; min-height: 100%; }
           <label class="search" id="cb-sq-box"><svg class="search__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg><input class="search__input" id="cb-sq" type="search" placeholder="Search" aria-label="Search sections" autocomplete="off" /><button class="search__clear" id="cb-sq-clear" type="button" aria-label="Clear search"><svg class="" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button></label>
         </div>
         <div class="table cb-sections" id="cb-sections" role="table" aria-label="Sections"></div>
+        <!-- tablet / phone: a card per section; View opens the details sheet -->
+        <div class="cb-cards" id="cb-cards"></div>
       </section>
 
     </main>
@@ -1162,6 +1180,11 @@ html, body { height: auto; min-height: 100%; }
     </div>
     <span class="cx-compose__count" id="cx-assistant-count">0/8000</span>
   </form>
+</dialog>
+<dialog class="cb-sheet" id="cb-sheet" aria-labelledby="cb-sheet-title">
+  <div class="cb-sheet__head"><div class="cb-sheet__titles"><h2 class="cb-sheet__title" id="cb-sheet-title"></h2><span class="cb-sheet__sub" id="cb-sheet-sub"></span></div><button class="btn btn--ghost btn--sm btn--icon-only" type="button" id="cb-sheet-close" aria-label="Close"><svg class="btn__icon" class="" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button></div>
+  <div class="cb-sheet__body" id="cb-sheet-body"></div>
+  <div class="cb-sheet__foot" id="cb-sheet-foot"></div>
 </dialog>
 <div class="listbox" id="cb-lb" popover role="listbox"><div class="listbox__list"></div></div>
 <div class="menu" id="cb-menu" popover role="menu" aria-label="Section actions"><div class="menu__list" id="cb-menu-list"></div></div>
@@ -1324,15 +1347,18 @@ window.cx = (function () {
     return b + '<span class="table__muted">' + s.seats[0] + "/" + s.seats[1] + "</span>";
   }
   function dl(rows) { return '<dl class="cb-dl">' + rows.map(function (r) { return "<dt>" + r[0] + "</dt><dd>" + esc(r[1]) + "</dd>"; }).join("") + "</dl>"; }
-  function detailHtml(s) {
+  function groupsHtml(s) {
     return '<div class="cb-groups">' +
       '<section class="cb-group"><h4>Information</h4>' + dl([["Class number", s.classNumber], ["Career", s.career], ["Session", s.sessionName], ["Units", s.units], ["Grading", s.grading]]) + "</section>" +
-      '<section class="cb-group"><h4>Details</h4>' + dl([["Instructor", s.instructor], ["Dates", s.dates], ["Meets", s.meets], ["Instruction mode", s.mode], ["Room", s.room], ["Campus", s.campus], ["Location", s.location], ["Components", s.components]]) + '<button type="button" class="btn btn--secondary btn--sm" data-act="See Location">See location</button></section>' +
+      '<section class="cb-group"><h4>Details</h4>' + dl([["Instructor", s.instructor], ["Dates", s.dates], ["Meets", s.meets], ["Instruction mode", s.mode], ["Room", s.room], ["Campus", s.campus], ["Location", s.location], ["Components", s.components]]) + '<button type="button" class="btn btn--secondary btn--sm" data-act="See Location" data-n="' + s.classNumber + '">See location</button></section>' +
       '<section class="cb-group"><h4>Availability</h4>' + dl([["Status", s.status], ["Seats open", s.seats[0] + "/" + s.seats[1]], ["Wait list open", s.waitlist[0] + "/" + s.waitlist[1]]]) + "</section>" +
-      '<section class="cb-group"><h4>Textbooks / course materials</h4><p>' + esc(s.textbooks) + '</p><button type="button" class="btn btn--secondary btn--sm" data-act="Buy Books">Buy books</button></section>' +
-      '<section class="cb-group"><h4>Additional links</h4><ul>' + s.links.map(function (l) { return '<li><a href="#" data-act="' + esc(l) + '">' + esc(l) + "</a></li>"; }).join("") + "</ul></section>" +
-      "</div>" +
-      '<div class="cb-actions"><button type="button" class="btn btn--primary btn--base" data-act="Add to Cart">Add to cart</button><button type="button" class="btn btn--secondary btn--base" data-act="Enroll">Enroll</button><button type="button" class="btn btn--secondary btn--base" data-act="Add to Planner">Add to planner</button>' +
+      '<section class="cb-group"><h4>Textbooks / course materials</h4><p>' + esc(s.textbooks) + '</p><button type="button" class="btn btn--secondary btn--sm" data-act="Buy Books" data-n="' + s.classNumber + '">Buy books</button></section>' +
+      '<section class="cb-group"><h4>Additional links</h4><ul>' + s.links.map(function (l) { return '<li><a href="#" data-act="' + esc(l) + '" data-n="' + s.classNumber + '">' + esc(l) + "</a></li>"; }).join("") + "</ul></section>" +
+      "</div>";
+  }
+  function detailHtml(s) {
+    return groupsHtml(s) +
+      '<div class="cb-actions"><button type="button" class="btn btn--primary btn--base" data-act="Add to Cart" data-n="' + s.classNumber + '">Add to cart</button><button type="button" class="btn btn--secondary btn--base" data-act="Enroll" data-n="' + s.classNumber + '">Enroll</button><button type="button" class="btn btn--secondary btn--base" data-act="Add to Planner" data-n="' + s.classNumber + '">Add to planner</button>' +
       '<button type="button" class="btn btn--secondary btn--base btn--icon-only" data-menu="' + s.classNumber + '" data-menu-rest aria-haspopup="menu" aria-label="More actions">' + ICONS.moreH + "</button></div>";
   }
   function renderSections() {
@@ -1355,7 +1381,42 @@ window.cx = (function () {
           "</div>" +
           '<div class="cb-detail" id="' + did + '"' + (open ? "" : " hidden") + ">" + detailHtml(s) + "</div>";
       }).join("") : '<div class="empty-state"><span class="empty-state__text">No sections match “' + esc(st.sq) + '”</span></div>');
+    // the same sections as cards (tablet / phone)
+    $("cb-cards").innerHTML = list.length ? list.map(function (s) {
+      var time = s.start ? s.start + " – " + s.end : "";
+      return '<article class="cb-card">' +
+        '<div class="cb-card__top"><span class="cb-sec__name"><b>' + esc(s.section) + " · " + esc(s.component) + "</b><span>Class " + esc(s.classNumber) + " · " + esc(s.session) + '</span></span><span class="cb-status">' + statusHtml(s) + "</span></div>" +
+        '<p class="cb-card__when">' + (s.days ? esc(s.days) + " · " + esc(time) + " · " : "") + esc(s.room) + "</p>" +
+        '<p class="cb-card__who">' + esc(s.instructor) + "</p>" +
+        '<div class="cb-card__btns"><button type="button" class="btn btn--tint btn--base" data-sec="' + s.classNumber + '">View</button><button type="button" class="btn btn--secondary btn--base" data-menu="' + s.classNumber + '" aria-haspopup="menu" aria-label="Actions for section ' + s.section + '"><span>Actions</span>' + ICONS.expand + "</button></div></article>";
+    }).join("") : '<div class="empty-state"><span class="empty-state__text">No sections match “' + esc(st.sq) + '”</span></div>';
   }
+  // ---- the section sheet (cards' View) ----
+  var sheet = $("cb-sheet"), sheetN = null;
+  function openSheet(n) {
+    var s = secByNumber(n); sheetN = n;
+    $("cb-sheet-title").textContent = "Section " + s.section + " · " + s.component;
+    $("cb-sheet-sub").textContent = course[0] + " " + course[1] + " · Class " + s.classNumber;
+    $("cb-sheet-body").innerHTML = groupsHtml(s);
+    $("cb-sheet-foot").innerHTML = '<button type="button" class="btn btn--primary btn--base" data-act="Add to Cart" data-n="' + n + '">Add to cart</button><button type="button" class="btn btn--secondary btn--base" data-act="Enroll" data-n="' + n + '">Enroll</button>' +
+      '<button type="button" class="btn btn--secondary btn--base btn--icon-only" data-menu="' + n + '" data-menu-sheet aria-haspopup="menu" aria-label="More actions">' + ICONS.moreH + "</button>";
+    sheet.showModal();
+  }
+  $("cb-sheet-close").addEventListener("click", function () { sheet.close(); });
+  sheet.addEventListener("click", function (e) {
+    if (e.target === sheet) { sheet.close(); return; }
+    var m = e.target.closest("[data-menu]");
+    if (m) { openMenu(m); return; }
+    var a = e.target.closest("[data-act]");
+    if (a) { e.preventDefault(); act(a.dataset.act, a.dataset.n); }
+  });
+  $("cb-cards").addEventListener("click", function (e) {
+    // (data-sec, not data-view — that one names the page's views)
+    var v = e.target.closest("[data-sec]");
+    if (v) { openSheet(v.dataset.sec); return; }
+    var m = e.target.closest("[data-menu]");
+    if (m) openMenu(m);
+  });
   searchBox("cb-sq", "cb-sq-box", "cb-sq-clear", "sq", renderSections);
   // the whole row toggles too (except its buttons)
   $("cb-sections").addEventListener("click", function (e) {
@@ -1365,7 +1426,7 @@ window.cx = (function () {
     var m = e.target.closest("[data-menu]");
     if (m) { openMenu(m); return; }
     var a = e.target.closest("[data-act]");
-    if (a) { e.preventDefault(); act(a.dataset.act, a.closest(".cb-detail").id.slice(5)); }
+    if (a) { e.preventDefault(); act(a.dataset.act, a.dataset.n); }
   });
   function secByNumber(n) { return secs.filter(function (s) { return s.classNumber === n; })[0]; }
   function act(what, n) {
@@ -1378,8 +1439,7 @@ window.cx = (function () {
   function openMenu(btn) {
     if (menu.matches(":popover-open") && menuBtn === btn) { menu.hidePopover(); return; }
     menuFor = btn.dataset.menu; menuBtn = btn;
-    var rest = btn.hasAttribute("data-menu-rest");
-    var acts = rest ? B.SECTION_ACTIONS.slice(3) : B.SECTION_ACTIONS;
+    var acts = btn.hasAttribute("data-menu-rest") ? B.SECTION_ACTIONS.slice(3) : btn.hasAttribute("data-menu-sheet") ? B.SECTION_ACTIONS.slice(2) : B.SECTION_ACTIONS;
     $("cb-menu-list").innerHTML = acts.map(function (a) { return '<button type="button" class="menu__item" role="menuitem" data-mact="' + esc(a) + '">' + esc(a) + "</button>"; }).join("");
     menu.showPopover();
     var r = btn.getBoundingClientRect();
