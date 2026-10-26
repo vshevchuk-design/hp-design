@@ -43,7 +43,8 @@ const sizes = [
 ];
 const content = [
   story("Value only", { id: "i-v", label: "Full name", value: "Ana Diaz", autocomplete: "name" }),
-  story("Icon left", { id: "i-ic", label: "Search", icon: "search", type: "search" }, "Icon sizes follow Button's — 16 / 20 / 24 at sm / base / lg, 8px gap."),
+  story("Icon left — search", { id: "i-ic", label: "Search classes", icon: "search", type: "search" }, "Icon sizes follow Button's — 16 / 20 / 24 at sm / base / lg, 8px gap."),
+  story("Icon left — email", { id: "i-mail", label: "Email", icon: "email", value: "ana@school.edu", type: "email", autocomplete: "email" }, "An icon that names what goes in the field. Optional — most fields don't need one; the label already says it."),
 ];
 const states = [
   story("Default", { id: "s-def", label: "Full name" }, "Empty, not focused: one 16px placeholder line. Hover it (border.strong) and click it (border.focus, the label floats in blue)."),
