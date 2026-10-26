@@ -81,7 +81,6 @@
   --tok-surface-page: #f9fafb;
   --tok-surface-default: #ffffff;
   --tok-surface-sunken: #e6e8eb;
-  --tok-surface-overlay: rgba(21, 25, 30, 0.5);
   --tok-border-default: #dadde0;
   --tok-text-secondary: #5d6a7a;
   --tok-family-sans: 'Sora', sans-serif;
@@ -92,7 +91,6 @@
 .box--page { background: var(--tok-surface-page); }
 .box--default { background: var(--tok-surface-default); }
 .box--sunken { background: var(--tok-surface-sunken); }
-.box--overlay { background: var(--tok-surface-overlay); }
 .box--padding-none { padding: 0px; }
 .box--padding-xs { padding: 8px; }
 .box--padding-sm { padding: 12px; }
@@ -231,7 +229,7 @@
     <div class="legend">
       <div class="row"><b>Lowest-level primitive</b><span>A generic container exposing surface/border/padding directly, no fixed combination — <a href="card.html">Card</a> is built on top of it by picking one specific combination for content grouping.</span></div>
       <div class="row"><b>No states</b><span>Purely presentational — same as <a href="separator.html">Separator</a>, a plain container never reacts to hover/focus/press on its own.</span></div>
-      <div class="row"><b>Surface</b><span>Every semantic surface role except disabled (a component-state concept, not a layout choice): page/default/sunken/overlay.</span></div>
+      <div class="row"><b>Surface</b><span>Every semantic surface role except disabled (a component-state concept, not a layout choice): page / default / sunken. Not <code class="tok">surface.overlay</code> — that is the modal scrim, not a box fill.</span></div>
       <div class="row"><b>Border</b><span>On/off only (border.default) — not a role choice like Input's, since Box isn't an interactive field.</span></div>
       <div class="row"><b>Radius</b><span>Not re-declared — the full existing radius scale applies as-is, shown below on a real Box.</span></div>
       <div class="row"><b>Padding</b><span>A curated 5-step subset of the dim scale (none/xs/sm/md/lg) — enough for a generic container; anything more specific can still reach dim.* directly.</span></div>
@@ -242,7 +240,6 @@
   --tok-surface-page: #f9fafb;
   --tok-surface-default: #ffffff;
   --tok-surface-sunken: #e6e8eb;
-  --tok-surface-overlay: rgba(21, 25, 30, 0.5);
   --tok-border-default: #dadde0;
   --tok-text-secondary: #5d6a7a;
   --tok-family-sans: 'Sora', sans-serif;
@@ -253,7 +250,6 @@
 .box--page { background: var(--tok-surface-page); }
 .box--default { background: var(--tok-surface-default); }
 .box--sunken { background: var(--tok-surface-sunken); }
-.box--overlay { background: var(--tok-surface-overlay); }
 .box--padding-none { padding: 0px; }
 .box--padding-xs { padding: 8px; }
 .box--padding-sm { padding: 12px; }
@@ -283,13 +279,6 @@
         <div class="story-preview"><div class="box box--sunken box--border box--padding-md demo-box">Box</div></div>
         <pre class="code"><code>&lt;div class="box box--sunken box--border box--padding-md"&gt;…&lt;/div&gt;</code></pre>
         <p class="story-note">Recessed — same role Input/Select/Search use for their own field background.</p>
-      </div>
-
-      <div class="story">
-        <h3>surface.overlay</h3>
-        <div class="story-preview"><div class="box box--overlay box--border box--padding-md demo-box">Box</div></div>
-        <pre class="code"><code>&lt;div class="box box--overlay box--border box--padding-md"&gt;…&lt;/div&gt;</code></pre>
-        <p class="story-note">Modal/drawer backdrop surface — includes its own alpha, per the semantic layer's own token.</p>
       </div>
     </div>
 

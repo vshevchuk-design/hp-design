@@ -63,7 +63,7 @@ const px = (d) => `${d.value}${d.unit}`;
 const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 const cv = (tokenPath) => `var(${cssVarName(tokenPath)})`;
 
-const colorPaths = ["surface.page", "surface.default", "surface.sunken", "surface.overlay", "border.default", "text.secondary"];
+const colorPaths = ["surface.page", "surface.default", "surface.sunken", "border.default", "text.secondary"];
 const colorValue = Object.fromEntries(colorPaths.map((p) => [p, resolve(p)]));
 const fontSans = resolve("family.sans");
 const rootVars = renderRootVars([...colorPaths.map((p) => [p, colorValue[p]]), ["family.sans", `'${fontSans}', sans-serif`]]);
@@ -87,7 +87,6 @@ const css = `${rootVars}
 .box--page { background: ${cv("surface.page")}; }
 .box--default { background: ${cv("surface.default")}; }
 .box--sunken { background: ${cv("surface.sunken")}; }
-.box--overlay { background: ${cv("surface.overlay")}; }
 .box--padding-none { padding: ${paddingValue.none}; }
 .box--padding-xs { padding: ${paddingValue.xs}; }
 .box--padding-sm { padding: ${paddingValue.sm}; }
@@ -108,7 +107,6 @@ const surfaceDefs = [
   { key: "page", label: "surface.page", note: "The page background itself — a Box in this role only reads as a container once nested inside something with a different surface." },
   { key: "default", label: "surface.default", note: "The ordinary card/panel background." },
   { key: "sunken", label: "surface.sunken", note: "Recessed — same role Input/Select/Search use for their own field background." },
-  { key: "overlay", label: "surface.overlay", note: "Modal/drawer backdrop surface — includes its own alpha, per the semantic layer's own token." },
 ];
 function surfaceStories() {
   return surfaceDefs
@@ -233,7 +231,7 @@ const html = `<!doctype html>
     <div class="legend">
       <div class="row"><b>Lowest-level primitive</b><span>A generic container exposing surface/border/padding directly, no fixed combination — <a href="card.html">Card</a> is built on top of it by picking one specific combination for content grouping.</span></div>
       <div class="row"><b>No states</b><span>Purely presentational — same as <a href="separator.html">Separator</a>, a plain container never reacts to hover/focus/press on its own.</span></div>
-      <div class="row"><b>Surface</b><span>Every semantic surface role except disabled (a component-state concept, not a layout choice): page/default/sunken/overlay.</span></div>
+      <div class="row"><b>Surface</b><span>Every semantic surface role except disabled (a component-state concept, not a layout choice): page / default / sunken. Not <code class="tok">surface.overlay</code> — that is the modal scrim, not a box fill.</span></div>
       <div class="row"><b>Border</b><span>On/off only (border.default) — not a role choice like Input's, since Box isn't an interactive field.</span></div>
       <div class="row"><b>Radius</b><span>Not re-declared — the full existing radius scale applies as-is, shown below on a real Box.</span></div>
       <div class="row"><b>Padding</b><span>A curated 5-step subset of the dim scale (none/xs/sm/md/lg) — enough for a generic container; anything more specific can still reach dim.* directly.</span></div>
