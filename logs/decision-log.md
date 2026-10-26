@@ -1743,3 +1743,7 @@ Mid-round the user asked why the error border was so pale: it was `border.danger
 
 Same day: the Figma Input hid its leading icon and the new reveal button by default, and the Read-only column had no label — the user caught it. Both booleans now default to true (existing instances, including the Inputs nested in Form's Field slots, kept as they were), Read-only got its column label, and the column labels moved clear of the set's own name label. Rule: a main component shows every optional part.
 Then the user asked to hide them again and show them in context instead: Show leading icon / Show reveal default to false; **Input / Examples** frame has Search (search icon), Email (email icon), Password (reveal), Read-only. Rule refined: common parts on by default, contextual parts off but always shown in an example. The Input page got an "Icon left — email" story too.
+
+## 2026-10-26 — No Label component
+
+Storybook has Label (Default, With Input, Weights normal/medium/semibold, Tones inherit/muted). It is a styled `<label>`: click-to-focus and the accessible name are the value, not the look. We already have both wherever labels live (Field label above, Input/Select floating label, Checkbox/Radio text) with exactly two looks. A standalone Label with weight/tone props would let every screen pick its own label style. Not built; a legend row on form.html says where Label went. User agreed.
