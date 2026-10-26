@@ -92,7 +92,12 @@
   --tok-fill-neutral-hover: #e6e8eb;
   --tok-fill-neutral-active: #cdd1d6;
   --tok-bg-danger: #ffdfde;
+  --tok-bg-primary-hover: #eff6ff;
   --tok-fill-primary: #077fec;
+  --tok-icon-on-fill: #ffffff;
+  --tok-fill-primary-hover: #0468c4;
+  --tok-surface-disabled: #e6e8eb;
+  --tok-fill-disabled: #e6e8eb;
   --tok-text-muted: #758191;
   --tok-family-sans: 'Sora', sans-serif;
 }
@@ -106,11 +111,25 @@
 .dropdown-menu__item[aria-expanded="true"] { background: var(--tok-fill-neutral-hover); }
 .dropdown-menu__icon { width: 16px; height: 16px; flex-shrink: 0; color: var(--tok-icon-secondary); }
 .dropdown-menu__chevron { width: 16px; height: 16px; flex-shrink: 0; margin-left: auto; color: var(--tok-icon-secondary); }
-/* ✓ / dot slot — reserved on every checkbox/radio item so labels line up */
-.dropdown-menu__indicator { width: 16px; height: 16px; flex-shrink: 0; display: grid; place-items: center; color: var(--tok-fill-primary); }
-.dropdown-menu__indicator svg { width: 100%; height: 100%; }
-.dropdown-menu__dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
-.dropdown-menu__item[aria-checked="false"] .dropdown-menu__indicator > * { visibility: hidden; }
+/* the real Checkbox / Radio — the row's hover drives their hover, as a label would */
+.dropdown-menu__checkbox, .dropdown-menu__radio { box-sizing: border-box; flex-shrink: 0; display: grid; place-items: center; }
+.dropdown-menu__checkbox { width: 20px; height: 20px; border-radius: 4px; border: 2px solid var(--tok-border-default); background: var(--tok-surface-default); }
+.dropdown-menu__checkbox svg { width: 16px; height: 16px; color: var(--tok-icon-on-fill); visibility: hidden; }
+.dropdown-menu__item:hover .dropdown-menu__checkbox { border-color: var(--tok-fill-primary); background: var(--tok-bg-primary-hover); }
+.dropdown-menu__item[aria-checked="true"] .dropdown-menu__checkbox { border-color: var(--tok-fill-primary); background: var(--tok-fill-primary); }
+.dropdown-menu__item[aria-checked="true"]:hover .dropdown-menu__checkbox { border-color: var(--tok-fill-primary-hover); background: var(--tok-fill-primary-hover); }
+.dropdown-menu__item[aria-checked="true"] .dropdown-menu__checkbox svg { visibility: visible; }
+.dropdown-menu__radio { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--tok-border-default); background: var(--tok-surface-default); }
+.dropdown-menu__radio::after { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--tok-fill-primary); visibility: hidden; }
+.dropdown-menu__item:hover .dropdown-menu__radio { border-color: var(--tok-fill-primary); background: var(--tok-bg-primary-hover); }
+.dropdown-menu__item[aria-checked="true"] .dropdown-menu__radio { border-color: var(--tok-fill-primary); background: var(--tok-surface-default); }
+.dropdown-menu__item[aria-checked="true"] .dropdown-menu__radio::after { visibility: visible; }
+.dropdown-menu__item[aria-checked="true"]:hover .dropdown-menu__radio { border-color: var(--tok-fill-primary-hover); }
+.dropdown-menu__item[aria-checked="true"]:hover .dropdown-menu__radio::after { background: var(--tok-fill-primary-hover); }
+.dropdown-menu__item:disabled .dropdown-menu__checkbox { border-color: var(--tok-border-default); background: var(--tok-surface-disabled); }
+.dropdown-menu__item:disabled[aria-checked="true"] .dropdown-menu__checkbox { border-color: var(--tok-fill-disabled); background: var(--tok-fill-disabled); }
+.dropdown-menu__item:disabled[aria-checked="true"] .dropdown-menu__checkbox svg { color: var(--tok-icon-disabled); }
+.dropdown-menu__item:disabled .dropdown-menu__radio { border-color: var(--tok-border-default); background: var(--tok-surface-disabled); }
 .dropdown-menu__item:disabled { color: var(--tok-text-disabled); cursor: not-allowed; }
 .dropdown-menu__item:disabled:hover { background: none; }
 .dropdown-menu__item:disabled .dropdown-menu__icon { color: var(--tok-icon-disabled); }
@@ -255,8 +274,8 @@
       <div class="row"><b>Not a Popover variant</b><span>Radix/Storybook's DropdownMenu (renamed from Menu 2026-10-26). Built on Popover's exact shell (native <code class="tok">popover</code> attribute, border+shadow.sm+radius.default, same positioning script) but kept as its own component — a list of actions has a different content/keyboard model than arbitrary Popover content, same reasoning Dialog/Drawer stayed separate despite sharing &lt;dialog&gt;.</span></div>
       <div class="row"><b>Not Listbox</b><span>Items here are things you <em>do</em> (Rename, Duplicate, Delete) or view settings that apply at once — a list of selectable <em>options</em> (checkboxes, single/multi-select) is <a href="listbox.html">Listbox</a>, a separate component with a different ARIA role (listbox/option vs. menu/menuitem).</span></div>
       <div class="row"><b>Group label</b><span>Heads a group ("Actions", "Sort order") — Command's group heading, resolved from <code class="tok">command.tokens.json</code>: <code class="tok">heading-sm</code> · <code class="tok">text.muted</code>, 28px tall. Not clickable.</span></div>
-      <div class="row"><b>Checkbox items</b><span><code class="tok">role="menuitemcheckbox"</code> — toggles a view setting (which columns show). ✓ in a 16px leading slot, Listbox's selected colour (<code class="tok">fill.primary</code>). Several can be on; the menu stays open.</span></div>
-      <div class="row"><b>Radio items</b><span><code class="tok">role="menuitemradio"</code> in a <code class="tok">role="group"</code> — one of a set (sort order). A 8px dot, not a full Radio ring: a dot vs. a ✓ is enough to tell one-of from many. The menu stays open.</span></div>
+      <div class="row"><b>Checkbox items</b><span><code class="tok">role="menuitemcheckbox"</code> — toggles a view setting (which columns show). The mark is the real <a href="checkbox.html">Checkbox</a> (20px, its own tokens), and hovering the row hovers it, as its label would. Several can be on; the menu stays open.</span></div>
+      <div class="row"><b>Radio items</b><span><code class="tok">role="menuitemradio"</code> in a <code class="tok">role="group"</code> — one of a set (sort order). The mark is the real <a href="radio.html">Radio</a> (20px, its own tokens). The menu stays open.</span></div>
       <div class="row"><b>vs. Listbox</b><span>A checkbox/radio item changes something <em>right away</em> (the table re-sorts). A value a form submits — a field showing what's chosen — is <a href="listbox.html">Listbox</a> inside Select.</span></div>
       <div class="row"><b>Submenu</b><span>An item with a trailing › opens a nested menu beside it — on hover, click or →; ← or hovering a sibling closes it. It overlaps the parent's edge by 4px so the pointer never crosses a gap, and flips to the left when there's no room. The trigger keeps its hover fill while open. A nested popover in the parent's DOM, so closing the parent closes it.</span></div>
       <div class="row"><b>Concentric radius</b><span>Panel is radius.default (8px), items are radius.xs (4px) — 8px outer minus the 4px outer padding, so a corner item's curve lines up with the panel's own curve instead of fighting it.</span></div>
@@ -280,7 +299,12 @@
   --tok-fill-neutral-hover: #e6e8eb;
   --tok-fill-neutral-active: #cdd1d6;
   --tok-bg-danger: #ffdfde;
+  --tok-bg-primary-hover: #eff6ff;
   --tok-fill-primary: #077fec;
+  --tok-icon-on-fill: #ffffff;
+  --tok-fill-primary-hover: #0468c4;
+  --tok-surface-disabled: #e6e8eb;
+  --tok-fill-disabled: #e6e8eb;
   --tok-text-muted: #758191;
   --tok-family-sans: 'Sora', sans-serif;
 }
@@ -294,11 +318,25 @@
 .dropdown-menu__item[aria-expanded="true"] { background: var(--tok-fill-neutral-hover); }
 .dropdown-menu__icon { width: 16px; height: 16px; flex-shrink: 0; color: var(--tok-icon-secondary); }
 .dropdown-menu__chevron { width: 16px; height: 16px; flex-shrink: 0; margin-left: auto; color: var(--tok-icon-secondary); }
-/* ✓ / dot slot — reserved on every checkbox/radio item so labels line up */
-.dropdown-menu__indicator { width: 16px; height: 16px; flex-shrink: 0; display: grid; place-items: center; color: var(--tok-fill-primary); }
-.dropdown-menu__indicator svg { width: 100%; height: 100%; }
-.dropdown-menu__dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
-.dropdown-menu__item[aria-checked="false"] .dropdown-menu__indicator &gt; * { visibility: hidden; }
+/* the real Checkbox / Radio — the row's hover drives their hover, as a label would */
+.dropdown-menu__checkbox, .dropdown-menu__radio { box-sizing: border-box; flex-shrink: 0; display: grid; place-items: center; }
+.dropdown-menu__checkbox { width: 20px; height: 20px; border-radius: 4px; border: 2px solid var(--tok-border-default); background: var(--tok-surface-default); }
+.dropdown-menu__checkbox svg { width: 16px; height: 16px; color: var(--tok-icon-on-fill); visibility: hidden; }
+.dropdown-menu__item:hover .dropdown-menu__checkbox { border-color: var(--tok-fill-primary); background: var(--tok-bg-primary-hover); }
+.dropdown-menu__item[aria-checked="true"] .dropdown-menu__checkbox { border-color: var(--tok-fill-primary); background: var(--tok-fill-primary); }
+.dropdown-menu__item[aria-checked="true"]:hover .dropdown-menu__checkbox { border-color: var(--tok-fill-primary-hover); background: var(--tok-fill-primary-hover); }
+.dropdown-menu__item[aria-checked="true"] .dropdown-menu__checkbox svg { visibility: visible; }
+.dropdown-menu__radio { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--tok-border-default); background: var(--tok-surface-default); }
+.dropdown-menu__radio::after { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--tok-fill-primary); visibility: hidden; }
+.dropdown-menu__item:hover .dropdown-menu__radio { border-color: var(--tok-fill-primary); background: var(--tok-bg-primary-hover); }
+.dropdown-menu__item[aria-checked="true"] .dropdown-menu__radio { border-color: var(--tok-fill-primary); background: var(--tok-surface-default); }
+.dropdown-menu__item[aria-checked="true"] .dropdown-menu__radio::after { visibility: visible; }
+.dropdown-menu__item[aria-checked="true"]:hover .dropdown-menu__radio { border-color: var(--tok-fill-primary-hover); }
+.dropdown-menu__item[aria-checked="true"]:hover .dropdown-menu__radio::after { background: var(--tok-fill-primary-hover); }
+.dropdown-menu__item:disabled .dropdown-menu__checkbox { border-color: var(--tok-border-default); background: var(--tok-surface-disabled); }
+.dropdown-menu__item:disabled[aria-checked="true"] .dropdown-menu__checkbox { border-color: var(--tok-fill-disabled); background: var(--tok-fill-disabled); }
+.dropdown-menu__item:disabled[aria-checked="true"] .dropdown-menu__checkbox svg { color: var(--tok-icon-disabled); }
+.dropdown-menu__item:disabled .dropdown-menu__radio { border-color: var(--tok-border-default); background: var(--tok-surface-disabled); }
 .dropdown-menu__item:disabled { color: var(--tok-text-disabled); cursor: not-allowed; }
 .dropdown-menu__item:disabled:hover { background: none; }
 .dropdown-menu__item:disabled .dropdown-menu__icon { color: var(--tok-icon-disabled); }
@@ -384,9 +422,9 @@
     <li role="none">
       <div class="dropdown-menu__label" id="dm-check-g-label">Toggle columns</div>
       <ul class="dropdown-menu__list" role="group" aria-labelledby="dm-check-g-label">
-        <li role="none"><button class="dropdown-menu__item" role="menuitemcheckbox" aria-checked="true"><span class="dropdown-menu__indicator"><svg class="" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>Status</button></li>
-        <li role="none"><button class="dropdown-menu__item" role="menuitemcheckbox" aria-checked="false"><span class="dropdown-menu__indicator"><svg class="" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>Activity</button></li>
-        <li role="none"><button class="dropdown-menu__item" role="menuitemcheckbox" aria-checked="true"><span class="dropdown-menu__indicator"><svg class="" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>Last message</button></li>
+        <li role="none"><button class="dropdown-menu__item" role="menuitemcheckbox" aria-checked="true"><span class="dropdown-menu__checkbox" aria-hidden="true"><svg class="" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>Status</button></li>
+        <li role="none"><button class="dropdown-menu__item" role="menuitemcheckbox" aria-checked="false"><span class="dropdown-menu__checkbox" aria-hidden="true"><svg class="" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>Activity</button></li>
+        <li role="none"><button class="dropdown-menu__item" role="menuitemcheckbox" aria-checked="true"><span class="dropdown-menu__checkbox" aria-hidden="true"><svg class="" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>Last message</button></li>
       </ul>
     </li>
   </ul>
@@ -397,9 +435,9 @@
     &lt;li role="none"&gt;
       &lt;div class="dropdown-menu__label" id="dm-check-g-label"&gt;Toggle columns&lt;/div&gt;
       &lt;ul class="dropdown-menu__list" role="group" aria-labelledby="dm-check-g-label"&gt;
-        &lt;li role="none"&gt;&lt;button class="dropdown-menu__item" role="menuitemcheckbox" aria-checked="true"&gt;&lt;span class="dropdown-menu__indicator"&gt;…&lt;/span&gt;Status&lt;/button&gt;&lt;/li&gt;
-        &lt;li role="none"&gt;&lt;button class="dropdown-menu__item" role="menuitemcheckbox" aria-checked="false"&gt;&lt;span class="dropdown-menu__indicator"&gt;…&lt;/span&gt;Activity&lt;/button&gt;&lt;/li&gt;
-        &lt;li role="none"&gt;&lt;button class="dropdown-menu__item" role="menuitemcheckbox" aria-checked="true"&gt;&lt;span class="dropdown-menu__indicator"&gt;…&lt;/span&gt;Last message&lt;/button&gt;&lt;/li&gt;
+        &lt;li role="none"&gt;&lt;button class="dropdown-menu__item" role="menuitemcheckbox" aria-checked="true"&gt;&lt;span class="dropdown-menu__checkbox" aria-hidden="true"&gt;…&lt;/span&gt;Status&lt;/button&gt;&lt;/li&gt;
+        &lt;li role="none"&gt;&lt;button class="dropdown-menu__item" role="menuitemcheckbox" aria-checked="false"&gt;&lt;span class="dropdown-menu__checkbox" aria-hidden="true"&gt;…&lt;/span&gt;Activity&lt;/button&gt;&lt;/li&gt;
+        &lt;li role="none"&gt;&lt;button class="dropdown-menu__item" role="menuitemcheckbox" aria-checked="true"&gt;&lt;span class="dropdown-menu__checkbox" aria-hidden="true"&gt;…&lt;/span&gt;Last message&lt;/button&gt;&lt;/li&gt;
       &lt;/ul&gt;
     &lt;/li&gt;
   &lt;/ul&gt;
@@ -415,9 +453,9 @@
     <li role="none">
       <div class="dropdown-menu__label" id="dm-radio-g-label">Sort order</div>
       <ul class="dropdown-menu__list" role="group" aria-labelledby="dm-radio-g-label">
-        <li role="none"><button class="dropdown-menu__item" role="menuitemradio" aria-checked="true"><span class="dropdown-menu__indicator"><span class="dropdown-menu__dot"></span></span>Name</button></li>
-        <li role="none"><button class="dropdown-menu__item" role="menuitemradio" aria-checked="false"><span class="dropdown-menu__indicator"><span class="dropdown-menu__dot"></span></span>Date</button></li>
-        <li role="none"><button class="dropdown-menu__item" role="menuitemradio" aria-checked="false"><span class="dropdown-menu__indicator"><span class="dropdown-menu__dot"></span></span>Status</button></li>
+        <li role="none"><button class="dropdown-menu__item" role="menuitemradio" aria-checked="true"><span class="dropdown-menu__radio" aria-hidden="true"></span>Name</button></li>
+        <li role="none"><button class="dropdown-menu__item" role="menuitemradio" aria-checked="false"><span class="dropdown-menu__radio" aria-hidden="true"></span>Date</button></li>
+        <li role="none"><button class="dropdown-menu__item" role="menuitemradio" aria-checked="false"><span class="dropdown-menu__radio" aria-hidden="true"></span>Status</button></li>
       </ul>
     </li>
   </ul>
@@ -428,9 +466,9 @@
     &lt;li role="none"&gt;
       &lt;div class="dropdown-menu__label" id="dm-radio-g-label"&gt;Sort order&lt;/div&gt;
       &lt;ul class="dropdown-menu__list" role="group" aria-labelledby="dm-radio-g-label"&gt;
-        &lt;li role="none"&gt;&lt;button class="dropdown-menu__item" role="menuitemradio" aria-checked="true"&gt;&lt;span class="dropdown-menu__indicator"&gt;&lt;span class="dropdown-menu__dot"&gt;&lt;/span&gt;&lt;/span&gt;Name&lt;/button&gt;&lt;/li&gt;
-        &lt;li role="none"&gt;&lt;button class="dropdown-menu__item" role="menuitemradio" aria-checked="false"&gt;&lt;span class="dropdown-menu__indicator"&gt;&lt;span class="dropdown-menu__dot"&gt;&lt;/span&gt;&lt;/span&gt;Date&lt;/button&gt;&lt;/li&gt;
-        &lt;li role="none"&gt;&lt;button class="dropdown-menu__item" role="menuitemradio" aria-checked="false"&gt;&lt;span class="dropdown-menu__indicator"&gt;&lt;span class="dropdown-menu__dot"&gt;&lt;/span&gt;&lt;/span&gt;Status&lt;/button&gt;&lt;/li&gt;
+        &lt;li role="none"&gt;&lt;button class="dropdown-menu__item" role="menuitemradio" aria-checked="true"&gt;&lt;span class="dropdown-menu__radio" aria-hidden="true"&gt;&lt;/span&gt;Name&lt;/button&gt;&lt;/li&gt;
+        &lt;li role="none"&gt;&lt;button class="dropdown-menu__item" role="menuitemradio" aria-checked="false"&gt;&lt;span class="dropdown-menu__radio" aria-hidden="true"&gt;&lt;/span&gt;Date&lt;/button&gt;&lt;/li&gt;
+        &lt;li role="none"&gt;&lt;button class="dropdown-menu__item" role="menuitemradio" aria-checked="false"&gt;&lt;span class="dropdown-menu__radio" aria-hidden="true"&gt;&lt;/span&gt;Status&lt;/button&gt;&lt;/li&gt;
       &lt;/ul&gt;
     &lt;/li&gt;
   &lt;/ul&gt;

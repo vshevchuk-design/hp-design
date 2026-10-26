@@ -63,19 +63,22 @@ const px = (d) => `${d.value}${d.unit}`;
 const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 const cv = (tokenPath) => `var(${cssVarName(tokenPath)})`;
 
-// Indicator colour is Listbox's selected checkmark; the group label is
-// Command's group heading — both resolved from their own token files.
-const listbox = load("tokens/components/listbox.tokens.json").component.listbox;
+// Checkbox/radio items carry the real Checkbox and Radio; the group label is
+// Command's group heading — all resolved from their own token files.
+const checkbox = load("tokens/components/checkbox.tokens.json").component.checkbox;
+const radio = load("tokens/components/radio.tokens.json").component.radio;
 const command = load("tokens/components/command.tokens.json").component.command;
 const refPath = (n) => n.$value.replace(/[{}]/g, "");
-const checkRole = refPath(listbox.state.selected.checkmark);
+const cb = checkbox.state, rd = radio.state;
+const markRoles = [cb.default.bg, cb.default.border, cb.hover.bg, cb.hover.border, cb.checked.bg, cb.checked.border, cb.checked.icon, cb.checkedHover.bg, cb.checkedHover.border, cb.disabled.bg, cb.disabled.border, cb.disabledChecked.bg, cb.disabledChecked.border, cb.disabledChecked.icon,
+  rd.default.bg, rd.default.border, rd.hover.bg, rd.hover.border, rd.checked.bg, rd.checked.border, rd.checked.dot, rd.checkedHover.border, rd.checkedHover.dot, rd.disabled.bg, rd.disabled.border].map(refPath);
 const headingRole = refPath(command.group.headingColor);
 
 const colorPaths = [...new Set([
   "fill.neutralHoverStrong",
   "surface.default", "border.default", "border.focus", "text.default", "text.disabled", "text.danger",
   "icon.secondary", "icon.disabled", "icon.danger", "fill.neutral", "fill.neutralHover", "fill.neutralActive", "bg.danger",
-  checkRole, headingRole,
+  ...markRoles, headingRole,
 ])];
 const colorValue = Object.fromEntries(colorPaths.map((p) => [p, resolve(p)]));
 const fontSans = resolve("family.sans");
@@ -92,8 +95,9 @@ const iconSize = px(resolve(menu.iconSize.$value));
 const labelType = resolveToken(menu.label);
 const shadow = resolveToken(menu.shadow);
 const shadowCss = `${px(shadow.offsetX)} ${px(shadow.offsetY)} ${px(shadow.blur)} ${px(shadow.spread)} ${shadow.color}`;
-const indicatorSize = px(resolve(menu.indicator.size.$value));
-const dotSize = px(resolve(menu.indicator.dot.$value));
+const R = (n) => cv(refPath(n));
+const cbBox = px(resolve(checkbox.size.box.$value)), cbIcon = px(resolve(checkbox.size.iconSize.$value)), cbBorder = px(resolve(checkbox.size.borderWidth.$value)), cbRadius = px(resolve(checkbox.radius.$value));
+const rdCircle = px(resolve(radio.size.circle.$value)), rdDot = px(resolve(radio.size.dot.$value)), rdBorder = px(resolve(radio.size.borderWidth.$value));
 const overlap = resolve(menu.submenu.overlap.$value).value;
 const headingType = resolveToken(command.group.heading);
 const headingHeight = px(resolve(command.group.headingHeight.$value));
@@ -115,11 +119,25 @@ const css = `${rootVars}
 .dropdown-menu__item[aria-expanded="true"] { background: ${cv("fill.neutralHover")}; }
 .dropdown-menu__icon { width: ${iconSize}; height: ${iconSize}; flex-shrink: 0; color: ${cv("icon.secondary")}; }
 .dropdown-menu__chevron { width: ${iconSize}; height: ${iconSize}; flex-shrink: 0; margin-left: auto; color: ${cv("icon.secondary")}; }
-/* ✓ / dot slot — reserved on every checkbox/radio item so labels line up */
-.dropdown-menu__indicator { width: ${indicatorSize}; height: ${indicatorSize}; flex-shrink: 0; display: grid; place-items: center; color: ${cv(checkRole)}; }
-.dropdown-menu__indicator svg { width: 100%; height: 100%; }
-.dropdown-menu__dot { width: ${dotSize}; height: ${dotSize}; border-radius: 50%; background: currentColor; }
-.dropdown-menu__item[aria-checked="false"] .dropdown-menu__indicator > * { visibility: hidden; }
+/* the real Checkbox / Radio — the row's hover drives their hover, as a label would */
+.dropdown-menu__checkbox, .dropdown-menu__radio { box-sizing: border-box; flex-shrink: 0; display: grid; place-items: center; }
+.dropdown-menu__checkbox { width: ${cbBox}; height: ${cbBox}; border-radius: ${cbRadius}; border: ${cbBorder} solid ${R(cb.default.border)}; background: ${R(cb.default.bg)}; }
+.dropdown-menu__checkbox svg { width: ${cbIcon}; height: ${cbIcon}; color: ${R(cb.checked.icon)}; visibility: hidden; }
+.dropdown-menu__item:hover .dropdown-menu__checkbox { border-color: ${R(cb.hover.border)}; background: ${R(cb.hover.bg)}; }
+.dropdown-menu__item[aria-checked="true"] .dropdown-menu__checkbox { border-color: ${R(cb.checked.border)}; background: ${R(cb.checked.bg)}; }
+.dropdown-menu__item[aria-checked="true"]:hover .dropdown-menu__checkbox { border-color: ${R(cb.checkedHover.border)}; background: ${R(cb.checkedHover.bg)}; }
+.dropdown-menu__item[aria-checked="true"] .dropdown-menu__checkbox svg { visibility: visible; }
+.dropdown-menu__radio { width: ${rdCircle}; height: ${rdCircle}; border-radius: 50%; border: ${rdBorder} solid ${R(rd.default.border)}; background: ${R(rd.default.bg)}; }
+.dropdown-menu__radio::after { content: ""; width: ${rdDot}; height: ${rdDot}; border-radius: 50%; background: ${R(rd.checked.dot)}; visibility: hidden; }
+.dropdown-menu__item:hover .dropdown-menu__radio { border-color: ${R(rd.hover.border)}; background: ${R(rd.hover.bg)}; }
+.dropdown-menu__item[aria-checked="true"] .dropdown-menu__radio { border-color: ${R(rd.checked.border)}; background: ${R(rd.checked.bg)}; }
+.dropdown-menu__item[aria-checked="true"] .dropdown-menu__radio::after { visibility: visible; }
+.dropdown-menu__item[aria-checked="true"]:hover .dropdown-menu__radio { border-color: ${R(rd.checkedHover.border)}; }
+.dropdown-menu__item[aria-checked="true"]:hover .dropdown-menu__radio::after { background: ${R(rd.checkedHover.dot)}; }
+.dropdown-menu__item:disabled .dropdown-menu__checkbox { border-color: ${R(cb.disabled.border)}; background: ${R(cb.disabled.bg)}; }
+.dropdown-menu__item:disabled[aria-checked="true"] .dropdown-menu__checkbox { border-color: ${R(cb.disabledChecked.border)}; background: ${R(cb.disabledChecked.bg)}; }
+.dropdown-menu__item:disabled[aria-checked="true"] .dropdown-menu__checkbox svg { color: ${R(cb.disabledChecked.icon)}; }
+.dropdown-menu__item:disabled .dropdown-menu__radio { border-color: ${R(rd.disabled.border)}; background: ${R(rd.disabled.bg)}; }
 .dropdown-menu__item:disabled { color: ${cv("text.disabled")}; cursor: not-allowed; }
 .dropdown-menu__item:disabled:hover { background: none; }
 .dropdown-menu__item:disabled .dropdown-menu__icon { color: ${cv("icon.disabled")}; }
@@ -157,8 +175,8 @@ ${ind}  </ul>
 ${ind}</li>`;
     }
     const cls = `dropdown-menu__item${it.destructive ? " dropdown-menu__item--destructive" : ""}`;
-    if (it.check !== undefined) return `${ind}<li role="none"><button class="${cls}" role="menuitemcheckbox" aria-checked="${it.check}"><span class="dropdown-menu__indicator">${svg("check", "")}</span>${it.text}</button></li>`;
-    if (it.radio !== undefined) return `${ind}<li role="none"><button class="${cls}" role="menuitemradio" aria-checked="${it.radio}"><span class="dropdown-menu__indicator"><span class="dropdown-menu__dot"></span></span>${it.text}</button></li>`;
+    if (it.check !== undefined) return `${ind}<li role="none"><button class="${cls}" role="menuitemcheckbox" aria-checked="${it.check}"><span class="dropdown-menu__checkbox" aria-hidden="true">${svg("check", "")}</span>${it.text}</button></li>`;
+    if (it.radio !== undefined) return `${ind}<li role="none"><button class="${cls}" role="menuitemradio" aria-checked="${it.radio}"><span class="dropdown-menu__radio" aria-hidden="true"></span>${it.text}</button></li>`;
     const icon = it.icon ? svg(it.icon) : "";
     if (it.sub) return `${ind}<li role="none">
 ${ind}  <button class="${cls}" role="menuitem" aria-haspopup="menu" aria-expanded="false" data-submenu="${it.sub.id}">${icon}${it.text}${svg("chevron_right", "dropdown-menu__chevron")}</button>
@@ -335,8 +353,8 @@ const html = `<!doctype html>
       <div class="row"><b>Not a Popover variant</b><span>Radix/Storybook's DropdownMenu (renamed from Menu 2026-10-26). Built on Popover's exact shell (native <code class="tok">popover</code> attribute, border+shadow.sm+radius.default, same positioning script) but kept as its own component — a list of actions has a different content/keyboard model than arbitrary Popover content, same reasoning Dialog/Drawer stayed separate despite sharing &lt;dialog&gt;.</span></div>
       <div class="row"><b>Not Listbox</b><span>Items here are things you <em>do</em> (Rename, Duplicate, Delete) or view settings that apply at once — a list of selectable <em>options</em> (checkboxes, single/multi-select) is <a href="listbox.html">Listbox</a>, a separate component with a different ARIA role (listbox/option vs. menu/menuitem).</span></div>
       <div class="row"><b>Group label</b><span>Heads a group ("Actions", "Sort order") — Command's group heading, resolved from <code class="tok">command.tokens.json</code>: <code class="tok">heading-sm</code> · <code class="tok">${headingRole}</code>, ${headingHeight} tall. Not clickable.</span></div>
-      <div class="row"><b>Checkbox items</b><span><code class="tok">role="menuitemcheckbox"</code> — toggles a view setting (which columns show). ✓ in a ${indicatorSize} leading slot, Listbox's selected colour (<code class="tok">${checkRole}</code>). Several can be on; the menu stays open.</span></div>
-      <div class="row"><b>Radio items</b><span><code class="tok">role="menuitemradio"</code> in a <code class="tok">role="group"</code> — one of a set (sort order). A ${dotSize} dot, not a full Radio ring: a dot vs. a ✓ is enough to tell one-of from many. The menu stays open.</span></div>
+      <div class="row"><b>Checkbox items</b><span><code class="tok">role="menuitemcheckbox"</code> — toggles a view setting (which columns show). The mark is the real <a href="checkbox.html">Checkbox</a> (${cbBox}, its own tokens), and hovering the row hovers it, as its label would. Several can be on; the menu stays open.</span></div>
+      <div class="row"><b>Radio items</b><span><code class="tok">role="menuitemradio"</code> in a <code class="tok">role="group"</code> — one of a set (sort order). The mark is the real <a href="radio.html">Radio</a> (${rdCircle}, its own tokens). The menu stays open.</span></div>
       <div class="row"><b>vs. Listbox</b><span>A checkbox/radio item changes something <em>right away</em> (the table re-sorts). A value a form submits — a field showing what's chosen — is <a href="listbox.html">Listbox</a> inside Select.</span></div>
       <div class="row"><b>Submenu</b><span>An item with a trailing › opens a nested menu beside it — on hover, click or →; ← or hovering a sibling closes it. It overlaps the parent's edge by ${px(resolve(menu.submenu.overlap.$value))} so the pointer never crosses a gap, and flips to the left when there's no room. The trigger keeps its hover fill while open. A nested popover in the parent's DOM, so closing the parent closes it.</span></div>
       <div class="row"><b>Concentric radius</b><span>Panel is radius.default (8px), items are radius.xs (4px) — 8px outer minus the 4px outer padding, so a corner item's curve lines up with the panel's own curve instead of fighting it.</span></div>
