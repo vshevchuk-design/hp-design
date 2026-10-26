@@ -20,7 +20,7 @@ export function ssCss(h) {
     return `${px(s.offsetX)} ${px(s.offsetY)} ${px(s.blur)} ${px(s.spread)} ${s.color}`;
   };
 
-  const { tabs, button, select, search, chip, listbox: lb, card, badge, pagination: pg, choiceTile: ct, radio, alert, toast, tooltip: tt, emptyState: es, modal, input, counter, progress, attachment: att, accordion: acc, datePicker: dp, calendar: cal, drawer, box, menu } = t;
+  const { tabs, button, select, search, chip, listbox: lb, card, badge, pagination: pg, choiceTile: ct, radio, alert, toast, tooltip: tt, emptyState: es, dialog: modal, input, counter, progress, attachment: att, accordion: acc, datePicker: dp, calendar: cal, drawer, box, menu } = t;
 
   const btn = (variant, size) => ({
     height: D(button[variant].size[size].height),

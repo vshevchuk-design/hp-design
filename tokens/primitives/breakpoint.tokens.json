@@ -1,10 +1,10 @@
 {
   "breakpoint": {
     "$description": "Viewport widths where layout changes. Read as min-width/max-width in @media — CSS custom properties can't be used inside a media query, so builders resolve these to literal px at build time. Added 2026-10-26 with Modal's mobile sheet; the first breakpoint in the system.",
-    "sm": {
+    "md": {
       "$type": "dimension",
-      "$value": "{dim.160}",
-      "$description": "640px — below this the viewport is a phone: Modal md/lg/xl become a bottom sheet."
+      "$value": "{dim.192}",
+      "$description": "768px — below this the viewport is a phone (or a small tablet in portrait): Modal md/lg/xl take Drawer's bottom placement. The same 768 the CX and Message Center prototypes already switched Drawer↔Modal at; named md after the common scale (Tailwind md = 768)."
     }
   }
 }

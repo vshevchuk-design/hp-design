@@ -1,7 +1,7 @@
 // Regenerates docs/alert-dialog.html from tokens/components/alert-dialog.tokens.json.
 // A modal confirmation the user must answer: no close (×), no outside-click,
 // Escape blocked — only the actions close it. The shell (width, radius, shadow,
-// surface, overlay, padding, type) is Modal's, resolved from modal.tokens.json,
+// surface, overlay, padding, type) is Dialog's, resolved from dialog.tokens.json,
 // so the two dialogs can't drift; this file only adds the stacked layout.
 // The generated <style> block IS the code shown in the "CSS" section below.
 // Run: node tools/build-alert-dialog-doc.mjs
@@ -25,7 +25,7 @@ const registry = {
 };
 const ad = load("tokens/components/alert-dialog.tokens.json").component.alertDialog;
 // the shell IS Modal's — resolved from its token file, never retyped
-const modal = load("tokens/components/modal.tokens.json").component.modal;
+const modal = load("tokens/components/dialog.tokens.json").component.dialog;
 const btnDanger = load("tokens/components/button.tokens.json").component.button.danger;
 
 function get(ref) { const parts = ref.replace(/[{}]/g, "").split("."); let n = registry; for (const p of parts) n = n[p]; if (n === undefined) throw new Error(`unresolved ${ref}`); return n; }
@@ -200,10 +200,10 @@ const html = `<!doctype html>
   </nav>
   <main>
     <h1>AlertDialog</h1>
-    <p class="sub">tokens/components/alert-dialog.tokens.json · generated — a confirmation the user has to answer. Same shell as <a href="modal.html">Modal</a>; no close (×), no click-outside, no Escape — only the actions close it.</p>
+    <p class="sub">tokens/components/alert-dialog.tokens.json · generated — a confirmation the user has to answer. Same shell as <a href="dialog.html">Dialog</a>; no close (×), no click-outside, no Escape — only the actions close it.</p>
 
     <div class="legend">
-      <div class="row"><b>Shell</b><span>Modal's, resolved from <code class="tok">modal.tokens.json</code>: ${D(modal.size.sm)} wide, <code class="tok">radius.xl</code>, <code class="tok">shadow.lg</code>, <code class="tok">surface.default</code> over a <code class="tok">surface.overlay</code> backdrop, ${D(modal.padding)} padding, native <code class="tok">showModal()</code>.</span></div>
+      <div class="row"><b>Shell</b><span>Dialog's, resolved from <code class="tok">modal.tokens.json</code>: ${D(modal.size.sm)} wide, <code class="tok">radius.xl</code>, <code class="tok">shadow.lg</code>, <code class="tok">surface.default</code> over a <code class="tok">surface.overlay</code> backdrop, ${D(modal.padding)} padding, native <code class="tok">showModal()</code>.</span></div>
       <div class="row"><b>Layout</b><span>One block — title (<code class="tok">heading-lg</code>) over description (<code class="tok">body-base</code>, <code class="tok">text.secondary</code>) ${D(ad.stackGap)} apart, actions ${D(ad.actionsGap)} below, right-aligned, safe action first. No header / footer bands, no dividers.</span></div>
       <div class="row"><b>Can't be dismissed</b><span>No ×. A backdrop click does nothing (there's no outside-click handler), and Escape is blocked by preventDefault() on the dialog's native <code class="tok">cancel</code> event.</span></div>
       <div class="row"><b>A11y</b><span><code class="tok">role="alertdialog"</code>, <code class="tok">aria-labelledby</code> the title, <code class="tok">aria-describedby</code> the description. <code class="tok">autofocus</code> on Cancel, so Enter right after opening never confirms a destructive action.</span></div>

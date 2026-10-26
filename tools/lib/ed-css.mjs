@@ -31,7 +31,7 @@ export function edCss(h) {
   const card = t.card, alert = t.alert, acc = t.accordion, pg = t.progress, sp = t.spinner;
   const badge = t.badge, chip = t.chip, lb = t.listbox, table = t.table;
   const button = t.button, input = t.input, select = t.select, search = t.search;
-  const es = t.emptyState, avatar = t.avatar, modal = t.modal, cb = t.checkbox, drawer = t.drawer;
+  const es = t.emptyState, avatar = t.avatar, modal = t.dialog, cb = t.checkbox, drawer = t.drawer;
   const drShadow = h.resolveToken(drawer.shadow);
   const drShadowCss = `${px(drShadow.offsetX)} ${px(drShadow.offsetY)} ${px(drShadow.blur)} ${px(drShadow.spread)} ${drShadow.color}`;
   const drMs = px(h.resolveToken(drawer.transitionDuration));

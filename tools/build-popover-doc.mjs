@@ -247,7 +247,7 @@ const html = `<!doctype html>
       <div class="row"><b>Border + shadow, both</b><span>Unlike Card (border-only, doesn't float) or Tooltip (shadow-only, no border) — Popover floats (needs shadow.sm) but also carries structured content worth a crisp edge (border.default).</span></div>
       <div class="row"><b>Positioning</b><span>The Popover API alone doesn't anchor-position — a small script (shown below) reads the trigger's bounding rect on click and places the panel underneath it, gap.2 (8px) below.</span></div>
       <div class="row"><b>No animation</b><span>Instant show/hide, on purpose — kept the scope on the core native-dismissal behavior rather than entrance/exit polish.</span></div>
-      <div class="row"><b>Not modal</b><span>The rest of the page stays interactive while a Popover is open — that's the whole distinction from <a href="modal.html">Modal</a>/<a href="drawer.html">Drawer</a>.</span></div>
+      <div class="row"><b>Not modal</b><span>The rest of the page stays interactive while a Popover is open — that's the whole distinction from <a href="dialog.html">Dialog</a>/<a href="drawer.html">Drawer</a>.</span></div>
     </div>
 
     <h2 class="big-section">CSS</h2>

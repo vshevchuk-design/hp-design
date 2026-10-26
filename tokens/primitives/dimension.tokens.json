@@ -232,7 +232,15 @@
         "value": 640,
         "unit": "px"
       },
-      "$description": "640px — Modal md (forms); also breakpoint.sm."
+      "$description": "640px — Modal md (forms)."
+    },
+    "192": {
+      "$type": "dimension",
+      "$value": {
+        "value": 768,
+        "unit": "px"
+      },
+      "$description": "768px — breakpoint.md."
     },
     "200": {
       "$type": "dimension",

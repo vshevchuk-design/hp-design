@@ -21,7 +21,7 @@ const registry = {
 };
 const cmd = load("tokens/components/command.tokens.json").component.command;
 const search = load("tokens/components/search.tokens.json").component.search;
-const modal = load("tokens/components/modal.tokens.json").component.modal;
+const modal = load("tokens/components/dialog.tokens.json").component.dialog;
 
 function get(ref) { const parts = ref.replace(/[{}]/g, "").split("."); let n = registry; for (const p of parts) n = n[p]; if (n === undefined) throw new Error(`command: unresolved ${ref}`); return n; }
 function resolveValue(v) { if (typeof v === "string" && v.startsWith("{")) return resolveToken(get(v)); return v; }

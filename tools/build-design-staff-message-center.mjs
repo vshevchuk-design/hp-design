@@ -43,7 +43,7 @@ const emptyState = load("tokens/components/empty-state.tokens.json").component.e
 const toast = load("tokens/components/toast.tokens.json").component.toast;
 const select = load("tokens/components/select.tokens.json").component.select;
 const input = load("tokens/components/input.tokens.json").component.input;
-const modal = load("tokens/components/modal.tokens.json").component.modal;
+const modal = load("tokens/components/dialog.tokens.json").component.dialog;
 const threadListItem = load("tokens/components/thread-list-item.tokens.json").component.threadListItem;
 const badge = load("tokens/components/badge.tokens.json").component.badge;
 const avatar = load("tokens/components/avatar.tokens.json").component.avatar;
@@ -311,7 +311,7 @@ const inputLgHeight = px(resolve(input.size.lg.height.$value));
 const inputFocusLabelColor = refPath(input.state.focus.label.$value);
 const inputPopulatedLabelColor = refPath(input.state.populated.label.$value);
 
-// ---- Modal — the compose dialog shell, resolved from modal.tokens.json ----
+// ---- Modal — the compose dialog shell, resolved from dialog.tokens.json ----
 const mdWidth = px(resolve(modal.size.sm.$value));
 const mdRadius = px(resolve(modal.radius.$value));
 const mdPadding = px(resolve(modal.padding.$value));

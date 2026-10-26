@@ -26,7 +26,7 @@ const POSTS = [
     body: "A confirmation the user has to answer — no close button, no click-outside, no Escape; only the actions close it, and Cancel gets focus first. It used to be a hidden behaviour flag on Modal; now it's its own component on the same shell, laid out as one block: title, description, actions.",
     links: [
       { label: "AlertDialog", href: "alert-dialog.html" },
-      { label: "Modal", href: "modal.html" },
+      { label: "Dialog", href: "dialog.html" },
     ],
   },
   {
@@ -180,7 +180,7 @@ const POSTS = [
       { label: "Tooltip", href: "tooltip.html" },
       { label: "Popover", href: "popover.html" },
       { label: "Drawer", href: "drawer.html" },
-      { label: "Modal", href: "modal.html" },
+      { label: "Dialog", href: "dialog.html" },
     ],
   },
   {
@@ -191,7 +191,7 @@ const POSTS = [
     links: [
       { label: "Menu", href: "menu.html" },
       { label: "Listbox", href: "listbox.html" },
-      { label: "Modal", href: "modal.html" },
+      { label: "Dialog", href: "dialog.html" },
     ],
   },
   {

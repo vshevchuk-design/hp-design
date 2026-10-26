@@ -55,7 +55,7 @@ export const NAV_ITEMS = {
   tooltip: { label: "Tooltip", href: "tooltip.html" },
   popover: { label: "Popover", href: "popover.html" },
   drawer: { label: "Drawer", href: "drawer.html" },
-  modal: { label: "Modal", href: "modal.html" },
+  dialog: { label: "Dialog", href: "dialog.html" },
   "alert-dialog": { label: "AlertDialog", href: "alert-dialog.html" },
   menu: { label: "Menu", href: "menu.html" },
   command: { label: "Command", href: "command.html" },
@@ -211,7 +211,7 @@ export function renderNav(activeKey, { basePath = "" } = {}) {
     ${link("tooltip")}
     ${link("popover")}
     ${link("drawer")}
-    ${link("modal")}
+    ${link("dialog")}
     ${link("alert-dialog")}
     ${link("menu")}
     ${link("split-button")}
