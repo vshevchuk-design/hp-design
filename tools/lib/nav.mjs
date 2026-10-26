@@ -35,6 +35,7 @@ export const NAV_ITEMS = {
   fab: { label: "FAB", href: "fab.html" },
   counter: { label: "Counter", href: "counter.html" },
   input: { label: "Input", href: "input.html" },
+  form: { label: "Form", href: "form.html" },
   select: { label: "Select", href: "select.html" },
   search: { label: "Search", href: "search.html" },
   pagination: { label: "Pagination", href: "pagination.html" },
@@ -185,6 +186,7 @@ export function renderNav(activeKey, { basePath = "" } = {}) {
     ${link("fab")}
     ${link("counter")}
     ${link("input")}
+    ${link("form")}
     ${link("select")}
     ${link("calendar")}
     ${link("date-picker")}

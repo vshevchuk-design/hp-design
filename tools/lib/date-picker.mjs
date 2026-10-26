@@ -83,12 +83,13 @@ export const DATE_PICKER_CSS = `
 const MONTHS_ABBR = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const fmt = (iso) => { const [y, m, d] = iso.split("-").map(Number); return `${MONTHS_ABBR[m - 1]} ${d}, ${y}`; };
 
-/** DatePicker markup. Dates are ISO (YYYY-MM-DD); `block` makes it fill its container. */
-export function datePickerHtml({ id, value, placeholder = "Select date", today, min, max, label = "Date", block = false, chevron = true, extraClass = "" }) {
+/** DatePicker markup. Dates are ISO (YYYY-MM-DD); `block` makes it fill its container.
+ *  In a Field: `triggerId` is what the Field's <label for> points at (its name = that label + the chosen date), `describedBy` its description/error ids. */
+export function datePickerHtml({ id, value, placeholder = "Select date", today, min, max, label = "Date", block = false, chevron = true, extraClass = "", triggerId = "", describedBy = "" }) {
   const pid = `${id}-panel`;
   const val = value ? `<span class="datepicker__value">${fmt(value)}</span>` : `<span class="datepicker__value datepicker__value--placeholder">${placeholder}</span>`;
   return `<div class="datepicker${block ? " datepicker--block" : ""}${extraClass ? ` ${extraClass}` : ""}" id="${id}"${value ? ` data-value="${value}"` : ""} data-placeholder="${placeholder}">
-      <button class="datepicker__trigger" type="button" popovertarget="${pid}" aria-haspopup="dialog" aria-label="${label}">${icon("calendar_today", "datepicker__icon")}${val}${chevron ? icon("expand_more", "datepicker__chevron") : ""}</button>
+      <button class="datepicker__trigger" type="button"${triggerId ? ` id="${triggerId}"` : ""} popovertarget="${pid}" aria-haspopup="dialog"${triggerId ? ` aria-labelledby="${triggerId}-label ${triggerId}"` : ` aria-label="${label}"`}${describedBy ? ` aria-describedby="${describedBy}"` : ""}>${icon("calendar_today", "datepicker__icon")}${val}${chevron ? icon("expand_more", "datepicker__chevron") : ""}</button>
       <div class="datepicker__panel" id="${pid}" popover role="dialog" aria-label="Choose a date">${calendarHtml({ value, view: value ? undefined : (today || min)?.slice(0, 7), today, min, max, label })}</div>
     </div>`;
 }

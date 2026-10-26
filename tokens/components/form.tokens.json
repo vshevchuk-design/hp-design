@@ -1,0 +1,40 @@
+{
+  "component": {
+    "form": {
+      "$description": "Form — the layout and behaviour around a set of Fields (Storybook's Form, Default + With Validation). Fields stack in one column; a long form splits into titled sections; the actions sit under the last field, Primary first. Validation runs on Submit — nothing is red before the first attempt — and after that each field re-checks as it is corrected; Submit with errors moves focus to the first invalid field. One column capped at maxWidth: a form stretched to the full page width makes every field a long line to scan. Added 2026-10-26.",
+      "maxWidth": {
+        "$type": "dimension",
+        "$value": "{dim.120}",
+        "$description": "480px, the same width as Dialog sm — a form in a page and a form in a small dialog are the same column."
+      },
+      "fieldGap": {
+        "$type": "dimension",
+        "$value": "{dim.6}",
+        "$description": "24px between fields — clearly more than a field's own 4px messages, so a description never reads as belonging to the next field."
+      },
+      "sectionGap": {
+        "$type": "dimension",
+        "$value": "{dim.10}",
+        "$description": "40px between sections."
+      },
+      "sectionTitle": {
+        "$type": "typography",
+        "$value": "{text-style.heading-md}"
+      },
+      "sectionTitleColor": {
+        "$type": "color",
+        "$value": "{text.default}"
+      },
+      "sectionTitleGap": {
+        "$type": "dimension",
+        "$value": "{dim.4}",
+        "$description": "16px title → first field. Padding on the <legend>, since a legend sits outside the fieldset's flex gap."
+      },
+      "actionsGap": {
+        "$type": "dimension",
+        "$value": "{dim.3}",
+        "$description": "12px between the buttons — Dialog's footer gap."
+      }
+    }
+  }
+}
