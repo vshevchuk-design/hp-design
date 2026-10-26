@@ -32,13 +32,18 @@ export function collapsibleTrigger({ id = "", controls = "", more, less, extraCl
   return `<button class="btn btn--ghost btn--sm collapsible__trigger${extraClass ? ` ${extraClass}` : ""}"${id ? ` id="${id}"` : ""} type="button" aria-expanded="false"${controls ? ` aria-controls="${controls}"` : ""} data-more="${more}" data-less="${less}"${hidden ? " hidden" : ""}><span class="collapsible__label">${more}</span>${chevron()}</button>`;
 }
 
-/** A whole Collapsible: `visible` always shows, `hidden` opens under it; `clamp` = Read more on one block of text. */
-export function collapsibleHtml({ id, visible = "", hidden = "", more, less, clamp = false, contentTag = "div" }) {
+/** A whole Collapsible: `visible` always shows, `hidden` opens under it; `clamp` = Read more on one block of text.
+ *  `triggerTop`: the trigger comes first and opens the block under it ("Show details") — nothing shows before it opens. */
+export function collapsibleHtml({ id, visible = "", hidden = "", more, less, clamp = false, contentTag = "div", triggerTop = false }) {
   const cid = `${id}-content`;
   const content = clamp
     ? `<${contentTag} class="collapsible__content" id="${cid}">${hidden}</${contentTag}>`
     : `<${contentTag} class="collapsible__content" id="${cid}" hidden="until-found">${hidden}</${contentTag}>`;
-  return `<div class="collapsible${clamp ? " collapsible--clamp" : ""}" id="${id}" data-collapsible>${visible}${content}${collapsibleTrigger({ controls: cid, more, less, hidden: clamp })}</div>`;
+  const trigger = collapsibleTrigger({ controls: cid, more, less, hidden: clamp });
+  // trigger on top sits before the content in the DOM too, so reading and tab order match what you see
+  return triggerTop
+    ? `<div class="collapsible collapsible--trigger-top" id="${id}" data-collapsible>${trigger}${content}</div>`
+    : `<div class="collapsible${clamp ? " collapsible--clamp" : ""}" id="${id}" data-collapsible>${visible}${content}${trigger}</div>`;
 }
 
 // Mounts every [data-collapsible] once. Clamp: the trigger shows only when the

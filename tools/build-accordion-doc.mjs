@@ -203,6 +203,7 @@ const html = `<!doctype html>
       <div class="row"><b>Single / multiple</b><span>Give every <code class="tok">&lt;details&gt;</code> in a group the same <code class="tok">name</code> and the browser keeps only one open — still zero JS. Without it any number can be open (the default).</span></div>
       <div class="row"><b>Chevron</b><span>At the end by default; <code class="tok">.accordion--chevron-start</code> puts it first. Quiet <code class="tok">icon.muted</code> by default; <code class="tok">.accordion--chevron-primary</code> paints it <code class="tok">icon.primary</code>.</span></div>
       <div class="row"><b>Numbers</b><span><code class="tok">.accordion__index</code> styles a number in the leading slot — <code class="tok">body-base</code>, <code class="tok">text.secondary</code>, tabular figures.</span></div>
+      <div class="row"><b>One row</b><span>A single section that opens under its heading (“Advanced options”) is an Accordion with one row. A small “Show details” / “Show all 8” button that opens a block is a <a href="collapsible.html">Collapsible</a>.</span></div>
       <div class="row"><b>Deferred</b><span>A nested second level.</span></div>
     </div>
 

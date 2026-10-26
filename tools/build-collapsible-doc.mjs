@@ -50,6 +50,7 @@ const listStory = collapsibleHtml({ id: "col-sessions", visible: `<ul class="col
 const readMore = collapsibleHtml({ id: "col-read", clamp: true, contentTag: "p", hidden: `<span class="col-text">This workshop covers the study habits that make the biggest difference in your first year: taking notes you will actually reuse, planning a realistic study week around classes and work, and preparing for finals without cramming. Each session builds on the one before, so try to come to all four. Bring a laptop or a notebook — whichever you take notes with in class. The Learning Commons is on the second floor of the library, next to the writing center.</span>`, more: "Read more", less: "Show less" });
 const filters = collapsibleHtml({ id: "col-filters", visible: `<p class="col-text">Department · Term · Status</p>`, hidden: `<p class="col-text">Instructor · Campus · Meeting days · Credits · Seats available</p>`, more: "More filters", less: "Fewer filters" });
 
+const details = collapsibleHtml({ id: "col-details", triggerTop: true, hidden: `<ul class="col-list"><li>Organizer<span>Andy Hernandez</span></li><li>Format<span>Online</span></li><li>Seats<span>18 left</span></li></ul>`, more: "Show details", less: "Hide details" });
 const story = (title, live, note) => `<div class="story"><h3>${title}</h3><div class="story-preview"><div class="col-demo">${live}</div></div><p class="story-note">${note}</p></div>`;
 const sample = `<div class="collapsible" id="sessions" data-collapsible>
   <ul>…the first 3 sessions — always visible…</ul>
@@ -113,6 +114,7 @@ const html = `<!doctype html>
       <div class="row"><b>Label</b><span>Says what is hidden — “Show all 8 sessions”, not “Show more” — and flips to “Show fewer” / “Show less” when open. <code class="tok">aria-expanded</code> + <code class="tok">aria-controls</code>.</span></div>
       <div class="row"><b>Hidden part</b><span><code class="tok">hidden="until-found"</code>: out of sight, but find-in-page still reaches it and opens it.</span></div>
       <div class="row"><b>Read more</b><span><code class="tok">.collapsible--clamp</code> cuts one block of text to 3 lines; the trigger appears only when the text is actually longer.</span></div>
+      <div class="row"><b>Bottom or top</b><span>Bottom (default) when part is already visible and the trigger continues it — “Show all 8 sessions”: the list grows and the trigger moves down with it. Top (<code class="tok">.collapsible--trigger-top</code>) when nothing shows until it opens — “Show details” over a block. If the trigger is a section heading (“Advanced options”), use an <a href="accordion.html">Accordion</a> with one row instead.</span></div>
       <div class="row"><b>vs Accordion</b><span>Accordion = many rows, each with its own header that opens it. Collapsible = one hidden part; what stays visible is whatever you put above it.</span></div>
     </div>
 
@@ -121,6 +123,7 @@ const html = `<!doctype html>
       ${story("List — show all", listStory, "The first 3 sessions always show; the trigger names how many there are.")}
       ${story("Read more", readMore, "Clamped to 3 lines; resize the window narrower or wider — the trigger only appears while the text overflows.")}
       ${story("More filters", filters, "Any block can be the hidden part, not only list items.")}
+      ${story("Trigger on top", details, ".collapsible--trigger-top — nothing shows until it opens, so the trigger comes first (in the DOM too) and opens the block under it.")}
     </div>
 
     <h2 class="big-section">Markup</h2>
