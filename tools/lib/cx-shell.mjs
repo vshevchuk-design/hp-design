@@ -39,7 +39,7 @@ const registry = {
 };
 
 // Everything ss-css.mjs destructures, plus Checkbox and Table.
-const COMPONENTS = ["tabs", "button", "select", "search", "chip", "listbox", "card", "badge", "pagination", "choice-tile", "radio", "alert", "toast", "tooltip", "empty-state", "modal", "input", "counter", "progress", "attachment", "accordion", "date-picker", "drawer", "box", "menu", "checkbox", "stat", "table"];
+const COMPONENTS = ["tabs", "button", "select", "search", "chip", "listbox", "card", "badge", "pagination", "choice-tile", "radio", "alert", "toast", "tooltip", "empty-state", "modal", "input", "counter", "progress", "attachment", "accordion", "calendar", "date-picker", "drawer", "box", "menu", "checkbox", "stat", "table"];
 const tokens = Object.assign({}, ...COMPONENTS.map((n) => load(`tokens/components/${n}.tokens.json`).component));
 
 function get(ref) {

@@ -1,7 +1,7 @@
 {
   "component": {
     "accordion": {
-      "$description": "Expandable disclosure rows. Built 2026-09-07 for the Explore Degrees results — its entire Degree Requirements tab is these: one row per requirement, showing a status icon, a name, a 'Covered / Still to do' label and a chevron, expanding to the classes that count toward it. Native-first like every other disclosure in this system: a real `<details>`/`<summary>` pair, so open/close, keyboard operation and find-in-page all work with no JS at all — the same reasoning behind Tooltip being pure CSS and Popover/Modal using the native APIs. **Rows, not boxes:** an accordion here is a flush list divided by hairlines, and the consumer wraps it in a Card if it needs an edge. That is deliberate — the reference stacks bordered boxes and it reads as a pile; a divided list of the same content reads as a list. The status icon and the trailing meta label are both optional slots, because the reference has rows without either (sub-options inside a requirement, like 'Psych 100 Level Elective'). Deferred: single-open (accordion group) behaviour — that needs the `name` attribute on `<details>`, which is worth adopting when a consumer actually wants only one row open at a time; and a nested/second-level variant.",
+      "$description": "Expandable disclosure rows. Built 2026-09-07 for the Explore Degrees results — its entire Degree Requirements tab is these: one row per requirement, showing a status icon, a name, a 'Covered / Still to do' label and a chevron, expanding to the classes that count toward it. Native-first like every other disclosure in this system: a real `<details>`/`<summary>` pair, so open/close, keyboard operation and find-in-page all work with no JS at all — the same reasoning behind Tooltip being pure CSS and Popover/Modal using the native APIs. **Rows, not boxes:** an accordion here is a flush list divided by hairlines, and the consumer wraps it in a Card if it needs an edge. That is deliberate — the reference stacks bordered boxes and it reads as a pile; a divided list of the same content reads as a list. What sits before and after the title lives in two optional slots (see `slot`): the done / todo / error mark is the separate StatusIcon component dropped into the leading slot, the 'Covered' label or a Badge goes in the trailing one. Single-open groups (added 2026-10-21, Storybook's 'Single'): give every `<details>` in the group the same `name` attribute — the browser closes the others natively, still zero JS; without it any number can be open ('Multiple', the default). `.accordion--chevron-start` puts the chevron before the title (Storybook's default placement; ours stays at the end). Deferred: a nested/second-level variant.",
       "item": {
         "paddingX": { "$type": "dimension", "$value": "{dim.4}" },
         "paddingY": { "$type": "dimension", "$value": "{dim.3}" },
@@ -31,7 +31,17 @@
       "metaColor": { "$type": "color", "$value": "{text.secondary}" },
       "chevron": {
         "size": { "$type": "dimension", "$value": "{dim.5}" },
-        "color": { "$type": "color", "$value": "{icon.muted}" }
+        "color": { "$type": "color", "$value": "{icon.muted}" },
+        "colorPrimary": { "$type": "color", "$value": "{icon.primary}", "$description": "`.accordion--chevron-primary` — the chevron in the brand colour, for a list where the open/close affordance should be noticed (Storybook's 'Custom Chevron Style'). The default stays quiet." }
+      },
+      "slot": {
+        "$description": "A row has two optional slots around the title — leading (before it) and trailing (after it, before the chevron) — that hold whatever the consumer needs: a StatusIcon, a number, an Avatar before; a meta label, a Badge, a Counter after. Slots, not variants (2026-10-21): what sits there is content, not a kind of Accordion — Radix's AccordionTrigger takes children and has no status prop. Each slot is a flex row with the item gap.",
+        "gap": { "$type": "dimension", "$value": "{dim.2}", "$description": "Between things inside one slot (a number and a StatusIcon)." }
+      },
+      "index": {
+        "$description": "Text style for a number in the leading slot ('1', '2') — ordered rows like restriction lines (Storybook's 'With Icon'). Same size as the title, quieter, tabular figures so 9 and 10 line up.",
+        "label": { "$type": "typography", "$value": "{text-style.body-base}" },
+        "color": { "$type": "color", "$value": "{text.secondary}" }
       },
       "body": {
         "paddingBottom": { "$type": "dimension", "$value": "{dim.4}" },

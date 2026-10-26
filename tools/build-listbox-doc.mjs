@@ -66,7 +66,7 @@ const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, 
 const cv = (tokenPath) => `var(${cssVarName(tokenPath)})`;
 
 const colorPaths = [
-  "fill.neutralHoverStrong", "bg.neutral",
+  "fill.neutralHoverStrong", "bg.neutral", "bg.neutralStrong",
   "surface.default", "surface.sunken", "surface.dim", "border.default", "border.focus", "text.default", "text.secondary", "text.disabled", "text.muted", "text.primary",
   "icon.default", "icon.onFill", "fill.neutral", "fill.neutralHover", "fill.neutralActive", "fill.primary",
 ];

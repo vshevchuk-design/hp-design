@@ -64,6 +64,8 @@ const skeletonTok = load("tokens/components/skeleton.tokens.json").component.ske
 const avatarGroup = load("tokens/components/avatar-group.tokens.json").component.avatarGroup;
 const stepperTok = load("tokens/components/stepper.tokens.json").component.stepper;
 const datePickerTok = load("tokens/components/date-picker.tokens.json").component.datePicker;
+// the grid (header / weekday / day) moved to the shared Calendar on 2026-10-21
+const calendarTok = load("tokens/components/calendar.tokens.json").component.calendar;
 const statTok = load("tokens/components/stat.tokens.json").component.stat;
 
 const registry = {
@@ -147,7 +149,7 @@ const colorPaths = [
   "fill.primary", "fill.primaryHover", "fill.primaryActive",
   "fill.neutral", "fill.neutralHover", "fill.neutralActive", "fill.neutralHoverStrong", "fill.neutralActiveStrong",
   "surface.dimHover",
-  "bg.primary", "bg.primaryHover", "bg.neutral", "bg.warning", "text.warning", "bg.danger", "text.danger", "bg.success", "text.success", "status.success", "surface.overlay",
+  "bg.primary", "bg.primaryHover", "bg.neutral", "bg.neutralStrong", "bg.warning", "text.warning", "bg.danger", "text.danger", "bg.success", "text.success", "status.success", "surface.overlay",
   "fill.danger", "fill.dangerHover", "fill.disabled", "text.disabled", "icon.disabled", "surface.disabled",
   "bg.ai", "text.ai", "icon.ai", "fill.ai",
   ...usedHues.flatMap((h) => [`avatar.${h}.bg`, `avatar.${h}.text`]),
@@ -592,8 +594,8 @@ const btnGhostSmGap = px(resolve(btnGhostSm.gap.$value));
 const btnGhostSmIcon = px(resolve(btnGhostSm.iconSize.$value));
 // The date-range popover had hand-typed 30/34px cells; its own component
 // file says 32/36 and the Date Range Picker doc page renders those.
-const drpNavSize = px(resolve(drp.header.navSize.$value));
-const drpDaySize = px(resolve(drp.day.size.$value));
+const drpNavSize = px(resolve(calendarTok.header.navSize.$value));
+const drpDaySize = px(resolve(calendarTok.day.size.$value));
 const btnGhostSmIconSize = px(resolve(btnGhostSm.iconSize.$value));
 const btnGhostSmLabelType = resolveToken(get(btnGhostSm.label.$value));
 const btnRingWidth = px(resolve(button.primary.state.focused.ringWidth.$value));
@@ -1608,10 +1610,10 @@ const stC = stepperTok.circle, stState = stepperTok.state;
 const stCircleSize = px(resolve(stC.size.$value)), stCircleLabel = resolveToken(stC.label), stCircleIcon = px(resolve(stC.iconSize.$value));
 const stGap = px(resolve(stepperTok.gap.$value)), stConn = px(resolve(stepperTok.connector.thickness.$value)), stTextType = resolveToken(get(stepperTok.text.$value));
 // DatePicker
-const dpT = datePickerTok.trigger, dpP = datePickerTok.panel, dpHd = datePickerTok.header, dpWd = datePickerTok.weekday, dpDay = datePickerTok.day;
+const dpT = datePickerTok.trigger, dpP = datePickerTok.panel, dpHd = calendarTok.header, dpWd = calendarTok.weekday, dpDay = calendarTok.day;
 const dpTh = px(resolve(dpT.height.$value)), dpTpadX = px(resolve(dpT.paddingX.$value)), dpTgap = px(resolve(dpT.gap.$value)), dpTradius = px(resolve(dpT.radius.$value)), dpTvalue = resolveToken(get(dpT.value.$value)), dpTicon = px(resolve(dpT.iconSize.$value));
 const dpPshadow = resolveToken(dpP.shadow); const dpPshadowCss = `${px(dpPshadow.offsetX)} ${px(dpPshadow.offsetY)} ${px(dpPshadow.blur)} ${px(dpPshadow.spread)} ${dpPshadow.color}`;
-const dpPradius = px(resolve(dpP.radius.$value)), dpPpad = px(resolve(dpP.padding.$value)), dpHdLabel = resolveToken(get(dpHd.label.$value)), dpNavSize = px(resolve(dpHd.navSize.$value));
+const dpPradius = px(resolve(dpP.radius.$value)), dpPpad = px(resolve(dpP.padding.$value)), dpHdLabel = resolveToken(get(dpHd.select.value.$value)), dpNavSize = px(resolve(dpHd.navSize.$value));
 const dpWdNode = get(dpWd.label.$value); const dpWdLabel = resolveToken(dpWdNode); const dpWdExt = dpWdNode.$extensions?.["hp.design/text"] || {};
 const dpDaySize = px(resolve(dpDay.size.$value)), dpDayRadius = px(resolve(dpDay.radius.$value)), dpDayLabel = resolveToken(get(dpDay.label.$value));
 // Stat
@@ -1718,7 +1720,7 @@ const consoleCss = `/* ---- Table (threads console) ---- */
 .mc-dp__chev { margin-left: auto; }
 .mc-dp__panel { margin: 0; box-sizing: border-box; padding: ${dpPpad}; border-radius: ${dpPradius}; background: ${cv(refPath(dpP.bg.$value))}; border: 1px solid ${cv(refPath(dpP.border.$value))}; box-shadow: ${dpPshadowCss}; font-family: ${cv("family.sans")}; }
 .mc-dp__header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-.mc-dp__month { ${typoCss(dpHdLabel)} color: ${cv(refPath(dpHd.labelColor.$value))}; }
+.mc-dp__month { ${typoCss(dpHdLabel)} color: ${cv(refPath(dpHd.select.valueColor.$value))}; }
 .mc-dp__nav { width: ${dpNavSize}; height: ${dpNavSize}; display: inline-flex; align-items: center; justify-content: center; border: none; background: none; border-radius: ${px(resolve("radius.default"))}; cursor: pointer; color: ${cv(refPath(dpHd.navIcon.$value))}; }
 .mc-dp__nav:hover { background: ${cv(refPath(dpHd.navHoverBg.$value))}; }
 .mc-dp__nav svg { width: 20px; height: 20px; }

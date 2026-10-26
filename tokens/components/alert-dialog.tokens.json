@@ -1,0 +1,9 @@
+{
+  "component": {
+    "alertDialog": {
+      "$description": "AlertDialog (Radix's term) — a modal confirmation the user must answer: no close (×), no outside-click dismissal, Escape blocked; the only ways out are the footer actions. Split out of Modal on 2026-10-21 (it used to be a `data-alert` behavioural flag on Modal), matching the product Storybook's separate Alert Dialog primitive. The shell — width, radius, shadow, surface, overlay, padding, title and description type — is Modal's, resolved from modal.tokens.json rather than re-declared, so the two dialogs can't drift. What differs is the layout: one padded block, title over description over actions, no header / footer bands and no dividers (an alert is a question, not a panel with sections). role=alertdialog, labelled by the title, described by the description; focus lands on Cancel (the safe action) when it opens. Use for genuinely destructive or irreversible confirmations; a plain Modal with Cancel / Delete covers the ordinary case.",
+      "stackGap": { "$type": "dimension", "$value": "{dim.2}", "$description": "Title → description." },
+      "actionsGap": { "$type": "dimension", "$value": "{dim.6}", "$description": "Description → the action row — the same 24px as the dialog's own padding, so the actions read as their own beat." }
+    }
+  }
+}

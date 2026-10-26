@@ -127,14 +127,17 @@
     <a class="navlink" href="counter.html">Counter</a>
     <a class="navlink" href="input.html">Input</a>
     <a class="navlink" href="select.html">Select</a>
+    <a class="navlink" href="calendar.html">Calendar</a>
     <a class="navlink" href="date-picker.html">DatePicker</a>
     <a class="navlink" href="date-range-picker.html">DateRangePicker</a>
+    <a class="navlink" href="time-picker.html">TimePicker</a>
     <a class="navlink" href="search.html">Search</a>
     <a class="navlink" href="pagination.html">Pagination</a>
     <a class="navlink" href="separator.html">Separator</a>
     <a class="navlink" href="tabs.html">Tabs</a>
     <a class="navlink" href="sidebar.html">Sidebar</a>
     <a class="navlink" href="accordion.html">Accordion</a>
+    <a class="navlink" href="status-icon.html">StatusIcon</a>
     <a class="navlink" href="checkbox.html">Checkbox</a>
     <a class="navlink" href="radio.html">Radio</a>
     <a class="navlink" href="box.html">Box</a>
@@ -149,6 +152,7 @@
     <a class="navlink" href="popover.html">Popover</a>
     <a class="navlink" href="drawer.html">Drawer</a>
     <a class="navlink" href="modal.html">Modal</a>
+    <a class="navlink" href="alert-dialog.html">AlertDialog</a>
     <a class="navlink" href="menu.html">Menu</a>
     <a class="navlink" href="split-button.html">SplitButton</a>
     <a class="navlink" href="listbox.html">Listbox</a>
@@ -207,6 +211,27 @@
     <h1>Logs</h1>
     <p class="sub">Changelog for the design system — what changed, when, and where to see it. Each entry links to the component or prototype pages it touched. Newest first.</p>
 
+    <section class="log-group">
+      <div class="log-group__date"><time datetime="2026-10-21">Oct 21, 2026</time></div>
+      <div class="log-group__posts">
+        <article class="log-post">
+        <div class="log-post__head">
+          <span class="log-tag log-tag--new">New</span>
+          <h3 class="log-post__title">AlertDialog component</h3>
+        </div>
+        <p class="log-post__body">A confirmation the user has to answer — no close button, no click-outside, no Escape; only the actions close it, and Cancel gets focus first. It used to be a hidden behaviour flag on Modal; now it's its own component on the same shell, laid out as one block: title, description, actions.</p>
+        <div class="log-post__links"><a class="log-link" href="alert-dialog.html">AlertDialog</a><a class="log-link" href="modal.html">Modal</a></div>
+      </article>
+        <article class="log-post">
+        <div class="log-post__head">
+          <span class="log-tag log-tag--new">New</span>
+          <h3 class="log-post__title">Calendar and TimePicker; the date pickers now share one calendar</h3>
+        </div>
+        <p class="log-post__body">Calendar is now its own component — the month grid with month and year selects, in single or range mode, one or two months, with optional min / max dates. DatePicker and DateRangePicker are rebuilt on it, so both have the same header and day states. New TimePicker: the same field as DatePicker opening a list of time slots, and the two join into one date + time field.</p>
+        <div class="log-post__links"><a class="log-link" href="calendar.html">Calendar</a><a class="log-link" href="date-picker.html">DatePicker</a><a class="log-link" href="date-range-picker.html">DateRangePicker</a><a class="log-link" href="time-picker.html">TimePicker</a></div>
+      </article>
+      </div>
+    </section>
     <section class="log-group">
       <div class="log-group__date"><time datetime="2026-09-06">Sep 6, 2026</time></div>
       <div class="log-group__posts">

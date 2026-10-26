@@ -75,7 +75,8 @@
           "tint": {
             "bg": {
               "$type": "color",
-              "$value": "{bg.neutral}"
+              "$value": "{bg.neutralStrong}",
+              "$description": "gray.150, one step deeper than bg.neutral (2026-10-26): at gray.100 the neutral badge vanished on every gray.100 surface — sunken blocks, secondary buttons, a hovered table/list row. Text stays text.default."
             },
             "text": {
               "$type": "color",
@@ -414,11 +415,7 @@
         }
       },
       "outline": {
-        "$description": "A third fill style beside tint and solid: white surface + border.default hairline + text.default — no colour at all. For plain metadata labels (which departments offer a service) that must read as labels, not as a status; a neutral tint would sit at the same visual level as a role badge beside it. Neutral only — a coloured outline would reintroduce the meaning it exists to avoid. The hairline is inside the box (border-box), so heights stay 16/20/24.",
-        "bg": {
-          "$type": "color",
-          "$value": "{surface.default}"
-        },
+        "$description": "A third fill style beside tint and solid: no fill (transparent, so it takes whatever surface it sits on) + border.default hairline + text.default — no colour at all. It had a white fill until 2026-10-26; on gray surfaces and hovered rows that read as a white hole, louder than the tint badges beside it — the opposite of its job. For plain metadata labels (which departments offer a service) that must read as labels, not as a status; a neutral tint would sit at the same visual level as a role badge beside it. Neutral only — a coloured outline would reintroduce the meaning it exists to avoid. The hairline is inside the box (border-box), so heights stay 16/20/24.",
         "border": {
           "$type": "color",
           "$value": "{border.default}"

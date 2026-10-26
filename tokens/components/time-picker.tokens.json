@@ -1,0 +1,21 @@
+{
+  "component": {
+    "timePicker": {
+      "$description": "A time-of-day field — the same trigger as DatePicker (its field recipe is resolved from date-picker.tokens.json, never re-declared here, so the two sit flush as one date + time field) that opens a Listbox of fixed slots ('09:30 AM EST', every 30 minutes by default). Pick-only, no free typing: a list of half-hours is faster to scan than a typed time is to validate, and it can't produce '9:7 PM'. The open list scrolls the selected slot (or the first one from 9 AM) into view. A clear (×) button appears once there's a value. The list rows are Listbox's single-select option recipe (resolved from listbox.tokens.json) — only what Listbox doesn't have lives here.",
+      "clear": {
+        "size": { "$type": "dimension", "$value": "{dim.6}", "$description": "24px hit area inside the 40px field." },
+        "iconSize": { "$type": "dimension", "$value": "{dim.4}" },
+        "icon": { "$type": "color", "$value": "{icon.default}" },
+        "hoverBg": { "$type": "color", "$value": "{fill.neutralHover}" },
+        "radius": { "$type": "dimension", "$value": "{radius.xs}" }
+      },
+      "option": {
+        "height": { "$type": "dimension", "$value": "{dim.9}", "$description": "36px — declared, because Listbox's 8px padding + a 14px × 1.4 line would render 35.6px." },
+        "zoneColor": { "$type": "color", "$value": "{text.muted}", "$description": "The timezone suffix ('EST') is quieter than the time itself, so a column of slots scans by the numbers." }
+      },
+      "panel": {
+        "minWidth": { "$type": "dimension", "$value": "{dim.40}", "$description": "160px — the list is never narrower than this, otherwise it matches the field's width." }
+      }
+    }
+  }
+}

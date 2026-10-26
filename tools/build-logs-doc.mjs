@@ -20,6 +20,28 @@ const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 // ---- the changelog, newest first ----
 const POSTS = [
   {
+    date: "2026-10-21",
+    type: "new",
+    title: "AlertDialog component",
+    body: "A confirmation the user has to answer — no close button, no click-outside, no Escape; only the actions close it, and Cancel gets focus first. It used to be a hidden behaviour flag on Modal; now it's its own component on the same shell, laid out as one block: title, description, actions.",
+    links: [
+      { label: "AlertDialog", href: "alert-dialog.html" },
+      { label: "Modal", href: "modal.html" },
+    ],
+  },
+  {
+    date: "2026-10-21",
+    type: "new",
+    title: "Calendar and TimePicker; the date pickers now share one calendar",
+    body: "Calendar is now its own component — the month grid with month and year selects, in single or range mode, one or two months, with optional min / max dates. DatePicker and DateRangePicker are rebuilt on it, so both have the same header and day states. New TimePicker: the same field as DatePicker opening a list of time slots, and the two join into one date + time field.",
+    links: [
+      { label: "Calendar", href: "calendar.html" },
+      { label: "DatePicker", href: "date-picker.html" },
+      { label: "DateRangePicker", href: "date-range-picker.html" },
+      { label: "TimePicker", href: "time-picker.html" },
+    ],
+  },
+  {
     date: "2026-09-06",
     type: "new",
     title: "DateRangePicker component",

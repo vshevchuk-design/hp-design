@@ -7,6 +7,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { renderNav } from "./lib/nav.mjs";
 import { cssVarName, renderRootVars } from "./lib/css-vars.mjs";
+import { STATUS_ICON_CSS, STATUS_ICON_COLOR_PATHS, statusIcon } from "./lib/status-icon.mjs";
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const load = (p) => JSON.parse(fs.readFileSync(path.join(root, p)));
@@ -57,7 +58,9 @@ const badgeSm = { height: px(resolve(badge.size.sm.height.$value)), paddingX: px
 const colorPaths = [...new Set([
   dividerRole, refPath(acc.titleColor.$value), refPath(acc.metaColor.$value), refPath(acc.chevron.color.$value),
   hoverRole, ringRole, cardBg, cardBorder, refPath(card.titleColor.$value),
-  pill.bg, pill.text, okPill.bg, okPill.text, "status.success", "icon.muted", "text.secondary", "text.default",
+  pill.bg, pill.text, okPill.bg, okPill.text, "text.secondary", "text.default",
+  refPath(acc.chevron.colorPrimary.$value), refPath(acc.index.color.$value),
+  ...STATUS_ICON_COLOR_PATHS,
 ])];
 const rootVars = renderRootVars([...colorPaths.map((p) => [p, resolve(p)]), ["family.sans", `'${resolve("family.sans")}', sans-serif`]]);
 
@@ -82,7 +85,11 @@ const css = `${rootVars}
    for yet: the options are a whole catalogue, not a list this row can hold). */
 .accordion__row { display: flex; align-items: center; gap: ${gap}; padding: ${paddingY} ${paddingX}; }
 .accordion__summary:focus-visible { outline: ${ringWidth} solid ${cv(ringRole)}; outline-offset: calc(-1 * ${ringWidth}); }
-.accordion__status { flex-shrink: 0; width: ${chevronSize}; height: ${chevronSize}; }
+/* two optional slots around the title: leading (StatusIcon, a number…) and
+   trailing (meta label, Badge…) — content, not Accordion variants */
+.accordion__leading, .accordion__trailing { flex-shrink: 0; display: flex; align-items: center; gap: ${px(resolve(acc.slot.gap.$value))}; }
+/* a number in the leading slot — ordered rows (restriction lines, steps) */
+.accordion__index { flex-shrink: 0; color: ${cv(refPath(acc.index.color.$value))}; ${typoCss(resolveToken(acc.index.label))} font-variant-numeric: tabular-nums; }
 .accordion__title { flex: 1; min-width: 0; color: ${cv(refPath(acc.titleColor.$value))}; ${typoCss(titleType)} }
 /* Rows inside a group that already has a heading: same size, normal weight, so
    the Card title stays the heading and the rows read as its contents. */
@@ -90,6 +97,9 @@ const css = `${rootVars}
 .accordion__meta { flex-shrink: 0; color: ${cv(refPath(acc.metaColor.$value))}; ${typoCss(metaType)} }
 .accordion__chevron { flex-shrink: 0; width: ${chevronSize}; height: ${chevronSize}; color: ${cv(refPath(acc.chevron.color.$value))}; transition: transform 0.12s ease; }
 .accordion__item[open] > .accordion__summary .accordion__chevron { transform: rotate(180deg); }
+/* chevron before everything else in the row (it is the summary's last child) */
+.accordion--chevron-start .accordion__chevron { order: -1; }
+.accordion--chevron-primary .accordion__chevron { color: ${cv(refPath(acc.chevron.colorPrimary.$value))}; }
 .accordion__body { display: flex; flex-direction: column; gap: ${bodyGap}; padding: 0 ${paddingX} ${bodyPad}; }`;
 
 const demoCss = `
@@ -98,41 +108,39 @@ const demoCss = `
 .acc-card__title { color: ${cv(refPath(card.titleColor.$value))}; ${typoCss(cardTitle)} font-family: ${cv("family.sans")}; }
 .badge { display: inline-flex; align-items: center; border-radius: ${badgeSm.radius}; height: ${badgeSm.height}; padding: 0 ${badgeSm.paddingX}; ${typoCss(badgeSm.label)} font-family: ${cv("family.sans")}; background: ${cv(pill.bg)}; color: ${cv(pill.text)}; }
 .badge--success { background: ${cv(okPill.bg)}; color: ${cv(okPill.text)}; }
+${STATUS_ICON_CSS}
 .acc-sub { color: ${cv("text.secondary")}; ${typoCss(bodySm)} }
 .acc-eyebrow { color: ${cv("text.secondary")}; ${typoCss(labelSm)} text-transform: ${labelSmTransform}; letter-spacing: ${labelSm.letterSpacing}; }
 .acc-course { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; color: ${cv("text.default")}; ${typoCss(bodySm)} }
 .acc-course b { font-weight: ${titleType.fontWeight}; }
-.acc-status--done { color: ${cv("status.success")}; }
-.acc-status--todo { color: ${cv("icon.muted")}; }`;
+`;
 
 const icon = (name, cls) => fs.readFileSync(path.join(root, `assets/icons/material-filled/${name}.svg`), "utf8").replace("<svg ", `<svg class="${cls}" `);
 const iconChevron = icon("expand_more", "accordion__chevron");
-const iconCheck = icon("check", "accordion__status acc-status--done");
-const iconCircle = icon("radio_button_unchecked", "accordion__status acc-status--todo");
+const leading = (status, index) => (status || index ? `<span class="accordion__leading">${index ? `<span class="accordion__index">${index}</span>` : ""}${status ? statusIcon(status) : ""}</span>` : "");
+const trailing = (meta, badge) => (meta || badge ? `<span class="accordion__trailing">${meta ? `<span class="accordion__meta">${esc(meta)}</span>` : ""}${badge || ""}</span>` : "");
 
-function item({ title, meta = "", status = null, body = "", open = false, quiet = false }) {
-  const statusIcon = status === "done" ? iconCheck : status === "todo" ? iconCircle : "";
-  return `  <details class="accordion__item"${open ? " open" : ""}>
+function item({ title, meta = "", status = null, body = "", open = false, quiet = false, name = "", index = "", badge = "" }) {
+  return `  <details class="accordion__item"${name ? ` name="${name}"` : ""}${open ? " open" : ""}>
     <summary class="accordion__summary">
-      ${statusIcon}
+      ${leading(status, index)}
       <span class="accordion__title${quiet ? " accordion__title--quiet" : ""}">${esc(title)}</span>
-      ${meta ? `<span class="accordion__meta">${esc(meta)}</span>` : ""}
+      ${trailing(meta, badge)}
       ${iconChevron}
     </summary>
     <div class="accordion__body">${body}</div>
   </details>`;
 }
 function row({ title, meta = "", status = null, quiet = false }) {
-  const statusIcon = status === "done" ? iconCheck : status === "todo" ? iconCircle : "";
   return `  <div class="accordion__item">
     <div class="accordion__row">
-      ${statusIcon}
+      ${leading(status)}
       <span class="accordion__title${quiet ? " accordion__title--quiet" : ""}">${esc(title)}</span>
-      ${meta ? `<span class="accordion__meta">${esc(meta)}</span>` : ""}
+      ${trailing(meta)}
     </div>
   </div>`;
 }
-const group = (items) => `<div class="accordion">\n${items.join("\n")}\n</div>`;
+const group = (items, mod = "") => `<div class="accordion${mod ? ` ${mod}` : ""}">\n${items.join("\n")}\n</div>`;
 
 const storyCard = (title, live, note = "", full = false) =>
   `<div class="story${full ? " story--full" : ""}"><h3>${title}</h3><div class="story-preview">${live}</div>${note ? `<p class="story-note">${note}</p>` : ""}</div>`;
@@ -189,10 +197,47 @@ const html = `<!doctype html>
     <div class="legend">
       <div class="row"><b>Native</b><span>A real <code class="tok">&lt;details&gt;</code>: open/close, keyboard operation and find-in-page work with <b>zero JS</b> — the same native-first rule Tooltip (pure CSS), Popover (Popover API) and Modal/Drawer (<code class="tok">&lt;dialog&gt;</code>) already follow.</span></div>
       <div class="row"><b>Rows, not boxes</b><span>An accordion is a <b>flush divided list</b>; the consumer wraps it in a Card if it needs an edge. Deliberate: the reference design stacks bordered boxes and it reads as a pile — the same content as divided rows reads as a list.</span></div>
-      <div class="row"><b>Optional slots</b><span>The status icon and the trailing meta label are both optional, because real data has rows with neither — sub-options inside a requirement.</span></div>
+      <div class="row"><b>Slots, not variants</b><span>Two optional slots around the title: <code class="tok">.accordion__leading</code> and <code class="tok">.accordion__trailing</code>. Whatever the product needs goes in them — a <a href="status-icon.html">StatusIcon</a> or a number before, a meta label or a Badge after. They are content, not kinds of Accordion: the component itself only knows rows, open / closed, single / multiple and where its chevron sits.</span></div>
       <div class="row"><b>Hover</b><span>The summary rests on a white surface, so it takes the wash tier <code class="tok">fill.neutralHover</code> (gray.100), not the Strong pair. See the two-tier rule in status.md.</span></div>
       <div class="row"><b>Rows that don't open</b><span>A row with nothing underneath uses <code class="tok">.accordion__row</code> — same metrics, no chevron, no hover, no pointer. A chevron that opens an empty region is a lie, and real lists mix the two: a requirement covered by a named class expands to show it, one the student has not picked classes for yet has nothing to show.</span></div>
-      <div class="row"><b>Deferred</b><span>Single-open groups (the <code class="tok">name</code> attribute on <code class="tok">&lt;details&gt;</code> does this natively — adopt it when a consumer wants only one row open) and a nested second level.</span></div>
+      <div class="row"><b>Single / multiple</b><span>Give every <code class="tok">&lt;details&gt;</code> in a group the same <code class="tok">name</code> and the browser keeps only one open — still zero JS. Without it any number can be open (the default).</span></div>
+      <div class="row"><b>Chevron</b><span>At the end by default; <code class="tok">.accordion--chevron-start</code> puts it first. Quiet <code class="tok">icon.muted</code> by default; <code class="tok">.accordion--chevron-primary</code> paints it <code class="tok">icon.primary</code>.</span></div>
+      <div class="row"><b>Numbers</b><span><code class="tok">.accordion__index</code> styles a number in the leading slot — <code class="tok">body-base</code>, <code class="tok">text.secondary</code>, tabular figures.</span></div>
+      <div class="row"><b>Deferred</b><span>A nested second level.</span></div>
+    </div>
+
+    <h2 class="big-section">Variants</h2>
+    <p class="section-desc">The same set as the product Storybook, in this system's styles: hairline-divided rows, quiet chevron, wash hover. Wrapped in a Card here only to give each list an edge.</p>
+    <div class="story-grid">
+      ${storyCard("Single", `<div class="acc-card">${group([
+        item({ title: "Product information", body: `<span class="acc-sub">Our flagship product combines cutting-edge technology with a clean design. Key features include fast processing and an interface built for beginners and experts alike.</span>`, open: true, name: "faq-single" }),
+        item({ title: "Shipping details", body: `<span class="acc-sub">Orders ship within two business days. Tracking is emailed as soon as the parcel leaves the warehouse.</span>`, name: "faq-single" }),
+        item({ title: "Return policy", body: `<span class="acc-sub">Return anything within 30 days for a full refund — no questions asked.</span>`, name: "faq-single" }),
+      ])}</div>`, "Every row shares name=\"faq-single\": opening one closes the open one. The open row can still be closed.")}
+      ${storyCard("Multiple", `<div class="acc-card">${group([
+        item({ title: "Product information", body: `<span class="acc-sub">Our flagship product combines cutting-edge technology with a clean design. Key features include fast processing and an interface built for beginners and experts alike.</span>`, open: true }),
+        item({ title: "Shipping details", body: `<span class="acc-sub">Orders ship within two business days. Tracking is emailed as soon as the parcel leaves the warehouse.</span>` }),
+        item({ title: "Return policy", body: `<span class="acc-sub">Return anything within 30 days for a full refund — no questions asked.</span>` }),
+      ])}</div>`, "No name — any number of rows open at once. The default.")}
+      ${storyCard("Chevron start", `<div class="acc-card">${group([
+        item({ title: "Product information", body: `<span class="acc-sub">Our flagship product combines cutting-edge technology with a clean design. Key features include fast processing and an interface built for beginners and experts alike.</span>` }),
+        item({ title: "Shipping details", body: `<span class="acc-sub">Orders ship within two business days. Tracking is emailed as soon as the parcel leaves the warehouse.</span>` }),
+        item({ title: "Return policy", body: `<span class="acc-sub">Return anything within 30 days for a full refund — no questions asked.</span>` }),
+      ], "accordion--chevron-start")}</div>`, ".accordion--chevron-start — chevron before the title.")}
+      ${storyCard("Primary chevron", `<div class="acc-card">${group([
+        item({ title: "Product information", body: `<span class="acc-sub">Our flagship product combines cutting-edge technology with a clean design. Key features include fast processing and an interface built for beginners and experts alike.</span>` }),
+        item({ title: "Shipping details", body: `<span class="acc-sub">Orders ship within two business days. Tracking is emailed as soon as the parcel leaves the warehouse.</span>` }),
+        item({ title: "Return policy", body: `<span class="acc-sub">Return anything within 30 days for a full refund — no questions asked.</span>` }),
+      ], "accordion--chevron-primary")}</div>`, ".accordion--chevron-primary — chevron in icon.primary, for a list whose rows should read as openable at a glance.")}
+      ${storyCard("With icon", `<div class="acc-card">${group([
+        item({ index: "1", status: "error", title: "Unnamed restriction line", body: `<span class="acc-sub">This line has no name yet — give it one before saving.</span>` }),
+        item({ index: "2", status: "done", title: "Freshmen only", body: `<span class="acc-sub">Class standing: Freshman.</span>` }),
+        item({ index: "3", status: "todo", title: "Majors only", body: `<span class="acc-sub">Not checked yet.</span>` }),
+      ])}</div>`, "Leading slot: a number + a StatusIcon (error, done, to do).")}
+      ${storyCard("Trailing slot", `<div class="acc-card">${group([
+        item({ title: "Tue, Oct 14 · Study skills workshop", badge: `<span class="badge badge--success">Attended</span>`, body: `<span class="acc-sub">From the organizer: slides are attached.</span>` }),
+        item({ title: "Tue, Oct 7 · Study skills workshop", badge: `<span class="badge">Missed</span>`, body: `<span class="acc-sub">No notes for this session.</span>` }),
+      ])}</div>`, "Trailing slot: a Badge — the Scheduling workshop sessions.")}
     </div>
 
     <h2 class="big-section">Rows</h2>

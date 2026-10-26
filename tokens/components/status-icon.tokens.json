@@ -1,0 +1,20 @@
+{
+  "component": {
+    "statusIcon": {
+      "$description": "A single icon that says whether something is done, still to do, or has a problem — the leading mark on a requirement row, a checklist line, a restriction line. Split out of Accordion on 2026-10-21: the state belongs to the content, not to the row that discloses it (Radix's AccordionTrigger takes children, it has no status prop), and the same mark is wanted in lists, tables and steps. One size — 20px, the same box as Accordion's chevron and every 20px icon in a 40px row. The icon carries the state, so it needs a text equivalent: either visible text next to it ('Covered', 'Still to do') or an aria-label.",
+      "size": { "$type": "dimension", "$value": "{dim.5}" },
+      "done": {
+        "color": { "$type": "color", "$value": "{status.success}" },
+        "$description": "Icon: check. Covered / complete / passed."
+      },
+      "todo": {
+        "color": { "$type": "color", "$value": "{icon.muted}" },
+        "$description": "Icon: radio_button_unchecked. Outstanding — not a problem, just not done."
+      },
+      "error": {
+        "color": { "$type": "color", "$value": "{status.danger}" },
+        "$description": "Icon: error. Something on this line needs fixing (an unnamed restriction line, a failed check)."
+      }
+    }
+  }
+}

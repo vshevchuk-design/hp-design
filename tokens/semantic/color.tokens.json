@@ -79,6 +79,7 @@
       "$type": "color",
       "$value": "{color.gray.100}"
     },
+    "neutralStrong": { "$type": "color", "$value": "{color.gray.150}", "$description": "The neutral wash one step deeper. For small fills that must stay visible on the gray.100 surfaces — surface.sunken, fill.neutral (secondary buttons, segmented-tab tracks) and fill.neutralHover (a hovered table or list row) — where bg.neutral is the very same colour and disappears. First consumer: Badge neutral tint (2026-10-26)." },
     "ai": {
       "$type": "color",
       "$value": "{color.violet.100}",
@@ -422,7 +423,7 @@
       "tint": {
         "bg": {
           "$type": "color",
-          "$value": "{bg.neutral}"
+          "$value": "{bg.neutralStrong}"
         },
         "text": {
           "$type": "color",
@@ -439,7 +440,7 @@
           "$value": "{text.onFill}"
         }
       },
-      "$description": "The one hue that ISN'T a full role alias — tint matches role=neutral (bg.neutral/text.default) but solid diverges deliberately: fill.neutral (gray.100) is the same pale value as the tint bg, so a 'solid gray' badge built from it would look identical to the tint one, not actually filled. Uses color.gray.500 + text.onFill instead — the same saturated-500-step + white-text pattern every other solid hue already uses, gray included. role=neutral's own solid stays on fill.neutral/text.default on purpose (matches Button secondary's established pale-even-when-emphasized precedent) — a neutral *status* has no 'urgent solid' need the way a decorative gray *tag* does, so this is the one place role and color genuinely diverge rather than alias."
+      "$description": "The one hue that ISN'T a full role alias — tint matches role=neutral (bg.neutralStrong/text.default since 2026-10-26) but solid diverges deliberately: fill.neutral (gray.100) is the same pale value as the tint bg, so a 'solid gray' badge built from it would look identical to the tint one, not actually filled. Uses color.gray.500 + text.onFill instead — the same saturated-500-step + white-text pattern every other solid hue already uses, gray included. role=neutral's own solid stays on fill.neutral/text.default on purpose (matches Button secondary's established pale-even-when-emphasized precedent) — a neutral *status* has no 'urgent solid' need the way a decorative gray *tag* does, so this is the one place role and color genuinely diverge rather than alias."
     },
     "blue": {
       "tint": {

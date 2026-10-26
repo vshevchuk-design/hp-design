@@ -36,8 +36,8 @@ export function edAppJs(h) {
   });
 
   const ICONS = JSON.stringify({
-    check: icon("check", "accordion__status accordion__status--done"),
-    circle: icon("radio_button_unchecked", "accordion__status accordion__status--todo"),
+    check: icon("check", "status-icon status-icon--done"),
+    circle: icon("radio_button_unchecked", "status-icon status-icon--todo"),
     chevron: icon("expand_more", "accordion__chevron"),
     close: icon("close", ""),
     add: icon("add", ""),

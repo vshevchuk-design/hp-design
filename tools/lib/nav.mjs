@@ -54,6 +54,7 @@ export const NAV_ITEMS = {
   popover: { label: "Popover", href: "popover.html" },
   drawer: { label: "Drawer", href: "drawer.html" },
   modal: { label: "Modal", href: "modal.html" },
+  "alert-dialog": { label: "AlertDialog", href: "alert-dialog.html" },
   menu: { label: "Menu", href: "menu.html" },
   listbox: { label: "Listbox", href: "listbox.html" },
   avatar: { label: "Avatar", href: "avatar.html" },
@@ -71,10 +72,13 @@ export const NAV_ITEMS = {
   skeleton: { label: "Skeleton", href: "skeleton.html" },
   spinner: { label: "Spinner", href: "spinner.html" },
   progress: { label: "Progress", href: "progress.html" },
+  "status-icon": { label: "StatusIcon", href: "status-icon.html" },
   stat: { label: "Stat", href: "stat.html" },
   "split-button": { label: "SplitButton", href: "split-button.html" },
+  calendar: { label: "Calendar", href: "calendar.html" },
   "date-picker": { label: "DatePicker", href: "date-picker.html" },
   "date-range-picker": { label: "DateRangePicker", href: "date-range-picker.html" },
+  "time-picker": { label: "TimePicker", href: "time-picker.html" },
 };
 
 // Products → prototype pages shown in the Designs pane. Keys are the
@@ -178,14 +182,17 @@ export function renderNav(activeKey, { basePath = "" } = {}) {
     ${link("counter")}
     ${link("input")}
     ${link("select")}
+    ${link("calendar")}
     ${link("date-picker")}
     ${link("date-range-picker")}
+    ${link("time-picker")}
     ${link("search")}
     ${link("pagination")}
     ${link("separator")}
     ${link("tabs")}
     ${link("sidebar")}
     ${link("accordion")}
+    ${link("status-icon")}
     ${link("checkbox")}
     ${link("radio")}
     ${link("box")}
@@ -200,6 +207,7 @@ export function renderNav(activeKey, { basePath = "" } = {}) {
     ${link("popover")}
     ${link("drawer")}
     ${link("modal")}
+    ${link("alert-dialog")}
     ${link("menu")}
     ${link("split-button")}
     ${link("listbox")}

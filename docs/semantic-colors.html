@@ -103,14 +103,17 @@
     <a class="navlink" href="counter.html">Counter</a>
     <a class="navlink" href="input.html">Input</a>
     <a class="navlink" href="select.html">Select</a>
+    <a class="navlink" href="calendar.html">Calendar</a>
     <a class="navlink" href="date-picker.html">DatePicker</a>
     <a class="navlink" href="date-range-picker.html">DateRangePicker</a>
+    <a class="navlink" href="time-picker.html">TimePicker</a>
     <a class="navlink" href="search.html">Search</a>
     <a class="navlink" href="pagination.html">Pagination</a>
     <a class="navlink" href="separator.html">Separator</a>
     <a class="navlink" href="tabs.html">Tabs</a>
     <a class="navlink" href="sidebar.html">Sidebar</a>
     <a class="navlink" href="accordion.html">Accordion</a>
+    <a class="navlink" href="status-icon.html">StatusIcon</a>
     <a class="navlink" href="checkbox.html">Checkbox</a>
     <a class="navlink" href="radio.html">Radio</a>
     <a class="navlink" href="box.html">Box</a>
@@ -125,6 +128,7 @@
     <a class="navlink" href="popover.html">Popover</a>
     <a class="navlink" href="drawer.html">Drawer</a>
     <a class="navlink" href="modal.html">Modal</a>
+    <a class="navlink" href="alert-dialog.html">AlertDialog</a>
     <a class="navlink" href="menu.html">Menu</a>
     <a class="navlink" href="split-button.html">SplitButton</a>
     <a class="navlink" href="listbox.html">Listbox</a>
@@ -271,6 +275,11 @@
         <span class="tok-alias">color.gray.100</span>
         <span class="tok-hex">#e6e8eb</span>
       </div>
+      <div class="tok-card" style="background:#dadde0;color:#141414">
+        <code class="tok-name">bg.neutralStrong</code>
+        <span class="tok-alias">color.gray.150</span>
+        <span class="tok-hex">#dadde0</span>
+      </div><div class="tok-desc-wrap"><p class="tok-desc">The neutral wash one step deeper. For small fills that must stay visible on the gray.100 surfaces — surface.sunken, fill.neutral (secondary buttons, segmented-tab tracks) and fill.neutralHover (a hovered table or list row) — where bg.neutral is the very same colour and disappears. First consumer: Badge neutral tint (2026-10-26).</p></div>
       <div class="tok-card" style="background:#e8e4ff;color:#141414">
         <code class="tok-name">bg.ai</code>
         <span class="tok-alias">color.violet.100</span>
@@ -656,10 +665,10 @@
     <h3 class="sub-section">tag</h3>
     <div class="legend"><div class="row"><span>Decorative, non-semantic categorical color for generic tagging/labeling (Badge's 'color' axis, e.g. a Notion/Linear/GitHub-style label picker) — deliberately separate from the 5 meaningful status roles (bg.*/fill.* primary/success/warning/danger + this group's own gray). Picking tag.orange means 'I want an orange label', not 'this is a warning'. Two intensities per hue: tint (pale bg + colored text, same 100/600 pairing bg.*/text.* already use) and solid (saturated bg + text.onFill, same 500-step + white pairing fill.* already uses) — same contrast trade-off already accepted for fill.primary/success/danger/warning (3.7-4.4:1 large-text/UI-component AA, not 4.5:1 small-text; pair with semibold/bold label weight). 4 of the 10 hues (blue/red/green/amber) are pure aliases of the existing primary/danger/success/warning role tokens, not new colors — 'color=blue' and 'role=primary' render identically on purpose, since blue already means primary/info everywhere else in this system. gray aliases role=neutral for tint only — see gray's own $description for why solid diverges. Only orange/violet/magenta/teal/brown are genuinely new leaf references. Same hue order as chart-series/avatar for one consistent categorical rhythm across the system.</span></div></div>
     <div class="swatch-grid">
-      <div class="tok-card" style="background:#e6e8eb;color:#141414">
+      <div class="tok-card" style="background:#dadde0;color:#141414">
         <code class="tok-name">tag.gray.tint.bg</code>
-        <span class="tok-alias">bg.neutral</span>
-        <span class="tok-hex">#e6e8eb</span>
+        <span class="tok-alias">bg.neutralStrong</span>
+        <span class="tok-hex">#dadde0</span>
       </div>
       <div class="tok-card" style="background:#121921;color:#fdfdfd">
         <code class="tok-name">tag.gray.tint.text</code>

@@ -15,7 +15,7 @@
   .navlink { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 8px; border-radius: 7px; font-size: 13px; text-decoration: none; color: var(--text-primary); margin-bottom: 1px; }
   .navlink:hover { background: var(--bg-card-hover); } .navlink.active { background: var(--accent-bg); color: var(--accent); font-weight: 600; }
   .nav-category { font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin: 16px 8px 6px; }
-  main { flex: 1; padding: 4rem 4rem 6rem; max-width: 1120px; }
+  main { flex: 1; padding: 4rem 4rem 6rem; max-width: 1120px; min-width: 0; }
   h1 { font-size: 36px; font-weight: 700; margin: 0 0 10px; letter-spacing: -0.02em; }
   .sub { font-size: 14px; color: var(--text-secondary); margin: 0 0 2.5rem; }
   h2.big-section { font-size: 24px; font-weight: 700; margin: 5.5rem 0 1.5rem; letter-spacing: -0.01em; padding-top: 2.5rem; border-top: 1px solid var(--border); }
@@ -26,49 +26,79 @@
   .legend .row b { width: 90px; flex-shrink: 0; color: var(--text-primary); font-weight: 600; font-family: var(--mono); font-size: 11.5px; }
   code.tok { font-family: var(--mono); font-size: 12px; color: var(--accent); }
   pre.code { background: var(--code-bg); color: var(--code-text); border-radius: 10px; padding: 16px 18px; margin: 0; overflow-x: auto; font-family: var(--mono); font-size: 12px; line-height: 1.7; } pre.code code { font-family: inherit; }
-  .story-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
-  .story { border: 0.5px solid var(--border); border-radius: 14px; background: var(--bg-card); padding: 22px; display: flex; flex-direction: column; gap: 12px; }
+  .story-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; }
+  .story-grid--wide { grid-template-columns: 1fr; }
+  .story { border: 0.5px solid var(--border); border-radius: 14px; background: var(--bg-card); padding: 22px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
   .story h3 { font-size: 14px; font-weight: 600; margin: 0; font-family: var(--mono); }
-  .story-preview { min-height: 52px; padding: 8px 0; }
+  .story-preview { padding: 8px 0; overflow-x: auto; }
   .story-note { font-size: 11.5px; color: var(--text-muted); margin: 0; line-height: 1.5; }
+  .cal-out { font-family: var(--mono); font-size: 11.5px; color: var(--text-secondary); margin: 12px 0 0; min-height: 1.5em; }
+  @media (max-width: 760px) { .shell { display: block; } nav.side { display: none; } main { padding: 2rem 16px 4rem; } }
+  .story-preview { min-height: 52px; }
   :root {
   --tok-surface-dim: #f4f5f7;
-  --tok-surface-default: #ffffff;
   --tok-border-default: #dadde0;
   --tok-border-strong: #adb5be;
   --tok-border-focus: #0468c4;
   --tok-text-default: #121921;
   --tok-text-muted: #758191;
-  --tok-text-disabled: #adb5be;
   --tok-icon-default: #485462;
+  --tok-surface-default: #ffffff;
   --tok-fill-neutral-hover: #e6e8eb;
+  --tok-icon-disabled: #adb5be;
   --tok-fill-primary: #077fec;
   --tok-text-on-fill: #ffffff;
+  --tok-bg-primary: #d9eaff;
+  --tok-text-disabled: #adb5be;
   --tok-family-sans: 'Sora', sans-serif;
 }
 
-.datepicker { display: inline-block; font-family: var(--tok-family-sans); }
-.datepicker__trigger { box-sizing: border-box; display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 12px; border-radius: 8px; background: var(--tok-surface-dim); border: 1px solid var(--tok-border-default); cursor: pointer; color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; font-family: inherit; }
+.calendar { display: inline-block; vertical-align: top; }
+.calendar__months { display: flex; gap: 20px; }
+.calendar__head { display: flex; align-items: center; justify-content: space-between; gap: 4px; margin-bottom: 8px; }
+.calendar__selects { display: flex; align-items: center; gap: 4px; }
+/* month / year select — a 32px control in the field family, chevron = expand_more */
+.calendar__sel { position: relative; display: inline-flex; }
+.calendar__select { appearance: none; -webkit-appearance: none; box-sizing: border-box; height: 32px; margin: 0; padding: 0 24px 0 8px; border: 1px solid var(--tok-border-default); border-radius: 8px; background: var(--tok-surface-default); color: var(--tok-text-default); font-family: inherit; font-weight: 400; font-size: 12px; line-height: 1.4; cursor: pointer; }
+.calendar__select:hover { border-color: var(--tok-border-strong); }
+.calendar__select:focus-visible { outline: none; border-color: var(--tok-border-focus); }
+.calendar__sel-chevron { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--tok-icon-default); pointer-events: none; }
+/* paging arrows; with two months the inner sides keep a same-width spacer */
+.calendar__nav { box-sizing: border-box; width: 32px; height: 32px; padding: 0; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; border: none; background: none; border-radius: 8px; cursor: pointer; color: var(--tok-icon-default); }
+.calendar__nav:hover { background: var(--tok-fill-neutral-hover); }
+.calendar__nav:disabled { color: var(--tok-icon-disabled); background: none; cursor: default; }
+.calendar__nav:focus-visible { outline: 2px solid var(--tok-border-focus); outline-offset: -2px; }
+.calendar__nav-icon { width: 20px; height: 20px; }
+.calendar__nav-sp { width: 32px; flex-shrink: 0; }
+.calendar__grid { display: grid; grid-template-columns: repeat(7, 36px); gap: 4px 0; }
+.calendar__weekday { width: 36px; height: 28px; display: inline-flex; align-items: center; justify-content: center; color: var(--tok-text-muted); font-weight: 700; font-size: 12px; line-height: 1.4; text-transform: uppercase; }
+.calendar__day { box-sizing: border-box; width: 36px; height: 36px; margin: 0; padding: 0; display: inline-flex; align-items: center; justify-content: center; border: 1px solid transparent; border-radius: 8px; background: none; cursor: pointer; color: var(--tok-text-default); font-weight: 400; font-size: 12px; line-height: 1.4; font-family: inherit; }
+.calendar__day:hover { background: var(--tok-fill-neutral-hover); }
+.calendar__day:focus-visible { outline: 2px solid var(--tok-border-focus); outline-offset: -2px; }
+.calendar__day--outside { color: var(--tok-text-muted); cursor: default; }
+.calendar__day--outside:hover { background: none; }
+.calendar__day--today { border-color: var(--tok-border-strong); }
+.calendar__day:disabled { color: var(--tok-text-disabled); background: none; cursor: default; }
+/* range: the wash runs edge-to-edge; the ends round on their outer side */
+.calendar__day--mid, .calendar__day--mid:hover { background: var(--tok-bg-primary); color: var(--tok-text-default); border-radius: 0; }
+.calendar__day--selected, .calendar__day--selected:hover { background: var(--tok-fill-primary); color: var(--tok-text-on-fill); border-color: var(--tok-fill-primary); }
+.calendar__day--start { border-radius: 8px 0 0 8px; }
+.calendar__day--end { border-radius: 0 8px 8px 0; }
+.calendar__day--start.calendar__day--end { border-radius: 8px; }
+/* narrow containers: two months stack */
+@media (max-width: 560px) { .calendar__months { flex-direction: column; gap: 12px; } }
+
+.datepicker { display: inline-block; vertical-align: top; font-family: var(--tok-family-sans); }
+.datepicker--block { display: block; }
+.datepicker__trigger { box-sizing: border-box; display: inline-flex; align-items: center; gap: 8px; height: 40px; margin: 0; padding: 0 12px; border-radius: 8px; background: var(--tok-surface-dim); border: 1px solid var(--tok-border-default); cursor: pointer; color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; font-family: inherit; text-align: left; }
+.datepicker--block .datepicker__trigger { width: 100%; }
 .datepicker__trigger:hover { border-color: var(--tok-border-strong); }
 .datepicker__trigger:focus-visible { outline: none; border-color: var(--tok-border-focus); }
-.datepicker__cal { width: 20px; height: 20px; color: var(--tok-icon-default); flex-shrink: 0; }
-.datepicker__value { min-width: 0; }
-.datepicker__chevron { width: 20px; height: 20px; color: var(--tok-icon-default); flex-shrink: 0; margin-left: auto; }
-
-.datepicker__panel { margin: 0; box-sizing: border-box; padding: 12px; border-radius: 8px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); box-shadow: 0px 2px 8px 0px rgba(21, 25, 30, 0.10); font-family: var(--tok-family-sans); }
-.datepicker__header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-.datepicker__month { font-weight: 600; font-size: 12px; line-height: 1.4; color: var(--tok-text-default); }
-.datepicker__nav { width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border: none; background: none; border-radius: 8px; cursor: pointer; color: var(--tok-icon-default); }
-.datepicker__nav:hover { background: var(--tok-fill-neutral-hover); }
-.datepicker__nav-icon { width: 20px; height: 20px; }
-.datepicker__grid { display: grid; grid-template-columns: repeat(7, 36px); gap: 2px; }
-.datepicker__weekday { width: 36px; height: 28px; display: inline-flex; align-items: center; justify-content: center; color: var(--tok-text-muted); font-weight: 700; font-size: 12px; line-height: 1.4; text-transform: uppercase; }
-.datepicker__day { width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid transparent; background: none; border-radius: 8px; cursor: pointer; color: var(--tok-text-default); font-weight: 400; font-size: 12px; line-height: 1.4; font-family: inherit; }
-.datepicker__day:hover { background: var(--tok-fill-neutral-hover); }
-.datepicker__day--outside { color: var(--tok-text-muted); }
-.datepicker__day--today { border-color: var(--tok-border-strong); }
-.datepicker__day--selected, .datepicker__day--selected:hover { background: var(--tok-fill-primary); color: var(--tok-text-on-fill); border-color: var(--tok-fill-primary); }
-.datepicker__day:focus-visible { outline: 2px solid var(--tok-border-focus); outline-offset: -2px; }
+.datepicker__icon, .datepicker__chevron { width: 20px; height: 20px; color: var(--tok-icon-default); flex-shrink: 0; }
+.datepicker__chevron { margin-left: auto; }
+.datepicker__value { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.datepicker__value--placeholder { color: var(--tok-text-muted); }
+.datepicker__panel { margin: 0; box-sizing: border-box; padding: 12px; border-radius: 8px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); box-shadow: 0px 2px 8px 0px rgba(21, 25, 30, 0.10); font-family: inherit; color: inherit; }
 </style>
 </head>
 <body>
@@ -114,14 +144,17 @@
     <a class="navlink" href="counter.html">Counter</a>
     <a class="navlink" href="input.html">Input</a>
     <a class="navlink" href="select.html">Select</a>
+    <a class="navlink" href="calendar.html">Calendar</a>
     <a class="navlink active" href="date-picker.html">DatePicker</a>
     <a class="navlink" href="date-range-picker.html">DateRangePicker</a>
+    <a class="navlink" href="time-picker.html">TimePicker</a>
     <a class="navlink" href="search.html">Search</a>
     <a class="navlink" href="pagination.html">Pagination</a>
     <a class="navlink" href="separator.html">Separator</a>
     <a class="navlink" href="tabs.html">Tabs</a>
     <a class="navlink" href="sidebar.html">Sidebar</a>
     <a class="navlink" href="accordion.html">Accordion</a>
+    <a class="navlink" href="status-icon.html">StatusIcon</a>
     <a class="navlink" href="checkbox.html">Checkbox</a>
     <a class="navlink" href="radio.html">Radio</a>
     <a class="navlink" href="box.html">Box</a>
@@ -136,6 +169,7 @@
     <a class="navlink" href="popover.html">Popover</a>
     <a class="navlink" href="drawer.html">Drawer</a>
     <a class="navlink" href="modal.html">Modal</a>
+    <a class="navlink" href="alert-dialog.html">AlertDialog</a>
     <a class="navlink" href="menu.html">Menu</a>
     <a class="navlink" href="split-button.html">SplitButton</a>
     <a class="navlink" href="listbox.html">Listbox</a>
@@ -191,129 +225,274 @@
 </script></nav>
   <main>
     <h1>DatePicker</h1>
-    <p class="sub">tokens/components/date-picker.tokens.json · generated — a single-date picker: a Select-style trigger that opens a month-grid calendar. Click the trigger below, navigate months, pick a day. Built for the message Expiration date.</p>
+    <p class="sub">tokens/components/date-picker.tokens.json · generated — a single-date field: a Select-style trigger that opens the <a href="calendar.html">Calendar</a> in a popover. Click a trigger, page or jump with the month / year selects, pick a day.</p>
 
     <div class="legend">
-      <div class="row"><b>Trigger</b><span>The locked-in field recipe — <code class="tok">surface.dim</code> fill + hairline border → <code class="tok">border.strong</code> hover → <code class="tok">border.focus</code>. A calendar icon, the formatted date, a chevron. Value text is 16px (the iOS-zoom rule every field follows).</span></div>
-      <div class="row"><b>Panel</b><span>Floats on the native Popover shell — <code class="tok">border.default</code> + <code class="tok">shadow.sm</code>, free outside-click/Escape dismissal. Month label + prev/next nav over a 7-column grid.</span></div>
-      <div class="row"><b>Days</b><span><code class="tok">today</code> gets a hairline ring, the <code class="tok">selected</code> day fills <code class="tok">fill.primary</code>, days spilling from the prev/next month dim to <code class="tok">text.muted</code>. Single date only — no range, no time.</span></div>
+      <div class="row"><b>Trigger</b><span>The locked-in field recipe — <code class="tok">surface.dim</code> fill + hairline border → <code class="tok">border.strong</code> hover → <code class="tok">border.focus</code>, 40px. Calendar icon, the formatted date (or a <code class="tok">text.muted</code> “Select date”), a chevron. 14px value, like Select — it's a button, not a text field.</span></div>
+      <div class="row"><b>Panel</b><span>Native Popover shell — <code class="tok">border.default</code> + <code class="tok">shadow.sm</code>, 12px padding, free outside-click / Escape dismissal. Opens on the selected month (or today's), focuses the selected day, flips above the trigger when there's no room below.</span></div>
+      <div class="row"><b>Calendar</b><span>The shared <a href="calendar.html">Calendar</a> in <code class="tok">single</code> mode — header, grid, day states and keyboard all come from there. <code class="tok">min</code> / <code class="tok">max</code> pass straight through.</span></div>
+      <div class="row"><b>With time</b><span>Joined to a <a href="time-picker.html">TimePicker</a> as one date + time field — see “Date and time” on that page.</span></div>
     </div>
 
-    <h2 class="big-section">Expiration date</h2>
-    <p class="section-desc">Selected Aug 15, 2026; "today" is Aug 8 (ringed) in this deterministic demo.</p>
+    <h2 class="big-section">Stories</h2>
+    <p class="section-desc">"Today" is pinned to Oct 21, 2026 on this page so it renders the same every day.</p>
     <div class="story-grid">
-      <div class="story"><h3>Pick a date</h3><div class="story-preview"><div class="datepicker" data-date="2026-08-15">
-      <button class="datepicker__trigger" type="button" popovertarget="dp-panel" aria-haspopup="dialog">
-        <svg class="datepicker__cal" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 3h-1V1h-2v2H7V1H5v2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H4V8h16v13z"/></svg><span class="datepicker__value">Aug 15, 2026</span><svg class="datepicker__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>
-      </button>
-      <div class="datepicker__panel" id="dp-panel" popover role="dialog" aria-label="Choose a date">
-        <div class="datepicker__header">
-          <button class="datepicker__nav datepicker__nav--prev" type="button" aria-label="Previous month"><svg class="datepicker__nav-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg></button>
-          <span class="datepicker__month">August 2026</span>
-          <button class="datepicker__nav datepicker__nav--next" type="button" aria-label="Next month"><svg class="datepicker__nav-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button>
-        </div>
-        <div class="datepicker__grid"></div>
-      </div>
-    </div></div></div>
+      <div class="story"><h3>With a value</h3><div class="story-preview"><div class="datepicker" id="dp-value" data-value="2026-11-15" data-placeholder="Select date">
+      <button class="datepicker__trigger" type="button" popovertarget="dp-value-panel" aria-haspopup="dialog" aria-label="Expiration date"><svg class="datepicker__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 3h-1V1h-2v2H7V1H5v2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H4V8h16v13z"/></svg><span class="datepicker__value">Nov 15, 2026</span><svg class="datepicker__chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+      <div class="datepicker__panel" id="dp-value-panel" popover role="dialog" aria-label="Choose a date"><div class="calendar" role="group" aria-label="Expiration date" data-mode="single" data-value="2026-11-15" data-today="2026-10-21"><div class="calendar__months"><div class="calendar__month"><div class="calendar__head"><button class="calendar__nav calendar__nav--prev" type="button" aria-label="Previous month"><svg class="calendar__nav-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg></button><span class="calendar__selects"><span class="calendar__sel"><select class="calendar__select calendar__select--month" aria-label="Month"><option value="0">January</option><option value="1">February</option><option value="2">March</option><option value="3">April</option><option value="4">May</option><option value="5">June</option><option value="6">July</option><option value="7">August</option><option value="8">September</option><option value="9">October</option><option value="10" selected>November</option><option value="11">December</option></select><svg class="calendar__sel-chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></span><span class="calendar__sel"><select class="calendar__select calendar__select--year" aria-label="Year"><option value="2026" selected>2026</option></select><svg class="calendar__sel-chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></span></span><button class="calendar__nav calendar__nav--next" type="button" aria-label="Next month"><svg class="calendar__nav-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button></div><div class="calendar__grid" role="group"></div></div></div></div></div>
+    </div></div><p class="story-note">Opens on November with the 15th selected.</p></div>
+      <div class="story"><h3>Empty</h3><div class="story-preview"><div class="datepicker" id="dp-empty" data-placeholder="Select date">
+      <button class="datepicker__trigger" type="button" popovertarget="dp-empty-panel" aria-haspopup="dialog" aria-label="Start date"><svg class="datepicker__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 3h-1V1h-2v2H7V1H5v2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H4V8h16v13z"/></svg><span class="datepicker__value datepicker__value--placeholder">Select date</span><svg class="datepicker__chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+      <div class="datepicker__panel" id="dp-empty-panel" popover role="dialog" aria-label="Choose a date"><div class="calendar" role="group" aria-label="Start date" data-mode="single" data-view="2026-10" data-today="2026-10-21"><div class="calendar__months"><div class="calendar__month"><div class="calendar__head"><button class="calendar__nav calendar__nav--prev" type="button" aria-label="Previous month"><svg class="calendar__nav-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg></button><span class="calendar__selects"><span class="calendar__sel"><select class="calendar__select calendar__select--month" aria-label="Month"><option value="0">January</option><option value="1">February</option><option value="2">March</option><option value="3">April</option><option value="4">May</option><option value="5">June</option><option value="6">July</option><option value="7">August</option><option value="8">September</option><option value="9" selected>October</option><option value="10">November</option><option value="11">December</option></select><svg class="calendar__sel-chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></span><span class="calendar__sel"><select class="calendar__select calendar__select--year" aria-label="Year"><option value="2026" selected>2026</option></select><svg class="calendar__sel-chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></span></span><button class="calendar__nav calendar__nav--next" type="button" aria-label="Next month"><svg class="calendar__nav-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button></div><div class="calendar__grid" role="group"></div></div></div></div></div>
+    </div></div><p class="story-note">Placeholder until a day is picked; opens on today's month.</p></div>
+      <div class="story"><h3>With min date</h3><div class="story-preview"><div class="datepicker" id="dp-min" data-placeholder="Select date">
+      <button class="datepicker__trigger" type="button" popovertarget="dp-min-panel" aria-haspopup="dialog" aria-label="Start date"><svg class="datepicker__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 3h-1V1h-2v2H7V1H5v2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H4V8h16v13z"/></svg><span class="datepicker__value datepicker__value--placeholder">Select date</span><svg class="datepicker__chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+      <div class="datepicker__panel" id="dp-min-panel" popover role="dialog" aria-label="Choose a date"><div class="calendar" role="group" aria-label="Start date" data-mode="single" data-view="2026-10" data-today="2026-10-21" data-min="2026-10-21"><div class="calendar__months"><div class="calendar__month"><div class="calendar__head"><button class="calendar__nav calendar__nav--prev" type="button" aria-label="Previous month"><svg class="calendar__nav-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg></button><span class="calendar__selects"><span class="calendar__sel"><select class="calendar__select calendar__select--month" aria-label="Month"><option value="0">January</option><option value="1">February</option><option value="2">March</option><option value="3">April</option><option value="4">May</option><option value="5">June</option><option value="6">July</option><option value="7">August</option><option value="8">September</option><option value="9" selected>October</option><option value="10">November</option><option value="11">December</option></select><svg class="calendar__sel-chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></span><span class="calendar__sel"><select class="calendar__select calendar__select--year" aria-label="Year"><option value="2026" selected>2026</option></select><svg class="calendar__sel-chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></span></span><button class="calendar__nav calendar__nav--next" type="button" aria-label="Next month"><svg class="calendar__nav-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button></div><div class="calendar__grid" role="group"></div></div></div></div></div>
+    </div></div><p class="story-note">min = today: earlier days are disabled, and so is the arrow back into September.</p></div>
     </div>
+    <div class="story-grid" style="margin-top:24px">
+      <div class="story"><h3>Full width (.datepicker--block)</h3><div class="story-preview"><div class="datepicker datepicker--block" id="dp-block" data-placeholder="Select date">
+      <button class="datepicker__trigger" type="button" popovertarget="dp-block-panel" aria-haspopup="dialog" aria-label="Start date"><svg class="datepicker__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 3h-1V1h-2v2H7V1H5v2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H4V8h16v13z"/></svg><span class="datepicker__value datepicker__value--placeholder">Select date</span><svg class="datepicker__chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+      <div class="datepicker__panel" id="dp-block-panel" popover role="dialog" aria-label="Choose a date"><div class="calendar" role="group" aria-label="Start date" data-mode="single" data-view="2026-10" data-today="2026-10-21"><div class="calendar__months"><div class="calendar__month"><div class="calendar__head"><button class="calendar__nav calendar__nav--prev" type="button" aria-label="Previous month"><svg class="calendar__nav-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg></button><span class="calendar__selects"><span class="calendar__sel"><select class="calendar__select calendar__select--month" aria-label="Month"><option value="0">January</option><option value="1">February</option><option value="2">March</option><option value="3">April</option><option value="4">May</option><option value="5">June</option><option value="6">July</option><option value="7">August</option><option value="8">September</option><option value="9" selected>October</option><option value="10">November</option><option value="11">December</option></select><svg class="calendar__sel-chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></span><span class="calendar__sel"><select class="calendar__select calendar__select--year" aria-label="Year"><option value="2026" selected>2026</option></select><svg class="calendar__sel-chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></span></span><button class="calendar__nav calendar__nav--next" type="button" aria-label="Next month"><svg class="calendar__nav-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button></div><div class="calendar__grid" role="group"></div></div></div></div></div>
+    </div></div><p class="story-note">Fills its container, the way it sits in a form column. The popover keeps the calendar's own width.</p></div>
+    </div>
+
+    <h2 class="big-section">Markup</h2>
+    <p class="section-desc">The panel is a native popover opened by the trigger; the calendar inside is rendered and kept in sync by <code class="tok">hpCalendar</code>.</p>
+    <pre class="code"><code>&lt;div class="datepicker" id="start-date" data-value="2026-10-21"&gt;
+  &lt;button class="datepicker__trigger" type="button" popovertarget="start-date-panel" aria-haspopup="dialog" aria-label="Start date"&gt;
+    …calendar_today…&lt;span class="datepicker__value"&gt;Oct 21, 2026&lt;/span&gt;…expand_more…
+  &lt;/button&gt;
+  &lt;div class="datepicker__panel" id="start-date-panel" popover role="dialog" aria-label="Choose a date"&gt;
+    &lt;div class="calendar" data-mode="single" data-value="2026-10-21" data-min="2026-10-21"&gt;…see Calendar…&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+&lt;!-- empty: &lt;span class="datepicker__value datepicker__value--placeholder"&gt;Select date&lt;/span&gt;
+     full width: .datepicker--block
+     on pick the .datepicker fires a bubbling "datechange" event, detail.iso = "2026-10-21" --&gt;</code></pre>
 
     <h2 class="big-section">CSS</h2>
     <pre class="code"><code>:root {
   --tok-surface-dim: #f4f5f7;
-  --tok-surface-default: #ffffff;
   --tok-border-default: #dadde0;
   --tok-border-strong: #adb5be;
   --tok-border-focus: #0468c4;
   --tok-text-default: #121921;
   --tok-text-muted: #758191;
-  --tok-text-disabled: #adb5be;
   --tok-icon-default: #485462;
+  --tok-surface-default: #ffffff;
   --tok-fill-neutral-hover: #e6e8eb;
+  --tok-icon-disabled: #adb5be;
   --tok-fill-primary: #077fec;
   --tok-text-on-fill: #ffffff;
+  --tok-bg-primary: #d9eaff;
+  --tok-text-disabled: #adb5be;
   --tok-family-sans: 'Sora', sans-serif;
 }
 
-.datepicker { display: inline-block; font-family: var(--tok-family-sans); }
-.datepicker__trigger { box-sizing: border-box; display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 12px; border-radius: 8px; background: var(--tok-surface-dim); border: 1px solid var(--tok-border-default); cursor: pointer; color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; font-family: inherit; }
+.calendar { display: inline-block; vertical-align: top; }
+.calendar__months { display: flex; gap: 20px; }
+.calendar__head { display: flex; align-items: center; justify-content: space-between; gap: 4px; margin-bottom: 8px; }
+.calendar__selects { display: flex; align-items: center; gap: 4px; }
+/* month / year select — a 32px control in the field family, chevron = expand_more */
+.calendar__sel { position: relative; display: inline-flex; }
+.calendar__select { appearance: none; -webkit-appearance: none; box-sizing: border-box; height: 32px; margin: 0; padding: 0 24px 0 8px; border: 1px solid var(--tok-border-default); border-radius: 8px; background: var(--tok-surface-default); color: var(--tok-text-default); font-family: inherit; font-weight: 400; font-size: 12px; line-height: 1.4; cursor: pointer; }
+.calendar__select:hover { border-color: var(--tok-border-strong); }
+.calendar__select:focus-visible { outline: none; border-color: var(--tok-border-focus); }
+.calendar__sel-chevron { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--tok-icon-default); pointer-events: none; }
+/* paging arrows; with two months the inner sides keep a same-width spacer */
+.calendar__nav { box-sizing: border-box; width: 32px; height: 32px; padding: 0; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; border: none; background: none; border-radius: 8px; cursor: pointer; color: var(--tok-icon-default); }
+.calendar__nav:hover { background: var(--tok-fill-neutral-hover); }
+.calendar__nav:disabled { color: var(--tok-icon-disabled); background: none; cursor: default; }
+.calendar__nav:focus-visible { outline: 2px solid var(--tok-border-focus); outline-offset: -2px; }
+.calendar__nav-icon { width: 20px; height: 20px; }
+.calendar__nav-sp { width: 32px; flex-shrink: 0; }
+.calendar__grid { display: grid; grid-template-columns: repeat(7, 36px); gap: 4px 0; }
+.calendar__weekday { width: 36px; height: 28px; display: inline-flex; align-items: center; justify-content: center; color: var(--tok-text-muted); font-weight: 700; font-size: 12px; line-height: 1.4; text-transform: uppercase; }
+.calendar__day { box-sizing: border-box; width: 36px; height: 36px; margin: 0; padding: 0; display: inline-flex; align-items: center; justify-content: center; border: 1px solid transparent; border-radius: 8px; background: none; cursor: pointer; color: var(--tok-text-default); font-weight: 400; font-size: 12px; line-height: 1.4; font-family: inherit; }
+.calendar__day:hover { background: var(--tok-fill-neutral-hover); }
+.calendar__day:focus-visible { outline: 2px solid var(--tok-border-focus); outline-offset: -2px; }
+.calendar__day--outside { color: var(--tok-text-muted); cursor: default; }
+.calendar__day--outside:hover { background: none; }
+.calendar__day--today { border-color: var(--tok-border-strong); }
+.calendar__day:disabled { color: var(--tok-text-disabled); background: none; cursor: default; }
+/* range: the wash runs edge-to-edge; the ends round on their outer side */
+.calendar__day--mid, .calendar__day--mid:hover { background: var(--tok-bg-primary); color: var(--tok-text-default); border-radius: 0; }
+.calendar__day--selected, .calendar__day--selected:hover { background: var(--tok-fill-primary); color: var(--tok-text-on-fill); border-color: var(--tok-fill-primary); }
+.calendar__day--start { border-radius: 8px 0 0 8px; }
+.calendar__day--end { border-radius: 0 8px 8px 0; }
+.calendar__day--start.calendar__day--end { border-radius: 8px; }
+/* narrow containers: two months stack */
+@media (max-width: 560px) { .calendar__months { flex-direction: column; gap: 12px; } }
+
+.datepicker { display: inline-block; vertical-align: top; font-family: var(--tok-family-sans); }
+.datepicker--block { display: block; }
+.datepicker__trigger { box-sizing: border-box; display: inline-flex; align-items: center; gap: 8px; height: 40px; margin: 0; padding: 0 12px; border-radius: 8px; background: var(--tok-surface-dim); border: 1px solid var(--tok-border-default); cursor: pointer; color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; font-family: inherit; text-align: left; }
+.datepicker--block .datepicker__trigger { width: 100%; }
 .datepicker__trigger:hover { border-color: var(--tok-border-strong); }
 .datepicker__trigger:focus-visible { outline: none; border-color: var(--tok-border-focus); }
-.datepicker__cal { width: 20px; height: 20px; color: var(--tok-icon-default); flex-shrink: 0; }
-.datepicker__value { min-width: 0; }
-.datepicker__chevron { width: 20px; height: 20px; color: var(--tok-icon-default); flex-shrink: 0; margin-left: auto; }
-
-.datepicker__panel { margin: 0; box-sizing: border-box; padding: 12px; border-radius: 8px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); box-shadow: 0px 2px 8px 0px rgba(21, 25, 30, 0.10); font-family: var(--tok-family-sans); }
-.datepicker__header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-.datepicker__month { font-weight: 600; font-size: 12px; line-height: 1.4; color: var(--tok-text-default); }
-.datepicker__nav { width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border: none; background: none; border-radius: 8px; cursor: pointer; color: var(--tok-icon-default); }
-.datepicker__nav:hover { background: var(--tok-fill-neutral-hover); }
-.datepicker__nav-icon { width: 20px; height: 20px; }
-.datepicker__grid { display: grid; grid-template-columns: repeat(7, 36px); gap: 2px; }
-.datepicker__weekday { width: 36px; height: 28px; display: inline-flex; align-items: center; justify-content: center; color: var(--tok-text-muted); font-weight: 700; font-size: 12px; line-height: 1.4; text-transform: uppercase; }
-.datepicker__day { width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid transparent; background: none; border-radius: 8px; cursor: pointer; color: var(--tok-text-default); font-weight: 400; font-size: 12px; line-height: 1.4; font-family: inherit; }
-.datepicker__day:hover { background: var(--tok-fill-neutral-hover); }
-.datepicker__day--outside { color: var(--tok-text-muted); }
-.datepicker__day--today { border-color: var(--tok-border-strong); }
-.datepicker__day--selected, .datepicker__day--selected:hover { background: var(--tok-fill-primary); color: var(--tok-text-on-fill); border-color: var(--tok-fill-primary); }
-.datepicker__day:focus-visible { outline: 2px solid var(--tok-border-focus); outline-offset: -2px; }</code></pre>
+.datepicker__icon, .datepicker__chevron { width: 20px; height: 20px; color: var(--tok-icon-default); flex-shrink: 0; }
+.datepicker__chevron { margin-left: auto; }
+.datepicker__value { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.datepicker__value--placeholder { color: var(--tok-text-muted); }
+.datepicker__panel { margin: 0; box-sizing: border-box; padding: 12px; border-radius: 8px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); box-shadow: 0px 2px 8px 0px rgba(21, 25, 30, 0.10); font-family: inherit; color: inherit; }</code></pre>
   </main>
 </div>
-<script>(function () {
+<script>
+window.hpCalendar = window.hpCalendar || (function () {
   var MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-  var WD = ["Su","Mo","Tu","We","Th","Fr","Sa"];
-  function fmt(y, m, d) { return MONTHS[m].slice(0,3) + " " + d + ", " + y; }
-  document.querySelectorAll(".datepicker").forEach(function (dpEl) {
-    var trigger = dpEl.querySelector(".datepicker__trigger");
-    var panel = dpEl.querySelector(".datepicker__panel");
-    var valEl = dpEl.querySelector(".datepicker__value");
-    // seed: the trigger's data-date (YYYY-MM-DD) is the selected value + view month
-    var parts = (dpEl.dataset.date || "2026-08-15").split("-").map(Number);
-    var sel = { y: parts[0], m: parts[1] - 1, d: parts[2] };
-    var view = { y: sel.y, m: sel.m };
-    var today = { y: 2026, m: 7, d: 8 }; // fixed "today" for a deterministic demo
-    function render() {
-      var first = new Date(view.y, view.m, 1).getDay();
-      var days = new Date(view.y, view.m + 1, 0).getDate();
-      var prevDays = new Date(view.y, view.m, 0).getDate();
-      var cells = [];
-      for (var i = 0; i < first; i++) cells.push({ d: prevDays - first + 1 + i, outside: true });
-      for (var d = 1; d <= days; d++) cells.push({ d: d, outside: false });
-      while (cells.length % 7 !== 0) cells.push({ d: cells.length - (first + days) + 1, outside: true });
-      var grid = WD.map(function (w) { return '<span class="datepicker__weekday">' + w + '</span>'; }).join("");
-      cells.forEach(function (c) {
-        var cls = ["datepicker__day"];
-        if (c.outside) cls.push("datepicker__day--outside");
-        else {
-          if (view.y === today.y && view.m === today.m && c.d === today.d) cls.push("datepicker__day--today");
-          if (view.y === sel.y && view.m === sel.m && c.d === sel.d) cls.push("datepicker__day--selected");
-        }
-        grid += '<button type="button" class="' + cls.join(" ") + '"' + (c.outside ? " disabled tabindex=-1" : "") + ' data-day="' + c.d + '">' + c.d + '</button>';
-      });
-      panel.querySelector(".datepicker__month").textContent = MONTHS[view.m] + " " + view.y;
-      panel.querySelector(".datepicker__grid").innerHTML = grid;
-      panel.querySelectorAll(".datepicker__day:not(.datepicker__day--outside)").forEach(function (btn) {
-        btn.addEventListener("click", function () {
-          sel = { y: view.y, m: view.m, d: parseInt(btn.dataset.day, 10) };
-          valEl.textContent = fmt(sel.y, sel.m, sel.d);
-          dpEl.dataset.date = sel.y + "-" + ("0" + (sel.m + 1)).slice(-2) + "-" + ("0" + sel.d).slice(-2);
-          panel.hidePopover();
-        });
-      });
+  var WD = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
+  var WD_FULL = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  function pad(n) { return ("0" + n).slice(-2); }
+  function parse(s) { if (!s) return null; var p = s.split("-").map(Number); return { y: p[0], m: p[1] - 1, d: p[2] || 1 }; }
+  function iso(a) { return a ? a.y + "-" + pad(a.m + 1) + "-" + pad(a.d) : ""; }
+  function key(a) { return a.y * 10000 + a.m * 100 + a.d; }
+  function mkey(a) { return a.y * 100 + a.m; }
+  function fromDate(dt) { return { y: dt.getFullYear(), m: dt.getMonth(), d: dt.getDate() }; }
+  function addDays(a, n) { return fromDate(new Date(a.y, a.m, a.d + n)); }
+  function viewAdd(v, n) { var dt = new Date(v.y, v.m + n, 1); return { y: dt.getFullYear(), m: dt.getMonth() }; }
+  function addMonths(a, n) { var last = new Date(a.y, a.m + n + 1, 0).getDate(); var dt = new Date(a.y, a.m + n, Math.min(a.d, last)); return fromDate(dt); }
+
+  function mount(el, opts) {
+    opts = opts || {};
+    var ds = el.dataset, mode = ds.mode || "single";
+    var monthEls = [].slice.call(el.querySelectorAll(".calendar__month"));
+    var today = parse(ds.today) || fromDate(new Date());
+    var min = parse(ds.min), max = parse(ds.max);
+    var st = { value: parse(ds.value), start: parse(ds.start), end: parse(ds.end) };
+    var anchor = parse(ds.view) || st.value || st.start || today;
+    var view = { y: anchor.y, m: anchor.m };
+    var focusDate = null;
+    function allowed(a) { var k = key(a); return !(min && k < key(min)) && !(max && k > key(max)); }
+    function visible(a) { var k = mkey(a); return k >= mkey(view) && k <= mkey(viewAdd(view, monthEls.length - 1)); }
+    function tabTarget() {
+      var c = [focusDate, mode === "single" ? st.value : st.start, today];
+      for (var i = 0; i < c.length; i++) if (c[i] && visible(c[i]) && allowed(c[i])) return iso(c[i]);
+      for (var d = 1; d <= 31; d++) { var f = { y: view.y, m: view.m, d: d }; if (allowed(f)) return iso(f); }
+      return null;
     }
-    panel.querySelector(".datepicker__nav--prev").addEventListener("click", function () { view.m--; if (view.m < 0) { view.m = 11; view.y--; } render(); });
-    panel.querySelector(".datepicker__nav--next").addEventListener("click", function () { view.m++; if (view.m > 11) { view.m = 0; view.y++; } render(); });
-    panel.addEventListener("toggle", function (e) {
-      if (e.newState === "open") {
-        view = { y: sel.y, m: sel.m };
-        render();
-        var r = trigger.getBoundingClientRect();
-        panel.style.position = "fixed"; panel.style.margin = "0";
-        panel.style.top = (r.bottom + 4) + "px";
-        panel.style.left = Math.max(8, Math.min(r.left, window.innerWidth - panel.offsetWidth - 8)) + "px";
-      }
+    function render() {
+      var tab = tabTarget();
+      var s = st.start, e = st.end;
+      monthEls.forEach(function (mEl, i) {
+        var v = viewAdd(view, i);
+        var mSel = mEl.querySelector(".calendar__select--month"), ySel = mEl.querySelector(".calendar__select--year");
+        mSel.value = v.m;
+        var y0 = (min ? Math.min(min.y, v.y) : v.y - 10), y1 = (max ? Math.max(max.y, v.y) : v.y + 10), yo = "";
+        for (var y = y0; y <= y1; y++) yo += '<option value="' + y + '"' + (y === v.y ? " selected" : "") + ">" + y + "</option>";
+        ySel.innerHTML = yo;
+        var first = new Date(v.y, v.m, 1).getDay(), days = new Date(v.y, v.m + 1, 0).getDate(), prevDays = new Date(v.y, v.m, 0).getDate();
+        var html = WD.map(function (w, k) { return '<span class="calendar__weekday" title="' + WD_FULL[k] + '">' + w + "</span>"; }).join("");
+        var i2, n = first + days;
+        for (i2 = 0; i2 < first; i2++) html += '<span class="calendar__day calendar__day--outside" aria-hidden="true">' + (prevDays - first + 1 + i2) + "</span>";
+        for (var d = 1; d <= days; d++) {
+          var a = { y: v.y, m: v.m, d: d }, k = key(a), cls = ["calendar__day"], on = false;
+          if (k === key(today)) cls.push("calendar__day--today");
+          if (mode === "single") { if (st.value && k === key(st.value)) { cls.push("calendar__day--selected"); on = true; } }
+          else if (s) {
+            var eK = e ? key(e) : key(s);
+            if (k === key(s)) { cls.push("calendar__day--selected", "calendar__day--start"); on = true; }
+            if (k === eK) { cls.push("calendar__day--selected", "calendar__day--end"); on = true; }
+            if (k > key(s) && k < eK) cls.push("calendar__day--mid");
+          }
+          var label = WD_FULL[new Date(v.y, v.m, d).getDay()] + ", " + MONTHS[v.m] + " " + d + ", " + v.y;
+          html += '<button type="button" class="' + cls.join(" ") + '" data-iso="' + iso(a) + '" aria-label="' + label + '" aria-pressed="' + on + '"' +
+            (k === key(today) ? ' aria-current="date"' : "") + (allowed(a) ? "" : " disabled") + ' tabindex="' + (iso(a) === tab ? 0 : -1) + '">' + d + "</button>";
+        }
+        for (i2 = 1; (n + i2 - 1) % 7 !== 0; i2++) html += '<span class="calendar__day calendar__day--outside" aria-hidden="true">' + i2 + "</span>";
+        var grid = mEl.querySelector(".calendar__grid");
+        grid.innerHTML = html;
+        grid.setAttribute("aria-label", MONTHS[v.m] + " " + v.y);
+      });
+      var prev = el.querySelector(".calendar__nav--prev"), next = el.querySelector(".calendar__nav--next");
+      if (prev) prev.disabled = !!(min && mkey(viewAdd(view, -1)) < mkey(min));
+      if (next) next.disabled = !!(max && mkey(viewAdd(view, monthEls.length)) > mkey(max));
+    }
+    function setView(v) { view = { y: v.y, m: v.m }; render(); }
+    function pick(a) {
+      if (mode === "single") st.value = a;
+      else if (!st.start || st.end) { st.start = a; st.end = null; }
+      else if (key(a) < key(st.start)) { st.end = st.start; st.start = a; }
+      else st.end = a;
+      focusDate = a; render();
+      if (opts.onChange) opts.onChange(api.getValue());
+    }
+    function moveFocus(a) {
+      if (!allowed(a)) return;
+      focusDate = a;
+      if (!visible(a)) view = mkey(a) < mkey(view) ? { y: a.y, m: a.m } : viewAdd({ y: a.y, m: a.m }, -(monthEls.length - 1));
+      render();
+      var b = el.querySelector('.calendar__day[data-iso="' + iso(a) + '"]'); if (b) b.focus();
+    }
+    el.addEventListener("click", function (e) {
+      var b = e.target.closest(".calendar__day[data-iso]");
+      if (b && !b.disabled) { pick(parse(b.dataset.iso)); var f = el.querySelector('.calendar__day[data-iso="' + b.dataset.iso + '"]'); if (f) f.focus(); return; }
+      if (e.target.closest(".calendar__nav--prev")) setView(viewAdd(view, -1));
+      else if (e.target.closest(".calendar__nav--next")) setView(viewAdd(view, 1));
     });
+    el.addEventListener("change", function (e) {
+      var mEl = e.target.closest(".calendar__month"); if (!mEl) return;
+      var i = monthEls.indexOf(mEl), v = viewAdd(view, i);
+      if (e.target.classList.contains("calendar__select--month")) v.m = parseInt(e.target.value, 10);
+      else v.y = parseInt(e.target.value, 10);
+      setView(viewAdd(v, -i));
+    });
+    el.addEventListener("keydown", function (e) {
+      var b = e.target.closest(".calendar__day[data-iso]"); if (!b) return;
+      var a = parse(b.dataset.iso), wdn = new Date(a.y, a.m, a.d).getDay(), t = null;
+      switch (e.key) {
+        case "ArrowLeft": t = addDays(a, -1); break;
+        case "ArrowRight": t = addDays(a, 1); break;
+        case "ArrowUp": t = addDays(a, -7); break;
+        case "ArrowDown": t = addDays(a, 7); break;
+        case "Home": t = addDays(a, -wdn); break;
+        case "End": t = addDays(a, 6 - wdn); break;
+        case "PageUp": t = addMonths(a, e.shiftKey ? -12 : -1); break;
+        case "PageDown": t = addMonths(a, e.shiftKey ? 12 : 1); break;
+      }
+      if (t) { e.preventDefault(); moveFocus(t); }
+    });
+    var api = {
+      el: el, render: render, setView: setView,
+      getValue: function () { return mode === "single" ? st.value : { start: st.start, end: st.end }; },
+      setValue: function (v) { if (mode === "single") st.value = v; else { st.start = v ? v.start : null; st.end = v ? v.end : null; } focusDate = null; render(); },
+      focus: function () { var b = el.querySelector('.calendar__day[tabindex="0"]'); if (b) b.focus(); }
+    };
     render();
+    return api;
+  }
+  return { mount: mount, parse: parse, iso: iso, key: key, viewAdd: viewAdd, addMonths: addMonths, MONTHS: MONTHS };
+})();
+(function () {
+  var ABBR = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  function fmt(a) { return ABBR[a.m] + " " + a.d + ", " + a.y; }
+  document.querySelectorAll(".datepicker").forEach(function (el) {
+    if (el._hpdp) return; el._hpdp = true;
+    var trigger = el.querySelector(".datepicker__trigger"), panel = el.querySelector(".datepicker__panel"), valEl = el.querySelector(".datepicker__value");
+    var calEl = panel.querySelector(".calendar");
+    var cal = hpCalendar.mount(calEl, { onChange: function (a) {
+      valEl.textContent = fmt(a); valEl.classList.remove("datepicker__value--placeholder");
+      el.dataset.value = hpCalendar.iso(a);
+      panel.hidePopover(); trigger.focus();
+      el.dispatchEvent(new CustomEvent("datechange", { bubbles: true, detail: { iso: el.dataset.value } }));
+    } });
+    panel.addEventListener("toggle", function (e) {
+      if (e.newState !== "open") return;
+      var v = cal.getValue(), today = hpCalendar.parse(calEl.dataset.today), min = hpCalendar.parse(calEl.dataset.min);
+      var at = v || (today && (!min || hpCalendar.key(today) >= hpCalendar.key(min)) ? today : min) || today;
+      if (at) cal.setView(at);
+      // float under the trigger; flip above if it doesn't fit; clamp to the viewport
+      var r = trigger.getBoundingClientRect(), pr = panel.getBoundingClientRect(), vw = window.innerWidth, vh = window.innerHeight, top;
+      if (r.bottom + 4 + pr.height <= vh - 8) top = r.bottom + 4;
+      else if (r.top - 4 - pr.height >= 8) top = r.top - 4 - pr.height;
+      else top = Math.max(8, vh - pr.height - 8);
+      panel.style.position = "fixed"; panel.style.margin = "0";
+      panel.style.top = top + "px";
+      panel.style.left = Math.max(8, Math.min(r.left, vw - pr.width - 8)) + "px";
+      cal.focus();
+    });
   });
-})();</script>
+})();
+</script>
 </body>
 </html>

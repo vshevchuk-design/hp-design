@@ -11,6 +11,7 @@
 // caught real bugs three times is **resolve the role from the component's own
 // token file, never retype the role name**. Everything below follows it.
 
+import { STATUS_ICON_CSS } from "./status-icon.mjs";
 /** @param h  { tokens, resolve, cv, px, refPath, typoCss, textExt } */
 export function edCss(h) {
   const { tokens: t, resolve, cv, px, refPath, typoCss, textExt } = h;
@@ -286,9 +287,7 @@ ${["info", "success", "warning", "danger"].map((r) => `.alert--${r} { background
 .accordion__summary::-webkit-details-marker { display: none; }
 .accordion__summary:hover { background: ${cv(refPath(acc.state.hover.bg.$value))}; }
 .accordion__summary:focus-visible { outline: ${px(resolve(acc.state.focused.ringWidth.$value))} solid ${cv(refPath(acc.state.focused.ringColor.$value))}; outline-offset: calc(-1 * ${px(resolve(acc.state.focused.ringWidth.$value))}); }
-.accordion__status { flex-shrink: 0; width: ${px(resolve(acc.chevron.size.$value))}; height: ${px(resolve(acc.chevron.size.$value))}; }
-.accordion__status--done { color: ${cv("status.success")}; }
-.accordion__status--todo { color: ${cv("icon.muted")}; }
+${STATUS_ICON_CSS}
 .accordion__title { flex: 1; min-width: 0; color: ${cv(refPath(acc.titleColor.$value))}; ${typoCss(h.resolveToken(acc.title))} }
 /* Every requirement row takes the quiet title: the Card head names the group
    and is bold, so bold rows under it would set two levels identically. */
@@ -568,7 +567,7 @@ export const ED_COLOR_PATHS = [
   "fill.primary", "fill.primaryHover", "fill.primaryActive", "fill.disabled",
   "fill.neutral", "fill.neutralHover", "fill.neutralActive", "fill.neutralHoverStrong", "fill.neutralActiveStrong",
   "fill.success",
-  "bg.primary", "bg.primaryHover", "bg.neutral", "bg.success", "bg.warning", "bg.danger",
+  "bg.primary", "bg.primaryHover", "bg.neutral", "bg.neutralStrong", "bg.success", "bg.warning", "bg.danger",
   "border.primary", "border.success", "border.warning", "border.danger",
   "status.success", "status.warning", "status.danger",
   "surface.overlay",

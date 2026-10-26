@@ -40,10 +40,12 @@
   --tok-fill-neutral-hover: #e6e8eb;
   --tok-border-focus: #0468c4;
   --tok-surface-default: #ffffff;
-  --tok-bg-neutral: #e6e8eb;
+  --tok-bg-neutral-strong: #dadde0;
   --tok-bg-success: #d4f1da;
   --tok-text-success: #057e3f;
+  --tok-icon-primary: #077fec;
   --tok-status-success: #0a994e;
+  --tok-status-danger: #de394b;
   --tok-family-sans: 'Sora', sans-serif;
 }
 
@@ -62,7 +64,11 @@
    for yet: the options are a whole catalogue, not a list this row can hold). */
 .accordion__row { display: flex; align-items: center; gap: 8px; padding: 12px 16px; }
 .accordion__summary:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: calc(-1 * 4px); }
-.accordion__status { flex-shrink: 0; width: 20px; height: 20px; }
+/* two optional slots around the title: leading (StatusIcon, a number…) and
+   trailing (meta label, Badge…) — content, not Accordion variants */
+.accordion__leading, .accordion__trailing { flex-shrink: 0; display: flex; align-items: center; gap: 8px; }
+/* a number in the leading slot — ordered rows (restriction lines, steps) */
+.accordion__index { flex-shrink: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 14px; line-height: 1.4; font-variant-numeric: tabular-nums; }
 .accordion__title { flex: 1; min-width: 0; color: var(--tok-text-default); font-weight: 600; font-size: 14px; line-height: 1.4; }
 /* Rows inside a group that already has a heading: same size, normal weight, so
    the Card title stays the heading and the rows read as its contents. */
@@ -70,19 +76,26 @@
 .accordion__meta { flex-shrink: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
 .accordion__chevron { flex-shrink: 0; width: 20px; height: 20px; color: var(--tok-icon-muted); transition: transform 0.12s ease; }
 .accordion__item[open] > .accordion__summary .accordion__chevron { transform: rotate(180deg); }
+/* chevron before everything else in the row (it is the summary's last child) */
+.accordion--chevron-start .accordion__chevron { order: -1; }
+.accordion--chevron-primary .accordion__chevron { color: var(--tok-icon-primary); }
 .accordion__body { display: flex; flex-direction: column; gap: 8px; padding: 0 16px 16px; }
   
 .acc-card { background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); border-radius: 8px; overflow: hidden; }
 .acc-card__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px; border-bottom: 1px solid var(--tok-border-default); }
 .acc-card__title { color: var(--tok-text-default); font-weight: 600; font-size: 14px; line-height: 1.4; font-family: var(--tok-family-sans); }
-.badge { display: inline-flex; align-items: center; border-radius: 999px; height: 16px; padding: 0 8px; font-weight: 600; font-size: 10px; line-height: 1; font-family: var(--tok-family-sans); background: var(--tok-bg-neutral); color: var(--tok-text-default); }
+.badge { display: inline-flex; align-items: center; border-radius: 999px; height: 16px; padding: 0 8px; font-weight: 600; font-size: 10px; line-height: 1; font-family: var(--tok-family-sans); background: var(--tok-bg-neutral-strong); color: var(--tok-text-default); }
 .badge--success { background: var(--tok-bg-success); color: var(--tok-text-success); }
+
+.status-icon { flex-shrink: 0; display: block; width: 20px; height: 20px; }
+.status-icon--done { color: var(--tok-status-success); }
+.status-icon--todo { color: var(--tok-icon-muted); }
+.status-icon--error { color: var(--tok-status-danger); }
 .acc-sub { color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
 .acc-eyebrow { color: var(--tok-text-secondary); font-weight: 700; font-size: 12px; line-height: 1.4; text-transform: uppercase; letter-spacing: [object Object]; }
 .acc-course { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; color: var(--tok-text-default); font-weight: 400; font-size: 12px; line-height: 1.4; }
 .acc-course b { font-weight: 600; }
-.acc-status--done { color: var(--tok-status-success); }
-.acc-status--todo { color: var(--tok-icon-muted); }
+
 </style>
 </head>
 <body>
@@ -128,14 +141,17 @@
     <a class="navlink" href="counter.html">Counter</a>
     <a class="navlink" href="input.html">Input</a>
     <a class="navlink" href="select.html">Select</a>
+    <a class="navlink" href="calendar.html">Calendar</a>
     <a class="navlink" href="date-picker.html">DatePicker</a>
     <a class="navlink" href="date-range-picker.html">DateRangePicker</a>
+    <a class="navlink" href="time-picker.html">TimePicker</a>
     <a class="navlink" href="search.html">Search</a>
     <a class="navlink" href="pagination.html">Pagination</a>
     <a class="navlink" href="separator.html">Separator</a>
     <a class="navlink" href="tabs.html">Tabs</a>
     <a class="navlink" href="sidebar.html">Sidebar</a>
     <a class="navlink active" href="accordion.html">Accordion</a>
+    <a class="navlink" href="status-icon.html">StatusIcon</a>
     <a class="navlink" href="checkbox.html">Checkbox</a>
     <a class="navlink" href="radio.html">Radio</a>
     <a class="navlink" href="box.html">Box</a>
@@ -150,6 +166,7 @@
     <a class="navlink" href="popover.html">Popover</a>
     <a class="navlink" href="drawer.html">Drawer</a>
     <a class="navlink" href="modal.html">Modal</a>
+    <a class="navlink" href="alert-dialog.html">AlertDialog</a>
     <a class="navlink" href="menu.html">Menu</a>
     <a class="navlink" href="split-button.html">SplitButton</a>
     <a class="navlink" href="listbox.html">Listbox</a>
@@ -210,10 +227,183 @@
     <div class="legend">
       <div class="row"><b>Native</b><span>A real <code class="tok">&lt;details&gt;</code>: open/close, keyboard operation and find-in-page work with <b>zero JS</b> — the same native-first rule Tooltip (pure CSS), Popover (Popover API) and Modal/Drawer (<code class="tok">&lt;dialog&gt;</code>) already follow.</span></div>
       <div class="row"><b>Rows, not boxes</b><span>An accordion is a <b>flush divided list</b>; the consumer wraps it in a Card if it needs an edge. Deliberate: the reference design stacks bordered boxes and it reads as a pile — the same content as divided rows reads as a list.</span></div>
-      <div class="row"><b>Optional slots</b><span>The status icon and the trailing meta label are both optional, because real data has rows with neither — sub-options inside a requirement.</span></div>
+      <div class="row"><b>Slots, not variants</b><span>Two optional slots around the title: <code class="tok">.accordion__leading</code> and <code class="tok">.accordion__trailing</code>. Whatever the product needs goes in them — a <a href="status-icon.html">StatusIcon</a> or a number before, a meta label or a Badge after. They are content, not kinds of Accordion: the component itself only knows rows, open / closed, single / multiple and where its chevron sits.</span></div>
       <div class="row"><b>Hover</b><span>The summary rests on a white surface, so it takes the wash tier <code class="tok">fill.neutralHover</code> (gray.100), not the Strong pair. See the two-tier rule in status.md.</span></div>
       <div class="row"><b>Rows that don't open</b><span>A row with nothing underneath uses <code class="tok">.accordion__row</code> — same metrics, no chevron, no hover, no pointer. A chevron that opens an empty region is a lie, and real lists mix the two: a requirement covered by a named class expands to show it, one the student has not picked classes for yet has nothing to show.</span></div>
-      <div class="row"><b>Deferred</b><span>Single-open groups (the <code class="tok">name</code> attribute on <code class="tok">&lt;details&gt;</code> does this natively — adopt it when a consumer wants only one row open) and a nested second level.</span></div>
+      <div class="row"><b>Single / multiple</b><span>Give every <code class="tok">&lt;details&gt;</code> in a group the same <code class="tok">name</code> and the browser keeps only one open — still zero JS. Without it any number can be open (the default).</span></div>
+      <div class="row"><b>Chevron</b><span>At the end by default; <code class="tok">.accordion--chevron-start</code> puts it first. Quiet <code class="tok">icon.muted</code> by default; <code class="tok">.accordion--chevron-primary</code> paints it <code class="tok">icon.primary</code>.</span></div>
+      <div class="row"><b>Numbers</b><span><code class="tok">.accordion__index</code> styles a number in the leading slot — <code class="tok">body-base</code>, <code class="tok">text.secondary</code>, tabular figures.</span></div>
+      <div class="row"><b>Deferred</b><span>A nested second level.</span></div>
+    </div>
+
+    <h2 class="big-section">Variants</h2>
+    <p class="section-desc">The same set as the product Storybook, in this system's styles: hairline-divided rows, quiet chevron, wash hover. Wrapped in a Card here only to give each list an edge.</p>
+    <div class="story-grid">
+      <div class="story"><h3>Single</h3><div class="story-preview"><div class="acc-card"><div class="accordion">
+  <details class="accordion__item" name="faq-single" open>
+    <summary class="accordion__summary">
+      
+      <span class="accordion__title">Product information</span>
+      
+      <svg class="accordion__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>
+    </summary>
+    <div class="accordion__body"><span class="acc-sub">Our flagship product combines cutting-edge technology with a clean design. Key features include fast processing and an interface built for beginners and experts alike.</span></div>
+  </details>
+  <details class="accordion__item" name="faq-single">
+    <summary class="accordion__summary">
+      
+      <span class="accordion__title">Shipping details</span>
+      
+      <svg class="accordion__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>
+    </summary>
+    <div class="accordion__body"><span class="acc-sub">Orders ship within two business days. Tracking is emailed as soon as the parcel leaves the warehouse.</span></div>
+  </details>
+  <details class="accordion__item" name="faq-single">
+    <summary class="accordion__summary">
+      
+      <span class="accordion__title">Return policy</span>
+      
+      <svg class="accordion__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>
+    </summary>
+    <div class="accordion__body"><span class="acc-sub">Return anything within 30 days for a full refund — no questions asked.</span></div>
+  </details>
+</div></div></div><p class="story-note">Every row shares name="faq-single": opening one closes the open one. The open row can still be closed.</p></div>
+      <div class="story"><h3>Multiple</h3><div class="story-preview"><div class="acc-card"><div class="accordion">
+  <details class="accordion__item" open>
+    <summary class="accordion__summary">
+      
+      <span class="accordion__title">Product information</span>
+      
+      <svg class="accordion__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>
+    </summary>
+    <div class="accordion__body"><span class="acc-sub">Our flagship product combines cutting-edge technology with a clean design. Key features include fast processing and an interface built for beginners and experts alike.</span></div>
+  </details>
+  <details class="accordion__item">
+    <summary class="accordion__summary">
+      
+      <span class="accordion__title">Shipping details</span>
+      
+      <svg class="accordion__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>
+    </summary>
+    <div class="accordion__body"><span class="acc-sub">Orders ship within two business days. Tracking is emailed as soon as the parcel leaves the warehouse.</span></div>
+  </details>
+  <details class="accordion__item">
+    <summary class="accordion__summary">
+      
+      <span class="accordion__title">Return policy</span>
+      
+      <svg class="accordion__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>
+    </summary>
+    <div class="accordion__body"><span class="acc-sub">Return anything within 30 days for a full refund — no questions asked.</span></div>
+  </details>
+</div></div></div><p class="story-note">No name — any number of rows open at once. The default.</p></div>
+      <div class="story"><h3>Chevron start</h3><div class="story-preview"><div class="acc-card"><div class="accordion accordion--chevron-start">
+  <details class="accordion__item">
+    <summary class="accordion__summary">
+      
+      <span class="accordion__title">Product information</span>
+      
+      <svg class="accordion__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>
+    </summary>
+    <div class="accordion__body"><span class="acc-sub">Our flagship product combines cutting-edge technology with a clean design. Key features include fast processing and an interface built for beginners and experts alike.</span></div>
+  </details>
+  <details class="accordion__item">
+    <summary class="accordion__summary">
+      
+      <span class="accordion__title">Shipping details</span>
+      
+      <svg class="accordion__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>
+    </summary>
+    <div class="accordion__body"><span class="acc-sub">Orders ship within two business days. Tracking is emailed as soon as the parcel leaves the warehouse.</span></div>
+  </details>
+  <details class="accordion__item">
+    <summary class="accordion__summary">
+      
+      <span class="accordion__title">Return policy</span>
+      
+      <svg class="accordion__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>
+    </summary>
+    <div class="accordion__body"><span class="acc-sub">Return anything within 30 days for a full refund — no questions asked.</span></div>
+  </details>
+</div></div></div><p class="story-note">.accordion--chevron-start — chevron before the title.</p></div>
+      <div class="story"><h3>Primary chevron</h3><div class="story-preview"><div class="acc-card"><div class="accordion accordion--chevron-primary">
+  <details class="accordion__item">
+    <summary class="accordion__summary">
+      
+      <span class="accordion__title">Product information</span>
+      
+      <svg class="accordion__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>
+    </summary>
+    <div class="accordion__body"><span class="acc-sub">Our flagship product combines cutting-edge technology with a clean design. Key features include fast processing and an interface built for beginners and experts alike.</span></div>
+  </details>
+  <details class="accordion__item">
+    <summary class="accordion__summary">
+      
+      <span class="accordion__title">Shipping details</span>
+      
+      <svg class="accordion__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>
+    </summary>
+    <div class="accordion__body"><span class="acc-sub">Orders ship within two business days. Tracking is emailed as soon as the parcel leaves the warehouse.</span></div>
+  </details>
+  <details class="accordion__item">
+    <summary class="accordion__summary">
+      
+      <span class="accordion__title">Return policy</span>
+      
+      <svg class="accordion__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>
+    </summary>
+    <div class="accordion__body"><span class="acc-sub">Return anything within 30 days for a full refund — no questions asked.</span></div>
+  </details>
+</div></div></div><p class="story-note">.accordion--chevron-primary — chevron in icon.primary, for a list whose rows should read as openable at a glance.</p></div>
+      <div class="story"><h3>With icon</h3><div class="story-preview"><div class="acc-card"><div class="accordion">
+  <details class="accordion__item">
+    <summary class="accordion__summary">
+      <span class="accordion__leading"><span class="accordion__index">1</span><svg class="status-icon status-icon--error" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg></span>
+      <span class="accordion__title">Unnamed restriction line</span>
+      
+      <svg class="accordion__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>
+    </summary>
+    <div class="accordion__body"><span class="acc-sub">This line has no name yet — give it one before saving.</span></div>
+  </details>
+  <details class="accordion__item">
+    <summary class="accordion__summary">
+      <span class="accordion__leading"><span class="accordion__index">2</span><svg class="status-icon status-icon--done" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
+      <span class="accordion__title">Freshmen only</span>
+      
+      <svg class="accordion__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>
+    </summary>
+    <div class="accordion__body"><span class="acc-sub">Class standing: Freshman.</span></div>
+  </details>
+  <details class="accordion__item">
+    <summary class="accordion__summary">
+      <span class="accordion__leading"><span class="accordion__index">3</span><svg class="status-icon status-icon--todo" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/></svg></span>
+      <span class="accordion__title">Majors only</span>
+      
+      <svg class="accordion__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>
+    </summary>
+    <div class="accordion__body"><span class="acc-sub">Not checked yet.</span></div>
+  </details>
+</div></div></div><p class="story-note">Leading slot: a number + a StatusIcon (error, done, to do).</p></div>
+      <div class="story"><h3>Trailing slot</h3><div class="story-preview"><div class="acc-card"><div class="accordion">
+  <details class="accordion__item">
+    <summary class="accordion__summary">
+      
+      <span class="accordion__title">Tue, Oct 14 · Study skills workshop</span>
+      <span class="accordion__trailing"><span class="badge badge--success">Attended</span></span>
+      <svg class="accordion__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>
+    </summary>
+    <div class="accordion__body"><span class="acc-sub">From the organizer: slides are attached.</span></div>
+  </details>
+  <details class="accordion__item">
+    <summary class="accordion__summary">
+      
+      <span class="accordion__title">Tue, Oct 7 · Study skills workshop</span>
+      <span class="accordion__trailing"><span class="badge">Missed</span></span>
+      <svg class="accordion__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>
+    </summary>
+    <div class="accordion__body"><span class="acc-sub">No notes for this session.</span></div>
+  </details>
+</div></div></div><p class="story-note">Trailing slot: a Badge — the Scheduling workshop sessions.</p></div>
     </div>
 
     <h2 class="big-section">Rows</h2>
@@ -243,21 +433,21 @@
     <div class="accordion__row">
       
       <span class="accordion__title accordion__title--quiet">Physical Science</span>
-      <span class="accordion__meta">3 units</span>
+      <span class="accordion__trailing"><span class="accordion__meta">3 units</span></span>
     </div>
   </div>
   <div class="accordion__item">
     <div class="accordion__row">
       
       <span class="accordion__title accordion__title--quiet">Lab Requirements</span>
-      <span class="accordion__meta">1 unit</span>
+      <span class="accordion__trailing"><span class="accordion__meta">1 unit</span></span>
     </div>
   </div>
   <details class="accordion__item">
     <summary class="accordion__summary">
       
       <span class="accordion__title accordion__title--quiet">Life Science</span>
-      <span class="accordion__meta">3.5 units</span>
+      <span class="accordion__trailing"><span class="accordion__meta">3.5 units</span></span>
       <svg class="accordion__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>
     </summary>
     <div class="accordion__body"><span class="acc-sub">Life Science</span>
@@ -268,18 +458,18 @@
       <div class="story"><h3>Status and state label</h3><div class="story-preview"><div class="accordion">
   <details class="accordion__item">
     <summary class="accordion__summary">
-      <svg class="accordion__status acc-status--done" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+      <span class="accordion__leading"><svg class="status-icon status-icon--done" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
       <span class="accordion__title">Social Science Courses</span>
-      <span class="accordion__meta">Covered</span>
+      <span class="accordion__trailing"><span class="accordion__meta">Covered</span></span>
       <svg class="accordion__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>
     </summary>
     <div class="accordion__body"><span class="acc-sub">Satisfied by your transferred credit.</span></div>
   </details>
   <details class="accordion__item">
     <summary class="accordion__summary">
-      <svg class="accordion__status acc-status--todo" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/></svg>
+      <span class="accordion__leading"><svg class="status-icon status-icon--todo" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/></svg></span>
       <span class="accordion__title">Physical Science</span>
-      <span class="accordion__meta">Still to do</span>
+      <span class="accordion__trailing"><span class="accordion__meta">Still to do</span></span>
       <svg class="accordion__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>
     </summary>
     <div class="accordion__body"><span class="acc-sub">No class applied to this yet.</span></div>
@@ -295,16 +485,16 @@
         <div class="accordion">
   <div class="accordion__item">
     <div class="accordion__row">
-      <svg class="accordion__status acc-status--done" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+      <span class="accordion__leading"><svg class="status-icon status-icon--done" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
       <span class="accordion__title accordion__title--quiet">Social Science Courses</span>
-      <span class="accordion__meta">Covered</span>
+      <span class="accordion__trailing"><span class="accordion__meta">Covered</span></span>
     </div>
   </div>
   <details class="accordion__item" open>
     <summary class="accordion__summary">
-      <svg class="accordion__status acc-status--done" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+      <span class="accordion__leading"><svg class="status-icon status-icon--done" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
       <span class="accordion__title accordion__title--quiet">Life Science</span>
-      <span class="accordion__meta">Covered</span>
+      <span class="accordion__trailing"><span class="accordion__meta">Covered</span></span>
       <svg class="accordion__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>
     </summary>
     <div class="accordion__body"><span class="acc-sub">Life Science</span>
@@ -313,23 +503,23 @@
   </details>
   <div class="accordion__item">
     <div class="accordion__row">
-      <svg class="accordion__status acc-status--todo" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/></svg>
+      <span class="accordion__leading"><svg class="status-icon status-icon--todo" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/></svg></span>
       <span class="accordion__title accordion__title--quiet">Physical Science</span>
-      <span class="accordion__meta">Still to do</span>
+      <span class="accordion__trailing"><span class="accordion__meta">Still to do</span></span>
     </div>
   </div>
   <div class="accordion__item">
     <div class="accordion__row">
-      <svg class="accordion__status acc-status--todo" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/></svg>
+      <span class="accordion__leading"><svg class="status-icon status-icon--todo" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/></svg></span>
       <span class="accordion__title accordion__title--quiet">Lab Requirements</span>
-      <span class="accordion__meta">Still to do</span>
+      <span class="accordion__trailing"><span class="accordion__meta">Still to do</span></span>
     </div>
   </div>
   <div class="accordion__item">
     <div class="accordion__row">
-      <svg class="accordion__status acc-status--done" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+      <span class="accordion__leading"><svg class="status-icon status-icon--done" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
       <span class="accordion__title accordion__title--quiet">LAU Math Requirement</span>
-      <span class="accordion__meta">Covered</span>
+      <span class="accordion__trailing"><span class="accordion__meta">Covered</span></span>
     </div>
   </div>
 </div>
@@ -345,10 +535,12 @@
   --tok-fill-neutral-hover: #e6e8eb;
   --tok-border-focus: #0468c4;
   --tok-surface-default: #ffffff;
-  --tok-bg-neutral: #e6e8eb;
+  --tok-bg-neutral-strong: #dadde0;
   --tok-bg-success: #d4f1da;
   --tok-text-success: #057e3f;
+  --tok-icon-primary: #077fec;
   --tok-status-success: #0a994e;
+  --tok-status-danger: #de394b;
   --tok-family-sans: 'Sora', sans-serif;
 }
 
@@ -367,7 +559,11 @@
    for yet: the options are a whole catalogue, not a list this row can hold). */
 .accordion__row { display: flex; align-items: center; gap: 8px; padding: 12px 16px; }
 .accordion__summary:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: calc(-1 * 4px); }
-.accordion__status { flex-shrink: 0; width: 20px; height: 20px; }
+/* two optional slots around the title: leading (StatusIcon, a number…) and
+   trailing (meta label, Badge…) — content, not Accordion variants */
+.accordion__leading, .accordion__trailing { flex-shrink: 0; display: flex; align-items: center; gap: 8px; }
+/* a number in the leading slot — ordered rows (restriction lines, steps) */
+.accordion__index { flex-shrink: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 14px; line-height: 1.4; font-variant-numeric: tabular-nums; }
 .accordion__title { flex: 1; min-width: 0; color: var(--tok-text-default); font-weight: 600; font-size: 14px; line-height: 1.4; }
 /* Rows inside a group that already has a heading: same size, normal weight, so
    the Card title stays the heading and the rows read as its contents. */
@@ -375,6 +571,9 @@
 .accordion__meta { flex-shrink: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
 .accordion__chevron { flex-shrink: 0; width: 20px; height: 20px; color: var(--tok-icon-muted); transition: transform 0.12s ease; }
 .accordion__item[open] &gt; .accordion__summary .accordion__chevron { transform: rotate(180deg); }
+/* chevron before everything else in the row (it is the summary's last child) */
+.accordion--chevron-start .accordion__chevron { order: -1; }
+.accordion--chevron-primary .accordion__chevron { color: var(--tok-icon-primary); }
 .accordion__body { display: flex; flex-direction: column; gap: 8px; padding: 0 16px 16px; }</code></pre>
   </main>
 </div>

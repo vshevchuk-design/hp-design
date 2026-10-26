@@ -1,16 +1,17 @@
 // Regenerates docs/date-range-picker.html from tokens/components/date-range-picker.tokens.json.
 // A date-range picker — the console filter's date window. One bordered field
 // `‹ | [calendar icon + "Aug 08, 2026 – Sep 08, 2026"] | ›`: the arrows step the
-// whole window by a month, the middle opens a dual-month calendar (month + year
-// selects per month, paging arrows on the outer sides) with Reset / Apply. A
-// `--single` one-month variant for narrow containers. Mirrors the staff Message
-// Center prototype's widget. The grids are built in JS (seeded, deterministic).
+// whole window by a month, the middle opens the shared Calendar (range mode,
+// two months — tools/lib/calendar.mjs) with Reset / Apply. A `--single`
+// one-month variant for narrow containers. Mirrors the staff Message Center
+// prototype's widget.
 // Run: node tools/build-date-range-picker-doc.mjs
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { renderNav } from "./lib/nav.mjs";
 import { cssVarName, renderRootVars } from "./lib/css-vars.mjs";
+import { CALENDAR_CSS, CALENDAR_COLOR_PATHS, CALENDAR_JS, calendarHtml } from "./lib/calendar.mjs";
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const load = (p) => JSON.parse(fs.readFileSync(path.join(root, p)));
@@ -41,30 +42,22 @@ const role = (node) => refPath(node.$value);
 const dimOf = (node) => px(resolve(node.$value));
 function typoCss(t) { return `font-weight: ${t.fontWeight}; font-size: ${px(t.fontSize)}; line-height: ${t.lineHeight};`; }
 
-const nav = dr.nav, panel = dr.panel, hd = dr.header, sel = dr.header.select, wd = dr.weekday, day = dr.day, foot = dr.footer;
+const nav = dr.nav, panel = dr.panel, foot = dr.footer;
 const bPri = button.primary, bSec = button.secondary;
 
 // every color role this page paints, read off the token nodes (no hand-typed role names)
 const colorNodes = [
   nav.bg, nav.border, nav.borderHover, nav.borderFocus, nav.divider, nav.arrowIcon, nav.arrowHoverBg, nav.calIcon, nav.valueColor, nav.fieldHoverBg,
   panel.bg, panel.border,
-  hd.navIcon, hd.navHoverBg,
-  sel.chevron, sel.bg, sel.border, sel.borderHover, sel.borderFocus, sel.valueColor,
-  wd.color,
-  day.color, day.hoverBg, day.todayBorder, day.endsBg, day.endsText, day.rangeBg, day.rangeText, day.outsideColor,
   foot.border,
   bPri.state.default.fill, bPri.state.default.label, bPri.state.hover.fill, bPri.state.pressed.fill, bPri.state.focused.ringColor,
   bSec.state.default.fill, bSec.state.default.label, bSec.state.hover.fill, bSec.state.pressed.fill, bSec.state.focused.ringColor,
 ];
-const colorPaths = [...new Set(colorNodes.map(role))];
+const colorPaths = [...new Set([...colorNodes.map(role), ...CALENDAR_COLOR_PATHS])];
 const rootVars = renderRootVars([...colorPaths.map((p) => [p, resolve(p)]), ["family.sans", `'${resolve("family.sans")}', sans-serif`]]);
 
 const navValue = resolveToken(get(nav.value.$value));
 const pShadow = resolveToken(panel.shadow); const pShadowCss = `${px(pShadow.offsetX)} ${px(pShadow.offsetY)} ${px(pShadow.blur)} ${px(pShadow.spread)} ${pShadow.color}`;
-const selValue = resolveToken(get(sel.value.$value));
-const wdLabelNode = get(wd.label.$value); const wdLabel = resolveToken(wdLabelNode); const wdExt = wdLabelNode.$extensions?.["hp.design/text"] || {};
-const daySize = dimOf(day.size), dayRadius = dimOf(day.radius), dayLabel = resolveToken(get(day.label.$value));
-const navSize = dimOf(hd.navSize);
 
 // one Button variant at size sm, as a footer-button modifier
 function btnCss(cls, b) {
@@ -95,111 +88,36 @@ const css = `${rootVars}
 .daterange__arrow--next { border-left: 1px solid ${cv(role(nav.divider))}; }
 .daterange__arrow:focus-visible, .daterange__field:focus-visible { outline: 2px solid ${cv(role(nav.borderFocus))}; outline-offset: -2px; }
 
-/* the panel: two consecutive months side by side + Reset / Apply */
+/* the panel: the Calendar (two months, range) + Reset / Apply */
 .daterange__panel { margin: 0; box-sizing: border-box; padding: ${dimOf(panel.padding)}; border-radius: ${dimOf(panel.radius)}; background: ${cv(role(panel.bg))}; border: 1px solid ${cv(role(panel.border))}; box-shadow: ${pShadowCss}; font-family: ${cv("family.sans")}; max-width: calc(100vw - 16px); }
-.daterange__cals { display: flex; gap: ${dimOf(panel.calendarGap)}; }
-.daterange__chead { display: flex; align-items: center; justify-content: space-between; gap: ${dimOf(hd.gap)}; margin-bottom: ${dimOf(hd.marginBottom)}; }
-.daterange__mrow { display: flex; align-items: center; gap: ${dimOf(sel.gap)}; }
-/* month / year select — a 32px control in the field family, chevron = expand_more */
-.daterange__sel { position: relative; display: inline-flex; }
-.daterange__month, .daterange__year { appearance: none; -webkit-appearance: none; box-sizing: border-box; height: ${dimOf(sel.height)}; margin: 0; padding: 0 ${dimOf(sel.paddingRight)} 0 ${dimOf(sel.paddingLeft)}; border: 1px solid ${cv(role(sel.border))}; border-radius: ${dimOf(sel.radius)}; background: ${cv(role(sel.bg))}; color: ${cv(role(sel.valueColor))}; font-family: inherit; ${typoCss(selValue)} cursor: pointer; }
-.daterange__month:hover, .daterange__year:hover { border-color: ${cv(role(sel.borderHover))}; }
-.daterange__month:focus-visible, .daterange__year:focus-visible { outline: none; border-color: ${cv(role(sel.borderFocus))}; }
-.daterange__sel-chevron { position: absolute; right: ${dimOf(sel.chevronInset)}; top: 50%; transform: translateY(-50%); width: ${dimOf(sel.chevronSize)}; height: ${dimOf(sel.chevronSize)}; color: ${cv(role(sel.chevron))}; pointer-events: none; }
-/* paging arrows sit on the OUTER sides; the inner side keeps a same-width spacer */
-.daterange__pnav { width: ${navSize}; height: ${navSize}; display: inline-flex; align-items: center; justify-content: center; border: none; background: none; border-radius: ${dimOf(sel.radius)}; cursor: pointer; color: ${cv(role(hd.navIcon))}; flex-shrink: 0; padding: 0; }
-.daterange__pnav:hover { background: ${cv(role(hd.navHoverBg))}; }
-.daterange__pnav:focus-visible { outline: 2px solid ${cv(role(sel.borderFocus))}; outline-offset: -2px; }
-.daterange__pnav-icon { width: ${dimOf(hd.navIconSize)}; height: ${dimOf(hd.navIconSize)}; }
-.daterange__pnav-sp { width: ${navSize}; flex-shrink: 0; }
-.daterange__grid { display: grid; grid-template-columns: repeat(7, ${daySize}); gap: ${dimOf(day.rowGap)} 0; }
-.daterange__weekday { width: ${daySize}; height: ${dimOf(wd.height)}; display: inline-flex; align-items: center; justify-content: center; color: ${cv(role(wd.color))}; ${typoCss(wdLabel)}${wdExt.textTransform ? ` text-transform: ${wdExt.textTransform};` : ""}${wdExt.letterSpacing ? ` letter-spacing: ${wdExt.letterSpacing};` : ""} }
-.daterange__day { box-sizing: border-box; width: ${daySize}; height: ${daySize}; padding: 0; display: inline-flex; align-items: center; justify-content: center; border: 1px solid transparent; background: none; cursor: pointer; color: ${cv(role(day.color))}; ${typoCss(dayLabel)} font-family: inherit; border-radius: ${dayRadius}; }
-.daterange__day:hover { background: ${cv(role(day.hoverBg))}; }
-.daterange__day--outside { color: ${cv(role(day.outsideColor))}; pointer-events: none; cursor: default; }
-.daterange__day--today { border-color: ${cv(role(day.todayBorder))}; }
-/* the range wash runs edge-to-edge; the ends round on their outer side */
-.daterange__day--mid, .daterange__day--mid:hover { background: ${cv(role(day.rangeBg))}; color: ${cv(role(day.rangeText))}; border-radius: 0; }
-.daterange__day--start, .daterange__day--end, .daterange__day--start:hover, .daterange__day--end:hover { background: ${cv(role(day.endsBg))}; color: ${cv(role(day.endsText))}; border-color: ${cv(role(day.endsBg))}; }
-.daterange__day--start { border-radius: ${dayRadius} 0 0 ${dayRadius}; }
-.daterange__day--end { border-radius: 0 ${dayRadius} ${dayRadius} 0; }
-.daterange__day--start.daterange__day--end { border-radius: ${dayRadius}; }
-.daterange__day:focus-visible { outline: 2px solid ${cv(role(sel.borderFocus))}; outline-offset: -2px; }
 .daterange__footer { display: flex; justify-content: space-between; gap: ${dimOf(foot.gap)}; padding-top: ${dimOf(foot.paddingTop)}; margin-top: ${dimOf(foot.marginTop)}; border-top: 1px solid ${cv(role(foot.border))}; }
 /* Reset = Button secondary sm · Apply = Button primary sm */
 ${btnCss("daterange__btn--secondary", bSec)}
 ${btnCss("daterange__btn--primary", bPri)}
-/* narrow containers: the dual panel stacks its months */
-@media (max-width: 560px) { .daterange__cals { flex-direction: column; gap: ${dimOf(panel.stackedGap)}; } }
+${CALENDAR_CSS}
 /* single-month variant (mobile/tablet filters drawer): caps height + scrolls on short screens */
 .daterange__panel--single { max-height: calc(100dvh - 16px); overflow-y: auto; }`;
 
-const js = `(function () {
+const js = `${CALENDAR_JS}
+(function () {
   var ABBR = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-  var WD = ["Su","Mo","Tu","We","Th","Fr","Sa"];
-  var TODAY = { y: 2026, m: 8, d: 8 }; // Sep 8, 2026 — fixed so the demo is deterministic
+  var C = hpCalendar;
   function pad(n) { return ("0" + n).slice(-2); }
-  function parse(s) { var p = s.split("-").map(Number); return { y: p[0], m: p[1] - 1, d: p[2] }; }
-  function iso(a) { return a.y + "-" + pad(a.m + 1) + "-" + pad(a.d); }
-  function cmp(a) { return a.y * 10000 + a.m * 100 + a.d; }
-  function addMonths(a, n) { var d = new Date(a.y, a.m + n, a.d); return { y: d.getFullYear(), m: d.getMonth(), d: d.getDate() }; }
-  function viewAdd(v, n) { var d = new Date(v.y, v.m + n, 1); return { y: d.getFullYear(), m: d.getMonth() }; }
   function fmtRange(s, e) { return ABBR[s.m] + " " + pad(s.d) + ", " + s.y + " – " + ABBR[e.m] + " " + pad(e.d) + ", " + e.y; }
 
   document.querySelectorAll(".daterange").forEach(function (el) {
     var panel = el.querySelector(".daterange__panel");
     var valEl = el.querySelector(".daterange__range-val");
     var DEF_S = el.dataset.start, DEF_E = el.dataset.end;
-    var cur = { s: parse(DEF_S), e: parse(DEF_E) };
-    var grids = [el.querySelector('.daterange__grid[data-cal="0"]'), el.querySelector('.daterange__grid[data-cal="1"]')];
-    var monthSels = [el.querySelector('.daterange__month[data-cal="0"]'), el.querySelector('.daterange__month[data-cal="1"]')];
-    var yearSels = [el.querySelector('.daterange__year[data-cal="0"]'), el.querySelector('.daterange__year[data-cal="1"]')];
-    var views, draftS = null, draftE = null;
-    function resetViews() { views = [{ y: cur.s.y, m: cur.s.m }, viewAdd({ y: cur.s.y, m: cur.s.m }, 1)]; }
-    function sync() { valEl.textContent = fmtRange(cur.s, cur.e); el.dataset.start = iso(cur.s); el.dataset.end = iso(cur.e); }
-    function commit(s, e) { if (cmp(s) > cmp(e)) { var t = s; s = e; e = t; } cur.s = s; cur.e = e; sync(); }
-
-    function renderCal(ci) {
-      var view = views[ci], grid = grids[ci];
-      if (!grid) return;
-      if (monthSels[ci]) monthSels[ci].value = view.m;
-      if (yearSels[ci]) yearSels[ci].value = view.y;
-      var s = draftS || cur.s, e = draftE || (draftS ? null : cur.e);
-      var first = new Date(view.y, view.m, 1).getDay(), days = new Date(view.y, view.m + 1, 0).getDate(), prevDays = new Date(view.y, view.m, 0).getDate();
-      var cells = [], i, d;
-      for (i = 0; i < first; i++) cells.push({ d: prevDays - first + 1 + i, outside: true });
-      for (d = 1; d <= days; d++) cells.push({ d: d, outside: false });
-      while (cells.length % 7 !== 0) cells.push({ d: cells.length - (first + days) + 1, outside: true });
-      var sV = s ? cmp(s) : null, eV = e ? cmp(e) : null;
-      var html = WD.map(function (w) { return '<span class="daterange__weekday">' + w + "</span>"; }).join("");
-      cells.forEach(function (c) {
-        if (c.outside) { html += '<span class="daterange__day daterange__day--outside" aria-hidden="true">' + c.d + "</span>"; return; }
-        var v = view.y * 10000 + view.m * 100 + c.d, cls = ["daterange__day"];
-        if (view.y === TODAY.y && view.m === TODAY.m && c.d === TODAY.d) cls.push("daterange__day--today");
-        if (sV !== null && eV !== null) { if (v === sV) cls.push("daterange__day--start"); else if (v === eV) cls.push("daterange__day--end"); else if (v > sV && v < eV) cls.push("daterange__day--mid"); }
-        else if (sV !== null && v === sV) cls.push("daterange__day--start", "daterange__day--end");
-        html += '<button type="button" class="' + cls.join(" ") + '" data-day="' + c.d + '">' + c.d + "</button>";
-      });
-      grid.innerHTML = html;
-      grid.querySelectorAll(".daterange__day[data-day]").forEach(function (btn) {
-        btn.addEventListener("click", function () {
-          var picked = { y: views[ci].y, m: views[ci].m, d: parseInt(btn.dataset.day, 10) };
-          if (!draftS || draftE) { draftS = picked; draftE = null; }
-          else if (cmp(picked) < cmp(draftS)) { draftE = draftS; draftS = picked; }
-          else { draftE = picked; }
-          renderAll();
-        });
-      });
-    }
-    function renderAll() { renderCal(0); renderCal(1); }
-    [0, 1].forEach(function (ci) {
-      if (monthSels[ci]) monthSels[ci].addEventListener("change", function () { views[ci] = { y: views[ci].y, m: parseInt(monthSels[ci].value, 10) }; renderCal(ci); });
-      if (yearSels[ci]) yearSels[ci].addEventListener("change", function () { views[ci] = { y: parseInt(yearSels[ci].value, 10), m: views[ci].m }; renderCal(ci); });
-    });
+    var cur = { s: C.parse(DEF_S), e: C.parse(DEF_E) };
+    var cal = C.mount(panel.querySelector(".calendar"));
+    function sync() { valEl.textContent = fmtRange(cur.s, cur.e); el.dataset.start = C.iso(cur.s); el.dataset.end = C.iso(cur.e); }
+    function commit(s, e) { if (C.key(s) > C.key(e)) { var t = s; s = e; e = t; } cur.s = s; cur.e = e; sync(); }
 
     panel.addEventListener("toggle", function (e) {
       if (e.newState !== "open") return;
-      resetViews(); draftS = null; draftE = null; renderAll();
+      // the calendar opens on the committed window; nothing applies until Apply
+      cal.setValue({ start: cur.s, end: cur.e }); cal.setView(cur.s);
       // float under the field; flip above if it doesn't fit; else clamp to the viewport
       requestAnimationFrame(function () {
         var r = el.querySelector(".daterange__nav").getBoundingClientRect();
@@ -210,39 +128,23 @@ const js = `(function () {
         panel.style.position = "fixed"; panel.style.margin = "0";
         panel.style.top = top + "px";
         panel.style.left = Math.max(8, Math.min(r.left, vw - pr.width - 8)) + "px";
+        cal.focus();
       });
     });
-    var pPrev = panel.querySelector(".daterange__pnav--prev"), pNext = panel.querySelector(".daterange__pnav--next");
-    if (pPrev) pPrev.addEventListener("click", function () { views = [viewAdd(views[0], -1), viewAdd(views[1], -1)]; renderAll(); });
-    if (pNext) pNext.addEventListener("click", function () { views = [viewAdd(views[0], 1), viewAdd(views[1], 1)]; renderAll(); });
-    panel.querySelector(".daterange__apply").addEventListener("click", function () { if (draftS) commit(draftS, draftE || draftS); panel.hidePopover(); });
+    panel.querySelector(".daterange__apply").addEventListener("click", function () { var v = cal.getValue(); if (v.start) commit(v.start, v.end || v.start); panel.hidePopover(); });
     panel.querySelector(".daterange__reset").addEventListener("click", function () {
-      cur.s = parse(DEF_S); cur.e = parse(DEF_E); draftS = null; draftE = null; sync(); panel.hidePopover();
+      cur.s = C.parse(DEF_S); cur.e = C.parse(DEF_E); sync(); panel.hidePopover();
     });
     // the field's own arrows step the whole committed window by a month
-    el.querySelector(".daterange__arrow--prev").addEventListener("click", function () { commit(addMonths(cur.s, -1), addMonths(cur.e, -1)); });
-    el.querySelector(".daterange__arrow--next").addEventListener("click", function () { commit(addMonths(cur.s, 1), addMonths(cur.e, 1)); });
-    resetViews(); sync();
+    el.querySelector(".daterange__arrow--prev").addEventListener("click", function () { commit(C.addMonths(cur.s, -1), C.addMonths(cur.e, -1)); });
+    el.querySelector(".daterange__arrow--next").addEventListener("click", function () { commit(C.addMonths(cur.s, 1), C.addMonths(cur.e, 1)); });
+    sync();
   });
 })();`;
 
 // ---- markup ----
-const MONTHS_FULL = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-const monthOpts = MONTHS_FULL.map((m, i) => `<option value="${i}"${i === 7 ? " selected" : ""}>${m}</option>`).join("");
-const yearOpts = [2024, 2025, 2026, 2027, 2028, 2029].map((y) => `<option value="${y}"${y === 2026 ? " selected" : ""}>${y}</option>`).join("");
-const selChevron = () => iconOf("expand_more", "daterange__sel-chevron");
-/** one month's header: [prev or spacer] [month ▾][year ▾] [next or spacer] */
-function calHead(cal, side) {
-  const prev = side === "left" || side === "both" ? `<button class="daterange__pnav daterange__pnav--prev" type="button" aria-label="Previous month">${iconOf("chevron_left", "daterange__pnav-icon")}</button>` : `<span class="daterange__pnav-sp"></span>`;
-  const next = side === "right" || side === "both" ? `<button class="daterange__pnav daterange__pnav--next" type="button" aria-label="Next month">${iconOf("chevron_right", "daterange__pnav-icon")}</button>` : `<span class="daterange__pnav-sp"></span>`;
-  return `<div class="daterange__chead">${prev}<span class="daterange__mrow"><span class="daterange__sel"><select class="daterange__month" data-cal="${cal}" aria-label="Month">${monthOpts}</select>${selChevron()}</span><span class="daterange__sel"><select class="daterange__year" data-cal="${cal}" aria-label="Year">${yearOpts}</select>${selChevron()}</span></span>${next}</div>`;
-}
 function widget(id, single) {
   const pid = `${id}-panel`;
-  const cals = single
-    ? `<div class="daterange__cal">${calHead(0, "both")}<div class="daterange__grid" data-cal="0"></div></div>`
-    : `<div class="daterange__cal">${calHead(0, "left")}<div class="daterange__grid" data-cal="0"></div></div>
-          <div class="daterange__cal">${calHead(1, "right")}<div class="daterange__grid" data-cal="1"></div></div>`;
   return `<div class="daterange${single ? " daterange--single" : ""}" id="${id}" data-start="2026-08-08" data-end="2026-09-08">
       <div class="daterange__nav">
         <button class="daterange__arrow daterange__arrow--prev" type="button" aria-label="Previous month">${iconOf("chevron_left", "daterange__arrow-icon")}</button>
@@ -250,9 +152,7 @@ function widget(id, single) {
         <button class="daterange__arrow daterange__arrow--next" type="button" aria-label="Next month">${iconOf("chevron_right", "daterange__arrow-icon")}</button>
       </div>
       <div class="daterange__panel${single ? " daterange__panel--single" : ""}" id="${pid}" popover role="dialog" aria-label="Choose a date range">
-        <div class="daterange__cals">
-          ${cals}
-        </div>
+        ${calendarHtml({ mode: "range", months: single ? 1 : 2, start: "2026-08-08", end: "2026-09-08", today: "2026-09-08", label: "Date range" })}
         <div class="daterange__footer">
           <button class="daterange__btn--secondary daterange__reset" type="button">Reset</button>
           <button class="daterange__btn--primary daterange__apply" type="button">Apply</button>
@@ -270,19 +170,8 @@ const markupSample = `<div class="daterange" data-start="2026-08-08" data-end="2
     <button class="daterange__arrow daterange__arrow--next" aria-label="Next month">…chevron_right…</button>
   </div>
   <div class="daterange__panel" id="dr-panel" popover role="dialog" aria-label="Choose a date range">
-    <div class="daterange__cals">
-      <div class="daterange__cal">
-        <div class="daterange__chead">
-          <button class="daterange__pnav daterange__pnav--prev" aria-label="Previous month">…</button>
-          <span class="daterange__mrow">
-            <span class="daterange__sel"><select class="daterange__month" data-cal="0">…</select>…expand_more…</span>
-            <span class="daterange__sel"><select class="daterange__year" data-cal="0">…</select>…expand_more…</span>
-          </span>
-          <span class="daterange__pnav-sp"></span>
-        </div>
-        <div class="daterange__grid" data-cal="0"><!-- weekdays + days, built in JS --></div>
-      </div>
-      <div class="daterange__cal"><!-- same, data-cal="1": spacer left, next arrow right --></div>
+    <div class="calendar" data-mode="range" data-start="2026-08-08" data-end="2026-09-08">
+      <!-- the shared Calendar, two months — see calendar.html -->
     </div>
     <div class="daterange__footer">
       <button class="daterange__btn--secondary daterange__reset">Reset</button>
@@ -339,9 +228,9 @@ const html = `<!doctype html>
 
     <div class="legend">
       <div class="row"><b>Field</b><span><b>‹</b> · calendar icon + range (“Aug 08, 2026 – Sep 08, 2026”) · <b>›</b>, hairline-divided, ${dimOf(nav.height)} tall, in the field recipe (<code class="tok">surface.dim</code> → <code class="tok">border.strong</code> hover → <code class="tok">border.focus</code>). The arrows step the <i>whole</i> window by a month — no calendar needed for “the month before”. The middle opens the panel.</span></div>
-      <div class="row"><b>Panel</b><span>Two consecutive months side by side on the Popover shell. Each month has month + year selects (32px, <code class="tok">surface.default</code>, <code class="tok">expand_more</code> chevron); the paging arrows sit on the outer sides and move both months together. Under 560px the months stack.</span></div>
+      <div class="row"><b>Panel</b><span>The shared <a href="calendar.html">Calendar</a> in <code class="tok">range</code> mode, two consecutive months, on the Popover shell. Its month + year selects and paging arrows (outer sides only, both months move together) come from there; under 560px the months stack.</span></div>
       <div class="row"><b>Picking</b><span>Click a day to set the start, another to set the end (picking an earlier day swaps them). Nothing applies until <b>Apply</b>; <b>Reset</b> returns to the default window. Reset = Button secondary sm, Apply = Button primary sm.</span></div>
-      <div class="row"><b>Days</b><span>Start and end fill <code class="tok">fill.primary</code>; the days between get a <code class="tok">bg.primary</code> wash, flush edge-to-edge as one band; today keeps a <code class="tok">border.strong</code> ring; outside-month days are muted and not pickable.</span></div>
+      <div class="row"><b>Days</b><span>Calendar's range states: start and end fill <code class="tok">fill.primary</code>, the days between get a flush <code class="tok">bg.primary</code> band, today keeps its <code class="tok">border.strong</code> ring, outside-month days are muted and not pickable.</span></div>
     </div>
 
     <h2 class="big-section">Filter by date window</h2>

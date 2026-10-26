@@ -100,7 +100,7 @@ for (const c of COLORS) for (const f of FILLS) pathsOf(badge.color[c][f]);
 // (undefined var). Caught by tools/check-css-vars.mjs.
 colorVarPaths.add("text.secondary");
 // outline style's own three roles
-for (const k of ["bg", "border", "text"]) colorVarPaths.add(badge.outline[k].$value.replace(/[{}]/g, ""));
+for (const k of ["border", "text"]) colorVarPaths.add(badge.outline[k].$value.replace(/[{}]/g, ""));
 const uniqPaths = [...colorVarPaths];
 const colorValue = Object.fromEntries(uniqPaths.map((p) => [p, resolve(p)]));
 const fontSans = resolve("family.sans");
@@ -124,7 +124,7 @@ const css = `${rootVars}
 ${sizeDefs.map((s) => `.badge--${s.key} { height: ${px(s.height)}; padding: 0 ${px(s.paddingX)}; ${typoCss(s.label)} }`).join("\n")}
 ${ROLES.map((r) => FILLS.map((f) => `.badge--role-${r}.badge--${f} { background: ${cv(refPath(badge.role[r][f].bg.$value))}; color: ${cv(refPath(badge.role[r][f].text.$value))}; }`).join("\n")).join("\n")}
 ${COLORS.map((c) => FILLS.map((f) => `.badge--color-${c}.badge--${f} { background: ${cv(refPath(badge.color[c][f].bg.$value))}; color: ${cv(refPath(badge.color[c][f].text.$value))}; }`).join("\n")).join("\n")}
-.badge--outline { background: ${cv(refPath(badge.outline.bg.$value))}; border: 1px solid ${cv(refPath(badge.outline.border.$value))}; color: ${cv(refPath(badge.outline.text.$value))}; }
+.badge--outline { background: transparent; border: 1px solid ${cv(refPath(badge.outline.border.$value))}; color: ${cv(refPath(badge.outline.text.$value))}; }
 .badge--regular { font-weight: ${resolve(badge.regular.fontWeight.$value)}; }`;
 
 function markup(sizeKey, kind, name, fill, label) {
@@ -151,7 +151,7 @@ function sizeStories() {
 
 // ---- Role x fill ----
 const roleNotes = {
-  neutral: "Tint: bg.neutral + text.default — the one role without a colored text counterpart. Solid: the same gray.500 + white as color=gray solid.",
+  neutral: "Tint: bg.neutralStrong (gray.150, one step deeper than bg.neutral so it survives gray.100 surfaces and hovered rows) + text.default — the one role without a colored text counterpart. Solid: the same gray.500 + white as color=gray solid.",
   primary: "bg.primary/fill.primary + text.primary/text.onFill — an open/active thread, or any 'in progress' status.",
   success: "bg.success/fill.success + text.success/text.onFill.",
   warning: "bg.warning/fill.warning + text.warning/text.onFill — an upcoming expiry, not yet expired.",
@@ -298,7 +298,7 @@ const html = `<!doctype html>
       <div class="row"><b>tint vs. solid</b><span>Every role and color supports both: <code class="tok">tint</code> (pale bg + colored text, 100/600 step) and <code class="tok">solid</code> (saturated bg + <code class="tok">text.onFill</code>, 500 step) — the same intensity pair Button/Card/Menu already split into <code class="tok">bg.*</code> vs. <code class="tok">fill.*</code>.</span></div>
       <div class="row"><b>Not Chip</b><span>The interactive filter-toggle sibling (checked/unchecked, clickable) is a separate component on purpose — a status/tag pill and a checkbox-like control are different ARIA roles, same reasoning the Menu/Listbox split already established.</span></div>
       <div class="row"><b>Zero-to-minimal new tokens</b><span>Every <code class="tok">role</code> pair and 5 of the 10 <code class="tok">color</code> pairs (gray/blue/red/green/amber) are pure reuses of existing semantic tokens. Only orange/violet/magenta/teal/brown needed new leaf color references (<code class="tok">tag.*</code>, tokens/semantic/color.tokens.json).</span></div>
-      <div class="row"><b>outline · regular</b><span>Added 2026-10-07 (Student Scheduling). <code class="tok">outline</code> is a third fill style — white surface, <code class="tok">border.default</code> hairline inside the box, <code class="tok">text.default</code> — neutral only, for plain metadata labels that must not read as a status. <code class="tok">regular</code> is a weight modifier for any badge: the label at <code class="tok">weight.normal</code> instead of semibold, for badges that appear several to a card beside body text, where a row of semibold pills out-shouts the heading.</span></div>
+      <div class="row"><b>outline · regular</b><span>Added 2026-10-07 (Student Scheduling). <code class="tok">outline</code> is a third fill style — no fill (it takes the surface it sits on; white until 2026-10-26, which read as a hole on gray), <code class="tok">border.default</code> hairline inside the box, <code class="tok">text.default</code> — neutral only, for plain metadata labels that must not read as a status. <code class="tok">regular</code> is a weight modifier for any badge: the label at <code class="tok">weight.normal</code> instead of semibold, for badges that appear several to a card beside body text, where a row of semibold pills out-shouts the heading.</span></div>
       <div class="row"><b>Sizes</b><span>sm 16 / base 20 / lg 24 — deliberately mirrors Counter's own height/paddingX/label ladder (resolved from Counter's real values, not re-guessed) so the two small-pill components line up when they sit side by side.</span></div>
     </div>
 

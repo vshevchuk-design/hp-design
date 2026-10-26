@@ -19,7 +19,7 @@ export function ssCss(h) {
     return `${px(s.offsetX)} ${px(s.offsetY)} ${px(s.blur)} ${px(s.spread)} ${s.color}`;
   };
 
-  const { tabs, button, select, search, chip, listbox: lb, card, badge, pagination: pg, choiceTile: ct, radio, alert, toast, tooltip: tt, emptyState: es, modal, input, counter, progress, attachment: att, accordion: acc, datePicker: dp, drawer, box, menu } = t;
+  const { tabs, button, select, search, chip, listbox: lb, card, badge, pagination: pg, choiceTile: ct, radio, alert, toast, tooltip: tt, emptyState: es, modal, input, counter, progress, attachment: att, accordion: acc, datePicker: dp, calendar: cal, drawer, box, menu } = t;
 
   const btn = (variant, size) => ({
     height: D(button[variant].size[size].height),
@@ -260,7 +260,7 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .badge { display: inline-flex; align-items: center; flex-shrink: 0; height: ${badgeSm.height}; padding: 0 ${badgeSm.paddingX}; border-radius: ${badgeSm.radius}; white-space: nowrap; ${typoCss(badgeSm.label)} }
 .badge--base { height: ${D(badge.size.base.height)}; padding: 0 ${D(badge.size.base.paddingX)}; ${typoCss(T(badge.size.base.label))} }
 /* outline: white + hairline (inside the box, so the height holds) + default text */
-.badge--outline { background: ${R(badge.outline.bg)}; border: 1px solid ${R(badge.outline.border)}; color: ${R(badge.outline.text)}; }
+.badge--outline { background: transparent; border: 1px solid ${R(badge.outline.border)}; color: ${R(badge.outline.text)}; }
 .badge--regular { font-weight: ${resolve(badge.regular.fontWeight.$value)}; }
 .badge--violet { background: ${R(badge.color.violet.tint.bg)}; color: ${R(badge.color.violet.tint.text)}; }
 ${["neutral", "primary", "success", "warning", "danger"].map((r) => `.badge--${r} { background: ${R(badge.role[r].tint.bg)}; color: ${R(badge.role[r].tint.text)}; }`).join("\n")}
@@ -692,14 +692,14 @@ html:has(.modal[open]) { overflow: hidden; }
 .ss-cal__head { display: flex; align-items: center; justify-content: space-between; gap: ${dim(3)}; }
 /* the month: 7 columns, DatePicker's weekday + day recipe, stretched */
 .ss-cal__grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: ${dim(1)}; }
-.ss-cal__dow { text-align: center; color: ${R(dp.weekday.color)}; ${typoCss(T(dp.weekday.label))} text-transform: ${labelSmCase}; letter-spacing: ${labelSm.letterSpacing}; padding-bottom: ${dim(1)}; }
-.ss-cal__cell { display: flex; flex-direction: column; align-items: center; gap: ${dim(1)}; min-width: 0; min-height: ${dim(14)}; padding: ${dim(1)} 0; border: none; border-radius: ${D(dp.day.radius)}; background: transparent; cursor: pointer; font-family: inherit; }
-.ss-cal__cell:hover { background: ${R(dp.day.hoverBg)}; }
+.ss-cal__dow { text-align: center; color: ${R(cal.weekday.color)}; ${typoCss(T(cal.weekday.label))} text-transform: ${labelSmCase}; letter-spacing: ${labelSm.letterSpacing}; padding-bottom: ${dim(1)}; }
+.ss-cal__cell { display: flex; flex-direction: column; align-items: center; gap: ${dim(1)}; min-width: 0; min-height: ${dim(14)}; padding: ${dim(1)} 0; border: none; border-radius: ${D(cal.day.radius)}; background: transparent; cursor: pointer; font-family: inherit; }
+.ss-cal__cell:hover { background: ${R(cal.day.hoverBg)}; }
 .ss-cal__cell:focus-visible { outline: ${ringW} solid ${cv("border.focus")}; outline-offset: -${ringW}; }
-.ss-cal__num { display: inline-flex; align-items: center; justify-content: center; width: ${D(dp.day.size)}; height: ${D(dp.day.size)}; border-radius: ${D(dp.day.radius)}; color: ${R(dp.day.color)}; ${typoCss(T(dp.day.label))} }
-.ss-cal__cell.is-outside .ss-cal__num { color: ${R(dp.day.outsideColor)}; }
-.ss-cal__cell.is-today .ss-cal__num { box-shadow: inset 0 0 0 1px ${R(dp.day.todayBorder)}; }
-.ss-cal__cell.is-selected .ss-cal__num { background: ${R(dp.day.selectedBg)}; color: ${R(dp.day.selectedText)}; box-shadow: none; }
+.ss-cal__num { display: inline-flex; align-items: center; justify-content: center; width: ${D(cal.day.size)}; height: ${D(cal.day.size)}; border-radius: ${D(cal.day.radius)}; color: ${R(cal.day.color)}; ${typoCss(T(cal.day.label))} }
+.ss-cal__cell.is-outside .ss-cal__num { color: ${R(cal.day.outsideColor)}; }
+.ss-cal__cell.is-today .ss-cal__num { box-shadow: inset 0 0 0 1px ${R(cal.day.todayBorder)}; }
+.ss-cal__cell.is-selected .ss-cal__num { background: ${R(cal.day.selectedBg)}; color: ${R(cal.day.selectedText)}; box-shadow: none; }
 .ss-cal__dots { display: flex; gap: ${dim(1)}; height: ${dim("1_5")}; }
 .ss-cal__dot { width: ${dim("1_5")}; height: ${dim("1_5")}; border-radius: 50%; flex-shrink: 0; }
 /* event colours = the Badges each kind wears elsewhere: violet, blue, teal */

@@ -87,7 +87,7 @@ const usedHues = [...new Set(inboxIdentities.map(hueOf))];
 const colorPaths = [
   "surface.default", "surface.dim", "border.default", "text.default", "text.secondary", "icon.muted", "text.muted",
   "fill.primary", "fill.neutralHover", "fill.neutralActive", "bg.primary", "border.focus", "icon.warning",
-  "bg.danger", "text.danger", "bg.warning", "text.warning", "bg.neutral", "bg.success", "text.success",
+  "bg.danger", "text.danger", "bg.warning", "text.warning", "bg.neutral", "bg.neutralStrong", "bg.success", "text.success",
   ...usedHues.flatMap((h) => [`avatar.${h}.bg`, `avatar.${h}.text`]),
 ];
 const colorValue = Object.fromEntries(colorPaths.map((p) => [p, resolve(p)]));

@@ -1,0 +1,57 @@
+{
+  "component": {
+    "calendar": {
+      "$description": "A bare month grid — the one calendar every date component is built on. No trigger, no surface: DatePicker puts it in a popover, DateRangePicker puts two of it in a popover with Reset / Apply, and a page can drop it straight into a Card. Header = paging arrows + month and year selects (a far-off date is two picks, not a dozen arrow clicks). Modes: `single` (one selected day) and `range` (filled start and end + a flush band between). `months: 2` lays two consecutive months side by side, paging arrows on the outer edges only. `min` / `max` disable the days outside the allowed window. Split out on 2026-10-21 from DatePicker and DateRangePicker, which each carried their own copy of the grid and two different headers.",
+      "header": {
+        "gap": { "$type": "dimension", "$value": "{dim.1}", "$description": "Minimum space around the selects; the header is space-between, so on a 252px month the arrows actually sit ~7px off them." },
+        "marginBottom": { "$type": "dimension", "$value": "{dim.2}" },
+        "navSize": { "$type": "dimension", "$value": "{dim.8}", "$description": "32px paging arrow. With two months, prev sits on the left month's outer edge and next on the right month's; the inner sides keep an empty 32px spacer so the selects stay centred over their grid." },
+        "navIconSize": { "$type": "dimension", "$value": "{dim.5}" },
+        "navIcon": { "$type": "color", "$value": "{icon.default}" },
+        "navHoverBg": { "$type": "color", "$value": "{fill.neutralHover}" },
+        "navDisabledIcon": { "$type": "color", "$value": "{icon.disabled}", "$description": "An arrow that would page entirely past min / max." },
+        "select": {
+          "$description": "Month + year <select> pair — a compact 32px control in the field family (white, not surface.dim, because it usually sits inside a white panel).",
+          "height": { "$type": "dimension", "$value": "{dim.8}" },
+          "gap": { "$type": "dimension", "$value": "{dim.1}", "$description": "Month select → year select." },
+          "paddingLeft": { "$type": "dimension", "$value": "{dim.2}" },
+          "paddingRight": { "$type": "dimension", "$value": "{dim.6}", "$description": "Room for the chevron (4px inset + 16px icon + 4px air). Tight on purpose: 'September' + the year + both arrows have to fit across one 252px month." },
+          "chevronInset": { "$type": "dimension", "$value": "{dim.1}" },
+          "chevronSize": { "$type": "dimension", "$value": "{dim.4}" },
+          "chevron": { "$type": "color", "$value": "{icon.default}" },
+          "radius": { "$type": "dimension", "$value": "{radius.default}" },
+          "bg": { "$type": "color", "$value": "{surface.default}" },
+          "border": { "$type": "color", "$value": "{border.default}" },
+          "borderHover": { "$type": "color", "$value": "{border.strong}" },
+          "borderFocus": { "$type": "color", "$value": "{border.focus}" },
+          "value": { "$type": "typography", "$value": "{text-style.body-sm}", "$description": "12px, same as the day numbers — at 14px 'September' + the year no longer fit between the two arrows over a 252px month." },
+          "valueColor": { "$type": "color", "$value": "{text.default}" }
+        }
+      },
+      "weekday": {
+        "height": { "$type": "dimension", "$value": "{dim.7}" },
+        "label": { "$type": "typography", "$value": "{text-style.label-sm}" },
+        "color": { "$type": "color", "$value": "{text.muted}" }
+      },
+      "day": {
+        "size": { "$type": "dimension", "$value": "{dim.9}", "$description": "36px square day cell — 7 of them make the 252px month width." },
+        "rowGap": { "$type": "dimension", "$value": "{dim.1}", "$description": "Vertical gap between weeks; columns sit flush (0 gap) so a range reads as one continuous band. 4px (not 2px) so a month is on the 4px grid at any number of weeks — 28px weekdays + 36px weeks + 4px gaps." },
+        "radius": { "$type": "dimension", "$value": "{radius.default}" },
+        "label": { "$type": "typography", "$value": "{text-style.body-sm}" },
+        "color": { "$type": "color", "$value": "{text.default}" },
+        "hoverBg": { "$type": "color", "$value": "{fill.neutralHover}" },
+        "todayBorder": { "$type": "color", "$value": "{border.strong}", "$description": "Today gets a hairline ring — a quiet 'you are here', distinct from the filled selection." },
+        "selectedBg": { "$type": "color", "$value": "{fill.primary}", "$description": "The selected day (single) and the start / end days (range) fill solid." },
+        "selectedText": { "$type": "color", "$value": "{text.onFill}" },
+        "rangeBg": { "$type": "color", "$value": "{bg.primary}", "$description": "Days between start and end get a light primary wash, edge to edge." },
+        "rangeText": { "$type": "color", "$value": "{text.default}" },
+        "outsideColor": { "$type": "color", "$value": "{text.muted}", "$description": "Days spilling in from the prev/next month — shown for the grid's shape, not pickable." },
+        "disabledColor": { "$type": "color", "$value": "{text.disabled}", "$description": "Days before min / after max — visible, not pickable." }
+      },
+      "months": {
+        "gap": { "$type": "dimension", "$value": "{dim.5}", "$description": "Space between two side-by-side months." },
+        "stackedGap": { "$type": "dimension", "$value": "{dim.3}", "$description": "Space between the months once they stack (< 560px)." }
+      }
+    }
+  }
+}

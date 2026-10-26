@@ -45,7 +45,7 @@
   --tok-border-danger: #febebd;
   --tok-bg-primary-hover: #eff6ff;
   --tok-bg-primary: #d9eaff;
-  --tok-bg-neutral: #e6e8eb;
+  --tok-bg-neutral-strong: #dadde0;
   --tok-tag-gray-solid-bg: #758191;
   --tok-tag-gray-solid-text: #ffffff;
   --tok-bg-success: #d4f1da;
@@ -56,7 +56,7 @@
   --tok-fill-warning: #b26f07;
   --tok-bg-danger: #ffdfde;
   --tok-text-danger: #c11435;
-  --tok-tag-gray-tint-bg: #e6e8eb;
+  --tok-tag-gray-tint-bg: #dadde0;
   --tok-tag-gray-tint-text: #121921;
   --tok-tag-blue-tint-bg: #d9eaff;
   --tok-tag-blue-tint-text: #0468c4;
@@ -101,6 +101,7 @@
   --tok-status-warning: #b26f07;
   --tok-status-danger: #de394b;
   --tok-surface-inverse: #242c36;
+  --tok-bg-neutral: #e6e8eb;
   --tok-surface-overlay: rgba(21, 25, 30, 0.5);
   --tok-icon-muted: #8e99a7;
   --tok-icon-danger: #de394b;
@@ -335,10 +336,10 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .badge { display: inline-flex; align-items: center; flex-shrink: 0; height: 16px; padding: 0 8px; border-radius: 999px; white-space: nowrap; font-weight: 600; font-size: 10px; line-height: 1; }
 .badge--base { height: 20px; padding: 0 8px; font-weight: 600; font-size: 12px; line-height: 1; }
 /* outline: white + hairline (inside the box, so the height holds) + default text */
-.badge--outline { background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); color: var(--tok-text-default); }
+.badge--outline { background: transparent; border: 1px solid var(--tok-border-default); color: var(--tok-text-default); }
 .badge--regular { font-weight: 400; }
 .badge--violet { background: var(--tok-tag-violet-tint-bg); color: var(--tok-tag-violet-tint-text); }
-.badge--neutral { background: var(--tok-bg-neutral); color: var(--tok-text-default); }
+.badge--neutral { background: var(--tok-bg-neutral-strong); color: var(--tok-text-default); }
 .badge--primary { background: var(--tok-bg-primary); color: var(--tok-text-primary); }
 .badge--success { background: var(--tok-bg-success); color: var(--tok-text-success); }
 .badge--warning { background: var(--tok-bg-warning); color: var(--tok-text-warning); }
