@@ -67,6 +67,7 @@
   .story-preview { min-height: 64px; display: flex; align-items: center; justify-content: center; padding: 12px 0; }
   .story-note { font-size: 11.5px; color: var(--text-muted); margin: 0; line-height: 1.5; }
 
+  .demo-slot { display: flex; align-items: center; justify-content: center; border: 1px dashed var(--border-strong); border-radius: 8px; font: 12px var(--mono); color: var(--text-muted); }
   .placeholder-note { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-muted); border: 0.5px dashed var(--border-strong); border-radius: 6px; padding: 4px 10px; margin-top: 1.5rem; }
 
   :root {
@@ -84,20 +85,39 @@
   --tok-fill-neutral-active: #cdd1d6;
   --tok-fill-danger: #de394b;
   --tok-fill-danger-hover: #c11435;
+  --tok-fill-primary: #077fec;
+  --tok-fill-primary-hover: #0468c4;
   --tok-family-sans: 'Sora', sans-serif;
 }
 
-dialog.modal { margin: auto; padding: 0; border: none; box-sizing: border-box; width: 384px; max-width: 90vw; max-height: 85dvh; border-radius: 24px; background: var(--tok-surface-default); box-shadow: 0px 8px 24px -2px rgba(21, 25, 30, 0.16);
+dialog.modal { margin: auto; padding: 0; border: none; box-sizing: border-box; width: min(480px, calc(100vw - 16px * 2)); max-width: none; max-height: 85dvh; border-radius: 24px; background: var(--tok-surface-default); box-shadow: 0px 8px 24px -2px rgba(21, 25, 30, 0.16);
   opacity: 0; transform: scale(0.96); transition: opacity 200ms ease, transform 200ms ease, overlay 200ms allow-discrete, display 200ms allow-discrete; }
 dialog.modal[open] { opacity: 1; transform: scale(1); }
 @starting-style { dialog.modal[open] { opacity: 0; transform: scale(0.96); } }
 dialog.modal::backdrop { background: var(--tok-surface-overlay); opacity: 0; transition: opacity 200ms ease allow-discrete; }
 dialog.modal[open]::backdrop { opacity: 1; }
 @starting-style { dialog.modal[open]::backdrop { opacity: 0; } }
+dialog.modal--md { width: min(640px, calc(100vw - 16px * 2)); }
+dialog.modal--lg { width: min(800px, calc(100vw - 16px * 2)); }
+dialog.modal--xl { width: min(1200px, calc(100vw - 16px * 2)); }
+
+/* Phone (< breakpoint.sm): md/lg/xl take Drawer's bottom placement — shape
+   from drawer.tokens.json. sm stays a centered card. */
+@media (max-width: 639.98px) {
+  dialog.modal--md, dialog.modal--lg, dialog.modal--xl { margin: 0; inset: auto 0 0 0; width: 100%; max-height: 80dvh; border-radius: 0px; box-shadow: 0px 4px 16px 0px rgba(21, 25, 30, 0.12);
+    opacity: 1; transform: translateY(100%); transition: transform 250ms ease, overlay 250ms allow-discrete, display 250ms allow-discrete; }
+  dialog.modal--md[open], dialog.modal--lg[open], dialog.modal--xl[open] { transform: translateY(0); }
+  @starting-style { dialog.modal--md[open], dialog.modal--lg[open], dialog.modal--xl[open] { transform: translateY(100%); } }
+  :is(dialog.modal--md, dialog.modal--lg, dialog.modal--xl) .modal__content { max-height: 80dvh; }
+}
 
 .modal__content { display: flex; flex-direction: column; max-height: 85dvh; box-sizing: border-box; font-family: var(--tok-family-sans); }
-.modal__header { flex-shrink: 0; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 24px; border-bottom: 1px solid var(--tok-border-default); }
+.modal__header { flex-shrink: 0; box-sizing: border-box; display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 24px; border-bottom: 1px solid var(--tok-border-default); }
+/* At least as tall as the × and centered in it: a lone title lines up with
+   the ×, a title + description grows down from the top. */
+.modal__heading { display: flex; flex-direction: column; justify-content: center; gap: 4px; min-width: 0; min-height: 32px; }
 .modal__title { margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 18px; line-height: 1.4; }
+.modal__description { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
 .modal__body { flex: 1; box-sizing: border-box; overflow: auto; padding: 24px; }
 .modal__body-text { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 14px; line-height: 1.4; }
 .modal__footer { flex-shrink: 0; box-sizing: border-box; display: flex; gap: 12px; justify-content: flex-end; padding: 24px; border-top: 1px solid var(--tok-border-default); }
@@ -114,6 +134,8 @@ dialog.modal[open]::backdrop { opacity: 1; }
    fill.neutralHover wash is the same colour and the hover shows nothing. */
 .ov-btn--secondary:hover { background: var(--tok-fill-neutral-hover-strong); }
 .ov-btn--secondary:active { background: var(--tok-fill-neutral-active); }
+.ov-btn--primary { background: var(--tok-fill-primary); color: var(--tok-text-on-fill); font-weight: 600; }
+.ov-btn--primary:hover { background: var(--tok-fill-primary-hover); }
 .ov-btn--danger { background: var(--tok-fill-danger); color: var(--tok-text-on-fill); font-weight: 600; }
 .ov-btn--danger:hover { background: var(--tok-fill-danger-hover); }
 .ov-btn:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
@@ -253,6 +275,9 @@ dialog.modal[open]::backdrop { opacity: 1; }
     <div class="legend">
       <div class="row"><b>Native &lt;dialog&gt;</b><span>Real <code class="tok">showModal()</code> — free focus-trap, Escape-to-close, ::backdrop, top-layer (no z-index). This demo is genuinely interactive.</span></div>
       <div class="row"><b>Centering is free</b><span>Unlike Drawer, no positioning CSS needed at all — showModal()'s own UA stylesheet already centers a &lt;dialog&gt; via position:fixed + inset:0 + margin:auto.</span></div>
+      <div class="row"><b>Sizes</b><span><code class="tok">sm</code> 480px (default — confirmations), <code class="tok">.modal--md</code> 640px (forms), <code class="tok">.modal--lg</code> 800px (two columns, a list or table), <code class="tok">.modal--xl</code> 1200px (a working view). Every size is capped at the viewport minus 16px each side. The body is a slot — anything goes there.</span></div>
+      <div class="row"><b>Phone</b><span>Below <code class="tok">breakpoint.sm</code> (640px) md/lg/xl take <a href="drawer.html">Drawer</a>'s bottom placement — shape read from <code class="tok">drawer.tokens.json</code>. sm stays a centered card: a short question reads as a question in the middle, from the bottom it reads like a menu. Still one Modal in code — resize this window under 640px and open md to see it.</span></div>
+      <div class="row"><b>Description</b><span>Optional line under the title, <code class="tok">body-sm</code> · <code class="tok">text.secondary</code>, 4px below it — same as Card's. Wire it with <code class="tok">aria-describedby</code>: a screen reader reads it right after the title on open.</span></div>
       <div class="row"><b>radius.xl</b><span>Already named for exactly this case in radius's own legend ('modals, large panels, hero cards') — not a new choice.</span></div>
       <div class="row"><b>Nested modals</b><span>A modal opened from within another modal 'just works' via the browser's native top-layer stacking — the z-index.tokens.json modal-2/modal-overlay-2 tiers were designed for a non-native implementation and aren't needed here.</span></div>
       <div class="row"><b>Native close</b><span><code class="tok">&lt;form method="dialog"&gt;</code> around each action button, same as Drawer.</span></div>
@@ -278,20 +303,39 @@ dialog.modal[open]::backdrop { opacity: 1; }
   --tok-fill-neutral-active: #cdd1d6;
   --tok-fill-danger: #de394b;
   --tok-fill-danger-hover: #c11435;
+  --tok-fill-primary: #077fec;
+  --tok-fill-primary-hover: #0468c4;
   --tok-family-sans: 'Sora', sans-serif;
 }
 
-dialog.modal { margin: auto; padding: 0; border: none; box-sizing: border-box; width: 384px; max-width: 90vw; max-height: 85dvh; border-radius: 24px; background: var(--tok-surface-default); box-shadow: 0px 8px 24px -2px rgba(21, 25, 30, 0.16);
+dialog.modal { margin: auto; padding: 0; border: none; box-sizing: border-box; width: min(480px, calc(100vw - 16px * 2)); max-width: none; max-height: 85dvh; border-radius: 24px; background: var(--tok-surface-default); box-shadow: 0px 8px 24px -2px rgba(21, 25, 30, 0.16);
   opacity: 0; transform: scale(0.96); transition: opacity 200ms ease, transform 200ms ease, overlay 200ms allow-discrete, display 200ms allow-discrete; }
 dialog.modal[open] { opacity: 1; transform: scale(1); }
 @starting-style { dialog.modal[open] { opacity: 0; transform: scale(0.96); } }
 dialog.modal::backdrop { background: var(--tok-surface-overlay); opacity: 0; transition: opacity 200ms ease allow-discrete; }
 dialog.modal[open]::backdrop { opacity: 1; }
 @starting-style { dialog.modal[open]::backdrop { opacity: 0; } }
+dialog.modal--md { width: min(640px, calc(100vw - 16px * 2)); }
+dialog.modal--lg { width: min(800px, calc(100vw - 16px * 2)); }
+dialog.modal--xl { width: min(1200px, calc(100vw - 16px * 2)); }
+
+/* Phone (&lt; breakpoint.sm): md/lg/xl take Drawer's bottom placement — shape
+   from drawer.tokens.json. sm stays a centered card. */
+@media (max-width: 639.98px) {
+  dialog.modal--md, dialog.modal--lg, dialog.modal--xl { margin: 0; inset: auto 0 0 0; width: 100%; max-height: 80dvh; border-radius: 0px; box-shadow: 0px 4px 16px 0px rgba(21, 25, 30, 0.12);
+    opacity: 1; transform: translateY(100%); transition: transform 250ms ease, overlay 250ms allow-discrete, display 250ms allow-discrete; }
+  dialog.modal--md[open], dialog.modal--lg[open], dialog.modal--xl[open] { transform: translateY(0); }
+  @starting-style { dialog.modal--md[open], dialog.modal--lg[open], dialog.modal--xl[open] { transform: translateY(100%); } }
+  :is(dialog.modal--md, dialog.modal--lg, dialog.modal--xl) .modal__content { max-height: 80dvh; }
+}
 
 .modal__content { display: flex; flex-direction: column; max-height: 85dvh; box-sizing: border-box; font-family: var(--tok-family-sans); }
-.modal__header { flex-shrink: 0; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 24px; border-bottom: 1px solid var(--tok-border-default); }
+.modal__header { flex-shrink: 0; box-sizing: border-box; display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 24px; border-bottom: 1px solid var(--tok-border-default); }
+/* At least as tall as the × and centered in it: a lone title lines up with
+   the ×, a title + description grows down from the top. */
+.modal__heading { display: flex; flex-direction: column; justify-content: center; gap: 4px; min-width: 0; min-height: 32px; }
 .modal__title { margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 18px; line-height: 1.4; }
+.modal__description { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
 .modal__body { flex: 1; box-sizing: border-box; overflow: auto; padding: 24px; }
 .modal__body-text { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 14px; line-height: 1.4; }
 .modal__footer { flex-shrink: 0; box-sizing: border-box; display: flex; gap: 12px; justify-content: flex-end; padding: 24px; border-top: 1px solid var(--tok-border-default); }
@@ -308,6 +352,8 @@ dialog.modal[open]::backdrop { opacity: 1; }
    fill.neutralHover wash is the same colour and the hover shows nothing. */
 .ov-btn--secondary:hover { background: var(--tok-fill-neutral-hover-strong); }
 .ov-btn--secondary:active { background: var(--tok-fill-neutral-active); }
+.ov-btn--primary { background: var(--tok-fill-primary); color: var(--tok-text-on-fill); font-weight: 600; }
+.ov-btn--primary:hover { background: var(--tok-fill-primary-hover); }
 .ov-btn--danger { background: var(--tok-fill-danger); color: var(--tok-text-on-fill); font-weight: 600; }
 .ov-btn--danger:hover { background: var(--tok-fill-danger-hover); }
 .ov-btn:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }</code></pre>
@@ -333,12 +379,14 @@ dialog.modal[open]::backdrop { opacity: 1; }
     <div class="story-grid">
       
       <div class="story">
-        <h3>Confirm dialog</h3>
-        <div class="story-preview"><button class="ov-btn ov-btn--secondary" data-modal-open="modal-basic">Open modal</button>
-    <dialog class="modal" id="modal-basic">
+        <h3>sm · confirm</h3>
+        <div class="story-preview"><button class="ov-btn ov-btn--secondary" data-modal-open="modal-basic">Open sm</button>
+    <dialog class="modal" id="modal-basic" aria-labelledby="modal-basic-title">
       <div class="modal__content">
         <div class="modal__header">
-          <p class="modal__title">Delete project?</p>
+          <div class="modal__heading">
+            <h2 class="modal__title" id="modal-basic-title">Delete project?</h2>
+          </div>
           <form method="dialog"><button class="modal__close" aria-label="Close"><svg class="modal__close-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button></form>
         </div>
         <div class="modal__body">
@@ -350,15 +398,16 @@ dialog.modal[open]::backdrop { opacity: 1; }
         </div>
       </div>
     </dialog></div>
-        <pre class="code"><code>&lt;button data-modal-open="modal-basic"&gt;Open modal&lt;/button&gt;
-&lt;dialog class="modal" id="modal-basic"&gt;
+        <pre class="code"><code>&lt;dialog class="modal" id="modal-basic" aria-labelledby="modal-basic-title"&gt;
   &lt;div class="modal__content"&gt;
     &lt;div class="modal__header"&gt;
-      &lt;p class="modal__title"&gt;Delete project?&lt;/p&gt;
+      &lt;div class="modal__heading"&gt;
+        &lt;h2 class="modal__title" id="modal-basic-title"&gt;Delete project?&lt;/h2&gt;
+      &lt;/div&gt;
       &lt;form method="dialog"&gt;&lt;button class="modal__close" aria-label="Close"&gt;…&lt;/button&gt;&lt;/form&gt;
     &lt;/div&gt;
     &lt;div class="modal__body"&gt;
-      &lt;p class="modal__body-text"&gt;This can't be undone…&lt;/p&gt;
+      &lt;p class="modal__body-text"&gt;This can't be undone. Everything in this project will be permanently deleted.&lt;/p&gt;
     &lt;/div&gt;
     &lt;div class="modal__footer"&gt;
       &lt;form method="dialog"&gt;&lt;button&gt;Cancel&lt;/button&gt;&lt;/form&gt;
@@ -366,13 +415,139 @@ dialog.modal[open]::backdrop { opacity: 1; }
     &lt;/div&gt;
   &lt;/div&gt;
 &lt;/dialog&gt;</code></pre>
-        
+        <p class="story-note">480px — the default. Stays a centered card on a phone.</p>
       </div>
       
       <div class="story">
-        <h3>body only</h3>
-        <div class="story-preview"><button class="ov-btn ov-btn--secondary" data-modal-open="modal-plain">Open modal</button>
-    <dialog class="modal" id="modal-plain">
+        <h3>md · form</h3>
+        <div class="story-preview"><button class="ov-btn ov-btn--secondary" data-modal-open="modal-md">Open md</button>
+    <dialog class="modal modal--md" id="modal-md" aria-labelledby="modal-md-title" aria-describedby="modal-md-desc">
+      <div class="modal__content">
+        <div class="modal__header">
+          <div class="modal__heading">
+            <h2 class="modal__title" id="modal-md-title">Edit session</h2>
+            <p class="modal__description" id="modal-md-desc">Changes are sent to the student when you save.</p>
+          </div>
+          <form method="dialog"><button class="modal__close" aria-label="Close"><svg class="modal__close-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button></form>
+        </div>
+        <div class="modal__body">
+          <div class="demo-slot" style="height: 240px">Body — any content</div>
+        </div>
+        <div class="modal__footer">
+          <form method="dialog"><button class="ov-btn ov-btn--secondary">Cancel</button></form>
+          <form method="dialog"><button class="ov-btn ov-btn--primary">Save</button></form>
+        </div>
+      </div>
+    </dialog></div>
+        <pre class="code"><code>&lt;dialog class="modal modal--md" id="modal-md" aria-labelledby="modal-md-title" aria-describedby="modal-md-desc"&gt;
+  &lt;div class="modal__content"&gt;
+    &lt;div class="modal__header"&gt;
+      &lt;div class="modal__heading"&gt;
+        &lt;h2 class="modal__title" id="modal-md-title"&gt;Edit session&lt;/h2&gt;
+        &lt;p class="modal__description" id="modal-md-desc"&gt;Changes are sent to the student when you save.&lt;/p&gt;
+      &lt;/div&gt;
+      &lt;form method="dialog"&gt;&lt;button class="modal__close" aria-label="Close"&gt;…&lt;/button&gt;&lt;/form&gt;
+    &lt;/div&gt;
+    &lt;div class="modal__body"&gt;
+      &lt;!-- any content --&gt;
+    &lt;/div&gt;
+    &lt;div class="modal__footer"&gt;
+      &lt;form method="dialog"&gt;&lt;button&gt;Cancel&lt;/button&gt;&lt;/form&gt;
+      &lt;form method="dialog"&gt;&lt;button&gt;Save&lt;/button&gt;&lt;/form&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/dialog&gt;</code></pre>
+        <p class="story-note">640px — a few fields, a date + time pick.</p>
+      </div>
+      
+      <div class="story">
+        <h3>lg · two columns, a list</h3>
+        <div class="story-preview"><button class="ov-btn ov-btn--secondary" data-modal-open="modal-lg">Open lg</button>
+    <dialog class="modal modal--lg" id="modal-lg" aria-labelledby="modal-lg-title" aria-describedby="modal-lg-desc">
+      <div class="modal__content">
+        <div class="modal__header">
+          <div class="modal__heading">
+            <h2 class="modal__title" id="modal-lg-title">Add recipients</h2>
+            <p class="modal__description" id="modal-lg-desc">Pick students or whole groups.</p>
+          </div>
+          <form method="dialog"><button class="modal__close" aria-label="Close"><svg class="modal__close-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button></form>
+        </div>
+        <div class="modal__body">
+          <div class="demo-slot" style="height: 360px">Body — any content</div>
+        </div>
+        <div class="modal__footer">
+          <form method="dialog"><button class="ov-btn ov-btn--secondary">Cancel</button></form>
+          <form method="dialog"><button class="ov-btn ov-btn--primary">Add</button></form>
+        </div>
+      </div>
+    </dialog></div>
+        <pre class="code"><code>&lt;dialog class="modal modal--lg" id="modal-lg" aria-labelledby="modal-lg-title" aria-describedby="modal-lg-desc"&gt;
+  &lt;div class="modal__content"&gt;
+    &lt;div class="modal__header"&gt;
+      &lt;div class="modal__heading"&gt;
+        &lt;h2 class="modal__title" id="modal-lg-title"&gt;Add recipients&lt;/h2&gt;
+        &lt;p class="modal__description" id="modal-lg-desc"&gt;Pick students or whole groups.&lt;/p&gt;
+      &lt;/div&gt;
+      &lt;form method="dialog"&gt;&lt;button class="modal__close" aria-label="Close"&gt;…&lt;/button&gt;&lt;/form&gt;
+    &lt;/div&gt;
+    &lt;div class="modal__body"&gt;
+      &lt;!-- any content --&gt;
+    &lt;/div&gt;
+    &lt;div class="modal__footer"&gt;
+      &lt;form method="dialog"&gt;&lt;button&gt;Cancel&lt;/button&gt;&lt;/form&gt;
+      &lt;form method="dialog"&gt;&lt;button&gt;Add&lt;/button&gt;&lt;/form&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/dialog&gt;</code></pre>
+        <p class="story-note">800px — a two-column form, a list or a table of a few columns.</p>
+      </div>
+      
+      <div class="story">
+        <h3>xl · working view</h3>
+        <div class="story-preview"><button class="ov-btn ov-btn--secondary" data-modal-open="modal-xl">Open xl</button>
+    <dialog class="modal modal--xl" id="modal-xl" aria-labelledby="modal-xl-title" aria-describedby="modal-xl-desc">
+      <div class="modal__content">
+        <div class="modal__header">
+          <div class="modal__heading">
+            <h2 class="modal__title" id="modal-xl-title">Review roster</h2>
+            <p class="modal__description" id="modal-xl-desc">Fall 2026 · Biology 101 · 48 students</p>
+          </div>
+          <form method="dialog"><button class="modal__close" aria-label="Close"><svg class="modal__close-icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button></form>
+        </div>
+        <div class="modal__body">
+          <div class="demo-slot" style="height: 1200px">Body — any content</div>
+        </div>
+        <div class="modal__footer">
+          <form method="dialog"><button class="ov-btn ov-btn--secondary">Close</button></form>
+          <form method="dialog"><button class="ov-btn ov-btn--primary">Export</button></form>
+        </div>
+      </div>
+    </dialog></div>
+        <pre class="code"><code>&lt;dialog class="modal modal--xl" id="modal-xl" aria-labelledby="modal-xl-title" aria-describedby="modal-xl-desc"&gt;
+  &lt;div class="modal__content"&gt;
+    &lt;div class="modal__header"&gt;
+      &lt;div class="modal__heading"&gt;
+        &lt;h2 class="modal__title" id="modal-xl-title"&gt;Review roster&lt;/h2&gt;
+        &lt;p class="modal__description" id="modal-xl-desc"&gt;Fall 2026 · Biology 101 · 48 students&lt;/p&gt;
+      &lt;/div&gt;
+      &lt;form method="dialog"&gt;&lt;button class="modal__close" aria-label="Close"&gt;…&lt;/button&gt;&lt;/form&gt;
+    &lt;/div&gt;
+    &lt;div class="modal__body"&gt;
+      &lt;!-- any content --&gt;
+    &lt;/div&gt;
+    &lt;div class="modal__footer"&gt;
+      &lt;form method="dialog"&gt;&lt;button&gt;Close&lt;/button&gt;&lt;/form&gt;
+      &lt;form method="dialog"&gt;&lt;button&gt;Export&lt;/button&gt;&lt;/form&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/dialog&gt;</code></pre>
+        <p class="story-note">1200px — a table, a preview, an editor. The body scrolls; header and footer stay put.</p>
+      </div>
+      
+      <div class="story">
+        <h3>Body only</h3>
+        <div class="story-preview"><button class="ov-btn ov-btn--secondary" data-modal-open="modal-plain">Open body only</button>
+    <dialog class="modal" id="modal-plain" aria-labelledby="modal-plain-title">
       <div class="modal__content">
         
         <div class="modal__body">
@@ -381,11 +556,10 @@ dialog.modal[open]::backdrop { opacity: 1; }
         
       </div>
     </dialog></div>
-        <pre class="code"><code>&lt;button data-modal-open="modal-plain"&gt;Open modal&lt;/button&gt;
-&lt;dialog class="modal" id="modal-plain"&gt;
+        <pre class="code"><code>&lt;dialog class="modal" id="modal-plain" aria-labelledby="modal-plain-title"&gt;
   &lt;div class="modal__content"&gt;
     &lt;div class="modal__body"&gt;
-      &lt;p class="modal__body-text"&gt;This can't be undone…&lt;/p&gt;
+      &lt;p class="modal__body-text"&gt;This can't be undone. Everything in this project will be permanently deleted.&lt;/p&gt;
     &lt;/div&gt;
   &lt;/div&gt;
 &lt;/dialog&gt;</code></pre>

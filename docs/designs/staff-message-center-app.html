@@ -397,7 +397,7 @@
    bottom-sheet takeover (the keyboard owns half the viewport on a phone —
    Cancel/Send live in the header, always within reach; slide-up entry);
    from 768px it is Modal's centered recipe. The split-view width is a
-   560px composition literal, not modal.width's 384px — the recipient
+   560px composition literal, between Modal's sm (480) and md (640) — the recipient
    list rows need the room (same layout-literal call as the textarea
    min-height). Subject/Message carry Input's recipe including its
    floating label (resting = placeholder only; focus/populated float the
@@ -551,7 +551,7 @@
 /* discard confirmation — modal.alert's behavioral variant: identical Modal
    surface, but no header close, Escape and outside-click disabled — the
    footer actions are the only way out. Danger = Button danger (button.tokens.json). */
-.mc-confirm { border: none; padding: 0; width: 384px; max-width: calc(100vw - 32px); border-radius: 24px; background: var(--tok-surface-default); box-shadow: 0px 8px 24px -2px rgba(21, 25, 30, 0.16); font-family: var(--tok-family-sans); }
+.mc-confirm { border: none; padding: 0; width: 480px; max-width: calc(100vw - 32px); border-radius: 24px; background: var(--tok-surface-default); box-shadow: 0px 8px 24px -2px rgba(21, 25, 30, 0.16); font-family: var(--tok-family-sans); }
 .mc-confirm::backdrop { background: var(--tok-surface-overlay); }
 .mc-confirm__body { display: flex; flex-direction: column; gap: 8px; padding: 24px; }
 .mc-confirm__title { margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 18px; line-height: 1.4; }

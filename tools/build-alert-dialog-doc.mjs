@@ -50,7 +50,7 @@ const dur = `${modal.transitionDuration.$value.value}${modal.transitionDuration.
 
 const css = `${rootVars}
 
-dialog.alert-dialog { margin: auto; padding: 0; border: none; box-sizing: border-box; width: ${D(modal.width)}; max-width: 90vw; max-height: 85dvh; border-radius: ${D(modal.radius)}; background: ${R(modal.bg)}; box-shadow: ${shadowCss};
+dialog.alert-dialog { margin: auto; padding: 0; border: none; box-sizing: border-box; width: ${D(modal.size.sm)}; max-width: 90vw; max-height: 85dvh; border-radius: ${D(modal.radius)}; background: ${R(modal.bg)}; box-shadow: ${shadowCss};
   opacity: 0; transform: scale(0.96); transition: opacity ${dur} ease, transform ${dur} ease, overlay ${dur} allow-discrete, display ${dur} allow-discrete; }
 dialog.alert-dialog[open] { opacity: 1; transform: scale(1); }
 @starting-style { dialog.alert-dialog[open] { opacity: 0; transform: scale(0.96); } }
@@ -203,7 +203,7 @@ const html = `<!doctype html>
     <p class="sub">tokens/components/alert-dialog.tokens.json · generated — a confirmation the user has to answer. Same shell as <a href="modal.html">Modal</a>; no close (×), no click-outside, no Escape — only the actions close it.</p>
 
     <div class="legend">
-      <div class="row"><b>Shell</b><span>Modal's, resolved from <code class="tok">modal.tokens.json</code>: ${D(modal.width)} wide, <code class="tok">radius.xl</code>, <code class="tok">shadow.lg</code>, <code class="tok">surface.default</code> over a <code class="tok">surface.overlay</code> backdrop, ${D(modal.padding)} padding, native <code class="tok">showModal()</code>.</span></div>
+      <div class="row"><b>Shell</b><span>Modal's, resolved from <code class="tok">modal.tokens.json</code>: ${D(modal.size.sm)} wide, <code class="tok">radius.xl</code>, <code class="tok">shadow.lg</code>, <code class="tok">surface.default</code> over a <code class="tok">surface.overlay</code> backdrop, ${D(modal.padding)} padding, native <code class="tok">showModal()</code>.</span></div>
       <div class="row"><b>Layout</b><span>One block — title (<code class="tok">heading-lg</code>) over description (<code class="tok">body-base</code>, <code class="tok">text.secondary</code>) ${D(ad.stackGap)} apart, actions ${D(ad.actionsGap)} below, right-aligned, safe action first. No header / footer bands, no dividers.</span></div>
       <div class="row"><b>Can't be dismissed</b><span>No ×. A backdrop click does nothing (there's no outside-click handler), and Escape is blocked by preventDefault() on the dialog's native <code class="tok">cancel</code> event.</span></div>
       <div class="row"><b>A11y</b><span><code class="tok">role="alertdialog"</code>, <code class="tok">aria-labelledby</code> the title, <code class="tok">aria-describedby</code> the description. <code class="tok">autofocus</code> on Cancel, so Enter right after opening never confirms a destructive action.</span></div>

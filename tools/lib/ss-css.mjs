@@ -477,8 +477,7 @@ ${["neutral", "primary", "success", "warning", "danger"].map((r) => `.badge--${r
 .btn--danger:not(:disabled):active { background: ${R(button.danger.state.pressed.fill)}; }
 
 /* ============ Modal / AlertDialog (native <dialog>) ============ */
-.modal { border: none; padding: 0; width: min(480px /* composition literal: room for two text areas; Modal's own 384 is the alert width */, calc(100vw - ${dim(8)})); max-height: calc(100dvh - ${dim(8)}); border-radius: ${D(modal.radius)}; background: ${R(modal.bg)}; box-shadow: ${shadowCss(modal.shadow)}; font-family: ${cv("family.sans")}; }
-.modal--alert { width: min(${D(modal.width)}, calc(100vw - ${dim(8)})); }
+.modal { border: none; padding: 0; width: min(${D(modal.size.sm)}, calc(100vw - ${dim(8)})); max-height: calc(100dvh - ${dim(8)}); border-radius: ${D(modal.radius)}; background: ${R(modal.bg)}; box-shadow: ${shadowCss(modal.shadow)}; font-family: ${cv("family.sans")}; }
 .modal[open] { display: flex; flex-direction: column; }
 .modal::backdrop { background: ${R(modal.overlay)}; }
 html:has(.modal[open]) { overflow: hidden; }

@@ -105,7 +105,7 @@ dialog.drawer--right { top: 0; right: 0; left: auto; height: 100dvh; width: ${wi
 dialog.drawer--right[open] { transform: translateX(0); }
 @starting-style { dialog.drawer--right[open] { transform: translateX(100%); } }
 
-dialog.drawer--bottom { bottom: 0; left: 0; right: 0; top: auto; width: 100%; max-height: 80dvh; border-radius: ${radius}; transform: translateY(100%); transition: transform ${dur} ease, overlay ${dur} allow-discrete, display ${dur} allow-discrete; }
+dialog.drawer--bottom { bottom: 0; left: 0; right: 0; top: auto; width: 100%; max-height: ${drawer.bottomMaxHeight.$value.value}${drawer.bottomMaxHeight.$value.unit}; border-radius: ${radius}; transform: translateY(100%); transition: transform ${dur} ease, overlay ${dur} allow-discrete, display ${dur} allow-discrete; }
 dialog.drawer--bottom[open] { transform: translateY(0); }
 @starting-style { dialog.drawer--bottom[open] { transform: translateY(100%); } }
 

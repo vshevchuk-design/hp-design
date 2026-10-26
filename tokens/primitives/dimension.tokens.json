@@ -210,13 +210,45 @@
         "unit": "px"
       }
     },
+    "120": {
+      "$type": "dimension",
+      "$value": {
+        "value": 480,
+        "unit": "px"
+      },
+      "$description": "480px — Modal sm (confirmations, AlertDialog)."
+    },
     "140": {
       "$type": "dimension",
       "$value": {
         "value": 560,
         "unit": "px"
       },
-      "$description": "560px — the command palette (Command dialog). Wider than Modal's 384 because each row carries an icon, a label and a shortcut."
+      "$description": "560px — the command palette (Command dialog). Wider than a confirmation because each row carries an icon, a label and a shortcut."
+    },
+    "160": {
+      "$type": "dimension",
+      "$value": {
+        "value": 640,
+        "unit": "px"
+      },
+      "$description": "640px — Modal md (forms); also breakpoint.sm."
+    },
+    "200": {
+      "$type": "dimension",
+      "$value": {
+        "value": 800,
+        "unit": "px"
+      },
+      "$description": "800px — Modal lg."
+    },
+    "300": {
+      "$type": "dimension",
+      "$value": {
+        "value": 1200,
+        "unit": "px"
+      },
+      "$description": "1200px — Modal xl."
     },
     "0_5": {
       "$type": "dimension",

@@ -24,6 +24,9 @@ const typo = load("tokens/primitives/typography.tokens.json");
 const textStyle = load("tokens/primitives/text-styles.tokens.json")["text-style"];
 const semantic = load("tokens/semantic/color.tokens.json");
 const modal = load("tokens/components/modal.tokens.json").component.modal;
+// Below breakpoint.sm, md/lg/xl take Drawer's bottom placement — its shape is read from drawer.tokens.json.
+const drawer = load("tokens/components/drawer.tokens.json").component.drawer;
+const breakpoint = load("tokens/primitives/breakpoint.tokens.json").breakpoint;
 // Close (×) IS a Button — ghost, sm, icon-only — so its size/colors come from button.tokens.json, not a local recipe.
 const ghost = load("tokens/components/button.tokens.json").component.button.ghost;
 const ghostRole = (n) => n.$value.replace(/[{}]/g, "");
@@ -39,6 +42,7 @@ const registry = {
   leading: typo.leading,
   tracking: typo.tracking,
   "text-style": textStyle,
+  breakpoint,
   ...semantic,
 };
 function get(ref) {
@@ -69,13 +73,23 @@ const cv = (tokenPath) => `var(${cssVarName(tokenPath)})`;
 const colorPaths = [
   "fill.neutralHoverStrong",
   "surface.default", "surface.overlay", "border.default", "border.focus", "text.default", "text.secondary", "text.onFill", "icon.secondary",
-  "fill.neutral", "fill.neutralHover", "fill.neutralActive", "fill.danger", "fill.dangerHover",
+  "fill.neutral", "fill.neutralHover", "fill.neutralActive", "fill.danger", "fill.dangerHover", "fill.primary", "fill.primaryHover",
 ].concat([ghost.state.default.icon, ghost.state.hover.fill, ghost.state.pressed.fill, ghost.state.focused.ringColor].map(ghostRole)).filter((p, i, a) => a.indexOf(p) === i);
 const colorValue = Object.fromEntries(colorPaths.map((p) => [p, resolve(p)]));
 const fontSans = resolve("family.sans");
 const rootVars = renderRootVars([...colorPaths.map((p) => [p, colorValue[p]]), ["family.sans", `'${fontSans}', sans-serif`]]);
 
-const width = px(resolve(modal.width.$value));
+const sizes = Object.fromEntries(Object.entries(modal.size).map(([k, n]) => [k, px(resolve(n.$value))]));
+const gutter = px(resolve(modal.viewportGutter.$value));
+const capped = (w) => `min(${w}, calc(100vw - ${gutter} * 2))`;
+const bp = resolve(modal.sheet.breakpoint.$value);
+const descType = resolveToken(modal.description);
+const headerGap = px(resolve(modal.headerGap.$value));
+const drRadius = px(resolve(drawer.radius.$value));
+const drMax = `${drawer.bottomMaxHeight.$value.value}${drawer.bottomMaxHeight.$value.unit}`;
+const drDur = `${drawer.transitionDuration.$value.value}${drawer.transitionDuration.$value.unit}`;
+const drShadow = resolveToken(drawer.shadow);
+const drShadowCss = `${px(drShadow.offsetX)} ${px(drShadow.offsetY)} ${px(drShadow.blur)} ${px(drShadow.spread)} ${drShadow.color}`;
 const radius = px(resolve(modal.radius.$value));
 const padding = px(resolve(modal.padding.$value));
 const gap = px(resolve(modal.gap.$value));
@@ -94,17 +108,34 @@ function typoCss(t) {
 
 const css = `${rootVars}
 
-dialog.modal { margin: auto; padding: 0; border: none; box-sizing: border-box; width: ${width}; max-width: 90vw; max-height: 85dvh; border-radius: ${radius}; background: ${cv("surface.default")}; box-shadow: ${shadowCss};
+dialog.modal { margin: auto; padding: 0; border: none; box-sizing: border-box; width: ${capped(sizes.sm)}; max-width: none; max-height: 85dvh; border-radius: ${radius}; background: ${cv("surface.default")}; box-shadow: ${shadowCss};
   opacity: 0; transform: scale(0.96); transition: opacity ${dur} ease, transform ${dur} ease, overlay ${dur} allow-discrete, display ${dur} allow-discrete; }
 dialog.modal[open] { opacity: 1; transform: scale(1); }
 @starting-style { dialog.modal[open] { opacity: 0; transform: scale(0.96); } }
 dialog.modal::backdrop { background: ${cv("surface.overlay")}; opacity: 0; transition: opacity ${dur} ease allow-discrete; }
 dialog.modal[open]::backdrop { opacity: 1; }
 @starting-style { dialog.modal[open]::backdrop { opacity: 0; } }
+dialog.modal--md { width: ${capped(sizes.md)}; }
+dialog.modal--lg { width: ${capped(sizes.lg)}; }
+dialog.modal--xl { width: ${capped(sizes.xl)}; }
+
+/* Phone (< breakpoint.sm): md/lg/xl take Drawer's bottom placement — shape
+   from drawer.tokens.json. sm stays a centered card. */
+@media (max-width: ${bp.value - 0.02}${bp.unit}) {
+  dialog.modal--md, dialog.modal--lg, dialog.modal--xl { margin: 0; inset: auto 0 0 0; width: 100%; max-height: ${drMax}; border-radius: ${drRadius}; box-shadow: ${drShadowCss};
+    opacity: 1; transform: translateY(100%); transition: transform ${drDur} ease, overlay ${drDur} allow-discrete, display ${drDur} allow-discrete; }
+  dialog.modal--md[open], dialog.modal--lg[open], dialog.modal--xl[open] { transform: translateY(0); }
+  @starting-style { dialog.modal--md[open], dialog.modal--lg[open], dialog.modal--xl[open] { transform: translateY(100%); } }
+  :is(dialog.modal--md, dialog.modal--lg, dialog.modal--xl) .modal__content { max-height: ${drMax}; }
+}
 
 .modal__content { display: flex; flex-direction: column; max-height: 85dvh; box-sizing: border-box; font-family: ${cv("family.sans")}; }
-.modal__header { flex-shrink: 0; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between; gap: ${gap}; padding: ${padding}; border-bottom: 1px solid ${cv("border.default")}; }
+.modal__header { flex-shrink: 0; box-sizing: border-box; display: flex; align-items: flex-start; justify-content: space-between; gap: ${gap}; padding: ${padding}; border-bottom: 1px solid ${cv("border.default")}; }
+/* At least as tall as the × and centered in it: a lone title lines up with
+   the ×, a title + description grows down from the top. */
+.modal__heading { display: flex; flex-direction: column; justify-content: center; gap: ${headerGap}; min-width: 0; min-height: ${px(resolve(ghost.size.sm.height.$value))}; }
 .modal__title { margin: 0; color: ${cv("text.default")}; ${typoCss(titleType)} }
+.modal__description { margin: 0; color: ${cv(modal.descriptionColor.$value.replace(/[{}]/g, ""))}; ${typoCss(descType)} }
 .modal__body { flex: 1; box-sizing: border-box; overflow: auto; padding: ${padding}; }
 .modal__body-text { margin: 0; color: ${cv("text.secondary")}; ${typoCss(bodyType)} }
 .modal__footer { flex-shrink: 0; box-sizing: border-box; display: flex; gap: ${gap}; justify-content: flex-end; padding: ${padding}; border-top: 1px solid ${cv("border.default")}; }
@@ -121,6 +152,8 @@ dialog.modal[open]::backdrop { opacity: 1; }
    fill.neutralHover wash is the same colour and the hover shows nothing. */
 .ov-btn--secondary:hover { background: ${cv("fill.neutralHoverStrong")}; }
 .ov-btn--secondary:active { background: ${cv("fill.neutralActive")}; }
+.ov-btn--primary { background: ${cv("fill.primary")}; color: ${cv("text.onFill")}; font-weight: 600; }
+.ov-btn--primary:hover { background: ${cv("fill.primaryHover")}; }
 .ov-btn--danger { background: ${cv("fill.danger")}; color: ${cv("text.onFill")}; font-weight: 600; }
 .ov-btn--danger:hover { background: ${cv("fill.dangerHover")}; }
 .ov-btn:focus-visible { outline: ${px(resolve("dim.1"))} solid ${cv("border.focus")}; outline-offset: ${px(resolve("dim.0_5"))}; }`;
@@ -135,42 +168,60 @@ function storyCard(title, liveHtml, codeHtml, note = "") {
       </div>`;
 }
 
-function modalMarkup(id, { withHeader = true, withFooter = true } = {}) {
-  return `<button class="ov-btn ov-btn--secondary" data-modal-open="${id}">Open modal</button>
-    <dialog class="modal" id="${id}">
+// One shape for every story: the live markup and the printed sample are built
+// from the same options. `slot` = height of a Body placeholder (any content
+// goes there); without it the body is the confirm sentence.
+const CONFIRM = { title: "Delete project?", text: "This can't be undone. Everything in this project will be permanently deleted.", cancel: "Cancel", confirm: "Delete", tone: "danger" };
+function parts(id, o) {
+  const cls = `modal${o.size && o.size !== "sm" ? ` modal--${o.size}` : ""}`;
+  const descId = `${id}-desc`;
+  const body = o.slot ? `<div class="demo-slot" style="height: ${o.slot}px">Body — any content</div>` : `<p class="modal__body-text">${esc(o.text)}</p>`;
+  return { cls, descId, body };
+}
+function modalMarkup(id, o) {
+  const { cls, descId, body } = parts(id, o);
+  return `<button class="ov-btn ov-btn--secondary" data-modal-open="${id}">${o.open || "Open modal"}</button>
+    <dialog class="${cls}" id="${id}" aria-labelledby="${id}-title"${o.description ? ` aria-describedby="${descId}"` : ""}>
       <div class="modal__content">
-        ${withHeader ? `<div class="modal__header">
-          <p class="modal__title">Delete project?</p>
+        ${o.title ? `<div class="modal__header">
+          <div class="modal__heading">
+            <h2 class="modal__title" id="${id}-title">${esc(o.title)}</h2>${o.description ? `
+            <p class="modal__description" id="${descId}">${esc(o.description)}</p>` : ""}
+          </div>
           <form method="dialog"><button class="modal__close" aria-label="Close">${iconClose}</button></form>
         </div>` : ""}
         <div class="modal__body">
-          <p class="modal__body-text">This can't be undone. Everything in this project will be permanently deleted.</p>
+          ${body}
         </div>
-        ${withFooter ? `<div class="modal__footer">
-          <form method="dialog"><button class="ov-btn ov-btn--secondary">Cancel</button></form>
-          <form method="dialog"><button class="ov-btn ov-btn--danger">Delete</button></form>
+        ${o.confirm ? `<div class="modal__footer">
+          <form method="dialog"><button class="ov-btn ov-btn--secondary">${o.cancel}</button></form>
+          <form method="dialog"><button class="ov-btn ov-btn--${o.tone || "primary"}">${o.confirm}</button></form>
         </div>` : ""}
       </div>
     </dialog>`;
 }
-function modalCode(id, { withHeader = true, withFooter = true } = {}) {
-  return `<button data-modal-open="${id}">Open modal</button>
-<dialog class="modal" id="${id}">
+function modalCode(id, o) {
+  const { cls, descId } = parts(id, o);
+  return `<dialog class="${cls}" id="${id}" aria-labelledby="${id}-title"${o.description ? ` aria-describedby="${descId}"` : ""}>
   <div class="modal__content">
-${withHeader ? `    <div class="modal__header">
-      <p class="modal__title">Delete project?</p>
+${o.title ? `    <div class="modal__header">
+      <div class="modal__heading">
+        <h2 class="modal__title" id="${id}-title">${o.title}</h2>
+${o.description ? `        <p class="modal__description" id="${descId}">${o.description}</p>
+` : ""}      </div>
       <form method="dialog"><button class="modal__close" aria-label="Close">…</button></form>
     </div>
 ` : ""}    <div class="modal__body">
-      <p class="modal__body-text">This can't be undone…</p>
+      ${o.slot ? "<!-- any content -->" : `<p class="modal__body-text">${o.text}</p>`}
     </div>
-${withFooter ? `    <div class="modal__footer">
-      <form method="dialog"><button>Cancel</button></form>
-      <form method="dialog"><button>Delete</button></form>
+${o.confirm ? `    <div class="modal__footer">
+      <form method="dialog"><button>${o.cancel}</button></form>
+      <form method="dialog"><button>${o.confirm}</button></form>
     </div>
 ` : ""}  </div>
 </dialog>`;
 }
+const story = (title, id, o, note) => storyCard(title, modalMarkup(id, o), modalCode(id, o), note);
 
 const openScript = `document.querySelectorAll('[data-modal-open]').forEach((btn) => {
   btn.addEventListener('click', () => {
@@ -257,6 +308,7 @@ const html = `<!doctype html>
   .story-preview { min-height: 64px; display: flex; align-items: center; justify-content: center; padding: 12px 0; }
   .story-note { font-size: 11.5px; color: var(--text-muted); margin: 0; line-height: 1.5; }
 
+  .demo-slot { display: flex; align-items: center; justify-content: center; border: 1px dashed var(--border-strong); border-radius: 8px; font: 12px var(--mono); color: var(--text-muted); }
   .placeholder-note { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-muted); border: 0.5px dashed var(--border-strong); border-radius: 6px; padding: 4px 10px; margin-top: 1.5rem; }
 
   ${css}
@@ -274,6 +326,9 @@ const html = `<!doctype html>
     <div class="legend">
       <div class="row"><b>Native &lt;dialog&gt;</b><span>Real <code class="tok">showModal()</code> — free focus-trap, Escape-to-close, ::backdrop, top-layer (no z-index). This demo is genuinely interactive.</span></div>
       <div class="row"><b>Centering is free</b><span>Unlike Drawer, no positioning CSS needed at all — showModal()'s own UA stylesheet already centers a &lt;dialog&gt; via position:fixed + inset:0 + margin:auto.</span></div>
+      <div class="row"><b>Sizes</b><span><code class="tok">sm</code> ${sizes.sm} (default — confirmations), <code class="tok">.modal--md</code> ${sizes.md} (forms), <code class="tok">.modal--lg</code> ${sizes.lg} (two columns, a list or table), <code class="tok">.modal--xl</code> ${sizes.xl} (a working view). Every size is capped at the viewport minus ${gutter} each side. The body is a slot — anything goes there.</span></div>
+      <div class="row"><b>Phone</b><span>Below <code class="tok">breakpoint.sm</code> (${bp.value}${bp.unit}) md/lg/xl take <a href="drawer.html">Drawer</a>'s bottom placement — shape read from <code class="tok">drawer.tokens.json</code>. sm stays a centered card: a short question reads as a question in the middle, from the bottom it reads like a menu. Still one Modal in code — resize this window under ${bp.value}${bp.unit} and open md to see it.</span></div>
+      <div class="row"><b>Description</b><span>Optional line under the title, <code class="tok">body-sm</code> · <code class="tok">text.secondary</code>, ${headerGap} below it — same as Card's. Wire it with <code class="tok">aria-describedby</code>: a screen reader reads it right after the title on open.</span></div>
       <div class="row"><b>radius.xl</b><span>Already named for exactly this case in radius's own legend ('modals, large panels, hero cards') — not a new choice.</span></div>
       <div class="row"><b>Nested modals</b><span>A modal opened from within another modal 'just works' via the browser's native top-layer stacking — the z-index.tokens.json modal-2/modal-overlay-2 tiers were designed for a non-native implementation and aren't needed here.</span></div>
       <div class="row"><b>Native close</b><span><code class="tok">&lt;form method="dialog"&gt;</code> around each action button, same as Drawer.</span></div>
@@ -297,8 +352,11 @@ const html = `<!doctype html>
     <h2 class="big-section">Examples</h2>
     <p class="section-desc">Click to open for real — try pressing Escape, clicking outside the panel, or clicking Cancel/Delete.</p>
     <div class="story-grid">
-      ${storyCard("Confirm dialog", modalMarkup("modal-basic"), modalCode("modal-basic"))}
-      ${storyCard("body only", modalMarkup("modal-plain", { withHeader: false, withFooter: false }), modalCode("modal-plain", { withHeader: false, withFooter: false }), "No header, no footer, no close button — Escape and click-outside are the only ways to dismiss this one, which is exactly why click-outside isn't optional.")}
+      ${story("sm · confirm", "modal-basic", { ...CONFIRM, open: "Open sm" }, `${sizes.sm} — the default. Stays a centered card on a phone.`)}
+      ${story("md · form", "modal-md", { size: "md", open: "Open md", title: "Edit session", description: "Changes are sent to the student when you save.", slot: 240, cancel: "Cancel", confirm: "Save" }, `${sizes.md} — a few fields, a date + time pick.`)}
+      ${story("lg · two columns, a list", "modal-lg", { size: "lg", open: "Open lg", title: "Add recipients", description: "Pick students or whole groups.", slot: 360, cancel: "Cancel", confirm: "Add" }, `${sizes.lg} — a two-column form, a list or a table of a few columns.`)}
+      ${story("xl · working view", "modal-xl", { size: "xl", open: "Open xl", title: "Review roster", description: "Fall 2026 · Biology 101 · 48 students", slot: 1200, cancel: "Close", confirm: "Export" }, `${sizes.xl} — a table, a preview, an editor. The body scrolls; header and footer stay put.`)}
+      ${story("Body only", "modal-plain", { text: CONFIRM.text, open: "Open body only" }, "No header, no footer, no close button — Escape and click-outside are the only ways to dismiss this one, which is exactly why click-outside isn't optional.")}
     </div>
 
     <p class="placeholder-note">Every code sample on this page is printed from the same resolved token values driving the live previews above it — copy it directly, nothing here is hand-typed.</p>

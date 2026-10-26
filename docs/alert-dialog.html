@@ -87,7 +87,7 @@
   --tok-family-sans: 'Sora', sans-serif;
 }
 
-dialog.alert-dialog { margin: auto; padding: 0; border: none; box-sizing: border-box; width: 384px; max-width: 90vw; max-height: 85dvh; border-radius: 24px; background: var(--tok-surface-default); box-shadow: 0px 8px 24px -2px rgba(21, 25, 30, 0.16);
+dialog.alert-dialog { margin: auto; padding: 0; border: none; box-sizing: border-box; width: 480px; max-width: 90vw; max-height: 85dvh; border-radius: 24px; background: var(--tok-surface-default); box-shadow: 0px 8px 24px -2px rgba(21, 25, 30, 0.16);
   opacity: 0; transform: scale(0.96); transition: opacity 200ms ease, transform 200ms ease, overlay 200ms allow-discrete, display 200ms allow-discrete; }
 dialog.alert-dialog[open] { opacity: 1; transform: scale(1); }
 @starting-style { dialog.alert-dialog[open] { opacity: 0; transform: scale(0.96); } }
@@ -247,7 +247,7 @@ dialog.alert-dialog[open]::backdrop { opacity: 1; }
     <p class="sub">tokens/components/alert-dialog.tokens.json · generated — a confirmation the user has to answer. Same shell as <a href="modal.html">Modal</a>; no close (×), no click-outside, no Escape — only the actions close it.</p>
 
     <div class="legend">
-      <div class="row"><b>Shell</b><span>Modal's, resolved from <code class="tok">modal.tokens.json</code>: 384px wide, <code class="tok">radius.xl</code>, <code class="tok">shadow.lg</code>, <code class="tok">surface.default</code> over a <code class="tok">surface.overlay</code> backdrop, 24px padding, native <code class="tok">showModal()</code>.</span></div>
+      <div class="row"><b>Shell</b><span>Modal's, resolved from <code class="tok">modal.tokens.json</code>: 480px wide, <code class="tok">radius.xl</code>, <code class="tok">shadow.lg</code>, <code class="tok">surface.default</code> over a <code class="tok">surface.overlay</code> backdrop, 24px padding, native <code class="tok">showModal()</code>.</span></div>
       <div class="row"><b>Layout</b><span>One block — title (<code class="tok">heading-lg</code>) over description (<code class="tok">body-base</code>, <code class="tok">text.secondary</code>) 8px apart, actions 24px below, right-aligned, safe action first. No header / footer bands, no dividers.</span></div>
       <div class="row"><b>Can't be dismissed</b><span>No ×. A backdrop click does nothing (there's no outside-click handler), and Escape is blocked by preventDefault() on the dialog's native <code class="tok">cancel</code> event.</span></div>
       <div class="row"><b>A11y</b><span><code class="tok">role="alertdialog"</code>, <code class="tok">aria-labelledby</code> the title, <code class="tok">aria-describedby</code> the description. <code class="tok">autofocus</code> on Cancel, so Enter right after opening never confirms a destructive action.</span></div>
@@ -358,7 +358,7 @@ document.querySelectorAll('dialog.alert-dialog').forEach((dlg) =&gt; {
   --tok-family-sans: 'Sora', sans-serif;
 }
 
-dialog.alert-dialog { margin: auto; padding: 0; border: none; box-sizing: border-box; width: 384px; max-width: 90vw; max-height: 85dvh; border-radius: 24px; background: var(--tok-surface-default); box-shadow: 0px 8px 24px -2px rgba(21, 25, 30, 0.16);
+dialog.alert-dialog { margin: auto; padding: 0; border: none; box-sizing: border-box; width: 480px; max-width: 90vw; max-height: 85dvh; border-radius: 24px; background: var(--tok-surface-default); box-shadow: 0px 8px 24px -2px rgba(21, 25, 30, 0.16);
   opacity: 0; transform: scale(0.96); transition: opacity 200ms ease, transform 200ms ease, overlay 200ms allow-discrete, display 200ms allow-discrete; }
 dialog.alert-dialog[open] { opacity: 1; transform: scale(1); }
 @starting-style { dialog.alert-dialog[open] { opacity: 0; transform: scale(0.96); } }

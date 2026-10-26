@@ -312,7 +312,7 @@ const inputFocusLabelColor = refPath(input.state.focus.label.$value);
 const inputPopulatedLabelColor = refPath(input.state.populated.label.$value);
 
 // ---- Modal — the compose dialog shell, resolved from modal.tokens.json ----
-const mdWidth = px(resolve(modal.width.$value));
+const mdWidth = px(resolve(modal.size.sm.$value));
 const mdRadius = px(resolve(modal.radius.$value));
 const mdPadding = px(resolve(modal.padding.$value));
 const mdGap = px(resolve(modal.gap.$value));
@@ -920,7 +920,7 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
    bottom-sheet takeover (the keyboard owns half the viewport on a phone —
    Cancel/Send live in the header, always within reach; slide-up entry);
    from 768px it is Modal's centered recipe. The split-view width is a
-   560px composition literal, not modal.width's 384px — the recipient
+   560px composition literal, between Modal's sm (480) and md (640) — the recipient
    list rows need the room (same layout-literal call as the textarea
    min-height). Subject/Message carry Input's recipe including its
    floating label (resting = placeholder only; focus/populated float the
