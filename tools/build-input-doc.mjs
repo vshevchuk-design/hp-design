@@ -1,196 +1,62 @@
-// Regenerates docs/input.html from tokens/components/input.tokens.json,
-// resolving aliases back through semantic/*.tokens.json and primitives/*.tokens.json.
-// sm has no floating label (single-line placeholder/value, both 16px). base/lg
-// float the placeholder into a 12px label above the value once focused or
-// populated — implemented as flexbox-centered stacked lines with an explicit
-// gap, not hand-computed padding (see the token's own $description for why).
-// The generated <style> block IS the code shown in the "CSS" section below —
-// one source, so the live preview and the printed snippet can't drift apart.
+// Regenerates docs/input.html from tokens/components/input.tokens.json.
+// Every preview is the real <input> from tools/lib/field.mjs (textFieldHtml) —
+// the same field Form uses — so hover, focus, typing and the floating label
+// all work, and the printed CSS is that one shared recipe.
 // Run: node tools/build-input-doc.mjs
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { renderNav } from "./lib/nav.mjs";
-import { cssVarName, renderRootVars } from "./lib/css-vars.mjs";
+import { renderRootVars } from "./lib/css-vars.mjs";
+import { FIELD_COLOR_PATHS, FIELD_CSS, TEXT_FIELD_JS, textFieldHtml } from "./lib/field.mjs";
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const load = (p) => JSON.parse(fs.readFileSync(path.join(root, p)));
-
-const colorPrim = load("tokens/primitives/color.tokens.json").color;
-const dim = load("tokens/primitives/dimension.tokens.json").dim;
-const radiusPrim = load("tokens/primitives/radius.tokens.json").radius;
 const typo = load("tokens/primitives/typography.tokens.json");
-const textStyle = load("tokens/primitives/text-styles.tokens.json")["text-style"];
-const semantic = load("tokens/semantic/color.tokens.json");
-const input = load("tokens/components/input.tokens.json").component.input;
-
-const registry = {
-  color: colorPrim,
-  dim,
-  radius: radiusPrim,
-  family: typo.family,
-  weight: typo.weight,
-  size: typo.size,
-  leading: typo.leading,
-  tracking: typo.tracking,
-  "text-style": textStyle,
-  ...semantic,
-};
-function get(ref) {
-  const parts = ref.replace(/[{}]/g, "").split(".");
-  let node = registry;
-  for (const p of parts) node = node[p];
-  return node;
-}
-function resolveValue(v) {
-  if (typeof v === "string" && v.startsWith("{")) return resolveToken(get(v));
-  return v;
-}
-function resolveToken(node) {
-  const v = node.$value;
-  if (v && typeof v === "object" && !("value" in v)) {
-    const out = {};
-    for (const [k, sub] of Object.entries(v)) out[k] = resolveValue(sub);
-    return out;
-  }
-  if (v && typeof v === "object" && "value" in v) return v;
-  return resolveValue(v);
-}
+const registry = { color: load("tokens/primitives/color.tokens.json").color, dim: load("tokens/primitives/dimension.tokens.json").dim, radius: load("tokens/primitives/radius.tokens.json").radius, family: typo.family, weight: typo.weight, size: typo.size, leading: typo.leading, tracking: typo.tracking, "text-style": load("tokens/primitives/text-styles.tokens.json")["text-style"], ...load("tokens/semantic/color.tokens.json") };
+function get(ref) { const parts = ref.replace(/[{}]/g, "").split("."); let n = registry; for (const p of parts) n = n[p]; if (n === undefined) throw new Error(`unresolved ${ref}`); return n; }
+function resolveValue(v) { if (typeof v === "string" && v.startsWith("{")) return resolveToken(get(v)); return v; }
+function resolveToken(node) { const v = node.$value; if (v && typeof v === "object" && !("value" in v)) { const o = {}; for (const [k, s] of Object.entries(v)) o[k] = resolveValue(s); return o; } if (v && typeof v === "object" && "value" in v) return v; return resolveValue(v); }
 const resolve = (ref) => resolveToken(get(ref));
 const px = (d) => `${d.value}${d.unit}`;
 const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+const input = load("tokens/components/input.tokens.json").component.input;
+const H = (k) => px(resolve(input.size[k].height.$value.replace(/[{}]/g, "")));
 
-// ---- color tokens this page uses, as CSS custom properties ----
-const hoverBgRole = input.state.hover.bg.$value.replace(/[{}]/g, "");
-const colorPaths = [
-  "surface.dimHover",
-  "surface.sunken", "surface.dim", "surface.disabled", "border.default", "border.strong", "border.focus", "border.danger",
-  "text.muted", "text.default", "text.disabled", "text.primary", "icon.default", "icon.disabled",
-];
-const colorValue = Object.fromEntries(colorPaths.map((p) => [p, resolve(p)]));
-const fontSans = resolve("family.sans");
-const cv = (tokenPath) => `var(${cssVarName(tokenPath)})`;
-const rootVars = renderRootVars([...colorPaths.map((p) => [p, colorValue[p]]), ["family.sans", `'${fontSans}', sans-serif`]]);
-
-const fieldRadius = px(resolve(input.radius.$value));
-const sizes = ["sm", "base", "lg"].map((key) => {
-  const s = input.size[key];
-  const base = {
-    key,
-    height: resolve(s.height.$value),
-    paddingX: resolve(s.paddingX.$value),
-    gap: resolve(s.gap.$value),
-    iconSize: resolve(s.iconSize.$value),
-    value: resolveToken(s.value),
-  };
-  if (key !== "sm") {
-    base.label = resolveToken(s.label);
-    base.labelGap = resolve(s.labelGap.$value);
-  }
-  return base;
-});
-
-// ---- icons ----
-const iconSearch = fs.readFileSync(path.join(root, "assets/icons/material-filled/search.svg"), "utf8").replace("<svg ", '<svg class="input__icon" ');
-
-function typoCss(t) {
-  return `font-weight: ${t.fontWeight}; font-size: ${px(t.fontSize)}; line-height: ${t.lineHeight};`;
-}
-
-// ---- the actual stylesheet — printed as code AND used to render the live preview ----
+// only the text field part of the shared sheet (Field/Form live on form.html)
+const fieldCss = FIELD_CSS.slice(0, FIELD_CSS.indexOf("/* Field — label"));
+const rootVars = renderRootVars([...FIELD_COLOR_PATHS.map((p) => [p, resolve(p)]), ["family.sans", `'${resolve("family.sans")}', sans-serif`]]);
 const css = `${rootVars}
+${fieldCss}`;
 
-.input {
-  display: inline-flex;
-  align-items: center;
-  box-sizing: border-box;
-  background: ${cv("surface.dim")};
-  border: 1px solid ${cv("border.default")};
-  border-radius: ${fieldRadius};
-  font-family: ${cv("family.sans")};
-  cursor: text;
-}
-.input__icon { flex-shrink: 0; color: ${cv("icon.default")}; }
-.input__placeholder { color: ${cv("text.muted")}; }
-.input__value { color: ${cv("text.default")}; }
-.input__stack { display: flex; flex-direction: column; justify-content: center; }
-.input__label { color: ${cv("text.muted")}; }
+// live markup and printed sample from one call; the sample shows "…" for SVGs
+const code = (html) => html.replace(/<svg[\s\S]*?<\/svg>/g, "…").replace(/></g, ">\n<");
+const story = (title, opts, note = "") => {
+  const live = textFieldHtml(opts);
+  return `<div class="story"><h3>${title}</h3><div class="story-preview">${live}</div><pre class="code"><code>${esc(code(live))}</code></pre>${note ? `<p class="story-note">${note}</p>` : ""}</div>`;
+};
 
-${sizes
-  .map((s) => {
-    const lines = [
-      `.input--${s.key} { height: ${px(s.height)}; padding: 0 ${px(s.paddingX)}; gap: ${px(s.gap)}; }`,
-      `.input--${s.key} .input__icon { width: ${px(s.iconSize)}; height: ${px(s.iconSize)}; }`,
-      `.input--${s.key} .input__placeholder, .input--${s.key} .input__value { ${typoCss(s.value)} }`,
-    ];
-    if (s.label) {
-      lines.push(`.input--${s.key} .input__stack { gap: ${px(s.labelGap)}; }`);
-      lines.push(`.input--${s.key} .input__label { ${typoCss(s.label)} }`);
-    }
-    return lines.join("\n");
-  })
-  .join("\n\n")}
-
-.input:not(.input--disabled):hover, .input--hover { background: ${cv(hoverBgRole)}; border-color: ${cv("border.strong")}; }
-.input--focus { border-color: ${cv("border.focus")}; }
-.input--focus .input__label { color: ${cv("text.primary")}; }
-.input--disabled { background: ${cv("surface.disabled")}; cursor: not-allowed; }
-.input--disabled .input__placeholder, .input--disabled .input__value, .input--disabled .input__label { color: ${cv("text.disabled")}; }
-.input--disabled .input__icon { color: ${cv("icon.disabled")}; }
-.input--error { border-color: ${cv("border.danger")}; }`;
-
-// ---- markup builders ----
-function restingMarkup(size, { icon = false, placeholder = "Email address", live = true } = {}) {
-  const ic = icon ? (live ? iconSearch : `<svg class="input__icon"><!-- icon: search --></svg>`) : "";
-  return `<div class="input input--${size}">${ic}<span class="input__placeholder">${placeholder}</span></div>`;
-}
-function floatedMarkup(size, { icon = false, label = "Email address", value = "", live = true } = {}) {
-  const ic = icon ? (live ? iconSearch : `<svg class="input__icon"><!-- icon: search --></svg>`) : "";
-  return `<div class="input input--${size}">${ic}<div class="input__stack"><span class="input__label">${label}</span><span class="input__value">${value}</span></div></div>`;
-}
-
-function storyCard(title, liveHtml, codeHtml, note = "") {
-  return `
-      <div class="story">
-        <h3>${title}</h3>
-        <div class="story-preview">${liveHtml}</div>
-        <pre class="code"><code>${esc(codeHtml)}</code></pre>
-        ${note ? `<p class="story-note">${note}</p>` : ""}
-      </div>`;
-}
-
-function sizeStories() {
-  return sizes
-    .map((s) => {
-      const live = s.key === "sm" ? restingMarkup(s.key, { live: true }) : floatedMarkup(s.key, { value: "name@example.com", live: true });
-      const code = s.key === "sm" ? restingMarkup(s.key, { live: false }) : floatedMarkup(s.key, { value: "name@example.com", live: false });
-      return storyCard(`${s.key} — ${px(s.height)}`, live, code);
-    })
-    .join("\n");
-}
-
-function contentStories() {
-  const items = [];
-  for (const withIcon of [false, true]) {
-    const title = withIcon ? "Icon left + value" : "Value only";
-    const live = floatedMarkup("base", { icon: withIcon, value: "name@example.com", live: true });
-    const code = floatedMarkup("base", { icon: withIcon, value: "name@example.com", live: false });
-    items.push(storyCard(title, live, code));
-  }
-  return items.join("\n");
-}
-
-const stateDefs = [
-  { key: "default", label: "default", node: (live) => restingMarkup("base", { live }), note: "Empty, not focused — placeholder centered at value size (16px), no floated label yet." },
-  { key: "hover", label: "hover", node: (live) => restingMarkup("base", { live }).replace('class="input input--base"', 'class="input input--base input--hover"'), note: "border.strong — same rule already documented on that token before this component existed." },
-  { key: "focus", label: "focus", node: (live) => floatedMarkup("base", { value: "", live }).replace('class="input input--base"', 'class="input input--base input--focus"'), note: "Placeholder already floated into the label the instant the field is focused — value area starts empty, ready to type." },
-  { key: "populated", label: "populated", node: (live) => floatedMarkup("base", { value: "name@example.com", live }), note: "Has a value, not focused — label stays floated (layout doesn't revert) but every color returns to default." },
-  { key: "disabled", label: "disabled", node: (live) => restingMarkup("base", { live }).replace('class="input input--base"', 'class="input input--base input--disabled"'), note: "surface.disabled equals surface.sunken (both gray.100) — same pattern as the secondary button's disabled state. Only text/icon fade." },
-  { key: "error", label: "error", node: (live) => floatedMarkup("base", { value: "not-an-email", live }).replace('class="input input--base"', 'class="input input--base input--error"'), note: "Scoped to the field's own border only — no separate helper-text element built here." },
+const sizes = [
+  story(`sm — ${H("sm")}`, { id: "i-sm", size: "sm", label: "Search classes" }, "No floating label — too short for two lines. The label is there for screen readers; the placeholder carries it on screen."),
+  story(`base — ${H("base")}`, { id: "i-base", label: "Email", value: "name@school.edu", type: "email", autocomplete: "email" }, "The default. Populated: the label floats to 12px above the 16px value."),
+  story(`lg — ${H("lg")}`, { id: "i-lg", size: "lg", label: "Email", value: "name@school.edu", type: "email", autocomplete: "email" }),
 ];
-function stateStories() {
-  return stateDefs.map((s) => storyCard(s.label, s.node(true), s.node(false), s.note)).join("\n");
-}
+const content = [
+  story("Value only", { id: "i-v", label: "Full name", value: "Ana Diaz", autocomplete: "name" }),
+  story("Icon left", { id: "i-ic", label: "Search", icon: "search", type: "search" }, "Icon sizes follow Button's — 16 / 20 / 24 at sm / base / lg, 8px gap."),
+];
+const states = [
+  story("Default", { id: "s-def", label: "Full name" }, "Empty, not focused: one 16px placeholder line. Hover it (border.strong) and click it (border.focus, the label floats in blue)."),
+  story("Populated", { id: "s-pop", label: "Full name", value: "Ana Diaz" }, "The label stays floated; every colour is back to rest."),
+  story("Disabled", { id: "s-dis", label: "Room", disabled: true }, "Unavailable right now — e.g. until a building is chosen. Faded, skipped by Tab, not submitted."),
+  story("Read-only", { id: "s-ro", label: "Student ID", value: "A00123456", readOnly: true }, "Can't change, can read, select and copy. Full-contrast text on white (no recessed fill), no hover, focusable, submitted with the form."),
+  story("Error", { id: "s-err", label: "Email", value: "name@school", type: "email", invalid: true }, `aria-invalid="true" → border.dangerStrong (red.600). In a form the message goes under it — see <a href="form.html">Form</a>.`),
+];
+const types = [
+  story("Email", { id: "t-email", label: "Email", type: "email", autocomplete: "email" }, `type="email" + autocomplete="email": the @ keyboard on a phone, autofill. Not a variant — the same field.`),
+  story("Password", { id: "t-pw", label: "Password", reveal: true, autocomplete: "current-password", value: "correct-horse" }, "A reveal button at the trailing edge — Button ghost sm icon-only. Its label says what the next press does."),
+  story("Numeric code", { id: "t-num", label: "Student ID", inputmode: "numeric", autocomplete: "off" }, `inputmode="numeric" — digits keyboard, still a text field. Not type="number": its spinners are tiny, the scroll wheel changes it and it accepts "e". A quantity with steps is NumberField.`),
+];
 
 const html = `<!doctype html>
 <html lang="en">
@@ -200,114 +66,72 @@ const html = `<!doctype html>
 <title>hp-design — Input</title>
 <link rel="stylesheet" href="../assets/fonts/sora/sora.css" />
 <style>
-  :root {
-    --bg-page: #f7f7f5; --bg-card: #ffffff; --bg-card-hover: #fbfbfa;
-    --border: #e4e3df; --border-strong: #d2d1cb;
-    --text-primary: #0e0e10; --text-secondary: #63625c; --text-muted: #918f87;
-    --accent: #0468c4; --accent-bg: #eff6ff;
-    --code-bg: #1e1e22; --code-text: #e4e3df;
-    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-    --sans: -apple-system, "Segoe UI", system-ui, sans-serif;
-    color-scheme: light;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root:where(:not([data-theme="light"])) {
-      --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327;
-      --border: #313035; --border-strong: #403f45;
-      --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68;
-      --accent: #5aa4ec; --accent-bg: #16283b;
-      --code-bg: #0d0d0f; --code-text: #d7d6d2;
-      color-scheme: dark;
-    }
-  }
-  :root[data-theme="dark"] {
-    --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327;
-    --border: #313035; --border-strong: #403f45;
-    --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68;
-    --accent: #5aa4ec; --accent-bg: #16283b;
-    --code-bg: #0d0d0f; --code-text: #d7d6d2;
-    color-scheme: dark;
-  }
-  * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg-page); color: var(--text-primary); font-family: var(--sans); }
+  :root { --bg-page: #f7f7f5; --bg-card: #ffffff; --bg-card-hover: #fbfbfa; --border: #e4e3df; --border-strong: #d2d1cb; --text-primary: #0e0e10; --text-secondary: #63625c; --text-muted: #918f87; --accent: #0468c4; --accent-bg: #eff6ff; --code-bg: #1e1e22; --code-text: #e4e3df; --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace; --sans: -apple-system, "Segoe UI", system-ui, sans-serif; color-scheme: light; }
+  @media (prefers-color-scheme: dark) { :root:where(:not([data-theme="light"])) { --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327; --border: #313035; --border-strong: #403f45; --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68; --accent: #5aa4ec; --accent-bg: #16283b; --code-bg: #0d0d0f; --code-text: #d7d6d2; color-scheme: dark; } }
+  :root[data-theme="dark"] { --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327; --border: #313035; --border-strong: #403f45; --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68; --accent: #5aa4ec; --accent-bg: #16283b; --code-bg: #0d0d0f; --code-text: #d7d6d2; color-scheme: dark; }
+  * { box-sizing: border-box; } body { margin: 0; background: var(--bg-page); color: var(--text-primary); font-family: var(--sans); }
   .shell { display: flex; min-height: 100vh; }
   nav.side { width: 220px; flex-shrink: 0; border-right: 0.5px solid var(--border); padding: 1.5rem 1rem; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
-  .brand { font-size: 14px; font-weight: 600; margin: 0 0 2px 8px; }
-  .brand-sub { font-size: 11.5px; color: var(--text-muted); margin: 0 0 1.5rem 8px; }
   .navlink { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 8px; border-radius: 7px; font-size: 13px; text-decoration: none; color: var(--text-primary); margin-bottom: 1px; }
-  .navlink:hover { background: var(--bg-card-hover); }
-  .navlink.active { background: var(--accent-bg); color: var(--accent); font-weight: 600; }
+  .navlink:hover { background: var(--bg-card-hover); } .navlink.active { background: var(--accent-bg); color: var(--accent); font-weight: 600; }
   .nav-category { font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin: 16px 8px 6px; }
-  main { flex: 1; padding: 4rem 4rem 6rem; max-width: 1120px; }
-
+  main { flex: 1; padding: 4rem 4rem 6rem; max-width: 1120px; min-width: 0; }
   h1 { font-size: 36px; font-weight: 700; margin: 0 0 10px; letter-spacing: -0.02em; }
   .sub { font-size: 14px; color: var(--text-secondary); margin: 0 0 2.5rem; }
   h2.big-section { font-size: 24px; font-weight: 700; margin: 5.5rem 0 1.5rem; letter-spacing: -0.01em; padding-top: 2.5rem; border-top: 1px solid var(--border); }
   h2.big-section:first-of-type { margin-top: 3rem; padding-top: 0; border-top: none; }
   .section-desc { font-size: 13.5px; color: var(--text-secondary); margin: -0.5rem 0 1.5rem; max-width: 68ch; line-height: 1.6; }
-
   .legend { font-size: 12.5px; color: var(--text-secondary); padding: 14px 18px; background: var(--bg-card); border: 0.5px solid var(--border); border-radius: 10px; margin-bottom: 1rem; line-height: 1.6; }
-  .legend .row { display: flex; gap: 14px; padding: 6px 0; border-bottom: 0.5px solid var(--border); }
-  .legend .row:last-child { border-bottom: none; }
-  .legend .row b { width: 150px; flex-shrink: 0; color: var(--text-primary); font-weight: 600; font-family: var(--mono); font-size: 11.5px; }
+  .legend .row { display: flex; gap: 14px; padding: 6px 0; border-bottom: 0.5px solid var(--border); } .legend .row:last-child { border-bottom: none; }
+  .legend .row b { width: 110px; flex-shrink: 0; color: var(--text-primary); font-weight: 600; font-family: var(--mono); font-size: 11.5px; }
   code.tok { font-family: var(--mono); font-size: 12px; color: var(--accent); }
-
-  pre.code { background: var(--code-bg); color: var(--code-text); border-radius: 10px; padding: 16px 18px; margin: 0; overflow-x: auto; font-family: var(--mono); font-size: 12px; line-height: 1.7; }
-  pre.code code { font-family: inherit; }
-
-  .story-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 28px; }
-  .story { border: 0.5px solid var(--border); border-radius: 14px; background: var(--bg-card); padding: 24px; display: flex; flex-direction: column; gap: 14px; }
+  pre.code { background: var(--code-bg); color: var(--code-text); border-radius: 10px; padding: 16px 18px; margin: 0; overflow-x: auto; font-family: var(--mono); font-size: 12px; line-height: 1.7; } pre.code code { font-family: inherit; }
+  .story-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; }
+  .story { border: 0.5px solid var(--border); border-radius: 14px; background: var(--bg-card); padding: 22px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+  .story--wide { grid-column: 1 / -1; }
   .story h3 { font-size: 14px; font-weight: 600; margin: 0; font-family: var(--mono); }
-  .story-preview { min-height: 64px; display: flex; align-items: center; justify-content: center; padding: 12px 0; }
-  .story-preview .input { width: 100%; max-width: 260px; }
+  .story-preview { padding: 8px 0; }
   .story-note { font-size: 11.5px; color: var(--text-muted); margin: 0; line-height: 1.5; }
-
-  .placeholder-note { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-muted); border: 0.5px dashed var(--border-strong); border-radius: 6px; padding: 4px 10px; margin-top: 1.5rem; }
-
+  @media (max-width: 760px) { .shell { display: block; } nav.side { display: none; } main { padding: 2rem 16px 4rem; } }
   ${css}
 </style>
 </head>
 <body>
 <div class="shell">
-  <nav class="side">
-    ${renderNav("input")}
-  </nav>
+  <nav class="side">${renderNav("input")}</nav>
   <main>
     <h1>Input</h1>
-    <p class="sub">tokens/components/input.tokens.json · generated — the CSS below is generated from the same resolved tokens driving every preview on this page, not hand-copied. Colors are CSS custom properties, not literal hex.</p>
+    <p class="sub">tokens/components/input.tokens.json · generated — every preview is the real field from <code class="tok">tools/lib/field.mjs</code>, the one <a href="form.html">Form</a> uses: hover it, click it, type.</p>
 
     <div class="legend">
-      <div class="row"><b>Fill + border</b><span>surface.sunken bg + border.default hairline — both already documented for exactly this ("Inputs...recessed" / "input borders at rest") from the semantic-color session, before this component existed. Not a pure outline, not a pure fill — both together.</span></div>
-      <div class="row"><b>Sizes</b><span>sm 32px (no floating label) / base 40px (default) / lg 48px. Value/placeholder text is 16px at every size — Safari on iOS auto-zooms the page on focus if it's smaller.</span></div>
-      <div class="row"><b>Floating label</b><span>base/lg only. Resting (empty, unfocused): one centered 16px placeholder line. Focused or populated: splits into a 12px label above the 16px value, vertically centered as a group via flexbox rather than hand-computed padding.</span></div>
-      <div class="row"><b>States</b><span>default → border.default · hover → border.strong · focus → border.focus + label turns text.primary (blue) · populated → colors revert to default, only the layout (label floated) persists · disabled → surface.disabled + *.disabled text/icon · error → border.danger.</span></div>
+      <div class="row"><b>Fill + border</b><span>surface.dim fill + border.default hairline at rest — a recessed place to type.</span></div>
+      <div class="row"><b>Sizes</b><span>sm ${H("sm")} (no floating label) / base ${H("base")} (default) / lg ${H("lg")}. Value text is 16px at every size — Safari on iOS zooms the page on focus if it's smaller.</span></div>
+      <div class="row"><b>Floating label</b><span>base/lg. Resting: the placeholder shows the label's text; the &lt;label&gt; is kept for screen readers. Focused or populated: a 12px label above the 16px value. Pure CSS — <code class="tok">:focus-within</code> / <code class="tok">:placeholder-shown</code>.</span></div>
+      <div class="row"><b>States</b><span>hover border.strong · focus border.focus + blue label · disabled surface.disabled, faded · <b>read-only</b> white, full contrast, no hover · error <code class="tok">border.dangerStrong</code> (red.600 — the pale border.danger is Alert's).</span></div>
+      <div class="row"><b>Disabled vs read-only</b><span>Disabled = unavailable right now; faded, skipped by Tab, not submitted. Read-only = this value doesn't change here, but read it, select it, copy it; submitted. If nothing on the page is editable, show text (label + value), not fields.</span></div>
+      <div class="row"><b>Types</b><span>email / tel / url / search are <code class="tok">type</code> + <code class="tok">autocomplete</code> on this field, not variants. Password adds a reveal button. Numbers: a code or ID is <code class="tok">inputmode="numeric"</code>; a quantity with steps is NumberField — never <code class="tok">type="number"</code>.</span></div>
+      <div class="row"><b>Not an Input</b><span>File upload — the native "Choose file / No file chosen" can't be styled and shows no list or progress. It's its own component (a button or drop zone + Attachment rows), on the backlog.</span></div>
     </div>
-
-    <h2 class="big-section">CSS</h2>
-    <p class="section-desc">One <code class="tok">:root</code> block of color custom properties, then a base <code class="tok">.input</code> class + <code class="tok">--sm/--base/--lg</code> size modifiers, then state modifiers as plain classes (also wired to real <code class="tok">:hover</code> for bonus interactivity where it doesn't conflict with a specific demonstrated state).</p>
-    <pre class="code"><code>${esc(css)}</code></pre>
 
     <h2 class="big-section">Sizes</h2>
-    <p class="section-desc">sm shows the resting single-line layout (its only layout). base/lg shown populated, to demonstrate the floated label at each size.</p>
-    <div class="story-grid">
-      ${sizeStories()}
-    </div>
+    <div class="story-grid">${sizes.join("")}</div>
 
-    <h2 class="big-section">Content variants</h2>
-    <p class="section-desc">Base size, populated. Icon sizing/gap mirrors the button component's own convention (16/20/24px, flat 8px gap).</p>
-    <div class="story-grid">
-      ${contentStories()}
-    </div>
+    <h2 class="big-section">Content</h2>
+    <div class="story-grid">${content.join("")}</div>
 
     <h2 class="big-section">States</h2>
-    <p class="section-desc">Base size.</p>
-    <div class="story-grid">
-      ${stateStories()}
-    </div>
+    <div class="story-grid">${states.join("")}</div>
 
-    <p class="placeholder-note">Every code sample on this page is printed from the same resolved token values driving the live previews above it — copy it directly, nothing here is hand-typed.</p>
+    <h2 class="big-section">Types</h2>
+    <div class="story-grid">${types.join("")}</div>
+
+    <h2 class="big-section">CSS</h2>
+    <pre class="code"><code>${esc(css)}</code></pre>
   </main>
 </div>
+<script>
+${TEXT_FIELD_JS}
+</script>
 </body>
 </html>
 `;

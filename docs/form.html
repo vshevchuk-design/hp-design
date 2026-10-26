@@ -42,18 +42,21 @@
   --tok-border-strong: #adb5be;
   --tok-border-focus: #0468c4;
   --tok-text-primary: #0468c4;
-  --tok-border-danger: #febebd;
+  --tok-border-danger-strong: #c11435;
+  --tok-icon-default: #485462;
+  --tok-surface-disabled: #e6e8eb;
+  --tok-text-disabled: #adb5be;
+  --tok-icon-disabled: #adb5be;
+  --tok-surface-default: #ffffff;
   --tok-text-secondary: #5d6a7a;
   --tok-text-danger: #c11435;
   --tok-icon-danger: #de394b;
-  --tok-icon-default: #485462;
-  --tok-surface-default: #ffffff;
+  --tok-icon-secondary: #758191;
   --tok-fill-neutral-hover: #e6e8eb;
-  --tok-icon-disabled: #adb5be;
+  --tok-fill-neutral-active: #cdd1d6;
   --tok-fill-primary: #077fec;
   --tok-text-on-fill: #ffffff;
   --tok-bg-primary: #d9eaff;
-  --tok-text-disabled: #adb5be;
   --tok-fill-primary-hover: #0468c4;
   --tok-fill-primary-active: #01519c;
   --tok-fill-neutral: #e6e8eb;
@@ -63,20 +66,59 @@
   --tok-family-sans: 'Sora', sans-serif;
 }
 
-/* Text field — a real <input> on Input base. The label floats in at 12px on
-   focus or once there is a value; resting, the placeholder shows the label's
-   text and the label itself is kept for screen readers only. */
-.text-field { box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; gap: 0px; height: 40px; padding: 0 12px; background: var(--tok-surface-dim); border: 1px solid var(--tok-border-default); border-radius: 8px; cursor: text; font-family: var(--tok-family-sans); }
-.text-field:hover { background: var(--tok-surface-dim-hover); border-color: var(--tok-border-strong); }
-.text-field:focus-within { border-color: var(--tok-border-focus); }
-.text-field__label { color: var(--tok-text-muted); font-weight: 400; font-size: 12px; line-height: 1.2; cursor: text; }
-.text-field:focus-within .text-field__label { color: var(--tok-text-primary); }
-.text-field:not(:focus-within):has(.text-field__control:placeholder-shown) .text-field__label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+/* Text field — a real <input> on Input's recipe. base/lg float the label in at
+   12px on focus or once there is a value; resting, the placeholder shows the
+   label's text and the label itself is kept for screen readers only. sm never
+   floats (too short for two lines) — its label is screen-reader only. */
+.text-field { box-sizing: border-box; display: flex; align-items: center; background: var(--tok-surface-dim); border: 1px solid var(--tok-border-default); border-radius: 8px; cursor: text; font-family: var(--tok-family-sans); }
+.text-field__stack { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; }
+.text-field { height: 40px; padding: 0 12px; gap: 8px; }
+.text-field .text-field__icon { width: 20px; height: 20px; }
+.text-field .text-field__action { margin-inline-end: -8px; }
+.text-field .text-field__stack { gap: 0px; }
+.text-field .text-field__label { font-weight: 400; font-size: 12px; line-height: 1.2; }
+.text-field--sm { height: 32px; padding: 0 8px; gap: 8px; }
+.text-field--sm .text-field__icon { width: 16px; height: 16px; }
+.text-field--sm .text-field__action { margin-inline-end: -4px; }
+.text-field--lg { height: 48px; padding: 0 16px; gap: 8px; }
+.text-field--lg .text-field__icon { width: 24px; height: 24px; }
+.text-field--lg .text-field__action { margin-inline-end: -12px; }
+.text-field--lg .text-field__stack { gap: 4px; }
+.text-field--lg .text-field__label { font-weight: 400; font-size: 12px; line-height: 1.2; }
+.text-field__icon { flex-shrink: 0; color: var(--tok-icon-default); }
+.text-field__label { color: var(--tok-text-muted); cursor: text; }
 .text-field__control { box-sizing: border-box; width: 100%; margin: 0; padding: 0; border: none; outline: none; background: transparent; color: var(--tok-text-default); font-family: inherit; font-weight: 400; font-size: 16px; line-height: 1.2; }
 .text-field__control::placeholder { color: var(--tok-text-muted); opacity: 1; }
+.text-field:not(:focus-within):has(.text-field__control:placeholder-shown) .text-field__label,
+.text-field--sm .text-field__label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .text-field:focus-within .text-field__control::placeholder { color: transparent; }
+/* hover / focus — not on a disabled or read-only field */
+.text-field:not(:has(:disabled, [readonly])):hover { background: var(--tok-surface-dim-hover); border-color: var(--tok-border-strong); }
+.text-field:focus-within { border-color: var(--tok-border-focus); }
+.text-field:not(:has([readonly])):focus-within .text-field__label { color: var(--tok-text-primary); }
+/* disabled — unavailable right now: faded, not focusable */
+.text-field:has(.text-field__control:disabled) { background: var(--tok-surface-disabled); border-color: var(--tok-border-default); cursor: not-allowed; }
+.text-field:has(.text-field__control:disabled) .text-field__control { color: var(--tok-text-disabled); cursor: not-allowed; }
+.text-field:has(.text-field__control:disabled) .text-field__control::placeholder { color: var(--tok-text-disabled); }
+.text-field:has(.text-field__control:disabled) .text-field__label { color: var(--tok-text-disabled); }
+.text-field:has(.text-field__control:disabled) .text-field__icon { color: var(--tok-icon-disabled); }
+/* read-only — can't change, can read, select and copy: full contrast, no recessed fill */
+.text-field:has(.text-field__control[readonly]) { background: var(--tok-surface-default); border-color: var(--tok-border-default); cursor: default; }
+.text-field:has(.text-field__control[readonly]) .text-field__label { color: var(--tok-text-muted); }
+.text-field:has(.text-field__control[readonly]) .text-field__control { color: var(--tok-text-default); }
+/* error — set aria-invalid on the control (FORM_JS does) */
+.text-field:has(.text-field__control[aria-invalid="true"]), .text-field:has(.text-field__control[aria-invalid="true"]):hover { border-color: var(--tok-border-danger-strong); }
+/* trailing action (password reveal) — Button ghost sm icon-only, pulled to 4px from the edge */
+.text-field__action { flex-shrink: 0; box-sizing: border-box; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; padding: 0; border: none; border-radius: 8px; background: transparent; color: var(--tok-icon-secondary); cursor: pointer; }
+.text-field__action:hover { background: var(--tok-fill-neutral-hover); }
+.text-field__action:active { background: var(--tok-fill-neutral-active); }
+.text-field__action:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: -4px; }
+.text-field__action svg { width: 16px; height: 16px; }
+.text-field__action[aria-pressed="true"] .text-field__show, .text-field__action[aria-pressed="false"] .text-field__hide { display: none; }
+.text-field--sm .text-field__action { width: 24px; height: 24px; }
 /* Text area — the same field, growing downward; the label sits on top */
-.text-field--area { height: auto; min-height: 96px; justify-content: flex-start; padding-top: 8px; padding-bottom: 8px; }
+.text-field--area { height: auto; min-height: 96px; align-items: stretch; padding-top: 8px; padding-bottom: 8px; }
+.text-field--area .text-field__stack { justify-content: flex-start; }
 .text-field--area .text-field__control { flex: 1; min-height: 64px; resize: vertical; }
 
 /* Field — label (only for controls without a floating one), control, description, error */
@@ -87,9 +129,8 @@
 .field__error { margin: 0; display: flex; align-items: flex-start; gap: 4px; color: var(--tok-text-danger); font-weight: 400; font-size: 12px; line-height: 1.4; }
 .field__error[hidden] { display: none; }
 .field__error-icon { width: 16px; height: 16px; flex-shrink: 0; color: var(--tok-icon-danger); }
-/* invalid: the control takes Input's error border, on hover and focus too */
-.field[data-invalid] .text-field, .field[data-invalid] .text-field:hover, .field[data-invalid] .text-field:focus-within,
-.field[data-invalid] .datepicker__trigger, .field[data-invalid] .datepicker__trigger:hover, .field[data-invalid] .datepicker__trigger:focus-visible { border-color: var(--tok-border-danger); }
+/* invalid: a DatePicker takes Input's error border too (a text field does via aria-invalid) */
+.field[data-invalid] .datepicker__trigger, .field[data-invalid] .datepicker__trigger:hover, .field[data-invalid] .datepicker__trigger:focus-visible { border-color: var(--tok-border-danger-strong); }
 
 /* Form — one column, sections, actions under the last field */
 .form { display: flex; flex-direction: column; gap: 24px; max-width: 480px; margin: 0; font-family: var(--tok-family-sans); }
@@ -300,7 +341,7 @@
     <div class="story-grid">
       <div class="story"><h3>Default</h3><div class="story-preview"><form class="form" id="form-default">
 <div class="field" data-field data-error-required="Username is required.">
-  <div class="text-field"><label class="text-field__label" for="f1-username">Username</label><input class="text-field__control" id="f1-username" name="f1-username" placeholder="Username" autocomplete="username" aria-describedby="f1-username-desc f1-username-error" type="text" /></div>
+  <div class="text-field"><div class="text-field__stack"><label class="text-field__label" for="f1-username">Username</label><input class="text-field__control" id="f1-username" name="f1-username" placeholder="Username" autocomplete="username" aria-describedby="f1-username-desc f1-username-error" type="text" /></div></div>
   <p class="field__description" id="f1-username-desc">Your public display name.</p>
   <p class="field__error" id="f1-username-error" hidden><svg class="field__error-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg><span></span></p>
 </div>
@@ -309,7 +350,7 @@
 </form></div><p class="story-note">Username with a description. Not required — Submit goes through.</p></div>
       <div class="story"><h3>With validation</h3><div class="story-preview"><form class="form" id="form-validation">
 <div class="field" data-field data-required data-error-required="Username is required.">
-  <div class="text-field"><label class="text-field__label" for="f2-username">Username</label><input class="text-field__control" id="f2-username" name="f2-username" placeholder="Username" required autocomplete="username" aria-describedby="f2-username-desc f2-username-error" type="text" /></div>
+  <div class="text-field"><div class="text-field__stack"><label class="text-field__label" for="f2-username">Username</label><input class="text-field__control" id="f2-username" name="f2-username" placeholder="Username" required autocomplete="username" aria-describedby="f2-username-desc f2-username-error" type="text" /></div></div>
   <p class="field__description" id="f2-username-desc">Your public display name.</p>
   <p class="field__error" id="f2-username-error" hidden><svg class="field__error-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg><span></span></p>
 </div>
@@ -321,16 +362,16 @@
     <h2 class="big-section">Field states</h2>
     <div class="story-grid">
       <div class="story"><h3>Default</h3><div class="story-preview"><div class="field" data-field>
-  <div class="text-field"><label class="text-field__label" for="s1">Username</label><input class="text-field__control" id="s1" name="s1" placeholder="Username" aria-describedby="s1-error" type="text" /></div>
+  <div class="text-field"><div class="text-field__stack"><label class="text-field__label" for="s1">Username</label><input class="text-field__control" id="s1" name="s1" placeholder="Username" aria-describedby="s1-error" type="text" /></div></div>
   <p class="field__error" id="s1-error" hidden><svg class="field__error-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg><span></span></p>
 </div></div><p class="story-note">Floating label, nothing under the field.</p></div>
       <div class="story"><h3>With description</h3><div class="story-preview"><div class="field" data-field>
-  <div class="text-field"><label class="text-field__label" for="s2">Username</label><input class="text-field__control" id="s2" name="s2" placeholder="Username" aria-describedby="s2-desc s2-error" type="text" /></div>
+  <div class="text-field"><div class="text-field__stack"><label class="text-field__label" for="s2">Username</label><input class="text-field__control" id="s2" name="s2" placeholder="Username" aria-describedby="s2-desc s2-error" type="text" /></div></div>
   <p class="field__description" id="s2-desc">Your public display name.</p>
   <p class="field__error" id="s2-error" hidden><svg class="field__error-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg><span></span></p>
 </div></div><p class="story-note">4px under the field, body-sm · text.secondary.</p></div>
       <div class="story"><h3>Error</h3><div class="story-preview"><div class="field" data-field data-invalid>
-  <div class="text-field"><label class="text-field__label" for="s3">Username</label><input class="text-field__control" id="s3" name="s3" placeholder="Username" aria-describedby="s3-desc s3-error" type="text" /></div>
+  <div class="text-field"><div class="text-field__stack"><label class="text-field__label" for="s3">Username</label><input class="text-field__control" id="s3" name="s3" placeholder="Username" aria-describedby="s3-desc s3-error" type="text" /></div></div>
   <p class="field__description" id="s3-desc">Your public display name.</p>
   <p class="field__error" id="s3-error"><svg class="field__error-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg><span>Username is required.</span></p>
 </div></div><p class="story-note">Description stays; the error goes under it with its icon. Input's error border. The label stays text.default.</p></div>
@@ -344,7 +385,7 @@
   <p class="field__error" id="s4-trigger-error" hidden><svg class="field__error-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg><span></span></p>
 </div></div><p class="story-note">For a control with no floating label of its own — here a DatePicker. heading-sm, 8px above the control.</p></div>
       <div class="story"><h3>Optional</h3><div class="story-preview"><div class="field" data-field>
-  <div class="text-field text-field--area"><label class="text-field__label" for="s5">Notes (optional)</label><textarea class="text-field__control" id="s5" name="s5" placeholder="Notes (optional)" aria-describedby="s5-desc s5-error" rows="3"></textarea></div>
+  <div class="text-field text-field--area"><div class="text-field__stack"><label class="text-field__label" for="s5">Notes (optional)</label><textarea class="text-field__control" id="s5" name="s5" placeholder="Notes (optional)" aria-describedby="s5-desc s5-error" rows="3"></textarea></div></div>
   <p class="field__description" id="s5-desc">Anything your advisor should know before you meet.</p>
   <p class="field__error" id="s5-error" hidden><svg class="field__error-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg><span></span></p>
 </div></div><p class="story-note">Required is the norm and isn't marked — the rare optional field says so in its label.</p></div>
@@ -357,11 +398,11 @@
 <fieldset class="form__section">
   <legend class="form__section-title">Your details</legend>
   <div class="field" data-field data-required data-error-required="Enter your full name.">
-  <div class="text-field"><label class="text-field__label" for="b-name">Full name</label><input class="text-field__control" id="b-name" name="b-name" placeholder="Full name" required autocomplete="name" aria-describedby="b-name-error" type="text" /></div>
+  <div class="text-field"><div class="text-field__stack"><label class="text-field__label" for="b-name">Full name</label><input class="text-field__control" id="b-name" name="b-name" placeholder="Full name" required autocomplete="name" aria-describedby="b-name-error" type="text" /></div></div>
   <p class="field__error" id="b-name-error" hidden><svg class="field__error-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg><span></span></p>
 </div>
   <div class="field" data-field data-required data-error-required="Enter your email." data-error-format="Enter an email like name@school.edu.">
-  <div class="text-field"><label class="text-field__label" for="b-email">Email</label><input class="text-field__control" id="b-email" name="b-email" placeholder="Email" required autocomplete="email" aria-describedby="b-email-desc b-email-error" type="email" /></div>
+  <div class="text-field"><div class="text-field__stack"><label class="text-field__label" for="b-email">Email</label><input class="text-field__control" id="b-email" name="b-email" placeholder="Email" required autocomplete="email" aria-describedby="b-email-desc b-email-error" type="email" /></div></div>
   <p class="field__description" id="b-email-desc">Your school email — we send the confirmation there.</p>
   <p class="field__error" id="b-email-error" hidden><svg class="field__error-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg><span></span></p>
 </div>
@@ -377,7 +418,7 @@
   <p class="field__error" id="b-date-trigger-error" hidden><svg class="field__error-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg><span></span></p>
 </div>
   <div class="field" data-field>
-  <div class="text-field text-field--area"><label class="text-field__label" for="b-notes">Notes (optional)</label><textarea class="text-field__control" id="b-notes" name="b-notes" placeholder="Notes (optional)" aria-describedby="b-notes-desc b-notes-error" rows="3"></textarea></div>
+  <div class="text-field text-field--area"><div class="text-field__stack"><label class="text-field__label" for="b-notes">Notes (optional)</label><textarea class="text-field__control" id="b-notes" name="b-notes" placeholder="Notes (optional)" aria-describedby="b-notes-desc b-notes-error" rows="3"></textarea></div></div>
   <p class="field__description" id="b-notes-desc">Anything your advisor should know before you meet.</p>
   <p class="field__error" id="b-notes-error" hidden><svg class="field__error-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg><span></span></p>
 </div>
@@ -417,18 +458,21 @@
   --tok-border-strong: #adb5be;
   --tok-border-focus: #0468c4;
   --tok-text-primary: #0468c4;
-  --tok-border-danger: #febebd;
+  --tok-border-danger-strong: #c11435;
+  --tok-icon-default: #485462;
+  --tok-surface-disabled: #e6e8eb;
+  --tok-text-disabled: #adb5be;
+  --tok-icon-disabled: #adb5be;
+  --tok-surface-default: #ffffff;
   --tok-text-secondary: #5d6a7a;
   --tok-text-danger: #c11435;
   --tok-icon-danger: #de394b;
-  --tok-icon-default: #485462;
-  --tok-surface-default: #ffffff;
+  --tok-icon-secondary: #758191;
   --tok-fill-neutral-hover: #e6e8eb;
-  --tok-icon-disabled: #adb5be;
+  --tok-fill-neutral-active: #cdd1d6;
   --tok-fill-primary: #077fec;
   --tok-text-on-fill: #ffffff;
   --tok-bg-primary: #d9eaff;
-  --tok-text-disabled: #adb5be;
   --tok-fill-primary-hover: #0468c4;
   --tok-fill-primary-active: #01519c;
   --tok-fill-neutral: #e6e8eb;
@@ -438,20 +482,59 @@
   --tok-family-sans: 'Sora', sans-serif;
 }
 
-/* Text field — a real &lt;input&gt; on Input base. The label floats in at 12px on
-   focus or once there is a value; resting, the placeholder shows the label's
-   text and the label itself is kept for screen readers only. */
-.text-field { box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; gap: 0px; height: 40px; padding: 0 12px; background: var(--tok-surface-dim); border: 1px solid var(--tok-border-default); border-radius: 8px; cursor: text; font-family: var(--tok-family-sans); }
-.text-field:hover { background: var(--tok-surface-dim-hover); border-color: var(--tok-border-strong); }
-.text-field:focus-within { border-color: var(--tok-border-focus); }
-.text-field__label { color: var(--tok-text-muted); font-weight: 400; font-size: 12px; line-height: 1.2; cursor: text; }
-.text-field:focus-within .text-field__label { color: var(--tok-text-primary); }
-.text-field:not(:focus-within):has(.text-field__control:placeholder-shown) .text-field__label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+/* Text field — a real &lt;input&gt; on Input's recipe. base/lg float the label in at
+   12px on focus or once there is a value; resting, the placeholder shows the
+   label's text and the label itself is kept for screen readers only. sm never
+   floats (too short for two lines) — its label is screen-reader only. */
+.text-field { box-sizing: border-box; display: flex; align-items: center; background: var(--tok-surface-dim); border: 1px solid var(--tok-border-default); border-radius: 8px; cursor: text; font-family: var(--tok-family-sans); }
+.text-field__stack { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; }
+.text-field { height: 40px; padding: 0 12px; gap: 8px; }
+.text-field .text-field__icon { width: 20px; height: 20px; }
+.text-field .text-field__action { margin-inline-end: -8px; }
+.text-field .text-field__stack { gap: 0px; }
+.text-field .text-field__label { font-weight: 400; font-size: 12px; line-height: 1.2; }
+.text-field--sm { height: 32px; padding: 0 8px; gap: 8px; }
+.text-field--sm .text-field__icon { width: 16px; height: 16px; }
+.text-field--sm .text-field__action { margin-inline-end: -4px; }
+.text-field--lg { height: 48px; padding: 0 16px; gap: 8px; }
+.text-field--lg .text-field__icon { width: 24px; height: 24px; }
+.text-field--lg .text-field__action { margin-inline-end: -12px; }
+.text-field--lg .text-field__stack { gap: 4px; }
+.text-field--lg .text-field__label { font-weight: 400; font-size: 12px; line-height: 1.2; }
+.text-field__icon { flex-shrink: 0; color: var(--tok-icon-default); }
+.text-field__label { color: var(--tok-text-muted); cursor: text; }
 .text-field__control { box-sizing: border-box; width: 100%; margin: 0; padding: 0; border: none; outline: none; background: transparent; color: var(--tok-text-default); font-family: inherit; font-weight: 400; font-size: 16px; line-height: 1.2; }
 .text-field__control::placeholder { color: var(--tok-text-muted); opacity: 1; }
+.text-field:not(:focus-within):has(.text-field__control:placeholder-shown) .text-field__label,
+.text-field--sm .text-field__label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .text-field:focus-within .text-field__control::placeholder { color: transparent; }
+/* hover / focus — not on a disabled or read-only field */
+.text-field:not(:has(:disabled, [readonly])):hover { background: var(--tok-surface-dim-hover); border-color: var(--tok-border-strong); }
+.text-field:focus-within { border-color: var(--tok-border-focus); }
+.text-field:not(:has([readonly])):focus-within .text-field__label { color: var(--tok-text-primary); }
+/* disabled — unavailable right now: faded, not focusable */
+.text-field:has(.text-field__control:disabled) { background: var(--tok-surface-disabled); border-color: var(--tok-border-default); cursor: not-allowed; }
+.text-field:has(.text-field__control:disabled) .text-field__control { color: var(--tok-text-disabled); cursor: not-allowed; }
+.text-field:has(.text-field__control:disabled) .text-field__control::placeholder { color: var(--tok-text-disabled); }
+.text-field:has(.text-field__control:disabled) .text-field__label { color: var(--tok-text-disabled); }
+.text-field:has(.text-field__control:disabled) .text-field__icon { color: var(--tok-icon-disabled); }
+/* read-only — can't change, can read, select and copy: full contrast, no recessed fill */
+.text-field:has(.text-field__control[readonly]) { background: var(--tok-surface-default); border-color: var(--tok-border-default); cursor: default; }
+.text-field:has(.text-field__control[readonly]) .text-field__label { color: var(--tok-text-muted); }
+.text-field:has(.text-field__control[readonly]) .text-field__control { color: var(--tok-text-default); }
+/* error — set aria-invalid on the control (FORM_JS does) */
+.text-field:has(.text-field__control[aria-invalid="true"]), .text-field:has(.text-field__control[aria-invalid="true"]):hover { border-color: var(--tok-border-danger-strong); }
+/* trailing action (password reveal) — Button ghost sm icon-only, pulled to 4px from the edge */
+.text-field__action { flex-shrink: 0; box-sizing: border-box; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; padding: 0; border: none; border-radius: 8px; background: transparent; color: var(--tok-icon-secondary); cursor: pointer; }
+.text-field__action:hover { background: var(--tok-fill-neutral-hover); }
+.text-field__action:active { background: var(--tok-fill-neutral-active); }
+.text-field__action:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: -4px; }
+.text-field__action svg { width: 16px; height: 16px; }
+.text-field__action[aria-pressed="true"] .text-field__show, .text-field__action[aria-pressed="false"] .text-field__hide { display: none; }
+.text-field--sm .text-field__action { width: 24px; height: 24px; }
 /* Text area — the same field, growing downward; the label sits on top */
-.text-field--area { height: auto; min-height: 96px; justify-content: flex-start; padding-top: 8px; padding-bottom: 8px; }
+.text-field--area { height: auto; min-height: 96px; align-items: stretch; padding-top: 8px; padding-bottom: 8px; }
+.text-field--area .text-field__stack { justify-content: flex-start; }
 .text-field--area .text-field__control { flex: 1; min-height: 64px; resize: vertical; }
 
 /* Field — label (only for controls without a floating one), control, description, error */
@@ -462,9 +545,8 @@
 .field__error { margin: 0; display: flex; align-items: flex-start; gap: 4px; color: var(--tok-text-danger); font-weight: 400; font-size: 12px; line-height: 1.4; }
 .field__error[hidden] { display: none; }
 .field__error-icon { width: 16px; height: 16px; flex-shrink: 0; color: var(--tok-icon-danger); }
-/* invalid: the control takes Input's error border, on hover and focus too */
-.field[data-invalid] .text-field, .field[data-invalid] .text-field:hover, .field[data-invalid] .text-field:focus-within,
-.field[data-invalid] .datepicker__trigger, .field[data-invalid] .datepicker__trigger:hover, .field[data-invalid] .datepicker__trigger:focus-visible { border-color: var(--tok-border-danger); }
+/* invalid: a DatePicker takes Input's error border too (a text field does via aria-invalid) */
+.field[data-invalid] .datepicker__trigger, .field[data-invalid] .datepicker__trigger:hover, .field[data-invalid] .datepicker__trigger:focus-visible { border-color: var(--tok-border-danger-strong); }
 
 /* Form — one column, sections, actions under the last field */
 .form { display: flex; flex-direction: column; gap: 24px; max-width: 480px; margin: 0; font-family: var(--tok-family-sans); }
@@ -626,6 +708,18 @@ window.hpCalendar = window.hpCalendar || (function () {
       panel.style.top = top + "px";
       panel.style.left = Math.max(8, Math.min(r.left, vw - pr.width - 8)) + "px";
       cal.focus();
+    });
+  });
+})();
+(function () {
+  document.querySelectorAll("[data-reveal]").forEach(function (btn) {
+    if (btn._hpreveal) return; btn._hpreveal = true;
+    var input = document.getElementById(btn.getAttribute("aria-controls"));
+    btn.addEventListener("click", function () {
+      var show = input.type === "password";
+      input.type = show ? "text" : "password";
+      btn.setAttribute("aria-pressed", String(show));
+      btn.setAttribute("aria-label", show ? "Hide password" : "Show password");
     });
   });
 })();

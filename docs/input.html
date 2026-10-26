@@ -6,133 +6,118 @@
 <title>hp-design — Input</title>
 <link rel="stylesheet" href="../assets/fonts/sora/sora.css" />
 <style>
-  :root {
-    --bg-page: #f7f7f5; --bg-card: #ffffff; --bg-card-hover: #fbfbfa;
-    --border: #e4e3df; --border-strong: #d2d1cb;
-    --text-primary: #0e0e10; --text-secondary: #63625c; --text-muted: #918f87;
-    --accent: #0468c4; --accent-bg: #eff6ff;
-    --code-bg: #1e1e22; --code-text: #e4e3df;
-    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-    --sans: -apple-system, "Segoe UI", system-ui, sans-serif;
-    color-scheme: light;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root:where(:not([data-theme="light"])) {
-      --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327;
-      --border: #313035; --border-strong: #403f45;
-      --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68;
-      --accent: #5aa4ec; --accent-bg: #16283b;
-      --code-bg: #0d0d0f; --code-text: #d7d6d2;
-      color-scheme: dark;
-    }
-  }
-  :root[data-theme="dark"] {
-    --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327;
-    --border: #313035; --border-strong: #403f45;
-    --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68;
-    --accent: #5aa4ec; --accent-bg: #16283b;
-    --code-bg: #0d0d0f; --code-text: #d7d6d2;
-    color-scheme: dark;
-  }
-  * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg-page); color: var(--text-primary); font-family: var(--sans); }
+  :root { --bg-page: #f7f7f5; --bg-card: #ffffff; --bg-card-hover: #fbfbfa; --border: #e4e3df; --border-strong: #d2d1cb; --text-primary: #0e0e10; --text-secondary: #63625c; --text-muted: #918f87; --accent: #0468c4; --accent-bg: #eff6ff; --code-bg: #1e1e22; --code-text: #e4e3df; --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace; --sans: -apple-system, "Segoe UI", system-ui, sans-serif; color-scheme: light; }
+  @media (prefers-color-scheme: dark) { :root:where(:not([data-theme="light"])) { --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327; --border: #313035; --border-strong: #403f45; --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68; --accent: #5aa4ec; --accent-bg: #16283b; --code-bg: #0d0d0f; --code-text: #d7d6d2; color-scheme: dark; } }
+  :root[data-theme="dark"] { --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327; --border: #313035; --border-strong: #403f45; --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68; --accent: #5aa4ec; --accent-bg: #16283b; --code-bg: #0d0d0f; --code-text: #d7d6d2; color-scheme: dark; }
+  * { box-sizing: border-box; } body { margin: 0; background: var(--bg-page); color: var(--text-primary); font-family: var(--sans); }
   .shell { display: flex; min-height: 100vh; }
   nav.side { width: 220px; flex-shrink: 0; border-right: 0.5px solid var(--border); padding: 1.5rem 1rem; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
-  .brand { font-size: 14px; font-weight: 600; margin: 0 0 2px 8px; }
-  .brand-sub { font-size: 11.5px; color: var(--text-muted); margin: 0 0 1.5rem 8px; }
   .navlink { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 8px; border-radius: 7px; font-size: 13px; text-decoration: none; color: var(--text-primary); margin-bottom: 1px; }
-  .navlink:hover { background: var(--bg-card-hover); }
-  .navlink.active { background: var(--accent-bg); color: var(--accent); font-weight: 600; }
+  .navlink:hover { background: var(--bg-card-hover); } .navlink.active { background: var(--accent-bg); color: var(--accent); font-weight: 600; }
   .nav-category { font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin: 16px 8px 6px; }
-  main { flex: 1; padding: 4rem 4rem 6rem; max-width: 1120px; }
-
+  main { flex: 1; padding: 4rem 4rem 6rem; max-width: 1120px; min-width: 0; }
   h1 { font-size: 36px; font-weight: 700; margin: 0 0 10px; letter-spacing: -0.02em; }
   .sub { font-size: 14px; color: var(--text-secondary); margin: 0 0 2.5rem; }
   h2.big-section { font-size: 24px; font-weight: 700; margin: 5.5rem 0 1.5rem; letter-spacing: -0.01em; padding-top: 2.5rem; border-top: 1px solid var(--border); }
   h2.big-section:first-of-type { margin-top: 3rem; padding-top: 0; border-top: none; }
   .section-desc { font-size: 13.5px; color: var(--text-secondary); margin: -0.5rem 0 1.5rem; max-width: 68ch; line-height: 1.6; }
-
   .legend { font-size: 12.5px; color: var(--text-secondary); padding: 14px 18px; background: var(--bg-card); border: 0.5px solid var(--border); border-radius: 10px; margin-bottom: 1rem; line-height: 1.6; }
-  .legend .row { display: flex; gap: 14px; padding: 6px 0; border-bottom: 0.5px solid var(--border); }
-  .legend .row:last-child { border-bottom: none; }
-  .legend .row b { width: 150px; flex-shrink: 0; color: var(--text-primary); font-weight: 600; font-family: var(--mono); font-size: 11.5px; }
+  .legend .row { display: flex; gap: 14px; padding: 6px 0; border-bottom: 0.5px solid var(--border); } .legend .row:last-child { border-bottom: none; }
+  .legend .row b { width: 110px; flex-shrink: 0; color: var(--text-primary); font-weight: 600; font-family: var(--mono); font-size: 11.5px; }
   code.tok { font-family: var(--mono); font-size: 12px; color: var(--accent); }
-
-  pre.code { background: var(--code-bg); color: var(--code-text); border-radius: 10px; padding: 16px 18px; margin: 0; overflow-x: auto; font-family: var(--mono); font-size: 12px; line-height: 1.7; }
-  pre.code code { font-family: inherit; }
-
-  .story-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 28px; }
-  .story { border: 0.5px solid var(--border); border-radius: 14px; background: var(--bg-card); padding: 24px; display: flex; flex-direction: column; gap: 14px; }
+  pre.code { background: var(--code-bg); color: var(--code-text); border-radius: 10px; padding: 16px 18px; margin: 0; overflow-x: auto; font-family: var(--mono); font-size: 12px; line-height: 1.7; } pre.code code { font-family: inherit; }
+  .story-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; }
+  .story { border: 0.5px solid var(--border); border-radius: 14px; background: var(--bg-card); padding: 22px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+  .story--wide { grid-column: 1 / -1; }
   .story h3 { font-size: 14px; font-weight: 600; margin: 0; font-family: var(--mono); }
-  .story-preview { min-height: 64px; display: flex; align-items: center; justify-content: center; padding: 12px 0; }
-  .story-preview .input { width: 100%; max-width: 260px; }
+  .story-preview { padding: 8px 0; }
   .story-note { font-size: 11.5px; color: var(--text-muted); margin: 0; line-height: 1.5; }
-
-  .placeholder-note { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-muted); border: 0.5px dashed var(--border-strong); border-radius: 6px; padding: 4px 10px; margin-top: 1.5rem; }
-
+  @media (max-width: 760px) { .shell { display: block; } nav.side { display: none; } main { padding: 2rem 16px 4rem; } }
   :root {
-  --tok-surface-dim-hover: #e6e8eb;
-  --tok-surface-sunken: #e6e8eb;
   --tok-surface-dim: #f4f5f7;
-  --tok-surface-disabled: #e6e8eb;
   --tok-border-default: #dadde0;
-  --tok-border-strong: #adb5be;
-  --tok-border-focus: #0468c4;
-  --tok-border-danger: #febebd;
   --tok-text-muted: #758191;
   --tok-text-default: #121921;
-  --tok-text-disabled: #adb5be;
+  --tok-surface-dim-hover: #e6e8eb;
+  --tok-border-strong: #adb5be;
+  --tok-border-focus: #0468c4;
   --tok-text-primary: #0468c4;
+  --tok-border-danger-strong: #c11435;
   --tok-icon-default: #485462;
+  --tok-surface-disabled: #e6e8eb;
+  --tok-text-disabled: #adb5be;
   --tok-icon-disabled: #adb5be;
+  --tok-surface-default: #ffffff;
+  --tok-text-secondary: #5d6a7a;
+  --tok-text-danger: #c11435;
+  --tok-icon-danger: #de394b;
+  --tok-icon-secondary: #758191;
+  --tok-fill-neutral-hover: #e6e8eb;
+  --tok-fill-neutral-active: #cdd1d6;
   --tok-family-sans: 'Sora', sans-serif;
 }
 
-.input {
-  display: inline-flex;
-  align-items: center;
-  box-sizing: border-box;
-  background: var(--tok-surface-dim);
-  border: 1px solid var(--tok-border-default);
-  border-radius: 8px;
-  font-family: var(--tok-family-sans);
-  cursor: text;
-}
-.input__icon { flex-shrink: 0; color: var(--tok-icon-default); }
-.input__placeholder { color: var(--tok-text-muted); }
-.input__value { color: var(--tok-text-default); }
-.input__stack { display: flex; flex-direction: column; justify-content: center; }
-.input__label { color: var(--tok-text-muted); }
+/* Text field — a real <input> on Input's recipe. base/lg float the label in at
+   12px on focus or once there is a value; resting, the placeholder shows the
+   label's text and the label itself is kept for screen readers only. sm never
+   floats (too short for two lines) — its label is screen-reader only. */
+.text-field { box-sizing: border-box; display: flex; align-items: center; background: var(--tok-surface-dim); border: 1px solid var(--tok-border-default); border-radius: 8px; cursor: text; font-family: var(--tok-family-sans); }
+.text-field__stack { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; }
+.text-field { height: 40px; padding: 0 12px; gap: 8px; }
+.text-field .text-field__icon { width: 20px; height: 20px; }
+.text-field .text-field__action { margin-inline-end: -8px; }
+.text-field .text-field__stack { gap: 0px; }
+.text-field .text-field__label { font-weight: 400; font-size: 12px; line-height: 1.2; }
+.text-field--sm { height: 32px; padding: 0 8px; gap: 8px; }
+.text-field--sm .text-field__icon { width: 16px; height: 16px; }
+.text-field--sm .text-field__action { margin-inline-end: -4px; }
+.text-field--lg { height: 48px; padding: 0 16px; gap: 8px; }
+.text-field--lg .text-field__icon { width: 24px; height: 24px; }
+.text-field--lg .text-field__action { margin-inline-end: -12px; }
+.text-field--lg .text-field__stack { gap: 4px; }
+.text-field--lg .text-field__label { font-weight: 400; font-size: 12px; line-height: 1.2; }
+.text-field__icon { flex-shrink: 0; color: var(--tok-icon-default); }
+.text-field__label { color: var(--tok-text-muted); cursor: text; }
+.text-field__control { box-sizing: border-box; width: 100%; margin: 0; padding: 0; border: none; outline: none; background: transparent; color: var(--tok-text-default); font-family: inherit; font-weight: 400; font-size: 16px; line-height: 1.2; }
+.text-field__control::placeholder { color: var(--tok-text-muted); opacity: 1; }
+.text-field:not(:focus-within):has(.text-field__control:placeholder-shown) .text-field__label,
+.text-field--sm .text-field__label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.text-field:focus-within .text-field__control::placeholder { color: transparent; }
+/* hover / focus — not on a disabled or read-only field */
+.text-field:not(:has(:disabled, [readonly])):hover { background: var(--tok-surface-dim-hover); border-color: var(--tok-border-strong); }
+.text-field:focus-within { border-color: var(--tok-border-focus); }
+.text-field:not(:has([readonly])):focus-within .text-field__label { color: var(--tok-text-primary); }
+/* disabled — unavailable right now: faded, not focusable */
+.text-field:has(.text-field__control:disabled) { background: var(--tok-surface-disabled); border-color: var(--tok-border-default); cursor: not-allowed; }
+.text-field:has(.text-field__control:disabled) .text-field__control { color: var(--tok-text-disabled); cursor: not-allowed; }
+.text-field:has(.text-field__control:disabled) .text-field__control::placeholder { color: var(--tok-text-disabled); }
+.text-field:has(.text-field__control:disabled) .text-field__label { color: var(--tok-text-disabled); }
+.text-field:has(.text-field__control:disabled) .text-field__icon { color: var(--tok-icon-disabled); }
+/* read-only — can't change, can read, select and copy: full contrast, no recessed fill */
+.text-field:has(.text-field__control[readonly]) { background: var(--tok-surface-default); border-color: var(--tok-border-default); cursor: default; }
+.text-field:has(.text-field__control[readonly]) .text-field__label { color: var(--tok-text-muted); }
+.text-field:has(.text-field__control[readonly]) .text-field__control { color: var(--tok-text-default); }
+/* error — set aria-invalid on the control (FORM_JS does) */
+.text-field:has(.text-field__control[aria-invalid="true"]), .text-field:has(.text-field__control[aria-invalid="true"]):hover { border-color: var(--tok-border-danger-strong); }
+/* trailing action (password reveal) — Button ghost sm icon-only, pulled to 4px from the edge */
+.text-field__action { flex-shrink: 0; box-sizing: border-box; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; padding: 0; border: none; border-radius: 8px; background: transparent; color: var(--tok-icon-secondary); cursor: pointer; }
+.text-field__action:hover { background: var(--tok-fill-neutral-hover); }
+.text-field__action:active { background: var(--tok-fill-neutral-active); }
+.text-field__action:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: -4px; }
+.text-field__action svg { width: 16px; height: 16px; }
+.text-field__action[aria-pressed="true"] .text-field__show, .text-field__action[aria-pressed="false"] .text-field__hide { display: none; }
+.text-field--sm .text-field__action { width: 24px; height: 24px; }
+/* Text area — the same field, growing downward; the label sits on top */
+.text-field--area { height: auto; min-height: 96px; align-items: stretch; padding-top: 8px; padding-bottom: 8px; }
+.text-field--area .text-field__stack { justify-content: flex-start; }
+.text-field--area .text-field__control { flex: 1; min-height: 64px; resize: vertical; }
 
-.input--sm { height: 32px; padding: 0 8px; gap: 8px; }
-.input--sm .input__icon { width: 16px; height: 16px; }
-.input--sm .input__placeholder, .input--sm .input__value { font-weight: 400; font-size: 16px; line-height: 1.2; }
 
-.input--base { height: 40px; padding: 0 12px; gap: 8px; }
-.input--base .input__icon { width: 20px; height: 20px; }
-.input--base .input__placeholder, .input--base .input__value { font-weight: 400; font-size: 16px; line-height: 1.2; }
-.input--base .input__stack { gap: 0px; }
-.input--base .input__label { font-weight: 400; font-size: 12px; line-height: 1.2; }
-
-.input--lg { height: 48px; padding: 0 16px; gap: 8px; }
-.input--lg .input__icon { width: 24px; height: 24px; }
-.input--lg .input__placeholder, .input--lg .input__value { font-weight: 400; font-size: 16px; line-height: 1.2; }
-.input--lg .input__stack { gap: 4px; }
-.input--lg .input__label { font-weight: 400; font-size: 12px; line-height: 1.2; }
-
-.input:not(.input--disabled):hover, .input--hover { background: var(--tok-surface-dim-hover); border-color: var(--tok-border-strong); }
-.input--focus { border-color: var(--tok-border-focus); }
-.input--focus .input__label { color: var(--tok-text-primary); }
-.input--disabled { background: var(--tok-surface-disabled); cursor: not-allowed; }
-.input--disabled .input__placeholder, .input--disabled .input__value, .input--disabled .input__label { color: var(--tok-text-disabled); }
-.input--disabled .input__icon { color: var(--tok-icon-disabled); }
-.input--error { border-color: var(--tok-border-danger); }
 </style>
 </head>
 <body>
 <div class="shell">
-  <nav class="side">
-    <style>
+  <nav class="side"><style>
   .nav-logo { color: var(--text-primary); margin: 2px 0 16px 8px; }
   .nav-logo svg { display: block; }
   .nav-pane .brand { margin: 12px 0 10px 8px; }
@@ -255,173 +240,194 @@
       document.querySelectorAll(".nav-pane").forEach((p) => p.classList.toggle("active", p.dataset.pane === tab.dataset.pane));
     });
   });
-</script>
-  </nav>
+</script></nav>
   <main>
     <h1>Input</h1>
-    <p class="sub">tokens/components/input.tokens.json · generated — the CSS below is generated from the same resolved tokens driving every preview on this page, not hand-copied. Colors are CSS custom properties, not literal hex.</p>
+    <p class="sub">tokens/components/input.tokens.json · generated — every preview is the real field from <code class="tok">tools/lib/field.mjs</code>, the one <a href="form.html">Form</a> uses: hover it, click it, type.</p>
 
     <div class="legend">
-      <div class="row"><b>Fill + border</b><span>surface.sunken bg + border.default hairline — both already documented for exactly this ("Inputs...recessed" / "input borders at rest") from the semantic-color session, before this component existed. Not a pure outline, not a pure fill — both together.</span></div>
-      <div class="row"><b>Sizes</b><span>sm 32px (no floating label) / base 40px (default) / lg 48px. Value/placeholder text is 16px at every size — Safari on iOS auto-zooms the page on focus if it's smaller.</span></div>
-      <div class="row"><b>Floating label</b><span>base/lg only. Resting (empty, unfocused): one centered 16px placeholder line. Focused or populated: splits into a 12px label above the 16px value, vertically centered as a group via flexbox rather than hand-computed padding.</span></div>
-      <div class="row"><b>States</b><span>default → border.default · hover → border.strong · focus → border.focus + label turns text.primary (blue) · populated → colors revert to default, only the layout (label floated) persists · disabled → surface.disabled + *.disabled text/icon · error → border.danger.</span></div>
+      <div class="row"><b>Fill + border</b><span>surface.dim fill + border.default hairline at rest — a recessed place to type.</span></div>
+      <div class="row"><b>Sizes</b><span>sm 32px (no floating label) / base 40px (default) / lg 48px. Value text is 16px at every size — Safari on iOS zooms the page on focus if it's smaller.</span></div>
+      <div class="row"><b>Floating label</b><span>base/lg. Resting: the placeholder shows the label's text; the &lt;label&gt; is kept for screen readers. Focused or populated: a 12px label above the 16px value. Pure CSS — <code class="tok">:focus-within</code> / <code class="tok">:placeholder-shown</code>.</span></div>
+      <div class="row"><b>States</b><span>hover border.strong · focus border.focus + blue label · disabled surface.disabled, faded · <b>read-only</b> white, full contrast, no hover · error <code class="tok">border.dangerStrong</code> (red.600 — the pale border.danger is Alert's).</span></div>
+      <div class="row"><b>Disabled vs read-only</b><span>Disabled = unavailable right now; faded, skipped by Tab, not submitted. Read-only = this value doesn't change here, but read it, select it, copy it; submitted. If nothing on the page is editable, show text (label + value), not fields.</span></div>
+      <div class="row"><b>Types</b><span>email / tel / url / search are <code class="tok">type</code> + <code class="tok">autocomplete</code> on this field, not variants. Password adds a reveal button. Numbers: a code or ID is <code class="tok">inputmode="numeric"</code>; a quantity with steps is NumberField — never <code class="tok">type="number"</code>.</span></div>
+      <div class="row"><b>Not an Input</b><span>File upload — the native "Choose file / No file chosen" can't be styled and shows no list or progress. It's its own component (a button or drop zone + Attachment rows), on the backlog.</span></div>
     </div>
 
+    <h2 class="big-section">Sizes</h2>
+    <div class="story-grid"><div class="story"><h3>sm — 32px</h3><div class="story-preview"><div class="text-field text-field--sm"><div class="text-field__stack"><label class="text-field__label" for="i-sm">Search classes</label><input class="text-field__control" id="i-sm" name="i-sm" placeholder="Search classes" type="text" /></div></div></div><pre class="code"><code>&lt;div class="text-field text-field--sm"&gt;
+&lt;div class="text-field__stack"&gt;
+&lt;label class="text-field__label" for="i-sm"&gt;Search classes&lt;/label&gt;
+&lt;input class="text-field__control" id="i-sm" name="i-sm" placeholder="Search classes" type="text" /&gt;
+&lt;/div&gt;
+&lt;/div&gt;</code></pre><p class="story-note">No floating label — too short for two lines. The label is there for screen readers; the placeholder carries it on screen.</p></div><div class="story"><h3>base — 40px</h3><div class="story-preview"><div class="text-field"><div class="text-field__stack"><label class="text-field__label" for="i-base">Email</label><input class="text-field__control" id="i-base" name="i-base" placeholder="Email" autocomplete="email" type="email" value="name@school.edu" /></div></div></div><pre class="code"><code>&lt;div class="text-field"&gt;
+&lt;div class="text-field__stack"&gt;
+&lt;label class="text-field__label" for="i-base"&gt;Email&lt;/label&gt;
+&lt;input class="text-field__control" id="i-base" name="i-base" placeholder="Email" autocomplete="email" type="email" value="name@school.edu" /&gt;
+&lt;/div&gt;
+&lt;/div&gt;</code></pre><p class="story-note">The default. Populated: the label floats to 12px above the 16px value.</p></div><div class="story"><h3>lg — 48px</h3><div class="story-preview"><div class="text-field text-field--lg"><div class="text-field__stack"><label class="text-field__label" for="i-lg">Email</label><input class="text-field__control" id="i-lg" name="i-lg" placeholder="Email" autocomplete="email" type="email" value="name@school.edu" /></div></div></div><pre class="code"><code>&lt;div class="text-field text-field--lg"&gt;
+&lt;div class="text-field__stack"&gt;
+&lt;label class="text-field__label" for="i-lg"&gt;Email&lt;/label&gt;
+&lt;input class="text-field__control" id="i-lg" name="i-lg" placeholder="Email" autocomplete="email" type="email" value="name@school.edu" /&gt;
+&lt;/div&gt;
+&lt;/div&gt;</code></pre></div></div>
+
+    <h2 class="big-section">Content</h2>
+    <div class="story-grid"><div class="story"><h3>Value only</h3><div class="story-preview"><div class="text-field"><div class="text-field__stack"><label class="text-field__label" for="i-v">Full name</label><input class="text-field__control" id="i-v" name="i-v" placeholder="Full name" autocomplete="name" type="text" value="Ana Diaz" /></div></div></div><pre class="code"><code>&lt;div class="text-field"&gt;
+&lt;div class="text-field__stack"&gt;
+&lt;label class="text-field__label" for="i-v"&gt;Full name&lt;/label&gt;
+&lt;input class="text-field__control" id="i-v" name="i-v" placeholder="Full name" autocomplete="name" type="text" value="Ana Diaz" /&gt;
+&lt;/div&gt;
+&lt;/div&gt;</code></pre></div><div class="story"><h3>Icon left</h3><div class="story-preview"><div class="text-field"><svg class="text-field__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg><div class="text-field__stack"><label class="text-field__label" for="i-ic">Search</label><input class="text-field__control" id="i-ic" name="i-ic" placeholder="Search" type="search" /></div></div></div><pre class="code"><code>&lt;div class="text-field"&gt;…&lt;div class="text-field__stack"&gt;
+&lt;label class="text-field__label" for="i-ic"&gt;Search&lt;/label&gt;
+&lt;input class="text-field__control" id="i-ic" name="i-ic" placeholder="Search" type="search" /&gt;
+&lt;/div&gt;
+&lt;/div&gt;</code></pre><p class="story-note">Icon sizes follow Button's — 16 / 20 / 24 at sm / base / lg, 8px gap.</p></div></div>
+
+    <h2 class="big-section">States</h2>
+    <div class="story-grid"><div class="story"><h3>Default</h3><div class="story-preview"><div class="text-field"><div class="text-field__stack"><label class="text-field__label" for="s-def">Full name</label><input class="text-field__control" id="s-def" name="s-def" placeholder="Full name" type="text" /></div></div></div><pre class="code"><code>&lt;div class="text-field"&gt;
+&lt;div class="text-field__stack"&gt;
+&lt;label class="text-field__label" for="s-def"&gt;Full name&lt;/label&gt;
+&lt;input class="text-field__control" id="s-def" name="s-def" placeholder="Full name" type="text" /&gt;
+&lt;/div&gt;
+&lt;/div&gt;</code></pre><p class="story-note">Empty, not focused: one 16px placeholder line. Hover it (border.strong) and click it (border.focus, the label floats in blue).</p></div><div class="story"><h3>Populated</h3><div class="story-preview"><div class="text-field"><div class="text-field__stack"><label class="text-field__label" for="s-pop">Full name</label><input class="text-field__control" id="s-pop" name="s-pop" placeholder="Full name" type="text" value="Ana Diaz" /></div></div></div><pre class="code"><code>&lt;div class="text-field"&gt;
+&lt;div class="text-field__stack"&gt;
+&lt;label class="text-field__label" for="s-pop"&gt;Full name&lt;/label&gt;
+&lt;input class="text-field__control" id="s-pop" name="s-pop" placeholder="Full name" type="text" value="Ana Diaz" /&gt;
+&lt;/div&gt;
+&lt;/div&gt;</code></pre><p class="story-note">The label stays floated; every colour is back to rest.</p></div><div class="story"><h3>Disabled</h3><div class="story-preview"><div class="text-field"><div class="text-field__stack"><label class="text-field__label" for="s-dis">Room</label><input class="text-field__control" id="s-dis" name="s-dis" placeholder="Room" disabled type="text" /></div></div></div><pre class="code"><code>&lt;div class="text-field"&gt;
+&lt;div class="text-field__stack"&gt;
+&lt;label class="text-field__label" for="s-dis"&gt;Room&lt;/label&gt;
+&lt;input class="text-field__control" id="s-dis" name="s-dis" placeholder="Room" disabled type="text" /&gt;
+&lt;/div&gt;
+&lt;/div&gt;</code></pre><p class="story-note">Unavailable right now — e.g. until a building is chosen. Faded, skipped by Tab, not submitted.</p></div><div class="story"><h3>Read-only</h3><div class="story-preview"><div class="text-field"><div class="text-field__stack"><label class="text-field__label" for="s-ro">Student ID</label><input class="text-field__control" id="s-ro" name="s-ro" placeholder="Student ID" readonly type="text" value="A00123456" /></div></div></div><pre class="code"><code>&lt;div class="text-field"&gt;
+&lt;div class="text-field__stack"&gt;
+&lt;label class="text-field__label" for="s-ro"&gt;Student ID&lt;/label&gt;
+&lt;input class="text-field__control" id="s-ro" name="s-ro" placeholder="Student ID" readonly type="text" value="A00123456" /&gt;
+&lt;/div&gt;
+&lt;/div&gt;</code></pre><p class="story-note">Can't change, can read, select and copy. Full-contrast text on white (no recessed fill), no hover, focusable, submitted with the form.</p></div><div class="story"><h3>Error</h3><div class="story-preview"><div class="text-field"><div class="text-field__stack"><label class="text-field__label" for="s-err">Email</label><input class="text-field__control" id="s-err" name="s-err" placeholder="Email" aria-invalid="true" type="email" value="name@school" /></div></div></div><pre class="code"><code>&lt;div class="text-field"&gt;
+&lt;div class="text-field__stack"&gt;
+&lt;label class="text-field__label" for="s-err"&gt;Email&lt;/label&gt;
+&lt;input class="text-field__control" id="s-err" name="s-err" placeholder="Email" aria-invalid="true" type="email" value="name@school" /&gt;
+&lt;/div&gt;
+&lt;/div&gt;</code></pre><p class="story-note">aria-invalid="true" → border.dangerStrong (red.600). In a form the message goes under it — see <a href="form.html">Form</a>.</p></div></div>
+
+    <h2 class="big-section">Types</h2>
+    <div class="story-grid"><div class="story"><h3>Email</h3><div class="story-preview"><div class="text-field"><div class="text-field__stack"><label class="text-field__label" for="t-email">Email</label><input class="text-field__control" id="t-email" name="t-email" placeholder="Email" autocomplete="email" type="email" /></div></div></div><pre class="code"><code>&lt;div class="text-field"&gt;
+&lt;div class="text-field__stack"&gt;
+&lt;label class="text-field__label" for="t-email"&gt;Email&lt;/label&gt;
+&lt;input class="text-field__control" id="t-email" name="t-email" placeholder="Email" autocomplete="email" type="email" /&gt;
+&lt;/div&gt;
+&lt;/div&gt;</code></pre><p class="story-note">type="email" + autocomplete="email": the @ keyboard on a phone, autofill. Not a variant — the same field.</p></div><div class="story"><h3>Password</h3><div class="story-preview"><div class="text-field"><div class="text-field__stack"><label class="text-field__label" for="t-pw">Password</label><input class="text-field__control" id="t-pw" name="t-pw" placeholder="Password" autocomplete="current-password" type="password" value="correct-horse" /></div><button class="text-field__action" type="button" aria-label="Show password" aria-pressed="false" aria-controls="t-pw" data-reveal><svg class="text-field__show" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg><svg class="text-field__hide" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0zm0 0h24v24H0zm0 0h24v24H0zm0 0h24v24H0z" fill="none"/><path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"/></svg></button></div></div><pre class="code"><code>&lt;div class="text-field"&gt;
+&lt;div class="text-field__stack"&gt;
+&lt;label class="text-field__label" for="t-pw"&gt;Password&lt;/label&gt;
+&lt;input class="text-field__control" id="t-pw" name="t-pw" placeholder="Password" autocomplete="current-password" type="password" value="correct-horse" /&gt;
+&lt;/div&gt;
+&lt;button class="text-field__action" type="button" aria-label="Show password" aria-pressed="false" aria-controls="t-pw" data-reveal&gt;……&lt;/button&gt;
+&lt;/div&gt;</code></pre><p class="story-note">A reveal button at the trailing edge — Button ghost sm icon-only. Its label says what the next press does.</p></div><div class="story"><h3>Numeric code</h3><div class="story-preview"><div class="text-field"><div class="text-field__stack"><label class="text-field__label" for="t-num">Student ID</label><input class="text-field__control" id="t-num" name="t-num" placeholder="Student ID" autocomplete="off" inputmode="numeric" type="text" /></div></div></div><pre class="code"><code>&lt;div class="text-field"&gt;
+&lt;div class="text-field__stack"&gt;
+&lt;label class="text-field__label" for="t-num"&gt;Student ID&lt;/label&gt;
+&lt;input class="text-field__control" id="t-num" name="t-num" placeholder="Student ID" autocomplete="off" inputmode="numeric" type="text" /&gt;
+&lt;/div&gt;
+&lt;/div&gt;</code></pre><p class="story-note">inputmode="numeric" — digits keyboard, still a text field. Not type="number": its spinners are tiny, the scroll wheel changes it and it accepts "e". A quantity with steps is NumberField.</p></div></div>
+
     <h2 class="big-section">CSS</h2>
-    <p class="section-desc">One <code class="tok">:root</code> block of color custom properties, then a base <code class="tok">.input</code> class + <code class="tok">--sm/--base/--lg</code> size modifiers, then state modifiers as plain classes (also wired to real <code class="tok">:hover</code> for bonus interactivity where it doesn't conflict with a specific demonstrated state).</p>
     <pre class="code"><code>:root {
-  --tok-surface-dim-hover: #e6e8eb;
-  --tok-surface-sunken: #e6e8eb;
   --tok-surface-dim: #f4f5f7;
-  --tok-surface-disabled: #e6e8eb;
   --tok-border-default: #dadde0;
-  --tok-border-strong: #adb5be;
-  --tok-border-focus: #0468c4;
-  --tok-border-danger: #febebd;
   --tok-text-muted: #758191;
   --tok-text-default: #121921;
-  --tok-text-disabled: #adb5be;
+  --tok-surface-dim-hover: #e6e8eb;
+  --tok-border-strong: #adb5be;
+  --tok-border-focus: #0468c4;
   --tok-text-primary: #0468c4;
+  --tok-border-danger-strong: #c11435;
   --tok-icon-default: #485462;
+  --tok-surface-disabled: #e6e8eb;
+  --tok-text-disabled: #adb5be;
   --tok-icon-disabled: #adb5be;
+  --tok-surface-default: #ffffff;
+  --tok-text-secondary: #5d6a7a;
+  --tok-text-danger: #c11435;
+  --tok-icon-danger: #de394b;
+  --tok-icon-secondary: #758191;
+  --tok-fill-neutral-hover: #e6e8eb;
+  --tok-fill-neutral-active: #cdd1d6;
   --tok-family-sans: 'Sora', sans-serif;
 }
 
-.input {
-  display: inline-flex;
-  align-items: center;
-  box-sizing: border-box;
-  background: var(--tok-surface-dim);
-  border: 1px solid var(--tok-border-default);
-  border-radius: 8px;
-  font-family: var(--tok-family-sans);
-  cursor: text;
-}
-.input__icon { flex-shrink: 0; color: var(--tok-icon-default); }
-.input__placeholder { color: var(--tok-text-muted); }
-.input__value { color: var(--tok-text-default); }
-.input__stack { display: flex; flex-direction: column; justify-content: center; }
-.input__label { color: var(--tok-text-muted); }
+/* Text field — a real &lt;input&gt; on Input's recipe. base/lg float the label in at
+   12px on focus or once there is a value; resting, the placeholder shows the
+   label's text and the label itself is kept for screen readers only. sm never
+   floats (too short for two lines) — its label is screen-reader only. */
+.text-field { box-sizing: border-box; display: flex; align-items: center; background: var(--tok-surface-dim); border: 1px solid var(--tok-border-default); border-radius: 8px; cursor: text; font-family: var(--tok-family-sans); }
+.text-field__stack { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; }
+.text-field { height: 40px; padding: 0 12px; gap: 8px; }
+.text-field .text-field__icon { width: 20px; height: 20px; }
+.text-field .text-field__action { margin-inline-end: -8px; }
+.text-field .text-field__stack { gap: 0px; }
+.text-field .text-field__label { font-weight: 400; font-size: 12px; line-height: 1.2; }
+.text-field--sm { height: 32px; padding: 0 8px; gap: 8px; }
+.text-field--sm .text-field__icon { width: 16px; height: 16px; }
+.text-field--sm .text-field__action { margin-inline-end: -4px; }
+.text-field--lg { height: 48px; padding: 0 16px; gap: 8px; }
+.text-field--lg .text-field__icon { width: 24px; height: 24px; }
+.text-field--lg .text-field__action { margin-inline-end: -12px; }
+.text-field--lg .text-field__stack { gap: 4px; }
+.text-field--lg .text-field__label { font-weight: 400; font-size: 12px; line-height: 1.2; }
+.text-field__icon { flex-shrink: 0; color: var(--tok-icon-default); }
+.text-field__label { color: var(--tok-text-muted); cursor: text; }
+.text-field__control { box-sizing: border-box; width: 100%; margin: 0; padding: 0; border: none; outline: none; background: transparent; color: var(--tok-text-default); font-family: inherit; font-weight: 400; font-size: 16px; line-height: 1.2; }
+.text-field__control::placeholder { color: var(--tok-text-muted); opacity: 1; }
+.text-field:not(:focus-within):has(.text-field__control:placeholder-shown) .text-field__label,
+.text-field--sm .text-field__label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.text-field:focus-within .text-field__control::placeholder { color: transparent; }
+/* hover / focus — not on a disabled or read-only field */
+.text-field:not(:has(:disabled, [readonly])):hover { background: var(--tok-surface-dim-hover); border-color: var(--tok-border-strong); }
+.text-field:focus-within { border-color: var(--tok-border-focus); }
+.text-field:not(:has([readonly])):focus-within .text-field__label { color: var(--tok-text-primary); }
+/* disabled — unavailable right now: faded, not focusable */
+.text-field:has(.text-field__control:disabled) { background: var(--tok-surface-disabled); border-color: var(--tok-border-default); cursor: not-allowed; }
+.text-field:has(.text-field__control:disabled) .text-field__control { color: var(--tok-text-disabled); cursor: not-allowed; }
+.text-field:has(.text-field__control:disabled) .text-field__control::placeholder { color: var(--tok-text-disabled); }
+.text-field:has(.text-field__control:disabled) .text-field__label { color: var(--tok-text-disabled); }
+.text-field:has(.text-field__control:disabled) .text-field__icon { color: var(--tok-icon-disabled); }
+/* read-only — can't change, can read, select and copy: full contrast, no recessed fill */
+.text-field:has(.text-field__control[readonly]) { background: var(--tok-surface-default); border-color: var(--tok-border-default); cursor: default; }
+.text-field:has(.text-field__control[readonly]) .text-field__label { color: var(--tok-text-muted); }
+.text-field:has(.text-field__control[readonly]) .text-field__control { color: var(--tok-text-default); }
+/* error — set aria-invalid on the control (FORM_JS does) */
+.text-field:has(.text-field__control[aria-invalid="true"]), .text-field:has(.text-field__control[aria-invalid="true"]):hover { border-color: var(--tok-border-danger-strong); }
+/* trailing action (password reveal) — Button ghost sm icon-only, pulled to 4px from the edge */
+.text-field__action { flex-shrink: 0; box-sizing: border-box; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; padding: 0; border: none; border-radius: 8px; background: transparent; color: var(--tok-icon-secondary); cursor: pointer; }
+.text-field__action:hover { background: var(--tok-fill-neutral-hover); }
+.text-field__action:active { background: var(--tok-fill-neutral-active); }
+.text-field__action:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: -4px; }
+.text-field__action svg { width: 16px; height: 16px; }
+.text-field__action[aria-pressed="true"] .text-field__show, .text-field__action[aria-pressed="false"] .text-field__hide { display: none; }
+.text-field--sm .text-field__action { width: 24px; height: 24px; }
+/* Text area — the same field, growing downward; the label sits on top */
+.text-field--area { height: auto; min-height: 96px; align-items: stretch; padding-top: 8px; padding-bottom: 8px; }
+.text-field--area .text-field__stack { justify-content: flex-start; }
+.text-field--area .text-field__control { flex: 1; min-height: 64px; resize: vertical; }
 
-.input--sm { height: 32px; padding: 0 8px; gap: 8px; }
-.input--sm .input__icon { width: 16px; height: 16px; }
-.input--sm .input__placeholder, .input--sm .input__value { font-weight: 400; font-size: 16px; line-height: 1.2; }
-
-.input--base { height: 40px; padding: 0 12px; gap: 8px; }
-.input--base .input__icon { width: 20px; height: 20px; }
-.input--base .input__placeholder, .input--base .input__value { font-weight: 400; font-size: 16px; line-height: 1.2; }
-.input--base .input__stack { gap: 0px; }
-.input--base .input__label { font-weight: 400; font-size: 12px; line-height: 1.2; }
-
-.input--lg { height: 48px; padding: 0 16px; gap: 8px; }
-.input--lg .input__icon { width: 24px; height: 24px; }
-.input--lg .input__placeholder, .input--lg .input__value { font-weight: 400; font-size: 16px; line-height: 1.2; }
-.input--lg .input__stack { gap: 4px; }
-.input--lg .input__label { font-weight: 400; font-size: 12px; line-height: 1.2; }
-
-.input:not(.input--disabled):hover, .input--hover { background: var(--tok-surface-dim-hover); border-color: var(--tok-border-strong); }
-.input--focus { border-color: var(--tok-border-focus); }
-.input--focus .input__label { color: var(--tok-text-primary); }
-.input--disabled { background: var(--tok-surface-disabled); cursor: not-allowed; }
-.input--disabled .input__placeholder, .input--disabled .input__value, .input--disabled .input__label { color: var(--tok-text-disabled); }
-.input--disabled .input__icon { color: var(--tok-icon-disabled); }
-.input--error { border-color: var(--tok-border-danger); }</code></pre>
-
-    <h2 class="big-section">Sizes</h2>
-    <p class="section-desc">sm shows the resting single-line layout (its only layout). base/lg shown populated, to demonstrate the floated label at each size.</p>
-    <div class="story-grid">
-      
-      <div class="story">
-        <h3>sm — 32px</h3>
-        <div class="story-preview"><div class="input input--sm"><span class="input__placeholder">Email address</span></div></div>
-        <pre class="code"><code>&lt;div class="input input--sm"&gt;&lt;span class="input__placeholder"&gt;Email address&lt;/span&gt;&lt;/div&gt;</code></pre>
-        
-      </div>
-
-      <div class="story">
-        <h3>base — 40px</h3>
-        <div class="story-preview"><div class="input input--base"><div class="input__stack"><span class="input__label">Email address</span><span class="input__value">name@example.com</span></div></div></div>
-        <pre class="code"><code>&lt;div class="input input--base"&gt;&lt;div class="input__stack"&gt;&lt;span class="input__label"&gt;Email address&lt;/span&gt;&lt;span class="input__value"&gt;name@example.com&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;</code></pre>
-        
-      </div>
-
-      <div class="story">
-        <h3>lg — 48px</h3>
-        <div class="story-preview"><div class="input input--lg"><div class="input__stack"><span class="input__label">Email address</span><span class="input__value">name@example.com</span></div></div></div>
-        <pre class="code"><code>&lt;div class="input input--lg"&gt;&lt;div class="input__stack"&gt;&lt;span class="input__label"&gt;Email address&lt;/span&gt;&lt;span class="input__value"&gt;name@example.com&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;</code></pre>
-        
-      </div>
-    </div>
-
-    <h2 class="big-section">Content variants</h2>
-    <p class="section-desc">Base size, populated. Icon sizing/gap mirrors the button component's own convention (16/20/24px, flat 8px gap).</p>
-    <div class="story-grid">
-      
-      <div class="story">
-        <h3>Value only</h3>
-        <div class="story-preview"><div class="input input--base"><div class="input__stack"><span class="input__label">Email address</span><span class="input__value">name@example.com</span></div></div></div>
-        <pre class="code"><code>&lt;div class="input input--base"&gt;&lt;div class="input__stack"&gt;&lt;span class="input__label"&gt;Email address&lt;/span&gt;&lt;span class="input__value"&gt;name@example.com&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;</code></pre>
-        
-      </div>
-
-      <div class="story">
-        <h3>Icon left + value</h3>
-        <div class="story-preview"><div class="input input--base"><svg class="input__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg><div class="input__stack"><span class="input__label">Email address</span><span class="input__value">name@example.com</span></div></div></div>
-        <pre class="code"><code>&lt;div class="input input--base"&gt;&lt;svg class="input__icon"&gt;&lt;!-- icon: search --&gt;&lt;/svg&gt;&lt;div class="input__stack"&gt;&lt;span class="input__label"&gt;Email address&lt;/span&gt;&lt;span class="input__value"&gt;name@example.com&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;</code></pre>
-        
-      </div>
-    </div>
-
-    <h2 class="big-section">States</h2>
-    <p class="section-desc">Base size.</p>
-    <div class="story-grid">
-      
-      <div class="story">
-        <h3>default</h3>
-        <div class="story-preview"><div class="input input--base"><span class="input__placeholder">Email address</span></div></div>
-        <pre class="code"><code>&lt;div class="input input--base"&gt;&lt;span class="input__placeholder"&gt;Email address&lt;/span&gt;&lt;/div&gt;</code></pre>
-        <p class="story-note">Empty, not focused — placeholder centered at value size (16px), no floated label yet.</p>
-      </div>
-
-      <div class="story">
-        <h3>hover</h3>
-        <div class="story-preview"><div class="input input--base input--hover"><span class="input__placeholder">Email address</span></div></div>
-        <pre class="code"><code>&lt;div class="input input--base input--hover"&gt;&lt;span class="input__placeholder"&gt;Email address&lt;/span&gt;&lt;/div&gt;</code></pre>
-        <p class="story-note">border.strong — same rule already documented on that token before this component existed.</p>
-      </div>
-
-      <div class="story">
-        <h3>focus</h3>
-        <div class="story-preview"><div class="input input--base input--focus"><div class="input__stack"><span class="input__label">Email address</span><span class="input__value"></span></div></div></div>
-        <pre class="code"><code>&lt;div class="input input--base input--focus"&gt;&lt;div class="input__stack"&gt;&lt;span class="input__label"&gt;Email address&lt;/span&gt;&lt;span class="input__value"&gt;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;</code></pre>
-        <p class="story-note">Placeholder already floated into the label the instant the field is focused — value area starts empty, ready to type.</p>
-      </div>
-
-      <div class="story">
-        <h3>populated</h3>
-        <div class="story-preview"><div class="input input--base"><div class="input__stack"><span class="input__label">Email address</span><span class="input__value">name@example.com</span></div></div></div>
-        <pre class="code"><code>&lt;div class="input input--base"&gt;&lt;div class="input__stack"&gt;&lt;span class="input__label"&gt;Email address&lt;/span&gt;&lt;span class="input__value"&gt;name@example.com&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;</code></pre>
-        <p class="story-note">Has a value, not focused — label stays floated (layout doesn't revert) but every color returns to default.</p>
-      </div>
-
-      <div class="story">
-        <h3>disabled</h3>
-        <div class="story-preview"><div class="input input--base input--disabled"><span class="input__placeholder">Email address</span></div></div>
-        <pre class="code"><code>&lt;div class="input input--base input--disabled"&gt;&lt;span class="input__placeholder"&gt;Email address&lt;/span&gt;&lt;/div&gt;</code></pre>
-        <p class="story-note">surface.disabled equals surface.sunken (both gray.100) — same pattern as the secondary button's disabled state. Only text/icon fade.</p>
-      </div>
-
-      <div class="story">
-        <h3>error</h3>
-        <div class="story-preview"><div class="input input--base input--error"><div class="input__stack"><span class="input__label">Email address</span><span class="input__value">not-an-email</span></div></div></div>
-        <pre class="code"><code>&lt;div class="input input--base input--error"&gt;&lt;div class="input__stack"&gt;&lt;span class="input__label"&gt;Email address&lt;/span&gt;&lt;span class="input__value"&gt;not-an-email&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;</code></pre>
-        <p class="story-note">Scoped to the field's own border only — no separate helper-text element built here.</p>
-      </div>
-    </div>
-
-    <p class="placeholder-note">Every code sample on this page is printed from the same resolved token values driving the live previews above it — copy it directly, nothing here is hand-typed.</p>
+</code></pre>
   </main>
 </div>
+<script>
+(function () {
+  document.querySelectorAll("[data-reveal]").forEach(function (btn) {
+    if (btn._hpreveal) return; btn._hpreveal = true;
+    var input = document.getElementById(btn.getAttribute("aria-controls"));
+    btn.addEventListener("click", function () {
+      var show = input.type === "password";
+      input.type = show ? "text" : "password";
+      btn.setAttribute("aria-pressed", String(show));
+      btn.setAttribute("aria-label", show ? "Hide password" : "Show password");
+    });
+  });
+})();
+</script>
 </body>
 </html>

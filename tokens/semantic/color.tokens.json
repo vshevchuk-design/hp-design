@@ -79,7 +79,11 @@
       "$type": "color",
       "$value": "{color.gray.100}"
     },
-    "neutralStrong": { "$type": "color", "$value": "{color.gray.150}", "$description": "The neutral wash one step deeper. For small fills that must stay visible on the gray.100 surfaces — surface.sunken, fill.neutral (secondary buttons, segmented-tab tracks) and fill.neutralHover (a hovered table or list row) — where bg.neutral is the very same colour and disappears. First consumer: Badge neutral tint (2026-10-26)." },
+    "neutralStrong": {
+      "$type": "color",
+      "$value": "{color.gray.150}",
+      "$description": "The neutral wash one step deeper. For small fills that must stay visible on the gray.100 surfaces — surface.sunken, fill.neutral (secondary buttons, segmented-tab tracks) and fill.neutralHover (a hovered table or list row) — where bg.neutral is the very same colour and disappears. First consumer: Badge neutral tint (2026-10-26)."
+    },
     "ai": {
       "$type": "color",
       "$value": "{color.violet.100}",
@@ -114,6 +118,11 @@
     "danger": {
       "$type": "color",
       "$value": "{color.red.200}"
+    },
+    "dangerStrong": {
+      "$type": "color",
+      "$value": "{color.red.600}",
+      "$description": "A field's error border (Input, Select, DatePicker in error). border.danger (red.200) is the pale edge of a tinted Alert — on a field it fell under the 3:1 a control's boundary needs (WCAG 1.4.11) and read as decoration, not as 'this is wrong'. red.600 pairs with border.focus (blue.600): the two strong field signals at the same step. Added 2026-10-26."
     },
     "warning": {
       "$type": "color",

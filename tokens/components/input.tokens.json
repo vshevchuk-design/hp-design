@@ -1,7 +1,7 @@
 {
   "component": {
     "input": {
-      "$description": "Single-line text field. sm has no floating label — the placeholder simply vanishes on focus/when typing, same text stays 16px throughout (see $description on size.sm). base/lg float the placeholder into a 12px label above the value on focus or once populated. Value/placeholder text is 16px at every size, deliberately — Safari on iOS auto-zooms the page on focus if an input's font-size is under 16px; going smaller (e.g. matching the button's 14px body size) would trigger that on every mobile focus.",
+      "$description": "Single-line text field. sm has no floating label — the placeholder simply vanishes on focus/when typing, same text stays 16px throughout (see $description on size.sm). base/lg float the placeholder into a 12px label above the value on focus or once populated. Value/placeholder text is 16px at every size, deliberately — Safari on iOS auto-zooms the page on focus if an input's font-size is under 16px; going smaller (e.g. matching the button's 14px body size) would trigger that on every mobile focus. Read-only (2026-10-26): a value the user can see, select and copy but not change — Student ID, an SSO email, a computed total — full-contrast text on surface.default (no recessed fill, so it stops looking like something to type into), no hover, focusable, submitted with the form; not disabled, which means 'unavailable right now', fades the text and is skipped by focus. Types: email/tel/url/search are type + autocomplete on this same field (the right keyboard on a phone), not variants; password gets a reveal button (Button ghost sm icon-only, visibility / visibility_off) at the trailing edge; number is NOT type=number (tiny spinners, the scroll wheel changes it, accepts 'e') — a code or ID is inputmode=numeric, a quantity with steps is NumberField. File upload is not an Input (its own component, backlog).",
       "radius": {
         "$type": "dimension",
         "$value": "{radius.default}"
@@ -203,10 +203,30 @@
           },
           "$description": "surface.disabled and surface.sunken are both {color.gray.100} — same value, same pattern as fill.disabled==fill.neutral on the secondary button. Disabled doesn't change the background, only the text/icon/label fading out."
         },
+        "readOnly": {
+          "bg": {
+            "$type": "color",
+            "$value": "{surface.default}",
+            "$description": "White, not the recessed surface.dim — the field stops reading as a place to type."
+          },
+          "border": {
+            "$type": "color",
+            "$value": "{border.default}"
+          },
+          "label": {
+            "$type": "color",
+            "$value": "{text.muted}"
+          },
+          "value": {
+            "$type": "color",
+            "$value": "{text.default}",
+            "$description": "Full contrast — the whole point versus disabled."
+          }
+        },
         "error": {
           "border": {
             "$type": "color",
-            "$value": "{border.danger}"
+            "$value": "{border.dangerStrong}"
           },
           "$description": "Scoped to the field's own border only — a separate helper/error-message text element below the field isn't built here, wasn't asked for."
         }

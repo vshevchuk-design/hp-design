@@ -62,7 +62,7 @@ const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, 
 const hoverBgRole = select.state.hover.bg.$value.replace(/[{}]/g, "");
 const colorPaths = [
   "surface.dimHover",
-  "surface.sunken", "surface.dim", "surface.disabled", "border.default", "border.strong", "border.focus", "border.danger",
+  "surface.sunken", "surface.dim", "surface.disabled", "border.default", "border.strong", "border.focus", "border.danger", "border.dangerStrong",
   "text.muted", "text.default", "text.disabled", "text.primary", "icon.default", "icon.disabled",
 ];
 const colorValue = Object.fromEntries(colorPaths.map((p) => [p, resolve(p)]));
@@ -135,7 +135,7 @@ ${sizes
 .select--disabled { background: ${cv("surface.disabled")}; cursor: not-allowed; }
 .select--disabled .select__placeholder, .select--disabled .select__value, .select--disabled .select__label { color: ${cv("text.disabled")}; }
 .select--disabled .select__icon, .select--disabled .select__chevron { color: ${cv("icon.disabled")}; }
-.select--error { border-color: ${cv("border.danger")}; }`;
+.select--error { border-color: ${cv("border.dangerStrong")}; }`;
 
 function restingMarkup(size, { icon = false, placeholder = "Country", live = true } = {}) {
   const ic = icon ? (live ? iconSearch : `<svg class="select__icon"><!-- icon: search --></svg>`) : "";

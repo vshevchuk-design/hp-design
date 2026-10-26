@@ -9,7 +9,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { renderNav } from "./lib/nav.mjs";
 import { cssVarName, renderRootVars } from "./lib/css-vars.mjs";
-import { FIELD_COLOR_PATHS, FIELD_CSS, FORM_JS, fieldHtml, textFieldHtml, describedBy } from "./lib/field.mjs";
+import { FIELD_COLOR_PATHS, FIELD_CSS, FORM_JS, TEXT_FIELD_JS, fieldHtml, textFieldHtml, describedBy } from "./lib/field.mjs";
 import { CALENDAR_CSS, CALENDAR_JS } from "./lib/calendar.mjs";
 import { DATE_PICKER_CSS, DATE_PICKER_COLOR_PATHS, DATE_PICKER_JS, datePickerHtml } from "./lib/date-picker.mjs";
 
@@ -194,6 +194,7 @@ const html = `<!doctype html>
 <script>
 ${CALENDAR_JS}
 ${DATE_PICKER_JS}
+${TEXT_FIELD_JS}
 ${FORM_JS}
 ${statusScript}
 </script>

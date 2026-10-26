@@ -66,27 +66,72 @@ const icon = (name, cls) =>
 const base = input.size.base, st = input.state;
 const colorNodes = [
   st.default.bg, st.default.border, st.default.placeholder, st.default.value, st.hover.bg, st.hover.border, st.focus.border, st.focus.label, st.populated.label, st.error.border,
+  st.default.icon, st.disabled.bg, st.disabled.border, st.disabled.placeholder, st.disabled.value, st.disabled.icon, st.disabled.label, st.readOnly.bg, st.readOnly.border, st.readOnly.label, st.readOnly.value,
   field.labelColor, field.optionalColor, field.descriptionColor, field.error.color, field.error.icon, form.sectionTitleColor,
 ];
-export const FIELD_COLOR_PATHS = [...new Set(colorNodes.map(refPath))];
+const ghostB = load("tokens/components/button.tokens.json").component.button.ghost;
+export const FIELD_COLOR_PATHS = [...new Set([...colorNodes, ghostB.state.default.icon, ghostB.state.hover.fill, ghostB.state.pressed.fill, ghostB.state.focused.ringColor].map(refPath))];
 
 const labelExtra = resolveToken(field.labelGap).value - resolveToken(field.messageGap).value;
 
+// the reveal button is Button ghost sm icon-only, resolved from button.tokens.json.
+// base first: the size modifiers share its specificity and must come after it.
+const ghost = ghostB;
+const ro = st.readOnly, dis = st.disabled;
+const sizeCss = ["base", "sm", "lg"].map((k) => {
+  const z = input.size[k];
+  const sel = k === "base" ? ".text-field" : `.text-field--${k}`;
+  const lines = [
+    `${sel} { height: ${D(z.height)}; padding: 0 ${D(z.paddingX)}; gap: ${D(z.gap)}; }`,
+    `${sel} .text-field__icon { width: ${D(z.iconSize)}; height: ${D(z.iconSize)}; }`,
+    `${sel} .text-field__action { margin-inline-end: -${resolveToken(z.paddingX).value - 4}px; }`,
+  ];
+  if (z.label) lines.push(`${sel} .text-field__stack { gap: ${D(z.labelGap)}; }`, `${sel} .text-field__label { ${T(z.label)} }`);
+  return lines.join("\n");
+}).join("\n");
+
 export const FIELD_CSS = `
-/* Text field — a real <input> on Input base. The label floats in at 12px on
-   focus or once there is a value; resting, the placeholder shows the label's
-   text and the label itself is kept for screen readers only. */
-.text-field { box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; gap: ${D(base.labelGap)}; height: ${D(base.height)}; padding: 0 ${D(base.paddingX)}; background: ${R(st.default.bg)}; border: 1px solid ${R(st.default.border)}; border-radius: ${D(input.radius)}; cursor: text; font-family: var(${cssVarName("family.sans")}); }
-.text-field:hover { background: ${R(st.hover.bg)}; border-color: ${R(st.hover.border)}; }
-.text-field:focus-within { border-color: ${R(st.focus.border)}; }
-.text-field__label { color: ${R(st.populated.label)}; ${T(base.label)} cursor: text; }
-.text-field:focus-within .text-field__label { color: ${R(st.focus.label)}; }
-.text-field:not(:focus-within):has(.text-field__control:placeholder-shown) .text-field__label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+/* Text field — a real <input> on Input's recipe. base/lg float the label in at
+   12px on focus or once there is a value; resting, the placeholder shows the
+   label's text and the label itself is kept for screen readers only. sm never
+   floats (too short for two lines) — its label is screen-reader only. */
+.text-field { box-sizing: border-box; display: flex; align-items: center; background: ${R(st.default.bg)}; border: 1px solid ${R(st.default.border)}; border-radius: ${D(input.radius)}; cursor: text; font-family: var(${cssVarName("family.sans")}); }
+.text-field__stack { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; }
+${sizeCss}
+.text-field__icon { flex-shrink: 0; color: ${R(st.default.icon)}; }
+.text-field__label { color: ${R(st.populated.label)}; cursor: text; }
 .text-field__control { box-sizing: border-box; width: 100%; margin: 0; padding: 0; border: none; outline: none; background: transparent; color: ${R(st.default.value)}; font-family: inherit; ${T(base.value)} }
 .text-field__control::placeholder { color: ${R(st.default.placeholder)}; opacity: 1; }
+.text-field:not(:focus-within):has(.text-field__control:placeholder-shown) .text-field__label,
+.text-field--sm .text-field__label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .text-field:focus-within .text-field__control::placeholder { color: transparent; }
+/* hover / focus — not on a disabled or read-only field */
+.text-field:not(:has(:disabled, [readonly])):hover { background: ${R(st.hover.bg)}; border-color: ${R(st.hover.border)}; }
+.text-field:focus-within { border-color: ${R(st.focus.border)}; }
+.text-field:not(:has([readonly])):focus-within .text-field__label { color: ${R(st.focus.label)}; }
+/* disabled — unavailable right now: faded, not focusable */
+.text-field:has(.text-field__control:disabled) { background: ${R(dis.bg)}; border-color: ${R(dis.border)}; cursor: not-allowed; }
+.text-field:has(.text-field__control:disabled) .text-field__control { color: ${R(dis.value)}; cursor: not-allowed; }
+.text-field:has(.text-field__control:disabled) .text-field__control::placeholder { color: ${R(dis.placeholder)}; }
+.text-field:has(.text-field__control:disabled) .text-field__label { color: ${R(dis.label)}; }
+.text-field:has(.text-field__control:disabled) .text-field__icon { color: ${R(dis.icon)}; }
+/* read-only — can't change, can read, select and copy: full contrast, no recessed fill */
+.text-field:has(.text-field__control[readonly]) { background: ${R(ro.bg)}; border-color: ${R(ro.border)}; cursor: default; }
+.text-field:has(.text-field__control[readonly]) .text-field__label { color: ${R(ro.label)}; }
+.text-field:has(.text-field__control[readonly]) .text-field__control { color: ${R(ro.value)}; }
+/* error — set aria-invalid on the control (FORM_JS does) */
+.text-field:has(.text-field__control[aria-invalid="true"]), .text-field:has(.text-field__control[aria-invalid="true"]):hover { border-color: ${R(st.error.border)}; }
+/* trailing action (password reveal) — Button ghost sm icon-only, pulled to 4px from the edge */
+.text-field__action { flex-shrink: 0; box-sizing: border-box; width: ${D(ghost.size.sm.height)}; height: ${D(ghost.size.sm.height)}; display: inline-flex; align-items: center; justify-content: center; padding: 0; border: none; border-radius: ${D(ghost.radius)}; background: transparent; color: ${R(ghost.state.default.icon)}; cursor: pointer; }
+.text-field__action:hover { background: ${R(ghost.state.hover.fill)}; }
+.text-field__action:active { background: ${R(ghost.state.pressed.fill)}; }
+.text-field__action:focus-visible { outline: ${D(ghost.state.focused.ringWidth)} solid ${R(ghost.state.focused.ringColor)}; outline-offset: -${D(ghost.state.focused.ringWidth)}; }
+.text-field__action svg { width: ${D(ghost.size.sm.iconSize)}; height: ${D(ghost.size.sm.iconSize)}; }
+.text-field__action[aria-pressed="true"] .text-field__show, .text-field__action[aria-pressed="false"] .text-field__hide { display: none; }
+.text-field--sm .text-field__action { width: ${px(resolveToken(get("dim.6")))}; height: ${px(resolveToken(get("dim.6")))}; }
 /* Text area — the same field, growing downward; the label sits on top */
-.text-field--area { height: auto; min-height: ${px(resolveToken(get("dim.24")))}; justify-content: flex-start; padding-top: ${px(resolveToken(get("dim.2")))}; padding-bottom: ${px(resolveToken(get("dim.2")))}; }
+.text-field--area { height: auto; min-height: ${px(resolveToken(get("dim.24")))}; align-items: stretch; padding-top: ${px(resolveToken(get("dim.2")))}; padding-bottom: ${px(resolveToken(get("dim.2")))}; }
+.text-field--area .text-field__stack { justify-content: flex-start; }
 .text-field--area .text-field__control { flex: 1; min-height: ${px(resolveToken(get("dim.16")))}; resize: vertical; }
 
 /* Field — label (only for controls without a floating one), control, description, error */
@@ -97,8 +142,7 @@ export const FIELD_CSS = `
 .field__error { margin: 0; display: flex; align-items: flex-start; gap: ${D(field.error.iconGap)}; color: ${R(field.error.color)}; ${T(field.error.text)} }
 .field__error[hidden] { display: none; }
 .field__error-icon { width: ${D(field.error.iconSize)}; height: ${D(field.error.iconSize)}; flex-shrink: 0; color: ${R(field.error.icon)}; }
-/* invalid: the control takes Input's error border, on hover and focus too */
-.field[data-invalid] .text-field, .field[data-invalid] .text-field:hover, .field[data-invalid] .text-field:focus-within,
+/* invalid: a DatePicker takes Input's error border too (a text field does via aria-invalid) */
 .field[data-invalid] .datepicker__trigger, .field[data-invalid] .datepicker__trigger:hover, .field[data-invalid] .datepicker__trigger:focus-visible { border-color: ${R(st.error.border)}; }
 
 /* Form — one column, sections, actions under the last field */
@@ -110,12 +154,32 @@ export const FIELD_CSS = `
 
 const errorIcon = () => icon("error", "field__error-icon");
 
-/** A text field: a real <input> (or <textarea> with `area`) with Input base's floating label. */
-export function textFieldHtml({ id, label, type = "text", required = false, value = "", autocomplete = "", area = false, describedBy = "" }) {
-  const attrs = `class="text-field__control" id="${id}" name="${id}" placeholder="${label}"${required ? " required" : ""}${autocomplete ? ` autocomplete="${autocomplete}"` : ""}${describedBy ? ` aria-describedby="${describedBy}"` : ""}`;
-  const control = area ? `<textarea ${attrs} rows="3">${value}</textarea>` : `<input ${attrs} type="${type}"${value ? ` value="${value}"` : ""} />`;
-  return `<div class="text-field${area ? " text-field--area" : ""}"><label class="text-field__label" for="${id}">${label}</label>${control}</div>`;
+/** A text field: a real <input> (or <textarea> with `area`) on Input's recipe.
+ *  size sm | base | lg · icon: a leading material icon name · reveal: password show/hide button
+ *  (type becomes password) · readOnly / disabled / invalid: those states on the real control. */
+export function textFieldHtml({ id, label, size = "base", type = "text", required = false, value = "", placeholder = "", autocomplete = "", inputmode = "", area = false, describedBy = "", icon: iconName = "", reveal = false, readOnly = false, disabled = false, invalid = false }) {
+  const attrs = `class="text-field__control" id="${id}" name="${id}" placeholder="${placeholder || label}"${required ? " required" : ""}${autocomplete ? ` autocomplete="${autocomplete}"` : ""}${inputmode ? ` inputmode="${inputmode}"` : ""}${describedBy ? ` aria-describedby="${describedBy}"` : ""}${readOnly ? " readonly" : ""}${disabled ? " disabled" : ""}${invalid ? ' aria-invalid="true"' : ""}`;
+  const control = area ? `<textarea ${attrs} rows="3">${value}</textarea>` : `<input ${attrs} type="${reveal ? "password" : type}"${value ? ` value="${value}"` : ""} />`;
+  const cls = `text-field${size !== "base" ? ` text-field--${size}` : ""}${area ? " text-field--area" : ""}`;
+  const lead = iconName ? icon(iconName, "text-field__icon") : "";
+  const action = reveal ? `<button class="text-field__action" type="button" aria-label="Show password" aria-pressed="false" aria-controls="${id}" data-reveal${disabled ? " disabled" : ""}>${icon("visibility", "text-field__show")}${icon("visibility_off", "text-field__hide")}</button>` : "";
+  return `<div class="${cls}">${lead}<div class="text-field__stack"><label class="text-field__label" for="${id}">${label}</label>${control}</div>${action}</div>`;
 }
+
+// Password reveal: flips the input between password and text; the button's
+// label says what the next press does.
+export const TEXT_FIELD_JS = `(function () {
+  document.querySelectorAll("[data-reveal]").forEach(function (btn) {
+    if (btn._hpreveal) return; btn._hpreveal = true;
+    var input = document.getElementById(btn.getAttribute("aria-controls"));
+    btn.addEventListener("click", function () {
+      var show = input.type === "password";
+      input.type = show ? "text" : "password";
+      btn.setAttribute("aria-pressed", String(show));
+      btn.setAttribute("aria-label", show ? "Hide password" : "Show password");
+    });
+  });
+})();`;
 
 /** A Field around `control`. `label` renders above it (only for controls without a floating label).
  *  `errors` are the messages FORM_JS shows: { required, format }. `error` renders the field already invalid. */
