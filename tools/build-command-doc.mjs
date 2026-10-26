@@ -117,7 +117,8 @@ const html = `<!doctype html>
       <div class="row"><b>Field</b><span>48px row, search icon (<code class="tok">icon.muted</code>), a borderless input in Search's value type — 16px, so iOS doesn't zoom — and a hairline under it.</span></div>
       <div class="row"><b>Rows</b><span>Listbox's option recipe at a declared 36px: icon (<code class="tok">icon.secondary</code>), label, an optional shortcut (<code class="tok">body-sm</code>, <code class="tok">text.muted</code>). The active row — keyboard or pointer — gets the <code class="tok">fill.neutralHover</code> wash. Groups have a 12px semibold heading and a hairline between them; a group with no matches hides.</span></div>
       <div class="row"><b>Keyboard</b><span>Type to filter (labels and keywords), ↑ ↓ / Home / End to move, Enter to run, Escape closes the palette.</span></div>
-      <div class="row"><b>Dialog</b><span>Modal's shell — <code class="tok">radius.xl</code>, <code class="tok">shadow.lg</code>, <code class="tok">surface.overlay</code> — 560px wide, 15% from the top. Ctrl/⌘+K opens and closes it; picking an item closes it.</span></div>
+      <div class="row"><b>Radius</b><span><code class="tok">radius.default</code> (8px) inline and in the dialog — concentric with the rows: 4px row radius + 4px list padding = 8. Modal's 24px corner around 4px rows looked square and cramped.</span></div>
+      <div class="row"><b>Dialog</b><span>Modal's <code class="tok">shadow.lg</code> and <code class="tok">surface.overlay</code>, 560px wide, 15% from the top. Ctrl/⌘+K opens and closes it; picking an item closes it.</span></div>
     </div>
 
     <h2 class="big-section">Stories</h2>

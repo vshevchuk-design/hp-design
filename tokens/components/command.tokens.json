@@ -1,11 +1,11 @@
 {
   "component": {
     "command": {
-      "$description": "A search over ACTIONS — a field on top, under it a filtered list of things to do or places to go, grouped, with an icon and an optional keyboard shortcut; picking one runs it. Not Listbox: Listbox picks a VALUE that stays selected (a check mark); a Command item has no selected state, it just runs. Two forms: inline (a panel on the page) and Dialog — the command palette, opened with Ctrl/⌘+K, on Modal's shell. Built from existing recipes: the field's value type is Search's (16px, the iOS zoom rule), the rows are Listbox's option recipe (radius, padding, hover wash) at a declared 36px, the dialog is Modal's surface / radius / shadow / overlay. Added 2026-10-26 (product Storybook's Command primitive).",
+      "$description": "A search over ACTIONS — a field on top, under it a filtered list of things to do or places to go, grouped, with an icon and an optional keyboard shortcut; picking one runs it. Not Listbox: Listbox picks a VALUE that stays selected (a check mark); a Command item has no selected state, it just runs. Two forms: inline (a panel on the page) and Dialog — the command palette, opened with Ctrl/⌘+K, on Modal's shell. Built from existing recipes: the field's value type is Search's (16px, the iOS zoom rule), the rows are Listbox's option recipe (radius, padding, hover wash) at a declared 36px, the dialog is Modal's surface / shadow / overlay, but with the list family's radius.default so its corners stay concentric with the rows. Added 2026-10-26 (product Storybook's Command primitive).",
       "panel": {
         "bg": { "$type": "color", "$value": "{surface.default}" },
         "border": { "$type": "color", "$value": "{border.default}" },
-        "radius": { "$type": "dimension", "$value": "{radius.default}", "$description": "Inline. The dialog uses Modal's radius.xl." },
+        "radius": { "$type": "dimension", "$value": "{radius.default}", "$description": "8px, inline AND dialog — concentric with the rows inside: 4px row radius + 4px list padding = 8. The dialog does not take Modal's radius.xl (24): around 4px-radius rows that big corner made the active row and the field look square and cramped (user, 2026-10-26). A palette is a floating list, like Popover / Menu / Listbox, which all use radius.default." },
         "dialogWidth": { "$type": "dimension", "$value": "{dim.140}", "$description": "560px." },
         "listMaxHeight": { "$type": "dimension", "$value": "{dim.80}", "$description": "320px — the list scrolls past this." },
         "listPadding": { "$type": "dimension", "$value": "{dim.1}" }

@@ -70,7 +70,8 @@
 /* the palette: Modal's shell, wider */
 dialog.command-dialog { margin: 15vh auto auto; padding: 0; border: none; width: 560px; max-width: calc(100vw - 32px); background: transparent; }
 dialog.command-dialog::backdrop { background: var(--tok-surface-overlay); }
-dialog.command-dialog > .command { border: none; border-radius: 24px; box-shadow: 0px 8px 24px -2px rgba(21, 25, 30, 0.16); }
+/* radius stays the list family's radius.default (concentric with the 4px rows), not Modal's xl */
+dialog.command-dialog > .command { border: none; box-shadow: 0px 8px 24px -2px rgba(21, 25, 30, 0.16); }
   
 .cmd-demo { width: 100%; max-width: 560px; }
 .cmd-open { box-sizing: border-box; height: 32px; padding: 0 8px; border: none; border-radius: 8px; background: var(--tok-fill-neutral); color: var(--tok-text-default); cursor: pointer; font-family: var(--tok-family-sans); font-weight: 600; font-size: 12px; line-height: 1.4; }
@@ -212,7 +213,8 @@ dialog.command-dialog > .command { border: none; border-radius: 24px; box-shadow
       <div class="row"><b>Field</b><span>48px row, search icon (<code class="tok">icon.muted</code>), a borderless input in Search's value type — 16px, so iOS doesn't zoom — and a hairline under it.</span></div>
       <div class="row"><b>Rows</b><span>Listbox's option recipe at a declared 36px: icon (<code class="tok">icon.secondary</code>), label, an optional shortcut (<code class="tok">body-sm</code>, <code class="tok">text.muted</code>). The active row — keyboard or pointer — gets the <code class="tok">fill.neutralHover</code> wash. Groups have a 12px semibold heading and a hairline between them; a group with no matches hides.</span></div>
       <div class="row"><b>Keyboard</b><span>Type to filter (labels and keywords), ↑ ↓ / Home / End to move, Enter to run, Escape closes the palette.</span></div>
-      <div class="row"><b>Dialog</b><span>Modal's shell — <code class="tok">radius.xl</code>, <code class="tok">shadow.lg</code>, <code class="tok">surface.overlay</code> — 560px wide, 15% from the top. Ctrl/⌘+K opens and closes it; picking an item closes it.</span></div>
+      <div class="row"><b>Radius</b><span><code class="tok">radius.default</code> (8px) inline and in the dialog — concentric with the rows: 4px row radius + 4px list padding = 8. Modal's 24px corner around 4px rows looked square and cramped.</span></div>
+      <div class="row"><b>Dialog</b><span>Modal's <code class="tok">shadow.lg</code> and <code class="tok">surface.overlay</code>, 560px wide, 15% from the top. Ctrl/⌘+K opens and closes it; picking an item closes it.</span></div>
     </div>
 
     <h2 class="big-section">Stories</h2>
@@ -282,7 +284,8 @@ dialog.command-dialog > .command { border: none; border-radius: 24px; box-shadow
 /* the palette: Modal's shell, wider */
 dialog.command-dialog { margin: 15vh auto auto; padding: 0; border: none; width: 560px; max-width: calc(100vw - 32px); background: transparent; }
 dialog.command-dialog::backdrop { background: var(--tok-surface-overlay); }
-dialog.command-dialog &gt; .command { border: none; border-radius: 24px; box-shadow: 0px 8px 24px -2px rgba(21, 25, 30, 0.16); }</code></pre>
+/* radius stays the list family's radius.default (concentric with the 4px rows), not Modal's xl */
+dialog.command-dialog &gt; .command { border: none; box-shadow: 0px 8px 24px -2px rgba(21, 25, 30, 0.16); }</code></pre>
   </main>
 </div>
 <script>

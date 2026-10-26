@@ -61,7 +61,8 @@ export const COMMAND_CSS = `
 /* the palette: Modal's shell, wider */
 dialog.command-dialog { margin: 15vh auto auto; padding: 0; border: none; width: ${D(panel.dialogWidth)}; max-width: calc(100vw - 32px); background: transparent; }
 dialog.command-dialog::backdrop { background: ${R(modal.overlay)}; }
-dialog.command-dialog > .command { border: none; border-radius: ${D(modal.radius)}; box-shadow: ${shadowCss}; }`;
+/* radius stays the list family's radius.default (concentric with the 4px rows), not Modal's xl */
+dialog.command-dialog > .command { border: none; box-shadow: ${shadowCss}; }`;
 
 /** groups: [{ heading, items: [{ label, icon, shortcut, keywords, disabled }] }] */
 export function commandHtml({ id, groups, placeholder = "Type a command or search…", label = "Commands", empty: emptyText = "No results found." }) {
