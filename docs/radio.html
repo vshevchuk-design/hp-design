@@ -82,6 +82,19 @@
   --tok-text-disabled: #adb5be;
   --tok-text-secondary: #5d6a7a;
   --tok-icon-disabled: #adb5be;
+  --tok-icon-on-fill: #ffffff;
+  --tok-surface-dim: #f4f5f7;
+  --tok-text-muted: #758191;
+  --tok-surface-dim-hover: #e6e8eb;
+  --tok-border-strong: #adb5be;
+  --tok-text-primary: #0468c4;
+  --tok-border-danger-strong: #c11435;
+  --tok-icon-default: #485462;
+  --tok-text-danger: #c11435;
+  --tok-icon-danger: #de394b;
+  --tok-icon-secondary: #758191;
+  --tok-fill-neutral-hover: #e6e8eb;
+  --tok-fill-neutral-active: #cdd1d6;
   --tok-family-sans: 'Sora', sans-serif;
 }
 
@@ -90,11 +103,9 @@
 .radio__circle { box-sizing: border-box; width: 20px; height: 20px; border-radius: 999px; border: 2px solid var(--tok-border-default); background: var(--tok-surface-default); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .radio__dot { width: 8px; height: 8px; border-radius: 999px; background: transparent; }
 .radio__label { color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; }
-
-.radio:hover .radio__input:not(:checked):not(:disabled) ~ .radio__circle { background: var(--tok-bg-primary-hover); }
-.radio:hover .radio__circle { border-color: var(--tok-fill-primary); }
+.radio:hover .radio__input:not(:checked):not(:disabled) ~ .radio__circle { background: var(--tok-bg-primary-hover); border-color: var(--tok-fill-primary); }
 .radio__input:focus-visible ~ .radio__circle { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
-.radio__input:checked ~ .radio__circle { border-color: var(--tok-fill-primary); }
+.radio__input:checked ~ .radio__circle { background: var(--tok-surface-default); border-color: var(--tok-fill-primary); }
 .radio__input:checked ~ .radio__circle .radio__dot { background: var(--tok-fill-primary); }
 .radio:hover .radio__input:checked:not(:disabled) ~ .radio__circle { border-color: var(--tok-fill-primary-hover); }
 .radio:hover .radio__input:checked:not(:disabled) ~ .radio__circle .radio__dot { background: var(--tok-fill-primary-hover); }
@@ -103,11 +114,27 @@
 .radio__input:disabled:checked ~ .radio__circle .radio__dot { background: var(--tok-icon-disabled); }
 .radio:has(.radio__input:disabled) { cursor: not-allowed; }
 
-.radio-group { display: flex; flex-direction: column; gap: 8px; }
-.radio-group--vertical .radio-group__items { display: flex; flex-direction: column; gap: 12px; }
-.radio-group--horizontal .radio-group__items { display: flex; flex-direction: row; flex-wrap: wrap; gap: 20px; }
-.radio-group__label { color: var(--tok-text-default); margin: 0; font-weight: 600; font-size: 12px; line-height: 1.4; }
-.radio-group__helper { color: var(--tok-text-secondary); margin: 0; font-weight: 400; font-size: 12px; line-height: 1.4; }
+/* Field — label (only for controls without a floating one), control, description, error */
+.field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.field__label { margin-bottom: 4px; color: var(--tok-text-default); font-weight: 600; font-size: 12px; line-height: 1.4; }
+.field__optional { color: var(--tok-text-muted); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.field__description { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.field__error { margin: 0; display: flex; align-items: flex-start; gap: 4px; color: var(--tok-text-danger); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.field__error[hidden] { display: none; }
+.field__error-icon { width: 16px; height: 16px; flex-shrink: 0; color: var(--tok-icon-danger); }
+/* invalid: a DatePicker takes Input's error border too (a text field does via aria-invalid) */
+.field[data-invalid] .datepicker__trigger, .field[data-invalid] .datepicker__trigger:hover, .field[data-invalid] .datepicker__trigger:focus-visible { border-color: var(--tok-border-danger-strong); }
+
+
+/* A group is a Field on a <fieldset>: the legend is its label, the helper its
+   description, the error the Field's. A legend sits outside flex layout, so the
+   fieldset is a plain block and the gaps are margins. */
+.choice-group { display: block; margin: 0; padding: 0; border: 0; min-width: 0; }
+.choice-group > legend { padding: 0; margin-bottom: 8px; }
+.choice-group__items { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; }
+.choice-group--horizontal .choice-group__items { flex-direction: row; flex-wrap: wrap; gap: 20px; }
+.choice-group > .field__description, .choice-group > .field__error { margin-top: 4px; }
+.choice-group:disabled > legend, .choice-group:disabled > .field__description { color: var(--tok-text-disabled); }
 </style>
 </head>
 <body>
@@ -247,7 +274,7 @@
       <div class="row"><b>Single size</b><span>20px circle, 8px dot — no sm/base/lg grid, same rationale as <a href="checkbox.html">Checkbox</a>.</span></div>
       <div class="row"><b>Never fully fills</b><span>Unlike Checkbox, checked only recolors the outline and shows a small inner dot — both fill.primary, the circle background stays surface.default. Plain CSS circle, not an icon; every reference checked (Radix/MUI/Ant/Material) draws it this way.</span></div>
       <div class="row"><b>States</b><span>default / hover / focused / checked / checked+hover / disabled / disabled+checked. No error state — not asked for.</span></div>
-      <div class="row"><b>Groups</b><span>RadioGroup composes plain Radio items sharing one <code class="tok">name</code> under an optional heading + helper text, vertical or horizontal — no group-level error state.</span></div>
+      <div class="row"><b>Groups</b><span>RadioGroup is a Field on a <code class="tok">&lt;fieldset&gt;</code> + <code class="tok">&lt;legend&gt;</code>, vertical or horizontal, with helper text, a whole-group disabled state and the Field's error message (on Submit, from <a href="form.html">Form</a>).</span></div>
     </div>
 
     <h2 class="big-section">CSS</h2>
@@ -264,6 +291,19 @@
   --tok-text-disabled: #adb5be;
   --tok-text-secondary: #5d6a7a;
   --tok-icon-disabled: #adb5be;
+  --tok-icon-on-fill: #ffffff;
+  --tok-surface-dim: #f4f5f7;
+  --tok-text-muted: #758191;
+  --tok-surface-dim-hover: #e6e8eb;
+  --tok-border-strong: #adb5be;
+  --tok-text-primary: #0468c4;
+  --tok-border-danger-strong: #c11435;
+  --tok-icon-default: #485462;
+  --tok-text-danger: #c11435;
+  --tok-icon-danger: #de394b;
+  --tok-icon-secondary: #758191;
+  --tok-fill-neutral-hover: #e6e8eb;
+  --tok-fill-neutral-active: #cdd1d6;
   --tok-family-sans: 'Sora', sans-serif;
 }
 
@@ -272,11 +312,9 @@
 .radio__circle { box-sizing: border-box; width: 20px; height: 20px; border-radius: 999px; border: 2px solid var(--tok-border-default); background: var(--tok-surface-default); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .radio__dot { width: 8px; height: 8px; border-radius: 999px; background: transparent; }
 .radio__label { color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; }
-
-.radio:hover .radio__input:not(:checked):not(:disabled) ~ .radio__circle { background: var(--tok-bg-primary-hover); }
-.radio:hover .radio__circle { border-color: var(--tok-fill-primary); }
+.radio:hover .radio__input:not(:checked):not(:disabled) ~ .radio__circle { background: var(--tok-bg-primary-hover); border-color: var(--tok-fill-primary); }
 .radio__input:focus-visible ~ .radio__circle { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
-.radio__input:checked ~ .radio__circle { border-color: var(--tok-fill-primary); }
+.radio__input:checked ~ .radio__circle { background: var(--tok-surface-default); border-color: var(--tok-fill-primary); }
 .radio__input:checked ~ .radio__circle .radio__dot { background: var(--tok-fill-primary); }
 .radio:hover .radio__input:checked:not(:disabled) ~ .radio__circle { border-color: var(--tok-fill-primary-hover); }
 .radio:hover .radio__input:checked:not(:disabled) ~ .radio__circle .radio__dot { background: var(--tok-fill-primary-hover); }
@@ -285,11 +323,27 @@
 .radio__input:disabled:checked ~ .radio__circle .radio__dot { background: var(--tok-icon-disabled); }
 .radio:has(.radio__input:disabled) { cursor: not-allowed; }
 
-.radio-group { display: flex; flex-direction: column; gap: 8px; }
-.radio-group--vertical .radio-group__items { display: flex; flex-direction: column; gap: 12px; }
-.radio-group--horizontal .radio-group__items { display: flex; flex-direction: row; flex-wrap: wrap; gap: 20px; }
-.radio-group__label { color: var(--tok-text-default); margin: 0; font-weight: 600; font-size: 12px; line-height: 1.4; }
-.radio-group__helper { color: var(--tok-text-secondary); margin: 0; font-weight: 400; font-size: 12px; line-height: 1.4; }</code></pre>
+/* Field — label (only for controls without a floating one), control, description, error */
+.field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.field__label { margin-bottom: 4px; color: var(--tok-text-default); font-weight: 600; font-size: 12px; line-height: 1.4; }
+.field__optional { color: var(--tok-text-muted); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.field__description { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.field__error { margin: 0; display: flex; align-items: flex-start; gap: 4px; color: var(--tok-text-danger); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.field__error[hidden] { display: none; }
+.field__error-icon { width: 16px; height: 16px; flex-shrink: 0; color: var(--tok-icon-danger); }
+/* invalid: a DatePicker takes Input's error border too (a text field does via aria-invalid) */
+.field[data-invalid] .datepicker__trigger, .field[data-invalid] .datepicker__trigger:hover, .field[data-invalid] .datepicker__trigger:focus-visible { border-color: var(--tok-border-danger-strong); }
+
+
+/* A group is a Field on a &lt;fieldset&gt;: the legend is its label, the helper its
+   description, the error the Field's. A legend sits outside flex layout, so the
+   fieldset is a plain block and the gaps are margins. */
+.choice-group { display: block; margin: 0; padding: 0; border: 0; min-width: 0; }
+.choice-group &gt; legend { padding: 0; margin-bottom: 8px; }
+.choice-group__items { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; }
+.choice-group--horizontal .choice-group__items { flex-direction: row; flex-wrap: wrap; gap: 20px; }
+.choice-group &gt; .field__description, .choice-group &gt; .field__error { margin-top: 4px; }
+.choice-group:disabled &gt; legend, .choice-group:disabled &gt; .field__description { color: var(--tok-text-disabled); }</code></pre>
 
     <h2 class="big-section">States</h2>
     <p class="section-desc">Single size (20px). Hover/focused are forced via inline style for a static screenshot — the real rule is :hover / :focus-visible on the native input, shown in the CSS above.</p>
@@ -402,56 +456,82 @@
     </div>
 
     <h2 class="big-section">Groups</h2>
-    <p class="section-desc">RadioGroup — vertical (stacked) and horizontal (wrapping row) layouts, each with an optional group label and helper text. No error/validation state at the group level.</p>
+    <p class="section-desc">RadioGroup — a <a href="form.html">Field</a> on a real <code class="tok">&lt;fieldset&gt;</code>: the <code class="tok">&lt;legend&gt;</code> is read before the options, one <code class="tok">disabled</code> turns off the whole group, and Form checks it on Submit like any field.</p>
     <div class="story-grid">
-      <div class="story">
-        <h3>vertical</h3>
-        <div class="story-preview" style="justify-content:flex-start"><div class="radio-group radio-group--vertical">
-      <p class="radio-group__label">Notify me by</p>
-      <div class="radio-group__items">
-      <label class="radio">
-        <input type="radio" class="radio__input" id="r-vertical-0" name="plan-vertical" checked />
-        <span class="radio__circle"><span class="radio__dot"></span></span>
-        <span class="radio__label">Email</span>
-      </label>
-      <label class="radio">
-        <input type="radio" class="radio__input" id="r-vertical-1" name="plan-vertical" />
-        <span class="radio__circle"><span class="radio__dot"></span></span>
-        <span class="radio__label">SMS</span>
-      </label>
-      <label class="radio">
-        <input type="radio" class="radio__input" id="r-vertical-2" name="plan-vertical" />
-        <span class="radio__circle"><span class="radio__dot"></span></span>
-        <span class="radio__label">Push notifications</span>
-      </label>
-      </div>
-      <p class="radio-group__helper">Pick one channel.</p>
-    </div></div>
-      </div>
-      <div class="story">
-        <h3>horizontal</h3>
-        <div class="story-preview" style="justify-content:flex-start"><div class="radio-group radio-group--horizontal">
-      <p class="radio-group__label">Notify me by</p>
-      <div class="radio-group__items">
-      <label class="radio">
-        <input type="radio" class="radio__input" id="r-horizontal-0" name="plan-horizontal" checked />
-        <span class="radio__circle"><span class="radio__dot"></span></span>
-        <span class="radio__label">Email</span>
-      </label>
-      <label class="radio">
-        <input type="radio" class="radio__input" id="r-horizontal-1" name="plan-horizontal" />
-        <span class="radio__circle"><span class="radio__dot"></span></span>
-        <span class="radio__label">SMS</span>
-      </label>
-      <label class="radio">
-        <input type="radio" class="radio__input" id="r-horizontal-2" name="plan-horizontal" />
-        <span class="radio__circle"><span class="radio__dot"></span></span>
-        <span class="radio__label">Push notifications</span>
-      </label>
-      </div>
-      <p class="radio-group__helper">Pick one channel.</p>
-    </div></div>
-      </div>
+      <div class="story"><h3>vertical</h3><div class="story-preview" style="justify-content:flex-start"><fieldset class="field choice-group" data-field aria-describedby="rg-v-desc rg-v-error">
+  <legend class="field__label">Contact me by</legend>
+  <div class="choice-group__items">
+    <label class="radio"><input type="radio" class="radio__input" id="rg-v-0" name="rg-v" value="Email" checked /><span class="radio__circle"><span class="radio__dot"></span></span><span class="radio__label">Email</span></label>
+    <label class="radio"><input type="radio" class="radio__input" id="rg-v-1" name="rg-v" value="Text message" /><span class="radio__circle"><span class="radio__dot"></span></span><span class="radio__label">Text message</span></label>
+    <label class="radio"><input type="radio" class="radio__input" id="rg-v-2" name="rg-v" value="Phone call" /><span class="radio__circle"><span class="radio__dot"></span></span><span class="radio__label">Phone call</span></label>
+  </div>
+  <p class="field__description" id="rg-v-desc">Pick one.</p>
+  <p class="field__error" id="rg-v-error" hidden><svg class="field__error-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg><span></span></p>
+</fieldset></div><pre class="code"><code>&lt;fieldset class="field choice-group" data-field aria-describedby="rg-v-desc rg-v-error"&gt;
+  &lt;legend class="field__label"&gt;Contact me by&lt;/legend&gt;
+  &lt;div class="choice-group__items"&gt;
+    &lt;label class="radio"&gt;&lt;input type="radio" class="radio__input" id="rg-v-0" name="rg-v" value="Email" checked /&gt;&lt;span class="radio__circle"&gt;&lt;span class="radio__dot"&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="radio__label"&gt;Email&lt;/span&gt;&lt;/label&gt;
+    &lt;label class="radio"&gt;&lt;input type="radio" class="radio__input" id="rg-v-1" name="rg-v" value="Text message" /&gt;&lt;span class="radio__circle"&gt;&lt;span class="radio__dot"&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="radio__label"&gt;Text message&lt;/span&gt;&lt;/label&gt;
+    &lt;label class="radio"&gt;&lt;input type="radio" class="radio__input" id="rg-v-2" name="rg-v" value="Phone call" /&gt;&lt;span class="radio__circle"&gt;&lt;span class="radio__dot"&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="radio__label"&gt;Phone call&lt;/span&gt;&lt;/label&gt;
+  &lt;/div&gt;
+  &lt;p class="field__description" id="rg-v-desc"&gt;Pick one.&lt;/p&gt;
+  &lt;p class="field__error" id="rg-v-error" hidden&gt;…&lt;span&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;/fieldset&gt;</code></pre><p class="story-note">Stacked, 12px apart. The legend is the Field label (heading-sm), the helper its description.</p></div>
+      <div class="story"><h3>horizontal</h3><div class="story-preview" style="justify-content:flex-start"><fieldset class="field choice-group choice-group--horizontal" data-field aria-describedby="rg-h-desc rg-h-error">
+  <legend class="field__label">Contact me by</legend>
+  <div class="choice-group__items">
+    <label class="radio"><input type="radio" class="radio__input" id="rg-h-0" name="rg-h" value="Email" checked /><span class="radio__circle"><span class="radio__dot"></span></span><span class="radio__label">Email</span></label>
+    <label class="radio"><input type="radio" class="radio__input" id="rg-h-1" name="rg-h" value="Text message" /><span class="radio__circle"><span class="radio__dot"></span></span><span class="radio__label">Text message</span></label>
+    <label class="radio"><input type="radio" class="radio__input" id="rg-h-2" name="rg-h" value="Phone call" /><span class="radio__circle"><span class="radio__dot"></span></span><span class="radio__label">Phone call</span></label>
+  </div>
+  <p class="field__description" id="rg-h-desc">Pick one.</p>
+  <p class="field__error" id="rg-h-error" hidden><svg class="field__error-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg><span></span></p>
+</fieldset></div><pre class="code"><code>&lt;fieldset class="field choice-group choice-group--horizontal" data-field aria-describedby="rg-h-desc rg-h-error"&gt;
+  &lt;legend class="field__label"&gt;Contact me by&lt;/legend&gt;
+  &lt;div class="choice-group__items"&gt;
+    &lt;label class="radio"&gt;&lt;input type="radio" class="radio__input" id="rg-h-0" name="rg-h" value="Email" checked /&gt;&lt;span class="radio__circle"&gt;&lt;span class="radio__dot"&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="radio__label"&gt;Email&lt;/span&gt;&lt;/label&gt;
+    &lt;label class="radio"&gt;&lt;input type="radio" class="radio__input" id="rg-h-1" name="rg-h" value="Text message" /&gt;&lt;span class="radio__circle"&gt;&lt;span class="radio__dot"&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="radio__label"&gt;Text message&lt;/span&gt;&lt;/label&gt;
+    &lt;label class="radio"&gt;&lt;input type="radio" class="radio__input" id="rg-h-2" name="rg-h" value="Phone call" /&gt;&lt;span class="radio__circle"&gt;&lt;span class="radio__dot"&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="radio__label"&gt;Phone call&lt;/span&gt;&lt;/label&gt;
+  &lt;/div&gt;
+  &lt;p class="field__description" id="rg-h-desc"&gt;Pick one.&lt;/p&gt;
+  &lt;p class="field__error" id="rg-h-error" hidden&gt;…&lt;span&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;/fieldset&gt;</code></pre><p class="story-note">A wrapping row, 20px apart — for two or three short options.</p></div>
+      <div class="story"><h3>disabled</h3><div class="story-preview" style="justify-content:flex-start"><fieldset class="field choice-group" data-field aria-describedby="rg-d-desc rg-d-error" disabled>
+  <legend class="field__label">Contact me by</legend>
+  <div class="choice-group__items">
+    <label class="radio"><input type="radio" class="radio__input" id="rg-d-0" name="rg-d" value="Email" checked /><span class="radio__circle"><span class="radio__dot"></span></span><span class="radio__label">Email</span></label>
+    <label class="radio"><input type="radio" class="radio__input" id="rg-d-1" name="rg-d" value="Text message" /><span class="radio__circle"><span class="radio__dot"></span></span><span class="radio__label">Text message</span></label>
+    <label class="radio"><input type="radio" class="radio__input" id="rg-d-2" name="rg-d" value="Phone call" /><span class="radio__circle"><span class="radio__dot"></span></span><span class="radio__label">Phone call</span></label>
+  </div>
+  <p class="field__description" id="rg-d-desc">Available once you add a phone number.</p>
+  <p class="field__error" id="rg-d-error" hidden><svg class="field__error-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg><span></span></p>
+</fieldset></div><pre class="code"><code>&lt;fieldset class="field choice-group" data-field aria-describedby="rg-d-desc rg-d-error" disabled&gt;
+  &lt;legend class="field__label"&gt;Contact me by&lt;/legend&gt;
+  &lt;div class="choice-group__items"&gt;
+    &lt;label class="radio"&gt;&lt;input type="radio" class="radio__input" id="rg-d-0" name="rg-d" value="Email" checked /&gt;&lt;span class="radio__circle"&gt;&lt;span class="radio__dot"&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="radio__label"&gt;Email&lt;/span&gt;&lt;/label&gt;
+    &lt;label class="radio"&gt;&lt;input type="radio" class="radio__input" id="rg-d-1" name="rg-d" value="Text message" /&gt;&lt;span class="radio__circle"&gt;&lt;span class="radio__dot"&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="radio__label"&gt;Text message&lt;/span&gt;&lt;/label&gt;
+    &lt;label class="radio"&gt;&lt;input type="radio" class="radio__input" id="rg-d-2" name="rg-d" value="Phone call" /&gt;&lt;span class="radio__circle"&gt;&lt;span class="radio__dot"&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="radio__label"&gt;Phone call&lt;/span&gt;&lt;/label&gt;
+  &lt;/div&gt;
+  &lt;p class="field__description" id="rg-d-desc"&gt;Available once you add a phone number.&lt;/p&gt;
+  &lt;p class="field__error" id="rg-d-error" hidden&gt;…&lt;span&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;/fieldset&gt;</code></pre><p class="story-note">disabled on the fieldset disables every radio in it; the legend and helper fade too.</p></div>
+      <div class="story"><h3>error</h3><div class="story-preview" style="justify-content:flex-start"><fieldset class="field choice-group" data-field data-invalid aria-describedby="rg-e-desc rg-e-error">
+  <legend class="field__label">Meeting format</legend>
+  <div class="choice-group__items">
+    <label class="radio"><input type="radio" class="radio__input" id="rg-e-0" name="rg-e" value="In person" /><span class="radio__circle"><span class="radio__dot"></span></span><span class="radio__label">In person</span></label>
+    <label class="radio"><input type="radio" class="radio__input" id="rg-e-1" name="rg-e" value="Online" /><span class="radio__circle"><span class="radio__dot"></span></span><span class="radio__label">Online</span></label>
+  </div>
+  <p class="field__description" id="rg-e-desc">You can change it later.</p>
+  <p class="field__error" id="rg-e-error"><svg class="field__error-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg><span>Choose a meeting format.</span></p>
+</fieldset></div><pre class="code"><code>&lt;fieldset class="field choice-group" data-field data-invalid aria-describedby="rg-e-desc rg-e-error"&gt;
+  &lt;legend class="field__label"&gt;Meeting format&lt;/legend&gt;
+  &lt;div class="choice-group__items"&gt;
+    &lt;label class="radio"&gt;&lt;input type="radio" class="radio__input" id="rg-e-0" name="rg-e" value="In person" /&gt;&lt;span class="radio__circle"&gt;&lt;span class="radio__dot"&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="radio__label"&gt;In person&lt;/span&gt;&lt;/label&gt;
+    &lt;label class="radio"&gt;&lt;input type="radio" class="radio__input" id="rg-e-1" name="rg-e" value="Online" /&gt;&lt;span class="radio__circle"&gt;&lt;span class="radio__dot"&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="radio__label"&gt;Online&lt;/span&gt;&lt;/label&gt;
+  &lt;/div&gt;
+  &lt;p class="field__description" id="rg-e-desc"&gt;You can change it later.&lt;/p&gt;
+  &lt;p class="field__error" id="rg-e-error"&gt;…&lt;span&gt;Choose a meeting format.&lt;/span&gt;&lt;/p&gt;
+&lt;/fieldset&gt;</code></pre><p class="story-note">After Submit with nothing picked: the Field's message under the helper. The radios themselves don't turn red — the message is the signal.</p></div>
     </div>
 
     <p class="placeholder-note">Every code sample on this page is printed from the same resolved token values driving the live previews above it — copy it directly, nothing here is hand-typed.</p>

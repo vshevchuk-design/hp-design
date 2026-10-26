@@ -90,7 +90,7 @@ const sizeCss = ["base", "sm", "lg"].map((k) => {
   return lines.join("\n");
 }).join("\n");
 
-export const FIELD_CSS = `
+export const TEXT_FIELD_CSS = `
 /* Text field — a real <input> on Input's recipe. base/lg float the label in at
    12px on focus or once there is a value; resting, the placeholder shows the
    label's text and the label itself is kept for screen readers only. sm never
@@ -133,7 +133,9 @@ ${sizeCss}
 .text-field--area { height: auto; min-height: ${px(resolveToken(get("dim.24")))}; align-items: stretch; padding-top: ${px(resolveToken(get("dim.2")))}; padding-bottom: ${px(resolveToken(get("dim.2")))}; }
 .text-field--area .text-field__stack { justify-content: flex-start; }
 .text-field--area .text-field__control { flex: 1; min-height: ${px(resolveToken(get("dim.16")))}; resize: vertical; }
+`;
 
+export const FIELD_WRAPPER_CSS = `
 /* Field — label (only for controls without a floating one), control, description, error */
 .field { display: flex; flex-direction: column; gap: ${D(field.messageGap)}; min-width: 0; }
 .field__label { margin-bottom: ${labelExtra}px; color: ${R(field.labelColor)}; ${T(field.label)} }
@@ -144,13 +146,18 @@ ${sizeCss}
 .field__error-icon { width: ${D(field.error.iconSize)}; height: ${D(field.error.iconSize)}; flex-shrink: 0; color: ${R(field.error.icon)}; }
 /* invalid: a DatePicker takes Input's error border too (a text field does via aria-invalid) */
 .field[data-invalid] .datepicker__trigger, .field[data-invalid] .datepicker__trigger:hover, .field[data-invalid] .datepicker__trigger:focus-visible { border-color: ${R(st.error.border)}; }
+`;
 
+export const FORM_LAYOUT_CSS = `
 /* Form — one column, sections, actions under the last field */
 .form { display: flex; flex-direction: column; gap: ${D(form.fieldGap)}; max-width: ${D(form.maxWidth)}; margin: 0; font-family: var(${cssVarName("family.sans")}); }
 .form__section { display: flex; flex-direction: column; gap: ${D(form.fieldGap)}; margin: 0; padding: 0; border: none; min-width: 0; }
 .form__section + .form__section { margin-top: ${resolveToken(form.sectionGap).value - resolveToken(form.fieldGap).value}px; }
 .form__section-title { margin: 0; padding: 0 0 ${D(form.sectionTitleGap)}; color: ${R(form.sectionTitleColor)}; ${T(form.sectionTitle)} }
 .form__actions { display: flex; flex-wrap: wrap; gap: ${D(form.actionsGap)}; }`;
+
+/** Everything: text field + Field + Form. */
+export const FIELD_CSS = TEXT_FIELD_CSS + FIELD_WRAPPER_CSS + FORM_LAYOUT_CSS;
 
 const errorIcon = () => icon("error", "field__error-icon");
 
@@ -197,16 +204,22 @@ export const describedBy = (id, { description = true } = {}) => `${description ?
 // Validate on Submit; after the first attempt each field re-checks as it is
 // corrected. Uses the browser's own constraint validation (required, type,
 // pattern) with the messages from data-error-*; a DatePicker counts as filled
-// once it has data-value.
+// once it has data-value; a RadioGroup / CheckboxGroup once one item is picked.
 export const FORM_JS = `(function () {
   document.querySelectorAll("form.form").forEach(function (form) {
     if (form._hpform) return; form._hpform = true;
     form.noValidate = true;
     var tried = false;
-    function controlOf(f) { return f.querySelector("input, textarea, .datepicker__trigger"); }
+    function controlOf(f) { return f.querySelector(".choice-group__items input:checked") || f.querySelector("input, textarea, .datepicker__trigger"); }
     function check(f) {
       var ctl = controlOf(f), dp = f.querySelector(".datepicker"), msg = "";
-      if (dp) { if (f.hasAttribute("data-required") && !dp.dataset.value) msg = f.dataset.errorRequired; }
+      var group = f.classList.contains("choice-group");
+      if (group) {
+        // a RadioGroup / CheckboxGroup: required = at least one picked
+        var picked = f.querySelector(".choice-group__items input:checked");
+        if (f.hasAttribute("data-required") && !picked && !f.disabled) msg = f.dataset.errorRequired;
+      }
+      else if (dp) { if (f.hasAttribute("data-required") && !dp.dataset.value) msg = f.dataset.errorRequired; }
       else if (ctl && ctl.validity) {
         if (ctl.validity.valueMissing) msg = f.dataset.errorRequired || ctl.validationMessage;
         else if (!ctl.validity.valid) msg = f.dataset.errorFormat || ctl.validationMessage;
@@ -214,7 +227,8 @@ export const FORM_JS = `(function () {
       var err = f.querySelector(".field__error");
       f.toggleAttribute("data-invalid", !!msg);
       err.hidden = !msg; err.querySelector("span").textContent = msg || "";
-      if (msg) ctl.setAttribute("aria-invalid", "true"); else ctl.removeAttribute("aria-invalid");
+      var marked = group ? f.querySelectorAll(".choice-group__items input") : [ctl];
+      Array.prototype.forEach.call(marked, function (c) { if (msg) c.setAttribute("aria-invalid", "true"); else c.removeAttribute("aria-invalid"); });
       return !msg;
     }
     form.addEventListener("submit", function (e) {
@@ -225,7 +239,8 @@ export const FORM_JS = `(function () {
     });
     function recheck(e) { if (!tried) return; var f = e.target.closest("[data-field]"); if (f) check(f); }
     form.addEventListener("input", recheck);
+    form.addEventListener("change", recheck);
     form.addEventListener("datechange", recheck);
-    form.addEventListener("reset", function () { tried = false; setTimeout(function () { form.querySelectorAll("[data-field]").forEach(function (f) { f.removeAttribute("data-invalid"); f.querySelector(".field__error").hidden = true; var c = controlOf(f); if (c) c.removeAttribute("aria-invalid"); }); }); });
+    form.addEventListener("reset", function () { tried = false; setTimeout(function () { form.querySelectorAll("[data-field]").forEach(function (f) { f.removeAttribute("data-invalid"); f.querySelector(".field__error").hidden = true; f.querySelectorAll("[aria-invalid]").forEach(function (c) { c.removeAttribute("aria-invalid"); }); }); }); });
   });
 })();`;

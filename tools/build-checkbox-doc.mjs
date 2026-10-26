@@ -14,6 +14,8 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { renderNav } from "./lib/nav.mjs";
 import { cssVarName, renderRootVars } from "./lib/css-vars.mjs";
+import { CHOICE_COLOR_PATHS, CHECKBOX_CSS, CHOICE_GROUP_CSS, CHOICE_JS, choiceGroupHtml } from "./lib/choice.mjs";
+import { FIELD_COLOR_PATHS, FIELD_WRAPPER_CSS } from "./lib/field.mjs";
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const load = (p) => JSON.parse(fs.readFileSync(path.join(root, p)));
@@ -74,9 +76,10 @@ const colorPaths = [
   "icon.onFill", "icon.disabled",
   "text.default", "text.disabled", "text.secondary",
 ];
-const colorValue = Object.fromEntries(colorPaths.map((p) => [p, resolve(p)]));
+const allPaths = [...new Set([...colorPaths, ...CHOICE_COLOR_PATHS, ...FIELD_COLOR_PATHS])];
+const colorValue = Object.fromEntries(allPaths.map((p) => [p, resolve(p)]));
 const fontSans = resolve("family.sans");
-const rootVars = renderRootVars([...colorPaths.map((p) => [p, colorValue[p]]), ["family.sans", `'${fontSans}', sans-serif`]]);
+const rootVars = renderRootVars([...allPaths.map((p) => [p, colorValue[p]]), ["family.sans", `'${fontSans}', sans-serif`]]);
 
 const box = px(resolve(checkbox.size.box.$value));
 const iconSize = px(resolve(checkbox.size.iconSize.$value));
@@ -87,12 +90,6 @@ const labelType = resolveToken(checkbox.label);
 const ringWidth = px(resolve(checkbox.state.focused.ringWidth.$value));
 const ringOffset = px(resolve(checkbox.state.focused.ringOffset.$value));
 
-const group = checkbox.group;
-const gapVertical = px(resolve(group.gapVertical.$value));
-const gapHorizontal = px(resolve(group.gapHorizontal.$value));
-const groupLabelGap = px(resolve(group.labelGap.$value));
-const groupLabelType = resolveToken(group.label);
-const groupHelperType = resolveToken(group.helper);
 
 const iconCheck = fs.readFileSync(path.join(root, "assets/icons/material-filled/check.svg"), "utf8").replace("<svg ", '<svg class="checkbox__icon checkbox__icon--check" ');
 const iconRemove = fs.readFileSync(path.join(root, "assets/icons/material-filled/remove.svg"), "utf8").replace("<svg ", '<svg class="checkbox__icon checkbox__icon--remove" ');
@@ -101,38 +98,11 @@ function typoCss(t) {
   return `font-weight: ${t.fontWeight}; font-size: ${px(t.fontSize)}; line-height: ${t.lineHeight};`;
 }
 
+// one recipe with Form and every other consumer — tools/lib/choice.mjs
 const css = `${rootVars}
-
-.checkbox { display: inline-flex; align-items: center; gap: ${gap}; font-family: ${cv("family.sans")}; cursor: pointer; }
-.checkbox__input { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
-.checkbox__box { box-sizing: border-box; width: ${box}; height: ${box}; border-radius: ${boxRadius}; border: ${borderWidth} solid ${cv("border.default")}; background: ${cv("surface.default")}; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.checkbox__icon { width: ${iconSize}; height: ${iconSize}; display: none; }
-.checkbox__label { color: ${cv("text.default")}; ${typoCss(labelType)} }
-
-.checkbox:hover .checkbox__input:not(:checked):not(:indeterminate):not(:disabled) ~ .checkbox__box { background: ${cv(hoverBg)}; }
-.checkbox:hover .checkbox__box { border-color: ${cv("fill.primary")}; }
-.checkbox__input:focus-visible ~ .checkbox__box { outline: ${ringWidth} solid ${cv("border.focus")}; outline-offset: ${ringOffset}; }
-.checkbox__input:checked ~ .checkbox__box, .checkbox__input:indeterminate ~ .checkbox__box {
-  background: ${cv("fill.primary")}; border-color: ${cv("fill.primary")};
-}
-.checkbox:hover .checkbox__input:checked:not(:disabled) ~ .checkbox__box, .checkbox:hover .checkbox__input:indeterminate:not(:disabled) ~ .checkbox__box {
-  background: ${cv("fill.primaryHover")}; border-color: ${cv("fill.primaryHover")};
-}
-.checkbox__input:checked ~ .checkbox__box .checkbox__icon--check { display: block; color: ${cv("icon.onFill")}; }
-.checkbox__input:indeterminate ~ .checkbox__box .checkbox__icon--remove { display: block; color: ${cv("icon.onFill")}; }
-.checkbox__input:disabled ~ .checkbox__box { background: ${cv("surface.disabled")}; border-color: ${cv("border.default")}; cursor: not-allowed; }
-.checkbox__input:disabled ~ .checkbox__label { color: ${cv("text.disabled")}; }
-.checkbox__input:disabled:checked ~ .checkbox__box, .checkbox__input:disabled:indeterminate ~ .checkbox__box {
-  background: ${cv("fill.disabled")}; border-color: ${cv("fill.disabled")};
-}
-.checkbox__input:disabled:checked ~ .checkbox__box .checkbox__icon--check, .checkbox__input:disabled:indeterminate ~ .checkbox__box .checkbox__icon--remove { color: ${cv("icon.disabled")}; }
-.checkbox:has(.checkbox__input:disabled) { cursor: not-allowed; }
-
-.checkbox-group { display: flex; flex-direction: column; gap: ${groupLabelGap}; }
-.checkbox-group--vertical .checkbox-group__items { display: flex; flex-direction: column; gap: ${gapVertical}; }
-.checkbox-group--horizontal .checkbox-group__items { display: flex; flex-direction: row; flex-wrap: wrap; gap: ${gapHorizontal}; }
-.checkbox-group__label { color: ${cv("text.default")}; margin: 0; ${typoCss(groupLabelType)} }
-.checkbox-group__helper { color: ${cv("text.secondary")}; margin: 0; ${typoCss(groupHelperType)} }`;
+${CHECKBOX_CSS}
+${FIELD_WRAPPER_CSS}
+${CHOICE_GROUP_CSS}`;
 
 function ic(svg, name, live) {
   return live ? svg : `<svg class="checkbox__icon checkbox__icon--${name}"><!-- icon: ${name} --></svg>`;
@@ -193,22 +163,14 @@ function stateStories(live) {
   return stateDefs.map((s, i) => storyCard(s.label, markup(`cb-state-${i}-${live ? "live" : "code"}`, { ...s.opts, live: true }), markup(`cb-state-${i}`, { ...s.opts, live: false }), s.note)).join("\n");
 }
 
-function groupExample(layout) {
-  const items = ["Email", "SMS", "Push notifications"];
-  const itemsHtml = items.map((label, i) => `      <label class="checkbox">
-        <input type="checkbox" class="checkbox__input" id="cb-${layout}-${i}"${i === 0 ? " checked" : ""} />
-        <span class="checkbox__box">${glyphs(true)}</span>
-        <span class="checkbox__label">${label}</span>
-      </label>`).join("\n");
-  return `<div class="checkbox-group checkbox-group--${layout}">
-      <p class="checkbox-group__label">Notify me by</p>
-      <div class="checkbox-group__items">
-${itemsHtml}
-      </div>
-      <p class="checkbox-group__helper">Choose at least one channel.</p>
-    </div>`;
-}
-
+// Groups — each one a Field on a <fieldset> (tools/lib/choice.mjs)
+const groupItems = [{ label: "Email", checked: true }, { label: "SMS" }, { label: "Push notifications" }];
+const groups = [
+  ["vertical", choiceGroupHtml({ type: "checkbox", name: "cg-v", legend: "Notify me by", helper: "Choose at least one channel.", items: groupItems }), "Stacked, 12px apart. The legend is the Field label (heading-sm), the helper its description."],
+  ["horizontal", choiceGroupHtml({ type: "checkbox", name: "cg-h", legend: "Notify me by", helper: "Choose at least one channel.", items: groupItems, direction: "horizontal" }), "A wrapping row, 20px apart — for two or three short options."],
+  ["disabled", choiceGroupHtml({ type: "checkbox", name: "cg-d", legend: "Notify me by", helper: "Turn on notifications in Settings first.", items: groupItems, disabled: true }), "disabled on the fieldset disables every checkbox in it; the legend and helper fade too."],
+  ["error", choiceGroupHtml({ type: "checkbox", name: "cg-e", legend: "Notify me by", helper: "Choose at least one channel.", items: [{ label: "Email" }, { label: "SMS" }, { label: "Push notifications" }], error: "Choose at least one channel." }), "After Submit with nothing ticked: the Field's message under the helper. The boxes don't turn red — the message is the signal."],
+];
 const html = `<!doctype html>
 <html lang="en">
 <head>
@@ -298,7 +260,7 @@ const html = `<!doctype html>
       <div class="row"><b>Glyphs</b><span>check.svg (checked) / remove.svg (indeterminate) from the shared <a href="icons.html">Material icon set</a> — not bespoke assets.</span></div>
       <div class="row"><b>Unchecked ≠ disabled</b><span>Unchecked default sits on surface.default (not filled), so disabled's surface.disabled swap is an actual visible change — unlike Input, where those two already share the same gray.100 value.</span></div>
       <div class="row"><b>States</b><span>default / hover / focused / checked / checked+hover / indeterminate / disabled / disabled+checked. No error state — not asked for, and there's no field validation concept here.</span></div>
-      <div class="row"><b>Groups</b><span>CheckboxGroup composes plain Checkbox items under an optional heading + helper text, vertical or horizontal — no group-level error state.</span></div>
+      <div class="row"><b>Groups</b><span>CheckboxGroup is a Field on a <code class="tok">&lt;fieldset&gt;</code> + <code class="tok">&lt;legend&gt;</code>, vertical or horizontal, with helper text, a whole-group disabled state and the Field's error message (on Submit, from <a href="form.html">Form</a>).</span></div>
     </div>
 
     <h2 class="big-section">CSS</h2>
@@ -311,24 +273,15 @@ const html = `<!doctype html>
     </div>
 
     <h2 class="big-section">Groups</h2>
-    <p class="section-desc">CheckboxGroup — vertical (stacked) and horizontal (wrapping row) layouts, each with an optional group label and helper text. No error/validation state at the group level.</p>
+    <p class="section-desc">CheckboxGroup — a <a href="form.html">Field</a> on a real <code class="tok">&lt;fieldset&gt;</code>: the <code class="tok">&lt;legend&gt;</code> is read before the options, one <code class="tok">disabled</code> turns off the whole group, and Form checks it on Submit like any field.</p>
     <div class="story-grid">
-      <div class="story">
-        <h3>vertical</h3>
-        <div class="story-preview" style="justify-content:flex-start">${groupExample("vertical")}</div>
-      </div>
-      <div class="story">
-        <h3>horizontal</h3>
-        <div class="story-preview" style="justify-content:flex-start">${groupExample("horizontal")}</div>
-      </div>
+      ${groups.map(([t, live, note]) => `<div class="story"><h3>${t}</h3><div class="story-preview" style="justify-content:flex-start">${live}</div><pre class="code"><code>${esc(live.replace(/<svg[\s\S]*?<\/svg>/g, "…"))}</code></pre><p class="story-note">${note}</p></div>`).join("\n      ")}
     </div>
 
     <p class="placeholder-note">Every code sample on this page is printed from the same resolved token values driving the live previews above it — copy it directly, nothing here is hand-typed.</p>
   </main>
 </div>
-<script>
-  document.querySelectorAll('[data-indeterminate]').forEach((el) => { el.indeterminate = true; });
-</script>
+<script>${CHOICE_JS}</script>
 </body>
 </html>
 `;

@@ -8,7 +8,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { renderNav } from "./lib/nav.mjs";
 import { renderRootVars } from "./lib/css-vars.mjs";
-import { FIELD_COLOR_PATHS, FIELD_CSS, TEXT_FIELD_JS, textFieldHtml } from "./lib/field.mjs";
+import { FIELD_COLOR_PATHS, TEXT_FIELD_CSS, TEXT_FIELD_JS, textFieldHtml } from "./lib/field.mjs";
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const load = (p) => JSON.parse(fs.readFileSync(path.join(root, p)));
@@ -24,7 +24,7 @@ const input = load("tokens/components/input.tokens.json").component.input;
 const H = (k) => px(resolve(input.size[k].height.$value.replace(/[{}]/g, "")));
 
 // only the text field part of the shared sheet (Field/Form live on form.html)
-const fieldCss = FIELD_CSS.slice(0, FIELD_CSS.indexOf("/* Field — label"));
+const fieldCss = TEXT_FIELD_CSS;
 const rootVars = renderRootVars([...FIELD_COLOR_PATHS.map((p) => [p, resolve(p)]), ["family.sans", `'${resolve("family.sans")}', sans-serif`]]);
 const css = `${rootVars}
 ${fieldCss}`;

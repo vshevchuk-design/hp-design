@@ -12,6 +12,7 @@ import { cssVarName, renderRootVars } from "./lib/css-vars.mjs";
 import { FIELD_COLOR_PATHS, FIELD_CSS, FORM_JS, TEXT_FIELD_JS, fieldHtml, textFieldHtml, describedBy } from "./lib/field.mjs";
 import { CALENDAR_CSS, CALENDAR_JS } from "./lib/calendar.mjs";
 import { DATE_PICKER_CSS, DATE_PICKER_COLOR_PATHS, DATE_PICKER_JS, datePickerHtml } from "./lib/date-picker.mjs";
+import { CHOICE_COLOR_PATHS, RADIO_CSS, CHOICE_GROUP_CSS, choiceGroupHtml } from "./lib/choice.mjs";
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const load = (p) => JSON.parse(fs.readFileSync(path.join(root, p)));
@@ -34,7 +35,7 @@ const btnPaths = [pr.state.default.fill, pr.state.default.label, pr.state.hover.
 const field = load("tokens/components/field.tokens.json").component.field;
 const form = load("tokens/components/form.tokens.json").component.form;
 
-const colorPaths = [...new Set([...FIELD_COLOR_PATHS, ...DATE_PICKER_COLOR_PATHS, ...btnPaths, "text.success", "text.secondary"])];
+const colorPaths = [...new Set([...FIELD_COLOR_PATHS, ...CHOICE_COLOR_PATHS, ...DATE_PICKER_COLOR_PATHS, ...btnPaths, "text.success", "text.secondary"])];
 const rootVars = renderRootVars([...colorPaths.map((p) => [p, resolve(p)]), ["family.sans", `'${resolve("family.sans")}', sans-serif`]]);
 const css = `${rootVars}
 ${FIELD_CSS}`;
@@ -50,6 +51,8 @@ const btnCss = `
 .btn--secondary:active { background: ${cv(role(se.state.pressed.fill))}; }
 ${CALENDAR_CSS}
 ${DATE_PICKER_CSS}
+${RADIO_CSS}
+${CHOICE_GROUP_CSS}
 .form-status { margin: 0; min-height: 1.4em; color: ${cv("text.success")}; ${typoCss(resolve("text-style.body-sm"))} }`;
 
 // ---- stories ----
@@ -85,6 +88,7 @@ const bookForm = formWrap("form-book", `<fieldset class="form__section">
 <fieldset class="form__section">
   <legend class="form__section-title">Appointment</legend>
   ${fieldHtml({ id: "b-date-trigger", label: "Preferred date", required: true, errors: { required: "Choose a date." }, control: datePickerHtml({ id: "b-date", today, min: today, block: true, triggerId: "b-date-trigger", describedBy: describedBy("b-date-trigger", { description: false }) }) })}
+  ${choiceGroupHtml({ name: "b-format", legend: "Meeting format", required: true, errors: { required: "Choose a meeting format." }, direction: "horizontal", items: [{ label: "In person" }, { label: "Online" }] })}
   ${fieldHtml({ id: "b-notes", description: "Anything your advisor should know before you meet.", control: textFieldHtml({ id: "b-notes", label: "Notes (optional)", area: true, describedBy: describedBy("b-notes") }) })}
 </fieldset>`, `<button class="btn btn--primary" type="submit">Book appointment</button><button class="btn btn--secondary" type="reset">Cancel</button>`);
 
@@ -180,7 +184,7 @@ const html = `<!doctype html>
     </div>
 
     <h2 class="big-section">A real form</h2>
-    <p class="section-desc">Two sections, a floating-label input, an email with a format rule, a DatePicker with its label above, an optional text area. Press Book appointment empty, then fill it in.</p>
+    <p class="section-desc">Two sections, a floating-label input, an email with a format rule, a DatePicker with its label above, a RadioGroup, an optional text area. Press Book appointment empty, then fill it in.</p>
     <div class="story-grid">
       ${story("Book an appointment", bookForm, "Email checks its format only once it isn't empty; Cancel resets the form and clears the errors.", true)}
     </div>

@@ -83,6 +83,18 @@
   --tok-text-default: #121921;
   --tok-text-disabled: #adb5be;
   --tok-text-secondary: #5d6a7a;
+  --tok-surface-dim: #f4f5f7;
+  --tok-text-muted: #758191;
+  --tok-surface-dim-hover: #e6e8eb;
+  --tok-border-strong: #adb5be;
+  --tok-text-primary: #0468c4;
+  --tok-border-danger-strong: #c11435;
+  --tok-icon-default: #485462;
+  --tok-text-danger: #c11435;
+  --tok-icon-danger: #de394b;
+  --tok-icon-secondary: #758191;
+  --tok-fill-neutral-hover: #e6e8eb;
+  --tok-fill-neutral-active: #cdd1d6;
   --tok-family-sans: 'Sora', sans-serif;
 }
 
@@ -91,31 +103,39 @@
 .checkbox__box { box-sizing: border-box; width: 20px; height: 20px; border-radius: 4px; border: 2px solid var(--tok-border-default); background: var(--tok-surface-default); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .checkbox__icon { width: 16px; height: 16px; display: none; }
 .checkbox__label { color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; }
-
-.checkbox:hover .checkbox__input:not(:checked):not(:indeterminate):not(:disabled) ~ .checkbox__box { background: var(--tok-bg-primary-hover); }
-.checkbox:hover .checkbox__box { border-color: var(--tok-fill-primary); }
+.checkbox:hover .checkbox__input:not(:checked):not(:indeterminate):not(:disabled) ~ .checkbox__box { background: var(--tok-bg-primary-hover); border-color: var(--tok-fill-primary); }
 .checkbox__input:focus-visible ~ .checkbox__box { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
-.checkbox__input:checked ~ .checkbox__box, .checkbox__input:indeterminate ~ .checkbox__box {
-  background: var(--tok-fill-primary); border-color: var(--tok-fill-primary);
-}
-.checkbox:hover .checkbox__input:checked:not(:disabled) ~ .checkbox__box, .checkbox:hover .checkbox__input:indeterminate:not(:disabled) ~ .checkbox__box {
-  background: var(--tok-fill-primary-hover); border-color: var(--tok-fill-primary-hover);
-}
+.checkbox__input:checked ~ .checkbox__box, .checkbox__input:indeterminate ~ .checkbox__box { background: var(--tok-fill-primary); border-color: var(--tok-fill-primary); }
+.checkbox:hover .checkbox__input:checked:not(:disabled) ~ .checkbox__box, .checkbox:hover .checkbox__input:indeterminate:not(:disabled) ~ .checkbox__box { background: var(--tok-fill-primary-hover); border-color: var(--tok-fill-primary-hover); }
 .checkbox__input:checked ~ .checkbox__box .checkbox__icon--check { display: block; color: var(--tok-icon-on-fill); }
 .checkbox__input:indeterminate ~ .checkbox__box .checkbox__icon--remove { display: block; color: var(--tok-icon-on-fill); }
 .checkbox__input:disabled ~ .checkbox__box { background: var(--tok-surface-disabled); border-color: var(--tok-border-default); cursor: not-allowed; }
 .checkbox__input:disabled ~ .checkbox__label { color: var(--tok-text-disabled); }
-.checkbox__input:disabled:checked ~ .checkbox__box, .checkbox__input:disabled:indeterminate ~ .checkbox__box {
-  background: var(--tok-fill-disabled); border-color: var(--tok-fill-disabled);
-}
+.checkbox__input:disabled:checked ~ .checkbox__box, .checkbox__input:disabled:indeterminate ~ .checkbox__box { background: var(--tok-fill-disabled); border-color: var(--tok-fill-disabled); }
 .checkbox__input:disabled:checked ~ .checkbox__box .checkbox__icon--check, .checkbox__input:disabled:indeterminate ~ .checkbox__box .checkbox__icon--remove { color: var(--tok-icon-disabled); }
 .checkbox:has(.checkbox__input:disabled) { cursor: not-allowed; }
 
-.checkbox-group { display: flex; flex-direction: column; gap: 8px; }
-.checkbox-group--vertical .checkbox-group__items { display: flex; flex-direction: column; gap: 12px; }
-.checkbox-group--horizontal .checkbox-group__items { display: flex; flex-direction: row; flex-wrap: wrap; gap: 20px; }
-.checkbox-group__label { color: var(--tok-text-default); margin: 0; font-weight: 600; font-size: 12px; line-height: 1.4; }
-.checkbox-group__helper { color: var(--tok-text-secondary); margin: 0; font-weight: 400; font-size: 12px; line-height: 1.4; }
+/* Field — label (only for controls without a floating one), control, description, error */
+.field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.field__label { margin-bottom: 4px; color: var(--tok-text-default); font-weight: 600; font-size: 12px; line-height: 1.4; }
+.field__optional { color: var(--tok-text-muted); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.field__description { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.field__error { margin: 0; display: flex; align-items: flex-start; gap: 4px; color: var(--tok-text-danger); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.field__error[hidden] { display: none; }
+.field__error-icon { width: 16px; height: 16px; flex-shrink: 0; color: var(--tok-icon-danger); }
+/* invalid: a DatePicker takes Input's error border too (a text field does via aria-invalid) */
+.field[data-invalid] .datepicker__trigger, .field[data-invalid] .datepicker__trigger:hover, .field[data-invalid] .datepicker__trigger:focus-visible { border-color: var(--tok-border-danger-strong); }
+
+
+/* A group is a Field on a <fieldset>: the legend is its label, the helper its
+   description, the error the Field's. A legend sits outside flex layout, so the
+   fieldset is a plain block and the gaps are margins. */
+.choice-group { display: block; margin: 0; padding: 0; border: 0; min-width: 0; }
+.choice-group > legend { padding: 0; margin-bottom: 8px; }
+.choice-group__items { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; }
+.choice-group--horizontal .choice-group__items { flex-direction: row; flex-wrap: wrap; gap: 20px; }
+.choice-group > .field__description, .choice-group > .field__error { margin-top: 4px; }
+.choice-group:disabled > legend, .choice-group:disabled > .field__description { color: var(--tok-text-disabled); }
 </style>
 </head>
 <body>
@@ -256,7 +276,7 @@
       <div class="row"><b>Glyphs</b><span>check.svg (checked) / remove.svg (indeterminate) from the shared <a href="icons.html">Material icon set</a> — not bespoke assets.</span></div>
       <div class="row"><b>Unchecked ≠ disabled</b><span>Unchecked default sits on surface.default (not filled), so disabled's surface.disabled swap is an actual visible change — unlike Input, where those two already share the same gray.100 value.</span></div>
       <div class="row"><b>States</b><span>default / hover / focused / checked / checked+hover / indeterminate / disabled / disabled+checked. No error state — not asked for, and there's no field validation concept here.</span></div>
-      <div class="row"><b>Groups</b><span>CheckboxGroup composes plain Checkbox items under an optional heading + helper text, vertical or horizontal — no group-level error state.</span></div>
+      <div class="row"><b>Groups</b><span>CheckboxGroup is a Field on a <code class="tok">&lt;fieldset&gt;</code> + <code class="tok">&lt;legend&gt;</code>, vertical or horizontal, with helper text, a whole-group disabled state and the Field's error message (on Submit, from <a href="form.html">Form</a>).</span></div>
     </div>
 
     <h2 class="big-section">CSS</h2>
@@ -274,6 +294,18 @@
   --tok-text-default: #121921;
   --tok-text-disabled: #adb5be;
   --tok-text-secondary: #5d6a7a;
+  --tok-surface-dim: #f4f5f7;
+  --tok-text-muted: #758191;
+  --tok-surface-dim-hover: #e6e8eb;
+  --tok-border-strong: #adb5be;
+  --tok-text-primary: #0468c4;
+  --tok-border-danger-strong: #c11435;
+  --tok-icon-default: #485462;
+  --tok-text-danger: #c11435;
+  --tok-icon-danger: #de394b;
+  --tok-icon-secondary: #758191;
+  --tok-fill-neutral-hover: #e6e8eb;
+  --tok-fill-neutral-active: #cdd1d6;
   --tok-family-sans: 'Sora', sans-serif;
 }
 
@@ -282,31 +314,39 @@
 .checkbox__box { box-sizing: border-box; width: 20px; height: 20px; border-radius: 4px; border: 2px solid var(--tok-border-default); background: var(--tok-surface-default); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .checkbox__icon { width: 16px; height: 16px; display: none; }
 .checkbox__label { color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; }
-
-.checkbox:hover .checkbox__input:not(:checked):not(:indeterminate):not(:disabled) ~ .checkbox__box { background: var(--tok-bg-primary-hover); }
-.checkbox:hover .checkbox__box { border-color: var(--tok-fill-primary); }
+.checkbox:hover .checkbox__input:not(:checked):not(:indeterminate):not(:disabled) ~ .checkbox__box { background: var(--tok-bg-primary-hover); border-color: var(--tok-fill-primary); }
 .checkbox__input:focus-visible ~ .checkbox__box { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
-.checkbox__input:checked ~ .checkbox__box, .checkbox__input:indeterminate ~ .checkbox__box {
-  background: var(--tok-fill-primary); border-color: var(--tok-fill-primary);
-}
-.checkbox:hover .checkbox__input:checked:not(:disabled) ~ .checkbox__box, .checkbox:hover .checkbox__input:indeterminate:not(:disabled) ~ .checkbox__box {
-  background: var(--tok-fill-primary-hover); border-color: var(--tok-fill-primary-hover);
-}
+.checkbox__input:checked ~ .checkbox__box, .checkbox__input:indeterminate ~ .checkbox__box { background: var(--tok-fill-primary); border-color: var(--tok-fill-primary); }
+.checkbox:hover .checkbox__input:checked:not(:disabled) ~ .checkbox__box, .checkbox:hover .checkbox__input:indeterminate:not(:disabled) ~ .checkbox__box { background: var(--tok-fill-primary-hover); border-color: var(--tok-fill-primary-hover); }
 .checkbox__input:checked ~ .checkbox__box .checkbox__icon--check { display: block; color: var(--tok-icon-on-fill); }
 .checkbox__input:indeterminate ~ .checkbox__box .checkbox__icon--remove { display: block; color: var(--tok-icon-on-fill); }
 .checkbox__input:disabled ~ .checkbox__box { background: var(--tok-surface-disabled); border-color: var(--tok-border-default); cursor: not-allowed; }
 .checkbox__input:disabled ~ .checkbox__label { color: var(--tok-text-disabled); }
-.checkbox__input:disabled:checked ~ .checkbox__box, .checkbox__input:disabled:indeterminate ~ .checkbox__box {
-  background: var(--tok-fill-disabled); border-color: var(--tok-fill-disabled);
-}
+.checkbox__input:disabled:checked ~ .checkbox__box, .checkbox__input:disabled:indeterminate ~ .checkbox__box { background: var(--tok-fill-disabled); border-color: var(--tok-fill-disabled); }
 .checkbox__input:disabled:checked ~ .checkbox__box .checkbox__icon--check, .checkbox__input:disabled:indeterminate ~ .checkbox__box .checkbox__icon--remove { color: var(--tok-icon-disabled); }
 .checkbox:has(.checkbox__input:disabled) { cursor: not-allowed; }
 
-.checkbox-group { display: flex; flex-direction: column; gap: 8px; }
-.checkbox-group--vertical .checkbox-group__items { display: flex; flex-direction: column; gap: 12px; }
-.checkbox-group--horizontal .checkbox-group__items { display: flex; flex-direction: row; flex-wrap: wrap; gap: 20px; }
-.checkbox-group__label { color: var(--tok-text-default); margin: 0; font-weight: 600; font-size: 12px; line-height: 1.4; }
-.checkbox-group__helper { color: var(--tok-text-secondary); margin: 0; font-weight: 400; font-size: 12px; line-height: 1.4; }</code></pre>
+/* Field — label (only for controls without a floating one), control, description, error */
+.field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.field__label { margin-bottom: 4px; color: var(--tok-text-default); font-weight: 600; font-size: 12px; line-height: 1.4; }
+.field__optional { color: var(--tok-text-muted); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.field__description { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.field__error { margin: 0; display: flex; align-items: flex-start; gap: 4px; color: var(--tok-text-danger); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.field__error[hidden] { display: none; }
+.field__error-icon { width: 16px; height: 16px; flex-shrink: 0; color: var(--tok-icon-danger); }
+/* invalid: a DatePicker takes Input's error border too (a text field does via aria-invalid) */
+.field[data-invalid] .datepicker__trigger, .field[data-invalid] .datepicker__trigger:hover, .field[data-invalid] .datepicker__trigger:focus-visible { border-color: var(--tok-border-danger-strong); }
+
+
+/* A group is a Field on a &lt;fieldset&gt;: the legend is its label, the helper its
+   description, the error the Field's. A legend sits outside flex layout, so the
+   fieldset is a plain block and the gaps are margins. */
+.choice-group { display: block; margin: 0; padding: 0; border: 0; min-width: 0; }
+.choice-group &gt; legend { padding: 0; margin-bottom: 8px; }
+.choice-group__items { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; }
+.choice-group--horizontal .choice-group__items { flex-direction: row; flex-wrap: wrap; gap: 20px; }
+.choice-group &gt; .field__description, .choice-group &gt; .field__error { margin-top: 4px; }
+.choice-group:disabled &gt; legend, .choice-group:disabled &gt; .field__description { color: var(--tok-text-disabled); }</code></pre>
 
     <h2 class="big-section">States</h2>
     <p class="section-desc">Single size (20px). Hover/focused are forced via inline style for a static screenshot — the real rule is :hover / :focus-visible on the native input, shown in the CSS above.</p>
@@ -434,63 +474,89 @@
     </div>
 
     <h2 class="big-section">Groups</h2>
-    <p class="section-desc">CheckboxGroup — vertical (stacked) and horizontal (wrapping row) layouts, each with an optional group label and helper text. No error/validation state at the group level.</p>
+    <p class="section-desc">CheckboxGroup — a <a href="form.html">Field</a> on a real <code class="tok">&lt;fieldset&gt;</code>: the <code class="tok">&lt;legend&gt;</code> is read before the options, one <code class="tok">disabled</code> turns off the whole group, and Form checks it on Submit like any field.</p>
     <div class="story-grid">
-      <div class="story">
-        <h3>vertical</h3>
-        <div class="story-preview" style="justify-content:flex-start"><div class="checkbox-group checkbox-group--vertical">
-      <p class="checkbox-group__label">Notify me by</p>
-      <div class="checkbox-group__items">
-      <label class="checkbox">
-        <input type="checkbox" class="checkbox__input" id="cb-vertical-0" checked />
-        <span class="checkbox__box"><svg class="checkbox__icon checkbox__icon--check" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg><svg class="checkbox__icon checkbox__icon--remove" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13H5v-2h14v2z"/></svg></span>
-        <span class="checkbox__label">Email</span>
-      </label>
-      <label class="checkbox">
-        <input type="checkbox" class="checkbox__input" id="cb-vertical-1" />
-        <span class="checkbox__box"><svg class="checkbox__icon checkbox__icon--check" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg><svg class="checkbox__icon checkbox__icon--remove" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13H5v-2h14v2z"/></svg></span>
-        <span class="checkbox__label">SMS</span>
-      </label>
-      <label class="checkbox">
-        <input type="checkbox" class="checkbox__input" id="cb-vertical-2" />
-        <span class="checkbox__box"><svg class="checkbox__icon checkbox__icon--check" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg><svg class="checkbox__icon checkbox__icon--remove" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13H5v-2h14v2z"/></svg></span>
-        <span class="checkbox__label">Push notifications</span>
-      </label>
-      </div>
-      <p class="checkbox-group__helper">Choose at least one channel.</p>
-    </div></div>
-      </div>
-      <div class="story">
-        <h3>horizontal</h3>
-        <div class="story-preview" style="justify-content:flex-start"><div class="checkbox-group checkbox-group--horizontal">
-      <p class="checkbox-group__label">Notify me by</p>
-      <div class="checkbox-group__items">
-      <label class="checkbox">
-        <input type="checkbox" class="checkbox__input" id="cb-horizontal-0" checked />
-        <span class="checkbox__box"><svg class="checkbox__icon checkbox__icon--check" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg><svg class="checkbox__icon checkbox__icon--remove" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13H5v-2h14v2z"/></svg></span>
-        <span class="checkbox__label">Email</span>
-      </label>
-      <label class="checkbox">
-        <input type="checkbox" class="checkbox__input" id="cb-horizontal-1" />
-        <span class="checkbox__box"><svg class="checkbox__icon checkbox__icon--check" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg><svg class="checkbox__icon checkbox__icon--remove" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13H5v-2h14v2z"/></svg></span>
-        <span class="checkbox__label">SMS</span>
-      </label>
-      <label class="checkbox">
-        <input type="checkbox" class="checkbox__input" id="cb-horizontal-2" />
-        <span class="checkbox__box"><svg class="checkbox__icon checkbox__icon--check" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg><svg class="checkbox__icon checkbox__icon--remove" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13H5v-2h14v2z"/></svg></span>
-        <span class="checkbox__label">Push notifications</span>
-      </label>
-      </div>
-      <p class="checkbox-group__helper">Choose at least one channel.</p>
-    </div></div>
-      </div>
+      <div class="story"><h3>vertical</h3><div class="story-preview" style="justify-content:flex-start"><fieldset class="field choice-group" data-field aria-describedby="cg-v-desc cg-v-error">
+  <legend class="field__label">Notify me by</legend>
+  <div class="choice-group__items">
+    <label class="checkbox"><input type="checkbox" class="checkbox__input" id="cg-v-0" name="cg-v" value="Email" checked /><span class="checkbox__box"><svg class="checkbox__icon checkbox__icon--check" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg><svg class="checkbox__icon checkbox__icon--remove" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13H5v-2h14v2z"/></svg></span><span class="checkbox__label">Email</span></label>
+    <label class="checkbox"><input type="checkbox" class="checkbox__input" id="cg-v-1" name="cg-v" value="SMS" /><span class="checkbox__box"><svg class="checkbox__icon checkbox__icon--check" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg><svg class="checkbox__icon checkbox__icon--remove" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13H5v-2h14v2z"/></svg></span><span class="checkbox__label">SMS</span></label>
+    <label class="checkbox"><input type="checkbox" class="checkbox__input" id="cg-v-2" name="cg-v" value="Push notifications" /><span class="checkbox__box"><svg class="checkbox__icon checkbox__icon--check" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg><svg class="checkbox__icon checkbox__icon--remove" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13H5v-2h14v2z"/></svg></span><span class="checkbox__label">Push notifications</span></label>
+  </div>
+  <p class="field__description" id="cg-v-desc">Choose at least one channel.</p>
+  <p class="field__error" id="cg-v-error" hidden><svg class="field__error-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg><span></span></p>
+</fieldset></div><pre class="code"><code>&lt;fieldset class="field choice-group" data-field aria-describedby="cg-v-desc cg-v-error"&gt;
+  &lt;legend class="field__label"&gt;Notify me by&lt;/legend&gt;
+  &lt;div class="choice-group__items"&gt;
+    &lt;label class="checkbox"&gt;&lt;input type="checkbox" class="checkbox__input" id="cg-v-0" name="cg-v" value="Email" checked /&gt;&lt;span class="checkbox__box"&gt;……&lt;/span&gt;&lt;span class="checkbox__label"&gt;Email&lt;/span&gt;&lt;/label&gt;
+    &lt;label class="checkbox"&gt;&lt;input type="checkbox" class="checkbox__input" id="cg-v-1" name="cg-v" value="SMS" /&gt;&lt;span class="checkbox__box"&gt;……&lt;/span&gt;&lt;span class="checkbox__label"&gt;SMS&lt;/span&gt;&lt;/label&gt;
+    &lt;label class="checkbox"&gt;&lt;input type="checkbox" class="checkbox__input" id="cg-v-2" name="cg-v" value="Push notifications" /&gt;&lt;span class="checkbox__box"&gt;……&lt;/span&gt;&lt;span class="checkbox__label"&gt;Push notifications&lt;/span&gt;&lt;/label&gt;
+  &lt;/div&gt;
+  &lt;p class="field__description" id="cg-v-desc"&gt;Choose at least one channel.&lt;/p&gt;
+  &lt;p class="field__error" id="cg-v-error" hidden&gt;…&lt;span&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;/fieldset&gt;</code></pre><p class="story-note">Stacked, 12px apart. The legend is the Field label (heading-sm), the helper its description.</p></div>
+      <div class="story"><h3>horizontal</h3><div class="story-preview" style="justify-content:flex-start"><fieldset class="field choice-group choice-group--horizontal" data-field aria-describedby="cg-h-desc cg-h-error">
+  <legend class="field__label">Notify me by</legend>
+  <div class="choice-group__items">
+    <label class="checkbox"><input type="checkbox" class="checkbox__input" id="cg-h-0" name="cg-h" value="Email" checked /><span class="checkbox__box"><svg class="checkbox__icon checkbox__icon--check" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg><svg class="checkbox__icon checkbox__icon--remove" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13H5v-2h14v2z"/></svg></span><span class="checkbox__label">Email</span></label>
+    <label class="checkbox"><input type="checkbox" class="checkbox__input" id="cg-h-1" name="cg-h" value="SMS" /><span class="checkbox__box"><svg class="checkbox__icon checkbox__icon--check" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg><svg class="checkbox__icon checkbox__icon--remove" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13H5v-2h14v2z"/></svg></span><span class="checkbox__label">SMS</span></label>
+    <label class="checkbox"><input type="checkbox" class="checkbox__input" id="cg-h-2" name="cg-h" value="Push notifications" /><span class="checkbox__box"><svg class="checkbox__icon checkbox__icon--check" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg><svg class="checkbox__icon checkbox__icon--remove" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13H5v-2h14v2z"/></svg></span><span class="checkbox__label">Push notifications</span></label>
+  </div>
+  <p class="field__description" id="cg-h-desc">Choose at least one channel.</p>
+  <p class="field__error" id="cg-h-error" hidden><svg class="field__error-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg><span></span></p>
+</fieldset></div><pre class="code"><code>&lt;fieldset class="field choice-group choice-group--horizontal" data-field aria-describedby="cg-h-desc cg-h-error"&gt;
+  &lt;legend class="field__label"&gt;Notify me by&lt;/legend&gt;
+  &lt;div class="choice-group__items"&gt;
+    &lt;label class="checkbox"&gt;&lt;input type="checkbox" class="checkbox__input" id="cg-h-0" name="cg-h" value="Email" checked /&gt;&lt;span class="checkbox__box"&gt;……&lt;/span&gt;&lt;span class="checkbox__label"&gt;Email&lt;/span&gt;&lt;/label&gt;
+    &lt;label class="checkbox"&gt;&lt;input type="checkbox" class="checkbox__input" id="cg-h-1" name="cg-h" value="SMS" /&gt;&lt;span class="checkbox__box"&gt;……&lt;/span&gt;&lt;span class="checkbox__label"&gt;SMS&lt;/span&gt;&lt;/label&gt;
+    &lt;label class="checkbox"&gt;&lt;input type="checkbox" class="checkbox__input" id="cg-h-2" name="cg-h" value="Push notifications" /&gt;&lt;span class="checkbox__box"&gt;……&lt;/span&gt;&lt;span class="checkbox__label"&gt;Push notifications&lt;/span&gt;&lt;/label&gt;
+  &lt;/div&gt;
+  &lt;p class="field__description" id="cg-h-desc"&gt;Choose at least one channel.&lt;/p&gt;
+  &lt;p class="field__error" id="cg-h-error" hidden&gt;…&lt;span&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;/fieldset&gt;</code></pre><p class="story-note">A wrapping row, 20px apart — for two or three short options.</p></div>
+      <div class="story"><h3>disabled</h3><div class="story-preview" style="justify-content:flex-start"><fieldset class="field choice-group" data-field aria-describedby="cg-d-desc cg-d-error" disabled>
+  <legend class="field__label">Notify me by</legend>
+  <div class="choice-group__items">
+    <label class="checkbox"><input type="checkbox" class="checkbox__input" id="cg-d-0" name="cg-d" value="Email" checked /><span class="checkbox__box"><svg class="checkbox__icon checkbox__icon--check" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg><svg class="checkbox__icon checkbox__icon--remove" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13H5v-2h14v2z"/></svg></span><span class="checkbox__label">Email</span></label>
+    <label class="checkbox"><input type="checkbox" class="checkbox__input" id="cg-d-1" name="cg-d" value="SMS" /><span class="checkbox__box"><svg class="checkbox__icon checkbox__icon--check" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg><svg class="checkbox__icon checkbox__icon--remove" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13H5v-2h14v2z"/></svg></span><span class="checkbox__label">SMS</span></label>
+    <label class="checkbox"><input type="checkbox" class="checkbox__input" id="cg-d-2" name="cg-d" value="Push notifications" /><span class="checkbox__box"><svg class="checkbox__icon checkbox__icon--check" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg><svg class="checkbox__icon checkbox__icon--remove" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13H5v-2h14v2z"/></svg></span><span class="checkbox__label">Push notifications</span></label>
+  </div>
+  <p class="field__description" id="cg-d-desc">Turn on notifications in Settings first.</p>
+  <p class="field__error" id="cg-d-error" hidden><svg class="field__error-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg><span></span></p>
+</fieldset></div><pre class="code"><code>&lt;fieldset class="field choice-group" data-field aria-describedby="cg-d-desc cg-d-error" disabled&gt;
+  &lt;legend class="field__label"&gt;Notify me by&lt;/legend&gt;
+  &lt;div class="choice-group__items"&gt;
+    &lt;label class="checkbox"&gt;&lt;input type="checkbox" class="checkbox__input" id="cg-d-0" name="cg-d" value="Email" checked /&gt;&lt;span class="checkbox__box"&gt;……&lt;/span&gt;&lt;span class="checkbox__label"&gt;Email&lt;/span&gt;&lt;/label&gt;
+    &lt;label class="checkbox"&gt;&lt;input type="checkbox" class="checkbox__input" id="cg-d-1" name="cg-d" value="SMS" /&gt;&lt;span class="checkbox__box"&gt;……&lt;/span&gt;&lt;span class="checkbox__label"&gt;SMS&lt;/span&gt;&lt;/label&gt;
+    &lt;label class="checkbox"&gt;&lt;input type="checkbox" class="checkbox__input" id="cg-d-2" name="cg-d" value="Push notifications" /&gt;&lt;span class="checkbox__box"&gt;……&lt;/span&gt;&lt;span class="checkbox__label"&gt;Push notifications&lt;/span&gt;&lt;/label&gt;
+  &lt;/div&gt;
+  &lt;p class="field__description" id="cg-d-desc"&gt;Turn on notifications in Settings first.&lt;/p&gt;
+  &lt;p class="field__error" id="cg-d-error" hidden&gt;…&lt;span&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;/fieldset&gt;</code></pre><p class="story-note">disabled on the fieldset disables every checkbox in it; the legend and helper fade too.</p></div>
+      <div class="story"><h3>error</h3><div class="story-preview" style="justify-content:flex-start"><fieldset class="field choice-group" data-field data-invalid aria-describedby="cg-e-desc cg-e-error">
+  <legend class="field__label">Notify me by</legend>
+  <div class="choice-group__items">
+    <label class="checkbox"><input type="checkbox" class="checkbox__input" id="cg-e-0" name="cg-e" value="Email" /><span class="checkbox__box"><svg class="checkbox__icon checkbox__icon--check" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg><svg class="checkbox__icon checkbox__icon--remove" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13H5v-2h14v2z"/></svg></span><span class="checkbox__label">Email</span></label>
+    <label class="checkbox"><input type="checkbox" class="checkbox__input" id="cg-e-1" name="cg-e" value="SMS" /><span class="checkbox__box"><svg class="checkbox__icon checkbox__icon--check" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg><svg class="checkbox__icon checkbox__icon--remove" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13H5v-2h14v2z"/></svg></span><span class="checkbox__label">SMS</span></label>
+    <label class="checkbox"><input type="checkbox" class="checkbox__input" id="cg-e-2" name="cg-e" value="Push notifications" /><span class="checkbox__box"><svg class="checkbox__icon checkbox__icon--check" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg><svg class="checkbox__icon checkbox__icon--remove" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13H5v-2h14v2z"/></svg></span><span class="checkbox__label">Push notifications</span></label>
+  </div>
+  <p class="field__description" id="cg-e-desc">Choose at least one channel.</p>
+  <p class="field__error" id="cg-e-error"><svg class="field__error-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg><span>Choose at least one channel.</span></p>
+</fieldset></div><pre class="code"><code>&lt;fieldset class="field choice-group" data-field data-invalid aria-describedby="cg-e-desc cg-e-error"&gt;
+  &lt;legend class="field__label"&gt;Notify me by&lt;/legend&gt;
+  &lt;div class="choice-group__items"&gt;
+    &lt;label class="checkbox"&gt;&lt;input type="checkbox" class="checkbox__input" id="cg-e-0" name="cg-e" value="Email" /&gt;&lt;span class="checkbox__box"&gt;……&lt;/span&gt;&lt;span class="checkbox__label"&gt;Email&lt;/span&gt;&lt;/label&gt;
+    &lt;label class="checkbox"&gt;&lt;input type="checkbox" class="checkbox__input" id="cg-e-1" name="cg-e" value="SMS" /&gt;&lt;span class="checkbox__box"&gt;……&lt;/span&gt;&lt;span class="checkbox__label"&gt;SMS&lt;/span&gt;&lt;/label&gt;
+    &lt;label class="checkbox"&gt;&lt;input type="checkbox" class="checkbox__input" id="cg-e-2" name="cg-e" value="Push notifications" /&gt;&lt;span class="checkbox__box"&gt;……&lt;/span&gt;&lt;span class="checkbox__label"&gt;Push notifications&lt;/span&gt;&lt;/label&gt;
+  &lt;/div&gt;
+  &lt;p class="field__description" id="cg-e-desc"&gt;Choose at least one channel.&lt;/p&gt;
+  &lt;p class="field__error" id="cg-e-error"&gt;…&lt;span&gt;Choose at least one channel.&lt;/span&gt;&lt;/p&gt;
+&lt;/fieldset&gt;</code></pre><p class="story-note">After Submit with nothing ticked: the Field's message under the helper. The boxes don't turn red — the message is the signal.</p></div>
     </div>
 
     <p class="placeholder-note">Every code sample on this page is printed from the same resolved token values driving the live previews above it — copy it directly, nothing here is hand-typed.</p>
   </main>
 </div>
-<script>
-  document.querySelectorAll('[data-indeterminate]').forEach((el) => { el.indeterminate = true; });
-</script>
+<script>document.querySelectorAll("[data-indeterminate]").forEach(function (el) { el.indeterminate = true; });</script>
 </body>
 </html>

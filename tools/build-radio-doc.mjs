@@ -14,6 +14,8 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { renderNav } from "./lib/nav.mjs";
 import { cssVarName, renderRootVars } from "./lib/css-vars.mjs";
+import { CHOICE_COLOR_PATHS, RADIO_CSS, CHOICE_GROUP_CSS, CHOICE_JS, choiceGroupHtml } from "./lib/choice.mjs";
+import { FIELD_COLOR_PATHS, FIELD_WRAPPER_CSS } from "./lib/field.mjs";
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const load = (p) => JSON.parse(fs.readFileSync(path.join(root, p)));
@@ -77,9 +79,10 @@ const colorPaths = [
   "text.default", "text.disabled", "text.secondary",
   disabledDot,
 ];
-const colorValue = Object.fromEntries(colorPaths.map((p) => [p, resolve(p)]));
+const allPaths = [...new Set([...colorPaths, ...CHOICE_COLOR_PATHS, ...FIELD_COLOR_PATHS])];
+const colorValue = Object.fromEntries(allPaths.map((p) => [p, resolve(p)]));
 const fontSans = resolve("family.sans");
-const rootVars = renderRootVars([...colorPaths.map((p) => [p, colorValue[p]]), ["family.sans", `'${fontSans}', sans-serif`]]);
+const rootVars = renderRootVars([...allPaths.map((p) => [p, colorValue[p]]), ["family.sans", `'${fontSans}', sans-serif`]]);
 
 const circle = px(resolve(radio.size.circle.$value));
 const dot = px(resolve(radio.size.dot.$value));
@@ -90,42 +93,16 @@ const labelType = resolveToken(radio.label);
 const ringWidth = px(resolve(radio.state.focused.ringWidth.$value));
 const ringOffset = px(resolve(radio.state.focused.ringOffset.$value));
 
-const group = radio.group;
-const gapVertical = px(resolve(group.gapVertical.$value));
-const gapHorizontal = px(resolve(group.gapHorizontal.$value));
-const groupLabelGap = px(resolve(group.labelGap.$value));
-const groupLabelType = resolveToken(group.label);
-const groupHelperType = resolveToken(group.helper);
 
 function typoCss(t) {
   return `font-weight: ${t.fontWeight}; font-size: ${px(t.fontSize)}; line-height: ${t.lineHeight};`;
 }
 
+// one recipe with Form and every other consumer — tools/lib/choice.mjs
 const css = `${rootVars}
-
-.radio { display: inline-flex; align-items: center; gap: ${gap}; font-family: ${cv("family.sans")}; cursor: pointer; }
-.radio__input { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
-.radio__circle { box-sizing: border-box; width: ${circle}; height: ${circle}; border-radius: ${circleRadius}; border: ${borderWidth} solid ${cv("border.default")}; background: ${cv("surface.default")}; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.radio__dot { width: ${dot}; height: ${dot}; border-radius: ${circleRadius}; background: transparent; }
-.radio__label { color: ${cv("text.default")}; ${typoCss(labelType)} }
-
-.radio:hover .radio__input:not(:checked):not(:disabled) ~ .radio__circle { background: ${cv(hoverBg)}; }
-.radio:hover .radio__circle { border-color: ${cv("fill.primary")}; }
-.radio__input:focus-visible ~ .radio__circle { outline: ${ringWidth} solid ${cv("border.focus")}; outline-offset: ${ringOffset}; }
-.radio__input:checked ~ .radio__circle { border-color: ${cv("fill.primary")}; }
-.radio__input:checked ~ .radio__circle .radio__dot { background: ${cv("fill.primary")}; }
-.radio:hover .radio__input:checked:not(:disabled) ~ .radio__circle { border-color: ${cv("fill.primaryHover")}; }
-.radio:hover .radio__input:checked:not(:disabled) ~ .radio__circle .radio__dot { background: ${cv("fill.primaryHover")}; }
-.radio__input:disabled ~ .radio__circle { background: ${cv("surface.disabled")}; border-color: ${cv("border.default")}; cursor: not-allowed; }
-.radio__input:disabled ~ .radio__label { color: ${cv("text.disabled")}; }
-.radio__input:disabled:checked ~ .radio__circle .radio__dot { background: ${cv(disabledDot)}; }
-.radio:has(.radio__input:disabled) { cursor: not-allowed; }
-
-.radio-group { display: flex; flex-direction: column; gap: ${groupLabelGap}; }
-.radio-group--vertical .radio-group__items { display: flex; flex-direction: column; gap: ${gapVertical}; }
-.radio-group--horizontal .radio-group__items { display: flex; flex-direction: row; flex-wrap: wrap; gap: ${gapHorizontal}; }
-.radio-group__label { color: ${cv("text.default")}; margin: 0; ${typoCss(groupLabelType)} }
-.radio-group__helper { color: ${cv("text.secondary")}; margin: 0; ${typoCss(groupHelperType)} }`;
+${RADIO_CSS}
+${FIELD_WRAPPER_CSS}
+${CHOICE_GROUP_CSS}`;
 
 function markup(id, name, { checked = false, disabled = false, hover = false, focused = false } = {}) {
   const attrs = [checked ? " checked" : "", disabled ? " disabled" : ""].join("");
@@ -169,27 +146,14 @@ function stateStories() {
   return stateDefs.map((s, i) => storyCard(s.label, markup(`r-state-${i}`, `state-demo-${i}`, s.opts), markup(`r-state-${i}`, `state-demo-${i}`, s.opts), s.note)).join("\n");
 }
 
-function groupExample(layout) {
-  const items = ["Email", "SMS", "Push notifications"];
-  const name = `plan-${layout}`;
-  const itemsHtml = items
-    .map(
-      (label, i) => `      <label class="radio">
-        <input type="radio" class="radio__input" id="r-${layout}-${i}" name="${name}"${i === 0 ? " checked" : ""} />
-        <span class="radio__circle"><span class="radio__dot"></span></span>
-        <span class="radio__label">${label}</span>
-      </label>`
-    )
-    .join("\n");
-  return `<div class="radio-group radio-group--${layout}">
-      <p class="radio-group__label">Notify me by</p>
-      <div class="radio-group__items">
-${itemsHtml}
-      </div>
-      <p class="radio-group__helper">Pick one channel.</p>
-    </div>`;
-}
-
+// Groups — each one a Field on a <fieldset> (tools/lib/choice.mjs)
+const groupItems = [{ label: "Email", checked: true }, { label: "Text message" }, { label: "Phone call" }];
+const groups = [
+  ["vertical", choiceGroupHtml({ name: "rg-v", legend: "Contact me by", helper: "Pick one.", items: groupItems }), "Stacked, 12px apart. The legend is the Field label (heading-sm), the helper its description."],
+  ["horizontal", choiceGroupHtml({ name: "rg-h", legend: "Contact me by", helper: "Pick one.", items: groupItems, direction: "horizontal" }), "A wrapping row, 20px apart — for two or three short options."],
+  ["disabled", choiceGroupHtml({ name: "rg-d", legend: "Contact me by", helper: "Available once you add a phone number.", items: groupItems, disabled: true }), "disabled on the fieldset disables every radio in it; the legend and helper fade too."],
+  ["error", choiceGroupHtml({ name: "rg-e", legend: "Meeting format", helper: "You can change it later.", items: [{ label: "In person" }, { label: "Online" }], error: "Choose a meeting format." }), "After Submit with nothing picked: the Field's message under the helper. The radios themselves don't turn red — the message is the signal."],
+];
 const html = `<!doctype html>
 <html lang="en">
 <head>
@@ -278,7 +242,7 @@ const html = `<!doctype html>
       <div class="row"><b>Single size</b><span>20px circle, 8px dot — no sm/base/lg grid, same rationale as <a href="checkbox.html">Checkbox</a>.</span></div>
       <div class="row"><b>Never fully fills</b><span>Unlike Checkbox, checked only recolors the outline and shows a small inner dot — both fill.primary, the circle background stays surface.default. Plain CSS circle, not an icon; every reference checked (Radix/MUI/Ant/Material) draws it this way.</span></div>
       <div class="row"><b>States</b><span>default / hover / focused / checked / checked+hover / disabled / disabled+checked. No error state — not asked for.</span></div>
-      <div class="row"><b>Groups</b><span>RadioGroup composes plain Radio items sharing one <code class="tok">name</code> under an optional heading + helper text, vertical or horizontal — no group-level error state.</span></div>
+      <div class="row"><b>Groups</b><span>RadioGroup is a Field on a <code class="tok">&lt;fieldset&gt;</code> + <code class="tok">&lt;legend&gt;</code>, vertical or horizontal, with helper text, a whole-group disabled state and the Field's error message (on Submit, from <a href="form.html">Form</a>).</span></div>
     </div>
 
     <h2 class="big-section">CSS</h2>
@@ -291,16 +255,9 @@ const html = `<!doctype html>
     </div>
 
     <h2 class="big-section">Groups</h2>
-    <p class="section-desc">RadioGroup — vertical (stacked) and horizontal (wrapping row) layouts, each with an optional group label and helper text. No error/validation state at the group level.</p>
+    <p class="section-desc">RadioGroup — a <a href="form.html">Field</a> on a real <code class="tok">&lt;fieldset&gt;</code>: the <code class="tok">&lt;legend&gt;</code> is read before the options, one <code class="tok">disabled</code> turns off the whole group, and Form checks it on Submit like any field.</p>
     <div class="story-grid">
-      <div class="story">
-        <h3>vertical</h3>
-        <div class="story-preview" style="justify-content:flex-start">${groupExample("vertical")}</div>
-      </div>
-      <div class="story">
-        <h3>horizontal</h3>
-        <div class="story-preview" style="justify-content:flex-start">${groupExample("horizontal")}</div>
-      </div>
+      ${groups.map(([t, live, note]) => `<div class="story"><h3>${t}</h3><div class="story-preview" style="justify-content:flex-start">${live}</div><pre class="code"><code>${esc(live.replace(/<svg[\s\S]*?<\/svg>/g, "…"))}</code></pre><p class="story-note">${note}</p></div>`).join("\n      ")}
     </div>
 
     <p class="placeholder-note">Every code sample on this page is printed from the same resolved token values driving the live previews above it — copy it directly, nothing here is hand-typed.</p>

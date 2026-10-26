@@ -153,7 +153,7 @@
         }
       },
       "group": {
-        "$description": "CheckboxGroup composes plain Checkbox items under an optional heading + helper text — no group-level error/validation state (not asked for; Checkbox itself has no error state either).",
+        "$description": "CheckboxGroup — a Field on a <fieldset> (2026-10-26): the <legend> is the Field label (this label style), the helper is the Field description, and the Field error message shows under the helper after Submit when the group is required and nothing is picked; the controls themselves don't turn red. disabled on the fieldset turns off the whole group. Recipe in tools/lib/choice.mjs. labelGap = legend → items; helper/error sit field.messageGap (4px) under the items, like every Field.",
         "gapVertical": {
           "$type": "dimension",
           "$value": "{dim.3}",
