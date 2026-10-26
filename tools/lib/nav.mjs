@@ -58,6 +58,7 @@ export const NAV_ITEMS = {
   modal: { label: "Modal", href: "modal.html" },
   "alert-dialog": { label: "AlertDialog", href: "alert-dialog.html" },
   menu: { label: "Menu", href: "menu.html" },
+  command: { label: "Command", href: "command.html" },
   listbox: { label: "Listbox", href: "listbox.html" },
   avatar: { label: "Avatar", href: "avatar.html" },
   "avatar-group": { label: "AvatarGroup", href: "avatar-group.html" },
@@ -215,6 +216,7 @@ export function renderNav(activeKey, { basePath = "" } = {}) {
     ${link("menu")}
     ${link("split-button")}
     ${link("listbox")}
+    ${link("command")}
     ${link("avatar")}
     ${link("avatar-group")}
     ${link("badge")}

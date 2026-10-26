@@ -210,6 +210,14 @@
         "unit": "px"
       }
     },
+    "140": {
+      "$type": "dimension",
+      "$value": {
+        "value": 560,
+        "unit": "px"
+      },
+      "$description": "560px — the command palette (Command dialog). Wider than Modal's 384 because each row carries an icon, a label and a shortcut."
+    },
     "0_5": {
       "$type": "dimension",
       "$value": {

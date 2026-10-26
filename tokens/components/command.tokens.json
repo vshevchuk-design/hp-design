@@ -1,0 +1,48 @@
+{
+  "component": {
+    "command": {
+      "$description": "A search over ACTIONS — a field on top, under it a filtered list of things to do or places to go, grouped, with an icon and an optional keyboard shortcut; picking one runs it. Not Listbox: Listbox picks a VALUE that stays selected (a check mark); a Command item has no selected state, it just runs. Two forms: inline (a panel on the page) and Dialog — the command palette, opened with Ctrl/⌘+K, on Modal's shell. Built from existing recipes: the field's value type is Search's (16px, the iOS zoom rule), the rows are Listbox's option recipe (radius, padding, hover wash) at a declared 36px, the dialog is Modal's surface / radius / shadow / overlay. Added 2026-10-26 (product Storybook's Command primitive).",
+      "panel": {
+        "bg": { "$type": "color", "$value": "{surface.default}" },
+        "border": { "$type": "color", "$value": "{border.default}" },
+        "radius": { "$type": "dimension", "$value": "{radius.default}", "$description": "Inline. The dialog uses Modal's radius.xl." },
+        "dialogWidth": { "$type": "dimension", "$value": "{dim.140}", "$description": "560px." },
+        "listMaxHeight": { "$type": "dimension", "$value": "{dim.80}", "$description": "320px — the list scrolls past this." },
+        "listPadding": { "$type": "dimension", "$value": "{dim.1}" }
+      },
+      "input": {
+        "height": { "$type": "dimension", "$value": "{dim.12}", "$description": "48px row: search icon + borderless field, a hairline under it." },
+        "paddingX": { "$type": "dimension", "$value": "{dim.4}" },
+        "gap": { "$type": "dimension", "$value": "{dim.2}" },
+        "iconSize": { "$type": "dimension", "$value": "{dim.5}" },
+        "icon": { "$type": "color", "$value": "{icon.muted}" },
+        "divider": { "$type": "color", "$value": "{border.default}" }
+      },
+      "group": {
+        "heading": { "$type": "typography", "$value": "{text-style.heading-sm}", "$description": "12px semibold — names the group ('Suggestions', 'Settings')." },
+        "headingColor": { "$type": "color", "$value": "{text.muted}" },
+        "headingHeight": { "$type": "dimension", "$value": "{dim.7}", "$description": "28px." },
+        "divider": { "$type": "color", "$value": "{border.default}", "$description": "Hairline between groups." }
+      },
+      "item": {
+        "height": { "$type": "dimension", "$value": "{dim.9}", "$description": "36px, the same row as Listbox / TimePicker options." },
+        "paddingX": { "$type": "dimension", "$value": "{dim.2}" },
+        "gap": { "$type": "dimension", "$value": "{dim.2}" },
+        "radius": { "$type": "dimension", "$value": "{radius.xs}" },
+        "iconSize": { "$type": "dimension", "$value": "{dim.4}" },
+        "icon": { "$type": "color", "$value": "{icon.secondary}" },
+        "label": { "$type": "typography", "$value": "{text-style.body-base}" },
+        "labelColor": { "$type": "color", "$value": "{text.default}" },
+        "activeBg": { "$type": "color", "$value": "{fill.neutralHover}", "$description": "The row the arrows / pointer are on — Enter runs it. The wash tier, like Listbox's hover." },
+        "shortcut": { "$type": "typography", "$value": "{text-style.body-sm}" },
+        "shortcutColor": { "$type": "color", "$value": "{text.muted}" },
+        "disabledColor": { "$type": "color", "$value": "{text.disabled}" }
+      },
+      "empty": {
+        "label": { "$type": "typography", "$value": "{text-style.body-sm}" },
+        "color": { "$type": "color", "$value": "{text.muted}" },
+        "paddingY": { "$type": "dimension", "$value": "{dim.6}" }
+      }
+    }
+  }
+}
