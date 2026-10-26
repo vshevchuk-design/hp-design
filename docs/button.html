@@ -97,10 +97,15 @@
   --tok-fill-primary-tint-hover: #c7dffc;
   --tok-fill-primary-tint-active: #b2d4fe;
   --tok-icon-primary: #077fec;
+  --tok-fill-danger: #de394b;
+  --tok-fill-danger-hover: #c11435;
+  --tok-fill-danger-active: #9c0326;
+  --tok-border-default: #dadde0;
   --tok-family-sans: 'Sora', sans-serif;
 }
 
 .btn {
+  box-sizing: border-box;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -149,35 +154,51 @@
 
 .btn--primary { background: var(--tok-fill-primary); color: var(--tok-text-on-fill); }
 .btn--primary .btn__icon { color: var(--tok-icon-on-fill); }
-.btn--primary:not(:disabled):hover { background: var(--tok-fill-primary-hover); }
-.btn--primary:not(:disabled):active { background: var(--tok-fill-primary-active); }
+.btn--primary:not(:disabled):not([aria-disabled="true"]):hover { background: var(--tok-fill-primary-hover); }
+.btn--primary:not(:disabled):not([aria-disabled="true"]):active { background: var(--tok-fill-primary-active); }
 .btn--primary:not(:disabled):focus-visible { outline: none; box-shadow: 0 0 0 2px var(--bg-card) /* substitute your own surface color */, 0 0 0 calc(2px + 4px) var(--tok-border-focus); }
-.btn--primary:disabled { background: var(--tok-fill-disabled); color: var(--tok-text-disabled); cursor: not-allowed; }
-.btn--primary:disabled .btn__icon { color: var(--tok-icon-disabled); }
+.btn--primary:disabled, .btn--primary[aria-disabled="true"] { background: var(--tok-fill-disabled); color: var(--tok-text-disabled); cursor: not-allowed; }
+.btn--primary:disabled .btn__icon, .btn--primary[aria-disabled="true"] .btn__icon { color: var(--tok-icon-disabled); }
 
 .btn--secondary { background: var(--tok-fill-neutral); color: var(--tok-text-default); }
 .btn--secondary .btn__icon { color: var(--tok-icon-default); }
-.btn--secondary:not(:disabled):hover { background: var(--tok-fill-neutral-hover-strong); }
-.btn--secondary:not(:disabled):active { background: var(--tok-fill-neutral-active-strong); }
+.btn--secondary:not(:disabled):not([aria-disabled="true"]):hover { background: var(--tok-fill-neutral-hover-strong); }
+.btn--secondary:not(:disabled):not([aria-disabled="true"]):active { background: var(--tok-fill-neutral-active-strong); }
 .btn--secondary:not(:disabled):focus-visible { outline: none; box-shadow: 0 0 0 2px var(--bg-card) /* substitute your own surface color */, 0 0 0 calc(2px + 4px) var(--tok-border-focus); }
-.btn--secondary:disabled { background: var(--tok-fill-disabled); color: var(--tok-text-disabled); cursor: not-allowed; }
-.btn--secondary:disabled .btn__icon { color: var(--tok-icon-disabled); }
+.btn--secondary:disabled, .btn--secondary[aria-disabled="true"] { background: var(--tok-fill-disabled); color: var(--tok-text-disabled); cursor: not-allowed; }
+.btn--secondary:disabled .btn__icon, .btn--secondary[aria-disabled="true"] .btn__icon { color: var(--tok-icon-disabled); }
 
 .btn--tint { background: var(--tok-fill-primary-tint); color: var(--tok-text-primary); }
 .btn--tint .btn__icon { color: var(--tok-icon-primary); }
-.btn--tint:not(:disabled):hover { background: var(--tok-fill-primary-tint-hover); }
-.btn--tint:not(:disabled):active { background: var(--tok-fill-primary-tint-active); }
+.btn--tint:not(:disabled):not([aria-disabled="true"]):hover { background: var(--tok-fill-primary-tint-hover); }
+.btn--tint:not(:disabled):not([aria-disabled="true"]):active { background: var(--tok-fill-primary-tint-active); }
 .btn--tint:not(:disabled):focus-visible { outline: none; box-shadow: 0 0 0 2px var(--bg-card) /* substitute your own surface color */, 0 0 0 calc(2px + 4px) var(--tok-border-focus); }
-.btn--tint:disabled { background: var(--tok-fill-disabled); color: var(--tok-text-disabled); cursor: not-allowed; }
-.btn--tint:disabled .btn__icon { color: var(--tok-icon-disabled); }
+.btn--tint:disabled, .btn--tint[aria-disabled="true"] { background: var(--tok-fill-disabled); color: var(--tok-text-disabled); cursor: not-allowed; }
+.btn--tint:disabled .btn__icon, .btn--tint[aria-disabled="true"] .btn__icon { color: var(--tok-icon-disabled); }
 
 .btn--ghost { background: transparent; color: var(--tok-text-secondary); }
 .btn--ghost .btn__icon { color: var(--tok-icon-secondary); }
-.btn--ghost:not(:disabled):hover { background: var(--tok-fill-neutral-hover); }
-.btn--ghost:not(:disabled):active { background: var(--tok-fill-neutral-active); }
+.btn--ghost:not(:disabled):not([aria-disabled="true"]):hover { background: var(--tok-fill-neutral-hover); }
+.btn--ghost:not(:disabled):not([aria-disabled="true"]):active { background: var(--tok-fill-neutral-active); }
 .btn--ghost:not(:disabled):focus-visible { outline: none; box-shadow: 0 0 0 2px var(--bg-card) /* substitute your own surface color */, 0 0 0 calc(2px + 4px) var(--tok-border-focus); }
-.btn--ghost:disabled { background: transparent; color: var(--tok-text-disabled); cursor: not-allowed; }
-.btn--ghost:disabled .btn__icon { color: var(--tok-icon-disabled); }
+.btn--ghost:disabled, .btn--ghost[aria-disabled="true"] { background: transparent; color: var(--tok-text-disabled); cursor: not-allowed; }
+.btn--ghost:disabled .btn__icon, .btn--ghost[aria-disabled="true"] .btn__icon { color: var(--tok-icon-disabled); }
+
+.btn--outline { background: transparent; color: var(--tok-text-default); border: 1px solid var(--tok-border-default); }
+.btn--outline .btn__icon { color: var(--tok-icon-default); }
+.btn--outline:not(:disabled):not([aria-disabled="true"]):hover { background: var(--tok-fill-neutral-hover); }
+.btn--outline:not(:disabled):not([aria-disabled="true"]):active { background: var(--tok-fill-neutral-active); }
+.btn--outline:not(:disabled):focus-visible { outline: none; box-shadow: 0 0 0 2px var(--bg-card) /* substitute your own surface color */, 0 0 0 calc(2px + 4px) var(--tok-border-focus); }
+.btn--outline:disabled, .btn--outline[aria-disabled="true"] { background: transparent; color: var(--tok-text-disabled); cursor: not-allowed; }
+.btn--outline:disabled .btn__icon, .btn--outline[aria-disabled="true"] .btn__icon { color: var(--tok-icon-disabled); }
+
+.btn--danger { background: var(--tok-fill-danger); color: var(--tok-text-on-fill); }
+.btn--danger .btn__icon { color: var(--tok-icon-on-fill); }
+.btn--danger:not(:disabled):not([aria-disabled="true"]):hover { background: var(--tok-fill-danger-hover); }
+.btn--danger:not(:disabled):not([aria-disabled="true"]):active { background: var(--tok-fill-danger-active); }
+.btn--danger:not(:disabled):focus-visible { outline: none; box-shadow: 0 0 0 2px var(--bg-card) /* substitute your own surface color */, 0 0 0 calc(2px + 4px) var(--tok-border-focus); }
+.btn--danger:disabled, .btn--danger[aria-disabled="true"] { background: var(--tok-fill-disabled); color: var(--tok-text-disabled); cursor: not-allowed; }
+.btn--danger:disabled .btn__icon, .btn--danger[aria-disabled="true"] .btn__icon { color: var(--tok-icon-disabled); }
 
 .counter {
   display: inline-flex;
@@ -236,6 +257,7 @@
     <a class="navlink" href="icons.html">Icons</a>
     <p class="nav-category">Components</p>
     <a class="navlink active" href="button.html">Button</a>
+    <a class="navlink" href="fab.html">FAB</a>
     <a class="navlink" href="counter.html">Counter</a>
     <a class="navlink" href="input.html">Input</a>
     <a class="navlink" href="select.html">Select</a>
@@ -321,14 +343,16 @@
   </nav>
   <main>
     <h1>Button</h1>
-    <p class="sub">tokens/components/button.tokens.json · Primary + Secondary + Ghost variants · generated — the CSS below is generated from the same resolved tokens driving every preview on this page, not hand-copied. Colors are CSS custom properties (<code class="tok">var(--fill-primary)</code> etc.), not literal hex — retune a token, regenerate, and every rule that references it updates together.</p>
+    <p class="sub">tokens/components/button.tokens.json · Primary · Secondary · Tint · Ghost · Outline · Danger · generated — the CSS below is generated from the same resolved tokens driving every preview on this page, not hand-copied. Colors are CSS custom properties (<code class="tok">var(--fill-primary)</code> etc.), not literal hex — retune a token, regenerate, and every rule that references it updates together.</p>
 
     <div class="legend">
-      <div class="row"><b>Sizes</b><span>sm 32px / base 40px (default) / lg 48px — shared by all four variants, byte-for-byte identical (asserted at build time). paddingX and iconSize scale with height on the same 4px grid the size step itself moves on; the 8px icon↔label gap is flat at every size, per spec.</span></div>
+      <div class="row"><b>Sizes</b><span>sm 32px / base 40px (default) / lg 48px — shared by all six variants, byte-for-byte identical (asserted at build time). paddingX and iconSize scale with height on the same 4px grid the size step itself moves on; the 8px icon↔label gap is flat at every size, per spec.</span></div>
       <div class="row"><b>Icon size</b><span>16 / 20 / 24px — resolves to exactly 50% of button height at every size, which is why it self-scales instead of needing separate tuning as more sizes get added later.</span></div>
       <div class="row"><b>Icon-only</b><span>Square (width = height), no paddingX/gap — the icon centers directly in the box.</span></div>
       <div class="row"><b>Radius</b><span>radius.default (8px) at every size — constant, doesn't scale with height, so the corner reads the same across sm/base/lg.</span></div>
       <div class="row"><b>Primary vs Secondary vs Tint vs Ghost</b><span>Same size/state/content-variant grid, four color roles: primary → fill.primary (brand blue, highest emphasis). secondary → fill.neutral (gray fill — fill.neutral's own token description calls it out as the intended secondary-button fill). tint → fill.primaryTint (blue.100) with a text.primary label, hovering to blue.150 and pressing to blue.200 — the brand colour at low emphasis, for an action that repeats on every card of a grid where a solid primary on each would make the whole screen shout (added 2026-10-07 for Scheduling's Pick a time). ghost → no fill or border at rest, the quietest tier — reuses the same transparent→fill.neutralHover→fill.neutralActive progression already established by pagination's page-item and tabs' segmented style.</span></div>
+      <div class="row"><b>Outline</b><span>No fill (it takes the surface it sits on, like the outline Badge), a <code class="tok">border.default</code> hairline inside the declared height — 32 / 40 / 48 still hold — and <code class="tok">text.default</code>; hover / press add the same washes as Ghost. For a quiet action where Secondary's gray fill would blend in (a gray panel, a hovered row), or beside Secondary when two quiet actions need telling apart.</span></div>
+      <div class="row"><b>Danger</b><span><code class="tok">fill.danger</code> → <code class="tok">fill.dangerHover</code> → <code class="tok">fill.dangerActive</code>, white label — for the action that destroys something (delete, remove, discard), usually the confirming button of an <a href="alert-dialog.html">AlertDialog</a>. Not for "important": one per view at most.</span></div>
       <div class="row"><b>States</b><span>default → variant's fill (or transparent, for ghost) · hover → fillHover · pressed → fillActive · focused → additive 4px ring (border.focus) with 2px offset, composes on top of any of the three · disabled → fill.disabled + text.disabled + icon.disabled (ghost stays transparent, no fill to lose).</span></div>
     </div>
 
@@ -359,10 +383,15 @@
   --tok-fill-primary-tint-hover: #c7dffc;
   --tok-fill-primary-tint-active: #b2d4fe;
   --tok-icon-primary: #077fec;
+  --tok-fill-danger: #de394b;
+  --tok-fill-danger-hover: #c11435;
+  --tok-fill-danger-active: #9c0326;
+  --tok-border-default: #dadde0;
   --tok-family-sans: 'Sora', sans-serif;
 }
 
 .btn {
+  box-sizing: border-box;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -411,35 +440,51 @@
 
 .btn--primary { background: var(--tok-fill-primary); color: var(--tok-text-on-fill); }
 .btn--primary .btn__icon { color: var(--tok-icon-on-fill); }
-.btn--primary:not(:disabled):hover { background: var(--tok-fill-primary-hover); }
-.btn--primary:not(:disabled):active { background: var(--tok-fill-primary-active); }
+.btn--primary:not(:disabled):not([aria-disabled="true"]):hover { background: var(--tok-fill-primary-hover); }
+.btn--primary:not(:disabled):not([aria-disabled="true"]):active { background: var(--tok-fill-primary-active); }
 .btn--primary:not(:disabled):focus-visible { outline: none; box-shadow: 0 0 0 2px var(--bg-card) /* substitute your own surface color */, 0 0 0 calc(2px + 4px) var(--tok-border-focus); }
-.btn--primary:disabled { background: var(--tok-fill-disabled); color: var(--tok-text-disabled); cursor: not-allowed; }
-.btn--primary:disabled .btn__icon { color: var(--tok-icon-disabled); }
+.btn--primary:disabled, .btn--primary[aria-disabled="true"] { background: var(--tok-fill-disabled); color: var(--tok-text-disabled); cursor: not-allowed; }
+.btn--primary:disabled .btn__icon, .btn--primary[aria-disabled="true"] .btn__icon { color: var(--tok-icon-disabled); }
 
 .btn--secondary { background: var(--tok-fill-neutral); color: var(--tok-text-default); }
 .btn--secondary .btn__icon { color: var(--tok-icon-default); }
-.btn--secondary:not(:disabled):hover { background: var(--tok-fill-neutral-hover-strong); }
-.btn--secondary:not(:disabled):active { background: var(--tok-fill-neutral-active-strong); }
+.btn--secondary:not(:disabled):not([aria-disabled="true"]):hover { background: var(--tok-fill-neutral-hover-strong); }
+.btn--secondary:not(:disabled):not([aria-disabled="true"]):active { background: var(--tok-fill-neutral-active-strong); }
 .btn--secondary:not(:disabled):focus-visible { outline: none; box-shadow: 0 0 0 2px var(--bg-card) /* substitute your own surface color */, 0 0 0 calc(2px + 4px) var(--tok-border-focus); }
-.btn--secondary:disabled { background: var(--tok-fill-disabled); color: var(--tok-text-disabled); cursor: not-allowed; }
-.btn--secondary:disabled .btn__icon { color: var(--tok-icon-disabled); }
+.btn--secondary:disabled, .btn--secondary[aria-disabled="true"] { background: var(--tok-fill-disabled); color: var(--tok-text-disabled); cursor: not-allowed; }
+.btn--secondary:disabled .btn__icon, .btn--secondary[aria-disabled="true"] .btn__icon { color: var(--tok-icon-disabled); }
 
 .btn--tint { background: var(--tok-fill-primary-tint); color: var(--tok-text-primary); }
 .btn--tint .btn__icon { color: var(--tok-icon-primary); }
-.btn--tint:not(:disabled):hover { background: var(--tok-fill-primary-tint-hover); }
-.btn--tint:not(:disabled):active { background: var(--tok-fill-primary-tint-active); }
+.btn--tint:not(:disabled):not([aria-disabled="true"]):hover { background: var(--tok-fill-primary-tint-hover); }
+.btn--tint:not(:disabled):not([aria-disabled="true"]):active { background: var(--tok-fill-primary-tint-active); }
 .btn--tint:not(:disabled):focus-visible { outline: none; box-shadow: 0 0 0 2px var(--bg-card) /* substitute your own surface color */, 0 0 0 calc(2px + 4px) var(--tok-border-focus); }
-.btn--tint:disabled { background: var(--tok-fill-disabled); color: var(--tok-text-disabled); cursor: not-allowed; }
-.btn--tint:disabled .btn__icon { color: var(--tok-icon-disabled); }
+.btn--tint:disabled, .btn--tint[aria-disabled="true"] { background: var(--tok-fill-disabled); color: var(--tok-text-disabled); cursor: not-allowed; }
+.btn--tint:disabled .btn__icon, .btn--tint[aria-disabled="true"] .btn__icon { color: var(--tok-icon-disabled); }
 
 .btn--ghost { background: transparent; color: var(--tok-text-secondary); }
 .btn--ghost .btn__icon { color: var(--tok-icon-secondary); }
-.btn--ghost:not(:disabled):hover { background: var(--tok-fill-neutral-hover); }
-.btn--ghost:not(:disabled):active { background: var(--tok-fill-neutral-active); }
+.btn--ghost:not(:disabled):not([aria-disabled="true"]):hover { background: var(--tok-fill-neutral-hover); }
+.btn--ghost:not(:disabled):not([aria-disabled="true"]):active { background: var(--tok-fill-neutral-active); }
 .btn--ghost:not(:disabled):focus-visible { outline: none; box-shadow: 0 0 0 2px var(--bg-card) /* substitute your own surface color */, 0 0 0 calc(2px + 4px) var(--tok-border-focus); }
-.btn--ghost:disabled { background: transparent; color: var(--tok-text-disabled); cursor: not-allowed; }
-.btn--ghost:disabled .btn__icon { color: var(--tok-icon-disabled); }
+.btn--ghost:disabled, .btn--ghost[aria-disabled="true"] { background: transparent; color: var(--tok-text-disabled); cursor: not-allowed; }
+.btn--ghost:disabled .btn__icon, .btn--ghost[aria-disabled="true"] .btn__icon { color: var(--tok-icon-disabled); }
+
+.btn--outline { background: transparent; color: var(--tok-text-default); border: 1px solid var(--tok-border-default); }
+.btn--outline .btn__icon { color: var(--tok-icon-default); }
+.btn--outline:not(:disabled):not([aria-disabled="true"]):hover { background: var(--tok-fill-neutral-hover); }
+.btn--outline:not(:disabled):not([aria-disabled="true"]):active { background: var(--tok-fill-neutral-active); }
+.btn--outline:not(:disabled):focus-visible { outline: none; box-shadow: 0 0 0 2px var(--bg-card) /* substitute your own surface color */, 0 0 0 calc(2px + 4px) var(--tok-border-focus); }
+.btn--outline:disabled, .btn--outline[aria-disabled="true"] { background: transparent; color: var(--tok-text-disabled); cursor: not-allowed; }
+.btn--outline:disabled .btn__icon, .btn--outline[aria-disabled="true"] .btn__icon { color: var(--tok-icon-disabled); }
+
+.btn--danger { background: var(--tok-fill-danger); color: var(--tok-text-on-fill); }
+.btn--danger .btn__icon { color: var(--tok-icon-on-fill); }
+.btn--danger:not(:disabled):not([aria-disabled="true"]):hover { background: var(--tok-fill-danger-hover); }
+.btn--danger:not(:disabled):not([aria-disabled="true"]):active { background: var(--tok-fill-danger-active); }
+.btn--danger:not(:disabled):focus-visible { outline: none; box-shadow: 0 0 0 2px var(--bg-card) /* substitute your own surface color */, 0 0 0 calc(2px + 4px) var(--tok-border-focus); }
+.btn--danger:disabled, .btn--danger[aria-disabled="true"] { background: var(--tok-fill-disabled); color: var(--tok-text-disabled); cursor: not-allowed; }
+.btn--danger:disabled .btn__icon, .btn--danger[aria-disabled="true"] .btn__icon { color: var(--tok-icon-disabled); }
 
 .counter {
   display: inline-flex;
@@ -1025,7 +1070,7 @@
     </div>
 
     <h3 class="mid-section">States</h3>
-    <p class="section-desc">Base size, icon-left+text variant. Default/hover/pressed/focused are one shared markup with different pseudo-classes applied — disabled is the one real attribute (<code class="tok">disabled</code>) that also flips the label/icon color and drops the cursor. Ghost has no background at rest, so disabled stays transparent too — it never had a fill to lose.</p>
+    <p class="section-desc">Base size, icon-left+text variant. Default/hover/pressed/focused are one shared markup with different pseudo-classes applied — disabled is the one real attribute (<code class="tok">disabled</code>) that also flips the label/icon color and drops the cursor. No background at rest, so disabled stays transparent too — it never had a fill to lose.</p>
     <div class="story-grid">
       
       <div class="story">
@@ -1078,6 +1123,341 @@
   color: var(--tok-text-disabled);
 }</code></pre>
         
+      </div>
+    </div>
+    
+    <h2 class="big-section">Outline</h2>
+    <h3 class="mid-section">Sizes</h3>
+    <p class="section-desc">Size and content variant are independent — any of the 5 variants below works at any of these 3 sizes. Shown here with the icon-left+text variant as the reference.</p>
+    <div class="story-grid">
+      
+      <div class="story">
+        <h3>sm — 32px</h3>
+        <div class="story-preview"><button class="btn btn--outline btn--sm"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+  Label</button></div>
+        <pre class="code"><code>&lt;button class="btn btn--outline btn--sm"&gt;
+  &lt;svg class="btn__icon"&gt;&lt;!-- icon: add --&gt;&lt;/svg&gt;
+  Label
+&lt;/button&gt;</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>base — 40px</h3>
+        <div class="story-preview"><button class="btn btn--outline btn--base"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+  Label</button></div>
+        <pre class="code"><code>&lt;button class="btn btn--outline btn--base"&gt;
+  &lt;svg class="btn__icon"&gt;&lt;!-- icon: add --&gt;&lt;/svg&gt;
+  Label
+&lt;/button&gt;</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>lg — 48px</h3>
+        <div class="story-preview"><button class="btn btn--outline btn--lg"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+  Label</button></div>
+        <pre class="code"><code>&lt;button class="btn btn--outline btn--lg"&gt;
+  &lt;svg class="btn__icon"&gt;&lt;!-- icon: add --&gt;&lt;/svg&gt;
+  Label
+&lt;/button&gt;</code></pre>
+        
+      </div>
+    </div>
+
+    <h3 class="mid-section">Content variants</h3>
+    <p class="section-desc">All 5 at base (40px) size. Icons shown (add / arrow_forward) are stand-ins for preview only — the real icon per button is decided when a concrete use case is composed. The counter variant uses <a href="counter.html">counter.onNeutral</a>, matching this button's own fill.</p>
+    <div class="story-grid">
+      
+      <div class="story">
+        <h3>Text only</h3>
+        <div class="story-preview"><button class="btn btn--outline btn--base">Label</button></div>
+        <pre class="code"><code>&lt;button class="btn btn--outline btn--base"&gt;
+  Label
+&lt;/button&gt;</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>Icon left + text</h3>
+        <div class="story-preview"><button class="btn btn--outline btn--base"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+  Label</button></div>
+        <pre class="code"><code>&lt;button class="btn btn--outline btn--base"&gt;
+  &lt;svg class="btn__icon"&gt;&lt;!-- icon: add --&gt;&lt;/svg&gt;
+  Label
+&lt;/button&gt;</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>Icon only (square)</h3>
+        <div class="story-preview"><button class="btn btn--outline btn--base btn--icon-only" aria-label="Icon only"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></button></div>
+        <pre class="code"><code>&lt;button class="btn btn--outline btn--base btn--icon-only" aria-label="Icon only"&gt;
+  &lt;svg class="btn__icon"&gt;&lt;!-- icon: add --&gt;&lt;/svg&gt;
+&lt;/button&gt;</code></pre>
+        <p class="story-note">Square — width equals height, no horizontal padding. Needs an <code>aria-label</code> since there's no visible text.</p>
+      </div>
+
+      <div class="story">
+        <h3>Icon left + text + icon right</h3>
+        <div class="story-preview"><button class="btn btn--outline btn--base"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+  Label
+  <svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg></button></div>
+        <pre class="code"><code>&lt;button class="btn btn--outline btn--base"&gt;
+  &lt;svg class="btn__icon"&gt;&lt;!-- icon: add --&gt;&lt;/svg&gt;
+  Label
+  &lt;svg class="btn__icon"&gt;&lt;!-- icon: arrow_forward --&gt;&lt;/svg&gt;
+&lt;/button&gt;</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>Icon left + text + counter right</h3>
+        <div class="story-preview"><button class="btn btn--outline btn--base"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+  Label
+  <span class="counter counter--base counter--onNeutral counter--inactive">0</span></button></div>
+        <pre class="code"><code>&lt;button class="btn btn--outline btn--base"&gt;
+  &lt;svg class="btn__icon"&gt;&lt;!-- icon: add --&gt;&lt;/svg&gt;
+  Label
+  &lt;span class="counter counter--base counter--onNeutral counter--inactive"&gt;0&lt;/span&gt;
+&lt;/button&gt;</code></pre>
+        
+      </div>
+    </div>
+
+    <h3 class="mid-section">States</h3>
+    <p class="section-desc">Base size, icon-left+text variant. Default/hover/pressed/focused are one shared markup with different pseudo-classes applied — disabled is the one real attribute (<code class="tok">disabled</code>) that also flips the label/icon color and drops the cursor. No background at rest, so disabled stays transparent too — it never had a fill to lose.</p>
+    <div class="story-grid">
+      
+      <div class="story">
+        <h3>default</h3>
+        <div class="story-preview"><button class="btn btn--outline btn--base" style=""><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+    Label</button></div>
+        <pre class="code"><code>.btn--outline {
+  background: transparent;
+  border: 1px solid var(--tok-border-default);
+}</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>hover</h3>
+        <div class="story-preview"><button class="btn btn--outline btn--base" style="background:var(--tok-fill-neutral-hover)"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+    Label</button></div>
+        <pre class="code"><code>.btn--outline:hover {
+  background: var(--tok-fill-neutral-hover);
+}</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>pressed</h3>
+        <div class="story-preview"><button class="btn btn--outline btn--base" style="background:var(--tok-fill-neutral-active)"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+    Label</button></div>
+        <pre class="code"><code>.btn--outline:active {
+  background: var(--tok-fill-neutral-active);
+}</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>focused</h3>
+        <div class="story-preview"><button class="btn btn--outline btn--base" style="box-shadow: 0 0 0 2px var(--bg-card) /* substitute your own surface color */, 0 0 0 calc(2px + 4px) var(--tok-border-focus);"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+    Label</button></div>
+        <pre class="code"><code>.btn--outline:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--bg-card) /* substitute your own surface color */, 0 0 0 calc(2px + 4px) var(--tok-border-focus);
+}</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>disabled</h3>
+        <div class="story-preview"><button class="btn btn--outline btn--base" disabled style=""><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+    Label</button></div>
+        <pre class="code"><code>.btn--outline:disabled {
+  background: transparent;
+  color: var(--tok-text-disabled);
+}</code></pre>
+        
+      </div>
+    </div>
+    
+    <h2 class="big-section">Danger</h2>
+    <h3 class="mid-section">Sizes</h3>
+    <p class="section-desc">Size and content variant are independent — any of the 5 variants below works at any of these 3 sizes. Shown here with the icon-left+text variant as the reference.</p>
+    <div class="story-grid">
+      
+      <div class="story">
+        <h3>sm — 32px</h3>
+        <div class="story-preview"><button class="btn btn--danger btn--sm"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+  Label</button></div>
+        <pre class="code"><code>&lt;button class="btn btn--danger btn--sm"&gt;
+  &lt;svg class="btn__icon"&gt;&lt;!-- icon: add --&gt;&lt;/svg&gt;
+  Label
+&lt;/button&gt;</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>base — 40px</h3>
+        <div class="story-preview"><button class="btn btn--danger btn--base"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+  Label</button></div>
+        <pre class="code"><code>&lt;button class="btn btn--danger btn--base"&gt;
+  &lt;svg class="btn__icon"&gt;&lt;!-- icon: add --&gt;&lt;/svg&gt;
+  Label
+&lt;/button&gt;</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>lg — 48px</h3>
+        <div class="story-preview"><button class="btn btn--danger btn--lg"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+  Label</button></div>
+        <pre class="code"><code>&lt;button class="btn btn--danger btn--lg"&gt;
+  &lt;svg class="btn__icon"&gt;&lt;!-- icon: add --&gt;&lt;/svg&gt;
+  Label
+&lt;/button&gt;</code></pre>
+        
+      </div>
+    </div>
+
+    <h3 class="mid-section">Content variants</h3>
+    <p class="section-desc">All 5 at base (40px) size. Icons shown (add / arrow_forward) are stand-ins for preview only — the real icon per button is decided when a concrete use case is composed. The counter variant uses <a href="counter.html">counter.onPrimary</a>, matching this button's own fill.</p>
+    <div class="story-grid">
+      
+      <div class="story">
+        <h3>Text only</h3>
+        <div class="story-preview"><button class="btn btn--danger btn--base">Label</button></div>
+        <pre class="code"><code>&lt;button class="btn btn--danger btn--base"&gt;
+  Label
+&lt;/button&gt;</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>Icon left + text</h3>
+        <div class="story-preview"><button class="btn btn--danger btn--base"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+  Label</button></div>
+        <pre class="code"><code>&lt;button class="btn btn--danger btn--base"&gt;
+  &lt;svg class="btn__icon"&gt;&lt;!-- icon: add --&gt;&lt;/svg&gt;
+  Label
+&lt;/button&gt;</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>Icon only (square)</h3>
+        <div class="story-preview"><button class="btn btn--danger btn--base btn--icon-only" aria-label="Icon only"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></button></div>
+        <pre class="code"><code>&lt;button class="btn btn--danger btn--base btn--icon-only" aria-label="Icon only"&gt;
+  &lt;svg class="btn__icon"&gt;&lt;!-- icon: add --&gt;&lt;/svg&gt;
+&lt;/button&gt;</code></pre>
+        <p class="story-note">Square — width equals height, no horizontal padding. Needs an <code>aria-label</code> since there's no visible text.</p>
+      </div>
+
+      <div class="story">
+        <h3>Icon left + text + icon right</h3>
+        <div class="story-preview"><button class="btn btn--danger btn--base"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+  Label
+  <svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg></button></div>
+        <pre class="code"><code>&lt;button class="btn btn--danger btn--base"&gt;
+  &lt;svg class="btn__icon"&gt;&lt;!-- icon: add --&gt;&lt;/svg&gt;
+  Label
+  &lt;svg class="btn__icon"&gt;&lt;!-- icon: arrow_forward --&gt;&lt;/svg&gt;
+&lt;/button&gt;</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>Icon left + text + counter right</h3>
+        <div class="story-preview"><button class="btn btn--danger btn--base"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+  Label
+  <span class="counter counter--base counter--onPrimary counter--inactive">0</span></button></div>
+        <pre class="code"><code>&lt;button class="btn btn--danger btn--base"&gt;
+  &lt;svg class="btn__icon"&gt;&lt;!-- icon: add --&gt;&lt;/svg&gt;
+  Label
+  &lt;span class="counter counter--base counter--onPrimary counter--inactive"&gt;0&lt;/span&gt;
+&lt;/button&gt;</code></pre>
+        
+      </div>
+    </div>
+
+    <h3 class="mid-section">States</h3>
+    <p class="section-desc">Base size, icon-left+text variant. Default/hover/pressed/focused are one shared markup with different pseudo-classes applied — disabled is the one real attribute (<code class="tok">disabled</code>) that also flips the label/icon color and drops the cursor.</p>
+    <div class="story-grid">
+      
+      <div class="story">
+        <h3>default</h3>
+        <div class="story-preview"><button class="btn btn--danger btn--base" style=""><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+    Label</button></div>
+        <pre class="code"><code>.btn--danger {
+  background: var(--tok-fill-danger);
+}</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>hover</h3>
+        <div class="story-preview"><button class="btn btn--danger btn--base" style="background:var(--tok-fill-danger-hover)"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+    Label</button></div>
+        <pre class="code"><code>.btn--danger:hover {
+  background: var(--tok-fill-danger-hover);
+}</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>pressed</h3>
+        <div class="story-preview"><button class="btn btn--danger btn--base" style="background:var(--tok-fill-danger-active)"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+    Label</button></div>
+        <pre class="code"><code>.btn--danger:active {
+  background: var(--tok-fill-danger-active);
+}</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>focused</h3>
+        <div class="story-preview"><button class="btn btn--danger btn--base" style="box-shadow: 0 0 0 2px var(--bg-card) /* substitute your own surface color */, 0 0 0 calc(2px + 4px) var(--tok-border-focus);"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+    Label</button></div>
+        <pre class="code"><code>.btn--danger:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--bg-card) /* substitute your own surface color */, 0 0 0 calc(2px + 4px) var(--tok-border-focus);
+}</code></pre>
+        
+      </div>
+
+      <div class="story">
+        <h3>disabled</h3>
+        <div class="story-preview"><button class="btn btn--danger btn--base" disabled style=""><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+    Label</button></div>
+        <pre class="code"><code>.btn--danger:disabled {
+  background: var(--tok-fill-disabled);
+  color: var(--tok-text-disabled);
+}</code></pre>
+        
+      </div>
+    </div>
+
+    <h2 class="big-section">Inactive (aria-disabled)</h2>
+    <p class="section-desc">Not a variant — a state any variant can take. It looks exactly like disabled, but the button stays in the tab order and is announced by a screen reader, because it uses <code class="tok">aria-disabled="true"</code> instead of the <code class="tok">disabled</code> attribute (which removes it from both). Use it when the user needs to find out <i>why</i> the action is unavailable, and pair it with a <a href="tooltip.html">Tooltip</a> that says so. Your code swallows the click. Plain <code class="tok">disabled</code> stays right when there is nothing to explain. Tab to these two to compare: only the inactive one takes focus.</p>
+    <div class="story-grid">
+      
+      <div class="story">
+        <h3>inactive</h3>
+        <div class="story-preview"><button class="btn btn--primary btn--base" aria-disabled="true" title="Add a subject first"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+    Send</button></div>
+        <pre class="code"><code>&lt;button class="btn btn--primary btn--base" aria-disabled="true" aria-describedby="why"&gt;Send&lt;/button&gt;
+&lt;!-- + a Tooltip id="why": "Add a subject first" --&gt;</code></pre>
+        <p class="story-note">Focusable, keeps the focus ring, no hover / press.</p>
+      </div>
+      
+      <div class="story">
+        <h3>disabled</h3>
+        <div class="story-preview"><button class="btn btn--primary btn--base" disabled><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+    Send</button></div>
+        <pre class="code"><code>&lt;button class="btn btn--primary btn--base" disabled&gt;Send&lt;/button&gt;</code></pre>
+        <p class="story-note">Skipped by Tab, silent to screen readers.</p>
       </div>
     </div>
 

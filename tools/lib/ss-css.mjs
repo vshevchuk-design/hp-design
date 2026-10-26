@@ -469,8 +469,11 @@ ${["neutral", "primary", "success", "warning", "danger"].map((r) => `.badge--${r
 .tab--active .counter { background: ${R(counter.onNeutral.state.active.bg)}; color: ${R(counter.onNeutral.state.active.label)}; }
 
 /* ============ Button — danger (AlertDialog's confirm, Modal's own recipe) ============ */
-.btn--danger { background: ${cv("fill.danger")}; color: ${cv("text.onFill")}; }
-.btn--danger:not(:disabled):hover, .btn--danger:not(:disabled):active { background: ${cv("fill.dangerHover")}; }
+/* Button danger — roles read from button.tokens.json (button.danger) */
+.btn--danger { background: ${R(button.danger.state.default.fill)}; color: ${R(button.danger.state.default.label)}; }
+.btn--danger .btn__icon { color: ${R(button.danger.state.default.icon)}; }
+.btn--danger:not(:disabled):hover { background: ${R(button.danger.state.hover.fill)}; }
+.btn--danger:not(:disabled):active { background: ${R(button.danger.state.pressed.fill)}; }
 
 /* ============ Modal / AlertDialog (native <dialog>) ============ */
 .modal { border: none; padding: 0; width: min(480px /* composition literal: room for two text areas; Modal's own 384 is the alert width */, calc(100vw - ${dim(8)})); max-height: calc(100dvh - ${dim(8)}); border-radius: ${D(modal.radius)}; background: ${R(modal.bg)}; box-shadow: ${shadowCss(modal.shadow)}; font-family: ${cv("family.sans")}; }
@@ -762,5 +765,5 @@ html:has(.ss-drawer[open]) { overflow: hidden; }
 export const SS_COLOR_PATHS = [
   "surface.page", "surface.default", "border.default", "border.focus",
   "text.default", "text.secondary", "text.muted", "icon.secondary", "fill.neutralHover",
-  "fill.danger", "fill.dangerHover", "text.onFill", "icon.success",
+  "fill.danger", "fill.dangerHover", "fill.dangerActive", "text.onFill", "icon.success",
 ];

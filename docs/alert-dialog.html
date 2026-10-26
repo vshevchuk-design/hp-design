@@ -81,6 +81,7 @@
   --tok-fill-neutral-active: #cdd1d6;
   --tok-fill-danger: #de394b;
   --tok-fill-danger-hover: #c11435;
+  --tok-fill-danger-active: #9c0326;
   --tok-text-on-fill: #ffffff;
   --tok-border-focus: #0468c4;
   --tok-family-sans: 'Sora', sans-serif;
@@ -107,8 +108,10 @@ dialog.alert-dialog[open]::backdrop { opacity: 1; }
 .ov-btn--secondary:active { background: var(--tok-fill-neutral-active); }
 .ov-btn--primary { background: var(--tok-fill-primary); color: var(--tok-text-on-fill); font-weight: 600; }
 .ov-btn--primary:hover { background: var(--tok-fill-primary-hover); }
+/* the destructive action is Button danger — roles read from button.tokens.json */
 .ov-btn--danger { background: var(--tok-fill-danger); color: var(--tok-text-on-fill); font-weight: 600; }
 .ov-btn--danger:hover { background: var(--tok-fill-danger-hover); }
+.ov-btn--danger:active { background: var(--tok-fill-danger-active); }
 .ov-btn:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
 </style>
 </head>
@@ -153,6 +156,7 @@ dialog.alert-dialog[open]::backdrop { opacity: 1; }
     <a class="navlink" href="icons.html">Icons</a>
     <p class="nav-category">Components</p>
     <a class="navlink" href="button.html">Button</a>
+    <a class="navlink" href="fab.html">FAB</a>
     <a class="navlink" href="counter.html">Counter</a>
     <a class="navlink" href="input.html">Input</a>
     <a class="navlink" href="select.html">Select</a>
@@ -332,6 +336,7 @@ document.querySelectorAll('dialog.alert-dialog').forEach((dlg) =&gt; {
   --tok-fill-neutral-active: #cdd1d6;
   --tok-fill-danger: #de394b;
   --tok-fill-danger-hover: #c11435;
+  --tok-fill-danger-active: #9c0326;
   --tok-text-on-fill: #ffffff;
   --tok-border-focus: #0468c4;
   --tok-family-sans: 'Sora', sans-serif;
@@ -358,8 +363,10 @@ dialog.alert-dialog[open]::backdrop { opacity: 1; }
 .ov-btn--secondary:active { background: var(--tok-fill-neutral-active); }
 .ov-btn--primary { background: var(--tok-fill-primary); color: var(--tok-text-on-fill); font-weight: 600; }
 .ov-btn--primary:hover { background: var(--tok-fill-primary-hover); }
+/* the destructive action is Button danger — roles read from button.tokens.json */
 .ov-btn--danger { background: var(--tok-fill-danger); color: var(--tok-text-on-fill); font-weight: 600; }
 .ov-btn--danger:hover { background: var(--tok-fill-danger-hover); }
+.ov-btn--danger:active { background: var(--tok-fill-danger-active); }
 .ov-btn:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }</code></pre>
   </main>
 </div>

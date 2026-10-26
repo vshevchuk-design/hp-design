@@ -32,6 +32,7 @@ export const NAV_ITEMS = {
   layout: { label: "Layout", href: "layout.html" },
   icons: { label: "Icons", href: "icons.html" },
   button: { label: "Button", href: "button.html" },
+  fab: { label: "FAB", href: "fab.html" },
   counter: { label: "Counter", href: "counter.html" },
   input: { label: "Input", href: "input.html" },
   select: { label: "Select", href: "select.html" },
@@ -179,6 +180,7 @@ export function renderNav(activeKey, { basePath = "" } = {}) {
     ${link("icons")}
     <p class="nav-category">Components</p>
     ${link("button")}
+    ${link("fab")}
     ${link("counter")}
     ${link("input")}
     ${link("select")}

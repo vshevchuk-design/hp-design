@@ -11,6 +11,7 @@
 // (a function of the helpers in X, so it resolves tokens the same way) and
 // its own script. The shell script exposes window.cx.toast(text) and
 // window.cx.notDesigned() for links that lead outside the prototype.
+import { FAB_CSS, fabHtml } from "./fab.mjs";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -136,10 +137,8 @@ html, body { height: auto; min-height: 100%; }
 .table__muted { color: ${R(tb.cell.mutedColor)}; }
 
 /* ============ Assistant: a floating button → a right-hand Drawer ============ */
-/* a 48px round icon button, the same on every width (user, 2026-10-20; 64, then 56 were too big) */
-.cx-fab { position: fixed; right: ${dim(6)}; bottom: calc(${dim(6)} + env(safe-area-inset-bottom)); z-index: 7; width: ${dim(12)}; height: ${dim(12)}; padding: 0; border-radius: 50%; box-shadow: ${X.shadow(drawer.shadow)}; }
-.cx-fab .btn__icon { width: ${dim(6)}; height: ${dim(6)}; }
-@media (max-width: 767px) { .cx-fab { right: ${dim(4)}; bottom: calc(${dim(4)} + env(safe-area-inset-bottom)); } }
+/* the DS FAB (tools/lib/fab.mjs): 48px round, Button primary colours, bottom-right */
+${FAB_CSS}
 /* pinned to the top and bottom of the visible area, not a 100dvh height —
    iOS Safari's bottom toolbar hid the foot of a 100dvh panel */
 .cx-assistant { border: none; padding: 0; margin: 0 0 0 auto; position: fixed; inset: 0 0 auto auto; height: 100lvh; max-height: none; width: min(${dim(96)}, 100vw); max-width: 100vw; background: ${R(drawer.bg)}; box-shadow: ${X.shadow(drawer.shadow)}; font-family: ${cv("family.sans")}; }
@@ -254,7 +253,7 @@ ${views}
     </main>
   </div>
 </div>
-<button class="btn btn--primary btn--base cx-fab" id="cx-fab" type="button" aria-haspopup="dialog" aria-label="Assistant" title="Assistant">${icon("auto_awesome", "btn__icon")}</button>
+${fabHtml({ icon: "auto_awesome", label: "Assistant", id: "cx-fab", attrs: 'aria-haspopup="dialog"' })}
 <dialog class="cx-assistant" id="cx-assistant" aria-labelledby="cx-assistant-title">
   <div class="ss-drawer__head"><h2 class="ss-drawer__title" id="cx-assistant-title">Assistant</h2><button class="btn btn--ghost btn--sm btn--icon-only" type="button" id="cx-assistant-close" aria-label="Close">${icon("close", "btn__icon")}</button></div>
   <div class="cx-assistant__body" id="cx-assistant-body">

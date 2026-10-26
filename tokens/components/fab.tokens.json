@@ -1,0 +1,13 @@
+{
+  "component": {
+    "fab": {
+      "$description": "Floating action button — one round, icon-only button that floats over the page in a fixed corner and opens the one thing that should be reachable from anywhere (the CX Assistant). Its colours and states ARE Button primary's (resolved from button.tokens.json, never re-declared), so a primary retune reaches it; what it owns is the shape, size, elevation and the corner it sits in. One per screen at most. Promoted from the CX shell's local .cx-fab on 2026-10-26 (user: 'FAB кнопку треба додати саме як фаб'). Always needs an aria-label (there is no visible text) and a native title.",
+      "size": { "$type": "dimension", "$value": "{dim.12}", "$description": "48px on every width (user, 2026-10-20 — 64, then 56, were too big)." },
+      "iconSize": { "$type": "dimension", "$value": "{dim.6}", "$description": "24px — half the diameter, the same 50% rule Button's icons follow." },
+      "radius": { "$type": "dimension", "$value": "{radius.full}" },
+      "shadow": { "$type": "shadow", "$value": "{shadow.md}", "$description": "The one button with elevation: it floats over content, so it needs to read as above it. Same tier as Drawer." },
+      "offset": { "$type": "dimension", "$value": "{dim.6}", "$description": "24px from the right and bottom edges (plus the safe-area inset) from 768px up." },
+      "offsetPhone": { "$type": "dimension", "$value": "{dim.4}", "$description": "16px under 768px — the page gutter." }
+    }
+  }
+}

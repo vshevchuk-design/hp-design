@@ -150,7 +150,7 @@ const colorPaths = [
   "fill.neutral", "fill.neutralHover", "fill.neutralActive", "fill.neutralHoverStrong", "fill.neutralActiveStrong",
   "surface.dimHover",
   "bg.primary", "bg.primaryHover", "bg.neutral", "bg.neutralStrong", "bg.warning", "text.warning", "bg.danger", "text.danger", "bg.success", "text.success", "status.success", "surface.overlay",
-  "fill.danger", "fill.dangerHover", "fill.disabled", "text.disabled", "icon.disabled", "surface.disabled",
+  "fill.danger", "fill.dangerHover", "fill.dangerActive", "fill.disabled", "text.disabled", "icon.disabled", "surface.disabled",
   "bg.ai", "text.ai", "icon.ai", "fill.ai",
   ...usedHues.flatMap((h) => [`avatar.${h}.bg`, `avatar.${h}.text`]),
 ];
@@ -897,8 +897,9 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
 .btn--primary:disabled .btn__icon { color: ${cv(btnPrimDisabled.icon)}; }
 /* danger action — the same fill.danger recipe Modal's own footer actions
    use (button.tokens.json has no danger variant; this is Modal's recipe) */
-.btn--danger { background: ${cv("fill.danger")}; color: ${cv("text.onFill")}; }
-.btn--danger:hover { background: ${cv("fill.dangerHover")}; }
+.btn--danger { background: ${cv(refPath(button.danger.state.default.fill.$value))}; color: ${cv(refPath(button.danger.state.default.label.$value))}; }
+.btn--danger:hover { background: ${cv(refPath(button.danger.state.hover.fill.$value))}; }
+.btn--danger:active { background: ${cv(refPath(button.danger.state.pressed.fill.$value))}; }
 .btn--danger.btn--base { height: ${btnPrimBaseHeight}; padding: 0 ${btnPrimBasePaddingX}; gap: ${btnPrimBaseGap}; ${typoCss(btnPrimBaseLabelType)} }
 .btn--primary.btn--lg { height: ${btnPrimLgHeight}; padding: 0 ${btnPrimLgPaddingX}; gap: ${btnPrimLgGap}; ${typoCss(btnPrimLgLabelType)} }
 .btn--primary.btn--lg .btn__icon { width: ${btnPrimLgIconSize}; height: ${btnPrimLgIconSize}; }
@@ -1072,7 +1073,7 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
 
 /* discard confirmation — modal.alert's behavioral variant: identical Modal
    surface, but no header close, Escape and outside-click disabled — the
-   footer actions are the only way out. Danger = Modal's fill.danger recipe. */
+   footer actions are the only way out. Danger = Button danger (button.tokens.json). */
 .mc-confirm { border: none; padding: 0; width: ${mdWidth}; max-width: calc(100vw - ${px(resolve("dim.8"))}); border-radius: ${mdRadius}; background: ${cv(mdBg)}; box-shadow: ${mdShadowCss}; font-family: ${cv("family.sans")}; }
 .mc-confirm::backdrop { background: ${cv(mdOverlay)}; }
 .mc-confirm__body { display: flex; flex-direction: column; gap: ${px(resolve("dim.2"))}; padding: ${mdPadding}; }

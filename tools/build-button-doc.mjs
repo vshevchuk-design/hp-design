@@ -73,6 +73,7 @@ const colorPaths = [
   "fill.disabled", "text.disabled", "icon.disabled",
   "border.focus", "color.white", "text.primary",
   "fill.primaryTint", "fill.primaryTintHover", "fill.primaryTintActive", "icon.primary",
+  "fill.danger", "fill.dangerHover", "fill.dangerActive", "border.default",
 ];
 const colorValue = Object.fromEntries(colorPaths.map((p) => [p, resolve(p)]));
 const fontSans = resolve("family.sans"); // e.g. "Sora"
@@ -97,8 +98,10 @@ const primarySizes = resolveSize(button.primary);
 const secondarySizes = resolveSize(button.secondary);
 const ghostSizes = resolveSize(button.ghost);
 const tintSizes = resolveSize(button.tint);
+const dangerSizes = resolveSize(button.danger);
+const outlineSizes = resolveSize(button.outline);
 primarySizes.forEach((p, i) => {
-  for (const [label, sizes_] of [["secondary", secondarySizes], ["tint", tintSizes], ["ghost", ghostSizes]]) {
+  for (const [label, sizes_] of [["secondary", secondarySizes], ["tint", tintSizes], ["ghost", ghostSizes], ["danger", dangerSizes], ["outline", outlineSizes]]) {
     const s = sizes_[i];
     const same = JSON.stringify(p) === JSON.stringify(s);
     if (!same) throw new Error(`button.primary.size.${p.key} and button.${label}.size.${s.key} were expected to be identical but diverged — update the shared .btn--${p.key} CSS generation to handle them separately.`);
@@ -125,7 +128,7 @@ const counterSizes = ["sm", "base", "lg"].map((key) => {
 // onPrimary's colors (white "active" pill, dark-navy "inactive") don't work on a
 // near-white gray button: the white pill barely shows and the navy reads as loud
 // rather than quiet, so each button variant needs its matching counter surface.
-const counterSurfaceFor = { primary: "onPrimary", secondary: "onNeutral", tint: "onNeutral", ghost: "onNeutral" };
+const counterSurfaceFor = { primary: "onPrimary", danger: "onPrimary", secondary: "onNeutral", tint: "onNeutral", ghost: "onNeutral", outline: "onNeutral" };
 // Read from counter.tokens.json, never retyped: onNeutral's inactive bg moved to
 // fill.neutralActiveStrong and a hand-typed "fill.neutralActive" here kept
 // painting the old gray.200 pill on this page until 2026-09-28.
@@ -158,10 +161,12 @@ const variants = {
   secondary: { label: "Secondary", fill: roleOf(button.secondary.state.default.fill), fillHover: roleOf(button.secondary.state.hover.fill), fillActive: roleOf(button.secondary.state.pressed.fill), text: roleOf(button.secondary.state.default.label), icon: roleOf(button.secondary.state.default.icon) },
   tint: { label: "Tint", fill: roleOf(button.tint.state.default.fill), fillHover: roleOf(button.tint.state.hover.fill), fillActive: roleOf(button.tint.state.pressed.fill), text: roleOf(button.tint.state.default.label), icon: roleOf(button.tint.state.default.icon) },
   ghost: { label: "Ghost", fill: null, fillHover: roleOf(button.ghost.state.hover.fill), fillActive: roleOf(button.ghost.state.pressed.fill), text: roleOf(button.ghost.state.default.label), icon: roleOf(button.ghost.state.default.icon) },
+  outline: { label: "Outline", fill: null, border: roleOf(button.outline.state.default.border), fillHover: roleOf(button.outline.state.hover.fill), fillActive: roleOf(button.outline.state.pressed.fill), text: roleOf(button.outline.state.default.label), icon: roleOf(button.outline.state.default.icon) },
+  danger: { label: "Danger", fill: roleOf(button.danger.state.default.fill), fillHover: roleOf(button.danger.state.hover.fill), fillActive: roleOf(button.danger.state.pressed.fill), text: roleOf(button.danger.state.default.label), icon: roleOf(button.danger.state.default.icon) },
 };
 // Whatever roles the token file names must exist as emitted CSS vars.
 for (const v of Object.values(variants)) {
-  for (const role of [v.fill, v.fillHover, v.fillActive, v.text, v.icon]) {
+  for (const role of [v.fill, v.border, v.fillHover, v.fillActive, v.text, v.icon]) {
     if (role && !colorPaths.includes(role)) throw new Error(`button.tokens.json references ${role}, missing from colorPaths`);
   }
 }
@@ -170,19 +175,25 @@ function variantCss(key) {
   const v = variants[key];
   const restBg = v.fill ? cv(v.fill) : "transparent";
   const disabledBg = v.fill ? cv("fill.disabled") : "transparent";
-  return `.btn--${key} { background: ${restBg}; color: ${cv(v.text)}; }
+  // the hairline sits inside the declared height (.btn is border-box)
+  const border = v.border ? ` border: 1px solid ${cv(v.border)};` : "";
+  // inactive = aria-disabled: same look as disabled, but still focusable — so
+  // it keeps the focus ring and loses only hover/press
+  const live = `:not(:disabled):not([aria-disabled="true"])`;
+  return `.btn--${key} { background: ${restBg}; color: ${cv(v.text)};${border} }
 .btn--${key} .btn__icon { color: ${cv(v.icon)}; }
-.btn--${key}:not(:disabled):hover { background: ${cv(v.fillHover)}; }
-.btn--${key}:not(:disabled):active { background: ${cv(v.fillActive)}; }
+.btn--${key}${live}:hover { background: ${cv(v.fillHover)}; }
+.btn--${key}${live}:active { background: ${cv(v.fillActive)}; }
 .btn--${key}:not(:disabled):focus-visible { outline: none; ${ringShadow} }
-.btn--${key}:disabled { background: ${disabledBg}; color: ${cv("text.disabled")}; cursor: not-allowed; }
-.btn--${key}:disabled .btn__icon { color: ${cv("icon.disabled")}; }`;
+.btn--${key}:disabled, .btn--${key}[aria-disabled="true"] { background: ${disabledBg}; color: ${cv("text.disabled")}; cursor: not-allowed; }
+.btn--${key}:disabled .btn__icon, .btn--${key}[aria-disabled="true"] .btn__icon { color: ${cv("icon.disabled")}; }`;
 }
 
 // ---- the actual stylesheet — printed as code AND used to render the live preview ----
 const css = `${rootVars}
 
 .btn {
+  box-sizing: border-box;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -216,6 +227,10 @@ ${variantCss("secondary")}
 ${variantCss("tint")}
 
 ${variantCss("ghost")}
+
+${variantCss("outline")}
+
+${variantCss("danger")}
 
 .counter {
   display: inline-flex;
@@ -293,7 +308,7 @@ function variantStories(variant) {
 function stateSnippets(variant) {
   const v = variants[variant];
   return {
-    default: `.btn--${variant} {\n  background: ${v.fill ? cv(v.fill) : "transparent"};\n}`,
+    default: `.btn--${variant} {\n  background: ${v.fill ? cv(v.fill) : "transparent"};${v.border ? `\n  border: 1px solid ${cv(v.border)};` : ""}\n}`,
     hover: `.btn--${variant}:hover {\n  background: ${cv(v.fillHover)};\n}`,
     pressed: `.btn--${variant}:active {\n  background: ${cv(v.fillActive)};\n}`,
     focused: `.btn--${variant}:focus-visible {\n  outline: none;\n  ${ringShadow}\n}`,
@@ -332,7 +347,7 @@ function variantSection(key) {
     </div>
 
     <h3 class="mid-section">States</h3>
-    <p class="section-desc">Base size, icon-left+text variant. Default/hover/pressed/focused are one shared markup with different pseudo-classes applied — disabled is the one real attribute (<code class="tok">disabled</code>) that also flips the label/icon color and drops the cursor.${key === "secondary" ? " fill.disabled equals fill.neutral (both gray.100), so disabled here only changes the label/icon color, not the background — see the token's own note." : ""}${key === "ghost" ? " Ghost has no background at rest, so disabled stays transparent too — it never had a fill to lose." : ""}</p>
+    <p class="section-desc">Base size, icon-left+text variant. Default/hover/pressed/focused are one shared markup with different pseudo-classes applied — disabled is the one real attribute (<code class="tok">disabled</code>) that also flips the label/icon color and drops the cursor.${key === "secondary" ? " fill.disabled equals fill.neutral (both gray.100), so disabled here only changes the label/icon color, not the background — see the token's own note." : ""}${key === "ghost" || key === "outline" ? " No background at rest, so disabled stays transparent too — it never had a fill to lose." : ""}</p>
     <div class="story-grid">
       ${stateStories(key)}
     </div>`;
@@ -422,14 +437,16 @@ const html = `<!doctype html>
   </nav>
   <main>
     <h1>Button</h1>
-    <p class="sub">tokens/components/button.tokens.json · Primary + Secondary + Ghost variants · generated — the CSS below is generated from the same resolved tokens driving every preview on this page, not hand-copied. Colors are CSS custom properties (<code class="tok">var(--fill-primary)</code> etc.), not literal hex — retune a token, regenerate, and every rule that references it updates together.</p>
+    <p class="sub">tokens/components/button.tokens.json · Primary · Secondary · Tint · Ghost · Outline · Danger · generated — the CSS below is generated from the same resolved tokens driving every preview on this page, not hand-copied. Colors are CSS custom properties (<code class="tok">var(--fill-primary)</code> etc.), not literal hex — retune a token, regenerate, and every rule that references it updates together.</p>
 
     <div class="legend">
-      <div class="row"><b>Sizes</b><span>sm 32px / base 40px (default) / lg 48px — shared by all four variants, byte-for-byte identical (asserted at build time). paddingX and iconSize scale with height on the same 4px grid the size step itself moves on; the 8px icon↔label gap is flat at every size, per spec.</span></div>
+      <div class="row"><b>Sizes</b><span>sm 32px / base 40px (default) / lg 48px — shared by all six variants, byte-for-byte identical (asserted at build time). paddingX and iconSize scale with height on the same 4px grid the size step itself moves on; the 8px icon↔label gap is flat at every size, per spec.</span></div>
       <div class="row"><b>Icon size</b><span>16 / 20 / 24px — resolves to exactly 50% of button height at every size, which is why it self-scales instead of needing separate tuning as more sizes get added later.</span></div>
       <div class="row"><b>Icon-only</b><span>Square (width = height), no paddingX/gap — the icon centers directly in the box.</span></div>
       <div class="row"><b>Radius</b><span>radius.default (8px) at every size — constant, doesn't scale with height, so the corner reads the same across sm/base/lg.</span></div>
       <div class="row"><b>Primary vs Secondary vs Tint vs Ghost</b><span>Same size/state/content-variant grid, four color roles: primary → fill.primary (brand blue, highest emphasis). secondary → fill.neutral (gray fill — fill.neutral's own token description calls it out as the intended secondary-button fill). tint → fill.primaryTint (blue.100) with a text.primary label, hovering to blue.150 and pressing to blue.200 — the brand colour at low emphasis, for an action that repeats on every card of a grid where a solid primary on each would make the whole screen shout (added 2026-10-07 for Scheduling's Pick a time). ghost → no fill or border at rest, the quietest tier — reuses the same transparent→fill.neutralHover→fill.neutralActive progression already established by pagination's page-item and tabs' segmented style.</span></div>
+      <div class="row"><b>Outline</b><span>No fill (it takes the surface it sits on, like the outline Badge), a <code class="tok">border.default</code> hairline inside the declared height — 32 / 40 / 48 still hold — and <code class="tok">text.default</code>; hover / press add the same washes as Ghost. For a quiet action where Secondary's gray fill would blend in (a gray panel, a hovered row), or beside Secondary when two quiet actions need telling apart.</span></div>
+      <div class="row"><b>Danger</b><span><code class="tok">fill.danger</code> → <code class="tok">fill.dangerHover</code> → <code class="tok">fill.dangerActive</code>, white label — for the action that destroys something (delete, remove, discard), usually the confirming button of an <a href="alert-dialog.html">AlertDialog</a>. Not for "important": one per view at most.</span></div>
       <div class="row"><b>States</b><span>default → variant's fill (or transparent, for ghost) · hover → fillHover · pressed → fillActive · focused → additive ${px(focusWidth)} ring (border.focus) with ${px(focusOffset)} offset, composes on top of any of the three · disabled → fill.disabled + text.disabled + icon.disabled (ghost stays transparent, no fill to lose).</span></div>
     </div>
 
@@ -441,6 +458,15 @@ const html = `<!doctype html>
     ${variantSection("secondary")}
     ${variantSection("tint")}
     ${variantSection("ghost")}
+    ${variantSection("outline")}
+    ${variantSection("danger")}
+
+    <h2 class="big-section">Inactive (aria-disabled)</h2>
+    <p class="section-desc">Not a variant — a state any variant can take. It looks exactly like disabled, but the button stays in the tab order and is announced by a screen reader, because it uses <code class="tok">aria-disabled="true"</code> instead of the <code class="tok">disabled</code> attribute (which removes it from both). Use it when the user needs to find out <i>why</i> the action is unavailable, and pair it with a <a href="tooltip.html">Tooltip</a> that says so. Your code swallows the click. Plain <code class="tok">disabled</code> stays right when there is nothing to explain. Tab to these two to compare: only the inactive one takes focus.</p>
+    <div class="story-grid">
+      ${storyCard("inactive", `<button class="btn btn--primary btn--base" aria-disabled="true" title="Add a subject first">${iconAdd}\n    Send</button>`, `<button class="btn btn--primary btn--base" aria-disabled="true" aria-describedby="why">Send</button>\n<!-- + a Tooltip id="why": "Add a subject first" -->`, "Focusable, keeps the focus ring, no hover / press.")}
+      ${storyCard("disabled", `<button class="btn btn--primary btn--base" disabled>${iconAdd}\n    Send</button>`, `<button class="btn btn--primary btn--base" disabled>Send</button>`, "Skipped by Tab, silent to screen readers.")}
+    </div>
 
     <p class="placeholder-note">Every code sample on this page is printed from the same resolved token values driving the live previews above it — copy it directly, nothing here is hand-typed.</p>
   </main>

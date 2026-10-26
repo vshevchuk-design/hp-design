@@ -293,6 +293,11 @@
       "$type": "color",
       "$value": "{color.red.600}"
     },
+    "dangerActive": {
+      "$type": "color",
+      "$value": "{color.red.700}",
+      "$description": "Pressed state of a danger fill (Button danger), one step past dangerHover — the same 500 → 600 → 700 ladder fill.primary uses."
+    },
     "warning": {
       "$type": "color",
       "$value": "{status.warning}"

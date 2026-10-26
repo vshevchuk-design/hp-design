@@ -26,6 +26,7 @@ const registry = {
 const ad = load("tokens/components/alert-dialog.tokens.json").component.alertDialog;
 // the shell IS Modal's — resolved from its token file, never retyped
 const modal = load("tokens/components/modal.tokens.json").component.modal;
+const btnDanger = load("tokens/components/button.tokens.json").component.button.danger;
 
 function get(ref) { const parts = ref.replace(/[{}]/g, "").split("."); let n = registry; for (const p of parts) n = n[p]; if (n === undefined) throw new Error(`unresolved ${ref}`); return n; }
 function resolveValue(v) { if (typeof v === "string" && v.startsWith("{")) return resolveToken(get(v)); return v; }
@@ -40,7 +41,7 @@ const cv = (p) => `var(${cssVarName(p)})`;
 const typoCss = (t) => `font-weight: ${t.fontWeight}; font-size: ${px(t.fontSize)}; line-height: ${t.lineHeight};`;
 
 // demo buttons: the same docs-only Cancel / destructive pair the Modal page uses
-const demoPaths = ["fill.primary", "fill.primaryHover", "fill.neutral", "fill.neutralHoverStrong", "fill.neutralActive", "fill.danger", "fill.dangerHover", "text.onFill", "border.focus"];
+const demoPaths = ["fill.primary", "fill.primaryHover", "fill.neutral", "fill.neutralHoverStrong", "fill.neutralActive", "fill.danger", "fill.dangerHover", "fill.dangerActive", "text.onFill", "border.focus"];
 const colorPaths = [...new Set([...[modal.bg, modal.overlay, modal.titleColor, modal.bodyColor].map(role), ...demoPaths, "text.default"])];
 const rootVars = renderRootVars([...colorPaths.map((p) => [p, resolve(p)]), ["family.sans", `'${resolve("family.sans")}', sans-serif`]]);
 const sh = resolveToken(modal.shadow);
@@ -70,8 +71,10 @@ dialog.alert-dialog[open]::backdrop { opacity: 1; }
 .ov-btn--secondary:active { background: ${cv("fill.neutralActive")}; }
 .ov-btn--primary { background: ${cv("fill.primary")}; color: ${cv("text.onFill")}; font-weight: 600; }
 .ov-btn--primary:hover { background: ${cv("fill.primaryHover")}; }
-.ov-btn--danger { background: ${cv("fill.danger")}; color: ${cv("text.onFill")}; font-weight: 600; }
-.ov-btn--danger:hover { background: ${cv("fill.dangerHover")}; }
+/* the destructive action is Button danger — roles read from button.tokens.json */
+.ov-btn--danger { background: ${R(btnDanger.state.default.fill)}; color: ${R(btnDanger.state.default.label)}; font-weight: 600; }
+.ov-btn--danger:hover { background: ${R(btnDanger.state.hover.fill)}; }
+.ov-btn--danger:active { background: ${R(btnDanger.state.pressed.fill)}; }
 .ov-btn:focus-visible { outline: ${px(resolve("dim.1"))} solid ${cv("border.focus")}; outline-offset: ${px(resolve("dim.0_5"))}; }`;
 
 // open; block Escape (<dialog> fires a native 'cancel' just before Escape closes

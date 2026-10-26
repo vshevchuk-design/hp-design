@@ -48,6 +48,7 @@
   --tok-surface-overlay: rgba(21, 25, 30, 0.5);
   --tok-fill-danger: #de394b;
   --tok-fill-danger-hover: #c11435;
+  --tok-fill-danger-active: #9c0326;
   --tok-fill-disabled: #e6e8eb;
   --tok-text-disabled: #adb5be;
   --tok-icon-disabled: #adb5be;
@@ -275,6 +276,7 @@
    use (button.tokens.json has no danger variant; this is Modal's recipe) */
 .btn--danger { background: var(--tok-fill-danger); color: var(--tok-text-on-fill); }
 .btn--danger:hover { background: var(--tok-fill-danger-hover); }
+.btn--danger:active { background: var(--tok-fill-danger-active); }
 .btn--danger.btn--base { height: 40px; padding: 0 12px; gap: 8px; font-weight: 600; font-size: 14px; line-height: 1.4; }
 .btn--primary.btn--lg { height: 48px; padding: 0 16px; gap: 8px; font-weight: 600; font-size: 16px; line-height: 1.4; }
 .btn--primary.btn--lg .btn__icon { width: 24px; height: 24px; }
@@ -395,7 +397,7 @@
 
 /* discard confirmation — modal.alert's behavioral variant: identical Modal
    surface, but no header close, Escape and outside-click disabled — the
-   footer actions are the only way out. Danger = Modal's fill.danger recipe. */
+   footer actions are the only way out. Danger = Button danger (button.tokens.json). */
 .mc-confirm { border: none; padding: 0; width: 384px; max-width: calc(100vw - 32px); border-radius: 24px; background: var(--tok-surface-default); box-shadow: 0px 8px 24px -2px rgba(21, 25, 30, 0.16); font-family: var(--tok-family-sans); }
 .mc-confirm::backdrop { background: var(--tok-surface-overlay); }
 .mc-confirm__body { display: flex; flex-direction: column; gap: 8px; padding: 24px; }

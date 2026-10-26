@@ -541,6 +541,281 @@
             "$description": "Stays transparent (no fill.disabled here, unlike primary/secondary) — ghost never has a background at rest, so disabled shouldn't suddenly gain one; only the label/icon fade."
           }
         }
+      },
+      "danger": {
+        "$description": "Destructive action — delete, remove, discard, leave for good. Same size grid and states as primary, red instead of blue. For the action that destroys something, not for 'important': one per view at most, usually the confirming action of an AlertDialog. Added 2026-10-26 — prototypes had hand-rolled .btn--danger in four places (33 uses across 8 prototypes) and Figma's Alert Dialog faked it with a fill override.",
+        "radius": {
+          "$type": "dimension",
+          "$value": "{radius.default}"
+        },
+        "size": {
+          "sm": {
+            "$description": "32px. Icon-only variant is 32×32 (square = height, no paddingX applied).",
+            "height": {
+              "$type": "dimension",
+              "$value": "{dim.8}"
+            },
+            "paddingX": {
+              "$type": "dimension",
+              "$value": "{dim.2}"
+            },
+            "gap": {
+              "$type": "dimension",
+              "$value": "{dim.2}"
+            },
+            "iconSize": {
+              "$type": "dimension",
+              "$value": "{dim.4}"
+            },
+            "label": {
+              "$type": "typography",
+              "$value": "{text-style.heading-sm}"
+            }
+          },
+          "base": {
+            "$description": "40px, the default size. Icon-only variant is 40×40.",
+            "height": {
+              "$type": "dimension",
+              "$value": "{dim.10}"
+            },
+            "paddingX": {
+              "$type": "dimension",
+              "$value": "{dim.3}"
+            },
+            "gap": {
+              "$type": "dimension",
+              "$value": "{dim.2}"
+            },
+            "iconSize": {
+              "$type": "dimension",
+              "$value": "{dim.5}"
+            },
+            "label": {
+              "$type": "typography",
+              "$value": "{text-style.heading-base}"
+            }
+          },
+          "lg": {
+            "$description": "48px. Icon-only variant is 48×48.",
+            "height": {
+              "$type": "dimension",
+              "$value": "{dim.12}"
+            },
+            "paddingX": {
+              "$type": "dimension",
+              "$value": "{dim.4}"
+            },
+            "gap": {
+              "$type": "dimension",
+              "$value": "{dim.2}"
+            },
+            "iconSize": {
+              "$type": "dimension",
+              "$value": "{dim.6}"
+            },
+            "label": {
+              "$type": "typography",
+              "$value": "{text-style.heading-md}"
+            }
+          },
+          "$description": "paddingX and iconSize scale with height along the same 4px grid the size step itself moves on (height +8 → paddingX +4, iconSize +4); gap between icon and label stays a flat 8px at every size, per spec. Icon sizes (16/20/24) resolve to 50% of button height at every step, which is why they don't need independent tuning as more sizes get added."
+        },
+        "state": {
+          "default": {
+            "fill": {
+              "$type": "color",
+              "$value": "{fill.danger}"
+            },
+            "label": {
+              "$type": "color",
+              "$value": "{text.onFill}"
+            },
+            "icon": {
+              "$type": "color",
+              "$value": "{icon.onFill}"
+            }
+          },
+          "hover": {
+            "fill": {
+              "$type": "color",
+              "$value": "{fill.dangerHover}"
+            }
+          },
+          "pressed": {
+            "fill": {
+              "$type": "color",
+              "$value": "{fill.dangerActive}"
+            }
+          },
+          "focused": {
+            "ringColor": {
+              "$type": "color",
+              "$value": "{border.focus}"
+            },
+            "ringWidth": {
+              "$type": "dimension",
+              "$value": "{dim.1}"
+            },
+            "ringOffset": {
+              "$type": "dimension",
+              "$value": "{dim.0_5}"
+            },
+            "$description": "Additive outline (keyboard focus only) on top of whatever default/hover/pressed fill is already showing — not a fill swap, so it composes with any of the three above."
+          },
+          "disabled": {
+            "fill": {
+              "$type": "color",
+              "$value": "{fill.disabled}"
+            },
+            "label": {
+              "$type": "color",
+              "$value": "{text.disabled}"
+            },
+            "icon": {
+              "$type": "color",
+              "$value": "{icon.disabled}"
+            }
+          }
+        }
+      },
+      "outline": {
+        "$description": "Quiet action with an edge: no fill (it takes the surface it sits on, like the outline Badge), a border.default hairline inside the declared height so 32/40/48 hold, text.default. For a secondary action where the gray Secondary fill would blend in (a gray panel, a hovered row) or beside Secondary when two quiet actions need telling apart. Added 2026-10-26.",
+        "radius": {
+          "$type": "dimension",
+          "$value": "{radius.default}"
+        },
+        "size": {
+          "sm": {
+            "$description": "32px. Icon-only variant is 32×32 (square = height, no paddingX applied).",
+            "height": {
+              "$type": "dimension",
+              "$value": "{dim.8}"
+            },
+            "paddingX": {
+              "$type": "dimension",
+              "$value": "{dim.2}"
+            },
+            "gap": {
+              "$type": "dimension",
+              "$value": "{dim.2}"
+            },
+            "iconSize": {
+              "$type": "dimension",
+              "$value": "{dim.4}"
+            },
+            "label": {
+              "$type": "typography",
+              "$value": "{text-style.heading-sm}"
+            }
+          },
+          "base": {
+            "$description": "40px, the default size. Icon-only variant is 40×40.",
+            "height": {
+              "$type": "dimension",
+              "$value": "{dim.10}"
+            },
+            "paddingX": {
+              "$type": "dimension",
+              "$value": "{dim.3}"
+            },
+            "gap": {
+              "$type": "dimension",
+              "$value": "{dim.2}"
+            },
+            "iconSize": {
+              "$type": "dimension",
+              "$value": "{dim.5}"
+            },
+            "label": {
+              "$type": "typography",
+              "$value": "{text-style.heading-base}"
+            }
+          },
+          "lg": {
+            "$description": "48px. Icon-only variant is 48×48.",
+            "height": {
+              "$type": "dimension",
+              "$value": "{dim.12}"
+            },
+            "paddingX": {
+              "$type": "dimension",
+              "$value": "{dim.4}"
+            },
+            "gap": {
+              "$type": "dimension",
+              "$value": "{dim.2}"
+            },
+            "iconSize": {
+              "$type": "dimension",
+              "$value": "{dim.6}"
+            },
+            "label": {
+              "$type": "typography",
+              "$value": "{text-style.heading-md}"
+            }
+          },
+          "$description": "Identical to primary.size — see that block's own $description for the scaling rule."
+        },
+        "state": {
+          "default": {
+            "border": {
+              "$type": "color",
+              "$value": "{border.default}"
+            },
+            "label": {
+              "$type": "color",
+              "$value": "{text.default}"
+            },
+            "icon": {
+              "$type": "color",
+              "$value": "{icon.default}"
+            }
+          },
+          "hover": {
+            "fill": {
+              "$type": "color",
+              "$value": "{fill.neutralHover}"
+            }
+          },
+          "pressed": {
+            "fill": {
+              "$type": "color",
+              "$value": "{fill.neutralActive}"
+            }
+          },
+          "focused": {
+            "ringColor": {
+              "$type": "color",
+              "$value": "{border.focus}"
+            },
+            "ringWidth": {
+              "$type": "dimension",
+              "$value": "{dim.1}"
+            },
+            "ringOffset": {
+              "$type": "dimension",
+              "$value": "{dim.0_5}"
+            },
+            "$description": "Same ring treatment as primary — border.focus is always blue regardless of the button's own role, per that token's own rule."
+          },
+          "disabled": {
+            "border": {
+              "$type": "color",
+              "$value": "{border.default}"
+            },
+            "label": {
+              "$type": "color",
+              "$value": "{text.disabled}"
+            },
+            "icon": {
+              "$type": "color",
+              "$value": "{icon.disabled}"
+            }
+          }
+        }
+      },
+      "inactive": {
+        "$description": "Not a variant — a state any variant can take: looks exactly like disabled, but the button stays focusable and is announced (aria-disabled=\"true\" instead of the disabled attribute, which removes it from the tab order and from screen readers). Use it when the user needs to find out WHY the action is unavailable, and pair it with a Tooltip that says so ('Add a subject first'). Plain disabled stays right when there is nothing to explain. Code swallows the click. Added 2026-10-26 (Storybook's inactive prop)."
       }
     }
   }
