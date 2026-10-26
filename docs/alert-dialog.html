@@ -251,6 +251,8 @@ dialog.alert-dialog[open]::backdrop { opacity: 1; }
       <div class="row"><b>Layout</b><span>One block — title (<code class="tok">heading-lg</code>) over description (<code class="tok">body-base</code>, <code class="tok">text.secondary</code>) 8px apart, actions 24px below, right-aligned, safe action first. No header / footer bands, no dividers.</span></div>
       <div class="row"><b>Can't be dismissed</b><span>No ×. A backdrop click does nothing (there's no outside-click handler), and Escape is blocked by preventDefault() on the dialog's native <code class="tok">cancel</code> event.</span></div>
       <div class="row"><b>A11y</b><span><code class="tok">role="alertdialog"</code>, <code class="tok">aria-labelledby</code> the title, <code class="tok">aria-describedby</code> the description. <code class="tok">autofocus</code> on Cancel, so Enter right after opening never confirms a destructive action.</span></div>
+      <div class="row"><b>One action</b><span>An acknowledgement — something happened and the user has to see it ("Session expired"): a single Primary action ("Got it", "Sign in again"), focused on open. Still no ×, no click-outside, no Escape — the point is that it gets read.</span></div>
+      <div class="row"><b>In code</b><span>These are opened through the app's <code class="tok">DialogManager</code>, not placed as markup on each screen: <code class="tok">await confirm({ title, description, tone })</code> shows the two-action dialog and resolves <code class="tok">true</code> / <code class="tok">false</code>; <code class="tok">await alert({ title, description })</code> shows the one-action dialog. The manager only opens and closes — the look is this component.</span></div>
       <div class="row"><b>When</b><span>Irreversible or destructive confirmations only. Anything that can be undone, or that the user can safely walk away from, is a plain Modal.</span></div>
     </div>
 
@@ -296,6 +298,18 @@ dialog.alert-dialog[open]::backdrop { opacity: 1; }
         </form>
       </div>
     </dialog></div><p class="story-note">Significant but not destructive — the action in fill.primary. Figma: Tone=Default.</p></div>
+      <div class="story"><h3>Acknowledge (one action)</h3><div class="story-preview"><button class="ov-btn ov-btn--primary" data-alert-dialog-open="ad-ack">Show session expired</button>
+    <dialog class="alert-dialog" id="ad-ack" role="alertdialog" aria-labelledby="ad-ack-title" aria-describedby="ad-ack-desc">
+      <div class="alert-dialog__content">
+        <div class="alert-dialog__text">
+          <h2 class="alert-dialog__title" id="ad-ack-title">Your session expired</h2>
+          <p class="alert-dialog__description" id="ad-ack-desc">You were signed out after 30 minutes without activity. Sign in again to pick up where you left off.</p>
+        </div>
+        <form class="alert-dialog__actions" method="dialog">
+          <button class="ov-btn ov-btn--primary" value="confirm" autofocus>Sign in again</button>
+        </form>
+      </div>
+    </dialog></div><p class="story-note">One Primary action, focused on open — DialogManager.alert(). Figma: Actions=One.</p></div>
     </div>
 
     <h2 class="big-section">Markup</h2>

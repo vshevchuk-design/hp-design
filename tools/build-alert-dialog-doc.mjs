@@ -86,7 +86,7 @@ document.querySelectorAll('dialog.alert-dialog').forEach((dlg) => {
   dlg.addEventListener('cancel', (e) => e.preventDefault());
 });`;
 
-function markup(id, { trigger, title, description, cancel = "Cancel", action, actionClass = "ov-btn--danger" }) {
+function markup(id, { trigger, title, description, cancel = "Cancel", action, actionClass = "ov-btn--danger", single = false }) {
   return `<button class="ov-btn ${actionClass}" data-alert-dialog-open="${id}">${trigger}</button>
     <dialog class="alert-dialog" id="${id}" role="alertdialog" aria-labelledby="${id}-title" aria-describedby="${id}-desc">
       <div class="alert-dialog__content">
@@ -95,8 +95,7 @@ function markup(id, { trigger, title, description, cancel = "Cancel", action, ac
           <p class="alert-dialog__description" id="${id}-desc">${description}</p>
         </div>
         <form class="alert-dialog__actions" method="dialog">
-          <button class="ov-btn ov-btn--secondary" value="cancel" autofocus>${cancel}</button>
-          <button class="ov-btn ${actionClass}" value="confirm">${action}</button>
+          ${single ? "" : `<button class="ov-btn ov-btn--secondary" value="cancel" autofocus>${cancel}</button>\n          `}<button class="ov-btn ${actionClass}" value="confirm"${single ? " autofocus" : ""}>${action}</button>
         </form>
       </div>
     </dialog>`;
@@ -208,6 +207,8 @@ const html = `<!doctype html>
       <div class="row"><b>Layout</b><span>One block — title (<code class="tok">heading-lg</code>) over description (<code class="tok">body-base</code>, <code class="tok">text.secondary</code>) ${D(ad.stackGap)} apart, actions ${D(ad.actionsGap)} below, right-aligned, safe action first. No header / footer bands, no dividers.</span></div>
       <div class="row"><b>Can't be dismissed</b><span>No ×. A backdrop click does nothing (there's no outside-click handler), and Escape is blocked by preventDefault() on the dialog's native <code class="tok">cancel</code> event.</span></div>
       <div class="row"><b>A11y</b><span><code class="tok">role="alertdialog"</code>, <code class="tok">aria-labelledby</code> the title, <code class="tok">aria-describedby</code> the description. <code class="tok">autofocus</code> on Cancel, so Enter right after opening never confirms a destructive action.</span></div>
+      <div class="row"><b>One action</b><span>An acknowledgement — something happened and the user has to see it ("Session expired"): a single Primary action ("Got it", "Sign in again"), focused on open. Still no ×, no click-outside, no Escape — the point is that it gets read.</span></div>
+      <div class="row"><b>In code</b><span>These are opened through the app's <code class="tok">DialogManager</code>, not placed as markup on each screen: <code class="tok">await confirm({ title, description, tone })</code> shows the two-action dialog and resolves <code class="tok">true</code> / <code class="tok">false</code>; <code class="tok">await alert({ title, description })</code> shows the one-action dialog. The manager only opens and closes — the look is this component.</span></div>
       <div class="row"><b>When</b><span>Irreversible or destructive confirmations only. Anything that can be undone, or that the user can safely walk away from, is a plain Modal.</span></div>
     </div>
 
@@ -217,6 +218,7 @@ const html = `<!doctype html>
       ${story("Destructive", markup("ad-delete", { trigger: "Delete account", title: "Delete your account?", description: "This is permanent — your account, messages and history are deleted immediately. There's no undo.", action: "Delete my account" }), "The destructive action in fill.danger, Cancel first and focused.")}
       ${story("Discard changes", markup("ad-discard", { trigger: "Leave page", title: "Discard unsaved changes?", description: "You've edited this message. If you leave now, your changes are lost.", cancel: "Keep editing", action: "Discard" }), "Cancel can be renamed to say what staying means.")}
       ${story("Confirm (not destructive)", markup("ad-submit", { trigger: "Submit application", title: "Submit your application?", description: "Once it's sent you can't edit it. We'll email you as soon as an advisor has reviewed it.", action: "Submit application", actionClass: "ov-btn--primary" }), "Significant but not destructive — the action in fill.primary. Figma: Tone=Default.")}
+      ${story("Acknowledge (one action)", markup("ad-ack", { trigger: "Show session expired", title: "Your session expired", description: "You were signed out after 30 minutes without activity. Sign in again to pick up where you left off.", action: "Sign in again", actionClass: "ov-btn--primary", single: true }), "One Primary action, focused on open — DialogManager.alert(). Figma: Actions=One.")}
     </div>
 
     <h2 class="big-section">Markup</h2>
