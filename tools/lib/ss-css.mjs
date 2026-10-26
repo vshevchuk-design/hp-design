@@ -20,7 +20,7 @@ export function ssCss(h) {
     return `${px(s.offsetX)} ${px(s.offsetY)} ${px(s.blur)} ${px(s.spread)} ${s.color}`;
   };
 
-  const { tabs, button, select, search, chip, listbox: lb, card, badge, pagination: pg, choiceTile: ct, radio, alert, toast, tooltip: tt, emptyState: es, dialog: modal, input, counter, progress, attachment: att, accordion: acc, datePicker: dp, calendar: cal, drawer, box, menu } = t;
+  const { tabs, button, select, search, chip, listbox: lb, card, badge, pagination: pg, choiceTile: ct, radio, alert, toast, tooltip: tt, emptyState: es, dialog: modal, input, counter, progress, attachment: att, accordion: acc, datePicker: dp, calendar: cal, drawer, box, dropdownMenu: menu } = t;
 
   const btn = (variant, size) => ({
     height: D(button[variant].size[size].height),
@@ -548,7 +548,7 @@ html:has(.modal[open]) { overflow: hidden; }
 /* ============ Menu (popover; one destructive item) ============ */
 .menu { margin: 0; padding: ${D(menu.padding)}; border-radius: ${D(menu.radius)}; background: ${R(menu.bg)}; border: 1px solid ${R(menu.border)}; box-shadow: ${shadowCss(menu.shadow)}; font-family: ${cv("family.sans")}; min-width: ${dim(48)}; }
 .menu__list { display: flex; flex-direction: column; gap: ${D(menu.gap)}; }
-.menu__item { width: 100%; display: flex; align-items: center; gap: ${D(menu.itemGap)}; padding: ${D(menu.itemPaddingY)} ${D(menu.itemPaddingX)}; border: none; background: none; border-radius: ${D(menu.itemRadius)}; cursor: pointer; text-align: left; white-space: nowrap; color: ${R(menu.state.default.text)}; font-family: inherit; ${typoCss(T(menu.label))} }
+.menu__item { width: 100%; display: flex; align-items: center; gap: ${D(menu.itemGap)}; height: ${D(menu.itemHeight)}; padding: 0 ${D(menu.itemPaddingX)}; border: none; background: none; border-radius: ${D(menu.itemRadius)}; cursor: pointer; text-align: left; white-space: nowrap; color: ${R(menu.state.default.text)}; font-family: inherit; ${typoCss(T(menu.label))} }
 .menu__icon { flex-shrink: 0; width: ${D(menu.iconSize)}; height: ${D(menu.iconSize)}; color: ${R(menu.state.default.icon)}; }
 .menu__item:hover { background: ${R(menu.state.hover.bg)}; }
 .menu__item:focus-visible { outline: ${ringW} solid ${cv("border.focus")}; outline-offset: -${ringW}; }

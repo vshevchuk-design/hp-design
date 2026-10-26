@@ -56,9 +56,9 @@
 .split__main:active, .split__chevron:active { background: var(--tok-fill-primary-active); }
 .split__main:focus-visible, .split__chevron:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; position: relative; }
 
-/* the Menu the chevron opens — resolved from menu.tokens.json */
+/* the Menu the chevron opens — resolved from dropdown-menu.tokens.json */
 .menu { margin: 0; box-sizing: border-box; padding: 4px; border-radius: 8px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); box-shadow: 0px 2px 8px 0px rgba(21, 25, 30, 0.10); min-width: 200px; font-family: var(--tok-family-sans); }
-.menu__item { width: 100%; box-sizing: border-box; display: flex; align-items: center; gap: 8px; padding: 8px 8px; border: none; background: none; border-radius: 4px; cursor: pointer; text-align: left; color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; }
+.menu__item { width: 100%; box-sizing: border-box; display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 8px; border: none; background: none; border-radius: 4px; cursor: pointer; text-align: left; color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; }
 .menu__item:hover { background: var(--tok-fill-neutral-hover); }
 .menu__icon { width: 16px; height: 16px; color: var(--tok-icon-secondary); flex-shrink: 0; }
 </style>
@@ -134,7 +134,7 @@
     <a class="navlink" href="drawer.html">Drawer</a>
     <a class="navlink" href="dialog.html">Dialog</a>
     <a class="navlink" href="alert-dialog.html">AlertDialog</a>
-    <a class="navlink" href="menu.html">Menu</a>
+    <a class="navlink" href="dropdown-menu.html">DropdownMenu</a>
     <a class="navlink active" href="split-button.html">SplitButton</a>
     <a class="navlink" href="listbox.html">Listbox</a>
     <a class="navlink" href="command.html">Command</a>
@@ -194,7 +194,7 @@
 
     <div class="legend">
       <div class="row"><b>One button</b><span>Two segments in one pill sharing Button primary's <code class="tok">fill.primary</code> + base size. A 1px <code class="tok">fill.primaryActive</code> seam is the only split at rest; each segment darkens on hover/press independently.</span></div>
-      <div class="row"><b>Chevron</b><span>Opens the real <code class="tok">Menu</code> (native popover, resolved from menu.tokens.json) — this component owns the split trigger, the Menu owns the list. Main-part = default action, chevron = the rest.</span></div>
+      <div class="row"><b>Chevron</b><span>Opens the real <code class="tok">DropdownMenu</code> (native popover, resolved from dropdown-menu.tokens.json) — this component owns the split trigger, the Menu owns the list. Main-part = default action, chevron = the rest.</span></div>
       <div class="row"><b>Use</b><span>"New Message ▾" → New Message / New Group Message. The one entry point where a primary action has a close sibling.</span></div>
     </div>
 
@@ -237,9 +237,9 @@
 .split__main:active, .split__chevron:active { background: var(--tok-fill-primary-active); }
 .split__main:focus-visible, .split__chevron:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; position: relative; }
 
-/* the Menu the chevron opens — resolved from menu.tokens.json */
+/* the Menu the chevron opens — resolved from dropdown-menu.tokens.json */
 .menu { margin: 0; box-sizing: border-box; padding: 4px; border-radius: 8px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); box-shadow: 0px 2px 8px 0px rgba(21, 25, 30, 0.10); min-width: 200px; font-family: var(--tok-family-sans); }
-.menu__item { width: 100%; box-sizing: border-box; display: flex; align-items: center; gap: 8px; padding: 8px 8px; border: none; background: none; border-radius: 4px; cursor: pointer; text-align: left; color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; }
+.menu__item { width: 100%; box-sizing: border-box; display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 8px; border: none; background: none; border-radius: 4px; cursor: pointer; text-align: left; color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; }
 .menu__item:hover { background: var(--tok-fill-neutral-hover); }
 .menu__icon { width: 16px; height: 16px; color: var(--tok-icon-secondary); flex-shrink: 0; }</code></pre>
   </main>

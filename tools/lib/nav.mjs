@@ -57,7 +57,7 @@ export const NAV_ITEMS = {
   drawer: { label: "Drawer", href: "drawer.html" },
   dialog: { label: "Dialog", href: "dialog.html" },
   "alert-dialog": { label: "AlertDialog", href: "alert-dialog.html" },
-  menu: { label: "Menu", href: "menu.html" },
+  "dropdown-menu": { label: "DropdownMenu", href: "dropdown-menu.html" },
   command: { label: "Command", href: "command.html" },
   listbox: { label: "Listbox", href: "listbox.html" },
   avatar: { label: "Avatar", href: "avatar.html" },
@@ -213,7 +213,7 @@ export function renderNav(activeKey, { basePath = "" } = {}) {
     ${link("drawer")}
     ${link("dialog")}
     ${link("alert-dialog")}
-    ${link("menu")}
+    ${link("dropdown-menu")}
     ${link("split-button")}
     ${link("listbox")}
     ${link("command")}

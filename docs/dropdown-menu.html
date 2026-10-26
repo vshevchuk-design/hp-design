@@ -1,0 +1,562 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>hp-design — DropdownMenu</title>
+<link rel="stylesheet" href="../assets/fonts/sora/sora.css" />
+<style>
+  :root {
+    --bg-page: #f7f7f5; --bg-card: #ffffff; --bg-card-hover: #fbfbfa;
+    --border: #e4e3df; --border-strong: #d2d1cb;
+    --text-primary: #0e0e10; --text-secondary: #63625c; --text-muted: #918f87;
+    --accent: #0468c4; --accent-bg: #eff6ff;
+    --code-bg: #1e1e22; --code-text: #e4e3df;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --sans: -apple-system, "Segoe UI", system-ui, sans-serif;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327;
+      --border: #313035; --border-strong: #403f45;
+      --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68;
+      --accent: #5aa4ec; --accent-bg: #16283b;
+      --code-bg: #0d0d0f; --code-text: #d7d6d2;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327;
+    --border: #313035; --border-strong: #403f45;
+    --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68;
+    --accent: #5aa4ec; --accent-bg: #16283b;
+    --code-bg: #0d0d0f; --code-text: #d7d6d2;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg-page); color: var(--text-primary); font-family: var(--sans); }
+  .shell { display: flex; min-height: 100vh; }
+  nav.side { width: 220px; flex-shrink: 0; border-right: 0.5px solid var(--border); padding: 1.5rem 1rem; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+  .brand { font-size: 14px; font-weight: 600; margin: 0 0 2px 8px; }
+  .brand-sub { font-size: 11.5px; color: var(--text-muted); margin: 0 0 1.5rem 8px; }
+  .navlink { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 8px; border-radius: 7px; font-size: 13px; text-decoration: none; color: var(--text-primary); margin-bottom: 1px; }
+  .navlink:hover { background: var(--bg-card-hover); }
+  .navlink.active { background: var(--accent-bg); color: var(--accent); font-weight: 600; }
+  .nav-category { font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin: 16px 8px 6px; }
+  main { flex: 1; padding: 4rem 4rem 6rem; max-width: 1120px; }
+
+  h1 { font-size: 36px; font-weight: 700; margin: 0 0 10px; letter-spacing: -0.02em; }
+  .sub { font-size: 14px; color: var(--text-secondary); margin: 0 0 2.5rem; }
+  h2.big-section { font-size: 24px; font-weight: 700; margin: 5.5rem 0 1.5rem; letter-spacing: -0.01em; padding-top: 2.5rem; border-top: 1px solid var(--border); }
+  h2.big-section:first-of-type { margin-top: 3rem; padding-top: 0; border-top: none; }
+  .section-desc { font-size: 13.5px; color: var(--text-secondary); margin: -0.5rem 0 1.5rem; max-width: 68ch; line-height: 1.6; }
+
+  .legend { font-size: 12.5px; color: var(--text-secondary); padding: 14px 18px; background: var(--bg-card); border: 0.5px solid var(--border); border-radius: 10px; margin-bottom: 1rem; line-height: 1.6; }
+  .legend .row { display: flex; gap: 14px; padding: 6px 0; border-bottom: 0.5px solid var(--border); }
+  .legend .row:last-child { border-bottom: none; }
+  .legend .row b { width: 150px; flex-shrink: 0; color: var(--text-primary); font-weight: 600; font-family: var(--mono); font-size: 11.5px; }
+  code.tok { font-family: var(--mono); font-size: 12px; color: var(--accent); }
+
+  pre.code { background: var(--code-bg); color: var(--code-text); border-radius: 10px; padding: 16px 18px; margin: 0; overflow-x: auto; font-family: var(--mono); font-size: 12px; line-height: 1.7; }
+  pre.code code { font-family: inherit; }
+
+  .story-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 28px; }
+  .story { border: 0.5px solid var(--border); border-radius: 14px; background: var(--bg-card); padding: 24px; display: flex; flex-direction: column; gap: 14px; }
+  .story h3 { font-size: 14px; font-weight: 600; margin: 0; font-family: var(--mono); }
+  .story-preview { min-height: 64px; display: flex; align-items: center; justify-content: center; padding: 12px 0; }
+  .story-note { font-size: 11.5px; color: var(--text-muted); margin: 0; line-height: 1.5; }
+
+  .ov-btn { box-sizing: border-box; height: 40px; padding: 0 12px; border-radius: 8px; border: none; cursor: pointer; font-family: var(--sans); font-weight: 600; font-size: 14px; line-height: 1.4; }
+  .ov-btn--secondary { background: var(--tok-fill-neutral); color: var(--tok-text-default); }
+  /* Strong tier — this button rests on fill.neutral (gray.100), where the
+   fill.neutralHover wash is the same colour and the hover shows nothing. */
+.ov-btn--secondary:hover { background: var(--tok-fill-neutral-hover-strong); }
+  .ov-btn--secondary:active { background: var(--tok-fill-neutral-active); }
+  .ov-btn:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
+
+  .placeholder-note { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-muted); border: 0.5px dashed var(--border-strong); border-radius: 6px; padding: 4px 10px; margin-top: 1.5rem; }
+
+  :root {
+  --tok-fill-neutral-hover-strong: #cdd1d6;
+  --tok-surface-default: #ffffff;
+  --tok-border-default: #dadde0;
+  --tok-border-focus: #0468c4;
+  --tok-text-default: #121921;
+  --tok-text-disabled: #adb5be;
+  --tok-text-danger: #c11435;
+  --tok-icon-secondary: #758191;
+  --tok-icon-disabled: #adb5be;
+  --tok-icon-danger: #de394b;
+  --tok-fill-neutral: #e6e8eb;
+  --tok-fill-neutral-hover: #e6e8eb;
+  --tok-fill-neutral-active: #cdd1d6;
+  --tok-bg-danger: #ffdfde;
+  --tok-fill-primary: #077fec;
+  --tok-text-muted: #758191;
+  --tok-family-sans: 'Sora', sans-serif;
+}
+
+.dropdown-menu { margin: 0; box-sizing: border-box; padding: 4px; border-radius: 8px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); box-shadow: 0px 2px 8px 0px rgba(21, 25, 30, 0.10); font-family: var(--tok-family-sans); min-width: 180px; }
+.dropdown-menu__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.dropdown-menu__label { box-sizing: border-box; height: 28px; display: flex; align-items: center; padding: 0 8px; color: var(--tok-text-muted); font-weight: 600; font-size: 12px; line-height: 1.4; }
+.dropdown-menu__item { width: 100%; box-sizing: border-box; display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 8px; border: none; background: none; border-radius: 4px; cursor: pointer; text-align: left; color: var(--tok-text-default); font-family: inherit; font-weight: 400; font-size: 14px; line-height: 1.4; }
+.dropdown-menu__item:hover, .dropdown-menu__item:focus-visible { background: var(--tok-fill-neutral-hover); outline: none; }
+/* a submenu trigger keeps the hover fill while its submenu is open */
+.dropdown-menu__item[aria-expanded="true"] { background: var(--tok-fill-neutral-hover); }
+.dropdown-menu__icon { width: 16px; height: 16px; flex-shrink: 0; color: var(--tok-icon-secondary); }
+.dropdown-menu__chevron { width: 16px; height: 16px; flex-shrink: 0; margin-left: auto; color: var(--tok-icon-secondary); }
+/* ✓ / dot slot — reserved on every checkbox/radio item so labels line up */
+.dropdown-menu__indicator { width: 16px; height: 16px; flex-shrink: 0; display: grid; place-items: center; color: var(--tok-fill-primary); }
+.dropdown-menu__indicator svg { width: 100%; height: 100%; }
+.dropdown-menu__dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+.dropdown-menu__item[aria-checked="false"] .dropdown-menu__indicator > * { visibility: hidden; }
+.dropdown-menu__item:disabled { color: var(--tok-text-disabled); cursor: not-allowed; }
+.dropdown-menu__item:disabled:hover { background: none; }
+.dropdown-menu__item:disabled .dropdown-menu__icon { color: var(--tok-icon-disabled); }
+.dropdown-menu__item--destructive { color: var(--tok-text-danger); }
+.dropdown-menu__item--destructive .dropdown-menu__icon { color: var(--tok-icon-danger); }
+.dropdown-menu__item--destructive:hover, .dropdown-menu__item--destructive:focus-visible { background: var(--tok-bg-danger); }
+.dropdown-menu__divider { height: 1px; background: var(--tok-border-default); margin: 2px 0px; }
+</style>
+</head>
+<body>
+<div class="shell">
+  <nav class="side">
+    <style>
+  .nav-logo { color: var(--text-primary); margin: 2px 0 16px 8px; }
+  .nav-logo svg { display: block; }
+  .nav-pane .brand { margin: 12px 0 10px 8px; }
+  .nav-tabs { display: flex; gap: 3px; margin: 0 0 4px; padding: 3px; background: var(--bg-card); border: 0.5px solid var(--border); border-radius: 9px; }
+  .nav-tab { flex: 1; border: none; background: transparent; padding: 6px 0; border-radius: 6px; font-size: 12px; font-weight: 600; color: var(--text-secondary); cursor: pointer; font-family: inherit; }
+  .nav-tab:hover { background: var(--bg-card-hover); color: var(--text-primary); }
+  .nav-tab.active { background: var(--accent-bg); color: var(--accent); }
+  .nav-pane { display: none; }
+  .nav-pane.active { display: block; }
+  .nav-acc { margin: 0; }
+  .nav-acc summary { list-style: none; display: flex; align-items: center; justify-content: space-between; cursor: pointer; font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin: 16px 8px 6px; user-select: none; }
+  .nav-acc summary::-webkit-details-marker { display: none; }
+  .nav-acc summary::after { content: ""; width: 5px; height: 5px; border-right: 1.5px solid var(--text-muted); border-bottom: 1.5px solid var(--text-muted); transform: rotate(-45deg); transition: transform 0.12s; }
+  .nav-acc[open] summary::after { transform: rotate(45deg); }
+</style>
+    <div class="nav-logo"><svg width="122" height="24" viewBox="0 0 122 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="24" height="24" fill="#0468C4"/>
+<path d="M13.0382 6C12.9042 6.50092 12.7966 7.01224 12.7179 7.53231C12.6432 8.02529 12.5943 8.52624 12.572 9.03381C12.9967 8.76717 13.4363 8.52023 13.8889 8.2943C14.3268 8.07568 14.7772 7.87687 15.2387 7.69887C15.1632 8.14962 15.114 8.60887 15.0911 9.07462C15.0816 9.26913 15.0764 9.46495 15.0764 9.66173C15.0764 9.91396 15.0842 10.1644 15.0998 10.4129C15.5005 10.215 15.9138 10.0371 16.3377 9.87991C16.7472 9.72808 17.1668 9.59574 17.5955 9.48434C17.5944 9.5433 17.5946 9.60252 17.5946 9.66173C17.5946 10.0205 17.6147 10.3747 17.6536 10.7235C17.8768 12.7214 18.7219 14.5409 20 16H18.4141C17.3833 14.5875 16.6873 12.9334 16.4375 11.1441C16.0303 11.3102 15.6351 11.498 15.2535 11.7062C15.5243 13.2549 16.0969 14.7056 16.9123 16H15.4653C14.8473 14.8895 14.3859 13.6867 14.1111 12.4182C13.7318 12.6864 13.3697 12.9763 13.0278 13.286C13.2777 14.2305 13.6235 15.1385 14.0538 16H12.6693C12.4221 15.4553 12.2059 14.8946 12.0226 14.3203C11.5762 14.8424 11.1789 15.4046 10.8368 16H9.41927C9.99395 14.8591 10.7478 13.8163 11.645 12.9054C11.5409 12.424 11.4595 11.9343 11.4019 11.438C9.97223 12.7077 8.81812 14.2592 8.03559 16H6.67448C7.6474 13.6062 9.25665 11.5172 11.3021 9.92405C11.3006 9.83678 11.2995 9.74934 11.2995 9.66173C11.2995 9.227 11.3176 8.796 11.3533 8.37009C8.6069 10.2438 6.48141 12.9003 5.33073 16H4C5.31971 12.1395 8.03339 8.88461 11.5703 6.78281C12.0451 6.50067 12.5351 6.23926 13.0382 6ZM13.8177 9.71336C13.3912 9.9547 12.9785 10.2168 12.5825 10.4987C12.6106 10.9783 12.6629 11.4523 12.7378 11.9186C13.1065 11.6225 13.4928 11.3453 13.895 11.0899C13.8453 10.6374 13.8195 10.1781 13.8177 9.71336Z" fill="white"/>
+<path transform="translate(0 2)" d="M57.2855 6.6813C59.048 6.68139 60.3655 7.51419 61.0148 9.04954V6.9958H63.0558V15.857C63.0558 19.5199 61.2184 21 57.1364 21C56.1532 21 55.1145 20.9258 54.2611 20.7964V18.6506C55.1331 18.7616 56.2278 18.8543 57.1183 18.8543C59.6045 18.8543 60.6253 17.9842 60.6253 16.0048V15.0991C59.9573 16.4124 58.7135 17.1151 57.1364 17.1151C54.3534 17.1149 52.5348 14.8951 52.5348 12.0649V11.6765C52.5348 8.82757 54.4652 6.6813 57.2855 6.6813ZM92.5843 6.64434C95.9983 6.64437 98.0762 9.08678 98.0762 11.8432V12.2316C98.0761 14.8954 96.1095 17.3926 92.5843 17.3926C89.0405 17.3926 87.0736 14.8954 87.0734 12.2316V11.8432C87.0734 9.08677 89.1517 6.64434 92.5843 6.64434ZM118.901 6.9958H122V8.88285H118.883V13.4338C118.883 14.4142 119.439 14.9693 120.423 14.9693H122V17.1709H120.552C117.769 17.1708 116.47 16.2083 116.47 13.2671V8.88285H114.875V6.9958H116.489V4.16606H118.901V6.9958ZM36.6339 9.12345H42.8869V3.53704H45.5217V17.0411H42.8869V11.4359H36.6339V17.0411H34V3.53704H36.6339V9.12345ZM50.9732 17.0411H48.3936V8.9198H46.9836V6.9958H50.9732V17.0411ZM67.7059 8.6792C68.2441 7.38445 69.246 6.6813 70.7674 6.6813H70.8785C73.1792 6.6813 74.3855 8.3094 74.3855 11.3061V17.0411H71.8059V11.0655C71.8058 9.7893 71.0084 8.99373 69.821 8.9937C68.5408 8.9937 67.706 9.90035 67.7059 11.2322V17.0411H65.1264V3.53704H67.7059V8.6792ZM81.2957 3.44425C84.7097 3.44425 86.6582 5.183 86.6583 8.01323V8.30967C86.6583 11.1215 84.7097 12.8975 81.2957 12.8975H79.2548V17.0411H76.62V3.44425H81.2957ZM102.654 17.0411H100.075V8.9198H98.6651V6.9958H102.654V17.0411ZM110.487 6.6813C112.881 6.6813 114.143 8.23567 114.143 11.288V17.0411H111.564V11.0655C111.564 9.82627 110.803 8.9937 109.578 8.9937C108.317 8.99388 107.463 9.84542 107.463 11.1402V17.0411H104.884V6.9958H106.925V9.47491C107.352 7.62506 108.502 6.68134 110.376 6.6813H110.487ZM92.5843 8.84589C90.7474 8.84589 89.6522 10.1965 89.6522 12.0279C89.6522 13.8408 90.6918 15.1911 92.5843 15.1911C94.4582 15.191 95.4974 13.8408 95.4975 12.0279C95.4975 10.1965 94.4026 8.84593 92.5843 8.84589ZM57.8793 8.80894C56.2465 8.80894 55.1144 10.0117 55.1144 11.8801C55.1145 13.7484 56.2651 14.9135 57.8793 14.9135C59.3635 14.9133 60.5882 13.8776 60.5882 12.1018V11.4547C60.5882 9.75297 59.3078 8.80911 57.8793 8.80894ZM79.2548 10.6221H81.5181C83.0951 10.6221 83.9864 9.60461 83.9865 8.16186C83.9865 6.70042 83.0952 5.71971 81.5181 5.71971H79.2548V10.6221ZM49.34 3C50.3419 3 50.806 3.57381 50.806 4.38777C50.806 5.20168 50.3419 5.79361 49.34 5.79361C48.3197 5.79353 47.8559 5.20162 47.8558 4.38777C47.8558 3.57386 48.3196 3.00008 49.34 3ZM101.021 3C102.023 3.00011 102.487 3.57388 102.487 4.38777C102.487 5.2016 102.023 5.7935 101.021 5.79361C100.001 5.79361 99.5366 5.20168 99.5365 4.38777C99.5365 3.57381 100.001 3 101.021 3Z" fill="currentColor"/>
+</svg>
+</div>
+    <div class="nav-tabs" role="tablist">
+      <button class="nav-tab active" data-pane="ds" type="button">DS</button>
+      <button class="nav-tab" data-pane="designs" type="button">Designs</button>
+    </div>
+    <div class="nav-pane nav-pane--ds active" data-pane="ds">
+    <p class="brand">Design System</p>
+    <a class="navlink" href="index.html">Overview</a>
+    <a class="navlink" href="logs.html">Logs</a>
+    <p class="nav-category">Tokens</p>
+    <a class="navlink" href="colors.html">Colors</a>
+    <a class="navlink" href="semantic-colors.html">Semantic colors</a>
+    <a class="navlink" href="typography.html">Typography</a>
+    <a class="navlink" href="layout.html">Layout</a>
+    <a class="navlink" href="icons.html">Icons</a>
+    <p class="nav-category">Components</p>
+    <a class="navlink" href="button.html">Button</a>
+    <a class="navlink" href="fab.html">FAB</a>
+    <a class="navlink" href="counter.html">Counter</a>
+    <a class="navlink" href="input.html">Input</a>
+    <a class="navlink" href="select.html">Select</a>
+    <a class="navlink" href="calendar.html">Calendar</a>
+    <a class="navlink" href="date-picker.html">DatePicker</a>
+    <a class="navlink" href="date-range-picker.html">DateRangePicker</a>
+    <a class="navlink" href="time-picker.html">TimePicker</a>
+    <a class="navlink" href="search.html">Search</a>
+    <a class="navlink" href="pagination.html">Pagination</a>
+    <a class="navlink" href="separator.html">Separator</a>
+    <a class="navlink" href="tabs.html">Tabs</a>
+    <a class="navlink" href="sidebar.html">Sidebar</a>
+    <a class="navlink" href="accordion.html">Accordion</a>
+    <a class="navlink" href="collapsible.html">Collapsible</a>
+    <a class="navlink" href="status-icon.html">StatusIcon</a>
+    <a class="navlink" href="checkbox.html">Checkbox</a>
+    <a class="navlink" href="radio.html">Radio</a>
+    <a class="navlink" href="box.html">Box</a>
+    <a class="navlink" href="card.html">Card</a>
+    <a class="navlink" href="choice-tile.html">ChoiceTile</a>
+    <a class="navlink" href="stat.html">Stat</a>
+    <a class="navlink" href="switch.html">Switch</a>
+    <a class="navlink" href="grid.html">Grid</a>
+    <a class="navlink" href="table.html">Table</a>
+    <a class="navlink" href="stepper.html">Stepper</a>
+    <a class="navlink" href="tooltip.html">Tooltip</a>
+    <a class="navlink" href="popover.html">Popover</a>
+    <a class="navlink" href="drawer.html">Drawer</a>
+    <a class="navlink" href="dialog.html">Dialog</a>
+    <a class="navlink" href="alert-dialog.html">AlertDialog</a>
+    <a class="navlink active" href="dropdown-menu.html">DropdownMenu</a>
+    <a class="navlink" href="split-button.html">SplitButton</a>
+    <a class="navlink" href="listbox.html">Listbox</a>
+    <a class="navlink" href="command.html">Command</a>
+    <a class="navlink" href="avatar.html">Avatar</a>
+    <a class="navlink" href="avatar-group.html">AvatarGroup</a>
+    <a class="navlink" href="badge.html">Badge</a>
+    <a class="navlink" href="chip.html">Chip</a>
+    <a class="navlink" href="attachment.html">Attachment</a>
+    <a class="navlink" href="message.html">Message</a>
+    <a class="navlink" href="bubble.html">Bubble</a>
+    <a class="navlink" href="thread-list-item.html">ThreadListItem</a>
+    <a class="navlink" href="composer.html">Composer</a>
+    <a class="navlink" href="empty-state.html">EmptyState</a>
+    <a class="navlink" href="toast.html">Toast</a>
+    <a class="navlink" href="alert.html">Alert</a>
+    <a class="navlink" href="skeleton.html">Skeleton</a>
+    <a class="navlink" href="spinner.html">Spinner</a>
+    <a class="navlink" href="progress.html">Progress</a>
+    </div>
+    <div class="nav-pane nav-pane--designs" data-pane="designs">
+    <p class="brand">Design Prototypes</p>
+    <details class="nav-acc" open>
+      <summary>Message Center</summary>
+      <a class="navlink" href="designs/student-message-center.html">Student Message Center</a>
+      <a class="navlink" href="designs/staff-message-center.html">Staff Message Center</a>
+    </details>
+    <details class="nav-acc" open>
+      <summary>Student Portal</summary>
+      <a class="navlink" href="designs/springboard.html">Springboard</a>
+      <a class="navlink" href="designs/explore-degrees.html">Explore Degrees</a>
+    </details>
+    <details class="nav-acc" open>
+      <summary>Academics</summary>
+      <a class="navlink" href="designs/degree-progress.html">Degree Progress</a>
+    </details>
+    <details class="nav-acc" open>
+      <summary>CX</summary>
+      <a class="navlink" href="designs/cx-dashboard.html">Dashboard</a>
+      <a class="navlink" href="designs/cx-browse-classes.html">Browse Classes</a>
+    </details>
+    <details class="nav-acc" open>
+      <summary>Scheduling</summary>
+      <a class="navlink" href="designs/student-scheduling.html">Student Scheduling</a>
+    </details>
+    </div>
+    <script>
+  document.querySelectorAll(".nav-tab").forEach((tab) => {
+    tab.addEventListener("click", () => {
+      document.querySelectorAll(".nav-tab").forEach((t) => t.classList.toggle("active", t === tab));
+      document.querySelectorAll(".nav-pane").forEach((p) => p.classList.toggle("active", p.dataset.pane === tab.dataset.pane));
+    });
+  });
+</script>
+  </nav>
+  <main>
+    <h1>DropdownMenu</h1>
+    <p class="sub">tokens/components/dropdown-menu.tokens.json · generated — the CSS below is generated from the same resolved tokens driving every preview on this page, not hand-copied. Colors are CSS custom properties, not literal hex.</p>
+
+    <div class="legend">
+      <div class="row"><b>Not a Popover variant</b><span>Radix/Storybook's DropdownMenu (renamed from Menu 2026-10-26). Built on Popover's exact shell (native <code class="tok">popover</code> attribute, border+shadow.sm+radius.default, same positioning script) but kept as its own component — a list of actions has a different content/keyboard model than arbitrary Popover content, same reasoning Dialog/Drawer stayed separate despite sharing &lt;dialog&gt;.</span></div>
+      <div class="row"><b>Not Listbox</b><span>Items here are things you <em>do</em> (Rename, Duplicate, Delete) or view settings that apply at once — a list of selectable <em>options</em> (checkboxes, single/multi-select) is <a href="listbox.html">Listbox</a>, a separate component with a different ARIA role (listbox/option vs. menu/menuitem).</span></div>
+      <div class="row"><b>Group label</b><span>Heads a group ("Actions", "Sort order") — Command's group heading, resolved from <code class="tok">command.tokens.json</code>: <code class="tok">heading-sm</code> · <code class="tok">text.muted</code>, 28px tall. Not clickable.</span></div>
+      <div class="row"><b>Checkbox items</b><span><code class="tok">role="menuitemcheckbox"</code> — toggles a view setting (which columns show). ✓ in a 16px leading slot, Listbox's selected colour (<code class="tok">fill.primary</code>). Several can be on; the menu stays open.</span></div>
+      <div class="row"><b>Radio items</b><span><code class="tok">role="menuitemradio"</code> in a <code class="tok">role="group"</code> — one of a set (sort order). A 8px dot, not a full Radio ring: a dot vs. a ✓ is enough to tell one-of from many. The menu stays open.</span></div>
+      <div class="row"><b>vs. Listbox</b><span>A checkbox/radio item changes something <em>right away</em> (the table re-sorts). A value a form submits — a field showing what's chosen — is <a href="listbox.html">Listbox</a> inside Select.</span></div>
+      <div class="row"><b>Submenu</b><span>An item with a trailing › opens a nested menu beside it — on hover, click or →; ← or hovering a sibling closes it. It overlaps the parent's edge by 4px so the pointer never crosses a gap, and flips to the left when there's no room. The trigger keeps its hover fill while open. A nested popover in the parent's DOM, so closing the parent closes it.</span></div>
+      <div class="row"><b>Concentric radius</b><span>Panel is radius.default (8px), items are radius.xs (4px) — 8px outer minus the 4px outer padding, so a corner item's curve lines up with the panel's own curve instead of fighting it.</span></div>
+      <div class="row"><b>Destructive item</b><span>text.danger/icon.danger at rest, and hovers into bg.danger (a pale red tint) instead of the usual fill.neutralHover — stays 'red' on hover rather than reverting to neutral gray.</span></div>
+      <div class="row"><b>Keyboard</b><span>Roles are real (<code class="tok">menu</code> / <code class="tok">menuitem</code> / <code class="tok">menuitemcheckbox</code> / <code class="tok">menuitemradio</code>), Escape and outside-click are native, → / ← open and close a submenu. Not here: arrow-key roving focus and type-ahead — a real port adds them (Radix does).</span></div>
+    </div>
+
+    <h2 class="big-section">CSS</h2>
+    <pre class="code"><code>:root {
+  --tok-fill-neutral-hover-strong: #cdd1d6;
+  --tok-surface-default: #ffffff;
+  --tok-border-default: #dadde0;
+  --tok-border-focus: #0468c4;
+  --tok-text-default: #121921;
+  --tok-text-disabled: #adb5be;
+  --tok-text-danger: #c11435;
+  --tok-icon-secondary: #758191;
+  --tok-icon-disabled: #adb5be;
+  --tok-icon-danger: #de394b;
+  --tok-fill-neutral: #e6e8eb;
+  --tok-fill-neutral-hover: #e6e8eb;
+  --tok-fill-neutral-active: #cdd1d6;
+  --tok-bg-danger: #ffdfde;
+  --tok-fill-primary: #077fec;
+  --tok-text-muted: #758191;
+  --tok-family-sans: 'Sora', sans-serif;
+}
+
+.dropdown-menu { margin: 0; box-sizing: border-box; padding: 4px; border-radius: 8px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); box-shadow: 0px 2px 8px 0px rgba(21, 25, 30, 0.10); font-family: var(--tok-family-sans); min-width: 180px; }
+.dropdown-menu__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.dropdown-menu__label { box-sizing: border-box; height: 28px; display: flex; align-items: center; padding: 0 8px; color: var(--tok-text-muted); font-weight: 600; font-size: 12px; line-height: 1.4; }
+.dropdown-menu__item { width: 100%; box-sizing: border-box; display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 8px; border: none; background: none; border-radius: 4px; cursor: pointer; text-align: left; color: var(--tok-text-default); font-family: inherit; font-weight: 400; font-size: 14px; line-height: 1.4; }
+.dropdown-menu__item:hover, .dropdown-menu__item:focus-visible { background: var(--tok-fill-neutral-hover); outline: none; }
+/* a submenu trigger keeps the hover fill while its submenu is open */
+.dropdown-menu__item[aria-expanded="true"] { background: var(--tok-fill-neutral-hover); }
+.dropdown-menu__icon { width: 16px; height: 16px; flex-shrink: 0; color: var(--tok-icon-secondary); }
+.dropdown-menu__chevron { width: 16px; height: 16px; flex-shrink: 0; margin-left: auto; color: var(--tok-icon-secondary); }
+/* ✓ / dot slot — reserved on every checkbox/radio item so labels line up */
+.dropdown-menu__indicator { width: 16px; height: 16px; flex-shrink: 0; display: grid; place-items: center; color: var(--tok-fill-primary); }
+.dropdown-menu__indicator svg { width: 100%; height: 100%; }
+.dropdown-menu__dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+.dropdown-menu__item[aria-checked="false"] .dropdown-menu__indicator &gt; * { visibility: hidden; }
+.dropdown-menu__item:disabled { color: var(--tok-text-disabled); cursor: not-allowed; }
+.dropdown-menu__item:disabled:hover { background: none; }
+.dropdown-menu__item:disabled .dropdown-menu__icon { color: var(--tok-icon-disabled); }
+.dropdown-menu__item--destructive { color: var(--tok-text-danger); }
+.dropdown-menu__item--destructive .dropdown-menu__icon { color: var(--tok-icon-danger); }
+.dropdown-menu__item--destructive:hover, .dropdown-menu__item--destructive:focus-visible { background: var(--tok-bg-danger); }
+.dropdown-menu__divider { height: 1px; background: var(--tok-border-default); margin: 2px 0px; }</code></pre>
+
+    <h2 class="big-section">Positioning script</h2>
+    <p class="section-desc">Identical to Popover's — same native popover attribute, same reasoning.</p>
+    <pre class="code"><code>document.querySelectorAll('[popovertarget]').forEach((trigger) =&gt; {
+  trigger.addEventListener('click', () =&gt; {
+    const panel = document.getElementById(trigger.getAttribute('popovertarget'));
+    const rect = trigger.getBoundingClientRect();
+    panel.style.top = (rect.bottom + 8) + 'px';
+    panel.style.left = rect.left + 'px';
+  });
+});</code></pre>
+
+    <h2 class="big-section">Content variants</h2>
+    <p class="section-desc">Click to open for real.</p>
+    <div class="story-grid">
+      
+      <div class="story">
+        <h3>Default — label, icons, destructive</h3>
+        <div class="story-preview"><button class="ov-btn ov-btn--secondary" popovertarget="dm-default" aria-haspopup="menu">Actions</button>
+<div class="dropdown-menu" id="dm-default" popover role="menu" aria-label="Actions">
+  <ul class="dropdown-menu__list" role="none">
+    <li role="none">
+      <div class="dropdown-menu__label" id="dm-default-g-label">Actions</div>
+      <ul class="dropdown-menu__list" role="group" aria-labelledby="dm-default-g-label">
+        <li role="none"><button class="dropdown-menu__item" role="menuitem"><svg class="dropdown-menu__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Edit</button></li>
+        <li role="none"><button class="dropdown-menu__item" role="menuitem"><svg class="dropdown-menu__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>Duplicate</button></li>
+      </ul>
+    </li>
+    <li role="none"><div class="dropdown-menu__divider" role="separator"></div></li>
+    <li role="none"><button class="dropdown-menu__item dropdown-menu__item--destructive" role="menuitem"><svg class="dropdown-menu__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>Delete</button></li>
+  </ul>
+</div></div>
+        <pre class="code"><code>&lt;button class="btn" popovertarget="dm-default" aria-haspopup="menu"&gt;Actions&lt;/button&gt;
+&lt;div class="dropdown-menu" id="dm-default" popover role="menu" aria-label="Actions"&gt;
+  &lt;ul class="dropdown-menu__list" role="none"&gt;
+    &lt;li role="none"&gt;
+      &lt;div class="dropdown-menu__label" id="dm-default-g-label"&gt;Actions&lt;/div&gt;
+      &lt;ul class="dropdown-menu__list" role="group" aria-labelledby="dm-default-g-label"&gt;
+        &lt;li role="none"&gt;&lt;button class="dropdown-menu__item" role="menuitem"&gt;…Edit&lt;/button&gt;&lt;/li&gt;
+        &lt;li role="none"&gt;&lt;button class="dropdown-menu__item" role="menuitem"&gt;…Duplicate&lt;/button&gt;&lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/li&gt;
+    &lt;li role="none"&gt;&lt;div class="dropdown-menu__divider" role="separator"&gt;&lt;/div&gt;&lt;/li&gt;
+    &lt;li role="none"&gt;&lt;button class="dropdown-menu__item dropdown-menu__item--destructive" role="menuitem"&gt;…Delete&lt;/button&gt;&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/div&gt;</code></pre>
+        <p class="story-note">The divider sets the destructive item apart from the safe ones.</p>
+      </div>
+      
+      <div class="story">
+        <h3>Text only</h3>
+        <div class="story-preview"><button class="ov-btn ov-btn--secondary" popovertarget="dm-text" aria-haspopup="menu">Options</button>
+<div class="dropdown-menu" id="dm-text" popover role="menu" aria-label="Options">
+  <ul class="dropdown-menu__list" role="none">
+    <li role="none"><button class="dropdown-menu__item" role="menuitem">Rename</button></li>
+    <li role="none"><button class="dropdown-menu__item" role="menuitem">Duplicate</button></li>
+    <li role="none"><button class="dropdown-menu__item" role="menuitem">Share</button></li>
+  </ul>
+</div></div>
+        <pre class="code"><code>&lt;button class="btn" popovertarget="dm-text" aria-haspopup="menu"&gt;Options&lt;/button&gt;
+&lt;div class="dropdown-menu" id="dm-text" popover role="menu" aria-label="Options"&gt;
+  &lt;ul class="dropdown-menu__list" role="none"&gt;
+    &lt;li role="none"&gt;&lt;button class="dropdown-menu__item" role="menuitem"&gt;Rename&lt;/button&gt;&lt;/li&gt;
+    &lt;li role="none"&gt;&lt;button class="dropdown-menu__item" role="menuitem"&gt;Duplicate&lt;/button&gt;&lt;/li&gt;
+    &lt;li role="none"&gt;&lt;button class="dropdown-menu__item" role="menuitem"&gt;Share&lt;/button&gt;&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/div&gt;</code></pre>
+        
+      </div>
+      
+      <div class="story">
+        <h3>Checkbox items</h3>
+        <div class="story-preview"><button class="ov-btn ov-btn--secondary" popovertarget="dm-check" aria-haspopup="menu">View options</button>
+<div class="dropdown-menu" id="dm-check" popover role="menu" aria-label="View options">
+  <ul class="dropdown-menu__list" role="none">
+    <li role="none">
+      <div class="dropdown-menu__label" id="dm-check-g-label">Toggle columns</div>
+      <ul class="dropdown-menu__list" role="group" aria-labelledby="dm-check-g-label">
+        <li role="none"><button class="dropdown-menu__item" role="menuitemcheckbox" aria-checked="true"><span class="dropdown-menu__indicator"><svg class="" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>Status</button></li>
+        <li role="none"><button class="dropdown-menu__item" role="menuitemcheckbox" aria-checked="false"><span class="dropdown-menu__indicator"><svg class="" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>Activity</button></li>
+        <li role="none"><button class="dropdown-menu__item" role="menuitemcheckbox" aria-checked="true"><span class="dropdown-menu__indicator"><svg class="" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>Last message</button></li>
+      </ul>
+    </li>
+  </ul>
+</div></div>
+        <pre class="code"><code>&lt;button class="btn" popovertarget="dm-check" aria-haspopup="menu"&gt;View options&lt;/button&gt;
+&lt;div class="dropdown-menu" id="dm-check" popover role="menu" aria-label="View options"&gt;
+  &lt;ul class="dropdown-menu__list" role="none"&gt;
+    &lt;li role="none"&gt;
+      &lt;div class="dropdown-menu__label" id="dm-check-g-label"&gt;Toggle columns&lt;/div&gt;
+      &lt;ul class="dropdown-menu__list" role="group" aria-labelledby="dm-check-g-label"&gt;
+        &lt;li role="none"&gt;&lt;button class="dropdown-menu__item" role="menuitemcheckbox" aria-checked="true"&gt;&lt;span class="dropdown-menu__indicator"&gt;…&lt;/span&gt;Status&lt;/button&gt;&lt;/li&gt;
+        &lt;li role="none"&gt;&lt;button class="dropdown-menu__item" role="menuitemcheckbox" aria-checked="false"&gt;&lt;span class="dropdown-menu__indicator"&gt;…&lt;/span&gt;Activity&lt;/button&gt;&lt;/li&gt;
+        &lt;li role="none"&gt;&lt;button class="dropdown-menu__item" role="menuitemcheckbox" aria-checked="true"&gt;&lt;span class="dropdown-menu__indicator"&gt;…&lt;/span&gt;Last message&lt;/button&gt;&lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/div&gt;</code></pre>
+        <p class="story-note">Click to toggle — the menu stays open so several columns can change in one go.</p>
+      </div>
+      
+      <div class="story">
+        <h3>Radio items</h3>
+        <div class="story-preview"><button class="ov-btn ov-btn--secondary" popovertarget="dm-radio" aria-haspopup="menu">Sort by</button>
+<div class="dropdown-menu" id="dm-radio" popover role="menu" aria-label="Sort by">
+  <ul class="dropdown-menu__list" role="none">
+    <li role="none">
+      <div class="dropdown-menu__label" id="dm-radio-g-label">Sort order</div>
+      <ul class="dropdown-menu__list" role="group" aria-labelledby="dm-radio-g-label">
+        <li role="none"><button class="dropdown-menu__item" role="menuitemradio" aria-checked="true"><span class="dropdown-menu__indicator"><span class="dropdown-menu__dot"></span></span>Name</button></li>
+        <li role="none"><button class="dropdown-menu__item" role="menuitemradio" aria-checked="false"><span class="dropdown-menu__indicator"><span class="dropdown-menu__dot"></span></span>Date</button></li>
+        <li role="none"><button class="dropdown-menu__item" role="menuitemradio" aria-checked="false"><span class="dropdown-menu__indicator"><span class="dropdown-menu__dot"></span></span>Status</button></li>
+      </ul>
+    </li>
+  </ul>
+</div></div>
+        <pre class="code"><code>&lt;button class="btn" popovertarget="dm-radio" aria-haspopup="menu"&gt;Sort by&lt;/button&gt;
+&lt;div class="dropdown-menu" id="dm-radio" popover role="menu" aria-label="Sort by"&gt;
+  &lt;ul class="dropdown-menu__list" role="none"&gt;
+    &lt;li role="none"&gt;
+      &lt;div class="dropdown-menu__label" id="dm-radio-g-label"&gt;Sort order&lt;/div&gt;
+      &lt;ul class="dropdown-menu__list" role="group" aria-labelledby="dm-radio-g-label"&gt;
+        &lt;li role="none"&gt;&lt;button class="dropdown-menu__item" role="menuitemradio" aria-checked="true"&gt;&lt;span class="dropdown-menu__indicator"&gt;&lt;span class="dropdown-menu__dot"&gt;&lt;/span&gt;&lt;/span&gt;Name&lt;/button&gt;&lt;/li&gt;
+        &lt;li role="none"&gt;&lt;button class="dropdown-menu__item" role="menuitemradio" aria-checked="false"&gt;&lt;span class="dropdown-menu__indicator"&gt;&lt;span class="dropdown-menu__dot"&gt;&lt;/span&gt;&lt;/span&gt;Date&lt;/button&gt;&lt;/li&gt;
+        &lt;li role="none"&gt;&lt;button class="dropdown-menu__item" role="menuitemradio" aria-checked="false"&gt;&lt;span class="dropdown-menu__indicator"&gt;&lt;span class="dropdown-menu__dot"&gt;&lt;/span&gt;&lt;/span&gt;Status&lt;/button&gt;&lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/div&gt;</code></pre>
+        <p class="story-note">One of the group; picking another moves the dot. Stays open.</p>
+      </div>
+      
+      <div class="story">
+        <h3>Submenu</h3>
+        <div class="story-preview"><button class="ov-btn ov-btn--secondary" popovertarget="dm-sub" aria-haspopup="menu">More options</button>
+<div class="dropdown-menu" id="dm-sub" popover role="menu" aria-label="More options">
+  <ul class="dropdown-menu__list" role="none">
+    <li role="none"><button class="dropdown-menu__item" role="menuitem">New file</button></li>
+    <li role="none">
+      <button class="dropdown-menu__item" role="menuitem" aria-haspopup="menu" aria-expanded="false" data-submenu="dm-sub-share">Share<svg class="dropdown-menu__chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button>
+      <div class="dropdown-menu" id="dm-sub-share" popover role="menu" aria-label="Share">
+        <ul class="dropdown-menu__list" role="none">
+          <li role="none"><button class="dropdown-menu__item" role="menuitem">Email</button></li>
+          <li role="none"><button class="dropdown-menu__item" role="menuitem">Message</button></li>
+          <li role="none"><div class="dropdown-menu__divider" role="separator"></div></li>
+          <li role="none"><button class="dropdown-menu__item" role="menuitem">Copy link</button></li>
+        </ul>
+      </div>
+    </li>
+    <li role="none"><div class="dropdown-menu__divider" role="separator"></div></li>
+    <li role="none"><button class="dropdown-menu__item" role="menuitem">Settings</button></li>
+  </ul>
+</div></div>
+        <pre class="code"><code>&lt;button class="btn" popovertarget="dm-sub" aria-haspopup="menu"&gt;More options&lt;/button&gt;
+&lt;div class="dropdown-menu" id="dm-sub" popover role="menu" aria-label="More options"&gt;
+  &lt;ul class="dropdown-menu__list" role="none"&gt;
+    &lt;li role="none"&gt;&lt;button class="dropdown-menu__item" role="menuitem"&gt;New file&lt;/button&gt;&lt;/li&gt;
+    &lt;li role="none"&gt;
+      &lt;button class="dropdown-menu__item" role="menuitem" aria-haspopup="menu" aria-expanded="false" data-submenu="dm-sub-share"&gt;Share…&lt;/button&gt;
+      &lt;div class="dropdown-menu" id="dm-sub-share" popover role="menu" aria-label="Share"&gt;
+        &lt;ul class="dropdown-menu__list" role="none"&gt;
+          &lt;li role="none"&gt;&lt;button class="dropdown-menu__item" role="menuitem"&gt;Email&lt;/button&gt;&lt;/li&gt;
+          &lt;li role="none"&gt;&lt;button class="dropdown-menu__item" role="menuitem"&gt;Message&lt;/button&gt;&lt;/li&gt;
+          &lt;li role="none"&gt;&lt;div class="dropdown-menu__divider" role="separator"&gt;&lt;/div&gt;&lt;/li&gt;
+          &lt;li role="none"&gt;&lt;button class="dropdown-menu__item" role="menuitem"&gt;Copy link&lt;/button&gt;&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/div&gt;
+    &lt;/li&gt;
+    &lt;li role="none"&gt;&lt;div class="dropdown-menu__divider" role="separator"&gt;&lt;/div&gt;&lt;/li&gt;
+    &lt;li role="none"&gt;&lt;button class="dropdown-menu__item" role="menuitem"&gt;Settings&lt;/button&gt;&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/div&gt;</code></pre>
+        <p class="story-note">Hover or click Share, or focus it and press →. The submenu flips left near the right edge of the screen.</p>
+      </div>
+      
+      <div class="story">
+        <h3>Disabled item</h3>
+        <div class="story-preview"><button class="ov-btn ov-btn--secondary" popovertarget="dm-disabled" aria-haspopup="menu">Actions</button>
+<div class="dropdown-menu" id="dm-disabled" popover role="menu" aria-label="Actions">
+  <ul class="dropdown-menu__list" role="none">
+    <li role="none"><button class="dropdown-menu__item" role="menuitem"><svg class="dropdown-menu__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Rename</button></li>
+    <li role="none"><button class="dropdown-menu__item" role="menuitem" disabled><svg class="dropdown-menu__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>Duplicate</button></li>
+    <li role="none"><div class="dropdown-menu__divider" role="separator"></div></li>
+    <li role="none"><button class="dropdown-menu__item dropdown-menu__item--destructive" role="menuitem"><svg class="dropdown-menu__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>Delete</button></li>
+  </ul>
+</div></div>
+        <pre class="code"><code>&lt;button class="btn" popovertarget="dm-disabled" aria-haspopup="menu"&gt;Actions&lt;/button&gt;
+&lt;div class="dropdown-menu" id="dm-disabled" popover role="menu" aria-label="Actions"&gt;
+  &lt;ul class="dropdown-menu__list" role="none"&gt;
+    &lt;li role="none"&gt;&lt;button class="dropdown-menu__item" role="menuitem"&gt;…Rename&lt;/button&gt;&lt;/li&gt;
+    &lt;li role="none"&gt;&lt;button class="dropdown-menu__item" role="menuitem" disabled&gt;…Duplicate&lt;/button&gt;&lt;/li&gt;
+    &lt;li role="none"&gt;&lt;div class="dropdown-menu__divider" role="separator"&gt;&lt;/div&gt;&lt;/li&gt;
+    &lt;li role="none"&gt;&lt;button class="dropdown-menu__item dropdown-menu__item--destructive" role="menuitem"&gt;…Delete&lt;/button&gt;&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/div&gt;</code></pre>
+        <p class="story-note">A disabled item keeps its icon/label faded and drops the hover background entirely.</p>
+      </div>
+    </div>
+
+    <p class="placeholder-note">Every code sample on this page is printed from the same resolved token values driving the live previews above it — copy it directly, nothing here is hand-typed.</p>
+  </main>
+</div>
+<script>document.querySelectorAll('[popovertarget]').forEach((trigger) => {
+  trigger.addEventListener('click', () => {
+    const panel = document.getElementById(trigger.getAttribute('popovertarget'));
+    const rect = trigger.getBoundingClientRect();
+    panel.style.top = (rect.bottom + 8) + 'px';
+    panel.style.left = rect.left + 'px';
+  });
+});</script>
+<script>document.querySelectorAll('.dropdown-menu').forEach((menu) => {
+  menu.addEventListener('click', (e) => {
+    const item = e.target.closest('.dropdown-menu__item');
+    if (!item || item.disabled || item.closest('.dropdown-menu') !== menu) return;
+    const role = item.getAttribute('role');
+    if (role === 'menuitemcheckbox') {
+      item.setAttribute('aria-checked', String(item.getAttribute('aria-checked') !== 'true'));
+    } else if (role === 'menuitemradio') {
+      item.closest('[role="group"]').querySelectorAll('[role="menuitemradio"]').forEach((r) => r.setAttribute('aria-checked', String(r === item)));
+    } else if (!item.hasAttribute('data-submenu')) {
+      let top = menu;
+      while (top.parentElement.closest('.dropdown-menu')) top = top.parentElement.closest('.dropdown-menu');
+      top.hidePopover();
+    }
+  });
+});</script>
+<script>document.querySelectorAll('[data-submenu]').forEach((trigger) => {
+  const sub = document.getElementById(trigger.dataset.submenu);
+  const parent = trigger.closest('.dropdown-menu');
+  const open = () => {
+    if (sub.matches(':popover-open')) return;
+    sub.showPopover();
+    // beside the parent, overlapping its edge by the panel padding; flip left when there's no room
+    const r = trigger.getBoundingClientRect(), p = parent.getBoundingClientRect(), w = sub.offsetWidth;
+    let left = p.right - 4;
+    if (left + w > window.innerWidth - 8) left = p.left + 4 - w;
+    sub.style.left = left + 'px';
+    sub.style.top = (r.top - 4 - 1) + 'px';
+  };
+  sub.addEventListener('toggle', (e) => trigger.setAttribute('aria-expanded', String(e.newState === 'open')));
+  trigger.addEventListener('mouseenter', open);
+  trigger.addEventListener('click', open);
+  trigger.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight') { e.preventDefault(); open(); sub.querySelector('.dropdown-menu__item').focus(); }
+  });
+  sub.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft') { e.preventDefault(); e.stopPropagation(); sub.hidePopover(); trigger.focus(); }
+  });
+  parent.querySelectorAll('.dropdown-menu__item').forEach((item) => {
+    if (item !== trigger && item.closest('.dropdown-menu') === parent) item.addEventListener('mouseenter', () => sub.matches(':popover-open') && sub.hidePopover());
+  });
+});</script>
+</body>
+</html>

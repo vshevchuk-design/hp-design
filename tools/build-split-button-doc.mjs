@@ -18,7 +18,7 @@ const typo = load("tokens/primitives/typography.tokens.json");
 const textStyle = load("tokens/primitives/text-styles.tokens.json")["text-style"];
 const semantic = load("tokens/semantic/color.tokens.json");
 const sb = load("tokens/components/split-button.tokens.json").component.splitButton;
-const menu = load("tokens/components/menu.tokens.json").component.menu;
+const menu = load("tokens/components/dropdown-menu.tokens.json").component.dropdownMenu;
 
 const registry = { color: colorPrim, dim, radius: radiusPrim, shadow: shadowPrim, family: typo.family, weight: typo.weight, size: typo.size, leading: typo.leading, tracking: typo.tracking, "text-style": textStyle, ...semantic };
 function get(ref) { const parts = ref.replace(/[{}]/g, "").split("."); let n = registry; for (const p of parts) n = n[p]; return n; }
@@ -45,12 +45,12 @@ const chevIcon = px(resolve(sb.size.chevronIcon.$value));
 const ringW = px(resolve(sb.focus.ringWidth.$value));
 const ringOff = px(resolve(sb.focus.ringOffset.$value));
 
-// menu recipe (resolved from menu.tokens.json — the chevron opens the real Menu)
+// menu recipe (resolved from dropdown-menu.tokens.json — the chevron opens the real Menu)
 const mRadius = px(resolve(menu.radius.$value));
 const mPadding = px(resolve(menu.padding.$value));
 const mItemRadius = px(resolve(menu.itemRadius.$value));
 const mItemPadX = px(resolve(menu.itemPaddingX.$value));
-const mItemPadY = px(resolve(menu.itemPaddingY.$value));
+const mItemHeight = px(resolve(menu.itemHeight.$value));
 const mItemGap = px(resolve(menu.itemGap.$value));
 const mLabel = resolveToken(get(menu.label.$value));
 const mIconSize = px(resolve(menu.iconSize.$value));
@@ -75,9 +75,9 @@ const css = `${rootVars}
 .split__main:active, .split__chevron:active { background: ${cv("fill.primaryActive")}; }
 .split__main:focus-visible, .split__chevron:focus-visible { outline: ${ringW} solid ${cv("border.focus")}; outline-offset: ${ringOff}; position: relative; }
 
-/* the Menu the chevron opens — resolved from menu.tokens.json */
+/* the Menu the chevron opens — resolved from dropdown-menu.tokens.json */
 .menu { margin: 0; box-sizing: border-box; padding: ${mPadding}; border-radius: ${mRadius}; background: ${cv("surface.default")}; border: 1px solid ${cv("border.default")}; box-shadow: ${mShadowCss}; min-width: 200px; font-family: ${cv("family.sans")}; }
-.menu__item { width: 100%; box-sizing: border-box; display: flex; align-items: center; gap: ${mItemGap}; padding: ${mItemPadY} ${mItemPadX}; border: none; background: none; border-radius: ${mItemRadius}; cursor: pointer; text-align: left; color: ${cv("text.default")}; ${typoCss(mLabel)} }
+.menu__item { width: 100%; box-sizing: border-box; display: flex; align-items: center; gap: ${mItemGap}; height: ${mItemHeight}; padding: 0 ${mItemPadX}; border: none; background: none; border-radius: ${mItemRadius}; cursor: pointer; text-align: left; color: ${cv("text.default")}; ${typoCss(mLabel)} }
 .menu__item:hover { background: ${cv("fill.neutralHover")}; }
 .menu__icon { width: ${mIconSize}; height: ${mIconSize}; color: ${cv("icon.secondary")}; flex-shrink: 0; }`;
 
@@ -150,7 +150,7 @@ const html = `<!doctype html>
 
     <div class="legend">
       <div class="row"><b>One button</b><span>Two segments in one pill sharing Button primary's <code class="tok">fill.primary</code> + base size. A 1px <code class="tok">fill.primaryActive</code> seam is the only split at rest; each segment darkens on hover/press independently.</span></div>
-      <div class="row"><b>Chevron</b><span>Opens the real <code class="tok">Menu</code> (native popover, resolved from menu.tokens.json) — this component owns the split trigger, the Menu owns the list. Main-part = default action, chevron = the rest.</span></div>
+      <div class="row"><b>Chevron</b><span>Opens the real <code class="tok">DropdownMenu</code> (native popover, resolved from dropdown-menu.tokens.json) — this component owns the split trigger, the Menu owns the list. Main-part = default action, chevron = the rest.</span></div>
       <div class="row"><b>Use</b><span>"New Message ▾" → New Message / New Group Message. The one entry point where a primary action has a close sibling.</span></div>
     </div>
 

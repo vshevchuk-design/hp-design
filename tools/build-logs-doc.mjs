@@ -189,7 +189,7 @@ const POSTS = [
     title: "Menu & Listbox (+ AlertDialog)",
     body: "The dropdown family on Popover's shell — Menu for one-shot actions, Listbox for selectable options (deliberately split by ARIA role). AlertDialog is a zero-new-token behavioral variant of Modal.",
     links: [
-      { label: "Menu", href: "menu.html" },
+      { label: "DropdownMenu", href: "dropdown-menu.html" },
       { label: "Listbox", href: "listbox.html" },
       { label: "Dialog", href: "dialog.html" },
     ],

@@ -608,7 +608,7 @@ html:has(.modal[open]) { overflow: hidden; }
 /* ============ Menu (popover; one destructive item) ============ */
 .menu { margin: 0; padding: 4px; border-radius: 8px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); box-shadow: 0px 2px 8px 0px rgba(21, 25, 30, 0.10); font-family: var(--tok-family-sans); min-width: 192px; }
 .menu__list { display: flex; flex-direction: column; gap: 2px; }
-.menu__item { width: 100%; display: flex; align-items: center; gap: 8px; padding: 8px 8px; border: none; background: none; border-radius: 4px; cursor: pointer; text-align: left; white-space: nowrap; color: var(--tok-text-default); font-family: inherit; font-weight: 400; font-size: 14px; line-height: 1.4; }
+.menu__item { width: 100%; display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 8px; border: none; background: none; border-radius: 4px; cursor: pointer; text-align: left; white-space: nowrap; color: var(--tok-text-default); font-family: inherit; font-weight: 400; font-size: 14px; line-height: 1.4; }
 .menu__icon { flex-shrink: 0; width: 16px; height: 16px; color: var(--tok-icon-secondary); }
 @media (hover: hover) { .menu__item:hover { background: var(--tok-fill-neutral-hover); } }
 .menu__item:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: -4px; }

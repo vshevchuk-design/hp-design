@@ -1,0 +1,128 @@
+{
+  "component": {
+    "dropdownMenu": {
+      "$description": "DropdownMenu (renamed from Menu 2026-10-26 — Radix/Storybook's name) — a dropdown action menu — a list of things you *do* (Rename, Duplicate, Delete), not a list of selectable options with persistent state (that's Listbox, a separate component — the ARIA role and keyboard model genuinely differ: menu/menuitem vs. listbox/option). Built on Popover's same shell: native `popover` attribute (top-layer, outside-click/Escape dismissal for free), border.default + shadow.sm + radius.default, the same small positioning script. This project doesn't implement real arrow-key/type-ahead keyboard navigation or ARIA roles (a static tokens+docs generator, not a live component library) — noted here so nobody mistakes the visual-only demo for a complete accessible implementation; a real port needs roving tabindex and role=menu/menuitem added on top of these tokens. Item types (2026-10-26): plain action (closes the menu), checkbox item (role=menuitemcheckbox — toggles a view setting such as a visible column, ✓ in a leading slot, the menu stays open, several can be on), radio item (role=menuitemradio — one of a group such as sort order, a dot in the leading slot, stays open), submenu trigger (trailing ›, opens a nested menu beside it on hover, click or →, flips to the left when there is no room). A group label ('Sort order') heads a group — Command's group-heading recipe, resolved from command.tokens.json, not re-declared. A checkbox/radio item changes something right away; a value a form submits is Listbox (Select) instead.",
+      "radius": {
+        "$type": "dimension",
+        "$value": "{radius.default}"
+      },
+      "itemRadius": {
+        "$type": "dimension",
+        "$value": "{radius.xs}",
+        "$description": "4px — concentric with the panel's own 8px radius minus the 4px outer padding (the same inner=outer-padding rule learned building Tabs' pill-in-track), so an item sitting in the top corner curves smoothly with the panel instead of fighting it."
+      },
+      "padding": {
+        "$type": "dimension",
+        "$value": "{dim.1}",
+        "$description": "4px outer padding around the whole item list."
+      },
+      "gap": {
+        "$type": "dimension",
+        "$value": "{dim.0_5}",
+        "$description": "2px between items — same as Popover's own menu example."
+      },
+      "itemPaddingX": {
+        "$type": "dimension",
+        "$value": "{dim.2}"
+      },
+      "itemHeight": {
+        "$type": "dimension",
+        "$value": "{dim.9}",
+        "$description": "36px, declared — 8px padding + a 14px × 1.4 line rendered 35.6px (off the 4px grid). Same 36 as Command and TimePicker rows. Replaced itemPaddingY 2026-10-26."
+      },
+      "itemGap": {
+        "$type": "dimension",
+        "$value": "{dim.2}",
+        "$description": "8px between an item's icon and its label — same flat gap Button uses."
+      },
+      "iconSize": {
+        "$type": "dimension",
+        "$value": "{dim.4}"
+      },
+      "bg": {
+        "$type": "color",
+        "$value": "{surface.default}"
+      },
+      "border": {
+        "$type": "color",
+        "$value": "{border.default}"
+      },
+      "shadow": {
+        "$type": "shadow",
+        "$value": "{shadow.sm}"
+      },
+      "divider": {
+        "$type": "color",
+        "$value": "{border.default}"
+      },
+      "indicator": {
+        "size": {
+          "$type": "dimension",
+          "$value": "{dim.4}",
+          "$description": "16px leading slot for ✓ / dot. Every item in a group that has indicators reserves it, so labels line up whether or not their item is on."
+        },
+        "dot": {
+          "$type": "dimension",
+          "$value": "{dim.2}",
+          "$description": "8px radio dot, centered in the slot — a dot, not a full Radio ring: inside a menu the ring is heavy, and a dot vs. a ✓ is enough to tell one-of from many."
+        },
+        "$description": "Indicator colour is Listbox's selected checkmark (fill.primary), resolved from listbox.tokens.json — the same 'this one is on' blue."
+      },
+      "submenu": {
+        "overlap": {
+          "$type": "dimension",
+          "$value": "{dim.1}",
+          "$description": "4px — the submenu sits over the parent panel's edge by its padding, so the pointer never crosses a gap moving into it, and its first item lines up with the trigger."
+        },
+        "$description": "Trigger = an ordinary item + trailing chevron_right (icon.secondary, iconSize); it keeps the hover fill while its submenu is open, so you can see which item it came from."
+      },
+      "label": {
+        "$type": "typography",
+        "$value": "{text-style.body-base}"
+      },
+      "state": {
+        "default": {
+          "text": {
+            "$type": "color",
+            "$value": "{text.default}"
+          },
+          "icon": {
+            "$type": "color",
+            "$value": "{icon.secondary}"
+          }
+        },
+        "hover": {
+          "bg": {
+            "$type": "color",
+            "$value": "{fill.neutralHover}"
+          }
+        },
+        "disabled": {
+          "text": {
+            "$type": "color",
+            "$value": "{text.disabled}"
+          },
+          "icon": {
+            "$type": "color",
+            "$value": "{icon.disabled}"
+          }
+        },
+        "destructive": {
+          "text": {
+            "$type": "color",
+            "$value": "{text.danger}"
+          },
+          "icon": {
+            "$type": "color",
+            "$value": "{icon.danger}"
+          },
+          "hoverBg": {
+            "$type": "color",
+            "$value": "{bg.danger}",
+            "$description": "Pale red tint (the same passive-surface role Card/badges would use), not fill.neutralHover — a destructive item's hover should read as 'still red', not revert to neutral gray."
+          }
+        }
+      }
+    }
+  }
+}
