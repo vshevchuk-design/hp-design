@@ -1751,3 +1751,7 @@ Storybook has Label (Default, With Input, Weights normal/medium/semibold, Tones 
 ## 2026-10-26 — ButtonDialog / PageDialog: code patterns, not components
 
 Storybook's PageDialog story (Button Dialog Demo, Page Dialog Demo — unstyled) shows two ways to open a Dialog: a trigger that owns its dialog (`useDialogState`), and one page-level dialog filled with the data of whichever row opened it. Nothing to design; like DialogManager, documented as an "In code" legend row on dialog.html — including keeping the page dialog's state in the URL (reload, shared link, Back). User agreed.
+
+## 2026-10-26 — Popover against the Storybook: no arrow, Controlled is code
+
+Storybook's Popover: Default, With Arrow, Controlled — they look the same. Ours already does more (header + close, menu content). Arrow not adopted: the panel sits 8px under its trigger with border + shadow, an arrow must flip with the panel and fights the rounded corner, and none of our floating panels have one. Controlled = opening/closing from outside — the native API (`showPopover`/`hidePopover`/`togglePopover`, the `toggle` event) does it; documented as an "In code" legend row. User agreed.
