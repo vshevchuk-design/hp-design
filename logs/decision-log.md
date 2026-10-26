@@ -1747,3 +1747,7 @@ Then the user asked to hide them again and show them in context instead: Show le
 ## 2026-10-26 — No Label component
 
 Storybook has Label (Default, With Input, Weights normal/medium/semibold, Tones inherit/muted). It is a styled `<label>`: click-to-focus and the accessible name are the value, not the look. We already have both wherever labels live (Field label above, Input/Select floating label, Checkbox/Radio text) with exactly two looks. A standalone Label with weight/tone props would let every screen pick its own label style. Not built; a legend row on form.html says where Label went. User agreed.
+
+## 2026-10-26 — ButtonDialog / PageDialog: code patterns, not components
+
+Storybook's PageDialog story (Button Dialog Demo, Page Dialog Demo — unstyled) shows two ways to open a Dialog: a trigger that owns its dialog (`useDialogState`), and one page-level dialog filled with the data of whichever row opened it. Nothing to design; like DialogManager, documented as an "In code" legend row on dialog.html — including keeping the page dialog's state in the URL (reload, shared link, Back). User agreed.
