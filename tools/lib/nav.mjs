@@ -41,6 +41,7 @@ export const NAV_ITEMS = {
   separator: { label: "Separator", href: "separator.html" },
   tabs: { label: "Tabs", href: "tabs.html" },
   sidebar: { label: "Sidebar", href: "sidebar.html" },
+  collapsible: { label: "Collapsible", href: "collapsible.html" },
   accordion: { label: "Accordion", href: "accordion.html" },
   checkbox: { label: "Checkbox", href: "checkbox.html" },
   radio: { label: "Radio", href: "radio.html" },
@@ -194,6 +195,7 @@ export function renderNav(activeKey, { basePath = "" } = {}) {
     ${link("tabs")}
     ${link("sidebar")}
     ${link("accordion")}
+    ${link("collapsible")}
     ${link("status-icon")}
     ${link("checkbox")}
     ${link("radio")}

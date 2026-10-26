@@ -6,6 +6,7 @@
 // so the resolver isn't copied a 46th time. Same rule too: resolve the role
 // from the component's token file, never retype the role name.
 
+import { COLLAPSIBLE_CSS } from "./collapsible.mjs";
 /** @param h  { tokens, resolve, resolveToken, cv, px, refPath, typoCss, textExt, get } */
 export function ssCss(h) {
   const { tokens: t, resolve, cv, px, refPath, typoCss, textExt } = h;
@@ -586,7 +587,8 @@ html:has(.modal[open]) { overflow: hidden; }
 .ss-session__num { color: ${cv("text.muted")}; ${typoCss(style("body-sm"))} }
 .ss-session__date { color: ${cv("text.default")}; ${typoCss(style("heading-sm"))} }
 .ss-session__time { color: ${cv("text.secondary")}; ${typoCss(style("body-sm"))} white-space: nowrap; }
-.ss-sessions__more { align-self: flex-start; margin-inline-start: -${bSm.paddingX}; }
+/* the show-all trigger is the DS Collapsible trigger (tools/lib/collapsible.mjs) */
+${COLLAPSIBLE_CSS}
 /* Below 1024 the summary card falls under the choices, so Register rides in
    a bar pinned to the bottom of the screen instead of in the card's foot. */
 .ss-cta-bar { display: none; }

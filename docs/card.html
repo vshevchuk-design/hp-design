@@ -171,6 +171,7 @@
     <a class="navlink" href="tabs.html">Tabs</a>
     <a class="navlink" href="sidebar.html">Sidebar</a>
     <a class="navlink" href="accordion.html">Accordion</a>
+    <a class="navlink" href="collapsible.html">Collapsible</a>
     <a class="navlink" href="status-icon.html">StatusIcon</a>
     <a class="navlink" href="checkbox.html">Checkbox</a>
     <a class="navlink" href="radio.html">Radio</a>
@@ -400,12 +401,18 @@
       <div class="story">
         <h3>default</h3>
         <div class="story-preview"><button class="card card--interactive demo-card" style="">
-      <p class="card__title"><span class="ph-line ph-line--title" style="width:60%"></span></p>
-      <p class="card__body-text"><span class="ph-line ph-line--body" style="width:100%"></span><span class="ph-line ph-line--body" style="width:45%"></span></p>
+      <div class="card__header">
+        <p class="card__title">Your workshop</p>
+        <p class="card__description">Study skills · 4 sessions</p>
+      </div>
+      <p class="card__body-text">Note-taking, planning a study week and preparing for finals. Sessions run on Tuesdays at 3 PM in the Learning Commons.</p>
     </button></div>
         <pre class="code"><code>&lt;button class="card card--interactive"&gt;
-  &lt;p class="card__title"&gt;Marketing site&lt;/p&gt;
-  &lt;p class="card__body-text"&gt;Last deployed 2 hours ago&lt;/p&gt;
+  &lt;div class="card__header"&gt;
+    &lt;p class="card__title"&gt;Your workshop&lt;/p&gt;
+    &lt;p class="card__description"&gt;Study skills · 4 sessions&lt;/p&gt;
+  &lt;/div&gt;
+  &lt;p class="card__body-text"&gt;Note-taking, planning a study week…&lt;/p&gt;
 &lt;/button&gt;</code></pre>
         
       </div>
@@ -413,12 +420,18 @@
       <div class="story">
         <h3>hover</h3>
         <div class="story-preview"><button class="card card--interactive demo-card" style="background:var(--tok-bg-primary-hover); border-color:var(--tok-fill-primary)">
-      <p class="card__title"><span class="ph-line ph-line--title" style="width:60%"></span></p>
-      <p class="card__body-text"><span class="ph-line ph-line--body" style="width:100%"></span><span class="ph-line ph-line--body" style="width:45%"></span></p>
+      <div class="card__header">
+        <p class="card__title">Your workshop</p>
+        <p class="card__description">Study skills · 4 sessions</p>
+      </div>
+      <p class="card__body-text">Note-taking, planning a study week and preparing for finals. Sessions run on Tuesdays at 3 PM in the Learning Commons.</p>
     </button></div>
         <pre class="code"><code>&lt;button class="card card--interactive"&gt;
-  &lt;p class="card__title"&gt;Marketing site&lt;/p&gt;
-  &lt;p class="card__body-text"&gt;Last deployed 2 hours ago&lt;/p&gt;
+  &lt;div class="card__header"&gt;
+    &lt;p class="card__title"&gt;Your workshop&lt;/p&gt;
+    &lt;p class="card__description"&gt;Study skills · 4 sessions&lt;/p&gt;
+  &lt;/div&gt;
+  &lt;p class="card__body-text"&gt;Note-taking, planning a study week…&lt;/p&gt;
 &lt;/button&gt;</code></pre>
         <p class="story-note">bg.primaryHover (blue.50) fill + fill.primary (blue.500) border. The fill was added 2026-09-07 — a border alone was too quiet a cue across a whole card. border.strong (gray) read as too weak a cue; border.primary (pale blue.200) paired with a gray fill on pressed read muddy — two color languages at once. border.focus moved to blue.600 system-wide so it stays the strongest, most certain state (keyboard focus needs to out-rank mouse hover).</p>
       </div>
@@ -426,12 +439,18 @@
       <div class="story">
         <h3>pressed</h3>
         <div class="story-preview"><button class="card card--interactive demo-card" style="background:var(--tok-bg-primary); border-color:var(--tok-fill-primary)">
-      <p class="card__title"><span class="ph-line ph-line--title" style="width:60%"></span></p>
-      <p class="card__body-text"><span class="ph-line ph-line--body" style="width:100%"></span><span class="ph-line ph-line--body" style="width:45%"></span></p>
+      <div class="card__header">
+        <p class="card__title">Your workshop</p>
+        <p class="card__description">Study skills · 4 sessions</p>
+      </div>
+      <p class="card__body-text">Note-taking, planning a study week and preparing for finals. Sessions run on Tuesdays at 3 PM in the Learning Commons.</p>
     </button></div>
         <pre class="code"><code>&lt;button class="card card--interactive"&gt;
-  &lt;p class="card__title"&gt;Marketing site&lt;/p&gt;
-  &lt;p class="card__body-text"&gt;Last deployed 2 hours ago&lt;/p&gt;
+  &lt;div class="card__header"&gt;
+    &lt;p class="card__title"&gt;Your workshop&lt;/p&gt;
+    &lt;p class="card__description"&gt;Study skills · 4 sessions&lt;/p&gt;
+  &lt;/div&gt;
+  &lt;p class="card__body-text"&gt;Note-taking, planning a study week…&lt;/p&gt;
 &lt;/button&gt;</code></pre>
         <p class="story-note">Border stays fill.primary; the fill is bg.primary (blue.100, the same passive-tint role used for banners/badges) — one consistent blue family instead of mixing in gray.</p>
       </div>
@@ -439,12 +458,18 @@
       <div class="story">
         <h3>focused</h3>
         <div class="story-preview"><button class="card card--interactive demo-card" style="outline:4px solid var(--tok-border-focus); outline-offset:2px">
-      <p class="card__title"><span class="ph-line ph-line--title" style="width:60%"></span></p>
-      <p class="card__body-text"><span class="ph-line ph-line--body" style="width:100%"></span><span class="ph-line ph-line--body" style="width:45%"></span></p>
+      <div class="card__header">
+        <p class="card__title">Your workshop</p>
+        <p class="card__description">Study skills · 4 sessions</p>
+      </div>
+      <p class="card__body-text">Note-taking, planning a study week and preparing for finals. Sessions run on Tuesdays at 3 PM in the Learning Commons.</p>
     </button></div>
         <pre class="code"><code>&lt;button class="card card--interactive"&gt;
-  &lt;p class="card__title"&gt;Marketing site&lt;/p&gt;
-  &lt;p class="card__body-text"&gt;Last deployed 2 hours ago&lt;/p&gt;
+  &lt;div class="card__header"&gt;
+    &lt;p class="card__title"&gt;Your workshop&lt;/p&gt;
+    &lt;p class="card__description"&gt;Study skills · 4 sessions&lt;/p&gt;
+  &lt;/div&gt;
+  &lt;p class="card__body-text"&gt;Note-taking, planning a study week…&lt;/p&gt;
 &lt;/button&gt;</code></pre>
         <p class="story-note">Additive ring, composes on top of hover/pressed. Real CSS is :focus-visible on the button, shown in the CSS above — forced here via inline style for a static screenshot.</p>
       </div>

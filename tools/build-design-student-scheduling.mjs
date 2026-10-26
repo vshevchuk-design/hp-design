@@ -20,6 +20,7 @@
 // Split like Explore Degrees: lib/ss-data.mjs (fixtures), lib/ss-css.mjs
 // (recipes + ss-* layer), lib/ss-app.mjs (client script); markup lives here.
 // Run: node tools/build-design-student-scheduling.mjs
+import { collapsibleTrigger } from "./lib/collapsible.mjs";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -461,7 +462,7 @@ const V6_VIEWS = `<!-- ============ Workshop ============ -->
           <div class="ss-step is-hidden" id="ss-ws-sessions-step">
             <div class="ss-step__head"><h3 class="ss-step__title">Sessions</h3><span class="ss-note" id="ss-ws-sessions-count"></span></div>
             <ol class="ss-sessions" id="ss-ws-sessions"></ol>
-            <button class="btn btn--ghost btn--sm ss-sessions__more is-hidden" id="ss-ws-more" type="button"></button>
+            ${collapsibleTrigger({ id: "ss-ws-more", more: "Show all sessions", less: "Show fewer", extraClass: "ss-sessions__more is-hidden" })}
           </div>
         </div>
         <aside class="card ss-summary" id="ss-ws-summary" aria-label="Your registration">
@@ -539,7 +540,7 @@ const V6_VIEWS = `<!-- ============ Workshop ============ -->
           <div class="ss-step" id="ss-mw-up-step">
             <div class="ss-step__head"><h3 class="ss-step__title">Coming up</h3><span class="ss-note" id="ss-mw-up-count"></span></div>
             <ol class="ss-sessions" id="ss-mw-up"></ol>
-            <button class="btn btn--ghost btn--sm ss-sessions__more is-hidden" id="ss-mw-more" type="button"></button>
+            ${collapsibleTrigger({ id: "ss-mw-more", more: "Show all", less: "Show fewer", extraClass: "ss-sessions__more is-hidden" })}
           </div>
           <div class="ss-step" id="ss-mw-past-step">
             <div class="ss-step__head"><h3 class="ss-step__title">Past sessions</h3><span class="ss-note" id="ss-mw-past-count"></span></div>

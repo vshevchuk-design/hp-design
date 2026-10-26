@@ -1379,7 +1379,7 @@ export function ssAppJs(d) {
       }).join("");
       var more = $("ss-ws-more");
       more.classList.toggle("is-hidden", all.length <= SHOW);
-      more.textContent = ws.showAll ? "Show fewer" : "Show all " + all.length + " sessions";
+      more.querySelector(".collapsible__label").textContent = ws.showAll ? "Show fewer" : "Show all " + all.length + " sessions"; more.setAttribute("aria-expanded", ws.showAll ? "true" : "false");
     }
 
     // summary card
@@ -1577,7 +1577,7 @@ export function ssAppJs(d) {
       }).join("");
       var more = $("ss-mw-more");
       more.classList.toggle("is-hidden", rest.length <= SHOW);
-      more.textContent = mw.showAll ? "Show fewer" : "Show all " + rest.length;
+      more.querySelector(".collapsible__label").textContent = mw.showAll ? "Show fewer" : "Show all " + rest.length; more.setAttribute("aria-expanded", mw.showAll ? "true" : "false");
     }
 
     // past sessions — newest first; attendance, and the organizer's note

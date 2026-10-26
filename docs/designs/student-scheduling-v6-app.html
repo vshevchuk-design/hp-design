@@ -667,7 +667,17 @@ html:has(.modal[open]) { overflow: hidden; }
 .ss-session__num { color: var(--tok-text-muted); font-weight: 400; font-size: 12px; line-height: 1.4; }
 .ss-session__date { color: var(--tok-text-default); font-weight: 600; font-size: 12px; line-height: 1.4; }
 .ss-session__time { color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; white-space: nowrap; }
-.ss-sessions__more { align-self: flex-start; margin-inline-start: -8px; }
+/* the show-all trigger is the DS Collapsible trigger (tools/lib/collapsible.mjs) */
+
+.collapsible { display: flex; flex-direction: column; align-items: stretch; gap: 8px; }
+/* Button ghost sm, pulled left by its own padding so the label lines up with the content */
+.collapsible__trigger { align-self: flex-start; margin-inline-start: -8px; }
+.collapsible__chevron { width: 16px; height: 16px; flex-shrink: 0; transition: transform 0.12s ease; }
+.collapsible__trigger[aria-expanded="true"] .collapsible__chevron { transform: rotate(180deg); }
+.collapsible__trigger[hidden] { display: none; }
+/* Read more: clamp the text until it is opened */
+.collapsible--clamp > .collapsible__content { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; }
+.collapsible--clamp.is-open > .collapsible__content { display: block; -webkit-line-clamp: none; overflow: visible; }
 /* Below 1024 the summary card falls under the choices, so Register rides in
    a bar pinned to the bottom of the screen instead of in the card's foot. */
 .ss-cta-bar { display: none; }
@@ -1079,7 +1089,7 @@ html:has(.ss-drawer[open]) { overflow: hidden; }
           <div class="ss-step is-hidden" id="ss-ws-sessions-step">
             <div class="ss-step__head"><h3 class="ss-step__title">Sessions</h3><span class="ss-note" id="ss-ws-sessions-count"></span></div>
             <ol class="ss-sessions" id="ss-ws-sessions"></ol>
-            <button class="btn btn--ghost btn--sm ss-sessions__more is-hidden" id="ss-ws-more" type="button"></button>
+            <button class="btn btn--ghost btn--sm collapsible__trigger ss-sessions__more is-hidden" id="ss-ws-more" type="button" aria-expanded="false" data-more="Show all sessions" data-less="Show fewer"><span class="collapsible__label">Show all sessions</span><svg class="collapsible__chevron btn__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
           </div>
         </div>
         <aside class="card ss-summary" id="ss-ws-summary" aria-label="Your registration">
@@ -1157,7 +1167,7 @@ html:has(.ss-drawer[open]) { overflow: hidden; }
           <div class="ss-step" id="ss-mw-up-step">
             <div class="ss-step__head"><h3 class="ss-step__title">Coming up</h3><span class="ss-note" id="ss-mw-up-count"></span></div>
             <ol class="ss-sessions" id="ss-mw-up"></ol>
-            <button class="btn btn--ghost btn--sm ss-sessions__more is-hidden" id="ss-mw-more" type="button"></button>
+            <button class="btn btn--ghost btn--sm collapsible__trigger ss-sessions__more is-hidden" id="ss-mw-more" type="button" aria-expanded="false" data-more="Show all" data-less="Show fewer"><span class="collapsible__label">Show all</span><svg class="collapsible__chevron btn__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
           </div>
           <div class="ss-step" id="ss-mw-past-step">
             <div class="ss-step__head"><h3 class="ss-step__title">Past sessions</h3><span class="ss-note" id="ss-mw-past-count"></span></div>
@@ -2645,7 +2655,7 @@ html:has(.ss-drawer[open]) { overflow: hidden; }
       }).join("");
       var more = $("ss-ws-more");
       more.classList.toggle("is-hidden", all.length <= SHOW);
-      more.textContent = ws.showAll ? "Show fewer" : "Show all " + all.length + " sessions";
+      more.querySelector(".collapsible__label").textContent = ws.showAll ? "Show fewer" : "Show all " + all.length + " sessions"; more.setAttribute("aria-expanded", ws.showAll ? "true" : "false");
     }
 
     // summary card
@@ -2843,7 +2853,7 @@ html:has(.ss-drawer[open]) { overflow: hidden; }
       }).join("");
       var more = $("ss-mw-more");
       more.classList.toggle("is-hidden", rest.length <= SHOW);
-      more.textContent = mw.showAll ? "Show fewer" : "Show all " + rest.length;
+      more.querySelector(".collapsible__label").textContent = mw.showAll ? "Show fewer" : "Show all " + rest.length; more.setAttribute("aria-expanded", mw.showAll ? "true" : "false");
     }
 
     // past sessions — newest first; attendance, and the organizer's note

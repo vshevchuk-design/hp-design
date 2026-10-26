@@ -1,0 +1,10 @@
+{
+  "component": {
+    "collapsible": {
+      "$description": "One region a trigger shows or hides — 'Show all 8 sessions' / 'Show fewer', 'Read more' / 'Show less'. Not Accordion: an Accordion is a list of rows each with its own header; a Collapsible is one hidden part of something, and the part that is always visible is whatever the consumer puts above it (Radix's Collapsible — Accordion is built from them). The trigger IS Button ghost sm (resolved from button.tokens.json) with a trailing chevron that turns over when open, pulled left by its own padding so its text lines up with the content above. The label says what is hidden ('Show all 8 sessions', not 'Show more') and flips to 'Show fewer' / 'Show less'. Hidden content uses hidden=\"until-found\", so find-in-page still reaches it and opens it. Added 2026-10-26 — Scheduling had hand-rolled this twice.",
+      "gap": { "$type": "dimension", "$value": "{dim.2}", "$description": "Content → trigger." },
+      "chevronSize": { "$type": "dimension", "$value": "{dim.4}", "$description": "16px, Button sm's icon size." },
+      "clampLines": { "$type": "number", "$value": 3, "$description": "Read more: the text is cut to this many lines until opened. The trigger only appears when the text is actually longer." }
+    }
+  }
+}

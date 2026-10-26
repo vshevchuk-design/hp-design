@@ -152,12 +152,18 @@ function interactiveStories() {
   return interactiveStateDefs
     .map((s) => {
       const html = `<button class="card card--interactive demo-card" style="${s.style}">
-      <p class="card__title">${phTitle("60%")}</p>
-      <p class="card__body-text">${phBody(["100%", "45%"])}</p>
+      <div class="card__header">
+        <p class="card__title">${T.title}</p>
+        <p class="card__description">${T.desc}</p>
+      </div>
+      <p class="card__body-text">${T.body}</p>
     </button>`;
       const code = `<button class="card card--interactive">
-  <p class="card__title">Marketing site</p>
-  <p class="card__body-text">Last deployed 2 hours ago</p>
+  <div class="card__header">
+    <p class="card__title">Your workshop</p>
+    <p class="card__description">Study skills · 4 sessions</p>
+  </div>
+  <p class="card__body-text">Note-taking, planning a study week…</p>
 </button>`;
       return storyCard(s.label, html, code, s.note || "");
     })
