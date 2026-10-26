@@ -38,6 +38,20 @@
         "$type": "color",
         "$value": "{text.default}"
       },
+      "description": {
+        "$type": "typography",
+        "$value": "{text-style.body-sm}",
+        "$description": "Optional line under the title (shadcn's CardDescription) — one short sentence of context: 'Your sessions this term', 'Due Oct 30'. Smaller and quieter than the body so it reads as part of the heading, not the start of the content. Added 2026-10-26."
+      },
+      "descriptionColor": {
+        "$type": "color",
+        "$value": "{text.secondary}"
+      },
+      "headerGap": {
+        "$type": "dimension",
+        "$value": "{dim.1}",
+        "$description": "Title → description, 4px: close enough that the two read as one heading block."
+      },
       "body": {
         "$type": "typography",
         "$value": "{text-style.body-base}"

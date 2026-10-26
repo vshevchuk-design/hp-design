@@ -67,7 +67,7 @@
   .story-preview { min-height: 64px; display: flex; align-items: center; justify-content: center; padding: 12px 0; }
   .story-note { font-size: 11.5px; color: var(--text-muted); margin: 0; line-height: 1.5; }
 
-  .demo-card { width: 100%; max-width: 280px; }
+  .demo-card { width: 100%; max-width: 360px; }
   .ph-line { display: block; border-radius: 4px; background: var(--border-strong); }
   .ph-line--title { height: 15px; margin-bottom: 6px; }
   .ph-line--body { height: 9px; background: var(--border); margin-bottom: 6px; }
@@ -85,19 +85,35 @@
   --tok-bg-primary-hover: #eff6ff;
   --tok-text-default: #121921;
   --tok-text-secondary: #5d6a7a;
+  --tok-text-on-fill: #ffffff;
+  --tok-fill-primary-hover: #0468c4;
+  --tok-fill-primary-active: #01519c;
+  --tok-fill-neutral: #e6e8eb;
+  --tok-fill-neutral-hover-strong: #cdd1d6;
+  --tok-fill-neutral-active-strong: #adb5be;
   --tok-family-sans: 'Sora', sans-serif;
 }
 
 .card { box-sizing: border-box; display: flex; flex-direction: column; gap: 12px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); border-radius: 8px; padding: 16px; font-family: var(--tok-family-sans); }
-.card__header { padding-bottom: 12px; border-bottom: 1px solid var(--tok-border-default); }
-.card__footer { padding-top: 12px; border-top: 1px solid var(--tok-border-default); display: flex; gap: 8px; }
+.card__header { display: flex; flex-direction: column; gap: 4px; padding-bottom: 12px; border-bottom: 1px solid var(--tok-border-default); }
+/* actions sit right, safe one first — the same order as Modal and AlertDialog */
+.card__footer { padding-top: 12px; border-top: 1px solid var(--tok-border-default); display: flex; justify-content: flex-end; gap: 8px; }
 .card__title { margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 14px; line-height: 1.4; }
+.card__description { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
 .card__body-text { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 14px; line-height: 1.4; }
 
 .card--interactive { width: 100%; text-align: left; cursor: pointer; appearance: none; outline: none; }
 .card--interactive:hover { background: var(--tok-bg-primary-hover); border-color: var(--tok-fill-primary); }
 .card--interactive:active { background: var(--tok-bg-primary); border-color: var(--tok-fill-primary); }
 .card--interactive:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
+
+/* footer actions: Button secondary + primary, sm — a card is denser than a dialog; see button.html */
+.btn--secondary { box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; border: none; cursor: pointer; white-space: nowrap; font-family: inherit; height: 32px; padding: 0 8px; border-radius: 8px; font-weight: 600; font-size: 12px; line-height: 1.4; background: var(--tok-fill-neutral); color: var(--tok-text-default); }
+.btn--secondary:hover { background: var(--tok-fill-neutral-hover-strong); }
+.btn--secondary:active { background: var(--tok-fill-neutral-active-strong); }
+.btn--primary { box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; border: none; cursor: pointer; white-space: nowrap; font-family: inherit; height: 32px; padding: 0 8px; border-radius: 8px; font-weight: 600; font-size: 12px; line-height: 1.4; background: var(--tok-fill-primary); color: var(--tok-text-on-fill); }
+.btn--primary:hover { background: var(--tok-fill-primary-hover); }
+.btn--primary:active { background: var(--tok-fill-primary-active); }
 </style>
 </head>
 <body>
@@ -247,71 +263,133 @@
   --tok-bg-primary-hover: #eff6ff;
   --tok-text-default: #121921;
   --tok-text-secondary: #5d6a7a;
+  --tok-text-on-fill: #ffffff;
+  --tok-fill-primary-hover: #0468c4;
+  --tok-fill-primary-active: #01519c;
+  --tok-fill-neutral: #e6e8eb;
+  --tok-fill-neutral-hover-strong: #cdd1d6;
+  --tok-fill-neutral-active-strong: #adb5be;
   --tok-family-sans: 'Sora', sans-serif;
 }
 
 .card { box-sizing: border-box; display: flex; flex-direction: column; gap: 12px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); border-radius: 8px; padding: 16px; font-family: var(--tok-family-sans); }
-.card__header { padding-bottom: 12px; border-bottom: 1px solid var(--tok-border-default); }
-.card__footer { padding-top: 12px; border-top: 1px solid var(--tok-border-default); display: flex; gap: 8px; }
+.card__header { display: flex; flex-direction: column; gap: 4px; padding-bottom: 12px; border-bottom: 1px solid var(--tok-border-default); }
+/* actions sit right, safe one first — the same order as Modal and AlertDialog */
+.card__footer { padding-top: 12px; border-top: 1px solid var(--tok-border-default); display: flex; justify-content: flex-end; gap: 8px; }
 .card__title { margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 14px; line-height: 1.4; }
+.card__description { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
 .card__body-text { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 14px; line-height: 1.4; }
 
 .card--interactive { width: 100%; text-align: left; cursor: pointer; appearance: none; outline: none; }
 .card--interactive:hover { background: var(--tok-bg-primary-hover); border-color: var(--tok-fill-primary); }
 .card--interactive:active { background: var(--tok-bg-primary); border-color: var(--tok-fill-primary); }
-.card--interactive:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }</code></pre>
+.card--interactive:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
+
+/* footer actions: Button secondary + primary, sm — a card is denser than a dialog; see button.html */
+.btn--secondary { box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; border: none; cursor: pointer; white-space: nowrap; font-family: inherit; height: 32px; padding: 0 8px; border-radius: 8px; font-weight: 600; font-size: 12px; line-height: 1.4; background: var(--tok-fill-neutral); color: var(--tok-text-default); }
+.btn--secondary:hover { background: var(--tok-fill-neutral-hover-strong); }
+.btn--secondary:active { background: var(--tok-fill-neutral-active-strong); }
+.btn--primary { box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; border: none; cursor: pointer; white-space: nowrap; font-family: inherit; height: 32px; padding: 0 8px; border-radius: 8px; font-weight: 600; font-size: 12px; line-height: 1.4; background: var(--tok-fill-primary); color: var(--tok-text-on-fill); }
+.btn--primary:hover { background: var(--tok-fill-primary-hover); }
+.btn--primary:active { background: var(--tok-fill-primary-active); }</code></pre>
 
     <h2 class="big-section">Static</h2>
-    <p class="section-desc">The gray bars are docs-only placeholders standing in for arbitrary content, not a fixed set of "card types" — Card has no opinion on what goes inside. The printed code below each one shows real starter text instead of the bars.</p>
+    <p class="section-desc">Every part is optional; use only the ones a card needs. The content is sample text — Card has no opinion on what goes inside.</p>
     <div class="story-grid">
-      
-      <div class="story">
-        <h3>Title + body</h3>
-        <div class="story-preview"><div class="card demo-card">
-      <p class="card__title"><span class="ph-line ph-line--title" style="width:50%"></span></p>
-      <p class="card__body-text"><span class="ph-line ph-line--body" style="width:100%"></span><span class="ph-line ph-line--body" style="width:70%"></span></p>
-    </div></div>
-        <pre class="code"><code>&lt;div class="card"&gt;
-  &lt;p class="card__title"&gt;Card title&lt;/p&gt;
-  &lt;p class="card__body-text"&gt;Supporting text goes here.&lt;/p&gt;
-&lt;/div&gt;</code></pre>
-        
-      </div>
       
       <div class="story">
         <h3>Body only</h3>
         <div class="story-preview"><div class="card demo-card">
-      <p class="card__body-text"><span class="ph-line ph-line--body" style="width:100%"></span><span class="ph-line ph-line--body" style="width:85%"></span><span class="ph-line ph-line--body" style="width:40%"></span></p>
-    </div></div>
+  <p class="card__body-text">Note-taking, planning a study week and preparing for finals. Sessions run on Tuesdays at 3 PM in the Learning Commons.</p>
+</div></div>
         <pre class="code"><code>&lt;div class="card"&gt;
-  &lt;p class="card__body-text"&gt;Supporting text goes here. Title is optional — this card has none.&lt;/p&gt;
+  &lt;p class="card__body-text"&gt;Note-taking, planning a study week and preparing for finals. Sessions run on Tuesdays at 3 PM in the Learning Commons.&lt;/p&gt;
 &lt;/div&gt;</code></pre>
-        <p class="story-note">Title is entirely optional — a card can be just card__body-text (or genuinely anything) with no card__title at all.</p>
+        <p class="story-note">No header — a card can be just content.</p>
       </div>
-      
+
+      <div class="story">
+        <h3>Title + body</h3>
+        <div class="story-preview"><div class="card demo-card">
+  <p class="card__title">Your workshop</p>
+  <p class="card__body-text">Note-taking, planning a study week and preparing for finals. Sessions run on Tuesdays at 3 PM in the Learning Commons.</p>
+</div></div>
+        <pre class="code"><code>&lt;div class="card"&gt;
+  &lt;p class="card__title"&gt;Your workshop&lt;/p&gt;
+  &lt;p class="card__body-text"&gt;Note-taking, planning a study week and preparing for finals. Sessions run on Tuesdays at 3 PM in the Learning Commons.&lt;/p&gt;
+&lt;/div&gt;</code></pre>
+        <p class="story-note">A plain title without a divider, for a short card.</p>
+      </div>
+
+      <div class="story">
+        <h3>Header with description</h3>
+        <div class="story-preview"><div class="card demo-card">
+  <div class="card__header">
+    <p class="card__title">Your workshop</p>
+    <p class="card__description">Study skills · 4 sessions</p>
+  </div>
+  <p class="card__body-text">Note-taking, planning a study week and preparing for finals. Sessions run on Tuesdays at 3 PM in the Learning Commons.</p>
+</div></div>
+        <pre class="code"><code>&lt;div class="card"&gt;
+  &lt;div class="card__header"&gt;
+    &lt;p class="card__title"&gt;Your workshop&lt;/p&gt;
+    &lt;p class="card__description"&gt;Study skills · 4 sessions&lt;/p&gt;
+  &lt;/div&gt;
+  &lt;p class="card__body-text"&gt;Note-taking, planning a study week and preparing for finals. Sessions run on Tuesdays at 3 PM in the Learning Commons.&lt;/p&gt;
+&lt;/div&gt;</code></pre>
+        <p class="story-note">card__description (body-sm, text.secondary) 4px under the title — one short line of context. The header gets its hairline.</p>
+      </div>
+
       <div class="story">
         <h3>Header + body + footer</h3>
         <div class="story-preview"><div class="card demo-card">
-      <div class="card__header">
-        <p class="card__title"><span class="ph-line ph-line--title" style="width:65%"></span></p>
-      </div>
-      <p class="card__body-text"><span class="ph-line ph-line--body" style="width:100%"></span><span class="ph-line ph-line--body" style="width:55%"></span></p>
-      <div class="card__footer">
-        <span class="card__body-text"><span class="ph-pill" style="width:64px"></span></span>
-        <span class="card__body-text"><span class="ph-pill" style="width:88px"></span></span>
-      </div>
-    </div></div>
+  <div class="card__header">
+    <p class="card__title">Your workshop</p>
+  </div>
+  <p class="card__body-text">Note-taking, planning a study week and preparing for finals. Sessions run on Tuesdays at 3 PM in the Learning Commons.</p>
+  <div class="card__footer">
+    <button class="btn--secondary">Leave</button>
+    <button class="btn--primary">Add to calendar</button>
+  </div>
+</div></div>
         <pre class="code"><code>&lt;div class="card"&gt;
   &lt;div class="card__header"&gt;
-    &lt;p class="card__title"&gt;Section title&lt;/p&gt;
+    &lt;p class="card__title"&gt;Your workshop&lt;/p&gt;
   &lt;/div&gt;
-  &lt;p class="card__body-text"&gt;Body content goes here.&lt;/p&gt;
+  &lt;p class="card__body-text"&gt;Note-taking, planning a study week and preparing for finals. Sessions run on Tuesdays at 3 PM in the Learning Commons.&lt;/p&gt;
   &lt;div class="card__footer"&gt;
-    &lt;span class="card__body-text"&gt;Action one&lt;/span&gt;
-    &lt;span class="card__body-text"&gt;Action two&lt;/span&gt;
+    &lt;button class="btn--secondary"&gt;Leave&lt;/button&gt;
+    &lt;button class="btn--primary"&gt;Add to calendar&lt;/button&gt;
   &lt;/div&gt;
 &lt;/div&gt;</code></pre>
-        <p class="story-note">Header and footer are separated from the body by border.default, same hairline as the card's own edge — also optional, use only the sections a given card needs.</p>
+        <p class="story-note">Footer actions right-aligned, safe one first: Secondary, then Primary — the same order as Modal and AlertDialog.</p>
+      </div>
+
+      <div class="story">
+        <h3>Full</h3>
+        <div class="story-preview"><div class="card demo-card">
+  <div class="card__header">
+    <p class="card__title">Your workshop</p>
+    <p class="card__description">Study skills · 4 sessions</p>
+  </div>
+  <p class="card__body-text">Note-taking, planning a study week and preparing for finals. Sessions run on Tuesdays at 3 PM in the Learning Commons.</p>
+  <div class="card__footer">
+    <button class="btn--secondary">Leave</button>
+    <button class="btn--primary">Add to calendar</button>
+  </div>
+</div></div>
+        <pre class="code"><code>&lt;div class="card"&gt;
+  &lt;div class="card__header"&gt;
+    &lt;p class="card__title"&gt;Your workshop&lt;/p&gt;
+    &lt;p class="card__description"&gt;Study skills · 4 sessions&lt;/p&gt;
+  &lt;/div&gt;
+  &lt;p class="card__body-text"&gt;Note-taking, planning a study week and preparing for finals. Sessions run on Tuesdays at 3 PM in the Learning Commons.&lt;/p&gt;
+  &lt;div class="card__footer"&gt;
+    &lt;button class="btn--secondary"&gt;Leave&lt;/button&gt;
+    &lt;button class="btn--primary"&gt;Add to calendar&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+        <p class="story-note">Every part: title, description, body, actions.</p>
       </div>
     </div>
 

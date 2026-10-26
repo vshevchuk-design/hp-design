@@ -24,6 +24,8 @@ const typo = load("tokens/primitives/typography.tokens.json");
 const textStyle = load("tokens/primitives/text-styles.tokens.json")["text-style"];
 const semantic = load("tokens/semantic/color.tokens.json");
 const card = load("tokens/components/card.tokens.json").component.card;
+// footer actions ARE Buttons — resolved from button.tokens.json, never retyped
+const button = load("tokens/components/button.tokens.json").component.button;
 
 const registry = {
   color: colorPrim,
@@ -62,7 +64,9 @@ const px = (d) => `${d.value}${d.unit}`;
 const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 const cv = (tokenPath) => `var(${cssVarName(tokenPath)})`;
 
-const colorPaths = ["surface.default", "border.default", "border.focus", "fill.primary", "bg.primary", "bg.primaryHover", "text.default", "text.secondary"];
+const roleOf = (n) => n.$value.replace(/[{}]/g, "");
+const btnRoles = ["primary", "secondary"].flatMap((v) => [button[v].state.default.fill, button[v].state.default.label, button[v].state.hover.fill, button[v].state.pressed.fill].map(roleOf));
+const colorPaths = [...new Set(["surface.default", "border.default", "border.focus", "fill.primary", "bg.primary", "bg.primaryHover", "text.default", "text.secondary", roleOf(card.descriptionColor), ...btnRoles])];
 const colorValue = Object.fromEntries(colorPaths.map((p) => [p, resolve(p)]));
 const fontSans = resolve("family.sans");
 const rootVars = renderRootVars([...colorPaths.map((p) => [p, colorValue[p]]), ["family.sans", `'${fontSans}', sans-serif`]]);
@@ -72,6 +76,8 @@ const padding = px(resolve(card.padding.$value));
 const gap = px(resolve(card.gap.$value));
 const titleType = resolveToken(card.title);
 const bodyType = resolveToken(card.body);
+const descType = resolveToken(card.description);
+const headerGap = px(resolve(card.headerGap.$value));
 // The hover surface role is READ from the token file, not retyped — same rule
 // that caught build-button-doc.mjs painting a stale role earlier today.
 const ixHoverBg = card.interactive.state.hover.bg.$value.replace(/[{}]/g, "");
@@ -85,15 +91,22 @@ function typoCss(t) {
 const css = `${rootVars}
 
 .card { box-sizing: border-box; display: flex; flex-direction: column; gap: ${gap}; background: ${cv("surface.default")}; border: 1px solid ${cv("border.default")}; border-radius: ${radius}; padding: ${padding}; font-family: ${cv("family.sans")}; }
-.card__header { padding-bottom: ${gap}; border-bottom: 1px solid ${cv("border.default")}; }
-.card__footer { padding-top: ${gap}; border-top: 1px solid ${cv("border.default")}; display: flex; gap: ${px(resolve("dim.2"))}; }
+.card__header { display: flex; flex-direction: column; gap: ${headerGap}; padding-bottom: ${gap}; border-bottom: 1px solid ${cv("border.default")}; }
+/* actions sit right, safe one first — the same order as Modal and AlertDialog */
+.card__footer { padding-top: ${gap}; border-top: 1px solid ${cv("border.default")}; display: flex; justify-content: flex-end; gap: ${px(resolve("dim.2"))}; }
 .card__title { margin: 0; color: ${cv("text.default")}; ${typoCss(titleType)} }
+.card__description { margin: 0; color: ${cv(roleOf(card.descriptionColor))}; ${typoCss(descType)} }
 .card__body-text { margin: 0; color: ${cv("text.secondary")}; ${typoCss(bodyType)} }
 
 .card--interactive { width: 100%; text-align: left; cursor: pointer; appearance: none; outline: none; }
 .card--interactive:hover { background: ${cv(ixHoverBg)}; border-color: ${cv("fill.primary")}; }
 .card--interactive:active { background: ${cv("bg.primary")}; border-color: ${cv("fill.primary")}; }
-.card--interactive:focus-visible { outline: ${ringWidth} solid ${cv("border.focus")}; outline-offset: ${ringOffset}; }`;
+.card--interactive:focus-visible { outline: ${ringWidth} solid ${cv("border.focus")}; outline-offset: ${ringOffset}; }
+
+/* footer actions: Button secondary + primary, sm — a card is denser than a dialog; see button.html */
+${["secondary", "primary"].map((v) => { const b = button[v], sz = b.size.sm; return `.btn--${v} { box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; border: none; cursor: pointer; white-space: nowrap; font-family: inherit; height: ${px(resolve(sz.height.$value))}; padding: 0 ${px(resolve(sz.paddingX.$value))}; border-radius: ${px(resolve(b.radius.$value))}; ${typoCss(resolveToken(get(sz.label.$value)))} background: ${cv(roleOf(b.state.default.fill))}; color: ${cv(roleOf(b.state.default.label))}; }
+.btn--${v}:hover { background: ${cv(roleOf(b.state.hover.fill))}; }
+.btn--${v}:active { background: ${cv(roleOf(b.state.pressed.fill))}; }`; }).join("\n")}`;
 
 function storyCard(title, liveHtml, codeHtml, note = "") {
   return `
@@ -105,59 +118,29 @@ function storyCard(title, liveHtml, codeHtml, note = "") {
       </div>`;
 }
 
-// Placeholder bars, not real words — a story showing actual copy ("Invoice
-// #4471") reads as if Card ships a fixed set of content "types". Card has no
-// opinion on content at all (that's up to whatever screen composes it), so
-// the live preview shows abstract gray bars instead. The printed code sample
-// below each one intentionally shows real, generic starter text instead of
-// the bars — nobody should copy-paste a `ph-line` div, it's a docs-only
-// illustration device, not part of the component.
-function phTitle(width = "50%") {
-  return `<span class="ph-line ph-line--title" style="width:${width}"></span>`;
+// Real sample content (until 2026-10-26 the stories used gray placeholder bars,
+// which also hid what a footer with buttons actually looks like).
+const T = { title: "Your workshop", desc: "Study skills · 4 sessions", body: "Note-taking, planning a study week and preparing for finals. Sessions run on Tuesdays at 3 PM in the Learning Commons." };
+const header = (desc) => `<div class="card__header">\n    <p class="card__title">${T.title}</p>${desc ? `\n    <p class="card__description">${T.desc}</p>` : ""}\n  </div>`;
+const footer = `<div class="card__footer">\n    <button class="btn--secondary">Leave</button>\n    <button class="btn--primary">Add to calendar</button>\n  </div>`;
+function cardMarkup({ head = false, desc = false, plainTitle = false, foot = false }) {
+  const parts = [];
+  if (head) parts.push(header(desc));
+  if (plainTitle) parts.push(`<p class="card__title">${T.title}</p>`);
+  parts.push(`<p class="card__body-text">${T.body}</p>`);
+  if (foot) parts.push(footer);
+  return `<div class="card">\n  ${parts.join("\n  ")}\n</div>`;
 }
-function phBody(widths = ["100%", "70%"]) {
-  return widths.map((w) => `<span class="ph-line ph-line--body" style="width:${w}"></span>`).join("");
-}
-function phPill(width = "64px") {
-  return `<span class="ph-pill" style="width:${width}"></span>`;
-}
-
-const staticDemo = `<div class="card demo-card">
-      <p class="card__title">${phTitle()}</p>
-      <p class="card__body-text">${phBody()}</p>
-    </div>`;
-const staticCode = `<div class="card">
-  <p class="card__title">Card title</p>
-  <p class="card__body-text">Supporting text goes here.</p>
-</div>`;
-
-const bodyOnlyDemo = `<div class="card demo-card">
-      <p class="card__body-text">${phBody(["100%", "85%", "40%"])}</p>
-    </div>`;
-const bodyOnlyCode = `<div class="card">
-  <p class="card__body-text">Supporting text goes here. Title is optional — this card has none.</p>
-</div>`;
-
-const sectionsDemo = `<div class="card demo-card">
-      <div class="card__header">
-        <p class="card__title">${phTitle("65%")}</p>
-      </div>
-      <p class="card__body-text">${phBody(["100%", "55%"])}</p>
-      <div class="card__footer">
-        <span class="card__body-text">${phPill()}</span>
-        <span class="card__body-text">${phPill("88px")}</span>
-      </div>
-    </div>`;
-const sectionsCode = `<div class="card">
-  <div class="card__header">
-    <p class="card__title">Section title</p>
-  </div>
-  <p class="card__body-text">Body content goes here.</p>
-  <div class="card__footer">
-    <span class="card__body-text">Action one</span>
-    <span class="card__body-text">Action two</span>
-  </div>
-</div>`;
+const staticStories = [
+  ["Body only", { }, "No header — a card can be just content."],
+  ["Title + body", { plainTitle: true }, "A plain title without a divider, for a short card."],
+  ["Header with description", { head: true, desc: true }, "card__description (body-sm, text.secondary) 4px under the title — one short line of context. The header gets its hairline."],
+  ["Header + body + footer", { head: true, foot: true }, "Footer actions right-aligned, safe one first: Secondary, then Primary — the same order as Modal and AlertDialog."],
+  ["Full", { head: true, desc: true, foot: true }, "Every part: title, description, body, actions."],
+];
+const staticHtml = staticStories.map(([title, o, note]) => storyCard(title, cardMarkup(o).replace('class="card"', 'class="card demo-card"'), cardMarkup(o), note)).join("\n");
+function phTitle(width = "50%") { return `<span class="ph-line ph-line--title" style="width:${width}"></span>`; }
+function phBody(widths = ["100%", "70%"]) { return widths.map((w) => `<span class="ph-line ph-line--body" style="width:${w}"></span>`).join(""); }
 
 const interactiveStateDefs = [
   { key: "default", label: "default", style: "" },
@@ -250,7 +233,7 @@ const html = `<!doctype html>
   .story-preview { min-height: 64px; display: flex; align-items: center; justify-content: center; padding: 12px 0; }
   .story-note { font-size: 11.5px; color: var(--text-muted); margin: 0; line-height: 1.5; }
 
-  .demo-card { width: 100%; max-width: 280px; }
+  .demo-card { width: 100%; max-width: 360px; }
   .ph-line { display: block; border-radius: 4px; background: var(--border-strong); }
   .ph-line--title { height: 15px; margin-bottom: 6px; }
   .ph-line--body { height: 9px; background: var(--border); margin-bottom: 6px; }
@@ -283,11 +266,9 @@ const html = `<!doctype html>
     <pre class="code"><code>${esc(css)}</code></pre>
 
     <h2 class="big-section">Static</h2>
-    <p class="section-desc">The gray bars are docs-only placeholders standing in for arbitrary content, not a fixed set of "card types" — Card has no opinion on what goes inside. The printed code below each one shows real starter text instead of the bars.</p>
+    <p class="section-desc">Every part is optional; use only the ones a card needs. The content is sample text — Card has no opinion on what goes inside.</p>
     <div class="story-grid">
-      ${storyCard("Title + body", staticDemo, staticCode)}
-      ${storyCard("Body only", bodyOnlyDemo, bodyOnlyCode, "Title is entirely optional — a card can be just card__body-text (or genuinely anything) with no card__title at all.")}
-      ${storyCard("Header + body + footer", sectionsDemo, sectionsCode, "Header and footer are separated from the body by border.default, same hairline as the card's own edge — also optional, use only the sections a given card needs.")}
+      ${staticHtml}
     </div>
 
     <h2 class="big-section">Interactive</h2>
