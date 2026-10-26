@@ -1755,3 +1755,7 @@ Storybook's PageDialog story (Button Dialog Demo, Page Dialog Demo — unstyled)
 ## 2026-10-26 — Popover against the Storybook: no arrow, Controlled is code
 
 Storybook's Popover: Default, With Arrow, Controlled — they look the same. Ours already does more (header + close, menu content). Arrow not adopted: the panel sits 8px under its trigger with border + shadow, an arrow must flip with the panel and fights the rounded corner, and none of our floating panels have one. Controlled = opening/closing from outside — the native API (`showPopover`/`hidePopover`/`togglePopover`, the `toggle` event) does it; documented as an "In code" legend row. User agreed.
+
+## 2026-10-26 — Figma Progress page: what the centred bar is
+
+The user could not tell what the bars with the fill in the middle were: the Indeterminate variants (no value — a sliver slides across in code, frozen mid-track in Figma) with the determinate copy "6 of 20 requirement areas covered" on them. Added a label beside every variant (type · size · what it shows) and a **Progress / Examples** frame with real copy for each: "6 of 20 requirement areas covered" (determinate) and "Checking your classes…" (indeterminate). Figma only; the docs page already had both stories.
