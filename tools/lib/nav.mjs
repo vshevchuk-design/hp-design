@@ -54,6 +54,7 @@ export const NAV_ITEMS = {
   grid: { label: "Grid", href: "grid.html" },
   table: { label: "Table", href: "table.html" },
   stepper: { label: "Stepper", href: "stepper.html" },
+  wizard: { label: "Wizard", href: "stepper.html#wizard" },
   tooltip: { label: "Tooltip", href: "tooltip.html" },
   popover: { label: "Popover", href: "popover.html" },
   "slide-over-panel": { label: "SlideOverPanel", href: "slide-over-panel.html" },
@@ -211,6 +212,7 @@ export function renderNav(activeKey, { basePath = "" } = {}) {
     ${link("grid")}
     ${link("table")}
     ${link("stepper")}
+    ${link("wizard")}
     ${link("tooltip")}
     ${link("popover")}
     ${link("slide-over-panel")}

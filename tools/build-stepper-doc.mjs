@@ -134,7 +134,7 @@ const html = `<!doctype html>
     <h2 class="big-section">Indicator</h2>
     <div class="story-grid" style="grid-template-columns: 1fr">${indicator.join("")}</div>
 
-    <h2 class="big-section">Wizard</h2>
+    <h2 class="big-section" id="wizard">Wizard</h2>
     <p class="section-desc">A real three-step flow. Press Next with the fields empty, fill them in, go back through a completed step, press Cancel on the first step.</p>
     <div class="story-grid">${story("Book an appointment", `<div class="wz-demo">${wizard}</div>`)}</div>
 
