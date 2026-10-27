@@ -156,6 +156,22 @@
               "$value": "{text.disabled}"
             }
           }
+        },
+        "hover": {
+          "$description": "The hover wash on an underline tab (2026-10-27, user: the flat-bottomed wash glued to the line looked wrong). A pill with all four corners rounded (segmented pillRadius), inset 2px from the top and lifted 4px off the underline, so it never touches the indicator — 32px tall on a base (40) tab, 24 on sm (32).",
+          "insetTop": {
+            "$type": "dimension",
+            "$value": "{dim.0_5}"
+          },
+          "gap": {
+            "$type": "dimension",
+            "$value": "{dim.1}",
+            "$description": "Space between the wash and the 2px underline."
+          },
+          "bg": {
+            "$type": "color",
+            "$value": "{fill.neutralHover}"
+          }
         }
       }
     }

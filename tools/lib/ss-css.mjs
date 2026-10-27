@@ -144,8 +144,11 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .tab--base { height: ${D(tabs.size.base.height)}; padding: 0 ${D(tabs.size.base.paddingX)}; }
 .tab:focus-visible { outline: ${ringW} solid ${cv("border.focus")}; outline-offset: -${ringW}; }
 .tabs--underline { display: flex; align-items: stretch; gap: ${D(tabs.underline.gap)}; border-bottom: 1px solid ${R(tabs.underline.baselineColor)}; max-width: 100%; overflow-x: auto; scrollbar-width: none; }
-.tabs--underline .tab { border-bottom: 2px solid transparent; margin-bottom: -1px; border-radius: ${D(tabs.segmented.pillRadius)} ${D(tabs.segmented.pillRadius)} 0 0; }
-.tabs--underline .tab:not(.tab--active):not(:disabled):hover { background: ${cv("fill.neutralHover")}; color: ${R(tabs.underline.state.hover.label)}; }
+/* hover: a fully rounded wash lifted off the underline (::before) */
+.tabs--underline .tab { position: relative; isolation: isolate; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.tabs--underline .tab::before { content: ""; position: absolute; z-index: -1; left: 0; right: 0; top: ${D(tabs.underline.hover.insetTop)}; bottom: ${D(tabs.underline.hover.gap)}; border-radius: ${D(tabs.segmented.pillRadius)}; background: transparent; }
+.tabs--underline .tab:not(.tab--active):not(:disabled):hover { color: ${R(tabs.underline.state.hover.label)}; }
+.tabs--underline .tab:not(.tab--active):not(:disabled):hover::before { background: ${R(tabs.underline.hover.bg)}; }
 .tabs--underline .tab--active { color: ${R(tabs.underline.state.active.label)}; font-weight: ${tabActiveWeight}; border-bottom-color: ${R(tabs.underline.indicatorColor)}; }
 .tabs--segmented { display: inline-flex; align-items: center; gap: ${D(tabs.segmented.trackPadding)}; background: ${R(tabs.segmented.trackBg)}; border-radius: ${D(tabs.segmented.trackRadius)}; padding: ${D(tabs.segmented.trackPadding)}; max-width: 100%; overflow-x: auto; scrollbar-width: none; }
 .tabs--segmented .tab { border-radius: ${D(tabs.segmented.pillRadius)}; color: ${R(tabs.segmented.state.default.label)}; }

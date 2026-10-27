@@ -136,8 +136,11 @@ ${sizes
 .tabs--segmented .tab--disabled .tab__icon, .tabs--underline .tab--disabled .tab__icon { color: ${cv("icon.disabled")}; }
 
 .tabs--underline { display: inline-flex; align-items: stretch; gap: ${und.gap}; border-bottom: 1px solid ${cv("border.default")}; max-width: 100%; overflow-x: auto; }
-.tabs--underline .tab { border-bottom: 2px solid transparent; margin-bottom: -1px; border-radius: ${seg.pillRadius} ${seg.pillRadius} 0 0; }
-.tabs--underline .tab:not(.tab--active):not(.tab--disabled):hover { background: ${cv("fill.neutralHover")}; color: ${cv("text.default")}; }
+/* hover: a fully rounded wash lifted off the underline (::before), not a flat-bottomed fill on the tab */
+.tabs--underline .tab { position: relative; isolation: isolate; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.tabs--underline .tab::before { content: ""; position: absolute; z-index: -1; left: 0; right: 0; top: ${px(resolve(tabs.underline.hover.insetTop.$value))}; bottom: ${px(resolve(tabs.underline.hover.gap.$value))}; border-radius: ${seg.pillRadius}; background: transparent; }
+.tabs--underline .tab:not(.tab--active):not(.tab--disabled):hover { color: ${cv("text.default")}; }
+.tabs--underline .tab:not(.tab--active):not(.tab--disabled):hover::before { background: ${cv(tabs.underline.hover.bg.$value.replace(/[{}]/g, ""))}; }
 .tabs--underline .tab--active { color: ${cv("text.default")}; font-weight: ${activeWeightSegmented}; border-bottom-color: ${cv("border.focus")}; }
 .tabs--underline .tab--disabled { color: ${cv("text.disabled")}; cursor: not-allowed; }
 
@@ -312,7 +315,9 @@ const html = `<!doctype html>
   /* .tab.tab--hover-demo (compound, not a single class) so this beats the
      later-defined, equal-specificity .tab base rule on source order alone —
      the actual bug: a single-class .tab--hover-demo lost that tie silently. */
-  .tab.tab--hover-demo { background: ${cv("fill.neutralHover")}; color: ${cv("text.default")}; }
+  .tabs--segmented .tab.tab--hover-demo { background: ${cv("fill.neutralHover")}; color: ${cv("text.default")}; }
+  .tabs--underline .tab.tab--hover-demo { color: ${cv("text.default")}; }
+  .tabs--underline .tab.tab--hover-demo::before { background: ${cv("fill.neutralHover")}; }
 
   .placeholder-note { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-muted); border: 0.5px dashed var(--border-strong); border-radius: 6px; padding: 4px 10px; margin-top: 1.5rem; }
 

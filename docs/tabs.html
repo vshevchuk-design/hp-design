@@ -73,7 +73,9 @@
   /* .tab.tab--hover-demo (compound, not a single class) so this beats the
      later-defined, equal-specificity .tab base rule on source order alone —
      the actual bug: a single-class .tab--hover-demo lost that tie silently. */
-  .tab.tab--hover-demo { background: var(--tok-fill-neutral-hover); color: var(--tok-text-default); }
+  .tabs--segmented .tab.tab--hover-demo { background: var(--tok-fill-neutral-hover); color: var(--tok-text-default); }
+  .tabs--underline .tab.tab--hover-demo { color: var(--tok-text-default); }
+  .tabs--underline .tab.tab--hover-demo::before { background: var(--tok-fill-neutral-hover); }
 
   .placeholder-note { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-muted); border: 0.5px dashed var(--border-strong); border-radius: 6px; padding: 4px 10px; margin-top: 1.5rem; }
 
@@ -113,8 +115,11 @@
 .tabs--segmented .tab--disabled .tab__icon, .tabs--underline .tab--disabled .tab__icon { color: var(--tok-icon-disabled); }
 
 .tabs--underline { display: inline-flex; align-items: stretch; gap: 24px; border-bottom: 1px solid var(--tok-border-default); max-width: 100%; overflow-x: auto; }
-.tabs--underline .tab { border-bottom: 2px solid transparent; margin-bottom: -1px; border-radius: 8px 8px 0 0; }
-.tabs--underline .tab:not(.tab--active):not(.tab--disabled):hover { background: var(--tok-fill-neutral-hover); color: var(--tok-text-default); }
+/* hover: a fully rounded wash lifted off the underline (::before), not a flat-bottomed fill on the tab */
+.tabs--underline .tab { position: relative; isolation: isolate; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.tabs--underline .tab::before { content: ""; position: absolute; z-index: -1; left: 0; right: 0; top: 2px; bottom: 4px; border-radius: 8px; background: transparent; }
+.tabs--underline .tab:not(.tab--active):not(.tab--disabled):hover { color: var(--tok-text-default); }
+.tabs--underline .tab:not(.tab--active):not(.tab--disabled):hover::before { background: var(--tok-fill-neutral-hover); }
 .tabs--underline .tab--active { color: var(--tok-text-default); font-weight: 600; border-bottom-color: var(--tok-border-focus); }
 .tabs--underline .tab--disabled { color: var(--tok-text-disabled); cursor: not-allowed; }
 
@@ -303,8 +308,11 @@
 .tabs--segmented .tab--disabled .tab__icon, .tabs--underline .tab--disabled .tab__icon { color: var(--tok-icon-disabled); }
 
 .tabs--underline { display: inline-flex; align-items: stretch; gap: 24px; border-bottom: 1px solid var(--tok-border-default); max-width: 100%; overflow-x: auto; }
-.tabs--underline .tab { border-bottom: 2px solid transparent; margin-bottom: -1px; border-radius: 8px 8px 0 0; }
-.tabs--underline .tab:not(.tab--active):not(.tab--disabled):hover { background: var(--tok-fill-neutral-hover); color: var(--tok-text-default); }
+/* hover: a fully rounded wash lifted off the underline (::before), not a flat-bottomed fill on the tab */
+.tabs--underline .tab { position: relative; isolation: isolate; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.tabs--underline .tab::before { content: ""; position: absolute; z-index: -1; left: 0; right: 0; top: 2px; bottom: 4px; border-radius: 8px; background: transparent; }
+.tabs--underline .tab:not(.tab--active):not(.tab--disabled):hover { color: var(--tok-text-default); }
+.tabs--underline .tab:not(.tab--active):not(.tab--disabled):hover::before { background: var(--tok-fill-neutral-hover); }
 .tabs--underline .tab--active { color: var(--tok-text-default); font-weight: 600; border-bottom-color: var(--tok-border-focus); }
 .tabs--underline .tab--disabled { color: var(--tok-text-disabled); cursor: not-allowed; }
 
