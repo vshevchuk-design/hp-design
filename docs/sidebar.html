@@ -52,7 +52,8 @@
   --tok-fill-neutral-hover: #e6e8eb;
   --tok-border-focus: #0468c4;
   --tok-fill-primary: #077fec;
-  --tok-fill-neutral-active-strong: #adb5be;
+  --tok-fill-neutral-active: #cdd1d6;
+  --tok-text-secondary-strong: #485462;
   --tok-surface-overlay: rgba(21, 25, 30, 0.5);
   --tok-family-sans: 'Sora', sans-serif;
 }
@@ -122,7 +123,7 @@
 .sidebar--neutral .sidebar__item[aria-current="page"] .sidebar__icon { color: var(--tok-icon-primary); }
 .sidebar--neutral .sidebar__count { background: var(--tok-fill-primary); color: var(--tok-text-on-fill); }
 /* gray: Counter onNeutral INACTIVE for an open group's total */
-.sidebar--neutral:not(.sidebar--collapsed) .sidebar__item[aria-expanded="true"] > .sidebar__count { background: var(--tok-fill-neutral-active-strong); color: var(--tok-text-default); }
+.sidebar--neutral:not(.sidebar--collapsed) .sidebar__item[aria-expanded="true"] > .sidebar__count { background: var(--tok-fill-neutral-active); color: var(--tok-text-secondary-strong); }
 
 /* ---- collapsed rail: icons only (desktop; below 1024 the panel is a drawer) ---- */
 @media (min-width: 768px) {
@@ -585,7 +586,8 @@
   --tok-fill-neutral-hover: #e6e8eb;
   --tok-border-focus: #0468c4;
   --tok-fill-primary: #077fec;
-  --tok-fill-neutral-active-strong: #adb5be;
+  --tok-fill-neutral-active: #cdd1d6;
+  --tok-text-secondary-strong: #485462;
   --tok-surface-overlay: rgba(21, 25, 30, 0.5);
   --tok-family-sans: 'Sora', sans-serif;
 }
@@ -655,7 +657,7 @@
 .sidebar--neutral .sidebar__item[aria-current="page"] .sidebar__icon { color: var(--tok-icon-primary); }
 .sidebar--neutral .sidebar__count { background: var(--tok-fill-primary); color: var(--tok-text-on-fill); }
 /* gray: Counter onNeutral INACTIVE for an open group's total */
-.sidebar--neutral:not(.sidebar--collapsed) .sidebar__item[aria-expanded="true"] &gt; .sidebar__count { background: var(--tok-fill-neutral-active-strong); color: var(--tok-text-default); }
+.sidebar--neutral:not(.sidebar--collapsed) .sidebar__item[aria-expanded="true"] &gt; .sidebar__count { background: var(--tok-fill-neutral-active); color: var(--tok-text-secondary-strong); }
 
 /* ---- collapsed rail: icons only (desktop; below 1024 the panel is a drawer) ---- */
 @media (min-width: 768px) {

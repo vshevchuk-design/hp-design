@@ -113,14 +113,14 @@
         "$description": "For use on top of fill.neutral (button.secondary's gray fill). Cannot reuse onPrimary's colors: fill.neutral is nearly white already, so a white 'active' pill would barely show, and fill.primaryActive's dark navy 'inactive' pill reads as loud/attention-grabbing rather than quiet against a light gray button — the opposite of onPrimary's effect on a blue button.",
         "state": {
           "inactive": {
-            "$description": "Mirrors onPrimary's logic (one step past the button's own hover shade, so it survives hover without disappearing), but in the gray family: fill.neutralActive, not fill.neutralHover. Dark label — the gray family's light steps need dark text, not white.",
+            "$description": "Quiet gray (2026-10-27, user: it read heavy and its black number was louder than the inactive tab label beside it): gray.200 pill (fill.neutralActive) + gray.700 number (text.secondaryStrong, 5.0:1). Was gray.300 + gray.950. text.secondary on gray.300 was tried and fails (2.66:1) — the count is information, it must stay ≥4.5:1. Known trade-off: on a Secondary button being pressed (also gray.200) the pill merges with the button for that moment; the number stays readable.",
             "bg": {
               "$type": "color",
-              "$value": "{fill.neutralActiveStrong}"
+              "$value": "{fill.neutralActive}"
             },
             "label": {
               "$type": "color",
-              "$value": "{text.default}"
+              "$value": "{text.secondaryStrong}"
             }
           },
           "active": {

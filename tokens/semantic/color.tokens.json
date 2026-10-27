@@ -146,6 +146,11 @@
       "$value": "{color.gray.600}",
       "$description": "Supporting text — still AA text-safe (>=4.5:1)."
     },
+    "secondaryStrong": {
+      "$type": "color",
+      "$value": "{color.gray.700}",
+      "$description": "Secondary text sitting on a gray fill (gray.200), where text.secondary (gray.600) falls to 3.6:1 — gray.700 keeps it quiet and over 4.5:1 (5.0:1 on gray.200). First use: the inactive Counter on a neutral surface (2026-10-27)."
+    },
     "muted": {
       "$type": "color",
       "$value": "{color.gray.500}",

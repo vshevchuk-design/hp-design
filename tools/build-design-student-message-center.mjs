@@ -129,7 +129,7 @@ const colorPaths = [
   "text.default", "text.secondary", "text.muted", "text.primary", "text.onFill",
   "icon.default", "icon.secondary", "icon.muted", "icon.onFill", "icon.primary", "icon.warning",
   "fill.primary", "fill.primaryHover", "fill.primaryActive",
-  "fill.neutral", "fill.neutralHover", "fill.neutralActive", "fill.neutralHoverStrong", "fill.neutralActiveStrong",
+  "fill.neutral", "fill.neutralHover", "fill.neutralActive", "fill.neutralHoverStrong", "text.secondaryStrong", "fill.neutralActiveStrong",
   "surface.dimHover",
   "bg.primary", "bg.primaryHover", "bg.neutral", "bg.neutralStrong", "bg.warning", "text.warning", "bg.danger", "text.danger", "bg.success", "text.success", "status.success", "surface.overlay",
   "fill.danger", "fill.dangerHover", "fill.dangerActive", "fill.disabled", "text.disabled", "icon.disabled", "surface.disabled",

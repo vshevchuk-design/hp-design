@@ -66,7 +66,7 @@ const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, 
 // fill.neutralHoverStrong since 2026-09-07. Fixed 2026-09-29.
 const segHoverBg = tabs.segmented.state.hover.bg.$value.replace(/[{}]/g, "");
 const colorPaths = [
-  "text.secondary", "text.default", "text.disabled", "fill.neutralHover", "fill.neutralActive", "fill.neutralHoverStrong", "fill.neutralActiveStrong", "surface.sunken", "surface.default",
+  "text.secondary", "text.secondaryStrong", "text.default", "text.disabled", "fill.neutralHover", "fill.neutralActive", "fill.neutralHoverStrong", "fill.neutralActiveStrong", "surface.sunken", "surface.default",
   "border.default", "border.focus", "text.onFill", "fill.primary", "icon.default", "icon.disabled",
 ];
 if (!colorPaths.includes(segHoverBg)) colorPaths.push(segHoverBg);

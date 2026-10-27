@@ -68,7 +68,7 @@ const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, 
 // as the :root block below, via cssVarName, so they can't drift apart.)
 const colorPaths = [
   "fill.primary", "fill.primaryHover", "fill.primaryActive", "text.onFill", "icon.onFill",
-  "fill.neutral", "fill.neutralHover", "fill.neutralActive", "fill.neutralHoverStrong", "fill.neutralActiveStrong", "text.default", "icon.default",
+  "fill.neutral", "fill.neutralHover", "fill.neutralActive", "fill.neutralHoverStrong", "text.secondaryStrong", "fill.neutralActiveStrong", "text.default", "icon.default",
   "text.secondary", "icon.secondary",
   "fill.disabled", "text.disabled", "icon.disabled",
   "border.focus", "color.white", "text.primary",

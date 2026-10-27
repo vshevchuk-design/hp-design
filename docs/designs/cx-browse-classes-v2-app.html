@@ -34,7 +34,8 @@
   --tok-surface-dim: #f4f5f7;
   --tok-icon-muted: #8e99a7;
   --tok-fill-primary: #077fec;
-  --tok-fill-neutral-active-strong: #adb5be;
+  --tok-fill-neutral-active: #cdd1d6;
+  --tok-text-secondary-strong: #485462;
   --tok-surface-overlay: rgba(21, 25, 30, 0.5);
   --tok-surface-sunken: #e6e8eb;
   --tok-fill-neutral-hover-strong: #cdd1d6;
@@ -45,10 +46,10 @@
   --tok-icon-disabled: #adb5be;
   --tok-fill-neutral: #e6e8eb;
   --tok-icon-default: #485462;
+  --tok-fill-neutral-active-strong: #adb5be;
   --tok-fill-primary-tint: #d9eaff;
   --tok-fill-primary-tint-hover: #c7dffc;
   --tok-fill-primary-tint-active: #b2d4fe;
-  --tok-fill-neutral-active: #cdd1d6;
   --tok-border-strong: #adb5be;
   --tok-surface-dim-hover: #e6e8eb;
   --tok-surface-disabled: #e6e8eb;
@@ -527,7 +528,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .ss-loc { display: flex; flex-direction: column; gap: 4px; }
 .ss-loc__text { margin: 0; color: var(--tok-text-default); font-weight: 400; font-size: 12px; line-height: 1.4; }
 /* ============ Counter (onNeutral sm — on the Upcoming tab) ============ */
-.counter { display: inline-flex; align-items: center; justify-content: center; height: 16px; min-width: 16px; padding: 0 4px; border-radius: 999px; background: var(--tok-fill-neutral-active-strong); color: var(--tok-text-default); font-weight: 700; font-size: 10px; line-height: 1; }
+.counter { display: inline-flex; align-items: center; justify-content: center; height: 16px; min-width: 16px; padding: 0 4px; border-radius: 999px; background: var(--tok-fill-neutral-active); color: var(--tok-text-secondary-strong); font-weight: 700; font-size: 10px; line-height: 1; }
 .tab--active .counter { background: var(--tok-fill-primary); color: var(--tok-text-on-fill); }
 
 /* ============ Button — danger (AlertDialog's confirm, Modal's own recipe) ============ */
@@ -895,7 +896,7 @@ html:has(.ss-drawer[open]) { overflow: hidden; }
 .sidebar--neutral .sidebar__item[aria-current="page"] .sidebar__icon { color: var(--tok-icon-primary); }
 .sidebar--neutral .sidebar__count { background: var(--tok-fill-primary); color: var(--tok-text-on-fill); }
 /* gray: Counter onNeutral INACTIVE for an open group's total */
-.sidebar--neutral:not(.sidebar--collapsed) .sidebar__item[aria-expanded="true"] > .sidebar__count { background: var(--tok-fill-neutral-active-strong); color: var(--tok-text-default); }
+.sidebar--neutral:not(.sidebar--collapsed) .sidebar__item[aria-expanded="true"] > .sidebar__count { background: var(--tok-fill-neutral-active); color: var(--tok-text-secondary-strong); }
 
 /* ---- collapsed rail: icons only (desktop; below 1024 the panel is a drawer) ---- */
 @media (min-width: 768px) {
