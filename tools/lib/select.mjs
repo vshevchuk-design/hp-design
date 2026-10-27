@@ -35,6 +35,7 @@ const badge = load("tokens/components/badge.tokens.json").component.badge;
 const command = load("tokens/components/command.tokens.json").component.command;
 const counter = load("tokens/components/counter.tokens.json").component.counter;
 const checkbox = load("tokens/components/checkbox.tokens.json").component.checkbox;
+const spinner = load("tokens/components/spinner.tokens.json").component.spinner;
 
 function get(ref) {
   const parts = ref.replace(/[{}]/g, "").split(".");
@@ -75,7 +76,7 @@ const colorNodes = [
   st.focus.border, st.focus.label, st.open.border, st.open.label, st.populated.label, st.disabled.bg, st.disabled.border, st.disabled.placeholder, st.disabled.value, st.disabled.icon, st.disabled.chevron, st.disabled.label, st.error.border,
   lb.bg, lb.border, lb.divider, lb.state.default.text, lb.state.hover.bg, lb.state.selected.checkmark, lb.descriptionColor,
   badge.role.neutral.tint.bg, badge.role.neutral.tint.text, command.group.headingColor, cnt.bg, cnt.label,
-  cbS.default.bg, cbS.default.border, cbS.checked.bg, cbS.checked.border, cbS.checked.icon,
+  cbS.default.bg, cbS.default.border, cbS.checked.bg, cbS.checked.border, cbS.checked.icon, spinner.track, spinner.indicator,
 ];
 export const SELECT_COLOR_PATHS = [...new Set([...colorNodes.map(refPath), "border.focus", "surface.dim", "icon.default", "text.default", "text.secondary", "text.muted", "text.primary"])];
 
@@ -119,6 +120,15 @@ export const LISTBOX_CSS = `
 .listbox__empty { margin: 0; padding: ${D(lb.optionPaddingY)} ${D(lb.optionPaddingX)}; color: ${cv("text.muted")}; ${T(lb.label)} }
 .listbox__empty[hidden] { display: none; }
 .listbox__search:focus-within { border-color: ${cv("border.focus")}; }
+/* infinite Select (InfiniteComboboxField): the last row of the list is its status —
+   "Loading…" while there's more (scrolling to it loads the next page), "No results",
+   or "Couldn't load" + Retry. Spinner sm, resolved from spinner.tokens.json. */
+.listbox__status { list-style: none; display: flex; align-items: center; gap: ${D(lb.optionGap)}; padding: ${D(lb.optionPaddingY)} ${D(lb.optionPaddingX)}; color: ${cv("text.muted")}; ${T(lb.label)} }
+.listbox__status[hidden] { display: none; }
+.listbox__spinner { flex-shrink: 0; box-sizing: border-box; width: ${D(spinner.sizes.sm.size)}; height: ${D(spinner.sizes.sm.size)}; border: ${D(spinner.sizes.sm.thickness)} solid ${R(spinner.track)}; border-top-color: ${R(spinner.indicator)}; border-radius: 50%; animation: listbox-spin ${spinner.duration.$value} linear infinite; }
+@keyframes listbox-spin { to { transform: rotate(360deg); } }
+.listbox__retry { margin-left: auto; border: none; background: none; padding: 0; cursor: pointer; color: ${cv("text.primary")}; font-family: inherit; ${T(lb.label)} }
+.listbox__retry:focus-visible { outline: 2px solid ${cv("border.focus")}; outline-offset: 2px; border-radius: 2px; }
 
 .listbox__select-all { display: flex; align-items: center; justify-content: space-between; gap: ${P("dim.2")}; padding: ${P("dim.1")} ${P("dim.2")}; }
 .listbox__select-all-label { color: ${cv("text.secondary")}; margin: 0; ${T(lb.selectAllRow.label)} }
@@ -182,7 +192,7 @@ const cbGlyph = () => icon("check", "listbox__cb-icon");
 
 /** A Select. options: [{ label, value, group }] — consecutive options with the same `group` render under its heading.
  *  value: a value (single) or an array (multiple). */
-export function selectHtml({ id, label, options, value = "", multiple = false, searchable = false, searchPlaceholder = "Search…", size = "base", icon: iconName = "", disabled = false, invalid = false, describedBy = "", panelWidth = "" }) {
+export function selectHtml({ id, label, options = [], value = "", multiple = false, searchable = false, searchPlaceholder = "Search…", source = "", size = "base", icon: iconName = "", disabled = false, invalid = false, describedBy = "", panelWidth = "" }) {
   const chosen = new Set([].concat(value).filter(Boolean));
   const picked = options.filter((o) => chosen.has(o.value ?? o.label));
   const empty = picked.length === 0;
@@ -200,11 +210,16 @@ export function selectHtml({ id, label, options, value = "", multiple = false, s
     ? `${bi ? `<li role="none"><div class="listbox__divider" role="separator"></div></li>` : ""}<li role="none"><ul class="listbox__group" role="group" aria-labelledby="${id}-g${bi}"><li role="presentation" class="listbox__group-label" id="${id}-g${bi}">${b.g}</li>${b.items.map(([o, i]) => opt(o, i)).join("")}</ul></li>`
     : b.items.map(([o, i]) => opt(o, i)).join("")).join("");
   const cls = `select${size !== "base" ? ` select--${size}` : ""}${empty ? " is-placeholder" : ""}`;
-  return `<div class="select-field" data-select${multiple ? " data-multiple" : ""}${searchable ? " data-searchable" : ""} data-value="${[...chosen].join(",")}" data-label="${label}">
+  // infinite: the options come from window[source](query, offset) a page at a time; `options` only names
+  // what's already chosen (so the field can show it before anything loads)
+  const list = source ? `<li role="none" class="listbox__status" aria-live="polite"><span class="listbox__spinner" aria-hidden="true"></span><span class="listbox__status-text">Loading…</span></li>` : body;
+  const labels = source ? ` data-source="${source}" data-labels='${JSON.stringify(Object.fromEntries(picked.map((o) => [o.value ?? o.label, o.label]))).replace(/'/g, "&#39;")}'` : "";
+  if (source) searchable = true;
+  return `<div class="select-field" data-select${multiple ? " data-multiple" : ""}${searchable ? " data-searchable" : ""}${labels} data-value="${[...chosen].join(",")}" data-label="${label}">
   <button type="button" class="${cls}" id="${id}" aria-haspopup="listbox" aria-expanded="false" aria-controls="${lid}" aria-labelledby="${id}-label ${id}-text"${disabled ? " disabled" : ""}${invalid ? ' aria-invalid="true"' : ""}${describedBy ? ` aria-describedby="${describedBy}"` : ""}>${iconName ? icon(iconName, "select__icon") : ""}<span class="select__stack"><span class="select__label" id="${id}-label">${label}</span><span class="select__value"><span class="select__text" id="${id}-text">${first}</span><span class="select__more"${picked.length > 1 ? "" : " hidden"}>+${Math.max(picked.length - 1, 0)}</span></span></span>${chevron()}</button>
   ${searchable
     // searchable: the panel holds a search box + the list, so the listbox role moves onto the list
-    ? `<div class="listbox select__panel" popover${panelWidth ? ` style="width:${panelWidth}"` : ""}><div class="listbox__search-wrap"><div class="listbox__search">${icon("search", "listbox__search-icon")}<input type="text" class="listbox__search-input" placeholder="${searchPlaceholder}" aria-label="${searchPlaceholder.replace(/…$/, "")}" aria-controls="${lid}" autocomplete="off" /></div></div><ul class="listbox__list" id="${lid}" role="listbox" aria-labelledby="${id}-label"${multiple ? ' aria-multiselectable="true"' : ""}>${body}</ul><p class="listbox__empty" hidden>No results</p></div>`
+    ? `<div class="listbox select__panel" popover${panelWidth ? ` style="width:${panelWidth}"` : ""}><div class="listbox__search-wrap"><div class="listbox__search">${icon("search", "listbox__search-icon")}<input type="text" class="listbox__search-input" placeholder="${searchPlaceholder}" aria-label="${searchPlaceholder.replace(/…$/, "")}" aria-controls="${lid}" autocomplete="off" /></div></div><ul class="listbox__list" id="${lid}" role="listbox" aria-labelledby="${id}-label"${multiple ? ' aria-multiselectable="true"' : ""}>${list}</ul>${source ? "" : `<p class="listbox__empty" hidden>No results</p>`}</div>`
     : `<div class="listbox select__panel" id="${lid}" popover role="listbox" aria-labelledby="${id}-label"${multiple ? ' aria-multiselectable="true"' : ""}${panelWidth ? ` style="width:${panelWidth}"` : ""}><ul class="listbox__list" role="none">${body}</ul></div>`}
 </div>`;
 }
@@ -217,8 +232,14 @@ export function selectHtml({ id, label, options, value = "", multiple = false, s
 // anywhere in the label), groups and dividers hide when empty; ↓ goes into the
 // list, ↑ from the first option back to the box, Enter in the box picks the
 // first match; typing on an option goes to the box. Closing clears the search.
+// Infinite (data-source): the list starts empty and asks window[source](query,
+// offset) → Promise<{ items: [{ label, value }], hasMore }> for a page; the last
+// row ("Loading…") — scrolling near it loads the next page; typing asks
+// the source again after a 250ms pause (the server filters, not the list).
+// Choices are kept by value, so they survive a new search.
 export const SELECT_JS = `(function () {
   var GAP = ${resolveToken(get("dim.1")).value};
+  var CHECK = ${JSON.stringify(check())}, CB = ${JSON.stringify(`<span class="listbox__cb-box">${cbGlyph()}</span>`)};
   document.querySelectorAll("[data-select]").forEach(function (wrap) {
     if (wrap._hpsel) return; wrap._hpsel = true;
     var trigger = wrap.querySelector(".select"), panel = wrap.querySelector(".select__panel"), multiple = wrap.hasAttribute("data-multiple");
@@ -227,6 +248,37 @@ export const SELECT_JS = `(function () {
     function go(el) { if (!el) return; el.focus({ preventScroll: true }); el.scrollIntoView({ block: "nearest" }); }
     var search = panel.querySelector(".listbox__search-input"), empty = panel.querySelector(".listbox__empty");
     var opts = function () { return Array.prototype.slice.call(panel.querySelectorAll(".listbox__option")).filter(function (o) { return !o.parentNode.hidden; }); };
+    var source = wrap.dataset.source ? window[wrap.dataset.source] : null, chosen = {}, list = panel.querySelector(".listbox__list"), status = panel.querySelector(".listbox__status");
+    var query = "", offset = 0, hasMore = true, busy = false, loaded = false, ticket = 0, seq = 0, timer = null;
+    if (source) chosen = JSON.parse(wrap.dataset.labels || "{}");
+    function setStatus(kind) {
+      status.hidden = kind === "done";
+      var text = { loading: "Loading…", empty: "No results", error: "Couldn't load." }[kind] || "";
+      status.innerHTML = (kind === "loading" ? '<span class="listbox__spinner" aria-hidden="true"></span>' : "") + '<span class="listbox__status-text">' + text + "</span>" + (kind === "error" ? '<button type="button" class="listbox__retry">Retry</button>' : "");
+    }
+    function row(item) {
+      var v = item.value != null ? String(item.value) : item.label, li = document.createElement("li"), b = document.createElement("button");
+      li.setAttribute("role", "none"); b.type = "button"; b.className = "listbox__option"; b.setAttribute("role", "option"); b.id = trigger.id + "-opt-" + (seq++); b.tabIndex = -1; b.dataset.value = v; b.setAttribute("aria-selected", String(v in chosen));
+      if (multiple) { b.innerHTML = CB; var l = document.createElement("span"); l.className = "listbox__cb-label"; l.textContent = item.label; b.appendChild(l); }
+      else { var t = document.createElement("span"); t.textContent = item.label; b.appendChild(t); b.insertAdjacentHTML("beforeend", CHECK); }
+      li.appendChild(b); list.insertBefore(li, status);
+    }
+    function load(reset) {
+      if (reset) { ticket++; offset = 0; hasMore = true; busy = false; Array.prototype.slice.call(list.children).forEach(function (c) { if (c !== status) c.remove(); }); }
+      if (busy || !hasMore) return;
+      busy = true; loaded = true; var mine = ticket; setStatus("loading"); list.setAttribute("aria-busy", "true");
+      Promise.resolve(source(query, offset)).then(function (r) {
+        if (mine !== ticket) return;
+        r.items.forEach(row); offset += r.items.length; hasMore = !!r.hasMore; busy = false; list.removeAttribute("aria-busy");
+        setStatus(hasMore ? "loading" : (offset ? "done" : "empty"));
+        if (hasMore && status.getBoundingClientRect().top < list.getBoundingClientRect().bottom) load();
+      }, function () { if (mine !== ticket) return; busy = false; list.removeAttribute("aria-busy"); setStatus("error"); });
+    }
+    if (source) {
+      // near the bottom (the Loading… row in sight) → the next page
+      list.addEventListener("scroll", function () { if (list.scrollTop + list.clientHeight >= list.scrollHeight - status.offsetHeight * 2) load(); }, { passive: true });
+      status.addEventListener("click", function (e) { if (e.target.closest(".listbox__retry")) load(); });
+    }
     function filter(q) {
       q = q.trim().toLowerCase();
       panel.querySelectorAll(".listbox__option").forEach(function (o) { o.parentNode.hidden = !!q && o.textContent.toLowerCase().indexOf(q) < 0; });
@@ -242,7 +294,7 @@ export const SELECT_JS = `(function () {
     }
     function open(focusWhich) {
       if (trigger.disabled) return;
-      if (!panel.matches(":popover-open")) { panel.showPopover(); place(); }
+      if (!panel.matches(":popover-open")) { panel.showPopover(); place(); if (source && !loaded) load(true); }
       var list = opts(), sel = list.filter(function (o) { return o.getAttribute("aria-selected") === "true"; })[0];
       if (search) { search.focus({ preventScroll: true }); if (sel) sel.scrollIntoView({ block: "nearest" }); return; }
       var target = focusWhich === "last" ? list[list.length - 1] : (sel || list[0]);
@@ -250,6 +302,14 @@ export const SELECT_JS = `(function () {
     }
     function close(refocus) { if (panel.matches(":popover-open")) panel.hidePopover(); if (refocus) trigger.focus(); }
     function sync() {
+      if (source) {
+        var vals = Object.keys(chosen);
+        wrap.dataset.value = vals.join(","); trigger.classList.toggle("is-placeholder", vals.length === 0);
+        text.textContent = vals.length ? chosen[vals[0]] : wrap.dataset.label;
+        more.hidden = vals.length < 2; more.textContent = "+" + Math.max(vals.length - 1, 0);
+        wrap.dispatchEvent(new CustomEvent("selectchange", { bubbles: true, detail: { value: multiple ? vals : (vals[0] || "") } }));
+        return;
+      }
       var on = opts().filter(function (o) { return o.getAttribute("aria-selected") === "true"; });
       wrap.dataset.value = on.map(function (o) { return o.dataset.value; }).join(",");
       trigger.classList.toggle("is-placeholder", on.length === 0);
@@ -258,13 +318,21 @@ export const SELECT_JS = `(function () {
       wrap.dispatchEvent(new CustomEvent("selectchange", { bubbles: true, detail: { value: multiple ? on.map(function (o) { return o.dataset.value; }) : (on[0] ? on[0].dataset.value : "") } }));
     }
     function pick(o) {
+      if (source) {
+        var v = o.dataset.value, label = o.textContent;
+        if (multiple) { if (v in chosen) delete chosen[v]; else chosen[v] = label; o.setAttribute("aria-selected", String(v in chosen)); sync(); return; }
+        chosen = {}; chosen[v] = label; opts().forEach(function (x) { x.setAttribute("aria-selected", String(x === o)); }); sync(); close(true); return;
+      }
       if (multiple) { o.setAttribute("aria-selected", String(o.getAttribute("aria-selected") !== "true")); sync(); return; }
       opts().forEach(function (x) { x.setAttribute("aria-selected", String(x === o)); });
       sync(); close(true);
     }
-    panel.addEventListener("toggle", function (e) { trigger.setAttribute("aria-expanded", String(e.newState === "open")); if (e.newState !== "open" && search) { search.value = ""; filter(""); } });
+    panel.addEventListener("toggle", function (e) { trigger.setAttribute("aria-expanded", String(e.newState === "open")); if (e.newState !== "open" && search) { var had = search.value; search.value = ""; if (!source) filter(""); else if (had || query) { query = ""; loaded = false; } } });
     if (search) {
-      search.addEventListener("input", function () { filter(search.value); place(); });
+      search.addEventListener("input", function () {
+        if (!source) { filter(search.value); place(); return; }
+        clearTimeout(timer); timer = setTimeout(function () { query = search.value.trim(); load(true); }, 250);
+      });
       search.addEventListener("keydown", function (e) {
         var list = opts();
         if (e.key === "ArrowDown") { e.preventDefault(); e.stopPropagation(); go(list[0]); }

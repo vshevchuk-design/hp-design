@@ -136,6 +136,15 @@
 .listbox__empty { margin: 0; padding: 8px 8px; color: var(--tok-text-muted); font-weight: 400; font-size: 14px; line-height: 1.4; }
 .listbox__empty[hidden] { display: none; }
 .listbox__search:focus-within { border-color: var(--tok-border-focus); }
+/* infinite Select (InfiniteComboboxField): the last row of the list is its status —
+   "Loading…" while there's more (scrolling to it loads the next page), "No results",
+   or "Couldn't load" + Retry. Spinner sm, resolved from spinner.tokens.json. */
+.listbox__status { list-style: none; display: flex; align-items: center; gap: 8px; padding: 8px 8px; color: var(--tok-text-muted); font-weight: 400; font-size: 14px; line-height: 1.4; }
+.listbox__status[hidden] { display: none; }
+.listbox__spinner { flex-shrink: 0; box-sizing: border-box; width: 16px; height: 16px; border: 2px solid var(--tok-border-default); border-top-color: var(--tok-fill-primary); border-radius: 50%; animation: listbox-spin 0.7s linear infinite; }
+@keyframes listbox-spin { to { transform: rotate(360deg); } }
+.listbox__retry { margin-left: auto; border: none; background: none; padding: 0; cursor: pointer; color: var(--tok-text-primary); font-family: inherit; font-weight: 400; font-size: 14px; line-height: 1.4; }
+.listbox__retry:focus-visible { outline: 2px solid var(--tok-border-focus); outline-offset: 2px; border-radius: 2px; }
 
 .listbox__select-all { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 4px 8px; }
 .listbox__select-all-label { color: var(--tok-text-secondary); margin: 0; font-weight: 400; font-size: 12px; line-height: 1.4; }
@@ -194,6 +203,7 @@
     <a class="navlink" href="form.html">Form</a>
     <a class="navlink" href="select.html">Select</a>
     <a class="navlink" href="select.html#combobox">ComboboxField</a>
+    <a class="navlink" href="select.html#infinite">InfiniteComboboxField</a>
     <a class="navlink" href="calendar.html">Calendar</a>
     <a class="navlink" href="date-picker.html">DatePicker</a>
     <a class="navlink" href="date-range-picker.html">DateRangePicker</a>
@@ -351,6 +361,15 @@
 .listbox__empty { margin: 0; padding: 8px 8px; color: var(--tok-text-muted); font-weight: 400; font-size: 14px; line-height: 1.4; }
 .listbox__empty[hidden] { display: none; }
 .listbox__search:focus-within { border-color: var(--tok-border-focus); }
+/* infinite Select (InfiniteComboboxField): the last row of the list is its status —
+   "Loading…" while there's more (scrolling to it loads the next page), "No results",
+   or "Couldn't load" + Retry. Spinner sm, resolved from spinner.tokens.json. */
+.listbox__status { list-style: none; display: flex; align-items: center; gap: 8px; padding: 8px 8px; color: var(--tok-text-muted); font-weight: 400; font-size: 14px; line-height: 1.4; }
+.listbox__status[hidden] { display: none; }
+.listbox__spinner { flex-shrink: 0; box-sizing: border-box; width: 16px; height: 16px; border: 2px solid var(--tok-border-default); border-top-color: var(--tok-fill-primary); border-radius: 50%; animation: listbox-spin 0.7s linear infinite; }
+@keyframes listbox-spin { to { transform: rotate(360deg); } }
+.listbox__retry { margin-left: auto; border: none; background: none; padding: 0; cursor: pointer; color: var(--tok-text-primary); font-family: inherit; font-weight: 400; font-size: 14px; line-height: 1.4; }
+.listbox__retry:focus-visible { outline: 2px solid var(--tok-border-focus); outline-offset: 2px; border-radius: 2px; }
 
 .listbox__select-all { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 4px 8px; }
 .listbox__select-all-label { color: var(--tok-text-secondary); margin: 0; font-weight: 400; font-size: 12px; line-height: 1.4; }

@@ -273,6 +273,15 @@ button.stepper__step:focus-visible { outline: 2px solid var(--tok-border-focus);
 .listbox__empty { margin: 0; padding: 8px 8px; color: var(--tok-text-muted); font-weight: 400; font-size: 14px; line-height: 1.4; }
 .listbox__empty[hidden] { display: none; }
 .listbox__search:focus-within { border-color: var(--tok-border-focus); }
+/* infinite Select (InfiniteComboboxField): the last row of the list is its status —
+   "Loading…" while there's more (scrolling to it loads the next page), "No results",
+   or "Couldn't load" + Retry. Spinner sm, resolved from spinner.tokens.json. */
+.listbox__status { list-style: none; display: flex; align-items: center; gap: 8px; padding: 8px 8px; color: var(--tok-text-muted); font-weight: 400; font-size: 14px; line-height: 1.4; }
+.listbox__status[hidden] { display: none; }
+.listbox__spinner { flex-shrink: 0; box-sizing: border-box; width: 16px; height: 16px; border: 2px solid var(--tok-border-default); border-top-color: var(--tok-fill-primary); border-radius: 50%; animation: listbox-spin 0.7s linear infinite; }
+@keyframes listbox-spin { to { transform: rotate(360deg); } }
+.listbox__retry { margin-left: auto; border: none; background: none; padding: 0; cursor: pointer; color: var(--tok-text-primary); font-family: inherit; font-weight: 400; font-size: 14px; line-height: 1.4; }
+.listbox__retry:focus-visible { outline: 2px solid var(--tok-border-focus); outline-offset: 2px; border-radius: 2px; }
 
 .listbox__select-all { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 4px 8px; }
 .listbox__select-all-label { color: var(--tok-text-secondary); margin: 0; font-weight: 400; font-size: 12px; line-height: 1.4; }
@@ -378,6 +387,7 @@ button.stepper__step:focus-visible { outline: 2px solid var(--tok-border-focus);
     <a class="navlink" href="form.html">Form</a>
     <a class="navlink" href="select.html">Select</a>
     <a class="navlink" href="select.html#combobox">ComboboxField</a>
+    <a class="navlink" href="select.html#infinite">InfiniteComboboxField</a>
     <a class="navlink" href="calendar.html">Calendar</a>
     <a class="navlink" href="date-picker.html">DatePicker</a>
     <a class="navlink" href="date-range-picker.html">DateRangePicker</a>
@@ -789,6 +799,7 @@ window.hpCalendar = window.hpCalendar || (function () {
 })();
 (function () {
   var GAP = 4;
+  var CHECK = "<svg class=\"listbox__checkmark\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z\"/></svg>", CB = "<span class=\"listbox__cb-box\"><svg class=\"listbox__cb-icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z\"/></svg></span>";
   document.querySelectorAll("[data-select]").forEach(function (wrap) {
     if (wrap._hpsel) return; wrap._hpsel = true;
     var trigger = wrap.querySelector(".select"), panel = wrap.querySelector(".select__panel"), multiple = wrap.hasAttribute("data-multiple");
@@ -797,6 +808,36 @@ window.hpCalendar = window.hpCalendar || (function () {
     function go(el) { if (!el) return; el.focus({ preventScroll: true }); el.scrollIntoView({ block: "nearest" }); }
     var search = panel.querySelector(".listbox__search-input"), empty = panel.querySelector(".listbox__empty");
     var opts = function () { return Array.prototype.slice.call(panel.querySelectorAll(".listbox__option")).filter(function (o) { return !o.parentNode.hidden; }); };
+    var source = wrap.dataset.source ? window[wrap.dataset.source] : null, chosen = {}, list = panel.querySelector(".listbox__list"), status = panel.querySelector(".listbox__status");
+    var query = "", offset = 0, hasMore = true, busy = false, loaded = false, ticket = 0, seq = 0, timer = null;
+    if (source) chosen = JSON.parse(wrap.dataset.labels || "{}");
+    function setStatus(kind) {
+      status.hidden = kind === "done";
+      var text = { loading: "Loading…", empty: "No results", error: "Couldn't load." }[kind] || "";
+      status.innerHTML = (kind === "loading" ? '<span class="listbox__spinner" aria-hidden="true"></span>' : "") + '<span class="listbox__status-text">' + text + "</span>" + (kind === "error" ? '<button type="button" class="listbox__retry">Retry</button>' : "");
+    }
+    function row(item) {
+      var v = item.value != null ? String(item.value) : item.label, li = document.createElement("li"), b = document.createElement("button");
+      li.setAttribute("role", "none"); b.type = "button"; b.className = "listbox__option"; b.setAttribute("role", "option"); b.id = trigger.id + "-opt-" + (seq++); b.tabIndex = -1; b.dataset.value = v; b.setAttribute("aria-selected", String(v in chosen));
+      if (multiple) { b.innerHTML = CB; var l = document.createElement("span"); l.className = "listbox__cb-label"; l.textContent = item.label; b.appendChild(l); }
+      else { var t = document.createElement("span"); t.textContent = item.label; b.appendChild(t); b.insertAdjacentHTML("beforeend", CHECK); }
+      li.appendChild(b); list.insertBefore(li, status);
+    }
+    function load(reset) {
+      if (reset) { ticket++; offset = 0; hasMore = true; busy = false; Array.prototype.slice.call(list.children).forEach(function (c) { if (c !== status) c.remove(); }); }
+      if (busy || !hasMore) return;
+      busy = true; loaded = true; var mine = ticket; setStatus("loading"); list.setAttribute("aria-busy", "true");
+      Promise.resolve(source(query, offset)).then(function (r) {
+        if (mine !== ticket) return;
+        r.items.forEach(row); offset += r.items.length; hasMore = !!r.hasMore; busy = false; list.removeAttribute("aria-busy");
+        setStatus(hasMore ? "loading" : (offset ? "done" : "empty"));
+        if (hasMore && status.getBoundingClientRect().top < list.getBoundingClientRect().bottom) load();
+      }, function () { if (mine !== ticket) return; busy = false; list.removeAttribute("aria-busy"); setStatus("error"); });
+    }
+    if (source) {
+      new IntersectionObserver(function (es) { if (es[0].isIntersecting && panel.matches(":popover-open")) load(); }, { root: list }).observe(status);
+      status.addEventListener("click", function (e) { if (e.target.closest(".listbox__retry")) load(); });
+    }
     function filter(q) {
       q = q.trim().toLowerCase();
       panel.querySelectorAll(".listbox__option").forEach(function (o) { o.parentNode.hidden = !!q && o.textContent.toLowerCase().indexOf(q) < 0; });
@@ -812,7 +853,7 @@ window.hpCalendar = window.hpCalendar || (function () {
     }
     function open(focusWhich) {
       if (trigger.disabled) return;
-      if (!panel.matches(":popover-open")) { panel.showPopover(); place(); }
+      if (!panel.matches(":popover-open")) { panel.showPopover(); place(); if (source && !loaded) load(true); }
       var list = opts(), sel = list.filter(function (o) { return o.getAttribute("aria-selected") === "true"; })[0];
       if (search) { search.focus({ preventScroll: true }); if (sel) sel.scrollIntoView({ block: "nearest" }); return; }
       var target = focusWhich === "last" ? list[list.length - 1] : (sel || list[0]);
@@ -820,6 +861,14 @@ window.hpCalendar = window.hpCalendar || (function () {
     }
     function close(refocus) { if (panel.matches(":popover-open")) panel.hidePopover(); if (refocus) trigger.focus(); }
     function sync() {
+      if (source) {
+        var vals = Object.keys(chosen);
+        wrap.dataset.value = vals.join(","); trigger.classList.toggle("is-placeholder", vals.length === 0);
+        text.textContent = vals.length ? chosen[vals[0]] : wrap.dataset.label;
+        more.hidden = vals.length < 2; more.textContent = "+" + Math.max(vals.length - 1, 0);
+        wrap.dispatchEvent(new CustomEvent("selectchange", { bubbles: true, detail: { value: multiple ? vals : (vals[0] || "") } }));
+        return;
+      }
       var on = opts().filter(function (o) { return o.getAttribute("aria-selected") === "true"; });
       wrap.dataset.value = on.map(function (o) { return o.dataset.value; }).join(",");
       trigger.classList.toggle("is-placeholder", on.length === 0);
@@ -828,13 +877,21 @@ window.hpCalendar = window.hpCalendar || (function () {
       wrap.dispatchEvent(new CustomEvent("selectchange", { bubbles: true, detail: { value: multiple ? on.map(function (o) { return o.dataset.value; }) : (on[0] ? on[0].dataset.value : "") } }));
     }
     function pick(o) {
+      if (source) {
+        var v = o.dataset.value, label = o.textContent;
+        if (multiple) { if (v in chosen) delete chosen[v]; else chosen[v] = label; o.setAttribute("aria-selected", String(v in chosen)); sync(); return; }
+        chosen = {}; chosen[v] = label; opts().forEach(function (x) { x.setAttribute("aria-selected", String(x === o)); }); sync(); close(true); return;
+      }
       if (multiple) { o.setAttribute("aria-selected", String(o.getAttribute("aria-selected") !== "true")); sync(); return; }
       opts().forEach(function (x) { x.setAttribute("aria-selected", String(x === o)); });
       sync(); close(true);
     }
-    panel.addEventListener("toggle", function (e) { trigger.setAttribute("aria-expanded", String(e.newState === "open")); if (e.newState !== "open" && search) { search.value = ""; filter(""); } });
+    panel.addEventListener("toggle", function (e) { trigger.setAttribute("aria-expanded", String(e.newState === "open")); if (e.newState !== "open" && search) { var had = search.value; search.value = ""; if (!source) filter(""); else if (had || query) { query = ""; loaded = false; } } });
     if (search) {
-      search.addEventListener("input", function () { filter(search.value); place(); });
+      search.addEventListener("input", function () {
+        if (!source) { filter(search.value); place(); return; }
+        clearTimeout(timer); timer = setTimeout(function () { query = search.value.trim(); load(true); }, 250);
+      });
       search.addEventListener("keydown", function (e) {
         var list = opts();
         if (e.key === "ArrowDown") { e.preventDefault(); e.stopPropagation(); go(list[0]); }

@@ -65,6 +65,12 @@ const combobox = [
   story("With groups", { id: "cb-groups", label: "Program", options: MAJORS, searchable: true, searchPlaceholder: "Search programs…" }, "Search across groups; a group with nothing left hides, and so does the hairline. Try 'sci'. Nothing at all → 'No results'."),
 ];
 
+const infinite = [
+  story("Single", { id: "inf-single", label: "Course", source: "demoCourses", searchPlaceholder: "Search 240 courses…" }, "Opens with the first 20; scroll to the bottom and the next 20 load (the 'Loading…' row is the trigger). Type 'bio' — the server is asked again after a short pause."),
+  story("Multi", { id: "inf-multi", label: "Courses", source: "demoCourses", multiple: true, options: [{ label: "BIO 101 — Introduction to Biology", value: "BIO 101" }], value: ["BIO 101"], searchPlaceholder: "Search 240 courses…" }, "Choices are kept by value, so they survive a new search — pick, search for something else, pick again."),
+  story("Couldn't load", { id: "inf-err", label: "Advisor", source: "demoFlaky", searchPlaceholder: "Search advisors…" }, "The first request fails: 'Couldn't load.' + Retry, in the same last row. Retry works."),
+];
+
 const html = `<!doctype html>
 <html lang="en">
 <head>
@@ -118,6 +124,7 @@ const html = `<!doctype html>
       <div class="row"><b>Error</b><span>Not "typed something wrong" — a choice can still be wrong: required and nothing chosen on Submit, or a choice that stopped working (the section filled up, the advisor isn't free that day). border.dangerStrong + the Field message.</span></div>
       <div class="row"><b>Multiple</b><span>The first choice + a Counter ("Email  +2") — the field keeps one line whatever you pick. Every choice as removable chips is a different field (MultiSelectBadges).</span></div>
       <div class="row"><b>Searchable</b><span><code class="tok">searchable: true</code> puts a search box at the top of the list — Storybook's <b>ComboboxField</b> (and SimpleCombobox, the same without a Field). Same Select, same field, Single or Multi. Use it past ~10 options, or when people know the name they want (courses, programs, people).</span></div>
+      <div class="row"><b>Infinite</b><span><code class="tok">source: "fnName"</code> — options come from the server a page at a time: <code class="tok">window[fnName](query, offset)</code> returns <code class="tok">{ items, hasMore }</code>. Storybook's <b>InfiniteComboboxField</b>. The list's last row says what's happening: Loading… (and loads the next page when you reach it), No results, or Couldn't load + Retry. Search goes to the server.</span></div>
       <div class="row"><b>Keyboard</b><span>↓ / ↑ / Enter / Space open; ↑ ↓ Home End move; Enter or Space pick; Escape closes back to the field; Tab closes. Single-select closes on pick.</span></div>
     </div>
 
@@ -134,11 +141,28 @@ const html = `<!doctype html>
     <p class="section-desc">Storybook's ComboboxField is a Select with a search box in its list. Here it's one option on Select, not a second component: <code class="tok">selectHtml({ …, searchable: true, searchPlaceholder: "Search courses…" })</code>. Opening focuses the search; the list filters as you type (anywhere in the name, case-insensitive); closing clears it.</p>
     <div class="story-grid">${combobox.join("")}</div>
 
+    <h2 class="big-section" id="infinite">Infinite — InfiniteComboboxField</h2>
+    <p class="section-desc">For lists too long to send at once — every course in the catalogue, every student. Same Select, searchable; the options load from <code class="tok">source</code> 20 at a time as you scroll, and typing asks the server (250ms after the last key). <code class="tok">options</code> only names what's already chosen, so the field shows it before anything loads. The demo fakes a 240-course server with 600ms latency.</p>
+    <div class="story-grid">${infinite.join("")}</div>
+
     <h2 class="big-section">CSS</h2>
     <pre class="code"><code>${esc(css)}</code></pre>
   </main>
 </div>
 <script>
+// a fake catalogue server for the Infinite stories: 240 courses, 20 a page, 600ms
+(function () {
+  var subj = [["BIO", "Biology"], ["CHEM", "Chemistry"], ["CS", "Computer Science"], ["ECON", "Economics"], ["ENG", "English"], ["HIST", "History"], ["MATH", "Mathematics"], ["MUS", "Music"], ["PHIL", "Philosophy"], ["PHYS", "Physics"], ["PSY", "Psychology"], ["SOC", "Sociology"]];
+  var topics = ["Introduction to", "Foundations of", "Topics in", "Methods in", "Seminar in", "Advanced", "Research in", "History of", "Theory of", "Applied", "Studies in", "Special Topics in", "Writing in", "Ethics of", "Data in", "Field Work in", "Readings in", "Lab in", "Capstone in", "Honors"];
+  var all = []; subj.forEach(function (s) { topics.forEach(function (t, i) { var n = s[0] + " " + (101 + i * 10); all.push({ value: n, label: n + " — " + t + " " + s[1] }); }); });
+  window.demoCourses = function (q, offset) {
+    return new Promise(function (res) { setTimeout(function () { var m = all.filter(function (c) { return c.label.toLowerCase().indexOf(q.toLowerCase()) >= 0; }); res({ items: m.slice(offset, offset + 20), hasMore: offset + 20 < m.length }); }, 600); });
+  };
+  var failed = false, people = ["Andy Hernandez", "Caitlin Moore", "Dana Brooks", "Elena Petrova", "Farah Khan", "Grace Liu"].map(function (n) { return { label: n }; });
+  window.demoFlaky = function (q) {
+    return new Promise(function (res, rej) { setTimeout(function () { if (!failed) { failed = true; rej(new Error("offline")); return; } res({ items: people.filter(function (p) { return p.label.toLowerCase().indexOf(q.toLowerCase()) >= 0; }), hasMore: false }); }, 600); });
+  };
+})();
 ${SELECT_JS}
 </script>
 </body>

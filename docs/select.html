@@ -136,6 +136,15 @@
 .listbox__empty { margin: 0; padding: 8px 8px; color: var(--tok-text-muted); font-weight: 400; font-size: 14px; line-height: 1.4; }
 .listbox__empty[hidden] { display: none; }
 .listbox__search:focus-within { border-color: var(--tok-border-focus); }
+/* infinite Select (InfiniteComboboxField): the last row of the list is its status —
+   "Loading…" while there's more (scrolling to it loads the next page), "No results",
+   or "Couldn't load" + Retry. Spinner sm, resolved from spinner.tokens.json. */
+.listbox__status { list-style: none; display: flex; align-items: center; gap: 8px; padding: 8px 8px; color: var(--tok-text-muted); font-weight: 400; font-size: 14px; line-height: 1.4; }
+.listbox__status[hidden] { display: none; }
+.listbox__spinner { flex-shrink: 0; box-sizing: border-box; width: 16px; height: 16px; border: 2px solid var(--tok-border-default); border-top-color: var(--tok-fill-primary); border-radius: 50%; animation: listbox-spin 0.7s linear infinite; }
+@keyframes listbox-spin { to { transform: rotate(360deg); } }
+.listbox__retry { margin-left: auto; border: none; background: none; padding: 0; cursor: pointer; color: var(--tok-text-primary); font-family: inherit; font-weight: 400; font-size: 14px; line-height: 1.4; }
+.listbox__retry:focus-visible { outline: 2px solid var(--tok-border-focus); outline-offset: 2px; border-radius: 2px; }
 
 .listbox__select-all { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 4px 8px; }
 .listbox__select-all-label { color: var(--tok-text-secondary); margin: 0; font-weight: 400; font-size: 12px; line-height: 1.4; }
@@ -193,6 +202,7 @@
     <a class="navlink" href="form.html">Form</a>
     <a class="navlink active" href="select.html">Select</a>
     <a class="navlink" href="select.html#combobox">ComboboxField</a>
+    <a class="navlink" href="select.html#infinite">InfiniteComboboxField</a>
     <a class="navlink" href="calendar.html">Calendar</a>
     <a class="navlink" href="date-picker.html">DatePicker</a>
     <a class="navlink" href="date-range-picker.html">DateRangePicker</a>
@@ -286,6 +296,7 @@
       <div class="row"><b>Error</b><span>Not "typed something wrong" — a choice can still be wrong: required and nothing chosen on Submit, or a choice that stopped working (the section filled up, the advisor isn't free that day). border.dangerStrong + the Field message.</span></div>
       <div class="row"><b>Multiple</b><span>The first choice + a Counter ("Email  +2") — the field keeps one line whatever you pick. Every choice as removable chips is a different field (MultiSelectBadges).</span></div>
       <div class="row"><b>Searchable</b><span><code class="tok">searchable: true</code> puts a search box at the top of the list — Storybook's <b>ComboboxField</b> (and SimpleCombobox, the same without a Field). Same Select, same field, Single or Multi. Use it past ~10 options, or when people know the name they want (courses, programs, people).</span></div>
+      <div class="row"><b>Infinite</b><span><code class="tok">source: "fnName"</code> — options come from the server a page at a time: <code class="tok">window[fnName](query, offset)</code> returns <code class="tok">{ items, hasMore }</code>. Storybook's <b>InfiniteComboboxField</b>. The list's last row says what's happening: Loading… (and loads the next page when you reach it), No results, or Couldn't load + Retry. Search goes to the server.</span></div>
       <div class="row"><b>Keyboard</b><span>↓ / ↑ / Enter / Space open; ↑ ↓ Home End move; Enter or Space pick; Escape closes back to the field; Tab closes. Single-select closes on pick.</span></div>
     </div>
 
@@ -382,6 +393,28 @@
   &lt;button type="button" class="select is-placeholder" id="cb-groups" aria-haspopup="listbox" aria-expanded="false" aria-controls="cb-groups-list" aria-labelledby="cb-groups-label cb-groups-text"&gt;&lt;span class="select__stack"&gt;&lt;span class="select__label" id="cb-groups-label"&gt;Program&lt;/span&gt;&lt;span class="select__value"&gt;&lt;span class="select__text" id="cb-groups-text"&gt;Program&lt;/span&gt;&lt;span class="select__more" hidden&gt;+0&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;…&lt;/button&gt;
   &lt;div class="listbox select__panel" popover&gt;&lt;div class="listbox__search-wrap"&gt;&lt;div class="listbox__search"&gt;…&lt;input type="text" class="listbox__search-input" placeholder="Search programs…" aria-label="Search programs" aria-controls="cb-groups-list" autocomplete="off" /&gt;&lt;/div&gt;&lt;/div&gt;&lt;ul class="listbox__list" id="cb-groups-list" role="listbox" aria-labelledby="cb-groups-label"&gt;&lt;li role="none"&gt;&lt;ul class="listbox__group" role="group" aria-labelledby="cb-groups-g0"&gt;&lt;li role="presentation" class="listbox__group-label" id="cb-groups-g0"&gt;Majors&lt;/li&gt;&lt;li role="none"&gt;&lt;button type="button" class="listbox__option" role="option" id="cb-groups-opt-0" aria-selected="false" data-value="Biology" tabindex="-1"&gt;&lt;span&gt;Biology&lt;/span&gt;…&lt;/button&gt;&lt;/li&gt;&lt;li role="none"&gt;&lt;button type="button" class="listbox__option" role="option" id="cb-groups-opt-1" aria-selected="false" data-value="Computer Science" tabindex="-1"&gt;&lt;span&gt;Computer Science&lt;/span&gt;…&lt;/button&gt;&lt;/li&gt;&lt;li role="none"&gt;&lt;button type="button" class="listbox__option" role="option" id="cb-groups-opt-2" aria-selected="false" data-value="Economics" tabindex="-1"&gt;&lt;span&gt;Economics&lt;/span&gt;…&lt;/button&gt;&lt;/li&gt;&lt;li role="none"&gt;&lt;button type="button" class="listbox__option" role="option" id="cb-groups-opt-3" aria-selected="false" data-value="English" tabindex="-1"&gt;&lt;span&gt;English&lt;/span&gt;…&lt;/button&gt;&lt;/li&gt;&lt;li role="none"&gt;&lt;button type="button" class="listbox__option" role="option" id="cb-groups-opt-4" aria-selected="false" data-value="History" tabindex="-1"&gt;&lt;span&gt;History&lt;/span&gt;…&lt;/button&gt;&lt;/li&gt;&lt;li role="none"&gt;&lt;button type="button" class="listbox__option" role="option" id="cb-groups-opt-5" aria-selected="false" data-value="Psychology" tabindex="-1"&gt;&lt;span&gt;Psychology&lt;/span&gt;…&lt;/button&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;&lt;li role="none"&gt;&lt;div class="listbox__divider" role="separator"&gt;&lt;/div&gt;&lt;/li&gt;&lt;li role="none"&gt;&lt;ul class="listbox__group" role="group" aria-labelledby="cb-groups-g1"&gt;&lt;li role="presentation" class="listbox__group-label" id="cb-groups-g1"&gt;Minors&lt;/li&gt;&lt;li role="none"&gt;&lt;button type="button" class="listbox__option" role="option" id="cb-groups-opt-6" aria-selected="false" data-value="Data Science" tabindex="-1"&gt;&lt;span&gt;Data Science&lt;/span&gt;…&lt;/button&gt;&lt;/li&gt;&lt;li role="none"&gt;&lt;button type="button" class="listbox__option" role="option" id="cb-groups-opt-7" aria-selected="false" data-value="Film Studies" tabindex="-1"&gt;&lt;span&gt;Film Studies&lt;/span&gt;…&lt;/button&gt;&lt;/li&gt;&lt;li role="none"&gt;&lt;button type="button" class="listbox__option" role="option" id="cb-groups-opt-8" aria-selected="false" data-value="Music" tabindex="-1"&gt;&lt;span&gt;Music&lt;/span&gt;…&lt;/button&gt;&lt;/li&gt;&lt;li role="none"&gt;&lt;button type="button" class="listbox__option" role="option" id="cb-groups-opt-9" aria-selected="false" data-value="Spanish" tabindex="-1"&gt;&lt;span&gt;Spanish&lt;/span&gt;…&lt;/button&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;&lt;/ul&gt;&lt;p class="listbox__empty" hidden&gt;No results&lt;/p&gt;&lt;/div&gt;
 &lt;/div&gt;</code></pre><p class="story-note">Search across groups; a group with nothing left hides, and so does the hairline. Try 'sci'. Nothing at all → 'No results'.</p></div></div>
+
+    <h2 class="big-section" id="infinite">Infinite — InfiniteComboboxField</h2>
+    <p class="section-desc">For lists too long to send at once — every course in the catalogue, every student. Same Select, searchable; the options load from <code class="tok">source</code> 20 at a time as you scroll, and typing asks the server (250ms after the last key). <code class="tok">options</code> only names what's already chosen, so the field shows it before anything loads. The demo fakes a 240-course server with 600ms latency.</p>
+    <div class="story-grid"><div class="story"><h3>Single</h3><div class="story-preview"><div class="sel-demo"><div class="select-field" data-select data-searchable data-source="demoCourses" data-labels='{}' data-value="" data-label="Course">
+  <button type="button" class="select is-placeholder" id="inf-single" aria-haspopup="listbox" aria-expanded="false" aria-controls="inf-single-list" aria-labelledby="inf-single-label inf-single-text"><span class="select__stack"><span class="select__label" id="inf-single-label">Course</span><span class="select__value"><span class="select__text" id="inf-single-text">Course</span><span class="select__more" hidden>+0</span></span></span><svg class="select__chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+  <div class="listbox select__panel" popover><div class="listbox__search-wrap"><div class="listbox__search"><svg class="listbox__search-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg><input type="text" class="listbox__search-input" placeholder="Search 240 courses…" aria-label="Search 240 courses" aria-controls="inf-single-list" autocomplete="off" /></div></div><ul class="listbox__list" id="inf-single-list" role="listbox" aria-labelledby="inf-single-label"><li role="none" class="listbox__status" aria-live="polite"><span class="listbox__spinner" aria-hidden="true"></span><span class="listbox__status-text">Loading…</span></li></ul></div>
+</div></div></div><pre class="code"><code>&lt;div class="select-field" data-select data-searchable data-source="demoCourses" data-labels='{}' data-value="" data-label="Course"&gt;
+  &lt;button type="button" class="select is-placeholder" id="inf-single" aria-haspopup="listbox" aria-expanded="false" aria-controls="inf-single-list" aria-labelledby="inf-single-label inf-single-text"&gt;&lt;span class="select__stack"&gt;&lt;span class="select__label" id="inf-single-label"&gt;Course&lt;/span&gt;&lt;span class="select__value"&gt;&lt;span class="select__text" id="inf-single-text"&gt;Course&lt;/span&gt;&lt;span class="select__more" hidden&gt;+0&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;…&lt;/button&gt;
+  &lt;div class="listbox select__panel" popover&gt;&lt;div class="listbox__search-wrap"&gt;&lt;div class="listbox__search"&gt;…&lt;input type="text" class="listbox__search-input" placeholder="Search 240 courses…" aria-label="Search 240 courses" aria-controls="inf-single-list" autocomplete="off" /&gt;&lt;/div&gt;&lt;/div&gt;&lt;ul class="listbox__list" id="inf-single-list" role="listbox" aria-labelledby="inf-single-label"&gt;&lt;li role="none" class="listbox__status" aria-live="polite"&gt;&lt;span class="listbox__spinner" aria-hidden="true"&gt;&lt;/span&gt;&lt;span class="listbox__status-text"&gt;Loading…&lt;/span&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;
+&lt;/div&gt;</code></pre><p class="story-note">Opens with the first 20; scroll to the bottom and the next 20 load (the 'Loading…' row is the trigger). Type 'bio' — the server is asked again after a short pause.</p></div><div class="story"><h3>Multi</h3><div class="story-preview"><div class="sel-demo"><div class="select-field" data-select data-multiple data-searchable data-source="demoCourses" data-labels='{"BIO 101":"BIO 101 — Introduction to Biology"}' data-value="BIO 101" data-label="Courses">
+  <button type="button" class="select" id="inf-multi" aria-haspopup="listbox" aria-expanded="false" aria-controls="inf-multi-list" aria-labelledby="inf-multi-label inf-multi-text"><span class="select__stack"><span class="select__label" id="inf-multi-label">Courses</span><span class="select__value"><span class="select__text" id="inf-multi-text">BIO 101 — Introduction to Biology</span><span class="select__more" hidden>+0</span></span></span><svg class="select__chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+  <div class="listbox select__panel" popover><div class="listbox__search-wrap"><div class="listbox__search"><svg class="listbox__search-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg><input type="text" class="listbox__search-input" placeholder="Search 240 courses…" aria-label="Search 240 courses" aria-controls="inf-multi-list" autocomplete="off" /></div></div><ul class="listbox__list" id="inf-multi-list" role="listbox" aria-labelledby="inf-multi-label" aria-multiselectable="true"><li role="none" class="listbox__status" aria-live="polite"><span class="listbox__spinner" aria-hidden="true"></span><span class="listbox__status-text">Loading…</span></li></ul></div>
+</div></div></div><pre class="code"><code>&lt;div class="select-field" data-select data-multiple data-searchable data-source="demoCourses" data-labels='{"BIO 101":"BIO 101 — Introduction to Biology"}' data-value="BIO 101" data-label="Courses"&gt;
+  &lt;button type="button" class="select" id="inf-multi" aria-haspopup="listbox" aria-expanded="false" aria-controls="inf-multi-list" aria-labelledby="inf-multi-label inf-multi-text"&gt;&lt;span class="select__stack"&gt;&lt;span class="select__label" id="inf-multi-label"&gt;Courses&lt;/span&gt;&lt;span class="select__value"&gt;&lt;span class="select__text" id="inf-multi-text"&gt;BIO 101 — Introduction to Biology&lt;/span&gt;&lt;span class="select__more" hidden&gt;+0&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;…&lt;/button&gt;
+  &lt;div class="listbox select__panel" popover&gt;&lt;div class="listbox__search-wrap"&gt;&lt;div class="listbox__search"&gt;…&lt;input type="text" class="listbox__search-input" placeholder="Search 240 courses…" aria-label="Search 240 courses" aria-controls="inf-multi-list" autocomplete="off" /&gt;&lt;/div&gt;&lt;/div&gt;&lt;ul class="listbox__list" id="inf-multi-list" role="listbox" aria-labelledby="inf-multi-label" aria-multiselectable="true"&gt;&lt;li role="none" class="listbox__status" aria-live="polite"&gt;&lt;span class="listbox__spinner" aria-hidden="true"&gt;&lt;/span&gt;&lt;span class="listbox__status-text"&gt;Loading…&lt;/span&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;
+&lt;/div&gt;</code></pre><p class="story-note">Choices are kept by value, so they survive a new search — pick, search for something else, pick again.</p></div><div class="story"><h3>Couldn't load</h3><div class="story-preview"><div class="sel-demo"><div class="select-field" data-select data-searchable data-source="demoFlaky" data-labels='{}' data-value="" data-label="Advisor">
+  <button type="button" class="select is-placeholder" id="inf-err" aria-haspopup="listbox" aria-expanded="false" aria-controls="inf-err-list" aria-labelledby="inf-err-label inf-err-text"><span class="select__stack"><span class="select__label" id="inf-err-label">Advisor</span><span class="select__value"><span class="select__text" id="inf-err-text">Advisor</span><span class="select__more" hidden>+0</span></span></span><svg class="select__chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+  <div class="listbox select__panel" popover><div class="listbox__search-wrap"><div class="listbox__search"><svg class="listbox__search-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg><input type="text" class="listbox__search-input" placeholder="Search advisors…" aria-label="Search advisors" aria-controls="inf-err-list" autocomplete="off" /></div></div><ul class="listbox__list" id="inf-err-list" role="listbox" aria-labelledby="inf-err-label"><li role="none" class="listbox__status" aria-live="polite"><span class="listbox__spinner" aria-hidden="true"></span><span class="listbox__status-text">Loading…</span></li></ul></div>
+</div></div></div><pre class="code"><code>&lt;div class="select-field" data-select data-searchable data-source="demoFlaky" data-labels='{}' data-value="" data-label="Advisor"&gt;
+  &lt;button type="button" class="select is-placeholder" id="inf-err" aria-haspopup="listbox" aria-expanded="false" aria-controls="inf-err-list" aria-labelledby="inf-err-label inf-err-text"&gt;&lt;span class="select__stack"&gt;&lt;span class="select__label" id="inf-err-label"&gt;Advisor&lt;/span&gt;&lt;span class="select__value"&gt;&lt;span class="select__text" id="inf-err-text"&gt;Advisor&lt;/span&gt;&lt;span class="select__more" hidden&gt;+0&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;…&lt;/button&gt;
+  &lt;div class="listbox select__panel" popover&gt;&lt;div class="listbox__search-wrap"&gt;&lt;div class="listbox__search"&gt;…&lt;input type="text" class="listbox__search-input" placeholder="Search advisors…" aria-label="Search advisors" aria-controls="inf-err-list" autocomplete="off" /&gt;&lt;/div&gt;&lt;/div&gt;&lt;ul class="listbox__list" id="inf-err-list" role="listbox" aria-labelledby="inf-err-label"&gt;&lt;li role="none" class="listbox__status" aria-live="polite"&gt;&lt;span class="listbox__spinner" aria-hidden="true"&gt;&lt;/span&gt;&lt;span class="listbox__status-text"&gt;Loading…&lt;/span&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;
+&lt;/div&gt;</code></pre><p class="story-note">The first request fails: 'Couldn't load.' + Retry, in the same last row. Retry works.</p></div></div>
 
     <h2 class="big-section">CSS</h2>
     <pre class="code"><code>:root {
@@ -486,6 +519,15 @@
 .listbox__empty { margin: 0; padding: 8px 8px; color: var(--tok-text-muted); font-weight: 400; font-size: 14px; line-height: 1.4; }
 .listbox__empty[hidden] { display: none; }
 .listbox__search:focus-within { border-color: var(--tok-border-focus); }
+/* infinite Select (InfiniteComboboxField): the last row of the list is its status —
+   "Loading…" while there's more (scrolling to it loads the next page), "No results",
+   or "Couldn't load" + Retry. Spinner sm, resolved from spinner.tokens.json. */
+.listbox__status { list-style: none; display: flex; align-items: center; gap: 8px; padding: 8px 8px; color: var(--tok-text-muted); font-weight: 400; font-size: 14px; line-height: 1.4; }
+.listbox__status[hidden] { display: none; }
+.listbox__spinner { flex-shrink: 0; box-sizing: border-box; width: 16px; height: 16px; border: 2px solid var(--tok-border-default); border-top-color: var(--tok-fill-primary); border-radius: 50%; animation: listbox-spin 0.7s linear infinite; }
+@keyframes listbox-spin { to { transform: rotate(360deg); } }
+.listbox__retry { margin-left: auto; border: none; background: none; padding: 0; cursor: pointer; color: var(--tok-text-primary); font-family: inherit; font-weight: 400; font-size: 14px; line-height: 1.4; }
+.listbox__retry:focus-visible { outline: 2px solid var(--tok-border-focus); outline-offset: 2px; border-radius: 2px; }
 
 .listbox__select-all { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 4px 8px; }
 .listbox__select-all-label { color: var(--tok-text-secondary); margin: 0; font-weight: 400; font-size: 12px; line-height: 1.4; }
@@ -498,8 +540,22 @@
   </main>
 </div>
 <script>
+// a fake catalogue server for the Infinite stories: 240 courses, 20 a page, 600ms
+(function () {
+  var subj = [["BIO", "Biology"], ["CHEM", "Chemistry"], ["CS", "Computer Science"], ["ECON", "Economics"], ["ENG", "English"], ["HIST", "History"], ["MATH", "Mathematics"], ["MUS", "Music"], ["PHIL", "Philosophy"], ["PHYS", "Physics"], ["PSY", "Psychology"], ["SOC", "Sociology"]];
+  var topics = ["Introduction to", "Foundations of", "Topics in", "Methods in", "Seminar in", "Advanced", "Research in", "History of", "Theory of", "Applied", "Studies in", "Special Topics in", "Writing in", "Ethics of", "Data in", "Field Work in", "Readings in", "Lab in", "Capstone in", "Honors"];
+  var all = []; subj.forEach(function (s) { topics.forEach(function (t, i) { var n = s[0] + " " + (101 + i * 10); all.push({ value: n, label: n + " — " + t + " " + s[1] }); }); });
+  window.demoCourses = function (q, offset) {
+    return new Promise(function (res) { setTimeout(function () { var m = all.filter(function (c) { return c.label.toLowerCase().indexOf(q.toLowerCase()) >= 0; }); res({ items: m.slice(offset, offset + 20), hasMore: offset + 20 < m.length }); }, 600); });
+  };
+  var failed = false, people = ["Andy Hernandez", "Caitlin Moore", "Dana Brooks", "Elena Petrova", "Farah Khan", "Grace Liu"].map(function (n) { return { label: n }; });
+  window.demoFlaky = function (q) {
+    return new Promise(function (res, rej) { setTimeout(function () { if (!failed) { failed = true; rej(new Error("offline")); return; } res({ items: people.filter(function (p) { return p.label.toLowerCase().indexOf(q.toLowerCase()) >= 0; }), hasMore: false }); }, 600); });
+  };
+})();
 (function () {
   var GAP = 4;
+  var CHECK = "<svg class=\"listbox__checkmark\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z\"/></svg>", CB = "<span class=\"listbox__cb-box\"><svg class=\"listbox__cb-icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z\"/></svg></span>";
   document.querySelectorAll("[data-select]").forEach(function (wrap) {
     if (wrap._hpsel) return; wrap._hpsel = true;
     var trigger = wrap.querySelector(".select"), panel = wrap.querySelector(".select__panel"), multiple = wrap.hasAttribute("data-multiple");
@@ -508,6 +564,37 @@
     function go(el) { if (!el) return; el.focus({ preventScroll: true }); el.scrollIntoView({ block: "nearest" }); }
     var search = panel.querySelector(".listbox__search-input"), empty = panel.querySelector(".listbox__empty");
     var opts = function () { return Array.prototype.slice.call(panel.querySelectorAll(".listbox__option")).filter(function (o) { return !o.parentNode.hidden; }); };
+    var source = wrap.dataset.source ? window[wrap.dataset.source] : null, chosen = {}, list = panel.querySelector(".listbox__list"), status = panel.querySelector(".listbox__status");
+    var query = "", offset = 0, hasMore = true, busy = false, loaded = false, ticket = 0, seq = 0, timer = null;
+    if (source) chosen = JSON.parse(wrap.dataset.labels || "{}");
+    function setStatus(kind) {
+      status.hidden = kind === "done";
+      var text = { loading: "Loading…", empty: "No results", error: "Couldn't load." }[kind] || "";
+      status.innerHTML = (kind === "loading" ? '<span class="listbox__spinner" aria-hidden="true"></span>' : "") + '<span class="listbox__status-text">' + text + "</span>" + (kind === "error" ? '<button type="button" class="listbox__retry">Retry</button>' : "");
+    }
+    function row(item) {
+      var v = item.value != null ? String(item.value) : item.label, li = document.createElement("li"), b = document.createElement("button");
+      li.setAttribute("role", "none"); b.type = "button"; b.className = "listbox__option"; b.setAttribute("role", "option"); b.id = trigger.id + "-opt-" + (seq++); b.tabIndex = -1; b.dataset.value = v; b.setAttribute("aria-selected", String(v in chosen));
+      if (multiple) { b.innerHTML = CB; var l = document.createElement("span"); l.className = "listbox__cb-label"; l.textContent = item.label; b.appendChild(l); }
+      else { var t = document.createElement("span"); t.textContent = item.label; b.appendChild(t); b.insertAdjacentHTML("beforeend", CHECK); }
+      li.appendChild(b); list.insertBefore(li, status);
+    }
+    function load(reset) {
+      if (reset) { ticket++; offset = 0; hasMore = true; busy = false; Array.prototype.slice.call(list.children).forEach(function (c) { if (c !== status) c.remove(); }); }
+      if (busy || !hasMore) return;
+      busy = true; loaded = true; var mine = ticket; setStatus("loading"); list.setAttribute("aria-busy", "true");
+      Promise.resolve(source(query, offset)).then(function (r) {
+        if (mine !== ticket) return;
+        r.items.forEach(row); offset += r.items.length; hasMore = !!r.hasMore; busy = false; list.removeAttribute("aria-busy");
+        setStatus(hasMore ? "loading" : (offset ? "done" : "empty"));
+        if (hasMore && status.getBoundingClientRect().top < list.getBoundingClientRect().bottom) load();
+      }, function () { if (mine !== ticket) return; busy = false; list.removeAttribute("aria-busy"); setStatus("error"); });
+    }
+    if (source) {
+      // near the bottom (the Loading… row in sight) → the next page
+      list.addEventListener("scroll", function () { if (list.scrollTop + list.clientHeight >= list.scrollHeight - status.offsetHeight * 2) load(); }, { passive: true });
+      status.addEventListener("click", function (e) { if (e.target.closest(".listbox__retry")) load(); });
+    }
     function filter(q) {
       q = q.trim().toLowerCase();
       panel.querySelectorAll(".listbox__option").forEach(function (o) { o.parentNode.hidden = !!q && o.textContent.toLowerCase().indexOf(q) < 0; });
@@ -523,7 +610,7 @@
     }
     function open(focusWhich) {
       if (trigger.disabled) return;
-      if (!panel.matches(":popover-open")) { panel.showPopover(); place(); }
+      if (!panel.matches(":popover-open")) { panel.showPopover(); place(); if (source && !loaded) load(true); }
       var list = opts(), sel = list.filter(function (o) { return o.getAttribute("aria-selected") === "true"; })[0];
       if (search) { search.focus({ preventScroll: true }); if (sel) sel.scrollIntoView({ block: "nearest" }); return; }
       var target = focusWhich === "last" ? list[list.length - 1] : (sel || list[0]);
@@ -531,6 +618,14 @@
     }
     function close(refocus) { if (panel.matches(":popover-open")) panel.hidePopover(); if (refocus) trigger.focus(); }
     function sync() {
+      if (source) {
+        var vals = Object.keys(chosen);
+        wrap.dataset.value = vals.join(","); trigger.classList.toggle("is-placeholder", vals.length === 0);
+        text.textContent = vals.length ? chosen[vals[0]] : wrap.dataset.label;
+        more.hidden = vals.length < 2; more.textContent = "+" + Math.max(vals.length - 1, 0);
+        wrap.dispatchEvent(new CustomEvent("selectchange", { bubbles: true, detail: { value: multiple ? vals : (vals[0] || "") } }));
+        return;
+      }
       var on = opts().filter(function (o) { return o.getAttribute("aria-selected") === "true"; });
       wrap.dataset.value = on.map(function (o) { return o.dataset.value; }).join(",");
       trigger.classList.toggle("is-placeholder", on.length === 0);
@@ -539,13 +634,21 @@
       wrap.dispatchEvent(new CustomEvent("selectchange", { bubbles: true, detail: { value: multiple ? on.map(function (o) { return o.dataset.value; }) : (on[0] ? on[0].dataset.value : "") } }));
     }
     function pick(o) {
+      if (source) {
+        var v = o.dataset.value, label = o.textContent;
+        if (multiple) { if (v in chosen) delete chosen[v]; else chosen[v] = label; o.setAttribute("aria-selected", String(v in chosen)); sync(); return; }
+        chosen = {}; chosen[v] = label; opts().forEach(function (x) { x.setAttribute("aria-selected", String(x === o)); }); sync(); close(true); return;
+      }
       if (multiple) { o.setAttribute("aria-selected", String(o.getAttribute("aria-selected") !== "true")); sync(); return; }
       opts().forEach(function (x) { x.setAttribute("aria-selected", String(x === o)); });
       sync(); close(true);
     }
-    panel.addEventListener("toggle", function (e) { trigger.setAttribute("aria-expanded", String(e.newState === "open")); if (e.newState !== "open" && search) { search.value = ""; filter(""); } });
+    panel.addEventListener("toggle", function (e) { trigger.setAttribute("aria-expanded", String(e.newState === "open")); if (e.newState !== "open" && search) { var had = search.value; search.value = ""; if (!source) filter(""); else if (had || query) { query = ""; loaded = false; } } });
     if (search) {
-      search.addEventListener("input", function () { filter(search.value); place(); });
+      search.addEventListener("input", function () {
+        if (!source) { filter(search.value); place(); return; }
+        clearTimeout(timer); timer = setTimeout(function () { query = search.value.trim(); load(true); }, 250);
+      });
       search.addEventListener("keydown", function (e) {
         var list = opts();
         if (e.key === "ArrowDown") { e.preventDefault(); e.stopPropagation(); go(list[0]); }
