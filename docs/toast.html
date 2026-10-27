@@ -46,9 +46,6 @@
   --tok-text-primary: #0468c4;
   --tok-fill-primary-tint-hover: #c7dffc;
   --tok-fill-primary-tint-active: #b2d4fe;
-  --tok-icon-secondary: #758191;
-  --tok-fill-neutral-hover: #e6e8eb;
-  --tok-fill-neutral-active: #cdd1d6;
   --tok-border-focus: #0468c4;
   --tok-status-success: #0a994e;
   --tok-icon-muted: #8e99a7;
@@ -60,7 +57,7 @@
   --tok-family-sans: 'Sora', sans-serif;
 }
 
-.toast { position: fixed; inset: auto; top: 24px; left: 50%; transform: translateX(-50%); margin: 0; box-sizing: border-box; max-width: min(480px, calc(100vw - 32px)); overflow: hidden; display: flex; align-items: flex-start; gap: 8px; padding: 12px 16px; border-radius: 8px; background: var(--tok-surface-default); box-shadow: inset 0 0 0 1px var(--tok-border-default), 0px 2px 8px 0px rgba(21, 25, 30, 0.10); font-family: var(--tok-family-sans); }
+.toast { position: fixed; inset: auto; top: 24px; left: 50%; transform: translateX(-50%); margin: 0; box-sizing: border-box; max-width: min(480px, calc(100vw - 32px)); overflow: hidden; display: flex; align-items: flex-start; gap: 8px; padding: 12px 16px; border-radius: 8px; background: var(--tok-surface-default); border: none; box-shadow: inset 0 0 0 1px var(--tok-border-default), 0px 2px 8px 0px rgba(21, 25, 30, 0.10); font-family: var(--tok-family-sans); }
 .toast--static { position: relative; top: auto; left: auto; transform: none; }
 .toast__icon { flex-shrink: 0; }
 .toast__text { display: flex; flex-direction: column; gap: 4px; min-width: 0; padding-top: 0; }
@@ -74,16 +71,13 @@
 .toast__action { box-sizing: border-box; height: 32px; padding: 0 8px; border: none; border-radius: 8px; background: var(--tok-fill-primary-tint); color: var(--tok-text-primary); cursor: pointer; font-family: inherit; font-weight: 600; font-size: 12px; line-height: 1.4; white-space: nowrap; }
 .toast__action:hover { background: var(--tok-fill-primary-tint-hover); }
 .toast__action:active { background: var(--tok-fill-primary-tint-active); }
-/* × — Button ghost sm icon-only */
-.toast__close { box-sizing: border-box; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; padding: 0; border: none; border-radius: 8px; background: transparent; color: var(--tok-icon-secondary); cursor: pointer; }
-.toast__close:hover { background: var(--tok-fill-neutral-hover); }
-.toast__close:active { background: var(--tok-fill-neutral-active); }
-.toast__close svg { width: 16px; height: 16px; }
-.toast__action:focus-visible, .toast__close:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
+.toast__action:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
 /* the hairline is an inset shadow (inside the box), so heights are 12 + lines + 12 */
-/* timer: a bar along the bottom that drains; pauses while hovered or focused */
+/* timer: the bar's animation is every toast's clock (pauses while hovered or focused);
+   it is drawn only on a toast with an action — how long Undo stays */
 .toast__timer { position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: var(--tok-fill-primary); transform-origin: left; animation: toast-timer var(--toast-duration, 4000ms) linear forwards; }
 .toast:hover .toast__timer, .toast:focus-within .toast__timer { animation-play-state: paused; }
+.toast:not(:has(.toast__action)) .toast__timer { opacity: 0; }
 @keyframes toast-timer { from { transform: scaleX(1); } to { transform: scaleX(0); } }
 .toast--static .toast__timer { animation: none; transform: scaleX(0.6); }
 /* entry */
@@ -232,8 +226,8 @@
     <div class="legend">
       <div class="row"><b>Roles</b><span>info · success · warning · danger — StatusIcon's icon and colour. danger is <code class="tok">role="alert"</code> (read at once), the rest <code class="tok">role="status"</code>.</span></div>
       <div class="row"><b>One or two lines</b><span>A short label, or a title (heading-sm) + a description (body-sm · text.secondary) that wraps past 480px.</span></div>
-      <div class="row"><b>Action</b><span>One action — usually <b>Undo</b> — as Button tint sm, plus a × to close. Never a second primary; never more than one action (that's a Dialog's job).</span></div>
-      <div class="row"><b>Timer</b><span>A 2px bar along the bottom drains over the toast's life: 4s, 8s with an action. It <b>pauses while the pointer or focus is on the toast</b> (WCAG 2.2.1 — the user can stop the clock), so Undo is always reachable.</span></div>
+      <div class="row"><b>Action</b><span>One action — usually <b>Undo</b> — as Button tint sm. No ×: the toast goes by itself, and Undo is the only thing worth a click. Never a second primary; never more than one action (that's a Dialog's job).</span></div>
+      <div class="row"><b>Timer</b><span>Only on a toast with an action: a 2px bar along the bottom drains over its 8s, so you see how long Undo is there. A plain toast has no bar (it just goes after 4s). Both <b>pause while the pointer or focus is on the toast</b> (WCAG 2.2.1 — the user can stop the clock), so Undo is always reachable.</span></div>
       <div class="row"><b>One at a time</b><span>A new toast replaces the one showing. <code class="tok">popover="manual"</code>: top layer, no light-dismiss.</span></div>
     </div>
 
@@ -249,7 +243,7 @@
     <div class="story-grid"><div class="story"><h3>info</h3><div class="story-preview"><div class="toast toast--info toast--static" role="status"><svg class="status-icon status-icon--info toast__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg><div class="toast__text"><p class="toast__label">Registration opens Monday</p></div></div></div><pre class="code"><code>&lt;div class="toast toast--info" role="status"&gt;…&lt;div class="toast__text"&gt;&lt;p class="toast__label"&gt;Registration opens Monday&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;</code></pre><p class="story-note">New — neutral news, StatusIcon info.</p></div><div class="story"><h3>success</h3><div class="story-preview"><div class="toast toast--success toast--static" role="status"><svg class="status-icon status-icon--success toast__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg><div class="toast__text"><p class="toast__label">Message sent</p></div></div></div><pre class="code"><code>&lt;div class="toast toast--success" role="status"&gt;…&lt;div class="toast__text"&gt;&lt;p class="toast__label"&gt;Message sent&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;</code></pre></div><div class="story"><h3>warning</h3><div class="story-preview"><div class="toast toast--warning toast--static" role="status"><svg class="status-icon status-icon--warning toast__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg><div class="toast__text"><p class="toast__label">This thread expires tomorrow</p></div></div></div><pre class="code"><code>&lt;div class="toast toast--warning" role="status"&gt;…&lt;div class="toast__text"&gt;&lt;p class="toast__label"&gt;This thread expires tomorrow&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;</code></pre></div><div class="story"><h3>danger</h3><div class="story-preview"><div class="toast toast--danger toast--static" role="alert"><svg class="status-icon status-icon--error toast__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg><div class="toast__text"><p class="toast__label">Could not send the message</p></div></div></div><pre class="code"><code>&lt;div class="toast toast--danger" role="alert"&gt;…&lt;div class="toast__text"&gt;&lt;p class="toast__label"&gt;Could not send the message&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;</code></pre><p class="story-note">role="alert" — read out at once.</p></div></div>
 
     <h2 class="big-section">Two lines, Undo, timer</h2>
-    <div class="story-grid"><div class="story"><h3>Two lines — title + description</h3><div class="story-preview"><div class="toast toast--success toast--static" role="status"><svg class="status-icon status-icon--success toast__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg><div class="toast__text"><p class="toast__title">Appointment booked</p><p class="toast__description">Tue, Oct 27 at 10:00 AM with Andy Hernandez. We emailed you the details.</p></div></div></div><pre class="code"><code>&lt;div class="toast toast--success" role="status"&gt;…&lt;div class="toast__text"&gt;&lt;p class="toast__title"&gt;Appointment booked&lt;/p&gt;&lt;p class="toast__description"&gt;Tue, Oct 27 at 10:00 AM with Andy Hernandez. We emailed you the details.&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;</code></pre><p class="story-note">Title in heading-sm, the second line body-sm · text.secondary; wraps past 480px.</p></div><div class="story"><h3>With Undo — and the timer</h3><div class="story-preview"><div class="toast toast--success toast--static" role="status"><svg class="status-icon status-icon--success toast__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg><div class="toast__text"><p class="toast__title">Thread archived</p><p class="toast__description">It's in Archive for 30 days.</p></div><div class="toast__actions"><button class="toast__action" type="button">Undo</button><button class="toast__close" type="button" aria-label="Dismiss"><svg class="" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button></div><span class="toast__timer" aria-hidden="true"></span></div></div><pre class="code"><code>&lt;div class="toast toast--success" role="status"&gt;…&lt;div class="toast__text"&gt;&lt;p class="toast__title"&gt;Thread archived&lt;/p&gt;&lt;p class="toast__description"&gt;It's in Archive for 30 days.&lt;/p&gt;&lt;/div&gt;&lt;div class="toast__actions"&gt;&lt;button class="toast__action" type="button"&gt;Undo&lt;/button&gt;&lt;button class="toast__close" type="button" aria-label="Dismiss"&gt;…&lt;/button&gt;&lt;/div&gt;&lt;span class="toast__timer" aria-hidden="true"&gt;&lt;/span&gt;&lt;/div&gt;</code></pre><p class="story-note">Undo is Button tint sm; × closes. The bar along the bottom drains over 8s (frozen here) and pauses while the pointer or focus is on the toast.</p></div><div class="story"><h3>One line with Undo</h3><div class="story-preview"><div class="toast toast--info toast--static" role="status"><svg class="status-icon status-icon--info toast__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg><div class="toast__text"><p class="toast__label">Draft deleted</p></div><div class="toast__actions"><button class="toast__action" type="button">Undo</button><button class="toast__close" type="button" aria-label="Dismiss"><svg class="" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button></div><span class="toast__timer" aria-hidden="true"></span></div></div><pre class="code"><code>&lt;div class="toast toast--info" role="status"&gt;…&lt;div class="toast__text"&gt;&lt;p class="toast__label"&gt;Draft deleted&lt;/p&gt;&lt;/div&gt;&lt;div class="toast__actions"&gt;&lt;button class="toast__action" type="button"&gt;Undo&lt;/button&gt;&lt;button class="toast__close" type="button" aria-label="Dismiss"&gt;…&lt;/button&gt;&lt;/div&gt;&lt;span class="toast__timer" aria-hidden="true"&gt;&lt;/span&gt;&lt;/div&gt;</code></pre></div></div>
+    <div class="story-grid"><div class="story"><h3>Two lines — title + description</h3><div class="story-preview"><div class="toast toast--success toast--static" role="status"><svg class="status-icon status-icon--success toast__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg><div class="toast__text"><p class="toast__title">Appointment booked</p><p class="toast__description">Tue, Oct 27 at 10:00 AM with Andy Hernandez. We emailed you the details.</p></div></div></div><pre class="code"><code>&lt;div class="toast toast--success" role="status"&gt;…&lt;div class="toast__text"&gt;&lt;p class="toast__title"&gt;Appointment booked&lt;/p&gt;&lt;p class="toast__description"&gt;Tue, Oct 27 at 10:00 AM with Andy Hernandez. We emailed you the details.&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;</code></pre><p class="story-note">Title in heading-sm, the second line body-sm · text.secondary; wraps past 480px.</p></div><div class="story"><h3>With Undo — and the timer</h3><div class="story-preview"><div class="toast toast--success toast--static" role="status"><svg class="status-icon status-icon--success toast__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg><div class="toast__text"><p class="toast__title">Thread archived</p><p class="toast__description">It's in Archive for 30 days.</p></div><div class="toast__actions"><button class="toast__action" type="button">Undo</button></div><span class="toast__timer" aria-hidden="true"></span></div></div><pre class="code"><code>&lt;div class="toast toast--success" role="status"&gt;…&lt;div class="toast__text"&gt;&lt;p class="toast__title"&gt;Thread archived&lt;/p&gt;&lt;p class="toast__description"&gt;It's in Archive for 30 days.&lt;/p&gt;&lt;/div&gt;&lt;div class="toast__actions"&gt;&lt;button class="toast__action" type="button"&gt;Undo&lt;/button&gt;&lt;/div&gt;&lt;span class="toast__timer" aria-hidden="true"&gt;&lt;/span&gt;&lt;/div&gt;</code></pre><p class="story-note">Undo is Button tint sm. The bar along the bottom drains over 8s (frozen here) and pauses while the pointer or focus is on the toast.</p></div><div class="story"><h3>One line with Undo</h3><div class="story-preview"><div class="toast toast--info toast--static" role="status"><svg class="status-icon status-icon--info toast__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg><div class="toast__text"><p class="toast__label">Draft deleted</p></div><div class="toast__actions"><button class="toast__action" type="button">Undo</button></div><span class="toast__timer" aria-hidden="true"></span></div></div><pre class="code"><code>&lt;div class="toast toast--info" role="status"&gt;…&lt;div class="toast__text"&gt;&lt;p class="toast__label"&gt;Draft deleted&lt;/p&gt;&lt;/div&gt;&lt;div class="toast__actions"&gt;&lt;button class="toast__action" type="button"&gt;Undo&lt;/button&gt;&lt;/div&gt;&lt;span class="toast__timer" aria-hidden="true"&gt;&lt;/span&gt;&lt;/div&gt;</code></pre></div></div>
 
     <h2 class="big-section">CSS</h2>
     <pre class="code"><code>:root {
@@ -262,9 +256,6 @@
   --tok-text-primary: #0468c4;
   --tok-fill-primary-tint-hover: #c7dffc;
   --tok-fill-primary-tint-active: #b2d4fe;
-  --tok-icon-secondary: #758191;
-  --tok-fill-neutral-hover: #e6e8eb;
-  --tok-fill-neutral-active: #cdd1d6;
   --tok-border-focus: #0468c4;
   --tok-status-success: #0a994e;
   --tok-icon-muted: #8e99a7;
@@ -276,7 +267,7 @@
   --tok-family-sans: 'Sora', sans-serif;
 }
 
-.toast { position: fixed; inset: auto; top: 24px; left: 50%; transform: translateX(-50%); margin: 0; box-sizing: border-box; max-width: min(480px, calc(100vw - 32px)); overflow: hidden; display: flex; align-items: flex-start; gap: 8px; padding: 12px 16px; border-radius: 8px; background: var(--tok-surface-default); box-shadow: inset 0 0 0 1px var(--tok-border-default), 0px 2px 8px 0px rgba(21, 25, 30, 0.10); font-family: var(--tok-family-sans); }
+.toast { position: fixed; inset: auto; top: 24px; left: 50%; transform: translateX(-50%); margin: 0; box-sizing: border-box; max-width: min(480px, calc(100vw - 32px)); overflow: hidden; display: flex; align-items: flex-start; gap: 8px; padding: 12px 16px; border-radius: 8px; background: var(--tok-surface-default); border: none; box-shadow: inset 0 0 0 1px var(--tok-border-default), 0px 2px 8px 0px rgba(21, 25, 30, 0.10); font-family: var(--tok-family-sans); }
 .toast--static { position: relative; top: auto; left: auto; transform: none; }
 .toast__icon { flex-shrink: 0; }
 .toast__text { display: flex; flex-direction: column; gap: 4px; min-width: 0; padding-top: 0; }
@@ -290,16 +281,13 @@
 .toast__action { box-sizing: border-box; height: 32px; padding: 0 8px; border: none; border-radius: 8px; background: var(--tok-fill-primary-tint); color: var(--tok-text-primary); cursor: pointer; font-family: inherit; font-weight: 600; font-size: 12px; line-height: 1.4; white-space: nowrap; }
 .toast__action:hover { background: var(--tok-fill-primary-tint-hover); }
 .toast__action:active { background: var(--tok-fill-primary-tint-active); }
-/* × — Button ghost sm icon-only */
-.toast__close { box-sizing: border-box; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; padding: 0; border: none; border-radius: 8px; background: transparent; color: var(--tok-icon-secondary); cursor: pointer; }
-.toast__close:hover { background: var(--tok-fill-neutral-hover); }
-.toast__close:active { background: var(--tok-fill-neutral-active); }
-.toast__close svg { width: 16px; height: 16px; }
-.toast__action:focus-visible, .toast__close:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
+.toast__action:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
 /* the hairline is an inset shadow (inside the box), so heights are 12 + lines + 12 */
-/* timer: a bar along the bottom that drains; pauses while hovered or focused */
+/* timer: the bar's animation is every toast's clock (pauses while hovered or focused);
+   it is drawn only on a toast with an action — how long Undo stays */
 .toast__timer { position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: var(--tok-fill-primary); transform-origin: left; animation: toast-timer var(--toast-duration, 4000ms) linear forwards; }
 .toast:hover .toast__timer, .toast:focus-within .toast__timer { animation-play-state: paused; }
+.toast:not(:has(.toast__action)) .toast__timer { opacity: 0; }
 @keyframes toast-timer { from { transform: scaleX(1); } to { transform: scaleX(0); } }
 .toast--static .toast__timer { animation: none; transform: scaleX(0.6); }
 /* entry */
@@ -316,7 +304,6 @@
     <h2 class="big-section">Script</h2>
     <pre class="code"><code>(function () {
   var ICONS = {"info":"&lt;svg class=\"status-icon status-icon--info toast__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"&gt;&lt;path d=\"M0 0h24v24H0z\" fill=\"none\"/&gt;&lt;path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z\"/&gt;&lt;/svg&gt;","success":"&lt;svg class=\"status-icon status-icon--success toast__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"&gt;&lt;path d=\"M0 0h24v24H0z\" fill=\"none\"/&gt;&lt;path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z\"/&gt;&lt;/svg&gt;","warning":"&lt;svg class=\"status-icon status-icon--warning toast__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"&gt;&lt;path d=\"M0 0h24v24H0z\" fill=\"none\"/&gt;&lt;path d=\"M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z\"/&gt;&lt;/svg&gt;","danger":"&lt;svg class=\"status-icon status-icon--error toast__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"&gt;&lt;path d=\"M0 0h24v24H0z\" fill=\"none\"/&gt;&lt;path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z\"/&gt;&lt;/svg&gt;"};
-  var CLOSE = "&lt;svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"&gt;&lt;path d=\"M0 0h24v24H0z\" fill=\"none\"/&gt;&lt;path d=\"M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z\"/&gt;&lt;/svg&gt;";
   var current = null;
   window.showToast = function (o) {
     if (current) current.dismiss();
@@ -331,7 +318,6 @@
     t.innerHTML = ICONS[role]; t.appendChild(text);
     var acts = document.createElement("div"); acts.className = "toast__actions";
     if (hasAction) { var a = document.createElement("button"); a.type = "button"; a.className = "toast__action"; a.textContent = o.action.label; a.addEventListener("click", function () { o.action.onClick &amp;&amp; o.action.onClick(); dismiss(); }); acts.appendChild(a); }
-    if (hasAction || o.close) { var c = document.createElement("button"); c.type = "button"; c.className = "toast__close"; c.setAttribute("aria-label", "Dismiss"); c.innerHTML = CLOSE; c.addEventListener("click", dismiss); acts.appendChild(c); }
     if (acts.children.length) t.appendChild(acts);
     var bar = document.createElement("span"); bar.className = "toast__timer"; bar.setAttribute("aria-hidden", "true"); t.appendChild(bar);
     document.body.appendChild(t); t.showPopover();
@@ -347,7 +333,6 @@
 <script>
 (function () {
   var ICONS = {"info":"<svg class=\"status-icon status-icon--info toast__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z\"/></svg>","success":"<svg class=\"status-icon status-icon--success toast__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z\"/></svg>","warning":"<svg class=\"status-icon status-icon--warning toast__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z\"/></svg>","danger":"<svg class=\"status-icon status-icon--error toast__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z\"/></svg>"};
-  var CLOSE = "<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z\"/></svg>";
   var current = null;
   window.showToast = function (o) {
     if (current) current.dismiss();
@@ -362,7 +347,6 @@
     t.innerHTML = ICONS[role]; t.appendChild(text);
     var acts = document.createElement("div"); acts.className = "toast__actions";
     if (hasAction) { var a = document.createElement("button"); a.type = "button"; a.className = "toast__action"; a.textContent = o.action.label; a.addEventListener("click", function () { o.action.onClick && o.action.onClick(); dismiss(); }); acts.appendChild(a); }
-    if (hasAction || o.close) { var c = document.createElement("button"); c.type = "button"; c.className = "toast__close"; c.setAttribute("aria-label", "Dismiss"); c.innerHTML = CLOSE; c.addEventListener("click", dismiss); acts.appendChild(c); }
     if (acts.children.length) t.appendChild(acts);
     var bar = document.createElement("span"); bar.className = "toast__timer"; bar.setAttribute("aria-hidden", "true"); t.appendChild(bar);
     document.body.appendChild(t); t.showPopover();

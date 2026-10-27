@@ -35,8 +35,8 @@ const roles = [
 ];
 const rich = [
   story("Two lines — title + description", { role: "success", title: "Appointment booked", text: "Tue, Oct 27 at 10:00 AM with Andy Hernandez. We emailed you the details." }, "Title in heading-sm, the second line body-sm · text.secondary; wraps past 480px."),
-  story("With Undo — and the timer", { role: "success", title: "Thread archived", text: "It's in Archive for 30 days.", action: "Undo", close: true, timer: true }, `Undo is Button tint sm; × closes. The bar along the bottom drains over ${TOAST_DURATIONS.withAction / 1000}s (frozen here) and pauses while the pointer or focus is on the toast.`),
-  story("One line with Undo", { role: "info", text: "Draft deleted", action: "Undo", close: true, timer: true }),
+  story("With Undo — and the timer", { role: "success", title: "Thread archived", text: "It's in Archive for 30 days.", action: "Undo", timer: true }, `Undo is Button tint sm. The bar along the bottom drains over ${TOAST_DURATIONS.withAction / 1000}s (frozen here) and pauses while the pointer or focus is on the toast.`),
+  story("One line with Undo", { role: "info", text: "Draft deleted", action: "Undo", timer: true }),
 ];
 const demo = `<div class="demo-row">
   <button class="demo-btn" onclick="showToast({ role: 'info', text: 'Registration opens Monday' })">Info</button>
@@ -96,8 +96,8 @@ const html = `<!doctype html>
     <div class="legend">
       <div class="row"><b>Roles</b><span>info · success · warning · danger — StatusIcon's icon and colour. danger is <code class="tok">role="alert"</code> (read at once), the rest <code class="tok">role="status"</code>.</span></div>
       <div class="row"><b>One or two lines</b><span>A short label, or a title (heading-sm) + a description (body-sm · text.secondary) that wraps past 480px.</span></div>
-      <div class="row"><b>Action</b><span>One action — usually <b>Undo</b> — as Button tint sm, plus a × to close. Never a second primary; never more than one action (that's a Dialog's job).</span></div>
-      <div class="row"><b>Timer</b><span>A 2px bar along the bottom drains over the toast's life: ${TOAST_DURATIONS.default / 1000}s, ${TOAST_DURATIONS.withAction / 1000}s with an action. It <b>pauses while the pointer or focus is on the toast</b> (WCAG 2.2.1 — the user can stop the clock), so Undo is always reachable.</span></div>
+      <div class="row"><b>Action</b><span>One action — usually <b>Undo</b> — as Button tint sm. No ×: the toast goes by itself, and Undo is the only thing worth a click. Never a second primary; never more than one action (that's a Dialog's job).</span></div>
+      <div class="row"><b>Timer</b><span>Only on a toast with an action: a 2px bar along the bottom drains over its ${TOAST_DURATIONS.withAction / 1000}s, so you see how long Undo is there. A plain toast has no bar (it just goes after ${TOAST_DURATIONS.default / 1000}s). Both <b>pause while the pointer or focus is on the toast</b> (WCAG 2.2.1 — the user can stop the clock), so Undo is always reachable.</span></div>
       <div class="row"><b>One at a time</b><span>A new toast replaces the one showing. <code class="tok">popover="manual"</code>: top layer, no light-dismiss.</span></div>
     </div>
 
