@@ -36,6 +36,7 @@ const command = load("tokens/components/command.tokens.json").component.command;
 const counter = load("tokens/components/counter.tokens.json").component.counter;
 const checkbox = load("tokens/components/checkbox.tokens.json").component.checkbox;
 const spinner = load("tokens/components/spinner.tokens.json").component.spinner;
+const chip = load("tokens/components/chip.tokens.json").component.chip;
 
 function get(ref) {
   const parts = ref.replace(/[{}]/g, "").split(".");
@@ -77,6 +78,7 @@ const colorNodes = [
   lb.bg, lb.border, lb.divider, lb.state.default.text, lb.state.hover.bg, lb.state.selected.checkmark, lb.descriptionColor,
   badge.role.neutral.tint.bg, badge.role.neutral.tint.text, command.group.headingColor, cnt.bg, cnt.label,
   cbS.default.bg, cbS.default.border, cbS.checked.bg, cbS.checked.border, cbS.checked.icon, spinner.track, spinner.indicator,
+  chip.removable.default.bg, chip.removable.default.border, chip.removable.default.text, chip.removable.hover.border, chip.removable.remove.icon, chip.removable.remove.hoverBg, chip.removable.remove.activeBg, chip.focus.ringColor,
 ];
 export const SELECT_COLOR_PATHS = [...new Set([...colorNodes.map(refPath), "border.focus", "surface.dim", "icon.default", "text.default", "text.secondary", "text.muted", "text.primary"])];
 
@@ -151,6 +153,10 @@ const sizeCss = ["base", "sm", "lg"].map((k) => {
   return lines.join("\n");
 }).join("\n");
 
+// chips: the 24px Chip sm centred in the 40px box (7px + 1px border), 4px apart
+const chipGap = D(chip.size.sm.gap);
+const chipPad = `${(resolveToken(sel.size.base.height).value - resolveToken(chip.size.sm.height).value) / 2 - 1}px`;
+const chipToggleMin = "96px";
 export const SELECT_CSS = `
 /* Select — the trigger. A real <button> on Input's box model; the value floats
    a 12px label above it once something is chosen (base/lg). */
@@ -183,6 +189,31 @@ ${sizeCss}
 .select:disabled .select__icon { color: ${R(st.disabled.icon)}; }
 .select:disabled .select__chevron { color: ${R(st.disabled.chevron)}; }
 .select[aria-invalid="true"], .select[aria-invalid="true"]:hover { border-color: ${R(st.error.border)}; }
+/* chips (MultiSelectBadges): every choice is a removable Chip sm inside the box; the box wraps
+   and grows a row at a time (40 → 68 → 96: 24px chips, 4px apart). The label is the Field's,
+   above — there's no room to float one. The toggle (a real <button>) takes the rest of the last row. */
+.select--chips { height: auto; min-height: ${D(sel.size.base.height)}; flex-wrap: wrap; gap: ${chipGap}; padding: ${chipPad} ${D(sel.size.base.paddingX)} ${chipPad} ${chipPad}; cursor: pointer; }
+.select__chips { display: contents; list-style: none; }
+.select__chip { box-sizing: border-box; display: inline-flex; align-items: center; gap: ${D(chip.size.sm.gap)}; height: ${D(chip.size.sm.height)}; max-width: 100%; padding: 0 ${D(chip.size.sm.gap)} 0 ${D(chip.size.sm.paddingX)}; border-radius: ${D(chip.radius)}; background: ${R(chip.removable.default.bg)}; border: 1px solid ${R(chip.removable.default.border)}; color: ${R(chip.removable.default.text)}; cursor: default; ${T(chip.size.sm.label)} }
+.select__chip:hover { border-color: ${R(chip.removable.hover.border)}; }
+.select__chip-label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.select__chip-remove { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; width: ${D(chip.size.sm.iconSize)}; height: ${D(chip.size.sm.iconSize)}; padding: 0; border: none; border-radius: ${P("radius.default")}; background: transparent; color: ${R(chip.removable.remove.icon)}; cursor: pointer; }
+.select__chip-remove svg { width: calc(${D(chip.size.sm.iconSize)} * 0.75); height: calc(${D(chip.size.sm.iconSize)} * 0.75); }
+.select__chip-remove:hover { background: ${R(chip.removable.remove.hoverBg)}; }
+.select__chip-remove:active { background: ${R(chip.removable.remove.activeBg)}; }
+.select__chip-remove:focus-visible { outline: ${D(chip.focus.ringWidth)} solid ${R(chip.focus.ringColor)}; outline-offset: ${D(chip.focus.ringOffset)}; }
+.select__toggle { flex: 1 0 ${chipToggleMin}; display: flex; align-items: center; gap: ${D(sel.size.base.gap)}; height: ${D(chip.size.sm.height)}; min-width: 0; margin: 0; padding: 0 0 0 calc(${D(sel.size.base.paddingX)} - ${chipPad}); border: none; background: none; font-family: inherit; text-align: left; color: ${R(st.default.placeholder)}; cursor: pointer; ${T(sel.size.base.value)} }
+.select__toggle:focus { outline: none; }
+.select--chips:not(.is-placeholder) .select__toggle { flex-basis: ${D(sel.size.base.iconSize)}; padding-left: 0; justify-content: flex-end; } /* with chips: just the chevron, at the end of the last row */
+.select--chips .select__chevron { width: ${D(sel.size.base.iconSize)}; height: ${D(sel.size.base.iconSize)}; }
+.select--chips:focus-within { border-color: ${R(st.focus.border)}; }
+.select--chips:has([aria-expanded="true"]), .select--chips:has([aria-expanded="true"]):hover { border-color: ${R(st.open.border)}; }
+.select--chips:has([aria-expanded="true"]) .select__chevron { transform: rotate(${st.open.chevronRotation.$value}deg); }
+.select--chips:has([aria-invalid="true"]), .select--chips:has([aria-invalid="true"]):hover { border-color: ${R(st.error.border)}; }
+.select--chips.is-disabled { background: ${R(st.disabled.bg)}; border-color: ${R(st.disabled.border)}; cursor: not-allowed; }
+.select--chips.is-disabled .select__toggle { color: ${R(st.disabled.placeholder)}; cursor: not-allowed; }
+.select--chips.is-disabled .select__chevron { color: ${R(st.disabled.chevron)}; }
+.select--chips.is-disabled .select__chip-remove { display: none; }
 /* the panel — Listbox, under the field, at least as wide as it */
 .select__panel { margin: 0; }`;
 
@@ -192,7 +223,8 @@ const cbGlyph = () => icon("check", "listbox__cb-icon");
 
 /** A Select. options: [{ label, value, group }] — consecutive options with the same `group` render under its heading.
  *  value: a value (single) or an array (multiple). */
-export function selectHtml({ id, label, options = [], value = "", multiple = false, searchable = false, searchPlaceholder = "Search…", source = "", size = "base", icon: iconName = "", disabled = false, invalid = false, describedBy = "", panelWidth = "" }) {
+export function selectHtml({ id, label, options = [], value = "", multiple = false, chips = false, placeholder = "", searchable = false, searchPlaceholder = "Search…", source = "", size = "base", icon: iconName = "", disabled = false, invalid = false, describedBy = "", panelWidth = "" }) {
+  if (chips) multiple = true; // chips are always a multi-select
   const chosen = new Set([].concat(value).filter(Boolean));
   const picked = options.filter((o) => chosen.has(o.value ?? o.label));
   const empty = picked.length === 0;
@@ -215,8 +247,15 @@ export function selectHtml({ id, label, options = [], value = "", multiple = fal
   const list = source ? `<li role="none" class="listbox__status" aria-live="polite"><span class="listbox__spinner" aria-hidden="true"></span><span class="listbox__status-text">Loading…</span></li>` : body;
   const labels = source ? ` data-source="${source}" data-labels='${JSON.stringify(Object.fromEntries(picked.map((o) => [o.value ?? o.label, o.label]))).replace(/'/g, "&#39;")}'` : "";
   if (source) searchable = true;
-  return `<div class="select-field" data-select${multiple ? " data-multiple" : ""}${searchable ? " data-searchable" : ""}${labels} data-value="${[...chosen].join(",")}" data-label="${label}">
-  <button type="button" class="${cls}" id="${id}" aria-haspopup="listbox" aria-expanded="false" aria-controls="${lid}" aria-labelledby="${id}-label ${id}-text"${disabled ? " disabled" : ""}${invalid ? ' aria-invalid="true"' : ""}${describedBy ? ` aria-describedby="${describedBy}"` : ""}>${iconName ? icon(iconName, "select__icon") : ""}<span class="select__stack"><span class="select__label" id="${id}-label">${label}</span><span class="select__value"><span class="select__text" id="${id}-text">${first}</span><span class="select__more"${picked.length > 1 ? "" : " hidden"}>+${Math.max(picked.length - 1, 0)}</span></span></span>${chevron()}</button>
+  const xIcon = () => icon("close", "");
+  const chipHtml = (o) => `<li class="select__chip" data-value="${o.value ?? o.label}"><span class="select__chip-label">${o.label}</span><button type="button" class="select__chip-remove" aria-label="Remove ${o.label}"${disabled ? " disabled" : ""}>${xIcon()}</button></li>`;
+  const triggerHtml = chips
+    // chips: the box is a div (chips hold their own × buttons — no buttons inside a button); the toggle is the button.
+    // Its label is the Field's (<label id="ID-label" for="ID">), so wrap this in fieldHtml.
+    ? `<div class="select select--chips${empty ? " is-placeholder" : ""}${disabled ? " is-disabled" : ""}"><ul class="select__chips" aria-label="Chosen">${picked.map(chipHtml).join("")}</ul><button type="button" class="select__toggle" id="${id}" aria-haspopup="listbox" aria-expanded="false" aria-controls="${lid}" aria-labelledby="${id}-label ${id}-text"${disabled ? " disabled" : ""}${invalid ? ' aria-invalid="true"' : ""}${describedBy ? ` aria-describedby="${describedBy}"` : ""}><span class="select__text" id="${id}-text">${empty ? placeholder || label : ""}</span>${chevron()}</button></div>`
+    : "";
+  return `<div class="select-field" data-select${multiple ? " data-multiple" : ""}${chips ? ` data-chips data-placeholder="${placeholder || label}"` : ""}${searchable ? " data-searchable" : ""}${labels} data-value="${[...chosen].join(",")}" data-label="${label}">
+  ${chips ? triggerHtml : `<button type="button" class="${cls}" id="${id}" aria-haspopup="listbox" aria-expanded="false" aria-controls="${lid}" aria-labelledby="${id}-label ${id}-text"${disabled ? " disabled" : ""}${invalid ? ' aria-invalid="true"' : ""}${describedBy ? ` aria-describedby="${describedBy}"` : ""}>${iconName ? icon(iconName, "select__icon") : ""}<span class="select__stack"><span class="select__label" id="${id}-label">${label}</span><span class="select__value"><span class="select__text" id="${id}-text">${first}</span><span class="select__more"${picked.length > 1 ? "" : " hidden"}>+${Math.max(picked.length - 1, 0)}</span></span></span>${chevron()}</button>`}
   ${searchable
     // searchable: the panel holds a search box + the list, so the listbox role moves onto the list
     ? `<div class="listbox select__panel" popover${panelWidth ? ` style="width:${panelWidth}"` : ""}><div class="listbox__search-wrap"><div class="listbox__search">${icon("search", "listbox__search-icon")}<input type="text" class="listbox__search-input" placeholder="${searchPlaceholder}" aria-label="${searchPlaceholder.replace(/…$/, "")}" aria-controls="${lid}" autocomplete="off" /></div></div><ul class="listbox__list" id="${lid}" role="listbox" aria-labelledby="${id}-label"${multiple ? ' aria-multiselectable="true"' : ""}>${list}</ul>${source ? "" : `<p class="listbox__empty" hidden>No results</p>`}</div>`
@@ -239,10 +278,10 @@ export function selectHtml({ id, label, options = [], value = "", multiple = fal
 // Choices are kept by value, so they survive a new search.
 export const SELECT_JS = `(function () {
   var GAP = ${resolveToken(get("dim.1")).value};
-  var CHECK = ${JSON.stringify(check())}, CB = ${JSON.stringify(`<span class="listbox__cb-box">${cbGlyph()}</span>`)};
+  var XICON = ${JSON.stringify(icon("close", ""))}, CHECK = ${JSON.stringify(check())}, CB = ${JSON.stringify(`<span class="listbox__cb-box">${cbGlyph()}</span>`)};
   document.querySelectorAll("[data-select]").forEach(function (wrap) {
     if (wrap._hpsel) return; wrap._hpsel = true;
-    var trigger = wrap.querySelector(".select"), panel = wrap.querySelector(".select__panel"), multiple = wrap.hasAttribute("data-multiple");
+    var box = wrap.querySelector(".select"), trigger = wrap.querySelector(".select__toggle") || box, chipList = wrap.querySelector(".select__chips"), panel = wrap.querySelector(".select__panel"), multiple = wrap.hasAttribute("data-multiple");
     var text = wrap.querySelector(".select__text"), more = wrap.querySelector(".select__more");
     // focus an option without scrolling the page; keep it in view inside a long list
     function go(el) { if (!el) return; el.focus({ preventScroll: true }); el.scrollIntoView({ block: "nearest" }); }
@@ -287,7 +326,7 @@ export const SELECT_JS = `(function () {
       if (empty) empty.hidden = opts().length > 0;
     }
     function place() {
-      var r = trigger.getBoundingClientRect(); panel.style.position = "fixed"; panel.style.right = "auto"; panel.style.bottom = "auto"; panel.style.minWidth = r.width + "px";
+      var r = box.getBoundingClientRect(); panel.style.position = "fixed"; panel.style.right = "auto"; panel.style.bottom = "auto"; panel.style.minWidth = r.width + "px";
       var h = panel.offsetHeight, top = r.bottom + GAP;
       if (top + h > window.innerHeight - 8 && r.top - GAP - h > 8) top = r.top - GAP - h;
       panel.style.top = top + "px"; panel.style.left = Math.max(8, Math.min(r.left, window.innerWidth - panel.offsetWidth - 8)) + "px";
@@ -301,21 +340,40 @@ export const SELECT_JS = `(function () {
       go(target);
     }
     function close(refocus) { if (panel.matches(":popover-open")) panel.hidePopover(); if (refocus) trigger.focus(); }
+    // the choices as [value, label] — from the store (source) or every option, filtered out or not
+    function chosenPairs() {
+      if (source) return Object.keys(chosen).map(function (v) { return [v, chosen[v]]; });
+      return Array.prototype.slice.call(panel.querySelectorAll(".listbox__option[aria-selected='true']")).map(function (o) { return [o.dataset.value, o.textContent]; });
+    }
+    function renderChips(pairs) {
+      chipList.innerHTML = "";
+      pairs.forEach(function (p) {
+        var li = document.createElement("li"), l = document.createElement("span"), x = document.createElement("button");
+        li.className = "select__chip"; li.dataset.value = p[0]; l.className = "select__chip-label"; l.textContent = p[1];
+        x.type = "button"; x.className = "select__chip-remove"; x.setAttribute("aria-label", "Remove " + p[1]); x.innerHTML = XICON;
+        li.appendChild(l); li.appendChild(x); chipList.appendChild(li);
+      });
+    }
     function sync() {
-      if (source) {
-        var vals = Object.keys(chosen);
-        wrap.dataset.value = vals.join(","); trigger.classList.toggle("is-placeholder", vals.length === 0);
-        text.textContent = vals.length ? chosen[vals[0]] : wrap.dataset.label;
-        more.hidden = vals.length < 2; more.textContent = "+" + Math.max(vals.length - 1, 0);
-        wrap.dispatchEvent(new CustomEvent("selectchange", { bubbles: true, detail: { value: multiple ? vals : (vals[0] || "") } }));
-        return;
-      }
-      var on = opts().filter(function (o) { return o.getAttribute("aria-selected") === "true"; });
-      wrap.dataset.value = on.map(function (o) { return o.dataset.value; }).join(",");
-      trigger.classList.toggle("is-placeholder", on.length === 0);
-      text.textContent = on.length ? on[0].textContent : wrap.dataset.label;
-      more.hidden = on.length < 2; more.textContent = "+" + Math.max(on.length - 1, 0);
-      wrap.dispatchEvent(new CustomEvent("selectchange", { bubbles: true, detail: { value: multiple ? on.map(function (o) { return o.dataset.value; }) : (on[0] ? on[0].dataset.value : "") } }));
+      var pairs = chosenPairs(), vals = pairs.map(function (p) { return p[0]; });
+      wrap.dataset.value = vals.join(","); box.classList.toggle("is-placeholder", pairs.length === 0);
+      if (chipList) { renderChips(pairs); text.textContent = pairs.length ? "" : wrap.dataset.placeholder; if (panel.matches(":popover-open")) place(); }
+      else { text.textContent = pairs.length ? pairs[0][1] : wrap.dataset.label; more.hidden = pairs.length < 2; more.textContent = "+" + Math.max(pairs.length - 1, 0); }
+      wrap.dispatchEvent(new CustomEvent("selectchange", { bubbles: true, detail: { value: multiple ? vals : (vals[0] || "") } }));
+    }
+    // chips: × takes a choice out (focus moves to the next ×, or the toggle); a click anywhere else on the box opens
+    function unpick(v) {
+      if (source) delete chosen[v];
+      panel.querySelectorAll(".listbox__option").forEach(function (o) { if (o.dataset.value === v) o.setAttribute("aria-selected", "false"); });
+      sync();
+    }
+    if (chipList) {
+      box.addEventListener("click", function (e) {
+        var x = e.target.closest(".select__chip-remove");
+        if (x) { if (trigger.disabled) return; var li = x.closest(".select__chip"), i = Array.prototype.indexOf.call(chipList.children, li); unpick(li.dataset.value); var nx = chipList.children[i] || chipList.children[i - 1]; (nx ? nx.querySelector(".select__chip-remove") : trigger).focus(); return; }
+        if (!e.target.closest(".select__toggle") && !e.target.closest(".select__chip")) trigger.click();
+      });
+      trigger.addEventListener("keydown", function (e) { if (e.key === "Backspace" && chipList.lastElementChild) { e.preventDefault(); unpick(chipList.lastElementChild.dataset.value); } });
     }
     function pick(o) {
       if (source) {

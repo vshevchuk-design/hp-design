@@ -8,6 +8,7 @@ import { fileURLToPath } from "node:url";
 import { renderNav } from "./lib/nav.mjs";
 import { renderRootVars } from "./lib/css-vars.mjs";
 import { SELECT_COLOR_PATHS, SELECT_CSS, LISTBOX_CSS, SELECT_JS, selectHtml } from "./lib/select.mjs";
+import { FIELD_COLOR_PATHS, FIELD_WRAPPER_CSS, fieldHtml } from "./lib/field.mjs";
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const load = (p) => JSON.parse(fs.readFileSync(path.join(root, p)));
@@ -22,10 +23,11 @@ const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, 
 const sel = load("tokens/components/select.tokens.json").component.select;
 const H = (k) => px(resolve(sel.size[k].height.$value.replace(/[{}]/g, "")));
 
-const rootVars = renderRootVars([...SELECT_COLOR_PATHS.map((p) => [p, resolve(p)]), ["family.sans", `'${resolve("family.sans")}', sans-serif`]]);
+const rootVars = renderRootVars([...new Set([...SELECT_COLOR_PATHS, ...FIELD_COLOR_PATHS])].map((p) => [p, resolve(p)]).concat([ ["family.sans", `'${resolve("family.sans")}', sans-serif`]]));
 const css = `${rootVars}
 ${SELECT_CSS}
-${LISTBOX_CSS}`;
+${LISTBOX_CSS}
+${FIELD_WRAPPER_CSS}`;
 
 const DEPTS = ["Advising", "Financial aid", "Registrar", "Career services"].map((label) => ({ label }));
 const FOOD = [["Fruits", ["Apple", "Banana", "Cherry"]], ["Vegetables", ["Carrot", "Celery", "Lettuce"]]].flatMap(([group, items]) => items.map((label) => ({ label, group })));
@@ -69,6 +71,20 @@ const infinite = [
   story("Single", { id: "inf-single", label: "Course", source: "demoCourses", searchPlaceholder: "Search 240 courses…" }, "Opens with the first 20; scroll to the bottom and the next 20 load (the 'Loading…' row is the trigger). Type 'bio' — the server is asked again after a short pause."),
   story("Multi", { id: "inf-multi", label: "Courses", source: "demoCourses", multiple: true, options: [{ label: "BIO 101 — Introduction to Biology", value: "BIO 101" }], value: ["BIO 101"], searchPlaceholder: "Search 240 courses…" }, "Choices are kept by value, so they survive a new search — pick, search for something else, pick again."),
   story("Couldn't load", { id: "inf-err", label: "Advisor", source: "demoFlaky", searchPlaceholder: "Search advisors…" }, "The first request fails: 'Couldn't load.' + Retry, in the same last row. Retry works."),
+];
+
+// chips: the label is the Field's (above), so each story is a Field around the Select
+const chipStory = (title, opts, note = "", field = {}) => {
+  const live = fieldHtml({ id: opts.id, label: opts.label, control: selectHtml({ ...opts, chips: true }), ...field });
+  return `<div class="story"><h3>${title}</h3><div class="story-preview"><div class="sel-demo" style="width: 360px">${live}</div></div><pre class="code"><code>${esc(code(live))}</code></pre>${note ? `<p class="story-note">${note}</p>` : ""}</div>`;
+};
+const C = COURSES.map((o) => o.label);
+const badges = [
+  chipStory("Chosen", { id: "ch-few", label: "Courses", options: COURSES, value: [C[1], C[2]], placeholder: "Choose courses" }, "Each choice is a Chip sm with its own ×. Click the box to add more; the list stays open while you tick."),
+  chipStory("Wraps, a row at a time", { id: "ch-many", label: "Courses", options: COURSES, value: C.slice(0, 6), placeholder: "Choose courses" }, "40 → 68 → 96: the box grows by whole chip rows. The toggle takes what's left of the last row."),
+  chipStory("Empty", { id: "ch-empty", label: "Courses", options: COURSES, placeholder: "Choose courses" }, "The placeholder says what to do; the label sits above, in the Field."),
+  chipStory("Searchable", { id: "ch-search", label: "Courses", options: COURSES, value: [C[0]], searchable: true, searchPlaceholder: "Search courses…", placeholder: "Choose courses" }, "Chips + a search box in the list — the long-list version."),
+  chipStory("Disabled", { id: "ch-dis", label: "Courses", options: COURSES, value: [C[1], C[3]], disabled: true }, "Chips stay readable; the × go away."),
 ];
 
 const html = `<!doctype html>
@@ -125,6 +141,7 @@ const html = `<!doctype html>
       <div class="row"><b>Multiple</b><span>The first choice + a Counter ("Email  +2") — the field keeps one line whatever you pick. Every choice as removable chips is a different field (MultiSelectBadges).</span></div>
       <div class="row"><b>Searchable</b><span><code class="tok">searchable: true</code> puts a search box at the top of the list — Storybook's <b>ComboboxField</b> (and SimpleCombobox, the same without a Field). Same Select, same field, Single or Multi. Use it past ~10 options, or when people know the name they want (courses, programs, people).</span></div>
       <div class="row"><b>Infinite</b><span><code class="tok">source: "fnName"</code> — options come from the server a page at a time: <code class="tok">window[fnName](query, offset)</code> returns <code class="tok">{ items, hasMore }</code>. Storybook's <b>InfiniteComboboxField</b>. The list's last row says what's happening: Loading… (and loads the next page when you reach it), No results, or Couldn't load + Retry. Search goes to the server.</span></div>
+      <div class="row"><b>Chips</b><span><code class="tok">chips: true</code> — every choice as a removable Chip in the field (Storybook's <b>MultiSelectBadges</b>). Use it when people need to see all of what they picked (a handful); for many, the first + Counter keeps the form tidy. The label moves above (Field) — chips leave no room to float one.</span></div>
       <div class="row"><b>Keyboard</b><span>↓ / ↑ / Enter / Space open; ↑ ↓ Home End move; Enter or Space pick; Escape closes back to the field; Tab closes. Single-select closes on pick.</span></div>
     </div>
 
@@ -144,6 +161,10 @@ const html = `<!doctype html>
     <h2 class="big-section" id="infinite">Infinite — InfiniteComboboxField</h2>
     <p class="section-desc">For lists too long to send at once — every course in the catalogue, every student. Same Select, searchable; the options load from <code class="tok">source</code> 20 at a time as you scroll, and typing asks the server (250ms after the last key). <code class="tok">options</code> only names what's already chosen, so the field shows it before anything loads. The demo fakes a 240-course server with 600ms latency.</p>
     <div class="story-grid">${infinite.join("")}</div>
+
+    <h2 class="big-section" id="badges">Chips — MultiSelectBadges</h2>
+    <p class="section-desc">The same multi-select, with every choice shown as a removable Chip sm inside the field: <code class="tok">selectHtml({ …, chips: true, placeholder: "Choose courses" })</code>, inside <code class="tok">fieldHtml</code> for the label. Chips hold their own × buttons, so the box is a <code class="tok">div</code> and the part after the chips is the toggle <code class="tok">button</code>. × removes one (focus goes to the next ×); Backspace on the toggle removes the last; clicking anywhere else on the box opens the list.</p>
+    <div class="story-grid">${badges.join("")}</div>
 
     <h2 class="big-section">CSS</h2>
     <pre class="code"><code>${esc(css)}</code></pre>

@@ -269,6 +269,31 @@
 .select:disabled .select__icon { color: var(--tok-icon-disabled); }
 .select:disabled .select__chevron { color: var(--tok-icon-disabled); }
 .select[aria-invalid="true"], .select[aria-invalid="true"]:hover { border-color: var(--tok-border-danger-strong); }
+/* chips (MultiSelectBadges): every choice is a removable Chip sm inside the box; the box wraps
+   and grows a row at a time (40 → 68 → 96: 24px chips, 4px apart). The label is the Field's,
+   above — there's no room to float one. The toggle (a real <button>) takes the rest of the last row. */
+.select--chips { height: auto; min-height: 40px; flex-wrap: wrap; gap: 4px; padding: 7px 12px 7px 7px; cursor: pointer; }
+.select__chips { display: contents; list-style: none; }
+.select__chip { box-sizing: border-box; display: inline-flex; align-items: center; gap: 4px; height: 24px; max-width: 100%; padding: 0 4px 0 8px; border-radius: 999px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); color: var(--tok-text-default); cursor: default; font-weight: 600; font-size: 12px; line-height: 1; }
+.select__chip:hover { border-color: var(--tok-border-strong); }
+.select__chip-label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.select__chip-remove { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; width: 12px; height: 12px; padding: 0; border: none; border-radius: 8px; background: transparent; color: var(--tok-icon-secondary); cursor: pointer; }
+.select__chip-remove svg { width: calc(12px * 0.75); height: calc(12px * 0.75); }
+.select__chip-remove:hover { background: var(--tok-fill-neutral-hover); }
+.select__chip-remove:active { background: var(--tok-fill-neutral-active); }
+.select__chip-remove:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
+.select__toggle { flex: 1 0 96px; display: flex; align-items: center; gap: 8px; height: 24px; min-width: 0; margin: 0; padding: 0 0 0 calc(12px - 7px); border: none; background: none; font-family: inherit; text-align: left; color: var(--tok-text-muted); cursor: pointer; font-weight: 400; font-size: 14px; line-height: 1.2; }
+.select__toggle:focus { outline: none; }
+.select--chips:not(.is-placeholder) .select__toggle { padding-left: 0; }
+.select--chips .select__chevron { width: 20px; height: 20px; }
+.select--chips:focus-within { border-color: var(--tok-border-focus); }
+.select--chips:has([aria-expanded="true"]), .select--chips:has([aria-expanded="true"]):hover { border-color: var(--tok-border-focus); }
+.select--chips:has([aria-expanded="true"]) .select__chevron { transform: rotate(180deg); }
+.select--chips:has([aria-invalid="true"]), .select--chips:has([aria-invalid="true"]):hover { border-color: var(--tok-border-danger-strong); }
+.select--chips.is-disabled { background: var(--tok-surface-disabled); border-color: var(--tok-border-default); cursor: not-allowed; }
+.select--chips.is-disabled .select__toggle { color: var(--tok-text-disabled); cursor: not-allowed; }
+.select--chips.is-disabled .select__chevron { color: var(--tok-icon-disabled); }
+.select--chips.is-disabled .select__chip-remove { display: none; }
 /* the panel — Listbox, under the field, at least as wide as it */
 .select__panel { margin: 0; }
 
@@ -373,6 +398,7 @@
     <a class="navlink" href="select.html">Select</a>
     <a class="navlink" href="select.html#combobox">ComboboxField</a>
     <a class="navlink" href="select.html#infinite">InfiniteComboboxField</a>
+    <a class="navlink" href="select.html#badges">MultiSelectBadges</a>
     <a class="navlink" href="calendar.html">Calendar</a>
     <a class="navlink" href="date-picker.html">DatePicker</a>
     <a class="navlink" href="date-range-picker.html">DateRangePicker</a>
@@ -876,10 +902,10 @@ window.hpCalendar = window.hpCalendar || (function () {
 })();
 (function () {
   var GAP = 4;
-  var CHECK = "<svg class=\"listbox__checkmark\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z\"/></svg>", CB = "<span class=\"listbox__cb-box\"><svg class=\"listbox__cb-icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z\"/></svg></span>";
+  var XICON = "<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z\"/></svg>", CHECK = "<svg class=\"listbox__checkmark\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z\"/></svg>", CB = "<span class=\"listbox__cb-box\"><svg class=\"listbox__cb-icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z\"/></svg></span>";
   document.querySelectorAll("[data-select]").forEach(function (wrap) {
     if (wrap._hpsel) return; wrap._hpsel = true;
-    var trigger = wrap.querySelector(".select"), panel = wrap.querySelector(".select__panel"), multiple = wrap.hasAttribute("data-multiple");
+    var box = wrap.querySelector(".select"), trigger = wrap.querySelector(".select__toggle") || box, chipList = wrap.querySelector(".select__chips"), panel = wrap.querySelector(".select__panel"), multiple = wrap.hasAttribute("data-multiple");
     var text = wrap.querySelector(".select__text"), more = wrap.querySelector(".select__more");
     // focus an option without scrolling the page; keep it in view inside a long list
     function go(el) { if (!el) return; el.focus({ preventScroll: true }); el.scrollIntoView({ block: "nearest" }); }
@@ -912,7 +938,8 @@ window.hpCalendar = window.hpCalendar || (function () {
       }, function () { if (mine !== ticket) return; busy = false; list.removeAttribute("aria-busy"); setStatus("error"); });
     }
     if (source) {
-      new IntersectionObserver(function (es) { if (es[0].isIntersecting && panel.matches(":popover-open")) load(); }, { root: list }).observe(status);
+      // near the bottom (the Loading… row in sight) → the next page
+      list.addEventListener("scroll", function () { if (list.scrollTop + list.clientHeight >= list.scrollHeight - status.offsetHeight * 2) load(); }, { passive: true });
       status.addEventListener("click", function (e) { if (e.target.closest(".listbox__retry")) load(); });
     }
     function filter(q) {
@@ -923,7 +950,7 @@ window.hpCalendar = window.hpCalendar || (function () {
       if (empty) empty.hidden = opts().length > 0;
     }
     function place() {
-      var r = trigger.getBoundingClientRect(); panel.style.position = "fixed"; panel.style.right = "auto"; panel.style.bottom = "auto"; panel.style.minWidth = r.width + "px";
+      var r = box.getBoundingClientRect(); panel.style.position = "fixed"; panel.style.right = "auto"; panel.style.bottom = "auto"; panel.style.minWidth = r.width + "px";
       var h = panel.offsetHeight, top = r.bottom + GAP;
       if (top + h > window.innerHeight - 8 && r.top - GAP - h > 8) top = r.top - GAP - h;
       panel.style.top = top + "px"; panel.style.left = Math.max(8, Math.min(r.left, window.innerWidth - panel.offsetWidth - 8)) + "px";
@@ -937,21 +964,40 @@ window.hpCalendar = window.hpCalendar || (function () {
       go(target);
     }
     function close(refocus) { if (panel.matches(":popover-open")) panel.hidePopover(); if (refocus) trigger.focus(); }
+    // the choices as [value, label] — from the store (source) or every option, filtered out or not
+    function chosenPairs() {
+      if (source) return Object.keys(chosen).map(function (v) { return [v, chosen[v]]; });
+      return Array.prototype.slice.call(panel.querySelectorAll(".listbox__option[aria-selected='true']")).map(function (o) { return [o.dataset.value, o.textContent]; });
+    }
+    function renderChips(pairs) {
+      chipList.innerHTML = "";
+      pairs.forEach(function (p) {
+        var li = document.createElement("li"), l = document.createElement("span"), x = document.createElement("button");
+        li.className = "select__chip"; li.dataset.value = p[0]; l.className = "select__chip-label"; l.textContent = p[1];
+        x.type = "button"; x.className = "select__chip-remove"; x.setAttribute("aria-label", "Remove " + p[1]); x.innerHTML = XICON;
+        li.appendChild(l); li.appendChild(x); chipList.appendChild(li);
+      });
+    }
     function sync() {
-      if (source) {
-        var vals = Object.keys(chosen);
-        wrap.dataset.value = vals.join(","); trigger.classList.toggle("is-placeholder", vals.length === 0);
-        text.textContent = vals.length ? chosen[vals[0]] : wrap.dataset.label;
-        more.hidden = vals.length < 2; more.textContent = "+" + Math.max(vals.length - 1, 0);
-        wrap.dispatchEvent(new CustomEvent("selectchange", { bubbles: true, detail: { value: multiple ? vals : (vals[0] || "") } }));
-        return;
-      }
-      var on = opts().filter(function (o) { return o.getAttribute("aria-selected") === "true"; });
-      wrap.dataset.value = on.map(function (o) { return o.dataset.value; }).join(",");
-      trigger.classList.toggle("is-placeholder", on.length === 0);
-      text.textContent = on.length ? on[0].textContent : wrap.dataset.label;
-      more.hidden = on.length < 2; more.textContent = "+" + Math.max(on.length - 1, 0);
-      wrap.dispatchEvent(new CustomEvent("selectchange", { bubbles: true, detail: { value: multiple ? on.map(function (o) { return o.dataset.value; }) : (on[0] ? on[0].dataset.value : "") } }));
+      var pairs = chosenPairs(), vals = pairs.map(function (p) { return p[0]; });
+      wrap.dataset.value = vals.join(","); box.classList.toggle("is-placeholder", pairs.length === 0);
+      if (chipList) { renderChips(pairs); text.textContent = pairs.length ? "" : wrap.dataset.placeholder; if (panel.matches(":popover-open")) place(); }
+      else { text.textContent = pairs.length ? pairs[0][1] : wrap.dataset.label; more.hidden = pairs.length < 2; more.textContent = "+" + Math.max(pairs.length - 1, 0); }
+      wrap.dispatchEvent(new CustomEvent("selectchange", { bubbles: true, detail: { value: multiple ? vals : (vals[0] || "") } }));
+    }
+    // chips: × takes a choice out (focus moves to the next ×, or the toggle); a click anywhere else on the box opens
+    function unpick(v) {
+      if (source) delete chosen[v];
+      panel.querySelectorAll(".listbox__option").forEach(function (o) { if (o.dataset.value === v) o.setAttribute("aria-selected", "false"); });
+      sync();
+    }
+    if (chipList) {
+      box.addEventListener("click", function (e) {
+        var x = e.target.closest(".select__chip-remove");
+        if (x) { if (trigger.disabled) return; var li = x.closest(".select__chip"), i = Array.prototype.indexOf.call(chipList.children, li); unpick(li.dataset.value); var nx = chipList.children[i] || chipList.children[i - 1]; (nx ? nx.querySelector(".select__chip-remove") : trigger).focus(); return; }
+        if (!e.target.closest(".select__toggle") && !e.target.closest(".select__chip")) trigger.click();
+      });
+      trigger.addEventListener("keydown", function (e) { if (e.key === "Backspace" && chipList.lastElementChild) { e.preventDefault(); unpick(chipList.lastElementChild.dataset.value); } });
     }
     function pick(o) {
       if (source) {
