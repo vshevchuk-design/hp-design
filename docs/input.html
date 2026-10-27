@@ -66,14 +66,17 @@
 .text-field { height: 40px; padding: 0 12px; gap: 8px; }
 .text-field .text-field__icon { width: 20px; height: 20px; }
 .text-field .text-field__action { margin-inline-end: -8px; }
+.text-field { --tf-action-pull: -8px; }
 .text-field .text-field__stack { gap: 0px; }
 .text-field .text-field__label { font-weight: 400; font-size: 12px; line-height: 1.2; }
 .text-field--sm { height: 32px; padding: 0 8px; gap: 8px; }
 .text-field--sm .text-field__icon { width: 16px; height: 16px; }
 .text-field--sm .text-field__action { margin-inline-end: -4px; }
+.text-field--sm { --tf-action-pull: -4px; }
 .text-field--lg { height: 48px; padding: 0 16px; gap: 8px; }
 .text-field--lg .text-field__icon { width: 24px; height: 24px; }
 .text-field--lg .text-field__action { margin-inline-end: -12px; }
+.text-field--lg { --tf-action-pull: -12px; }
 .text-field--lg .text-field__stack { gap: 4px; }
 .text-field--lg .text-field__label { font-weight: 400; font-size: 12px; line-height: 1.2; }
 .text-field__icon { flex-shrink: 0; color: var(--tok-icon-default); }
@@ -107,6 +110,15 @@
 .text-field__action svg { width: 16px; height: 16px; }
 .text-field__action[aria-pressed="true"] .text-field__show, .text-field__action[aria-pressed="false"] .text-field__hide { display: none; }
 .text-field--sm .text-field__action { width: 24px; height: 24px; }
+.text-field__action:disabled { color: var(--tok-icon-disabled); background: transparent; cursor: not-allowed; }
+/* NumberField — the same field + − / + (two of the trailing actions, 0 apart) and an optional unit.
+   The input is type=text inputmode=decimal role=spinbutton: type=number's spinners are tiny, the
+   scroll wheel changes it and it takes "e". */
+.text-field__steps { display: flex; flex-shrink: 0; }
+.text-field__steps .text-field__action { margin-inline-end: 0; }
+.text-field__steps .text-field__action:last-child { margin-inline-end: var(--tf-action-pull, 0); }
+.text-field__unit { flex-shrink: 0; color: var(--tok-text-muted); font-weight: 400; font-size: 16px; line-height: 1.2; }
+.text-field__control[role="spinbutton"] { font-variant-numeric: tabular-nums; }
 /* Text area — the same field, growing downward; the label sits on top */
 .text-field--area { height: auto; min-height: 96px; align-items: stretch; padding-top: 8px; padding-bottom: 8px; }
 .text-field--area .text-field__stack { justify-content: flex-start; }
@@ -157,6 +169,7 @@
     <a class="navlink" href="fab.html">FAB</a>
     <a class="navlink" href="counter.html">Counter</a>
     <a class="navlink active" href="input.html">Input</a>
+    <a class="navlink" href="input.html#number">NumberField</a>
     <a class="navlink" href="form.html">Form</a>
     <a class="navlink" href="select.html">Select</a>
     <a class="navlink" href="select.html#combobox">ComboboxField</a>
@@ -339,6 +352,77 @@
 &lt;/div&gt;
 &lt;/div&gt;</code></pre><p class="story-note">inputmode="numeric" — digits keyboard, still a text field. Not type="number": its spinners are tiny, the scroll wheel changes it and it accepts "e". A quantity with steps is NumberField.</p></div></div>
 
+    <h2 class="big-section" id="number">NumberField</h2>
+    <p class="section-desc">A quantity with steps — credits, guests, hours. The same field + − / + at the trailing edge (Button ghost sm icon-only, out of the Tab order: the arrow keys do the same) and an optional unit: <code class="tok">textFieldHtml({ …, number: { min, max, step, decimals, unit } })</code>. The input is <code class="tok">type="text"</code> <code class="tok">inputmode="numeric|decimal"</code> <code class="tok">role="spinbutton"</code> with aria-valuemin / max / now — never <code class="tok">type="number"</code>. Typing keeps only what can be a number; on blur the value snaps to the step and the range. A code or ID that happens to be digits is not a NumberField (nothing to step) — that's <code class="tok">inputmode="numeric"</code> on a plain field.</p>
+    <div class="story-grid"><div class="story"><h3>Credits</h3><div class="story-preview"><div class="text-field"><div class="text-field__stack"><label class="text-field__label" for="n-cr">Credits</label><input class="text-field__control" id="n-cr" name="n-cr" placeholder="Credits" inputmode="numeric" role="spinbutton" data-number data-step="1" data-decimals="0" data-unit="credits" data-min="0" aria-valuemin="0" data-max="21" aria-valuemax="21" aria-valuenow="12" autocomplete="off" type="text" value="12" /></div><span class="text-field__unit" aria-hidden="true">credits</span><div class="text-field__steps"><button class="text-field__action" type="button" tabindex="-1" aria-label="Decrease" aria-controls="n-cr" data-step-by="-1"><svg class="" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13H5v-2h14v2z"/></svg></button><button class="text-field__action" type="button" tabindex="-1" aria-label="Increase" aria-controls="n-cr" data-step-by="1"><svg class="" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></button></div></div></div><pre class="code"><code>&lt;div class="text-field"&gt;
+&lt;div class="text-field__stack"&gt;
+&lt;label class="text-field__label" for="n-cr"&gt;Credits&lt;/label&gt;
+&lt;input class="text-field__control" id="n-cr" name="n-cr" placeholder="Credits" inputmode="numeric" role="spinbutton" data-number data-step="1" data-decimals="0" data-unit="credits" data-min="0" aria-valuemin="0" data-max="21" aria-valuemax="21" aria-valuenow="12" autocomplete="off" type="text" value="12" /&gt;
+&lt;/div&gt;
+&lt;span class="text-field__unit" aria-hidden="true"&gt;credits&lt;/span&gt;
+&lt;div class="text-field__steps"&gt;
+&lt;button class="text-field__action" type="button" tabindex="-1" aria-label="Decrease" aria-controls="n-cr" data-step-by="-1"&gt;…&lt;/button&gt;
+&lt;button class="text-field__action" type="button" tabindex="-1" aria-label="Increase" aria-controls="n-cr" data-step-by="1"&gt;…&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;</code></pre><p class="story-note">− / + step by 1; ↑ ↓ too, Shift or PageUp / PageDown by 10, Home / End to the ends. Press and hold a button to keep going.</p></div><div class="story"><h3>At the minimum</h3><div class="story-preview"><div class="text-field"><div class="text-field__stack"><label class="text-field__label" for="n-min">Guests</label><input class="text-field__control" id="n-min" name="n-min" placeholder="Guests" inputmode="numeric" role="spinbutton" data-number data-step="1" data-decimals="0" data-min="1" aria-valuemin="1" data-max="10" aria-valuemax="10" aria-valuenow="1" autocomplete="off" type="text" value="1" /></div><div class="text-field__steps"><button class="text-field__action" type="button" tabindex="-1" aria-label="Decrease" aria-controls="n-min" data-step-by="-1" disabled><svg class="" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13H5v-2h14v2z"/></svg></button><button class="text-field__action" type="button" tabindex="-1" aria-label="Increase" aria-controls="n-min" data-step-by="1"><svg class="" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></button></div></div></div><pre class="code"><code>&lt;div class="text-field"&gt;
+&lt;div class="text-field__stack"&gt;
+&lt;label class="text-field__label" for="n-min"&gt;Guests&lt;/label&gt;
+&lt;input class="text-field__control" id="n-min" name="n-min" placeholder="Guests" inputmode="numeric" role="spinbutton" data-number data-step="1" data-decimals="0" data-min="1" aria-valuemin="1" data-max="10" aria-valuemax="10" aria-valuenow="1" autocomplete="off" type="text" value="1" /&gt;
+&lt;/div&gt;
+&lt;div class="text-field__steps"&gt;
+&lt;button class="text-field__action" type="button" tabindex="-1" aria-label="Decrease" aria-controls="n-min" data-step-by="-1" disabled&gt;…&lt;/button&gt;
+&lt;button class="text-field__action" type="button" tabindex="-1" aria-label="Increase" aria-controls="n-min" data-step-by="1"&gt;…&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;</code></pre><p class="story-note">At min the − is disabled (and at max the +) — the end of the range is visible before you hit it.</p></div><div class="story"><h3>Decimals</h3><div class="story-preview"><div class="text-field"><div class="text-field__stack"><label class="text-field__label" for="n-dec">Hours per week</label><input class="text-field__control" id="n-dec" name="n-dec" placeholder="Hours per week" inputmode="decimal" role="spinbutton" data-number data-step="0.5" data-decimals="1" data-unit="h" data-min="0" aria-valuemin="0" data-max="40" aria-valuemax="40" aria-valuenow="7.5" autocomplete="off" type="text" value="7.5" /></div><span class="text-field__unit" aria-hidden="true">h</span><div class="text-field__steps"><button class="text-field__action" type="button" tabindex="-1" aria-label="Decrease" aria-controls="n-dec" data-step-by="-1"><svg class="" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13H5v-2h14v2z"/></svg></button><button class="text-field__action" type="button" tabindex="-1" aria-label="Increase" aria-controls="n-dec" data-step-by="1"><svg class="" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></button></div></div></div><pre class="code"><code>&lt;div class="text-field"&gt;
+&lt;div class="text-field__stack"&gt;
+&lt;label class="text-field__label" for="n-dec"&gt;Hours per week&lt;/label&gt;
+&lt;input class="text-field__control" id="n-dec" name="n-dec" placeholder="Hours per week" inputmode="decimal" role="spinbutton" data-number data-step="0.5" data-decimals="1" data-unit="h" data-min="0" aria-valuemin="0" data-max="40" aria-valuemax="40" aria-valuenow="7.5" autocomplete="off" type="text" value="7.5" /&gt;
+&lt;/div&gt;
+&lt;span class="text-field__unit" aria-hidden="true"&gt;h&lt;/span&gt;
+&lt;div class="text-field__steps"&gt;
+&lt;button class="text-field__action" type="button" tabindex="-1" aria-label="Decrease" aria-controls="n-dec" data-step-by="-1"&gt;…&lt;/button&gt;
+&lt;button class="text-field__action" type="button" tabindex="-1" aria-label="Increase" aria-controls="n-dec" data-step-by="1"&gt;…&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;</code></pre><p class="story-note">step 0.5, one decimal. Type 7.26 and leave the field: it snaps to 7.5 — the step and the range are kept on blur, never mid-typing.</p></div><div class="story"><h3>Empty</h3><div class="story-preview"><div class="text-field"><div class="text-field__stack"><label class="text-field__label" for="n-empty">Seats</label><input class="text-field__control" id="n-empty" name="n-empty" placeholder="Seats" inputmode="numeric" role="spinbutton" data-number data-step="1" data-decimals="0" data-min="1" aria-valuemin="1" data-max="30" aria-valuemax="30" autocomplete="off" type="text" /></div><div class="text-field__steps"><button class="text-field__action" type="button" tabindex="-1" aria-label="Decrease" aria-controls="n-empty" data-step-by="-1"><svg class="" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13H5v-2h14v2z"/></svg></button><button class="text-field__action" type="button" tabindex="-1" aria-label="Increase" aria-controls="n-empty" data-step-by="1"><svg class="" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></button></div></div></div><pre class="code"><code>&lt;div class="text-field"&gt;
+&lt;div class="text-field__stack"&gt;
+&lt;label class="text-field__label" for="n-empty"&gt;Seats&lt;/label&gt;
+&lt;input class="text-field__control" id="n-empty" name="n-empty" placeholder="Seats" inputmode="numeric" role="spinbutton" data-number data-step="1" data-decimals="0" data-min="1" aria-valuemin="1" data-max="30" aria-valuemax="30" autocomplete="off" type="text" /&gt;
+&lt;/div&gt;
+&lt;div class="text-field__steps"&gt;
+&lt;button class="text-field__action" type="button" tabindex="-1" aria-label="Decrease" aria-controls="n-empty" data-step-by="-1"&gt;…&lt;/button&gt;
+&lt;button class="text-field__action" type="button" tabindex="-1" aria-label="Increase" aria-controls="n-empty" data-step-by="1"&gt;…&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;</code></pre><p class="story-note">+ starts at the minimum, − at the maximum.</p></div><div class="story"><h3>sm</h3><div class="story-preview"><div class="text-field text-field--sm"><div class="text-field__stack"><label class="text-field__label" for="n-sm">Quantity</label><input class="text-field__control" id="n-sm" name="n-sm" placeholder="Quantity" inputmode="numeric" role="spinbutton" data-number data-step="1" data-decimals="0" data-min="1" aria-valuemin="1" data-max="99" aria-valuemax="99" aria-valuenow="2" autocomplete="off" type="text" value="2" /></div><div class="text-field__steps"><button class="text-field__action" type="button" tabindex="-1" aria-label="Decrease" aria-controls="n-sm" data-step-by="-1"><svg class="" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13H5v-2h14v2z"/></svg></button><button class="text-field__action" type="button" tabindex="-1" aria-label="Increase" aria-controls="n-sm" data-step-by="1"><svg class="" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></button></div></div></div><pre class="code"><code>&lt;div class="text-field text-field--sm"&gt;
+&lt;div class="text-field__stack"&gt;
+&lt;label class="text-field__label" for="n-sm"&gt;Quantity&lt;/label&gt;
+&lt;input class="text-field__control" id="n-sm" name="n-sm" placeholder="Quantity" inputmode="numeric" role="spinbutton" data-number data-step="1" data-decimals="0" data-min="1" aria-valuemin="1" data-max="99" aria-valuemax="99" aria-valuenow="2" autocomplete="off" type="text" value="2" /&gt;
+&lt;/div&gt;
+&lt;div class="text-field__steps"&gt;
+&lt;button class="text-field__action" type="button" tabindex="-1" aria-label="Decrease" aria-controls="n-sm" data-step-by="-1"&gt;…&lt;/button&gt;
+&lt;button class="text-field__action" type="button" tabindex="-1" aria-label="Increase" aria-controls="n-sm" data-step-by="1"&gt;…&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;</code></pre><p class="story-note">Tables and filters: the 24px buttons of sm.</p></div><div class="story"><h3>Disabled</h3><div class="story-preview"><div class="text-field"><div class="text-field__stack"><label class="text-field__label" for="n-dis">Credits</label><input class="text-field__control" id="n-dis" name="n-dis" placeholder="Credits" inputmode="numeric" role="spinbutton" data-number data-step="1" data-decimals="0" data-unit="credits" data-min="0" aria-valuemin="0" data-max="21" aria-valuemax="21" aria-valuenow="12" autocomplete="off" disabled type="text" value="12" /></div><span class="text-field__unit" aria-hidden="true">credits</span><div class="text-field__steps"><button class="text-field__action" type="button" tabindex="-1" aria-label="Decrease" aria-controls="n-dis" data-step-by="-1" disabled><svg class="" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13H5v-2h14v2z"/></svg></button><button class="text-field__action" type="button" tabindex="-1" aria-label="Increase" aria-controls="n-dis" data-step-by="1" disabled><svg class="" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></button></div></div></div><pre class="code"><code>&lt;div class="text-field"&gt;
+&lt;div class="text-field__stack"&gt;
+&lt;label class="text-field__label" for="n-dis"&gt;Credits&lt;/label&gt;
+&lt;input class="text-field__control" id="n-dis" name="n-dis" placeholder="Credits" inputmode="numeric" role="spinbutton" data-number data-step="1" data-decimals="0" data-unit="credits" data-min="0" aria-valuemin="0" data-max="21" aria-valuemax="21" aria-valuenow="12" autocomplete="off" disabled type="text" value="12" /&gt;
+&lt;/div&gt;
+&lt;span class="text-field__unit" aria-hidden="true"&gt;credits&lt;/span&gt;
+&lt;div class="text-field__steps"&gt;
+&lt;button class="text-field__action" type="button" tabindex="-1" aria-label="Decrease" aria-controls="n-dis" data-step-by="-1" disabled&gt;…&lt;/button&gt;
+&lt;button class="text-field__action" type="button" tabindex="-1" aria-label="Increase" aria-controls="n-dis" data-step-by="1" disabled&gt;…&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;</code></pre></div><div class="story"><h3>Error</h3><div class="story-preview"><div class="text-field"><div class="text-field__stack"><label class="text-field__label" for="n-err">Credits</label><input class="text-field__control" id="n-err" name="n-err" placeholder="Credits" inputmode="numeric" role="spinbutton" data-number data-step="1" data-decimals="0" data-unit="credits" data-min="0" aria-valuemin="0" data-max="30" aria-valuemax="30" aria-valuenow="24" autocomplete="off" aria-invalid="true" type="text" value="24" /></div><span class="text-field__unit" aria-hidden="true">credits</span><div class="text-field__steps"><button class="text-field__action" type="button" tabindex="-1" aria-label="Decrease" aria-controls="n-err" data-step-by="-1"><svg class="" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13H5v-2h14v2z"/></svg></button><button class="text-field__action" type="button" tabindex="-1" aria-label="Increase" aria-controls="n-err" data-step-by="1"><svg class="" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></button></div></div></div><pre class="code"><code>&lt;div class="text-field"&gt;
+&lt;div class="text-field__stack"&gt;
+&lt;label class="text-field__label" for="n-err"&gt;Credits&lt;/label&gt;
+&lt;input class="text-field__control" id="n-err" name="n-err" placeholder="Credits" inputmode="numeric" role="spinbutton" data-number data-step="1" data-decimals="0" data-unit="credits" data-min="0" aria-valuemin="0" data-max="30" aria-valuemax="30" aria-valuenow="24" autocomplete="off" aria-invalid="true" type="text" value="24" /&gt;
+&lt;/div&gt;
+&lt;span class="text-field__unit" aria-hidden="true"&gt;credits&lt;/span&gt;
+&lt;div class="text-field__steps"&gt;
+&lt;button class="text-field__action" type="button" tabindex="-1" aria-label="Decrease" aria-controls="n-err" data-step-by="-1"&gt;…&lt;/button&gt;
+&lt;button class="text-field__action" type="button" tabindex="-1" aria-label="Increase" aria-controls="n-err" data-step-by="1"&gt;…&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;</code></pre><p class="story-note">Out of what's allowed for this student (more than 21 without approval) — the field's range is wider, the rule is the form's. The message goes under it in a Field.</p></div></div>
+
     <h2 class="big-section">CSS</h2>
     <pre class="code"><code>:root {
   --tok-surface-dim: #f4f5f7;
@@ -373,14 +457,17 @@
 .text-field { height: 40px; padding: 0 12px; gap: 8px; }
 .text-field .text-field__icon { width: 20px; height: 20px; }
 .text-field .text-field__action { margin-inline-end: -8px; }
+.text-field { --tf-action-pull: -8px; }
 .text-field .text-field__stack { gap: 0px; }
 .text-field .text-field__label { font-weight: 400; font-size: 12px; line-height: 1.2; }
 .text-field--sm { height: 32px; padding: 0 8px; gap: 8px; }
 .text-field--sm .text-field__icon { width: 16px; height: 16px; }
 .text-field--sm .text-field__action { margin-inline-end: -4px; }
+.text-field--sm { --tf-action-pull: -4px; }
 .text-field--lg { height: 48px; padding: 0 16px; gap: 8px; }
 .text-field--lg .text-field__icon { width: 24px; height: 24px; }
 .text-field--lg .text-field__action { margin-inline-end: -12px; }
+.text-field--lg { --tf-action-pull: -12px; }
 .text-field--lg .text-field__stack { gap: 4px; }
 .text-field--lg .text-field__label { font-weight: 400; font-size: 12px; line-height: 1.2; }
 .text-field__icon { flex-shrink: 0; color: var(--tok-icon-default); }
@@ -414,6 +501,15 @@
 .text-field__action svg { width: 16px; height: 16px; }
 .text-field__action[aria-pressed="true"] .text-field__show, .text-field__action[aria-pressed="false"] .text-field__hide { display: none; }
 .text-field--sm .text-field__action { width: 24px; height: 24px; }
+.text-field__action:disabled { color: var(--tok-icon-disabled); background: transparent; cursor: not-allowed; }
+/* NumberField — the same field + − / + (two of the trailing actions, 0 apart) and an optional unit.
+   The input is type=text inputmode=decimal role=spinbutton: type=number's spinners are tiny, the
+   scroll wheel changes it and it takes "e". */
+.text-field__steps { display: flex; flex-shrink: 0; }
+.text-field__steps .text-field__action { margin-inline-end: 0; }
+.text-field__steps .text-field__action:last-child { margin-inline-end: var(--tf-action-pull, 0); }
+.text-field__unit { flex-shrink: 0; color: var(--tok-text-muted); font-weight: 400; font-size: 16px; line-height: 1.2; }
+.text-field__control[role="spinbutton"] { font-variant-numeric: tabular-nums; }
 /* Text area — the same field, growing downward; the label sits on top */
 .text-field--area { height: auto; min-height: 96px; align-items: stretch; padding-top: 8px; padding-bottom: 8px; }
 .text-field--area .text-field__stack { justify-content: flex-start; }
@@ -423,6 +519,54 @@
 </div>
 <script>
 (function () {
+  document.querySelectorAll("[data-number]").forEach(function (inp) {
+    if (inp._hpnum) return; inp._hpnum = true;
+    var box = inp.closest(".text-field"), dn = box.querySelector('[data-step-by="-1"]'), up = box.querySelector('[data-step-by="1"]');
+    var step = +inp.dataset.step || 1, dec = +inp.dataset.decimals || 0;
+    var min = inp.dataset.min !== undefined ? +inp.dataset.min : -Infinity, max = inp.dataset.max !== undefined ? +inp.dataset.max : Infinity;
+    var base = isFinite(min) ? min : 0, last = inp.value;
+    function parse() { var t = inp.value.replace(/[s,]/g, ""); return t === "" ? null : (isFinite(+t) ? +t : NaN); }
+    function fit(n) { n = Math.round((n - base) / step) * step + base; return Math.min(max, Math.max(min, +n.toFixed(dec))); }
+    function update() {
+      var n = parse(), off = inp.disabled || inp.readOnly, ok = n !== null && !isNaN(n);
+      dn.disabled = off || (ok && n <= min); up.disabled = off || (ok && n >= max);
+      if (ok) inp.setAttribute("aria-valuenow", n); else inp.removeAttribute("aria-valuenow");
+      if (ok && inp.dataset.unit) inp.setAttribute("aria-valuetext", inp.value + " " + inp.dataset.unit); else inp.removeAttribute("aria-valuetext"); // the unit is aria-hidden on screen
+    }
+    function set(n) {
+      n = fit(n); var v = n.toFixed(dec); if (v === inp.value) { update(); return; }
+      inp.value = v; last = v; update();
+      inp.dispatchEvent(new Event("input", { bubbles: true })); inp.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+    function bump(k) { var n = parse(); if (n === null || isNaN(n)) n = k > 0 ? (isFinite(min) ? min - step : -step) : (isFinite(max) ? max + step : step); set(n + k * step); }
+    inp.addEventListener("keydown", function (e) {
+      var big = 10;
+      if (e.key === "ArrowUp") { e.preventDefault(); bump(e.shiftKey ? big : 1); }
+      else if (e.key === "ArrowDown") { e.preventDefault(); bump(e.shiftKey ? -big : -1); }
+      else if (e.key === "PageUp") { e.preventDefault(); bump(big); }
+      else if (e.key === "PageDown") { e.preventDefault(); bump(-big); }
+      else if (e.key === "Home" && isFinite(min)) { e.preventDefault(); set(min); }
+      else if (e.key === "End" && isFinite(max)) { e.preventDefault(); set(max); }
+    });
+    inp.addEventListener("input", function (e) {
+      if (!e.isTrusted) return;
+      var t = inp.value.replace(dec ? /[^0-9.-]/g : /[^0-9-]/g, "").replace(/(?!^)-/g, "").replace(/(..*)./g, "$1");
+      if (!(min < 0)) t = t.replace(/-/g, "");
+      if (t !== inp.value) inp.value = t; update();
+    });
+    inp.addEventListener("blur", function () { var n = parse(); if (n === null) { last = ""; update(); return; } if (isNaN(n)) { inp.value = last; update(); return; } set(n); });
+    [dn, up].forEach(function (b) {
+      var hold = null, rep = null;
+      function stop() { clearTimeout(hold); clearInterval(rep); hold = rep = null; }
+      b.addEventListener("pointerdown", function (e) {
+        if (b.disabled || e.button !== 0) return; e.preventDefault(); inp.focus();
+        var k = +b.dataset.stepBy; bump(k);
+        hold = setTimeout(function () { rep = setInterval(function () { if (b.disabled) stop(); else bump(k); }, 80); }, 400);
+      });
+      ["pointerup", "pointerleave", "pointercancel"].forEach(function (ev) { b.addEventListener(ev, stop); });
+    });
+    update();
+  });
   document.querySelectorAll("[data-reveal]").forEach(function (btn) {
     if (btn._hpreveal) return; btn._hpreveal = true;
     var input = document.getElementById(btn.getAttribute("aria-controls"));

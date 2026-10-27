@@ -63,7 +63,7 @@ const content = [
 
 const combobox = [
   story("Single", { id: "cb-single", label: "Course", options: COURSES, searchable: true, searchPlaceholder: "Search courses…" }, "Type to narrow the list; ↓ goes into it, Enter picks the first match. One choice → a checkmark, not checkboxes (a checkbox promises 'pick several'). No 'Clear selection' row — pick another; an optional field clears with a None option if it needs one."),
-  story("Multi", { id: "cb-multi", label: "Courses", options: COURSES, value: ["Linear Algebra", "English Composition"], multiple: true, searchable: true, searchPlaceholder: "Search courses…" }, "Checkboxes, the list stays open while you search and tick. The field keeps one line: the first choice + a Counter."),
+  story("Multi", { id: "cb-multi", label: "Courses", options: COURSES, value: ["Linear Algebra", "English Composition"], multiple: true, searchable: true, searchPlaceholder: "Search courses…" }, "Checkboxes, the list stays open while you search and tick. Under the search: '2 selected · Clear all' — it clears every choice, even ones the search is hiding. The field keeps one line: the first choice + a Counter."),
   story("With groups", { id: "cb-groups", label: "Program", options: MAJORS, searchable: true, searchPlaceholder: "Search programs…" }, "Search across groups; a group with nothing left hides, and so does the hairline. Try 'sci'. Nothing at all → 'No results'."),
 ];
 

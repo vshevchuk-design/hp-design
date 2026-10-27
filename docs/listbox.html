@@ -149,6 +149,8 @@
 
 .listbox__select-all { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 4px 8px; }
 .listbox__select-all-label { color: var(--tok-text-secondary); margin: 0; font-weight: 400; font-size: 12px; line-height: 1.4; }
+.listbox__select-all[hidden] { display: none; }
+.listbox__clear:focus-visible { outline: 2px solid var(--tok-border-focus); outline-offset: 2px; border-radius: 2px; }
 .listbox__clear { border: none; background: none; padding: 0; cursor: pointer; color: var(--tok-text-primary); font-weight: 400; font-size: 12px; line-height: 1.4; text-decoration: underline; }
 
 /* groups ("Fruits", "Vegetables") — Command's group heading, a hairline between groups */
@@ -201,6 +203,7 @@
     <a class="navlink" href="fab.html">FAB</a>
     <a class="navlink" href="counter.html">Counter</a>
     <a class="navlink" href="input.html">Input</a>
+    <a class="navlink" href="input.html#number">NumberField</a>
     <a class="navlink" href="form.html">Form</a>
     <a class="navlink" href="select.html">Select</a>
     <a class="navlink" href="select.html#combobox">ComboboxField</a>
@@ -376,6 +379,8 @@
 
 .listbox__select-all { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 4px 8px; }
 .listbox__select-all-label { color: var(--tok-text-secondary); margin: 0; font-weight: 400; font-size: 12px; line-height: 1.4; }
+.listbox__select-all[hidden] { display: none; }
+.listbox__clear:focus-visible { outline: 2px solid var(--tok-border-focus); outline-offset: 2px; border-radius: 2px; }
 .listbox__clear { border: none; background: none; padding: 0; cursor: pointer; color: var(--tok-text-primary); font-weight: 400; font-size: 12px; line-height: 1.4; text-decoration: underline; }
 
 /* groups ("Fruits", "Vegetables") — Command's group heading, a hairline between groups */

@@ -59,6 +59,16 @@ const types = [
   story("Numeric code", { id: "t-num", label: "Student ID", inputmode: "numeric", autocomplete: "off" }, `inputmode="numeric" — digits keyboard, still a text field. Not type="number": its spinners are tiny, the scroll wheel changes it and it accepts "e". A quantity with steps is NumberField.`),
 ];
 
+const number = [
+  story("Credits", { id: "n-cr", label: "Credits", value: "12", number: { min: 0, max: 21, unit: "credits" } }, "− / + step by 1; ↑ ↓ too, Shift or PageUp / PageDown by 10, Home / End to the ends. Press and hold a button to keep going."),
+  story("At the minimum", { id: "n-min", label: "Guests", value: "1", number: { min: 1, max: 10 } }, "At min the − is disabled (and at max the +) — the end of the range is visible before you hit it."),
+  story("Decimals", { id: "n-dec", label: "Hours per week", value: "7.5", number: { min: 0, max: 40, step: 0.5, decimals: 1, unit: "h" } }, "step 0.5, one decimal. Type 7.26 and leave the field: it snaps to 7.5 — the step and the range are kept on blur, never mid-typing."),
+  story("Empty", { id: "n-empty", label: "Seats", number: { min: 1, max: 30 } }, "+ starts at the minimum, − at the maximum."),
+  story("sm", { id: "n-sm", size: "sm", label: "Quantity", value: "2", number: { min: 1, max: 99 } }, "Tables and filters: the 24px buttons of sm."),
+  story("Disabled", { id: "n-dis", label: "Credits", value: "12", disabled: true, number: { min: 0, max: 21, unit: "credits" } }),
+  story("Error", { id: "n-err", label: "Credits", value: "24", invalid: true, number: { min: 0, max: 30, unit: "credits" } }, `Out of what's allowed for this student (more than 21 without approval) — the field's range is wider, the rule is the form's. The message goes under it in a Field.`),
+];
+
 const html = `<!doctype html>
 <html lang="en">
 <head>
@@ -125,6 +135,10 @@ const html = `<!doctype html>
 
     <h2 class="big-section">Types</h2>
     <div class="story-grid">${types.join("")}</div>
+
+    <h2 class="big-section" id="number">NumberField</h2>
+    <p class="section-desc">A quantity with steps — credits, guests, hours. The same field + − / + at the trailing edge (Button ghost sm icon-only, out of the Tab order: the arrow keys do the same) and an optional unit: <code class="tok">textFieldHtml({ …, number: { min, max, step, decimals, unit } })</code>. The input is <code class="tok">type="text"</code> <code class="tok">inputmode="numeric|decimal"</code> <code class="tok">role="spinbutton"</code> with aria-valuemin / max / now — never <code class="tok">type="number"</code>. Typing keeps only what can be a number; on blur the value snaps to the step and the range. A code or ID that happens to be digits is not a NumberField (nothing to step) — that's <code class="tok">inputmode="numeric"</code> on a plain field.</p>
+    <div class="story-grid">${number.join("")}</div>
 
     <h2 class="big-section">CSS</h2>
     <pre class="code"><code>${esc(css)}</code></pre>

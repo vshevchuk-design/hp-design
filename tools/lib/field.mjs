@@ -85,6 +85,7 @@ const sizeCss = ["base", "sm", "lg"].map((k) => {
     `${sel} { height: ${D(z.height)}; padding: 0 ${D(z.paddingX)}; gap: ${D(z.gap)}; }`,
     `${sel} .text-field__icon { width: ${D(z.iconSize)}; height: ${D(z.iconSize)}; }`,
     `${sel} .text-field__action { margin-inline-end: -${resolveToken(z.paddingX).value - 4}px; }`,
+    `${sel} { --tf-action-pull: -${resolveToken(z.paddingX).value - 4}px; }`,
   ];
   if (z.label) lines.push(`${sel} .text-field__stack { gap: ${D(z.labelGap)}; }`, `${sel} .text-field__label { ${T(z.label)} }`);
   return lines.join("\n");
@@ -129,6 +130,15 @@ ${sizeCss}
 .text-field__action svg { width: ${D(ghost.size.sm.iconSize)}; height: ${D(ghost.size.sm.iconSize)}; }
 .text-field__action[aria-pressed="true"] .text-field__show, .text-field__action[aria-pressed="false"] .text-field__hide { display: none; }
 .text-field--sm .text-field__action { width: ${px(resolveToken(get("dim.6")))}; height: ${px(resolveToken(get("dim.6")))}; }
+.text-field__action:disabled { color: ${R(st.disabled.icon)}; background: transparent; cursor: not-allowed; }
+/* NumberField — the same field + − / + (two of the trailing actions, 0 apart) and an optional unit.
+   The input is type=text inputmode=decimal role=spinbutton: type=number's spinners are tiny, the
+   scroll wheel changes it and it takes "e". */
+.text-field__steps { display: flex; flex-shrink: 0; }
+.text-field__steps .text-field__action { margin-inline-end: 0; }
+.text-field__steps .text-field__action:last-child { margin-inline-end: var(--tf-action-pull, 0); }
+.text-field__unit { flex-shrink: 0; color: ${R(st.default.placeholder)}; ${T(base.value)} }
+.text-field__control[role="spinbutton"] { font-variant-numeric: tabular-nums; }
 /* Text area — the same field, growing downward; the label sits on top */
 .text-field--area { height: auto; min-height: ${px(resolveToken(get("dim.24")))}; align-items: stretch; padding-top: ${px(resolveToken(get("dim.2")))}; padding-bottom: ${px(resolveToken(get("dim.2")))}; }
 .text-field--area .text-field__stack { justify-content: flex-start; }
@@ -164,18 +174,78 @@ const errorIcon = () => icon("error", "field__error-icon");
 /** A text field: a real <input> (or <textarea> with `area`) on Input's recipe.
  *  size sm | base | lg · icon: a leading material icon name · reveal: password show/hide button
  *  (type becomes password) · readOnly / disabled / invalid: those states on the real control. */
-export function textFieldHtml({ id, label, size = "base", type = "text", required = false, value = "", placeholder = "", autocomplete = "", inputmode = "", area = false, describedBy = "", icon: iconName = "", reveal = false, readOnly = false, disabled = false, invalid = false }) {
-  const attrs = `class="text-field__control" id="${id}" name="${id}" placeholder="${placeholder || label}"${required ? " required" : ""}${autocomplete ? ` autocomplete="${autocomplete}"` : ""}${inputmode ? ` inputmode="${inputmode}"` : ""}${describedBy ? ` aria-describedby="${describedBy}"` : ""}${readOnly ? " readonly" : ""}${disabled ? " disabled" : ""}${invalid ? ' aria-invalid="true"' : ""}`;
+export function textFieldHtml({ id, label, size = "base", type = "text", required = false, value = "", placeholder = "", autocomplete = "", inputmode = "", area = false, describedBy = "", icon: iconName = "", reveal = false, readOnly = false, disabled = false, invalid = false, number = null }) {
+  // number: { min, max, step = 1, decimals = 0, unit } — NumberField: − / + and the arrow keys step it
+  const num = number ? { step: 1, decimals: 0, ...number } : null;
+  if (num) inputmode = num.decimals ? "decimal" : "numeric";
+  const numAttrs = num ? ` role="spinbutton" data-number data-step="${num.step}" data-decimals="${num.decimals}"${num.unit ? ` data-unit="${num.unit}"` : ""}${num.min != null ? ` data-min="${num.min}" aria-valuemin="${num.min}"` : ""}${num.max != null ? ` data-max="${num.max}" aria-valuemax="${num.max}"` : ""}${value !== "" ? ` aria-valuenow="${value}"` : ""} autocomplete="off"` : "";
+  const attrs = `class="text-field__control" id="${id}" name="${id}" placeholder="${placeholder || label}"${required ? " required" : ""}${autocomplete ? ` autocomplete="${autocomplete}"` : ""}${inputmode ? ` inputmode="${inputmode}"` : ""}${numAttrs}${describedBy ? ` aria-describedby="${describedBy}"` : ""}${readOnly ? " readonly" : ""}${disabled ? " disabled" : ""}${invalid ? ' aria-invalid="true"' : ""}`;
   const control = area ? `<textarea ${attrs} rows="3">${value}</textarea>` : `<input ${attrs} type="${reveal ? "password" : type}"${value ? ` value="${value}"` : ""} />`;
   const cls = `text-field${size !== "base" ? ` text-field--${size}` : ""}${area ? " text-field--area" : ""}`;
   const lead = iconName ? icon(iconName, "text-field__icon") : "";
+  const off = disabled || readOnly;
+  const steps = num ? `${num.unit ? `<span class="text-field__unit" aria-hidden="true">${num.unit}</span>` : ""}<div class="text-field__steps"><button class="text-field__action" type="button" tabindex="-1" aria-label="Decrease" aria-controls="${id}" data-step-by="-1"${off || (num.min != null && value !== "" && +value <= num.min) ? " disabled" : ""}>${icon("remove", "")}</button><button class="text-field__action" type="button" tabindex="-1" aria-label="Increase" aria-controls="${id}" data-step-by="1"${off || (num.max != null && value !== "" && +value >= num.max) ? " disabled" : ""}>${icon("add", "")}</button></div>` : "";
   const action = reveal ? `<button class="text-field__action" type="button" aria-label="Show password" aria-pressed="false" aria-controls="${id}" data-reveal${disabled ? " disabled" : ""}>${icon("visibility", "text-field__show")}${icon("visibility_off", "text-field__hide")}</button>` : "";
-  return `<div class="${cls}">${lead}<div class="text-field__stack"><label class="text-field__label" for="${id}">${label}</label>${control}</div>${action}</div>`;
+  return `<div class="${cls}">${lead}<div class="text-field__stack"><label class="text-field__label" for="${id}">${label}</label>${control}</div>${action}${steps}</div>`;
 }
 
 // Password reveal: flips the input between password and text; the button's
 // label says what the next press does.
+// NumberField: − / + step it (press and hold repeats); ↑ ↓ step, Shift or
+// PageUp / PageDown ×10, Home / End go to min / max. Typing keeps digits,
+// one "-" and one "."; on blur the value snaps to the step, stays in min–max
+// and shows its decimals — text that isn't a number goes back to the last one.
+// The buttons are out of the Tab order (the arrows do the same) and keep focus
+// in the input; each change fires input + change.
 export const TEXT_FIELD_JS = `(function () {
+  document.querySelectorAll("[data-number]").forEach(function (inp) {
+    if (inp._hpnum) return; inp._hpnum = true;
+    var box = inp.closest(".text-field"), dn = box.querySelector('[data-step-by="-1"]'), up = box.querySelector('[data-step-by="1"]');
+    var step = +inp.dataset.step || 1, dec = +inp.dataset.decimals || 0;
+    var min = inp.dataset.min !== undefined ? +inp.dataset.min : -Infinity, max = inp.dataset.max !== undefined ? +inp.dataset.max : Infinity;
+    var base = isFinite(min) ? min : 0, last = inp.value;
+    function parse() { var t = inp.value.replace(/[\s,]/g, ""); return t === "" ? null : (isFinite(+t) ? +t : NaN); }
+    function fit(n) { n = Math.round((n - base) / step) * step + base; return Math.min(max, Math.max(min, +n.toFixed(dec))); }
+    function update() {
+      var n = parse(), off = inp.disabled || inp.readOnly, ok = n !== null && !isNaN(n);
+      dn.disabled = off || (ok && n <= min); up.disabled = off || (ok && n >= max);
+      if (ok) inp.setAttribute("aria-valuenow", n); else inp.removeAttribute("aria-valuenow");
+      if (ok && inp.dataset.unit) inp.setAttribute("aria-valuetext", inp.value + " " + inp.dataset.unit); else inp.removeAttribute("aria-valuetext"); // the unit is aria-hidden on screen
+    }
+    function set(n) {
+      n = fit(n); var v = n.toFixed(dec); if (v === inp.value) { update(); return; }
+      inp.value = v; last = v; update();
+      inp.dispatchEvent(new Event("input", { bubbles: true })); inp.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+    function bump(k) { var n = parse(); if (n === null || isNaN(n)) n = k > 0 ? (isFinite(min) ? min - step : -step) : (isFinite(max) ? max + step : step); set(n + k * step); }
+    inp.addEventListener("keydown", function (e) {
+      var big = 10;
+      if (e.key === "ArrowUp") { e.preventDefault(); bump(e.shiftKey ? big : 1); }
+      else if (e.key === "ArrowDown") { e.preventDefault(); bump(e.shiftKey ? -big : -1); }
+      else if (e.key === "PageUp") { e.preventDefault(); bump(big); }
+      else if (e.key === "PageDown") { e.preventDefault(); bump(-big); }
+      else if (e.key === "Home" && isFinite(min)) { e.preventDefault(); set(min); }
+      else if (e.key === "End" && isFinite(max)) { e.preventDefault(); set(max); }
+    });
+    inp.addEventListener("input", function (e) {
+      if (!e.isTrusted) return;
+      var t = inp.value.replace(dec ? /[^0-9.\-]/g : /[^0-9\-]/g, "").replace(/(?!^)-/g, "").replace(/(\..*)\./g, "$1");
+      if (!(min < 0)) t = t.replace(/-/g, "");
+      if (t !== inp.value) inp.value = t; update();
+    });
+    inp.addEventListener("blur", function () { var n = parse(); if (n === null) { last = ""; update(); return; } if (isNaN(n)) { inp.value = last; update(); return; } set(n); });
+    [dn, up].forEach(function (b) {
+      var hold = null, rep = null;
+      function stop() { clearTimeout(hold); clearInterval(rep); hold = rep = null; }
+      b.addEventListener("pointerdown", function (e) {
+        if (b.disabled || e.button !== 0) return; e.preventDefault(); inp.focus();
+        var k = +b.dataset.stepBy; bump(k);
+        hold = setTimeout(function () { rep = setInterval(function () { if (b.disabled) stop(); else bump(k); }, 80); }, 400);
+      });
+      ["pointerup", "pointerleave", "pointercancel"].forEach(function (ev) { b.addEventListener(ev, stop); });
+    });
+    update();
+  });
   document.querySelectorAll("[data-reveal]").forEach(function (btn) {
     if (btn._hpreveal) return; btn._hpreveal = true;
     var input = document.getElementById(btn.getAttribute("aria-controls"));

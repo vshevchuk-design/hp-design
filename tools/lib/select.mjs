@@ -134,6 +134,8 @@ export const LISTBOX_CSS = `
 
 .listbox__select-all { display: flex; align-items: center; justify-content: space-between; gap: ${P("dim.2")}; padding: ${P("dim.1")} ${P("dim.2")}; }
 .listbox__select-all-label { color: ${cv("text.secondary")}; margin: 0; ${T(lb.selectAllRow.label)} }
+.listbox__select-all[hidden] { display: none; }
+.listbox__clear:focus-visible { outline: 2px solid ${cv("border.focus")}; outline-offset: 2px; border-radius: 2px; }
 .listbox__clear { border: none; background: none; padding: 0; cursor: pointer; color: ${cv("text.primary")}; ${T(lb.selectAllRow.clearAction)}${clearDeco ? ` text-decoration: ${clearDeco};` : ""} }
 
 /* groups ("Fruits", "Vegetables") — Command's group heading, a hairline between groups */
@@ -258,7 +260,7 @@ export function selectHtml({ id, label, options = [], value = "", multiple = fal
   ${chips ? triggerHtml : `<button type="button" class="${cls}" id="${id}" aria-haspopup="listbox" aria-expanded="false" aria-controls="${lid}" aria-labelledby="${id}-label ${id}-text"${disabled ? " disabled" : ""}${invalid ? ' aria-invalid="true"' : ""}${describedBy ? ` aria-describedby="${describedBy}"` : ""}>${iconName ? icon(iconName, "select__icon") : ""}<span class="select__stack"><span class="select__label" id="${id}-label">${label}</span><span class="select__value"><span class="select__text" id="${id}-text">${first}</span><span class="select__more"${picked.length > 1 ? "" : " hidden"}>+${Math.max(picked.length - 1, 0)}</span></span></span>${chevron()}</button>`}
   ${searchable
     // searchable: the panel holds a search box + the list, so the listbox role moves onto the list
-    ? `<div class="listbox select__panel" popover${panelWidth ? ` style="width:${panelWidth}"` : ""}><div class="listbox__search-wrap"><div class="listbox__search">${icon("search", "listbox__search-icon")}<input type="text" class="listbox__search-input" placeholder="${searchPlaceholder}" aria-label="${searchPlaceholder.replace(/…$/, "")}" aria-controls="${lid}" autocomplete="off" /></div></div><ul class="listbox__list" id="${lid}" role="listbox" aria-labelledby="${id}-label"${multiple ? ' aria-multiselectable="true"' : ""}>${list}</ul>${source ? "" : `<p class="listbox__empty" hidden>No results</p>`}</div>`
+    ? `<div class="listbox select__panel" popover${panelWidth ? ` style="width:${panelWidth}"` : ""}><div class="listbox__search-wrap"><div class="listbox__search">${icon("search", "listbox__search-icon")}<input type="text" class="listbox__search-input" placeholder="${searchPlaceholder}" aria-label="${searchPlaceholder.replace(/…$/, "")}" aria-controls="${lid}" autocomplete="off" /></div></div>${multiple ? `<div class="listbox__select-all"${picked.length ? "" : " hidden"}><p class="listbox__select-all-label" aria-live="polite">${picked.length} selected</p><button type="button" class="listbox__clear">Clear all</button></div>` : ""}<ul class="listbox__list" id="${lid}" role="listbox" aria-labelledby="${id}-label"${multiple ? ' aria-multiselectable="true"' : ""}>${list}</ul>${source ? "" : `<p class="listbox__empty" hidden>No results</p>`}</div>`
     : `<div class="listbox select__panel" id="${lid}" popover role="listbox" aria-labelledby="${id}-label"${multiple ? ' aria-multiselectable="true"' : ""}${panelWidth ? ` style="width:${panelWidth}"` : ""}><ul class="listbox__list" role="none">${body}</ul></div>`}
 </div>`;
 }
@@ -357,11 +359,18 @@ export const SELECT_JS = `(function () {
     function sync() {
       var pairs = chosenPairs(), vals = pairs.map(function (p) { return p[0]; });
       wrap.dataset.value = vals.join(","); box.classList.toggle("is-placeholder", pairs.length === 0);
+      if (selectAll) { var was = selectAll.hidden; selectAll.hidden = !pairs.length; selectAll.firstChild.textContent = pairs.length + " selected"; if (was !== selectAll.hidden && panel.matches(":popover-open")) place(); }
       if (chipList) { renderChips(pairs); text.textContent = pairs.length ? "" : wrap.dataset.placeholder; if (panel.matches(":popover-open")) place(); }
       else { text.textContent = pairs.length ? pairs[0][1] : wrap.dataset.label; more.hidden = pairs.length < 2; more.textContent = "+" + Math.max(pairs.length - 1, 0); }
       wrap.dispatchEvent(new CustomEvent("selectchange", { bubbles: true, detail: { value: multiple ? vals : (vals[0] || "") } }));
     }
     // chips: × takes a choice out (focus moves to the next ×, or the toggle); a click anywhere else on the box opens
+    // searchable multi: "N selected · Clear all" under the search — every choice out, even ones filtered out of view
+    var selectAll = panel.querySelector(".listbox__select-all");
+    if (selectAll) selectAll.querySelector(".listbox__clear").addEventListener("click", function () {
+      chosen = {}; panel.querySelectorAll(".listbox__option").forEach(function (o) { o.setAttribute("aria-selected", "false"); });
+      sync(); if (search) search.focus();
+    });
     function unpick(v) {
       if (source) delete chosen[v];
       panel.querySelectorAll(".listbox__option").forEach(function (o) { if (o.dataset.value === v) o.setAttribute("aria-selected", "false"); });
