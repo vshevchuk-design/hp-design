@@ -1,0 +1,40 @@
+{
+  "component": {
+    "slider": {
+      "$description": "Slider — pick a number (or a range) on a scale by dragging. Added 2026-10-27 from the Storybook Slider (Default, Integer, Disabled, Controlled). A real <input type=range> per thumb, so arrows / PageUp / PageDown / Home / End, screen readers and forms work natively; a range is two inputs over one track. Our language, not Storybook's: the filled part is fill.primary (blue — our primary, not their navy), the thumb is a white disc with a 2px blue ring like Radio's checked circle, the current value always shows beside the label (a slider with no number shown makes people guess), and optional marks under the track for a short integer scale. Use it when the exact number matters less than the position on a scale (a budget, a range of credits, how many sessions); when the exact number matters, a NumberField is faster.",
+      "height": { "$type": "dimension", "$value": "{dim.5}", "$description": "20px — the row the thumb sits in; declared, so the control is on the 4px grid whatever the browser does with range inputs." },
+      "track": {
+        "height": { "$type": "dimension", "$value": "{dim.1}", "$description": "4px." },
+        "radius": { "$type": "dimension", "$value": "{radius.full}" },
+        "bg": { "$type": "color", "$value": "{fill.neutralActive}", "$description": "gray.200 — the empty part of the scale." },
+        "fill": { "$type": "color", "$value": "{fill.primary}", "$description": "The chosen part — brand blue, the same 'this is the value' colour as a checked Checkbox." },
+        "fillHover": { "$type": "color", "$value": "{fill.primaryHover}" }
+      },
+      "thumb": {
+        "size": { "$type": "dimension", "$value": "{dim.5}", "$description": "20px — the same as a Radio / Checkbox, big enough to grab." },
+        "bg": { "$type": "color", "$value": "{surface.default}" },
+        "border": { "$type": "color", "$value": "{fill.primary}" },
+        "borderHover": { "$type": "color", "$value": "{fill.primaryHover}" },
+        "borderWidth": { "$type": "dimension", "$value": "{dim.0_5}", "$description": "2px — Radio's ring." },
+        "shadow": { "$type": "shadow", "$value": "{shadow.sm}", "$description": "Lifts the disc off the track so it reads as something to grab." },
+        "halo": { "$type": "color", "$value": "{bg.primary}", "$description": "A soft 4px halo while hovered or dragged — the hit area made visible." },
+        "haloSize": { "$type": "dimension", "$value": "{dim.1}" }
+      },
+      "focus": {
+        "ringColor": { "$type": "color", "$value": "{border.focus}" },
+        "ringWidth": { "$type": "dimension", "$value": "{dim.0_5}" },
+        "ringOffset": { "$type": "dimension", "$value": "{dim.0_5}", "$description": "Keyboard focus only (focus-visible): a ring outside the thumb, like every other control." }
+      },
+      "disabled": {
+        "track": { "$type": "color", "$value": "{fill.neutral}" },
+        "fill": { "$type": "color", "$value": "{icon.disabled}" },
+        "thumbBorder": { "$type": "color", "$value": "{icon.disabled}" }
+      },
+      "value": { "$type": "typography", "$value": "{text-style.heading-sm}", "$description": "The current value at the end of the label row — same weight as the label, tabular figures so it doesn't jitter while dragging." },
+      "valueColor": { "$type": "color", "$value": "{text.default}" },
+      "mark": { "$type": "typography", "$value": "{text-style.body-sm}", "$description": "Optional labels under the track — the ends, or every step of a short integer scale (≤ 11 steps)." },
+      "markColor": { "$type": "color", "$value": "{text.muted}" },
+      "markGap": { "$type": "dimension", "$value": "{dim.2}", "$description": "8px track → marks." }
+    }
+  }
+}

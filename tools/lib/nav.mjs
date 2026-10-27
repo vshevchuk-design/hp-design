@@ -39,6 +39,7 @@ export const NAV_ITEMS = {
   select: { label: "Select", href: "select.html" },
   search: { label: "Search", href: "search.html" },
   pagination: { label: "Pagination", href: "pagination.html" },
+  slider: { label: "Slider", href: "slider.html" },
   separator: { label: "Separator", href: "separator.html" },
   tabs: { label: "Tabs", href: "tabs.html" },
   sidebar: { label: "Sidebar", href: "sidebar.html" },
@@ -194,6 +195,7 @@ export function renderNav(activeKey, { basePath = "" } = {}) {
     ${link("time-picker")}
     ${link("search")}
     ${link("pagination")}
+    ${link("slider")}
     ${link("separator")}
     ${link("tabs")}
     ${link("sidebar")}
