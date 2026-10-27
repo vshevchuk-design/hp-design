@@ -40,7 +40,7 @@ export const NAV_ITEMS = {
   search: { label: "Search", href: "search.html" },
   "combobox-field": { label: "ComboboxField", href: "select.html#combobox" },
   "infinite-combobox-field": { label: "InfiniteComboboxField", href: "select.html#infinite" },
-  "multi-select-badges": { label: "MultiSelectBadges", href: "select.html#badges" },
+  "multi-select-badges": { label: "MultiSelectBadges", href: "multi-select-badges.html" },
   "number-field": { label: "NumberField", href: "input.html#number" },
   pagination: { label: "Pagination", href: "pagination.html" },
   slider: { label: "Slider", href: "slider.html" },

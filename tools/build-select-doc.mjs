@@ -57,7 +57,7 @@ const states = [
 ];
 const content = [
   story("Icon left", { id: "c-ic", label: "Campus", icon: "location_on", options: ["Main campus", "Downtown", "Online"].map((label) => ({ label })), value: "Downtown" }),
-  story("Multiple", { id: "c-multi", label: "Notify me by", options: CHANNELS, value: ["Email", "SMS", "Push notifications"], multiple: true }, "Checkbox options, the list stays open. The field shows the first choice + a Counter for the rest, so it never grows. A field that lists every choice as removable chips is MultiSelectBadges (Fields, later)."),
+  story("Multiple", { id: "c-multi", label: "Notify me by", options: CHANNELS, value: ["Email", "SMS", "Push notifications"], multiple: true }, "Checkbox options, the list stays open. The field shows the first choice + a Counter for the rest, so it never grows. A field that shows every choice as a removable chip: Chips, below."),
   story("With groups", { id: "c-groups", label: "Food", options: FOOD }, "Group headings (Command's heading-sm, text.muted) and a hairline between groups."),
 ];
 
@@ -138,10 +138,10 @@ const html = `<!doctype html>
       <div class="row"><b>Box model</b><span>Input's: sm ${H("sm")} / base ${H("base")} / lg ${H("lg")}, surface.dim fill, floating label on base/lg.</span></div>
       <div class="row"><b>Focus vs open</b><span><b>Focus</b> — the field is active but closed (you Tabbed onto it): border.focus. <b>Open</b> — the list is showing: the same border, the label turns blue and the chevron turns up. Fields show focus on click too; the keyboard-only ring (focus-visible) is for buttons and checks.</span></div>
       <div class="row"><b>Error</b><span>Not "typed something wrong" — a choice can still be wrong: required and nothing chosen on Submit, or a choice that stopped working (the section filled up, the advisor isn't free that day). border.dangerStrong + the Field message.</span></div>
-      <div class="row"><b>Multiple</b><span>The first choice + a Counter ("Email  +2") — the field keeps one line whatever you pick. Every choice as removable chips is a different field (MultiSelectBadges).</span></div>
+      <div class="row"><b>Multiple</b><span>The first choice + a Counter ("Email  +2") — the field keeps one line whatever you pick. Every choice as removable chips in the field: <code class="tok">chips: true</code> (below).</span></div>
       <div class="row"><b>Searchable</b><span><code class="tok">searchable: true</code> puts a search box at the top of the list — Storybook's <b>ComboboxField</b> (and SimpleCombobox, the same without a Field). Same Select, same field, Single or Multi. Use it past ~10 options, or when people know the name they want (courses, programs, people).</span></div>
       <div class="row"><b>Infinite</b><span><code class="tok">source: "fnName"</code> — options come from the server a page at a time: <code class="tok">window[fnName](query, offset)</code> returns <code class="tok">{ items, hasMore }</code>. Storybook's <b>InfiniteComboboxField</b>. The list's last row says what's happening: Loading… (and loads the next page when you reach it), No results, or Couldn't load + Retry. Search goes to the server.</span></div>
-      <div class="row"><b>Chips</b><span><code class="tok">chips: true</code> — every choice as a removable Chip in the field (Storybook's <b>MultiSelectBadges</b>). Use it when people need to see all of what they picked (a handful); for many, the first + Counter keeps the form tidy. The label moves above (Field) — chips leave no room to float one.</span></div>
+      <div class="row"><b>Chips</b><span><code class="tok">chips: true</code> — every choice as a removable Chip in the field. Use it when people need to see all of what they picked (a handful); for many, the first + Counter keeps the form tidy. Not Storybook's MultiSelectBadges — that's a summary of choices made somewhere else (<a href="multi-select-badges.html">MultiSelectBadges</a>). The label moves above (Field) — chips leave no room to float one.</span></div>
       <div class="row"><b>Keyboard</b><span>↓ / ↑ / Enter / Space open; ↑ ↓ Home End move; Enter or Space pick; Escape closes back to the field; Tab closes. Single-select closes on pick.</span></div>
     </div>
 
@@ -162,7 +162,7 @@ const html = `<!doctype html>
     <p class="section-desc">For lists too long to send at once — every course in the catalogue, every student. Same Select, searchable; the options load from <code class="tok">source</code> 20 at a time as you scroll, and typing asks the server (250ms after the last key). <code class="tok">options</code> only names what's already chosen, so the field shows it before anything loads. The demo fakes a 240-course server with 600ms latency.</p>
     <div class="story-grid">${infinite.join("")}</div>
 
-    <h2 class="big-section" id="badges">Chips — MultiSelectBadges</h2>
+    <h2 class="big-section" id="chips">Chips — every choice in the field</h2>
     <p class="section-desc">The same multi-select, with every choice shown as a removable Chip sm inside the field: <code class="tok">selectHtml({ …, chips: true, placeholder: "Choose courses" })</code>, inside <code class="tok">fieldHtml</code> for the label. Chips hold their own × buttons, so the box is a <code class="tok">div</code> and the part after the chips is the toggle <code class="tok">button</code>. × removes one (focus goes to the next ×); Backspace on the toggle removes the last; clicking anywhere else on the box opens the list.</p>
     <div class="story-grid">${badges.join("")}</div>
 

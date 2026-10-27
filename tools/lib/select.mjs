@@ -191,7 +191,7 @@ ${sizeCss}
 .select:disabled .select__icon { color: ${R(st.disabled.icon)}; }
 .select:disabled .select__chevron { color: ${R(st.disabled.chevron)}; }
 .select[aria-invalid="true"], .select[aria-invalid="true"]:hover { border-color: ${R(st.error.border)}; }
-/* chips (MultiSelectBadges): every choice is a removable Chip sm inside the box; the box wraps
+/* chips: every choice is a removable Chip sm inside the box; the box wraps
    and grows a row at a time (40 → 68 → 96: 24px chips, 4px apart). The label is the Field's,
    above — there's no room to float one. The toggle (a real <button>) takes the rest of the last row. */
 .select--chips { height: auto; min-height: ${D(sel.size.base.height)}; flex-wrap: wrap; gap: ${chipGap}; padding: ${chipPad} ${D(sel.size.base.paddingX)} ${chipPad} ${chipPad}; cursor: pointer; }
