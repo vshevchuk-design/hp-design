@@ -14,6 +14,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { renderNav } from "./lib/nav.mjs";
 import { cssVarName, renderRootVars } from "./lib/css-vars.mjs";
+import { SPLIT_BUTTON_COLOR_PATHS, SPLIT_BUTTON_CSS, SPLIT_BUTTON_JS, splitButtonHtml } from "./lib/split-button.mjs";
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const load = (p) => JSON.parse(fs.readFileSync(path.join(root, p)));
@@ -78,6 +79,8 @@ const colorPaths = [
 const colorValue = Object.fromEntries(colorPaths.map((p) => [p, resolve(p)]));
 const fontSans = resolve("family.sans"); // e.g. "Sora"
 const cv = (tokenPath) => `var(${cssVarName(tokenPath)})`;
+// SplitButton lives on this page (tools/lib/split-button.mjs); its colours join the page's
+for (const p of SPLIT_BUTTON_COLOR_PATHS) if (!colorPaths.includes(p)) { colorPaths.push(p); colorValue[p] = resolve(p); }
 const rootVars = renderRootVars([...colorPaths.map((p) => [p, colorValue[p]]), ["family.sans", `'${fontSans}', sans-serif`]]);
 
 // ---- resolve shared size grid (asserted identical across variants) ----
@@ -428,6 +431,7 @@ const html = `<!doctype html>
   .placeholder-note { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-muted); border: 0.5px dashed var(--border-strong); border-radius: 6px; padding: 4px 10px; margin-top: 1.5rem; }
 
   ${css}
+  ${SPLIT_BUTTON_CSS}
 </style>
 </head>
 <body>
@@ -447,6 +451,8 @@ const html = `<!doctype html>
       <div class="row"><b>Primary vs Secondary vs Tint vs Ghost</b><span>Same size/state/content-variant grid, four color roles: primary → fill.primary (brand blue, highest emphasis). secondary → fill.neutral (gray fill — fill.neutral's own token description calls it out as the intended secondary-button fill). tint → fill.primaryTint (blue.100) with a text.primary label, hovering to blue.150 and pressing to blue.200 — the brand colour at low emphasis, for an action that repeats on every card of a grid where a solid primary on each would make the whole screen shout (added 2026-10-07 for Scheduling's Pick a time). ghost → no fill or border at rest, the quietest tier — reuses the same transparent→fill.neutralHover→fill.neutralActive progression already established by pagination's page-item and tabs' segmented style.</span></div>
       <div class="row"><b>Outline</b><span>No fill (it takes the surface it sits on, like the outline Badge), a <code class="tok">border.default</code> hairline inside the declared height — 32 / 40 / 48 still hold — and <code class="tok">text.default</code>; hover / press add the same washes as Ghost. For a quiet action where Secondary's gray fill would blend in (a gray panel, a hovered row), or beside Secondary when two quiet actions need telling apart.</span></div>
       <div class="row"><b>Danger</b><span><code class="tok">fill.danger</code> → <code class="tok">fill.dangerHover</code> → <code class="tok">fill.dangerActive</code>, white label — for the action that destroys something (delete, remove, discard), usually the confirming button of an <a href="alert-dialog.html">AlertDialog</a>. Not for "important": one per view at most.</span></div>
+      <div class="row"><b>Split button</b><span>A Button with a chevron segment that opens a <a href="dropdown-menu.html">DropdownMenu</a> of alternatives — Primary or Secondary, base size. See the section below.</span></div>
+      <div class="row"><b>Floating action</b><span>A round button floating over the page, one per screen, is <a href="fab.html">FAB</a> — its own component, with its own position and elevation rules.</span></div>
       <div class="row"><b>States</b><span>default → variant's fill (or transparent, for ghost) · hover → fillHover · pressed → fillActive · focused → additive ${px(focusWidth)} ring (border.focus) with ${px(focusOffset)} offset, composes on top of any of the three · disabled → fill.disabled + text.disabled + icon.disabled (ghost stays transparent, no fill to lose).</span></div>
     </div>
 
@@ -461,6 +467,13 @@ const html = `<!doctype html>
     ${variantSection("outline")}
     ${variantSection("danger")}
 
+    <h2 class="big-section" id="split-button">Split button</h2>
+    <p class="section-desc">The main part does the default action; the chevron opens a <a href="dropdown-menu.html">DropdownMenu</a> of alternatives. Button's base size and states; a seam marks the split (a darker blue on Primary, gray.300 on Secondary). Primary for the screen's main action with variants ("New message ▾"); Secondary for a secondary one beside it ("Export ▾" next to a blue "Save"). Tokens: <code class="tok">split-button.tokens.json</code>, recipe in <code class="tok">tools/lib/split-button.mjs</code>.</p>
+    <div class="story-grid">
+      ${storyCard("split · primary", splitButtonHtml({ id: "sb-primary", label: "New message", icon: "edit", menuLabel: "More ways to start", items: [{ label: "New message", icon: "person" }, { label: "New group message", icon: "group" }] }), splitButtonHtml({ id: "sb-primary", label: "New message", icon: "edit", menuLabel: "More ways to start", items: [{ label: "New message", icon: "person" }, { label: "New group message", icon: "group" }] }).replace(/<svg[\s\S]*?<\/svg>/g, "…"), "The screen's main action, with variants.")}
+      ${storyCard("split · secondary", splitButtonHtml({ id: "sb-secondary", label: "Export", icon: "download", variant: "secondary", menuLabel: "Export options", items: [{ label: "Export as CSV" }, { label: "Export as PDF" }, { label: "Print" }] }), splitButtonHtml({ id: "sb-secondary", label: "Export", icon: "download", variant: "secondary", menuLabel: "Export options", items: [{ label: "Export as CSV" }, { label: "Export as PDF" }, { label: "Print" }] }).replace(/<svg[\s\S]*?<\/svg>/g, "…"), "A secondary action with alternatives — sits beside a blue Primary without competing.")}
+    </div>
+
     <h2 class="big-section">Inactive (aria-disabled)</h2>
     <p class="section-desc">Not a variant — a state any variant can take. It looks exactly like disabled, but the button stays in the tab order and is announced by a screen reader, because it uses <code class="tok">aria-disabled="true"</code> instead of the <code class="tok">disabled</code> attribute (which removes it from both). Use it when the user needs to find out <i>why</i> the action is unavailable, and pair it with a <a href="tooltip.html">Tooltip</a> that says so. Your code swallows the click. Plain <code class="tok">disabled</code> stays right when there is nothing to explain. Tab to these two to compare: only the inactive one takes focus.</p>
     <div class="story-grid">
@@ -471,6 +484,7 @@ const html = `<!doctype html>
     <p class="placeholder-note">Every code sample on this page is printed from the same resolved token values driving the live previews above it — copy it directly, nothing here is hand-typed.</p>
   </main>
 </div>
+<script>${SPLIT_BUTTON_JS}</script>
 </body>
 </html>
 `;

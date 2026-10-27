@@ -158,7 +158,6 @@
     <a class="navlink" href="dialog.html">Dialog</a>
     <a class="navlink" href="alert-dialog.html">AlertDialog</a>
     <a class="navlink" href="dropdown-menu.html">DropdownMenu</a>
-    <a class="navlink" href="split-button.html">SplitButton</a>
     <a class="navlink" href="listbox.html">Listbox</a>
     <a class="navlink" href="command.html">Command</a>
     <a class="navlink" href="avatar.html">Avatar</a>
@@ -272,7 +271,7 @@
           <h3 class="log-post__title">Staff Message Center → email-inbox client (Phases B–E)</h3>
         </div>
         <p class="log-post__body">The staff prototype's split-pane chat is fully reworked into an email inbox. Console: a persistent topbar (mail + department + a SplitButton "New Message ▾" + user avatar) over a full-width Table (Student / Subject &amp; Message / Responsible / Expiration / Date), unread rows bold; on mobile the table reflows to stacked list rows. Opening a thread is a full-page detail (topbar kept, Gmail-style) with inline read receipts ("Seen · time") and a Reply / Reply &amp; Resolve composer. "Responsible" replaces Handled-by/Unassigned. The lost Group Message flow is back: a Stepper wizard (select students by add/paste-IDs → message details with a rich editor, AI Assist, and a DatePicker) that fans out to a grouped card in Resolved; opening it shows delivery Stat tiles + a replies list + a recipients Drawer with status filters. Built on the seven new components (Table / AvatarGroup / Stepper / DatePicker / SplitButton / Stat / Skeleton); the compose dialog + AI panel + rich composer carry over.</p>
-        <div class="log-post__links"><a class="log-link" href="designs/staff-message-center.html">Staff Message Center</a><a class="log-link" href="table.html">Table</a><a class="log-link" href="split-button.html">SplitButton</a></div>
+        <div class="log-post__links"><a class="log-link" href="designs/staff-message-center.html">Staff Message Center</a><a class="log-link" href="table.html">Table</a><a class="log-link" href="button.html#split-button">SplitButton</a></div>
       </article>
         <article class="log-post">
         <div class="log-post__head">
@@ -280,7 +279,7 @@
           <h3 class="log-post__title">Seven new components for the Message Center v3 redesign</h3>
         </div>
         <p class="log-post__body">Foundation for the email-inbox rework: Table (the threads console — a div-grid with unread/read rows, sortable headers, selectable rows), AvatarGroup (overlapping stack + "+N"), Stepper (the group-message wizard 1→2), DatePicker (Select-style trigger + calendar popover, for message expiration), SplitButton ("New Message ▾" → opens a Menu), Stat (delivery-metric tiles), and Skeleton (loading placeholders). Built strictly on the existing tokens; the console rework consumes them next.</p>
-        <div class="log-post__links"><a class="log-link" href="table.html">Table</a><a class="log-link" href="avatar-group.html">AvatarGroup</a><a class="log-link" href="stepper.html">Stepper</a><a class="log-link" href="date-picker.html">DatePicker</a><a class="log-link" href="split-button.html">SplitButton</a><a class="log-link" href="stat.html">Stat</a><a class="log-link" href="skeleton.html">Skeleton</a></div>
+        <div class="log-post__links"><a class="log-link" href="table.html">Table</a><a class="log-link" href="avatar-group.html">AvatarGroup</a><a class="log-link" href="stepper.html">Stepper</a><a class="log-link" href="date-picker.html">DatePicker</a><a class="log-link" href="button.html#split-button">SplitButton</a><a class="log-link" href="stat.html">Stat</a><a class="log-link" href="skeleton.html">Skeleton</a></div>
       </article>
       </div>
     </section>

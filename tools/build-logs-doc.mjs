@@ -68,7 +68,7 @@ const POSTS = [
     links: [
       { label: "Staff Message Center", href: "designs/staff-message-center.html" },
       { label: "Table", href: "table.html" },
-      { label: "SplitButton", href: "split-button.html" },
+      { label: "SplitButton", href: "button.html#split-button" },
     ],
   },
   {
@@ -81,7 +81,7 @@ const POSTS = [
       { label: "AvatarGroup", href: "avatar-group.html" },
       { label: "Stepper", href: "stepper.html" },
       { label: "DatePicker", href: "date-picker.html" },
-      { label: "SplitButton", href: "split-button.html" },
+      { label: "SplitButton", href: "button.html#split-button" },
       { label: "Stat", href: "stat.html" },
       { label: "Skeleton", href: "skeleton.html" },
     ],

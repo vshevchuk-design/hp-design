@@ -102,6 +102,8 @@
   --tok-fill-danger-hover: #c11435;
   --tok-fill-danger-active: #9c0326;
   --tok-border-default: #dadde0;
+  --tok-border-strong: #adb5be;
+  --tok-surface-default: #ffffff;
   --tok-family-sans: 'Sora', sans-serif;
 }
 
@@ -215,6 +217,30 @@
 .counter--lg { height: 24px; min-width: 24px; padding: 0 6px; font-size: 14px; line-height: 1; }
 .counter--onPrimary.counter--inactive { background: var(--tok-fill-primary-active); color: var(--tok-text-on-fill); }
 .counter--onNeutral.counter--inactive { background: var(--tok-fill-neutral-active); color: var(--tok-text-secondary-strong); }
+  
+.split { display: inline-flex; align-items: stretch; height: 40px; border-radius: 8px; font-family: var(--tok-family-sans); }
+.split__main, .split__chevron { border: none; margin: 0; cursor: pointer; display: inline-flex; align-items: center; font-family: inherit; }
+.split__main { gap: 8px; padding: 0 16px; border-radius: 8px 0 0 8px; font-weight: 600; font-size: 14px; line-height: 1.4; }
+.split__chevron { justify-content: center; width: 36px; padding: 0; border-radius: 0 8px 8px 0; }
+.split__icon, .split__chevron-icon { width: 20px; height: 20px; flex-shrink: 0; }
+.split__main:focus-visible, .split__chevron:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; position: relative; z-index: 1; }
+/* Primary */
+.split--primary .split__main, .split--primary .split__chevron { background: var(--tok-fill-primary); color: var(--tok-text-on-fill); }
+.split--primary .split__chevron { box-shadow: inset 1px 0 0 var(--tok-fill-primary-active); }
+.split--primary .split__icon, .split--primary .split__chevron-icon { color: var(--tok-icon-on-fill); }
+.split--primary .split__main:hover, .split--primary .split__chevron:hover { background: var(--tok-fill-primary-hover); }
+.split--primary .split__main:active, .split--primary .split__chevron:active, .split--primary .split__chevron[aria-expanded="true"] { background: var(--tok-fill-primary-active); }
+/* Secondary */
+.split--secondary .split__main, .split--secondary .split__chevron { background: var(--tok-fill-neutral); color: var(--tok-text-default); }
+.split--secondary .split__chevron { box-shadow: inset 1px 0 0 var(--tok-border-strong); }
+.split--secondary .split__icon, .split--secondary .split__chevron-icon { color: var(--tok-icon-default); }
+.split--secondary .split__main:hover, .split--secondary .split__chevron:hover { background: var(--tok-fill-neutral-hover-strong); }
+.split--secondary .split__main:active, .split--secondary .split__chevron:active, .split--secondary .split__chevron[aria-expanded="true"] { background: var(--tok-fill-neutral-active-strong); }
+/* the DropdownMenu the chevron opens — resolved from dropdown-menu.tokens.json */
+.split__menu { margin: 0; box-sizing: border-box; padding: 4px; border-radius: 8px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); box-shadow: 0px 2px 8px 0px rgba(21, 25, 30, 0.10); min-width: 200px; font-family: var(--tok-family-sans); }
+.split__menu-item { width: 100%; box-sizing: border-box; display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 8px; border: none; background: none; border-radius: 4px; cursor: pointer; text-align: left; color: var(--tok-text-default); font-family: inherit; font-weight: 400; font-size: 14px; line-height: 1.4; }
+.split__menu-item:hover, .split__menu-item:focus-visible { background: var(--tok-fill-neutral-hover); outline: none; }
+.split__menu-icon { width: 16px; height: 16px; color: var(--tok-icon-secondary); flex-shrink: 0; }
 </style>
 </head>
 <body>
@@ -292,7 +318,6 @@
     <a class="navlink" href="dialog.html">Dialog</a>
     <a class="navlink" href="alert-dialog.html">AlertDialog</a>
     <a class="navlink" href="dropdown-menu.html">DropdownMenu</a>
-    <a class="navlink" href="split-button.html">SplitButton</a>
     <a class="navlink" href="listbox.html">Listbox</a>
     <a class="navlink" href="command.html">Command</a>
     <a class="navlink" href="avatar.html">Avatar</a>
@@ -358,6 +383,8 @@
       <div class="row"><b>Primary vs Secondary vs Tint vs Ghost</b><span>Same size/state/content-variant grid, four color roles: primary → fill.primary (brand blue, highest emphasis). secondary → fill.neutral (gray fill — fill.neutral's own token description calls it out as the intended secondary-button fill). tint → fill.primaryTint (blue.100) with a text.primary label, hovering to blue.150 and pressing to blue.200 — the brand colour at low emphasis, for an action that repeats on every card of a grid where a solid primary on each would make the whole screen shout (added 2026-10-07 for Scheduling's Pick a time). ghost → no fill or border at rest, the quietest tier — reuses the same transparent→fill.neutralHover→fill.neutralActive progression already established by pagination's page-item and tabs' segmented style.</span></div>
       <div class="row"><b>Outline</b><span>No fill (it takes the surface it sits on, like the outline Badge), a <code class="tok">border.default</code> hairline inside the declared height — 32 / 40 / 48 still hold — and <code class="tok">text.default</code>; hover / press add the same washes as Ghost. For a quiet action where Secondary's gray fill would blend in (a gray panel, a hovered row), or beside Secondary when two quiet actions need telling apart.</span></div>
       <div class="row"><b>Danger</b><span><code class="tok">fill.danger</code> → <code class="tok">fill.dangerHover</code> → <code class="tok">fill.dangerActive</code>, white label — for the action that destroys something (delete, remove, discard), usually the confirming button of an <a href="alert-dialog.html">AlertDialog</a>. Not for "important": one per view at most.</span></div>
+      <div class="row"><b>Split button</b><span>A Button with a chevron segment that opens a <a href="dropdown-menu.html">DropdownMenu</a> of alternatives — Primary or Secondary, base size. See the section below.</span></div>
+      <div class="row"><b>Floating action</b><span>A round button floating over the page, one per screen, is <a href="fab.html">FAB</a> — its own component, with its own position and elevation rules.</span></div>
       <div class="row"><b>States</b><span>default → variant's fill (or transparent, for ghost) · hover → fillHover · pressed → fillActive · focused → additive 4px ring (border.focus) with 2px offset, composes on top of any of the three · disabled → fill.disabled + text.disabled + icon.disabled (ghost stays transparent, no fill to lose).</span></div>
     </div>
 
@@ -393,6 +420,8 @@
   --tok-fill-danger-hover: #c11435;
   --tok-fill-danger-active: #9c0326;
   --tok-border-default: #dadde0;
+  --tok-border-strong: #adb5be;
+  --tok-surface-default: #ffffff;
   --tok-family-sans: 'Sora', sans-serif;
 }
 
@@ -1445,6 +1474,55 @@
       </div>
     </div>
 
+    <h2 class="big-section" id="split-button">Split button</h2>
+    <p class="section-desc">The main part does the default action; the chevron opens a <a href="dropdown-menu.html">DropdownMenu</a> of alternatives. Button's base size and states; a seam marks the split (a darker blue on Primary, gray.300 on Secondary). Primary for the screen's main action with variants ("New message ▾"); Secondary for a secondary one beside it ("Export ▾" next to a blue "Save"). Tokens: <code class="tok">split-button.tokens.json</code>, recipe in <code class="tok">tools/lib/split-button.mjs</code>.</p>
+    <div class="story-grid">
+      
+      <div class="story">
+        <h3>split · primary</h3>
+        <div class="story-preview"><div class="split split--primary">
+  <button class="split__main" type="button"><svg class="split__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>New message</button>
+  <button class="split__chevron" type="button" popovertarget="sb-primary-menu" aria-label="More ways to start" aria-haspopup="menu" aria-expanded="false"><svg class="split__chevron-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+</div>
+<div class="split__menu" id="sb-primary-menu" popover role="menu">
+  <button class="split__menu-item" role="menuitem" type="button"><svg class="split__menu-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>New message</button>
+  <button class="split__menu-item" role="menuitem" type="button"><svg class="split__menu-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>New group message</button>
+</div></div>
+        <pre class="code"><code>&lt;div class="split split--primary"&gt;
+  &lt;button class="split__main" type="button"&gt;…New message&lt;/button&gt;
+  &lt;button class="split__chevron" type="button" popovertarget="sb-primary-menu" aria-label="More ways to start" aria-haspopup="menu" aria-expanded="false"&gt;…&lt;/button&gt;
+&lt;/div&gt;
+&lt;div class="split__menu" id="sb-primary-menu" popover role="menu"&gt;
+  &lt;button class="split__menu-item" role="menuitem" type="button"&gt;…New message&lt;/button&gt;
+  &lt;button class="split__menu-item" role="menuitem" type="button"&gt;…New group message&lt;/button&gt;
+&lt;/div&gt;</code></pre>
+        <p class="story-note">The screen's main action, with variants.</p>
+      </div>
+      
+      <div class="story">
+        <h3>split · secondary</h3>
+        <div class="story-preview"><div class="split split--secondary">
+  <button class="split__main" type="button"><svg class="split__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"><g><rect fill="none" height="24" width="24"/></g><g><path d="M5,20h14v-2H5V20z M19,9h-4V3H9v6H5l7,7L19,9z"/></g></svg>Export</button>
+  <button class="split__chevron" type="button" popovertarget="sb-secondary-menu" aria-label="Export options" aria-haspopup="menu" aria-expanded="false"><svg class="split__chevron-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+</div>
+<div class="split__menu" id="sb-secondary-menu" popover role="menu">
+  <button class="split__menu-item" role="menuitem" type="button">Export as CSV</button>
+  <button class="split__menu-item" role="menuitem" type="button">Export as PDF</button>
+  <button class="split__menu-item" role="menuitem" type="button">Print</button>
+</div></div>
+        <pre class="code"><code>&lt;div class="split split--secondary"&gt;
+  &lt;button class="split__main" type="button"&gt;…Export&lt;/button&gt;
+  &lt;button class="split__chevron" type="button" popovertarget="sb-secondary-menu" aria-label="Export options" aria-haspopup="menu" aria-expanded="false"&gt;…&lt;/button&gt;
+&lt;/div&gt;
+&lt;div class="split__menu" id="sb-secondary-menu" popover role="menu"&gt;
+  &lt;button class="split__menu-item" role="menuitem" type="button"&gt;Export as CSV&lt;/button&gt;
+  &lt;button class="split__menu-item" role="menuitem" type="button"&gt;Export as PDF&lt;/button&gt;
+  &lt;button class="split__menu-item" role="menuitem" type="button"&gt;Print&lt;/button&gt;
+&lt;/div&gt;</code></pre>
+        <p class="story-note">A secondary action with alternatives — sits beside a blue Primary without competing.</p>
+      </div>
+    </div>
+
     <h2 class="big-section">Inactive (aria-disabled)</h2>
     <p class="section-desc">Not a variant — a state any variant can take. It looks exactly like disabled, but the button stays in the tab order and is announced by a screen reader, because it uses <code class="tok">aria-disabled="true"</code> instead of the <code class="tok">disabled</code> attribute (which removes it from both). Use it when the user needs to find out <i>why</i> the action is unavailable, and pair it with a <a href="tooltip.html">Tooltip</a> that says so. Your code swallows the click. Plain <code class="tok">disabled</code> stays right when there is nothing to explain. Tab to these two to compare: only the inactive one takes focus.</p>
     <div class="story-grid">
@@ -1470,5 +1548,20 @@
     <p class="placeholder-note">Every code sample on this page is printed from the same resolved token values driving the live previews above it — copy it directly, nothing here is hand-typed.</p>
   </main>
 </div>
+<script>(function () {
+  document.querySelectorAll(".split__chevron").forEach(function (btn) {
+    var menu = document.getElementById(btn.getAttribute("popovertarget"));
+    if (!menu || menu._hpsplit) return; menu._hpsplit = true;
+    menu.addEventListener("toggle", function (e) {
+      btn.setAttribute("aria-expanded", String(e.newState === "open"));
+      if (e.newState !== "open") return;
+      var r = btn.getBoundingClientRect();
+      menu.style.position = "fixed"; menu.style.margin = "0"; menu.style.right = "auto"; menu.style.bottom = "auto";
+      menu.style.top = (r.bottom + 4) + "px";
+      menu.style.left = Math.max(8, r.right - menu.offsetWidth) + "px";
+    });
+    menu.addEventListener("click", function (e) { if (e.target.closest(".split__menu-item")) menu.hidePopover(); });
+  });
+})();</script>
 </body>
 </html>

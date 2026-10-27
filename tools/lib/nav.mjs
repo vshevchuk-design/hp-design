@@ -79,7 +79,6 @@ export const NAV_ITEMS = {
   progress: { label: "Progress", href: "progress.html" },
   "status-icon": { label: "StatusIcon", href: "status-icon.html" },
   stat: { label: "Stat", href: "stat.html" },
-  "split-button": { label: "SplitButton", href: "split-button.html" },
   calendar: { label: "Calendar", href: "calendar.html" },
   "date-picker": { label: "DatePicker", href: "date-picker.html" },
   "date-range-picker": { label: "DateRangePicker", href: "date-range-picker.html" },
@@ -218,7 +217,6 @@ export function renderNav(activeKey, { basePath = "" } = {}) {
     ${link("dialog")}
     ${link("alert-dialog")}
     ${link("dropdown-menu")}
-    ${link("split-button")}
     ${link("listbox")}
     ${link("command")}
     ${link("avatar")}
