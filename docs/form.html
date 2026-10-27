@@ -60,12 +60,12 @@
   --tok-fill-primary-hover: #0468c4;
   --tok-fill-disabled: #e6e8eb;
   --tok-bg-neutral-strong: #dadde0;
-  --tok-fill-neutral-active-strong: #adb5be;
   --tok-text-on-fill: #ffffff;
   --tok-bg-primary: #d9eaff;
   --tok-fill-primary-active: #01519c;
   --tok-fill-neutral: #e6e8eb;
   --tok-fill-neutral-hover-strong: #cdd1d6;
+  --tok-fill-neutral-active-strong: #adb5be;
   --tok-text-success: #057e3f;
   --tok-family-sans: 'Sora', sans-serif;
 }
@@ -252,8 +252,8 @@
 /* nothing chosen: the label's text is the placeholder; sm never floats */
 .select.is-placeholder .select__label, .select--sm .select__label { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 .select.is-placeholder .select__value { color: var(--tok-text-muted); }
-/* multiple: the first choice + a Counter for the rest ("Email  +2") */
-.select__more { flex-shrink: 0; box-sizing: border-box; min-width: 16px; height: 16px; padding: 0 4px; display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; background: var(--tok-fill-neutral-active-strong); color: var(--tok-text-default); font-weight: 700; font-size: 10px; line-height: 1; }
+/* multiple: the first choice + "+N" for the rest ("Email  +2") — Counter's size, select.more's quieter colours */
+.select__more { flex-shrink: 0; box-sizing: border-box; min-width: 16px; height: 16px; padding: 0 4px; display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; background: var(--tok-bg-neutral-strong); color: var(--tok-text-secondary); font-weight: 700; font-size: 10px; line-height: 1; }
 .select__more[hidden] { display: none; }
 /* states */
 .select:not(:disabled):hover { background: var(--tok-surface-dim-hover); border-color: var(--tok-border-strong); }
@@ -607,12 +607,12 @@
   --tok-fill-primary-hover: #0468c4;
   --tok-fill-disabled: #e6e8eb;
   --tok-bg-neutral-strong: #dadde0;
-  --tok-fill-neutral-active-strong: #adb5be;
   --tok-text-on-fill: #ffffff;
   --tok-bg-primary: #d9eaff;
   --tok-fill-primary-active: #01519c;
   --tok-fill-neutral: #e6e8eb;
   --tok-fill-neutral-hover-strong: #cdd1d6;
+  --tok-fill-neutral-active-strong: #adb5be;
   --tok-text-success: #057e3f;
   --tok-family-sans: 'Sora', sans-serif;
 }

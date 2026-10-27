@@ -69,7 +69,7 @@ const icon = (name, cls) =>
   fs.readFileSync(path.join(root, `assets/icons/material-filled/${name}.svg`), "utf8").replace("<svg ", `<svg class="${cls}" aria-hidden="true" `);
 
 const st = sel.state, cbS = checkbox.state;
-const cnt = counter.onNeutral.state.inactive, cntSize = counter.size.sm;
+const cnt = sel.more, cntSize = counter.size.sm;
 const colorNodes = [
   st.default.bg, st.default.border, st.default.placeholder, st.default.value, st.default.icon, st.default.chevron, st.hover.bg, st.hover.border,
   st.focus.border, st.focus.label, st.open.border, st.open.label, st.populated.label, st.disabled.bg, st.disabled.border, st.disabled.placeholder, st.disabled.value, st.disabled.icon, st.disabled.chevron, st.disabled.label, st.error.border,
@@ -152,7 +152,7 @@ ${sizeCss}
 /* nothing chosen: the label's text is the placeholder; sm never floats */
 .select.is-placeholder .select__label, .select--sm .select__label { ${hide} }
 .select.is-placeholder .select__value { color: ${R(st.default.placeholder)}; }
-/* multiple: the first choice + a Counter for the rest ("Email  +2") */
+/* multiple: the first choice + "+N" for the rest ("Email  +2") — Counter's size, select.more's quieter colours */
 .select__more { flex-shrink: 0; box-sizing: border-box; min-width: ${D(cntSize.minWidth)}; height: ${D(cntSize.height)}; padding: 0 ${D(cntSize.paddingX)}; display: inline-flex; align-items: center; justify-content: center; border-radius: ${D(counter.radius)}; background: ${R(cnt.bg)}; color: ${R(cnt.label)}; ${T(cntSize.label)} }
 .select__more[hidden] { display: none; }
 /* states */

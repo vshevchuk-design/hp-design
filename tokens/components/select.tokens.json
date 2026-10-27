@@ -230,6 +230,17 @@
             "$value": "{border.dangerStrong}"
           }
         }
+      },
+      "more": {
+        "$description": "The '+N' after the first choice in a multiple Select. Counter's size (counter.size.sm), but its own colours: counter.onNeutral's gray.300 is made to stand out on Tabs' gray.100 track and read as a heavy blot inside a gray.50 field (user, 2026-10-27). bg.neutralStrong (gray.150) — the neutral Badge tint — with text.secondary keeps it a quiet aside to the value.",
+        "bg": {
+          "$type": "color",
+          "$value": "{bg.neutralStrong}"
+        },
+        "label": {
+          "$type": "color",
+          "$value": "{text.secondary}"
+        }
       }
     }
   }
