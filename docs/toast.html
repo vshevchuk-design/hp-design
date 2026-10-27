@@ -6,86 +6,89 @@
 <title>hp-design — Toast</title>
 <link rel="stylesheet" href="../assets/fonts/sora/sora.css" />
 <style>
-  :root {
-    --bg-page: #f7f7f5; --bg-card: #ffffff; --bg-card-hover: #fbfbfa;
-    --border: #e4e3df; --border-strong: #d2d1cb;
-    --text-primary: #0e0e10; --text-secondary: #63625c; --text-muted: #918f87;
-    --accent: #0468c4; --accent-bg: #eff6ff;
-    --code-bg: #1e1e22; --code-text: #e4e3df;
-    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-    --sans: -apple-system, "Segoe UI", system-ui, sans-serif;
-    color-scheme: light;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root:where(:not([data-theme="light"])) {
-      --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327;
-      --border: #313035; --border-strong: #403f45;
-      --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68;
-      --accent: #5aa4ec; --accent-bg: #16283b;
-      --code-bg: #0d0d0f; --code-text: #d7d6d2;
-      color-scheme: dark;
-    }
-  }
-  :root[data-theme="dark"] {
-    --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327;
-    --border: #313035; --border-strong: #403f45;
-    --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68;
-    --accent: #5aa4ec; --accent-bg: #16283b;
-    --code-bg: #0d0d0f; --code-text: #d7d6d2;
-    color-scheme: dark;
-  }
-  * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg-page); color: var(--text-primary); font-family: var(--sans); }
+  :root { --bg-page: #f7f7f5; --bg-card: #ffffff; --bg-card-hover: #fbfbfa; --border: #e4e3df; --border-strong: #d2d1cb; --text-primary: #0e0e10; --text-secondary: #63625c; --text-muted: #918f87; --accent: #0468c4; --accent-bg: #eff6ff; --code-bg: #1e1e22; --code-text: #e4e3df; --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace; --sans: -apple-system, "Segoe UI", system-ui, sans-serif; color-scheme: light; }
+  @media (prefers-color-scheme: dark) { :root:where(:not([data-theme="light"])) { --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327; --border: #313035; --border-strong: #403f45; --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68; --accent: #5aa4ec; --accent-bg: #16283b; --code-bg: #0d0d0f; --code-text: #d7d6d2; color-scheme: dark; } }
+  :root[data-theme="dark"] { --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327; --border: #313035; --border-strong: #403f45; --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68; --accent: #5aa4ec; --accent-bg: #16283b; --code-bg: #0d0d0f; --code-text: #d7d6d2; color-scheme: dark; }
+  * { box-sizing: border-box; } body { margin: 0; background: var(--bg-page); color: var(--text-primary); font-family: var(--sans); }
   .shell { display: flex; min-height: 100vh; }
   nav.side { width: 220px; flex-shrink: 0; border-right: 0.5px solid var(--border); padding: 1.5rem 1rem; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
-  .brand { font-size: 14px; font-weight: 600; margin: 0 0 2px 8px; }
-  .brand-sub { font-size: 11.5px; color: var(--text-muted); margin: 0 0 1.5rem 8px; }
   .navlink { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 8px; border-radius: 7px; font-size: 13px; text-decoration: none; color: var(--text-primary); margin-bottom: 1px; }
-  .navlink:hover { background: var(--bg-card-hover); }
-  .navlink.active { background: var(--accent-bg); color: var(--accent); font-weight: 600; }
+  .navlink:hover { background: var(--bg-card-hover); } .navlink.active { background: var(--accent-bg); color: var(--accent); font-weight: 600; }
   .nav-category { font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin: 16px 8px 6px; }
-  main { flex: 1; padding: 4rem 4rem 6rem; max-width: 1120px; }
-
+  main { flex: 1; padding: 4rem 4rem 6rem; max-width: 1120px; min-width: 0; }
   h1 { font-size: 36px; font-weight: 700; margin: 0 0 10px; letter-spacing: -0.02em; }
   .sub { font-size: 14px; color: var(--text-secondary); margin: 0 0 2.5rem; }
   h2.big-section { font-size: 24px; font-weight: 700; margin: 5.5rem 0 1.5rem; letter-spacing: -0.01em; padding-top: 2.5rem; border-top: 1px solid var(--border); }
   h2.big-section:first-of-type { margin-top: 3rem; padding-top: 0; border-top: none; }
   .section-desc { font-size: 13.5px; color: var(--text-secondary); margin: -0.5rem 0 1.5rem; max-width: 68ch; line-height: 1.6; }
-
   .legend { font-size: 12.5px; color: var(--text-secondary); padding: 14px 18px; background: var(--bg-card); border: 0.5px solid var(--border); border-radius: 10px; margin-bottom: 1rem; line-height: 1.6; }
-  .legend .row { display: flex; gap: 14px; padding: 6px 0; border-bottom: 0.5px solid var(--border); }
-  .legend .row:last-child { border-bottom: none; }
-  .legend .row b { width: 150px; flex-shrink: 0; color: var(--text-primary); font-weight: 600; font-family: var(--mono); font-size: 11.5px; }
+  .legend .row { display: flex; gap: 14px; padding: 6px 0; border-bottom: 0.5px solid var(--border); } .legend .row:last-child { border-bottom: none; }
+  .legend .row b { width: 110px; flex-shrink: 0; color: var(--text-primary); font-weight: 600; font-family: var(--mono); font-size: 11.5px; }
   code.tok { font-family: var(--mono); font-size: 12px; color: var(--accent); }
-
-  pre.code { background: var(--code-bg); color: var(--code-text); border-radius: 10px; padding: 16px 18px; margin: 0; overflow-x: auto; font-family: var(--mono); font-size: 12px; line-height: 1.7; }
-  pre.code code { font-family: inherit; }
-
-  .story-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
-  .story { border: 0.5px solid var(--border); border-radius: 14px; background: var(--bg-card); padding: 22px; display: flex; flex-direction: column; gap: 12px; }
+  pre.code { background: var(--code-bg); color: var(--code-text); border-radius: 10px; padding: 16px 18px; margin: 0; overflow-x: auto; font-family: var(--mono); font-size: 12px; line-height: 1.7; } pre.code code { font-family: inherit; }
+  .story-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; }
+  .story { border: 0.5px solid var(--border); border-radius: 14px; background: var(--bg-card); padding: 22px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+  .story--wide { grid-column: 1 / -1; }
   .story h3 { font-size: 14px; font-weight: 600; margin: 0; font-family: var(--mono); }
-  .story-preview { min-height: 56px; padding: 12px 0; }
+  .story-preview { padding: 8px 0; }
   .story-note { font-size: 11.5px; color: var(--text-muted); margin: 0; line-height: 1.5; }
-
-  .usage-preview { border: 0.5px solid var(--border); border-radius: 14px; background: var(--bg-card); padding: 24px; margin-bottom: 1rem; display: flex; gap: 12px; flex-wrap: wrap; }
-  .demo-btn { border: 0.5px solid var(--border-strong); background: var(--bg-card); color: var(--text-primary); border-radius: 8px; padding: 8px 14px; font-size: 13px; cursor: pointer; font-family: var(--sans); }
-  .demo-btn:hover { background: var(--bg-card-hover); }
-
+  @media (max-width: 760px) { .shell { display: block; } nav.side { display: none; } main { padding: 2rem 16px 4rem; } }
+  .demo-row { display: flex; flex-wrap: wrap; gap: 8px; }
+  .demo-btn { height: 32px; padding: 0 12px; border: none; border-radius: 8px; background: var(--tok-fill-neutral); color: var(--tok-text-default); font: 600 13px var(--sans); cursor: pointer; }
+  .demo-btn:hover { background: var(--tok-fill-neutral-hover-strong); }
   :root {
   --tok-surface-default: #ffffff;
   --tok-border-default: #dadde0;
   --tok-text-default: #121921;
+  --tok-text-secondary: #5d6a7a;
+  --tok-fill-primary: #077fec;
+  --tok-fill-primary-tint: #d9eaff;
+  --tok-text-primary: #0468c4;
+  --tok-fill-primary-tint-hover: #c7dffc;
+  --tok-fill-primary-tint-active: #b2d4fe;
+  --tok-icon-secondary: #758191;
+  --tok-fill-neutral-hover: #e6e8eb;
+  --tok-fill-neutral-active: #cdd1d6;
+  --tok-border-focus: #0468c4;
   --tok-status-success: #0a994e;
   --tok-icon-muted: #8e99a7;
   --tok-icon-primary: #077fec;
   --tok-status-warning: #b26f07;
   --tok-status-danger: #de394b;
+  --tok-fill-neutral: #e6e8eb;
+  --tok-fill-neutral-hover-strong: #cdd1d6;
   --tok-family-sans: 'Sora', sans-serif;
 }
 
-.toast { position: fixed; inset: auto; top: 24px; left: 50%; transform: translateX(-50%); margin: 0; box-sizing: border-box; display: flex; align-items: center; gap: 8px; padding: 12px 16px; border-radius: 8px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); box-shadow: 0px 2px 8px 0px rgba(21, 25, 30, 0.10); font-family: var(--tok-family-sans); }
-.toast__icon { flex-shrink: 0; width: 20px; height: 20px; }
-.toast__label { color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; white-space: nowrap; }
+.toast { position: fixed; inset: auto; top: 24px; left: 50%; transform: translateX(-50%); margin: 0; box-sizing: border-box; max-width: min(480px, calc(100vw - 32px)); overflow: hidden; display: flex; align-items: flex-start; gap: 8px; padding: 12px 16px; border-radius: 8px; background: var(--tok-surface-default); box-shadow: inset 0 0 0 1px var(--tok-border-default), 0px 2px 8px 0px rgba(21, 25, 30, 0.10); font-family: var(--tok-family-sans); }
+.toast--static { position: relative; top: auto; left: auto; transform: none; }
+.toast__icon { flex-shrink: 0; }
+.toast__text { display: flex; flex-direction: column; gap: 4px; min-width: 0; padding-top: 0; }
+.toast__label { margin: 0; color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; line-height: 20px; }
+.toast__title { margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 12px; line-height: 1.4; line-height: 16px; }
+.toast__description { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; line-height: 16px; }
+/* one line: the icon and the label share a centre */
+.toast:not(:has(.toast__description)) { align-items: center; }
+.toast__actions { display: flex; align-items: center; gap: 8px; margin-left: calc(12px - 8px); align-self: center; flex-shrink: 0; }
+/* the action — Button tint sm */
+.toast__action { box-sizing: border-box; height: 32px; padding: 0 8px; border: none; border-radius: 8px; background: var(--tok-fill-primary-tint); color: var(--tok-text-primary); cursor: pointer; font-family: inherit; font-weight: 600; font-size: 12px; line-height: 1.4; white-space: nowrap; }
+.toast__action:hover { background: var(--tok-fill-primary-tint-hover); }
+.toast__action:active { background: var(--tok-fill-primary-tint-active); }
+/* × — Button ghost sm icon-only */
+.toast__close { box-sizing: border-box; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; padding: 0; border: none; border-radius: 8px; background: transparent; color: var(--tok-icon-secondary); cursor: pointer; }
+.toast__close:hover { background: var(--tok-fill-neutral-hover); }
+.toast__close:active { background: var(--tok-fill-neutral-active); }
+.toast__close svg { width: 16px; height: 16px; }
+.toast__action:focus-visible, .toast__close:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
+/* the hairline is an inset shadow (inside the box), so heights are 12 + lines + 12 */
+/* timer: a bar along the bottom that drains; pauses while hovered or focused */
+.toast__timer { position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: var(--tok-fill-primary); transform-origin: left; animation: toast-timer var(--toast-duration, 4000ms) linear forwards; }
+.toast:hover .toast__timer, .toast:focus-within .toast__timer { animation-play-state: paused; }
+@keyframes toast-timer { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+.toast--static .toast__timer { animation: none; transform: scaleX(0.6); }
+/* entry */
+.toast:popover-open { opacity: 1; translate: 0 0; transition: opacity 0.18s ease, translate 0.18s ease; }
+@starting-style { .toast:popover-open { opacity: 0; translate: 0 -8px; } }
 
 .status-icon { flex-shrink: 0; display: block; width: 20px; height: 20px; }
 .status-icon--success { color: var(--tok-status-success); }
@@ -93,18 +96,11 @@
 .status-icon--info { color: var(--tok-icon-primary); }
 .status-icon--warning { color: var(--tok-status-warning); }
 .status-icon--error { color: var(--tok-status-danger); }
-
-/* entry transition — same @starting-style approach as SlideOverPanel/Modal */
-.toast:popover-open { opacity: 1; translate: 0 0; transition: opacity 0.18s ease, translate 0.18s ease; }
-@starting-style {
-  .toast:popover-open { opacity: 0; translate: 0 -8px; }
-}
 </style>
 </head>
 <body>
 <div class="shell">
-  <nav class="side">
-    <style>
+  <nav class="side"><style>
   .nav-logo { color: var(--text-primary); margin: 2px 0 16px 8px; }
   .nav-logo svg { display: block; }
   .nav-pane .brand { margin: 12px 0 10px 8px; }
@@ -228,117 +224,155 @@
       document.querySelectorAll(".nav-pane").forEach((p) => p.classList.toggle("active", p.dataset.pane === tab.dataset.pane));
     });
   });
-</script>
-  </nav>
+</script></nav>
   <main>
     <h1>Toast</h1>
-    <p class="sub">tokens/components/toast.tokens.json · generated — the CSS below is generated from the same resolved tokens driving every preview on this page, nothing hand-copied. Colors are CSS custom properties, not literal hex. Press the buttons in "Live" — real toasts, real top layer, real timer.</p>
+    <p class="sub">tokens/components/toast.tokens.json · generated — short feedback that floats top-centre and leaves on its own. Recipe in <code class="tok">tools/lib/toast.mjs</code>; the role icon is <a href="status-icon.html">StatusIcon</a>.</p>
 
     <div class="legend">
-      <div class="row"><b>Why "Toast"</b><span>The industry name for transient, self-dismissing feedback — Radix Toast, shadcn's toast, Sonner, Material's Snackbar and Ant's <code class="tok">message</code> are all this one pattern with different default positions. "Notification" usually means the richer, longer-lived card with a title, body and actions — deliberately NOT built yet.</span></div>
-      <div class="row"><b>Top-center, one line</b><span>Role icon + text, fixed at <code class="tok">toast.offsetTop</code> from the viewport top, horizontally centered. Auto-dismisses (default 3200ms in the helper below).</span></div>
-      <div class="row"><b>Neutral surface, colored icon</b><span>The shell stays white + hairline + shadow.sm at every role (Popover's own floating recipe) — only the icon carries the meaning: <code class="tok">status.success/danger/warning</code>, the status.* group's first consumer ("badges, alerts, form validation" per its own $description).</span></div>
-      <div class="row"><b>Native-first</b><span><code class="tok">popover="manual"</code> + <code class="tok">showPopover()</code> — free top-layer, and "manual" opts out of light-dismiss: a toast leaves on its own timer, not because the user clicked elsewhere. Entry via @starting-style, same as SlideOverPanel/Modal.</span></div>
-      <div class="row"><b>Deferred</b><span>Close (×) button, inline action link, title+body notification variant, stacking manager for simultaneous toasts — none needed by the driving use case (Message Center's archive confirmation), none built speculatively.</span></div>
+      <div class="row"><b>Roles</b><span>info · success · warning · danger — StatusIcon's icon and colour. danger is <code class="tok">role="alert"</code> (read at once), the rest <code class="tok">role="status"</code>.</span></div>
+      <div class="row"><b>One or two lines</b><span>A short label, or a title (heading-sm) + a description (body-sm · text.secondary) that wraps past 480px.</span></div>
+      <div class="row"><b>Action</b><span>One action — usually <b>Undo</b> — as Button tint sm, plus a × to close. Never a second primary; never more than one action (that's a Dialog's job).</span></div>
+      <div class="row"><b>Timer</b><span>A 2px bar along the bottom drains over the toast's life: 4s, 8s with an action. It <b>pauses while the pointer or focus is on the toast</b> (WCAG 2.2.1 — the user can stop the clock), so Undo is always reachable.</span></div>
+      <div class="row"><b>One at a time</b><span>A new toast replaces the one showing. <code class="tok">popover="manual"</code>: top layer, no light-dismiss.</span></div>
     </div>
+
+    <h2 class="big-section">Try it</h2>
+    <div class="demo-row">
+  <button class="demo-btn" onclick="showToast({ role: 'info', text: 'Registration opens Monday' })">Info</button>
+  <button class="demo-btn" onclick="showToast({ role: 'success', title: 'Appointment booked', text: 'Tue, Oct 27 at 10:00 AM with Andy Hernandez.' })">Two lines</button>
+  <button class="demo-btn" onclick="showToast({ role: 'success', title: 'Thread archived', text: 'It\'s in Archive for 30 days.', action: { label: 'Undo', onClick: () => showToast({ role: 'info', text: 'Thread restored' }) } })">With Undo</button>
+  <button class="demo-btn" onclick="showToast({ role: 'danger', text: 'Could not send the message' })">Danger</button>
+</div>
+
+    <h2 class="big-section">Roles</h2>
+    <div class="story-grid"><div class="story"><h3>info</h3><div class="story-preview"><div class="toast toast--info toast--static" role="status"><svg class="status-icon status-icon--info toast__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg><div class="toast__text"><p class="toast__label">Registration opens Monday</p></div></div></div><pre class="code"><code>&lt;div class="toast toast--info" role="status"&gt;…&lt;div class="toast__text"&gt;&lt;p class="toast__label"&gt;Registration opens Monday&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;</code></pre><p class="story-note">New — neutral news, StatusIcon info.</p></div><div class="story"><h3>success</h3><div class="story-preview"><div class="toast toast--success toast--static" role="status"><svg class="status-icon status-icon--success toast__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg><div class="toast__text"><p class="toast__label">Message sent</p></div></div></div><pre class="code"><code>&lt;div class="toast toast--success" role="status"&gt;…&lt;div class="toast__text"&gt;&lt;p class="toast__label"&gt;Message sent&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;</code></pre></div><div class="story"><h3>warning</h3><div class="story-preview"><div class="toast toast--warning toast--static" role="status"><svg class="status-icon status-icon--warning toast__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg><div class="toast__text"><p class="toast__label">This thread expires tomorrow</p></div></div></div><pre class="code"><code>&lt;div class="toast toast--warning" role="status"&gt;…&lt;div class="toast__text"&gt;&lt;p class="toast__label"&gt;This thread expires tomorrow&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;</code></pre></div><div class="story"><h3>danger</h3><div class="story-preview"><div class="toast toast--danger toast--static" role="alert"><svg class="status-icon status-icon--error toast__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg><div class="toast__text"><p class="toast__label">Could not send the message</p></div></div></div><pre class="code"><code>&lt;div class="toast toast--danger" role="alert"&gt;…&lt;div class="toast__text"&gt;&lt;p class="toast__label"&gt;Could not send the message&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;</code></pre><p class="story-note">role="alert" — read out at once.</p></div></div>
+
+    <h2 class="big-section">Two lines, Undo, timer</h2>
+    <div class="story-grid"><div class="story"><h3>Two lines — title + description</h3><div class="story-preview"><div class="toast toast--success toast--static" role="status"><svg class="status-icon status-icon--success toast__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg><div class="toast__text"><p class="toast__title">Appointment booked</p><p class="toast__description">Tue, Oct 27 at 10:00 AM with Andy Hernandez. We emailed you the details.</p></div></div></div><pre class="code"><code>&lt;div class="toast toast--success" role="status"&gt;…&lt;div class="toast__text"&gt;&lt;p class="toast__title"&gt;Appointment booked&lt;/p&gt;&lt;p class="toast__description"&gt;Tue, Oct 27 at 10:00 AM with Andy Hernandez. We emailed you the details.&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;</code></pre><p class="story-note">Title in heading-sm, the second line body-sm · text.secondary; wraps past 480px.</p></div><div class="story"><h3>With Undo — and the timer</h3><div class="story-preview"><div class="toast toast--success toast--static" role="status"><svg class="status-icon status-icon--success toast__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg><div class="toast__text"><p class="toast__title">Thread archived</p><p class="toast__description">It's in Archive for 30 days.</p></div><div class="toast__actions"><button class="toast__action" type="button">Undo</button><button class="toast__close" type="button" aria-label="Dismiss"><svg class="" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button></div><span class="toast__timer" aria-hidden="true"></span></div></div><pre class="code"><code>&lt;div class="toast toast--success" role="status"&gt;…&lt;div class="toast__text"&gt;&lt;p class="toast__title"&gt;Thread archived&lt;/p&gt;&lt;p class="toast__description"&gt;It's in Archive for 30 days.&lt;/p&gt;&lt;/div&gt;&lt;div class="toast__actions"&gt;&lt;button class="toast__action" type="button"&gt;Undo&lt;/button&gt;&lt;button class="toast__close" type="button" aria-label="Dismiss"&gt;…&lt;/button&gt;&lt;/div&gt;&lt;span class="toast__timer" aria-hidden="true"&gt;&lt;/span&gt;&lt;/div&gt;</code></pre><p class="story-note">Undo is Button tint sm; × closes. The bar along the bottom drains over 8s (frozen here) and pauses while the pointer or focus is on the toast.</p></div><div class="story"><h3>One line with Undo</h3><div class="story-preview"><div class="toast toast--info toast--static" role="status"><svg class="status-icon status-icon--info toast__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg><div class="toast__text"><p class="toast__label">Draft deleted</p></div><div class="toast__actions"><button class="toast__action" type="button">Undo</button><button class="toast__close" type="button" aria-label="Dismiss"><svg class="" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button></div><span class="toast__timer" aria-hidden="true"></span></div></div><pre class="code"><code>&lt;div class="toast toast--info" role="status"&gt;…&lt;div class="toast__text"&gt;&lt;p class="toast__label"&gt;Draft deleted&lt;/p&gt;&lt;/div&gt;&lt;div class="toast__actions"&gt;&lt;button class="toast__action" type="button"&gt;Undo&lt;/button&gt;&lt;button class="toast__close" type="button" aria-label="Dismiss"&gt;…&lt;/button&gt;&lt;/div&gt;&lt;span class="toast__timer" aria-hidden="true"&gt;&lt;/span&gt;&lt;/div&gt;</code></pre></div></div>
 
     <h2 class="big-section">CSS</h2>
     <pre class="code"><code>:root {
   --tok-surface-default: #ffffff;
   --tok-border-default: #dadde0;
   --tok-text-default: #121921;
+  --tok-text-secondary: #5d6a7a;
+  --tok-fill-primary: #077fec;
+  --tok-fill-primary-tint: #d9eaff;
+  --tok-text-primary: #0468c4;
+  --tok-fill-primary-tint-hover: #c7dffc;
+  --tok-fill-primary-tint-active: #b2d4fe;
+  --tok-icon-secondary: #758191;
+  --tok-fill-neutral-hover: #e6e8eb;
+  --tok-fill-neutral-active: #cdd1d6;
+  --tok-border-focus: #0468c4;
   --tok-status-success: #0a994e;
   --tok-icon-muted: #8e99a7;
   --tok-icon-primary: #077fec;
   --tok-status-warning: #b26f07;
   --tok-status-danger: #de394b;
+  --tok-fill-neutral: #e6e8eb;
+  --tok-fill-neutral-hover-strong: #cdd1d6;
   --tok-family-sans: 'Sora', sans-serif;
 }
 
-.toast { position: fixed; inset: auto; top: 24px; left: 50%; transform: translateX(-50%); margin: 0; box-sizing: border-box; display: flex; align-items: center; gap: 8px; padding: 12px 16px; border-radius: 8px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); box-shadow: 0px 2px 8px 0px rgba(21, 25, 30, 0.10); font-family: var(--tok-family-sans); }
-.toast__icon { flex-shrink: 0; width: 20px; height: 20px; }
-.toast__label { color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; white-space: nowrap; }
+.toast { position: fixed; inset: auto; top: 24px; left: 50%; transform: translateX(-50%); margin: 0; box-sizing: border-box; max-width: min(480px, calc(100vw - 32px)); overflow: hidden; display: flex; align-items: flex-start; gap: 8px; padding: 12px 16px; border-radius: 8px; background: var(--tok-surface-default); box-shadow: inset 0 0 0 1px var(--tok-border-default), 0px 2px 8px 0px rgba(21, 25, 30, 0.10); font-family: var(--tok-family-sans); }
+.toast--static { position: relative; top: auto; left: auto; transform: none; }
+.toast__icon { flex-shrink: 0; }
+.toast__text { display: flex; flex-direction: column; gap: 4px; min-width: 0; padding-top: 0; }
+.toast__label { margin: 0; color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; line-height: 20px; }
+.toast__title { margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 12px; line-height: 1.4; line-height: 16px; }
+.toast__description { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; line-height: 16px; }
+/* one line: the icon and the label share a centre */
+.toast:not(:has(.toast__description)) { align-items: center; }
+.toast__actions { display: flex; align-items: center; gap: 8px; margin-left: calc(12px - 8px); align-self: center; flex-shrink: 0; }
+/* the action — Button tint sm */
+.toast__action { box-sizing: border-box; height: 32px; padding: 0 8px; border: none; border-radius: 8px; background: var(--tok-fill-primary-tint); color: var(--tok-text-primary); cursor: pointer; font-family: inherit; font-weight: 600; font-size: 12px; line-height: 1.4; white-space: nowrap; }
+.toast__action:hover { background: var(--tok-fill-primary-tint-hover); }
+.toast__action:active { background: var(--tok-fill-primary-tint-active); }
+/* × — Button ghost sm icon-only */
+.toast__close { box-sizing: border-box; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; padding: 0; border: none; border-radius: 8px; background: transparent; color: var(--tok-icon-secondary); cursor: pointer; }
+.toast__close:hover { background: var(--tok-fill-neutral-hover); }
+.toast__close:active { background: var(--tok-fill-neutral-active); }
+.toast__close svg { width: 16px; height: 16px; }
+.toast__action:focus-visible, .toast__close:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
+/* the hairline is an inset shadow (inside the box), so heights are 12 + lines + 12 */
+/* timer: a bar along the bottom that drains; pauses while hovered or focused */
+.toast__timer { position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: var(--tok-fill-primary); transform-origin: left; animation: toast-timer var(--toast-duration, 4000ms) linear forwards; }
+.toast:hover .toast__timer, .toast:focus-within .toast__timer { animation-play-state: paused; }
+@keyframes toast-timer { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+.toast--static .toast__timer { animation: none; transform: scaleX(0.6); }
+/* entry */
+.toast:popover-open { opacity: 1; translate: 0 0; transition: opacity 0.18s ease, translate 0.18s ease; }
+@starting-style { .toast:popover-open { opacity: 0; translate: 0 -8px; } }
 
 .status-icon { flex-shrink: 0; display: block; width: 20px; height: 20px; }
 .status-icon--success { color: var(--tok-status-success); }
 .status-icon--todo { color: var(--tok-icon-muted); }
 .status-icon--info { color: var(--tok-icon-primary); }
 .status-icon--warning { color: var(--tok-status-warning); }
-.status-icon--error { color: var(--tok-status-danger); }
+.status-icon--error { color: var(--tok-status-danger); }</code></pre>
 
-/* entry transition — same @starting-style approach as SlideOverPanel/Modal */
-.toast:popover-open { opacity: 1; translate: 0 0; transition: opacity 0.18s ease, translate 0.18s ease; }
-@starting-style {
-  .toast:popover-open { opacity: 0; translate: 0 -8px; }
-}</code></pre>
-
-    <h2 class="big-section">JS</h2>
-    <p class="section-desc">The whole behavior — create, show, auto-dismiss.</p>
-    <pre class="code"><code>// popover="manual": free top-layer, and NO light-dismiss — a toast leaves
-// on its own timer, not because the user clicked elsewhere.
-const TOAST_ICONS = {"success":"&lt;svg class=\"status-icon status-icon--success toast__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"&gt;&lt;path d=\"M0 0h24v24H0z\" fill=\"none\"/&gt;&lt;path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z\"/&gt;&lt;/svg&gt;","danger":"&lt;svg class=\"status-icon status-icon--error toast__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"&gt;&lt;path d=\"M0 0h24v24H0z\" fill=\"none\"/&gt;&lt;path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z\"/&gt;&lt;/svg&gt;","warning":"&lt;svg class=\"status-icon status-icon--warning toast__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"&gt;&lt;path d=\"M0 0h24v24H0z\" fill=\"none\"/&gt;&lt;path d=\"M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z\"/&gt;&lt;/svg&gt;"};
-function showToast(role, text, duration = 3200) {
-  const t = document.createElement("div");
-  t.className = "toast toast--" + role;
-  t.setAttribute("popover", "manual");
-  t.setAttribute("role", role === "danger" ? "alert" : "status");
-  t.innerHTML = TOAST_ICONS[role] + '&lt;span class="toast__label"&gt;&lt;/span&gt;';
-  t.querySelector(".toast__label").textContent = text;
-  document.body.appendChild(t);
-  t.showPopover();
-  setTimeout(() =&gt; { t.hidePopover(); t.remove(); }, duration);
-}</code></pre>
-
-    <h2 class="big-section">Roles</h2>
-    <p class="section-desc">success / danger / warning — same shell, different status icon.</p>
-    <div class="story-grid">
-      
-      <div class="story">
-        <h3>success</h3>
-        <div class="story-preview"><div class="toast toast--success" style="position: static; transform: none;"><svg class="status-icon status-icon--success toast__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg><span class="toast__label">Thread archived</span></div></div>
-        <pre class="code"><code>&lt;div class="toast toast--success" popover="manual" role="status"&gt;&lt;svg class="status-icon status-icon--success toast__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"&gt;&lt;path d="M0 0h24v24H0z" fill="none"/&gt;&lt;path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/&gt;&lt;/svg&gt;&lt;span class="toast__label"&gt;Thread archived&lt;/span&gt;&lt;/div&gt;</code></pre>
-        <p class="story-note">Forced inline via style for this static preview — the real component is fixed top-center in the top layer.</p>
-      </div>
-
-      <div class="story">
-        <h3>danger</h3>
-        <div class="story-preview"><div class="toast toast--danger" style="position: static; transform: none;"><svg class="status-icon status-icon--error toast__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg><span class="toast__label">Could not send the message</span></div></div>
-        <pre class="code"><code>&lt;div class="toast toast--danger" popover="manual" role="status"&gt;&lt;svg class="status-icon status-icon--error toast__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"&gt;&lt;path d="M0 0h24v24H0z" fill="none"/&gt;&lt;path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/&gt;&lt;/svg&gt;&lt;span class="toast__label"&gt;Could not send the message&lt;/span&gt;&lt;/div&gt;</code></pre>
-        <p class="story-note">Forced inline via style for this static preview — the real component is fixed top-center in the top layer.</p>
-      </div>
-
-      <div class="story">
-        <h3>warning</h3>
-        <div class="story-preview"><div class="toast toast--warning" style="position: static; transform: none;"><svg class="status-icon status-icon--warning toast__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg><span class="toast__label">This thread expires tomorrow</span></div></div>
-        <pre class="code"><code>&lt;div class="toast toast--warning" popover="manual" role="status"&gt;&lt;svg class="status-icon status-icon--warning toast__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"&gt;&lt;path d="M0 0h24v24H0z" fill="none"/&gt;&lt;path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/&gt;&lt;/svg&gt;&lt;span class="toast__label"&gt;This thread expires tomorrow&lt;/span&gt;&lt;/div&gt;</code></pre>
-        <p class="story-note">Forced inline via style for this static preview — the real component is fixed top-center in the top layer.</p>
-      </div>
-    </div>
-
-    <h2 class="big-section">Live</h2>
-    <p class="section-desc">Real toasts in the real top layer.</p>
-    <div class="usage-preview">
-      <button class="demo-btn" onclick="showToast('success', 'Thread archived')">Show success</button>
-      <button class="demo-btn" onclick="showToast('danger', 'Could not send the message')">Show danger</button>
-      <button class="demo-btn" onclick="showToast('warning', 'This thread expires tomorrow')">Show warning</button>
-    </div>
+    <h2 class="big-section">Script</h2>
+    <pre class="code"><code>(function () {
+  var ICONS = {"info":"&lt;svg class=\"status-icon status-icon--info toast__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"&gt;&lt;path d=\"M0 0h24v24H0z\" fill=\"none\"/&gt;&lt;path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z\"/&gt;&lt;/svg&gt;","success":"&lt;svg class=\"status-icon status-icon--success toast__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"&gt;&lt;path d=\"M0 0h24v24H0z\" fill=\"none\"/&gt;&lt;path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z\"/&gt;&lt;/svg&gt;","warning":"&lt;svg class=\"status-icon status-icon--warning toast__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"&gt;&lt;path d=\"M0 0h24v24H0z\" fill=\"none\"/&gt;&lt;path d=\"M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z\"/&gt;&lt;/svg&gt;","danger":"&lt;svg class=\"status-icon status-icon--error toast__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"&gt;&lt;path d=\"M0 0h24v24H0z\" fill=\"none\"/&gt;&lt;path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z\"/&gt;&lt;/svg&gt;"};
+  var CLOSE = "&lt;svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"&gt;&lt;path d=\"M0 0h24v24H0z\" fill=\"none\"/&gt;&lt;path d=\"M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z\"/&gt;&lt;/svg&gt;";
+  var current = null;
+  window.showToast = function (o) {
+    if (current) current.dismiss();
+    var role = o.role || "success", hasAction = !!o.action;
+    var ms = o.duration || (hasAction ? 8000 : 4000);
+    var t = document.createElement("div");
+    t.className = "toast toast--" + role; t.setAttribute("popover", "manual"); t.setAttribute("role", role === "danger" ? "alert" : "status");
+    t.style.setProperty("--toast-duration", ms + "ms");
+    var text = document.createElement("div"); text.className = "toast__text";
+    if (o.title) { var h = document.createElement("p"); h.className = "toast__title"; h.textContent = o.title; text.appendChild(h); if (o.text) { var d = document.createElement("p"); d.className = "toast__description"; d.textContent = o.text; text.appendChild(d); } }
+    else { var l = document.createElement("p"); l.className = "toast__label"; l.textContent = o.text; text.appendChild(l); }
+    t.innerHTML = ICONS[role]; t.appendChild(text);
+    var acts = document.createElement("div"); acts.className = "toast__actions";
+    if (hasAction) { var a = document.createElement("button"); a.type = "button"; a.className = "toast__action"; a.textContent = o.action.label; a.addEventListener("click", function () { o.action.onClick &amp;&amp; o.action.onClick(); dismiss(); }); acts.appendChild(a); }
+    if (hasAction || o.close) { var c = document.createElement("button"); c.type = "button"; c.className = "toast__close"; c.setAttribute("aria-label", "Dismiss"); c.innerHTML = CLOSE; c.addEventListener("click", dismiss); acts.appendChild(c); }
+    if (acts.children.length) t.appendChild(acts);
+    var bar = document.createElement("span"); bar.className = "toast__timer"; bar.setAttribute("aria-hidden", "true"); t.appendChild(bar);
+    document.body.appendChild(t); t.showPopover();
+    // the timer bar's animation is the clock: it pauses on hover/focus (CSS) and ends the toast
+    function dismiss() { if (!t.isConnected) return; try { t.hidePopover(); } catch (e) {} t.remove(); if (current &amp;&amp; current.el === t) current = null; }
+    bar.addEventListener("animationend", dismiss);
+    current = { el: t, dismiss: dismiss };
+    return current;
+  };
+})();</code></pre>
   </main>
 </div>
 <script>
-// popover="manual": free top-layer, and NO light-dismiss — a toast leaves
-// on its own timer, not because the user clicked elsewhere.
-const TOAST_ICONS = {"success":"<svg class=\"status-icon status-icon--success toast__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z\"/></svg>","danger":"<svg class=\"status-icon status-icon--error toast__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z\"/></svg>","warning":"<svg class=\"status-icon status-icon--warning toast__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z\"/></svg>"};
-function showToast(role, text, duration = 3200) {
-  const t = document.createElement("div");
-  t.className = "toast toast--" + role;
-  t.setAttribute("popover", "manual");
-  t.setAttribute("role", role === "danger" ? "alert" : "status");
-  t.innerHTML = TOAST_ICONS[role] + '<span class="toast__label"></span>';
-  t.querySelector(".toast__label").textContent = text;
-  document.body.appendChild(t);
-  t.showPopover();
-  setTimeout(() => { t.hidePopover(); t.remove(); }, duration);
-}
+(function () {
+  var ICONS = {"info":"<svg class=\"status-icon status-icon--info toast__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z\"/></svg>","success":"<svg class=\"status-icon status-icon--success toast__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z\"/></svg>","warning":"<svg class=\"status-icon status-icon--warning toast__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z\"/></svg>","danger":"<svg class=\"status-icon status-icon--error toast__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z\"/></svg>"};
+  var CLOSE = "<svg class=\"\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z\"/></svg>";
+  var current = null;
+  window.showToast = function (o) {
+    if (current) current.dismiss();
+    var role = o.role || "success", hasAction = !!o.action;
+    var ms = o.duration || (hasAction ? 8000 : 4000);
+    var t = document.createElement("div");
+    t.className = "toast toast--" + role; t.setAttribute("popover", "manual"); t.setAttribute("role", role === "danger" ? "alert" : "status");
+    t.style.setProperty("--toast-duration", ms + "ms");
+    var text = document.createElement("div"); text.className = "toast__text";
+    if (o.title) { var h = document.createElement("p"); h.className = "toast__title"; h.textContent = o.title; text.appendChild(h); if (o.text) { var d = document.createElement("p"); d.className = "toast__description"; d.textContent = o.text; text.appendChild(d); } }
+    else { var l = document.createElement("p"); l.className = "toast__label"; l.textContent = o.text; text.appendChild(l); }
+    t.innerHTML = ICONS[role]; t.appendChild(text);
+    var acts = document.createElement("div"); acts.className = "toast__actions";
+    if (hasAction) { var a = document.createElement("button"); a.type = "button"; a.className = "toast__action"; a.textContent = o.action.label; a.addEventListener("click", function () { o.action.onClick && o.action.onClick(); dismiss(); }); acts.appendChild(a); }
+    if (hasAction || o.close) { var c = document.createElement("button"); c.type = "button"; c.className = "toast__close"; c.setAttribute("aria-label", "Dismiss"); c.innerHTML = CLOSE; c.addEventListener("click", dismiss); acts.appendChild(c); }
+    if (acts.children.length) t.appendChild(acts);
+    var bar = document.createElement("span"); bar.className = "toast__timer"; bar.setAttribute("aria-hidden", "true"); t.appendChild(bar);
+    document.body.appendChild(t); t.showPopover();
+    // the timer bar's animation is the clock: it pauses on hover/focus (CSS) and ends the toast
+    function dismiss() { if (!t.isConnected) return; try { t.hidePopover(); } catch (e) {} t.remove(); if (current && current.el === t) current = null; }
+    bar.addEventListener("animationend", dismiss);
+    current = { el: t, dismiss: dismiss };
+    return current;
+  };
+})();
 </script>
 </body>
 </html>
