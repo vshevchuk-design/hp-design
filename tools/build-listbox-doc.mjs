@@ -13,6 +13,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { renderNav } from "./lib/nav.mjs";
 import { cssVarName, renderRootVars } from "./lib/css-vars.mjs";
+import { SELECT_COLOR_PATHS, LISTBOX_CSS } from "./lib/select.mjs";
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const load = (p) => JSON.parse(fs.readFileSync(path.join(root, p)));
@@ -65,69 +66,11 @@ const px = (d) => `${d.value}${d.unit}`;
 const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 const cv = (tokenPath) => `var(${cssVarName(tokenPath)})`;
 
-const colorPaths = [
-  "fill.neutralHoverStrong", "bg.neutral", "bg.neutralStrong",
-  "surface.default", "surface.sunken", "surface.dim", "border.default", "border.focus", "text.default", "text.secondary", "text.disabled", "text.muted", "text.primary",
-  "icon.default", "icon.onFill", "fill.neutral", "fill.neutralHover", "fill.neutralActive", "fill.primary",
-];
-const colorValue = Object.fromEntries(colorPaths.map((p) => [p, resolve(p)]));
-const fontSans = resolve("family.sans");
-const rootVars = renderRootVars([...colorPaths.map((p) => [p, colorValue[p]]), ["family.sans", `'${fontSans}', sans-serif`]]);
-
-const radius = px(resolve(listbox.radius.$value));
-const optionRadius = px(resolve(listbox.optionRadius.$value));
-const padding = px(resolve(listbox.padding.$value));
-const gap = px(resolve(listbox.gap.$value));
-const optionPaddingX = px(resolve(listbox.optionPaddingX.$value));
-const optionPaddingY = px(resolve(listbox.optionPaddingY.$value));
-const optionGap = px(resolve(listbox.optionGap.$value));
-const checkmarkSize = px(resolve(listbox.checkmarkSize.$value));
-const maxHeight = px(resolve(listbox.maxHeight.$value));
-const labelType = resolveToken(listbox.label);
-// An option can carry a second line saying what it IS, and a trailing slot
-// naming its kind. The trailing pill is a REAL Badge (neutral tint, sm),
-// resolved from badge.tokens.json — never a re-typed pill.
-const badge = load("tokens/components/badge.tokens.json").component.badge;
-const stripRef = (r) => r.replace(/[{}]/g, "");
-const descType = resolveToken(listbox.description);
-const descColor = stripRef(listbox.descriptionColor.$value);
-const stackGap = px(resolve(listbox.stackGap.$value));
-const trailingGap = px(resolve(listbox.trailingGap.$value));
-const optBadge = {
-  bg: stripRef(badge.role.neutral.tint.bg.$value),
-  text: stripRef(badge.role.neutral.tint.text.$value),
-  radius: px(resolve(badge.radius.$value)),
-  height: px(resolve(badge.size.sm.height.$value)),
-  paddingX: px(resolve(badge.size.sm.paddingX.$value)),
-  label: resolveToken(badge.size.sm.label),
-};
-const shadow = resolveToken(listbox.shadow);
-const shadowCss = `${px(shadow.offsetX)} ${px(shadow.offsetY)} ${px(shadow.blur)} ${px(shadow.spread)} ${shadow.color}`;
-
-const cbBox = px(resolve(listbox.checkbox.box.$value));
-const cbRadius = px(resolve(listbox.checkbox.radius.$value));
-const cbBorderWidth = px(resolve(listbox.checkbox.borderWidth.$value));
-
-const searchGapBelow = px(resolve(listbox.search.gapBelow.$value));
-const searchHeight = px(resolve(search.size.sm.height.$value));
-const searchPaddingX = px(resolve(search.size.sm.paddingX.$value));
-const searchIconSize = px(resolve(search.size.sm.iconSize.$value));
-const searchGap = px(resolve(search.size.sm.gap.$value));
-const searchValueType = resolveToken(search.value);
-
-const selectAllLabelType = resolveToken(listbox.selectAllRow.label);
-const clearActionType = resolveToken(listbox.selectAllRow.clearAction);
-// resolveToken only ever returns a $value tree, so $extensions (the
-// textDecoration link-sm carries) gets silently dropped along the way —
-// fetch it directly from the token this one points at.
-const clearActionNode = get(listbox.selectAllRow.clearAction.$value);
-const clearActionDecoration = clearActionNode.$extensions?.["hp.design/text"]?.textDecoration;
-
+// the recipe lives in tools/lib/select.mjs — one Listbox for this page, Select and Form
+const colorPaths = [...new Set([...SELECT_COLOR_PATHS, "fill.neutral", "fill.neutralHoverStrong", "fill.neutralActive"])];
+const rootVars = renderRootVars([...colorPaths.map((p) => [p, resolve(p)]), ["family.sans", `'${resolve("family.sans")}', sans-serif`]]);
 function typoCss(t) {
   return `font-weight: ${t.fontWeight}; font-size: ${px(t.fontSize)}; line-height: ${t.lineHeight};`;
-}
-function linkCss(t, decoration) {
-  return `${typoCss(t)}${decoration ? ` text-decoration: ${decoration};` : ""}`;
 }
 
 const iconCheck = fs.readFileSync(path.join(root, "assets/icons/material-filled/check.svg"), "utf8");
@@ -136,37 +79,7 @@ const iconCheckboxGlyph = iconCheck.replace("<svg ", '<svg class="listbox__cb-ic
 const iconSearch = fs.readFileSync(path.join(root, "assets/icons/material-filled/search.svg"), "utf8").replace("<svg ", '<svg class="listbox__search-icon" ');
 
 const css = `${rootVars}
-
-.listbox { margin: 0; box-sizing: border-box; padding: ${padding}; border-radius: ${radius}; background: ${cv("surface.default")}; border: 1px solid ${cv("border.default")}; box-shadow: ${shadowCss}; font-family: ${cv("family.sans")}; min-width: 220px; }
-.listbox__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: ${gap}; max-height: ${maxHeight}; overflow: auto; }
-.listbox__option { width: 100%; box-sizing: border-box; display: flex; align-items: center; gap: ${optionGap}; padding: ${optionPaddingY} ${optionPaddingX}; border: none; background: none; border-radius: ${optionRadius}; cursor: pointer; text-align: left; color: ${cv("text.default")}; font-family: inherit; ${typoCss(labelType)} }
-.listbox__option:hover { background: ${cv("fill.neutralHover")}; }
-/* An option with a description + a trailing kind badge. The text stack takes
-   the remaining width so a long programme name wraps instead of pushing the
-   badge out of the panel. */
-.listbox__stack { display: flex; flex-direction: column; gap: ${stackGap}; min-width: 0; flex: 1; }
-.listbox__desc { color: ${cv(descColor)}; ${typoCss(descType)} }
-.listbox__trailing { flex-shrink: 0; margin-left: ${trailingGap}; display: inline-flex; align-items: center; height: ${optBadge.height}; padding: 0 ${optBadge.paddingX}; border-radius: ${optBadge.radius}; background: ${cv(optBadge.bg)}; color: ${cv(optBadge.text)}; ${typoCss(optBadge.label)} }
-.listbox__checkmark { width: ${checkmarkSize}; height: ${checkmarkSize}; margin-left: auto; color: ${cv("fill.primary")}; flex-shrink: 0; }
-
-.listbox__cb-option { width: 100%; box-sizing: border-box; display: flex; align-items: center; gap: ${optionGap}; padding: ${optionPaddingY} ${optionPaddingX}; border-radius: ${optionRadius}; cursor: pointer; }
-.listbox__cb-option:hover { background: ${cv("fill.neutralHover")}; }
-.listbox__cb-input { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
-.listbox__cb-box { box-sizing: border-box; width: ${cbBox}; height: ${cbBox}; border-radius: ${cbRadius}; border: ${cbBorderWidth} solid ${cv("border.default")}; background: ${cv("surface.default")}; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.listbox__cb-icon { width: ${px(resolve("dim.4"))}; height: ${px(resolve("dim.4"))}; display: none; }
-.listbox__cb-input:checked ~ .listbox__cb-box { background: ${cv("fill.primary")}; border-color: ${cv("fill.primary")}; }
-.listbox__cb-input:checked ~ .listbox__cb-box .listbox__cb-icon { display: block; color: ${cv("icon.onFill")}; }
-.listbox__cb-label { color: ${cv("text.default")}; font-family: inherit; ${typoCss(labelType)} }
-
-.listbox__search-wrap { padding: ${px(resolve("dim.1"))} ${px(resolve("dim.1"))} ${searchGapBelow}; margin-bottom: ${px(resolve("dim.0_5"))}; border-bottom: 1px solid ${cv("border.default")}; }
-.listbox__search { display: flex; align-items: center; box-sizing: border-box; height: ${searchHeight}; padding: 0 ${searchPaddingX}; gap: ${searchGap}; border-radius: ${px(resolve("radius.default"))}; background: ${cv("surface.dim")}; border: 1px solid ${cv("border.default")}; }
-.listbox__search-icon { width: ${searchIconSize}; height: ${searchIconSize}; color: ${cv("icon.default")}; flex-shrink: 0; }
-.listbox__search input { border: none; background: none; outline: none; width: 100%; color: ${cv("text.default")}; font-family: inherit; ${typoCss(searchValueType)} }
-.listbox__search input::placeholder { color: ${cv("text.muted")}; }
-
-.listbox__select-all { display: flex; align-items: center; justify-content: space-between; gap: ${px(resolve("dim.2"))}; padding: ${px(resolve("dim.1"))} ${px(resolve("dim.2"))}; }
-.listbox__select-all-label { color: ${cv("text.secondary")}; margin: 0; ${typoCss(selectAllLabelType)} }
-.listbox__clear { border: none; background: none; padding: 0; cursor: pointer; color: ${cv("text.primary")}; ${linkCss(clearActionType, clearActionDecoration)} }`;
+${LISTBOX_CSS}`;
 
 function storyCard(title, liveHtml, codeHtml, note = "") {
   return `
@@ -277,6 +190,23 @@ const multiCode = `<button popovertarget="listbox-multi">Labels (2)</button>
   </ul>
 </div>`;
 
+const GROUPS = [["Fruits", ["Apple", "Banana", "Cherry"]], ["Vegetables", ["Carrot", "Celery", "Lettuce"]]];
+const groupBody = (live) => GROUPS.map(([g, items], gi) => `${gi ? `<li role="none"><div class="listbox__divider" role="separator"></div></li>\n        ` : ""}<li role="none"><ul class="listbox__group" role="group" aria-labelledby="lbg-${gi}">
+          <li role="presentation" class="listbox__group-label" id="lbg-${gi}">${g}</li>
+          ${items.map((it) => `<li role="none"><button class="listbox__option" role="option" aria-selected="${it === "Banana"}"><span>${it}</span>${live ? iconCheckmark : "…"}</button></li>`).join("\n          ")}
+        </ul></li>`).join("\n        ");
+const groupDemo = `<button class="ov-btn ov-btn--secondary" popovertarget="listbox-groups">Food: Banana</button>
+    <div id="listbox-groups" class="listbox" popover role="listbox">
+      <ul class="listbox__list" role="none">
+        ${groupBody(true)}
+      </ul>
+    </div>`;
+const groupCode = `<div class="listbox" popover role="listbox">
+  <ul class="listbox__list" role="none">
+    ${groupBody(false)}
+  </ul>
+</div>`;
+
 const triggerGap = resolve("dim.2").value;
 const positionScript = `document.querySelectorAll('[popovertarget]').forEach((trigger) => {
   trigger.addEventListener('click', () => {
@@ -384,7 +314,8 @@ const html = `<!doctype html>
       <div class="row"><b>Single-select</b><span>Trailing checkmark (check.svg, fill.primary) on the selected option, no background tint — same convention as Radix Select / a native &lt;select&gt;. Picking an option would close the listbox in a real implementation.</span></div>
       <div class="row"><b>Multi-select</b><span>A real Checkbox marker per option — literally the Checkbox component's own tokens (dim.5 box, radius.xs, fill.primary checked), not re-derived. Stays open across picks.</span></div>
       <div class="row"><b>Search + select-all</b><span>Search reuses Search component's own sm-size tokens verbatim. "Clear all" uses text-style.link-sm (the underlined-link style), not a button — both only shown for the multi-select variant, where a long option list actually benefits from them.</span></div>
-      <div class="row"><b>Static demo only</b><span>No real keyboard nav, live search filtering, or ARIA roles implemented — same caveat as Menu, this is a tokens+visual reference.</span></div>
+      <div class="row"><b>Groups</b><span>A heading per group (the Command heading: heading-sm, text.muted, 28px) and a hairline between groups; each group is <code class="tok">role="group"</code> labelled by its heading.</span></div>
+      <div class="row"><b>Live in Select</b><span>The demos here are the panel on its own. Keyboard, picking and closing are wired in <a href="select.html">Select</a> (tools/lib/select.mjs).</span></div>
     </div>
 
     <h2 class="big-section">CSS</h2>
@@ -399,6 +330,7 @@ const html = `<!doctype html>
     <div class="story-grid">
       ${storyCard("Single-select", singleDemo, singleCode, "Poland is selected — trailing checkmark, no other visual change.")}
       ${storyCard("Multi-select, with search + select-all", multiDemo, multiCode, "Bug and Feature request are checked. Clicking a checkbox in a real implementation wouldn't close the panel.")}
+      ${storyCard("With groups", groupDemo, groupCode, "Group headings — the Command heading-sm in text.muted, 28px — and a hairline between groups. Each group is role=group labelled by its heading.")}
       ${storyCard("Option with a description + kind badge", programDemo, programCode, "The Explore Degrees 'Add a major or minor' picker. The label alone is ambiguous — several programmes share a name and differ only by degree type — so the description carries what the option IS, and the trailing pill (a real Badge, neutral tint, sm) carries its kind.")}
     </div>
 

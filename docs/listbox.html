@@ -78,47 +78,54 @@
   .placeholder-note { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-muted); border: 0.5px dashed var(--border-strong); border-radius: 6px; padding: 4px 10px; margin-top: 1.5rem; }
 
   :root {
-  --tok-fill-neutral-hover-strong: #cdd1d6;
-  --tok-bg-neutral: #e6e8eb;
-  --tok-bg-neutral-strong: #dadde0;
-  --tok-surface-default: #ffffff;
-  --tok-surface-sunken: #e6e8eb;
   --tok-surface-dim: #f4f5f7;
   --tok-border-default: #dadde0;
-  --tok-border-focus: #0468c4;
-  --tok-text-default: #121921;
-  --tok-text-secondary: #5d6a7a;
-  --tok-text-disabled: #adb5be;
   --tok-text-muted: #758191;
-  --tok-text-primary: #0468c4;
+  --tok-text-default: #121921;
   --tok-icon-default: #485462;
+  --tok-surface-dim-hover: #e6e8eb;
+  --tok-border-strong: #adb5be;
+  --tok-border-focus: #0468c4;
+  --tok-text-primary: #0468c4;
+  --tok-surface-disabled: #e6e8eb;
+  --tok-text-disabled: #adb5be;
+  --tok-icon-disabled: #adb5be;
+  --tok-border-danger-strong: #c11435;
+  --tok-surface-default: #ffffff;
+  --tok-fill-neutral-hover: #e6e8eb;
+  --tok-fill-primary: #077fec;
+  --tok-text-secondary: #5d6a7a;
+  --tok-bg-neutral-strong: #dadde0;
+  --tok-fill-neutral-active-strong: #adb5be;
   --tok-icon-on-fill: #ffffff;
   --tok-fill-neutral: #e6e8eb;
-  --tok-fill-neutral-hover: #e6e8eb;
+  --tok-fill-neutral-hover-strong: #cdd1d6;
   --tok-fill-neutral-active: #cdd1d6;
-  --tok-fill-primary: #077fec;
   --tok-family-sans: 'Sora', sans-serif;
 }
 
 .listbox { margin: 0; box-sizing: border-box; padding: 4px; border-radius: 8px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); box-shadow: 0px 2px 8px 0px rgba(21, 25, 30, 0.10); font-family: var(--tok-family-sans); min-width: 220px; }
 .listbox__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; max-height: 288px; overflow: auto; }
 .listbox__option { width: 100%; box-sizing: border-box; display: flex; align-items: center; gap: 8px; padding: 8px 8px; border: none; background: none; border-radius: 4px; cursor: pointer; text-align: left; color: var(--tok-text-default); font-family: inherit; font-weight: 400; font-size: 14px; line-height: 1.4; }
-.listbox__option:hover { background: var(--tok-fill-neutral-hover); }
+.listbox__option:hover, .listbox__option:focus-visible { background: var(--tok-fill-neutral-hover); outline: none; }
 /* An option with a description + a trailing kind badge. The text stack takes
    the remaining width so a long programme name wraps instead of pushing the
    badge out of the panel. */
 .listbox__stack { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
 .listbox__desc { color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
 .listbox__trailing { flex-shrink: 0; margin-left: 8px; display: inline-flex; align-items: center; height: 16px; padding: 0 8px; border-radius: 999px; background: var(--tok-bg-neutral-strong); color: var(--tok-text-default); font-weight: 600; font-size: 10px; line-height: 1; }
+/* single-select: a trailing checkmark on the chosen option, no tint */
 .listbox__checkmark { width: 16px; height: 16px; margin-left: auto; color: var(--tok-fill-primary); flex-shrink: 0; }
+.listbox__option[aria-selected="false"] .listbox__checkmark { visibility: hidden; }
 
+/* multi-select: a real Checkbox marker per option (checkbox.tokens.json) */
 .listbox__cb-option { width: 100%; box-sizing: border-box; display: flex; align-items: center; gap: 8px; padding: 8px 8px; border-radius: 4px; cursor: pointer; }
 .listbox__cb-option:hover { background: var(--tok-fill-neutral-hover); }
 .listbox__cb-input { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 .listbox__cb-box { box-sizing: border-box; width: 20px; height: 20px; border-radius: 4px; border: 2px solid var(--tok-border-default); background: var(--tok-surface-default); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.listbox__cb-icon { width: 16px; height: 16px; display: none; }
-.listbox__cb-input:checked ~ .listbox__cb-box { background: var(--tok-fill-primary); border-color: var(--tok-fill-primary); }
-.listbox__cb-input:checked ~ .listbox__cb-box .listbox__cb-icon { display: block; color: var(--tok-icon-on-fill); }
+.listbox__cb-icon { width: 16px; height: 16px; display: none; color: var(--tok-icon-on-fill); }
+.listbox__cb-input:checked ~ .listbox__cb-box, .listbox__option[aria-selected="true"] .listbox__cb-box { background: var(--tok-fill-primary); border-color: var(--tok-fill-primary); }
+.listbox__cb-input:checked ~ .listbox__cb-box .listbox__cb-icon, .listbox__option[aria-selected="true"] .listbox__cb-box .listbox__cb-icon { display: block; }
 .listbox__cb-label { color: var(--tok-text-default); font-family: inherit; font-weight: 400; font-size: 14px; line-height: 1.4; }
 
 .listbox__search-wrap { padding: 4px 4px 4px; margin-bottom: 2px; border-bottom: 1px solid var(--tok-border-default); }
@@ -130,6 +137,11 @@
 .listbox__select-all { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 4px 8px; }
 .listbox__select-all-label { color: var(--tok-text-secondary); margin: 0; font-weight: 400; font-size: 12px; line-height: 1.4; }
 .listbox__clear { border: none; background: none; padding: 0; cursor: pointer; color: var(--tok-text-primary); font-weight: 400; font-size: 12px; line-height: 1.4; text-decoration: underline; }
+
+/* groups ("Fruits", "Vegetables") — Command's group heading, a hairline between groups */
+.listbox__group { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.listbox__group-label { box-sizing: border-box; height: 28px; display: flex; align-items: center; padding: 0 8px; color: var(--tok-text-muted); font-weight: 600; font-size: 12px; line-height: 1.4; }
+.listbox__divider { height: 1px; margin: 4px 0; background: var(--tok-border-default); }
 </style>
 </head>
 <body>
@@ -270,52 +282,60 @@
       <div class="row"><b>Single-select</b><span>Trailing checkmark (check.svg, fill.primary) on the selected option, no background tint — same convention as Radix Select / a native &lt;select&gt;. Picking an option would close the listbox in a real implementation.</span></div>
       <div class="row"><b>Multi-select</b><span>A real Checkbox marker per option — literally the Checkbox component's own tokens (dim.5 box, radius.xs, fill.primary checked), not re-derived. Stays open across picks.</span></div>
       <div class="row"><b>Search + select-all</b><span>Search reuses Search component's own sm-size tokens verbatim. "Clear all" uses text-style.link-sm (the underlined-link style), not a button — both only shown for the multi-select variant, where a long option list actually benefits from them.</span></div>
-      <div class="row"><b>Static demo only</b><span>No real keyboard nav, live search filtering, or ARIA roles implemented — same caveat as Menu, this is a tokens+visual reference.</span></div>
+      <div class="row"><b>Groups</b><span>A heading per group (the Command heading: heading-sm, text.muted, 28px) and a hairline between groups; each group is <code class="tok">role="group"</code> labelled by its heading.</span></div>
+      <div class="row"><b>Live in Select</b><span>The demos here are the panel on its own. Keyboard, picking and closing are wired in <a href="select.html">Select</a> (tools/lib/select.mjs).</span></div>
     </div>
 
     <h2 class="big-section">CSS</h2>
     <pre class="code"><code>:root {
-  --tok-fill-neutral-hover-strong: #cdd1d6;
-  --tok-bg-neutral: #e6e8eb;
-  --tok-bg-neutral-strong: #dadde0;
-  --tok-surface-default: #ffffff;
-  --tok-surface-sunken: #e6e8eb;
   --tok-surface-dim: #f4f5f7;
   --tok-border-default: #dadde0;
-  --tok-border-focus: #0468c4;
-  --tok-text-default: #121921;
-  --tok-text-secondary: #5d6a7a;
-  --tok-text-disabled: #adb5be;
   --tok-text-muted: #758191;
-  --tok-text-primary: #0468c4;
+  --tok-text-default: #121921;
   --tok-icon-default: #485462;
+  --tok-surface-dim-hover: #e6e8eb;
+  --tok-border-strong: #adb5be;
+  --tok-border-focus: #0468c4;
+  --tok-text-primary: #0468c4;
+  --tok-surface-disabled: #e6e8eb;
+  --tok-text-disabled: #adb5be;
+  --tok-icon-disabled: #adb5be;
+  --tok-border-danger-strong: #c11435;
+  --tok-surface-default: #ffffff;
+  --tok-fill-neutral-hover: #e6e8eb;
+  --tok-fill-primary: #077fec;
+  --tok-text-secondary: #5d6a7a;
+  --tok-bg-neutral-strong: #dadde0;
+  --tok-fill-neutral-active-strong: #adb5be;
   --tok-icon-on-fill: #ffffff;
   --tok-fill-neutral: #e6e8eb;
-  --tok-fill-neutral-hover: #e6e8eb;
+  --tok-fill-neutral-hover-strong: #cdd1d6;
   --tok-fill-neutral-active: #cdd1d6;
-  --tok-fill-primary: #077fec;
   --tok-family-sans: 'Sora', sans-serif;
 }
 
 .listbox { margin: 0; box-sizing: border-box; padding: 4px; border-radius: 8px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); box-shadow: 0px 2px 8px 0px rgba(21, 25, 30, 0.10); font-family: var(--tok-family-sans); min-width: 220px; }
 .listbox__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; max-height: 288px; overflow: auto; }
 .listbox__option { width: 100%; box-sizing: border-box; display: flex; align-items: center; gap: 8px; padding: 8px 8px; border: none; background: none; border-radius: 4px; cursor: pointer; text-align: left; color: var(--tok-text-default); font-family: inherit; font-weight: 400; font-size: 14px; line-height: 1.4; }
-.listbox__option:hover { background: var(--tok-fill-neutral-hover); }
+.listbox__option:hover, .listbox__option:focus-visible { background: var(--tok-fill-neutral-hover); outline: none; }
 /* An option with a description + a trailing kind badge. The text stack takes
    the remaining width so a long programme name wraps instead of pushing the
    badge out of the panel. */
 .listbox__stack { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
 .listbox__desc { color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
 .listbox__trailing { flex-shrink: 0; margin-left: 8px; display: inline-flex; align-items: center; height: 16px; padding: 0 8px; border-radius: 999px; background: var(--tok-bg-neutral-strong); color: var(--tok-text-default); font-weight: 600; font-size: 10px; line-height: 1; }
+/* single-select: a trailing checkmark on the chosen option, no tint */
 .listbox__checkmark { width: 16px; height: 16px; margin-left: auto; color: var(--tok-fill-primary); flex-shrink: 0; }
+.listbox__option[aria-selected="false"] .listbox__checkmark { visibility: hidden; }
 
+/* multi-select: a real Checkbox marker per option (checkbox.tokens.json) */
 .listbox__cb-option { width: 100%; box-sizing: border-box; display: flex; align-items: center; gap: 8px; padding: 8px 8px; border-radius: 4px; cursor: pointer; }
 .listbox__cb-option:hover { background: var(--tok-fill-neutral-hover); }
 .listbox__cb-input { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 .listbox__cb-box { box-sizing: border-box; width: 20px; height: 20px; border-radius: 4px; border: 2px solid var(--tok-border-default); background: var(--tok-surface-default); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.listbox__cb-icon { width: 16px; height: 16px; display: none; }
-.listbox__cb-input:checked ~ .listbox__cb-box { background: var(--tok-fill-primary); border-color: var(--tok-fill-primary); }
-.listbox__cb-input:checked ~ .listbox__cb-box .listbox__cb-icon { display: block; color: var(--tok-icon-on-fill); }
+.listbox__cb-icon { width: 16px; height: 16px; display: none; color: var(--tok-icon-on-fill); }
+.listbox__cb-input:checked ~ .listbox__cb-box, .listbox__option[aria-selected="true"] .listbox__cb-box { background: var(--tok-fill-primary); border-color: var(--tok-fill-primary); }
+.listbox__cb-input:checked ~ .listbox__cb-box .listbox__cb-icon, .listbox__option[aria-selected="true"] .listbox__cb-box .listbox__cb-icon { display: block; }
 .listbox__cb-label { color: var(--tok-text-default); font-family: inherit; font-weight: 400; font-size: 14px; line-height: 1.4; }
 
 .listbox__search-wrap { padding: 4px 4px 4px; margin-bottom: 2px; border-bottom: 1px solid var(--tok-border-default); }
@@ -326,7 +346,12 @@
 
 .listbox__select-all { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 4px 8px; }
 .listbox__select-all-label { color: var(--tok-text-secondary); margin: 0; font-weight: 400; font-size: 12px; line-height: 1.4; }
-.listbox__clear { border: none; background: none; padding: 0; cursor: pointer; color: var(--tok-text-primary); font-weight: 400; font-size: 12px; line-height: 1.4; text-decoration: underline; }</code></pre>
+.listbox__clear { border: none; background: none; padding: 0; cursor: pointer; color: var(--tok-text-primary); font-weight: 400; font-size: 12px; line-height: 1.4; text-decoration: underline; }
+
+/* groups ("Fruits", "Vegetables") — Command's group heading, a hairline between groups */
+.listbox__group { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.listbox__group-label { box-sizing: border-box; height: 28px; display: flex; align-items: center; padding: 0 8px; color: var(--tok-text-muted); font-weight: 600; font-size: 12px; line-height: 1.4; }
+.listbox__divider { height: 1px; margin: 4px 0; background: var(--tok-border-default); }</code></pre>
 
     <h2 class="big-section">Positioning script</h2>
     <p class="section-desc">Identical to Menu/Popover's.</p>
@@ -419,6 +444,46 @@
   &lt;/ul&gt;
 &lt;/div&gt;</code></pre>
         <p class="story-note">Bug and Feature request are checked. Clicking a checkbox in a real implementation wouldn't close the panel.</p>
+      </div>
+      
+      <div class="story">
+        <h3>With groups</h3>
+        <div class="story-preview"><button class="ov-btn ov-btn--secondary" popovertarget="listbox-groups">Food: Banana</button>
+    <div id="listbox-groups" class="listbox" popover role="listbox">
+      <ul class="listbox__list" role="none">
+        <li role="none"><ul class="listbox__group" role="group" aria-labelledby="lbg-0">
+          <li role="presentation" class="listbox__group-label" id="lbg-0">Fruits</li>
+          <li role="none"><button class="listbox__option" role="option" aria-selected="false"><span>Apple</span><svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li>
+          <li role="none"><button class="listbox__option" role="option" aria-selected="true"><span>Banana</span><svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li>
+          <li role="none"><button class="listbox__option" role="option" aria-selected="false"><span>Cherry</span><svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li>
+        </ul></li>
+        <li role="none"><div class="listbox__divider" role="separator"></div></li>
+        <li role="none"><ul class="listbox__group" role="group" aria-labelledby="lbg-1">
+          <li role="presentation" class="listbox__group-label" id="lbg-1">Vegetables</li>
+          <li role="none"><button class="listbox__option" role="option" aria-selected="false"><span>Carrot</span><svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li>
+          <li role="none"><button class="listbox__option" role="option" aria-selected="false"><span>Celery</span><svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li>
+          <li role="none"><button class="listbox__option" role="option" aria-selected="false"><span>Lettuce</span><svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li>
+        </ul></li>
+      </ul>
+    </div></div>
+        <pre class="code"><code>&lt;div class="listbox" popover role="listbox"&gt;
+  &lt;ul class="listbox__list" role="none"&gt;
+    &lt;li role="none"&gt;&lt;ul class="listbox__group" role="group" aria-labelledby="lbg-0"&gt;
+          &lt;li role="presentation" class="listbox__group-label" id="lbg-0"&gt;Fruits&lt;/li&gt;
+          &lt;li role="none"&gt;&lt;button class="listbox__option" role="option" aria-selected="false"&gt;&lt;span&gt;Apple&lt;/span&gt;…&lt;/button&gt;&lt;/li&gt;
+          &lt;li role="none"&gt;&lt;button class="listbox__option" role="option" aria-selected="true"&gt;&lt;span&gt;Banana&lt;/span&gt;…&lt;/button&gt;&lt;/li&gt;
+          &lt;li role="none"&gt;&lt;button class="listbox__option" role="option" aria-selected="false"&gt;&lt;span&gt;Cherry&lt;/span&gt;…&lt;/button&gt;&lt;/li&gt;
+        &lt;/ul&gt;&lt;/li&gt;
+        &lt;li role="none"&gt;&lt;div class="listbox__divider" role="separator"&gt;&lt;/div&gt;&lt;/li&gt;
+        &lt;li role="none"&gt;&lt;ul class="listbox__group" role="group" aria-labelledby="lbg-1"&gt;
+          &lt;li role="presentation" class="listbox__group-label" id="lbg-1"&gt;Vegetables&lt;/li&gt;
+          &lt;li role="none"&gt;&lt;button class="listbox__option" role="option" aria-selected="false"&gt;&lt;span&gt;Carrot&lt;/span&gt;…&lt;/button&gt;&lt;/li&gt;
+          &lt;li role="none"&gt;&lt;button class="listbox__option" role="option" aria-selected="false"&gt;&lt;span&gt;Celery&lt;/span&gt;…&lt;/button&gt;&lt;/li&gt;
+          &lt;li role="none"&gt;&lt;button class="listbox__option" role="option" aria-selected="false"&gt;&lt;span&gt;Lettuce&lt;/span&gt;…&lt;/button&gt;&lt;/li&gt;
+        &lt;/ul&gt;&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/div&gt;</code></pre>
+        <p class="story-note">Group headings — the Command heading-sm in text.muted, 28px — and a hairline between groups. Each group is role=group labelled by its heading.</p>
       </div>
       
       <div class="story">

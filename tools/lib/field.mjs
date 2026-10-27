@@ -204,13 +204,13 @@ export const describedBy = (id, { description = true } = {}) => `${description ?
 // Validate on Submit; after the first attempt each field re-checks as it is
 // corrected. Uses the browser's own constraint validation (required, type,
 // pattern) with the messages from data-error-*; a DatePicker counts as filled
-// once it has data-value; a RadioGroup / CheckboxGroup once one item is picked.
+// once it has data-value; a RadioGroup / CheckboxGroup once one item is picked; a Select once it has a value.
 export const FORM_JS = `(function () {
   document.querySelectorAll("form.form").forEach(function (form) {
     if (form._hpform) return; form._hpform = true;
     form.noValidate = true;
     var tried = false;
-    function controlOf(f) { return f.querySelector(".choice-group__items input:checked") || f.querySelector("input, textarea, .datepicker__trigger"); }
+    function controlOf(f) { return f.querySelector(".choice-group__items input:checked") || f.querySelector(".select, input, textarea, .datepicker__trigger"); }
     function check(f) {
       var ctl = controlOf(f), dp = f.querySelector(".datepicker"), msg = "";
       var group = f.classList.contains("choice-group");
@@ -220,6 +220,7 @@ export const FORM_JS = `(function () {
         if (f.hasAttribute("data-required") && !picked && !f.disabled) msg = f.dataset.errorRequired;
       }
       else if (dp) { if (f.hasAttribute("data-required") && !dp.dataset.value) msg = f.dataset.errorRequired; }
+      else if (f.querySelector("[data-select]")) { if (f.hasAttribute("data-required") && !f.querySelector("[data-select]").dataset.value) msg = f.dataset.errorRequired; }
       else if (ctl && ctl.validity) {
         if (ctl.validity.valueMissing) msg = f.dataset.errorRequired || ctl.validationMessage;
         else if (!ctl.validity.valid) msg = f.dataset.errorFormat || ctl.validationMessage;
@@ -241,6 +242,7 @@ export const FORM_JS = `(function () {
     form.addEventListener("input", recheck);
     form.addEventListener("change", recheck);
     form.addEventListener("datechange", recheck);
+    form.addEventListener("selectchange", recheck);
     form.addEventListener("reset", function () { tried = false; setTimeout(function () { form.querySelectorAll("[data-field]").forEach(function (f) { f.removeAttribute("data-invalid"); f.querySelector(".field__error").hidden = true; f.querySelectorAll("[aria-invalid]").forEach(function (c) { c.removeAttribute("aria-invalid"); }); }); }); });
   });
 })();`;

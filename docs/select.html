@@ -6,135 +6,147 @@
 <title>hp-design — Select</title>
 <link rel="stylesheet" href="../assets/fonts/sora/sora.css" />
 <style>
-  :root {
-    --bg-page: #f7f7f5; --bg-card: #ffffff; --bg-card-hover: #fbfbfa;
-    --border: #e4e3df; --border-strong: #d2d1cb;
-    --text-primary: #0e0e10; --text-secondary: #63625c; --text-muted: #918f87;
-    --accent: #0468c4; --accent-bg: #eff6ff;
-    --code-bg: #1e1e22; --code-text: #e4e3df;
-    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-    --sans: -apple-system, "Segoe UI", system-ui, sans-serif;
-    color-scheme: light;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root:where(:not([data-theme="light"])) {
-      --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327;
-      --border: #313035; --border-strong: #403f45;
-      --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68;
-      --accent: #5aa4ec; --accent-bg: #16283b;
-      --code-bg: #0d0d0f; --code-text: #d7d6d2;
-      color-scheme: dark;
-    }
-  }
-  :root[data-theme="dark"] {
-    --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327;
-    --border: #313035; --border-strong: #403f45;
-    --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68;
-    --accent: #5aa4ec; --accent-bg: #16283b;
-    --code-bg: #0d0d0f; --code-text: #d7d6d2;
-    color-scheme: dark;
-  }
-  * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg-page); color: var(--text-primary); font-family: var(--sans); }
+  :root { --bg-page: #f7f7f5; --bg-card: #ffffff; --bg-card-hover: #fbfbfa; --border: #e4e3df; --border-strong: #d2d1cb; --text-primary: #0e0e10; --text-secondary: #63625c; --text-muted: #918f87; --accent: #0468c4; --accent-bg: #eff6ff; --code-bg: #1e1e22; --code-text: #e4e3df; --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace; --sans: -apple-system, "Segoe UI", system-ui, sans-serif; color-scheme: light; }
+  @media (prefers-color-scheme: dark) { :root:where(:not([data-theme="light"])) { --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327; --border: #313035; --border-strong: #403f45; --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68; --accent: #5aa4ec; --accent-bg: #16283b; --code-bg: #0d0d0f; --code-text: #d7d6d2; color-scheme: dark; } }
+  :root[data-theme="dark"] { --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327; --border: #313035; --border-strong: #403f45; --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68; --accent: #5aa4ec; --accent-bg: #16283b; --code-bg: #0d0d0f; --code-text: #d7d6d2; color-scheme: dark; }
+  * { box-sizing: border-box; } body { margin: 0; background: var(--bg-page); color: var(--text-primary); font-family: var(--sans); }
   .shell { display: flex; min-height: 100vh; }
   nav.side { width: 220px; flex-shrink: 0; border-right: 0.5px solid var(--border); padding: 1.5rem 1rem; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
-  .brand { font-size: 14px; font-weight: 600; margin: 0 0 2px 8px; }
-  .brand-sub { font-size: 11.5px; color: var(--text-muted); margin: 0 0 1.5rem 8px; }
   .navlink { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 8px; border-radius: 7px; font-size: 13px; text-decoration: none; color: var(--text-primary); margin-bottom: 1px; }
-  .navlink:hover { background: var(--bg-card-hover); }
-  .navlink.active { background: var(--accent-bg); color: var(--accent); font-weight: 600; }
+  .navlink:hover { background: var(--bg-card-hover); } .navlink.active { background: var(--accent-bg); color: var(--accent); font-weight: 600; }
   .nav-category { font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin: 16px 8px 6px; }
-  main { flex: 1; padding: 4rem 4rem 6rem; max-width: 1120px; }
-
+  main { flex: 1; padding: 4rem 4rem 6rem; max-width: 1120px; min-width: 0; }
   h1 { font-size: 36px; font-weight: 700; margin: 0 0 10px; letter-spacing: -0.02em; }
   .sub { font-size: 14px; color: var(--text-secondary); margin: 0 0 2.5rem; }
   h2.big-section { font-size: 24px; font-weight: 700; margin: 5.5rem 0 1.5rem; letter-spacing: -0.01em; padding-top: 2.5rem; border-top: 1px solid var(--border); }
   h2.big-section:first-of-type { margin-top: 3rem; padding-top: 0; border-top: none; }
   .section-desc { font-size: 13.5px; color: var(--text-secondary); margin: -0.5rem 0 1.5rem; max-width: 68ch; line-height: 1.6; }
-
   .legend { font-size: 12.5px; color: var(--text-secondary); padding: 14px 18px; background: var(--bg-card); border: 0.5px solid var(--border); border-radius: 10px; margin-bottom: 1rem; line-height: 1.6; }
-  .legend .row { display: flex; gap: 14px; padding: 6px 0; border-bottom: 0.5px solid var(--border); }
-  .legend .row:last-child { border-bottom: none; }
-  .legend .row b { width: 150px; flex-shrink: 0; color: var(--text-primary); font-weight: 600; font-family: var(--mono); font-size: 11.5px; }
+  .legend .row { display: flex; gap: 14px; padding: 6px 0; border-bottom: 0.5px solid var(--border); } .legend .row:last-child { border-bottom: none; }
+  .legend .row b { width: 110px; flex-shrink: 0; color: var(--text-primary); font-weight: 600; font-family: var(--mono); font-size: 11.5px; }
   code.tok { font-family: var(--mono); font-size: 12px; color: var(--accent); }
-
-  pre.code { background: var(--code-bg); color: var(--code-text); border-radius: 10px; padding: 16px 18px; margin: 0; overflow-x: auto; font-family: var(--mono); font-size: 12px; line-height: 1.7; }
-  pre.code code { font-family: inherit; }
-
-  .story-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 28px; }
-  .story { border: 0.5px solid var(--border); border-radius: 14px; background: var(--bg-card); padding: 24px; display: flex; flex-direction: column; gap: 14px; }
+  pre.code { background: var(--code-bg); color: var(--code-text); border-radius: 10px; padding: 16px 18px; margin: 0; overflow-x: auto; font-family: var(--mono); font-size: 12px; line-height: 1.7; } pre.code code { font-family: inherit; }
+  .story-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; }
+  .story { border: 0.5px solid var(--border); border-radius: 14px; background: var(--bg-card); padding: 22px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+  .story--wide { grid-column: 1 / -1; }
   .story h3 { font-size: 14px; font-weight: 600; margin: 0; font-family: var(--mono); }
-  .story-preview { min-height: 64px; display: flex; align-items: center; justify-content: center; padding: 12px 0; }
-  .story-preview .select { width: 100%; max-width: 260px; }
+  .story-preview { padding: 8px 0; }
   .story-note { font-size: 11.5px; color: var(--text-muted); margin: 0; line-height: 1.5; }
-
-  .placeholder-note { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-muted); border: 0.5px dashed var(--border-strong); border-radius: 6px; padding: 4px 10px; margin-top: 1.5rem; }
-
+  @media (max-width: 760px) { .shell { display: block; } nav.side { display: none; } main { padding: 2rem 16px 4rem; } }
+  .sel-demo { width: 280px; max-width: 100%; }
   :root {
-  --tok-surface-dim-hover: #e6e8eb;
-  --tok-surface-sunken: #e6e8eb;
   --tok-surface-dim: #f4f5f7;
-  --tok-surface-disabled: #e6e8eb;
   --tok-border-default: #dadde0;
-  --tok-border-strong: #adb5be;
-  --tok-border-focus: #0468c4;
-  --tok-border-danger: #febebd;
-  --tok-border-danger-strong: #c11435;
   --tok-text-muted: #758191;
   --tok-text-default: #121921;
-  --tok-text-disabled: #adb5be;
-  --tok-text-primary: #0468c4;
   --tok-icon-default: #485462;
+  --tok-surface-dim-hover: #e6e8eb;
+  --tok-border-strong: #adb5be;
+  --tok-border-focus: #0468c4;
+  --tok-text-primary: #0468c4;
+  --tok-surface-disabled: #e6e8eb;
+  --tok-text-disabled: #adb5be;
   --tok-icon-disabled: #adb5be;
+  --tok-border-danger-strong: #c11435;
+  --tok-surface-default: #ffffff;
+  --tok-fill-neutral-hover: #e6e8eb;
+  --tok-fill-primary: #077fec;
+  --tok-text-secondary: #5d6a7a;
+  --tok-bg-neutral-strong: #dadde0;
+  --tok-fill-neutral-active-strong: #adb5be;
+  --tok-icon-on-fill: #ffffff;
   --tok-family-sans: 'Sora', sans-serif;
 }
 
-.select {
-  display: inline-flex;
-  align-items: center;
-  box-sizing: border-box;
-  background: var(--tok-surface-dim);
-  border: 1px solid var(--tok-border-default);
-  border-radius: 8px;
-  font-family: var(--tok-family-sans);
-  cursor: pointer;
-}
-.select__icon { flex-shrink: 0; color: var(--tok-icon-default); }
-.select__chevron { flex-shrink: 0; margin-left: auto; color: var(--tok-icon-default); }
-.select__placeholder { color: var(--tok-text-muted); }
-.select__value { color: var(--tok-text-default); }
-.select__stack { display: flex; flex-direction: column; justify-content: center; flex: 1; min-width: 0; }
-.select__label { color: var(--tok-text-muted); }
-
+/* Select — the trigger. A real <button> on Input's box model; the value floats
+   a 12px label above it once something is chosen (base/lg). */
+.select-field { position: relative; display: block; min-width: 0; }
+.select { box-sizing: border-box; display: flex; align-items: center; width: 100%; margin: 0; background: var(--tok-surface-dim); border: 1px solid var(--tok-border-default); border-radius: 8px; font-family: var(--tok-family-sans); text-align: left; cursor: pointer; }
+.select { height: 40px; padding: 0 12px; gap: 8px; }
+.select .select__icon, .select .select__chevron { width: 20px; height: 20px; }
+.select .select__value { font-weight: 400; font-size: 14px; line-height: 1.2; }
+.select .select__stack { gap: 0px; }
+.select .select__label { font-weight: 400; font-size: 12px; line-height: 1.2; }
 .select--sm { height: 32px; padding: 0 8px; gap: 8px; }
 .select--sm .select__icon, .select--sm .select__chevron { width: 16px; height: 16px; }
-.select--sm .select__placeholder, .select--sm .select__value { font-weight: 400; font-size: 14px; line-height: 1.2; }
-
-.select--base { height: 40px; padding: 0 12px; gap: 8px; }
-.select--base .select__icon, .select--base .select__chevron { width: 20px; height: 20px; }
-.select--base .select__placeholder, .select--base .select__value { font-weight: 400; font-size: 14px; line-height: 1.2; }
-.select--base .select__stack { gap: 0px; }
-.select--base .select__label { font-weight: 400; font-size: 12px; line-height: 1.2; }
-
+.select--sm .select__value { font-weight: 400; font-size: 14px; line-height: 1.2; }
 .select--lg { height: 48px; padding: 0 16px; gap: 8px; }
 .select--lg .select__icon, .select--lg .select__chevron { width: 24px; height: 24px; }
-.select--lg .select__placeholder, .select--lg .select__value { font-weight: 400; font-size: 14px; line-height: 1.2; }
+.select--lg .select__value { font-weight: 400; font-size: 14px; line-height: 1.2; }
 .select--lg .select__stack { gap: 4px; }
 .select--lg .select__label { font-weight: 400; font-size: 12px; line-height: 1.2; }
+.select__stack { display: flex; flex-direction: column; justify-content: center; flex: 1; min-width: 0; }
+.select__label { color: var(--tok-text-muted); white-space: nowrap; }
+.select__value { display: flex; align-items: center; gap: 8px; min-width: 0; color: var(--tok-text-default); }
+.select__text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.select__icon { flex-shrink: 0; color: var(--tok-icon-default); }
+.select__chevron { flex-shrink: 0; margin-left: auto; color: var(--tok-icon-default); transition: transform 0.12s ease; }
+/* nothing chosen: the label's text is the placeholder; sm never floats */
+.select.is-placeholder .select__label, .select--sm .select__label { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.select.is-placeholder .select__value { color: var(--tok-text-muted); }
+/* multiple: the first choice + a Counter for the rest ("Email  +2") */
+.select__more { flex-shrink: 0; box-sizing: border-box; min-width: 16px; height: 16px; padding: 0 4px; display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; background: var(--tok-fill-neutral-active-strong); color: var(--tok-text-default); font-weight: 700; font-size: 10px; line-height: 1; }
+.select__more[hidden] { display: none; }
+/* states */
+.select:not(:disabled):hover { background: var(--tok-surface-dim-hover); border-color: var(--tok-border-strong); }
+.select:focus-visible { outline: none; border-color: var(--tok-border-focus); }
+/* open — the list is showing: focus border, blue label, the chevron turns up */
+.select[aria-expanded="true"], .select[aria-expanded="true"]:hover { border-color: var(--tok-border-focus); }
+.select[aria-expanded="true"] .select__label { color: var(--tok-text-primary); }
+.select[aria-expanded="true"] .select__chevron { transform: rotate(180deg); }
+.select:disabled { background: var(--tok-surface-disabled); border-color: var(--tok-border-default); cursor: not-allowed; }
+.select:disabled .select__value { color: var(--tok-text-disabled); }
+.select:disabled.is-placeholder .select__value { color: var(--tok-text-disabled); }
+.select:disabled .select__label { color: var(--tok-text-disabled); }
+.select:disabled .select__icon { color: var(--tok-icon-disabled); }
+.select:disabled .select__chevron { color: var(--tok-icon-disabled); }
+.select[aria-invalid="true"], .select[aria-invalid="true"]:hover { border-color: var(--tok-border-danger-strong); }
+/* the panel — Listbox, under the field, at least as wide as it */
+.select__panel { margin: 0; }
 
-.select:not(.select--disabled):hover, .select--hover { background: var(--tok-surface-dim-hover); border-color: var(--tok-border-strong); }
-.select--focus { border-color: var(--tok-border-focus); }
-.select--focus .select__label { color: var(--tok-text-primary); }
-.select--disabled { background: var(--tok-surface-disabled); cursor: not-allowed; }
-.select--disabled .select__placeholder, .select--disabled .select__value, .select--disabled .select__label { color: var(--tok-text-disabled); }
-.select--disabled .select__icon, .select--disabled .select__chevron { color: var(--tok-icon-disabled); }
-.select--error { border-color: var(--tok-border-danger-strong); }
+.listbox { margin: 0; box-sizing: border-box; padding: 4px; border-radius: 8px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); box-shadow: 0px 2px 8px 0px rgba(21, 25, 30, 0.10); font-family: var(--tok-family-sans); min-width: 220px; }
+.listbox__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; max-height: 288px; overflow: auto; }
+.listbox__option { width: 100%; box-sizing: border-box; display: flex; align-items: center; gap: 8px; padding: 8px 8px; border: none; background: none; border-radius: 4px; cursor: pointer; text-align: left; color: var(--tok-text-default); font-family: inherit; font-weight: 400; font-size: 14px; line-height: 1.4; }
+.listbox__option:hover, .listbox__option:focus-visible { background: var(--tok-fill-neutral-hover); outline: none; }
+/* An option with a description + a trailing kind badge. The text stack takes
+   the remaining width so a long programme name wraps instead of pushing the
+   badge out of the panel. */
+.listbox__stack { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+.listbox__desc { color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.listbox__trailing { flex-shrink: 0; margin-left: 8px; display: inline-flex; align-items: center; height: 16px; padding: 0 8px; border-radius: 999px; background: var(--tok-bg-neutral-strong); color: var(--tok-text-default); font-weight: 600; font-size: 10px; line-height: 1; }
+/* single-select: a trailing checkmark on the chosen option, no tint */
+.listbox__checkmark { width: 16px; height: 16px; margin-left: auto; color: var(--tok-fill-primary); flex-shrink: 0; }
+.listbox__option[aria-selected="false"] .listbox__checkmark { visibility: hidden; }
+
+/* multi-select: a real Checkbox marker per option (checkbox.tokens.json) */
+.listbox__cb-option { width: 100%; box-sizing: border-box; display: flex; align-items: center; gap: 8px; padding: 8px 8px; border-radius: 4px; cursor: pointer; }
+.listbox__cb-option:hover { background: var(--tok-fill-neutral-hover); }
+.listbox__cb-input { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.listbox__cb-box { box-sizing: border-box; width: 20px; height: 20px; border-radius: 4px; border: 2px solid var(--tok-border-default); background: var(--tok-surface-default); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.listbox__cb-icon { width: 16px; height: 16px; display: none; color: var(--tok-icon-on-fill); }
+.listbox__cb-input:checked ~ .listbox__cb-box, .listbox__option[aria-selected="true"] .listbox__cb-box { background: var(--tok-fill-primary); border-color: var(--tok-fill-primary); }
+.listbox__cb-input:checked ~ .listbox__cb-box .listbox__cb-icon, .listbox__option[aria-selected="true"] .listbox__cb-box .listbox__cb-icon { display: block; }
+.listbox__cb-label { color: var(--tok-text-default); font-family: inherit; font-weight: 400; font-size: 14px; line-height: 1.4; }
+
+.listbox__search-wrap { padding: 4px 4px 4px; margin-bottom: 2px; border-bottom: 1px solid var(--tok-border-default); }
+.listbox__search { display: flex; align-items: center; box-sizing: border-box; height: 32px; padding: 0 8px; gap: 8px; border-radius: 8px; background: var(--tok-surface-dim); border: 1px solid var(--tok-border-default); }
+.listbox__search-icon { width: 16px; height: 16px; color: var(--tok-icon-default); flex-shrink: 0; }
+.listbox__search input { border: none; background: none; outline: none; width: 100%; color: var(--tok-text-default); font-family: inherit; font-weight: 400; font-size: 16px; line-height: 1.2; }
+.listbox__search input::placeholder { color: var(--tok-text-muted); }
+
+.listbox__select-all { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 4px 8px; }
+.listbox__select-all-label { color: var(--tok-text-secondary); margin: 0; font-weight: 400; font-size: 12px; line-height: 1.4; }
+.listbox__clear { border: none; background: none; padding: 0; cursor: pointer; color: var(--tok-text-primary); font-weight: 400; font-size: 12px; line-height: 1.4; text-decoration: underline; }
+
+/* groups ("Fruits", "Vegetables") — Command's group heading, a hairline between groups */
+.listbox__group { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.listbox__group-label { box-sizing: border-box; height: 28px; display: flex; align-items: center; padding: 0 8px; color: var(--tok-text-muted); font-weight: 600; font-size: 12px; line-height: 1.4; }
+.listbox__divider { height: 1px; margin: 4px 0; background: var(--tok-border-default); }
 </style>
 </head>
 <body>
 <div class="shell">
-  <nav class="side">
-    <style>
+  <nav class="side"><style>
   .nav-logo { color: var(--text-primary); margin: 2px 0 16px 8px; }
   .nav-logo svg { display: block; }
   .nav-pane .brand { margin: 12px 0 10px 8px; }
@@ -257,176 +269,259 @@
       document.querySelectorAll(".nav-pane").forEach((p) => p.classList.toggle("active", p.dataset.pane === tab.dataset.pane));
     });
   });
-</script>
-  </nav>
+</script></nav>
   <main>
     <h1>Select</h1>
-    <p class="sub">tokens/components/select.tokens.json · generated — the CSS below is generated from the same resolved tokens driving every preview on this page, not hand-copied. Colors are CSS custom properties, not literal hex. Documents the closed trigger only — the open menu/listbox isn't built yet.</p>
+    <p class="sub">tokens/components/select.tokens.json · generated — the field that shows a choice and opens a <a href="listbox.html">Listbox</a> under it. Every preview is the real one from <code class="tok">tools/lib/select.mjs</code>: click, pick, use the keyboard.</p>
 
     <div class="legend">
-      <div class="row"><b>Fill + border</b><span>Same as <a href="input.html">Input</a> — surface.sunken bg + border.default hairline.</span></div>
-      <div class="row"><b>Sizes</b><span>Identical height grid to Input: sm 32px (no floating label) / base 40px / lg 48px. <b>Value text is 14px at every size</b> (16px until 2026-10-07): Select is a button that opens the Listbox, not a text field, so the iOS Safari focus-zoom that keeps Input/Search at 16px does not apply — the live product’s Radix Select is text-sm (14px) too. Build it as a button + Listbox; a native Identical grid to Input: sm 32px (no floating label) / base 40px / lg 48px, 16px value text throughout.lt;selectIdentical grid to Input: sm 32px (no floating label) / base 40px / lg 48px, 16px value text throughout.gt; on iOS would need 16px again.</span></div>
-      <div class="row"><b>Chevron</b><span>Always present, right-aligned (margin-left: auto pushes it to the far edge regardless of value length) — unlike the optional icon-left, this isn't a content variant, every select has one.</span></div>
-      <div class="row"><b>Floating label</b><span>Same mechanics as Input — see <a href="input.html">input.html</a> for the full reasoning.</span></div>
-      <div class="row"><b>States</b><span>Same set as Input: default / hover / focus / populated / disabled / error.</span></div>
+      <div class="row"><b>Select + Listbox</b><span>Two components, like Radix's Select.Trigger + Select.Content: Select is the field, Listbox the panel. The same Listbox serves Combobox, MultiSelect and filters.</span></div>
+      <div class="row"><b>Box model</b><span>Input's: sm 32px / base 40px / lg 48px, surface.dim fill, floating label on base/lg.</span></div>
+      <div class="row"><b>Focus vs open</b><span><b>Focus</b> — the field is active but closed (you Tabbed onto it): border.focus. <b>Open</b> — the list is showing: the same border, the label turns blue and the chevron turns up. Fields show focus on click too; the keyboard-only ring (focus-visible) is for buttons and checks.</span></div>
+      <div class="row"><b>Error</b><span>Not "typed something wrong" — a choice can still be wrong: required and nothing chosen on Submit, or a choice that stopped working (the section filled up, the advisor isn't free that day). border.dangerStrong + the Field message.</span></div>
+      <div class="row"><b>Multiple</b><span>The first choice + a Counter ("Email  +2") — the field keeps one line whatever you pick. Every choice as removable chips is a different field (MultiSelectBadges).</span></div>
+      <div class="row"><b>Keyboard</b><span>↓ / ↑ / Enter / Space open; ↑ ↓ Home End move; Enter or Space pick; Escape closes back to the field; Tab closes. Single-select closes on pick.</span></div>
     </div>
 
+    <h2 class="big-section">Sizes</h2>
+    <div class="story-grid"><div class="story"><h3>sm — 32px</h3><div class="story-preview"><div class="sel-demo"><div class="select-field" data-select data-value="Registrar" data-label="Department">
+  <button type="button" class="select select--sm" id="z-sm" aria-haspopup="listbox" aria-expanded="false" aria-controls="z-sm-list" aria-labelledby="z-sm-label z-sm-text"><span class="select__stack"><span class="select__label" id="z-sm-label">Department</span><span class="select__value"><span class="select__text" id="z-sm-text">Registrar</span><span class="select__more" hidden>+0</span></span></span><svg class="select__chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+  <div class="listbox select__panel" id="z-sm-list" popover role="listbox" aria-labelledby="z-sm-label"><ul class="listbox__list" role="none"><li role="none"><button type="button" class="listbox__option" role="option" id="z-sm-opt-0" aria-selected="false" data-value="Advising" tabindex="-1"><span>Advising</span><svg class="listbox__checkmark" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li><li role="none"><button type="button" class="listbox__option" role="option" id="z-sm-opt-1" aria-selected="false" data-value="Financial aid" tabindex="-1"><span>Financial aid</span><svg class="listbox__checkmark" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li><li role="none"><button type="button" class="listbox__option" role="option" id="z-sm-opt-2" aria-selected="true" data-value="Registrar" tabindex="-1"><span>Registrar</span><svg class="listbox__checkmark" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li><li role="none"><button type="button" class="listbox__option" role="option" id="z-sm-opt-3" aria-selected="false" data-value="Career services" tabindex="-1"><span>Career services</span><svg class="listbox__checkmark" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li></ul></div>
+</div></div></div><pre class="code"><code>&lt;div class="select-field" data-select data-value="Registrar" data-label="Department"&gt;
+  &lt;button type="button" class="select select--sm" id="z-sm" aria-haspopup="listbox" aria-expanded="false" aria-controls="z-sm-list" aria-labelledby="z-sm-label z-sm-text"&gt;&lt;span class="select__stack"&gt;&lt;span class="select__label" id="z-sm-label"&gt;Department&lt;/span&gt;&lt;span class="select__value"&gt;&lt;span class="select__text" id="z-sm-text"&gt;Registrar&lt;/span&gt;&lt;span class="select__more" hidden&gt;+0&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;…&lt;/button&gt;
+  &lt;div class="listbox select__panel" id="z-sm-list" popover role="listbox" aria-labelledby="z-sm-label"&gt;&lt;ul class="listbox__list" role="none"&gt;&lt;li role="none"&gt;&lt;button type="button" class="listbox__option" role="option" id="z-sm-opt-0" aria-selected="false" data-value="Advising" tabindex="-1"&gt;&lt;span&gt;Advising&lt;/span&gt;…&lt;/button&gt;&lt;/li&gt;&lt;li role="none"&gt;&lt;button type="button" class="listbox__option" role="option" id="z-sm-opt-1" aria-selected="false" data-value="Financial aid" tabindex="-1"&gt;&lt;span&gt;Financial aid&lt;/span&gt;…&lt;/button&gt;&lt;/li&gt;&lt;li role="none"&gt;&lt;button type="button" class="listbox__option" role="option" id="z-sm-opt-2" aria-selected="true" data-value="Registrar" tabindex="-1"&gt;&lt;span&gt;Registrar&lt;/span&gt;…&lt;/button&gt;&lt;/li&gt;&lt;li role="none"&gt;&lt;button type="button" class="listbox__option" role="option" id="z-sm-opt-3" aria-selected="false" data-value="Career services" tabindex="-1"&gt;&lt;span&gt;Career services&lt;/span&gt;…&lt;/button&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;
+&lt;/div&gt;</code></pre><p class="story-note">No floating label — the value (or the label as a placeholder) is the one line.</p></div><div class="story"><h3>base — 40px</h3><div class="story-preview"><div class="sel-demo"><div class="select-field" data-select data-value="Registrar" data-label="Department">
+  <button type="button" class="select" id="z-base" aria-haspopup="listbox" aria-expanded="false" aria-controls="z-base-list" aria-labelledby="z-base-label z-base-text"><span class="select__stack"><span class="select__label" id="z-base-label">Department</span><span class="select__value"><span class="select__text" id="z-base-text">Registrar</span><span class="select__more" hidden>+0</span></span></span><svg class="select__chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+  <div class="listbox select__panel" id="z-base-list" popover role="listbox" aria-labelledby="z-base-label"><ul class="listbox__list" role="none"><li role="none"><button type="button" class="listbox__option" role="option" id="z-base-opt-0" aria-selected="false" data-value="Advising" tabindex="-1"><span>Advising</span><svg class="listbox__checkmark" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li><li role="none"><button type="button" class="listbox__option" role="option" id="z-base-opt-1" aria-selected="false" data-value="Financial aid" tabindex="-1"><span>Financial aid</span><svg class="listbox__checkmark" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li><li role="none"><button type="button" class="listbox__option" role="option" id="z-base-opt-2" aria-selected="true" data-value="Registrar" tabindex="-1"><span>Registrar</span><svg class="listbox__checkmark" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li><li role="none"><button type="button" class="listbox__option" role="option" id="z-base-opt-3" aria-selected="false" data-value="Career services" tabindex="-1"><span>Career services</span><svg class="listbox__checkmark" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li></ul></div>
+</div></div></div><pre class="code"><code>&lt;div class="select-field" data-select data-value="Registrar" data-label="Department"&gt;
+  &lt;button type="button" class="select" id="z-base" aria-haspopup="listbox" aria-expanded="false" aria-controls="z-base-list" aria-labelledby="z-base-label z-base-text"&gt;&lt;span class="select__stack"&gt;&lt;span class="select__label" id="z-base-label"&gt;Department&lt;/span&gt;&lt;span class="select__value"&gt;&lt;span class="select__text" id="z-base-text"&gt;Registrar&lt;/span&gt;&lt;span class="select__more" hidden&gt;+0&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;…&lt;/button&gt;
+  &lt;div class="listbox select__panel" id="z-base-list" popover role="listbox" aria-labelledby="z-base-label"&gt;&lt;ul class="listbox__list" role="none"&gt;&lt;li role="none"&gt;&lt;button type="button" class="listbox__option" role="option" id="z-base-opt-0" aria-selected="false" data-value="Advising" tabindex="-1"&gt;&lt;span&gt;Advising&lt;/span&gt;…&lt;/button&gt;&lt;/li&gt;&lt;li role="none"&gt;&lt;button type="button" class="listbox__option" role="option" id="z-base-opt-1" aria-selected="false" data-value="Financial aid" tabindex="-1"&gt;&lt;span&gt;Financial aid&lt;/span&gt;…&lt;/button&gt;&lt;/li&gt;&lt;li role="none"&gt;&lt;button type="button" class="listbox__option" role="option" id="z-base-opt-2" aria-selected="true" data-value="Registrar" tabindex="-1"&gt;&lt;span&gt;Registrar&lt;/span&gt;…&lt;/button&gt;&lt;/li&gt;&lt;li role="none"&gt;&lt;button type="button" class="listbox__option" role="option" id="z-base-opt-3" aria-selected="false" data-value="Career services" tabindex="-1"&gt;&lt;span&gt;Career services&lt;/span&gt;…&lt;/button&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;
+&lt;/div&gt;</code></pre><p class="story-note">The default. Chosen: the label floats to 12px above the value.</p></div><div class="story"><h3>lg — 48px</h3><div class="story-preview"><div class="sel-demo"><div class="select-field" data-select data-value="Registrar" data-label="Department">
+  <button type="button" class="select select--lg" id="z-lg" aria-haspopup="listbox" aria-expanded="false" aria-controls="z-lg-list" aria-labelledby="z-lg-label z-lg-text"><span class="select__stack"><span class="select__label" id="z-lg-label">Department</span><span class="select__value"><span class="select__text" id="z-lg-text">Registrar</span><span class="select__more" hidden>+0</span></span></span><svg class="select__chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+  <div class="listbox select__panel" id="z-lg-list" popover role="listbox" aria-labelledby="z-lg-label"><ul class="listbox__list" role="none"><li role="none"><button type="button" class="listbox__option" role="option" id="z-lg-opt-0" aria-selected="false" data-value="Advising" tabindex="-1"><span>Advising</span><svg class="listbox__checkmark" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li><li role="none"><button type="button" class="listbox__option" role="option" id="z-lg-opt-1" aria-selected="false" data-value="Financial aid" tabindex="-1"><span>Financial aid</span><svg class="listbox__checkmark" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li><li role="none"><button type="button" class="listbox__option" role="option" id="z-lg-opt-2" aria-selected="true" data-value="Registrar" tabindex="-1"><span>Registrar</span><svg class="listbox__checkmark" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li><li role="none"><button type="button" class="listbox__option" role="option" id="z-lg-opt-3" aria-selected="false" data-value="Career services" tabindex="-1"><span>Career services</span><svg class="listbox__checkmark" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li></ul></div>
+</div></div></div><pre class="code"><code>&lt;div class="select-field" data-select data-value="Registrar" data-label="Department"&gt;
+  &lt;button type="button" class="select select--lg" id="z-lg" aria-haspopup="listbox" aria-expanded="false" aria-controls="z-lg-list" aria-labelledby="z-lg-label z-lg-text"&gt;&lt;span class="select__stack"&gt;&lt;span class="select__label" id="z-lg-label"&gt;Department&lt;/span&gt;&lt;span class="select__value"&gt;&lt;span class="select__text" id="z-lg-text"&gt;Registrar&lt;/span&gt;&lt;span class="select__more" hidden&gt;+0&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;…&lt;/button&gt;
+  &lt;div class="listbox select__panel" id="z-lg-list" popover role="listbox" aria-labelledby="z-lg-label"&gt;&lt;ul class="listbox__list" role="none"&gt;&lt;li role="none"&gt;&lt;button type="button" class="listbox__option" role="option" id="z-lg-opt-0" aria-selected="false" data-value="Advising" tabindex="-1"&gt;&lt;span&gt;Advising&lt;/span&gt;…&lt;/button&gt;&lt;/li&gt;&lt;li role="none"&gt;&lt;button type="button" class="listbox__option" role="option" id="z-lg-opt-1" aria-selected="false" data-value="Financial aid" tabindex="-1"&gt;&lt;span&gt;Financial aid&lt;/span&gt;…&lt;/button&gt;&lt;/li&gt;&lt;li role="none"&gt;&lt;button type="button" class="listbox__option" role="option" id="z-lg-opt-2" aria-selected="true" data-value="Registrar" tabindex="-1"&gt;&lt;span&gt;Registrar&lt;/span&gt;…&lt;/button&gt;&lt;/li&gt;&lt;li role="none"&gt;&lt;button type="button" class="listbox__option" role="option" id="z-lg-opt-3" aria-selected="false" data-value="Career services" tabindex="-1"&gt;&lt;span&gt;Career services&lt;/span&gt;…&lt;/button&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;
+&lt;/div&gt;</code></pre></div></div>
+
+    <h2 class="big-section">States</h2>
+    <div class="story-grid"><div class="story"><h3>Default</h3><div class="story-preview"><div class="sel-demo"><div class="select-field" data-select data-value="" data-label="Department">
+  <button type="button" class="select is-placeholder" id="st-def" aria-haspopup="listbox" aria-expanded="false" aria-controls="st-def-list" aria-labelledby="st-def-label st-def-text"><span class="select__stack"><span class="select__label" id="st-def-label">Department</span><span class="select__value"><span class="select__text" id="st-def-text">Department</span><span class="select__more" hidden>+0</span></span></span><svg class="select__chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+  <div class="listbox select__panel" id="st-def-list" popover role="listbox" aria-labelledby="st-def-label"><ul class="listbox__list" role="none"><li role="none"><button type="button" class="listbox__option" role="option" id="st-def-opt-0" aria-selected="false" data-value="Advising" tabindex="-1"><span>Advising</span><svg class="listbox__checkmark" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li><li role="none"><button type="button" class="listbox__option" role="option" id="st-def-opt-1" aria-selected="false" data-value="Financial aid" tabindex="-1"><span>Financial aid</span><svg class="listbox__checkmark" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li><li role="none"><button type="button" class="listbox__option" role="option" id="st-def-opt-2" aria-selected="false" data-value="Registrar" tabindex="-1"><span>Registrar</span><svg class="listbox__checkmark" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li><li role="none"><button type="button" class="listbox__option" role="option" id="st-def-opt-3" aria-selected="false" data-value="Career services" tabindex="-1"><span>Career services</span><svg class="listbox__checkmark" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li></ul></div>
+</div></div></div><pre class="code"><code>&lt;div class="select-field" data-select data-value="" data-label="Department"&gt;
+  &lt;button type="button" class="select is-placeholder" id="st-def" aria-haspopup="listbox" aria-expanded="false" aria-controls="st-def-list" aria-labelledby="st-def-label st-def-text"&gt;&lt;span class="select__stack"&gt;&lt;span class="select__label" id="st-def-label"&gt;Department&lt;/span&gt;&lt;span class="select__value"&gt;&lt;span class="select__text" id="st-def-text"&gt;Department&lt;/span&gt;&lt;span class="select__more" hidden&gt;+0&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;…&lt;/button&gt;
+  &lt;div class="listbox select__panel" id="st-def-list" popover role="listbox" aria-labelledby="st-def-label"&gt;&lt;ul class="listbox__list" role="none"&gt;&lt;li role="none"&gt;&lt;button type="button" class="listbox__option" role="option" id="st-def-opt-0" aria-selected="false" data-value="Advising" tabindex="-1"&gt;&lt;span&gt;Advising&lt;/span&gt;…&lt;/button&gt;&lt;/li&gt;&lt;li role="none"&gt;&lt;button type="button" class="listbox__option" role="option" id="st-def-opt-1" aria-selected="false" data-value="Financial aid" tabindex="-1"&gt;&lt;span&gt;Financial aid&lt;/span&gt;…&lt;/button&gt;&lt;/li&gt;&lt;li role="none"&gt;&lt;button type="button" class="listbox__option" role="option" id="st-def-opt-2" aria-selected="false" data-value="Registrar" tabindex="-1"&gt;&lt;span&gt;Registrar&lt;/span&gt;…&lt;/button&gt;&lt;/li&gt;&lt;li role="none"&gt;&lt;button type="button" class="listbox__option" role="option" id="st-def-opt-3" aria-selected="false" data-value="Career services" tabindex="-1"&gt;&lt;span&gt;Career services&lt;/span&gt;…&lt;/button&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;
+&lt;/div&gt;</code></pre><p class="story-note">Nothing chosen: the label's text is the placeholder. Hover it.</p></div><div class="story"><h3>Populated</h3><div class="story-preview"><div class="sel-demo"><div class="select-field" data-select data-value="Financial aid" data-label="Department">
+  <button type="button" class="select" id="st-pop" aria-haspopup="listbox" aria-expanded="false" aria-controls="st-pop-list" aria-labelledby="st-pop-label st-pop-text"><span class="select__stack"><span class="select__label" id="st-pop-label">Department</span><span class="select__value"><span class="select__text" id="st-pop-text">Financial aid</span><span class="select__more" hidden>+0</span></span></span><svg class="select__chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+  <div class="listbox select__panel" id="st-pop-list" popover role="listbox" aria-labelledby="st-pop-label"><ul class="listbox__list" role="none"><li role="none"><button type="button" class="listbox__option" role="option" id="st-pop-opt-0" aria-selected="false" data-value="Advising" tabindex="-1"><span>Advising</span><svg class="listbox__checkmark" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li><li role="none"><button type="button" class="listbox__option" role="option" id="st-pop-opt-1" aria-selected="true" data-value="Financial aid" tabindex="-1"><span>Financial aid</span><svg class="listbox__checkmark" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li><li role="none"><button type="button" class="listbox__option" role="option" id="st-pop-opt-2" aria-selected="false" data-value="Registrar" tabindex="-1"><span>Registrar</span><svg class="listbox__checkmark" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li><li role="none"><button type="button" class="listbox__option" role="option" id="st-pop-opt-3" aria-selected="false" data-value="Career services" tabindex="-1"><span>Career services</span><svg class="listbox__checkmark" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li></ul></div>
+</div></div></div><pre class="code"><code>&lt;div class="select-field" data-select data-value="Financial aid" data-label="Department"&gt;
+  &lt;button type="button" class="select" id="st-pop" aria-haspopup="listbox" aria-expanded="false" aria-controls="st-pop-list" aria-labelledby="st-pop-label st-pop-text"&gt;&lt;span class="select__stack"&gt;&lt;span class="select__label" id="st-pop-label"&gt;Department&lt;/span&gt;&lt;span class="select__value"&gt;&lt;span class="select__text" id="st-pop-text"&gt;Financial aid&lt;/span&gt;&lt;span class="select__more" hidden&gt;+0&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;…&lt;/button&gt;
+  &lt;div class="listbox select__panel" id="st-pop-list" popover role="listbox" aria-labelledby="st-pop-label"&gt;&lt;ul class="listbox__list" role="none"&gt;&lt;li role="none"&gt;&lt;button type="button" class="listbox__option" role="option" id="st-pop-opt-0" aria-selected="false" data-value="Advising" tabindex="-1"&gt;&lt;span&gt;Advising&lt;/span&gt;…&lt;/button&gt;&lt;/li&gt;&lt;li role="none"&gt;&lt;button type="button" class="listbox__option" role="option" id="st-pop-opt-1" aria-selected="true" data-value="Financial aid" tabindex="-1"&gt;&lt;span&gt;Financial aid&lt;/span&gt;…&lt;/button&gt;&lt;/li&gt;&lt;li role="none"&gt;&lt;button type="button" class="listbox__option" role="option" id="st-pop-opt-2" aria-selected="false" data-value="Registrar" tabindex="-1"&gt;&lt;span&gt;Registrar&lt;/span&gt;…&lt;/button&gt;&lt;/li&gt;&lt;li role="none"&gt;&lt;button type="button" class="listbox__option" role="option" id="st-pop-opt-3" aria-selected="false" data-value="Career services" tabindex="-1"&gt;&lt;span&gt;Career services&lt;/span&gt;…&lt;/button&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;
+&lt;/div&gt;</code></pre></div><div class="story"><h3>Open</h3><div class="story-preview"><div class="sel-demo"><div class="select-field" data-select data-value="Registrar" data-label="Department">
+  <button type="button" class="select" id="st-open" aria-haspopup="listbox" aria-expanded="true" aria-controls="st-open-list" aria-labelledby="st-open-label st-open-text"><span class="select__stack"><span class="select__label" id="st-open-label">Department</span><span class="select__value"><span class="select__text" id="st-open-text">Registrar</span><span class="select__more" hidden>+0</span></span></span><svg class="select__chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+  <div class="listbox select__panel" id="st-open-list" popover role="listbox" aria-labelledby="st-open-label"><ul class="listbox__list" role="none"><li role="none"><button type="button" class="listbox__option" role="option" id="st-open-opt-0" aria-selected="false" data-value="Advising" tabindex="-1"><span>Advising</span><svg class="listbox__checkmark" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li><li role="none"><button type="button" class="listbox__option" role="option" id="st-open-opt-1" aria-selected="false" data-value="Financial aid" tabindex="-1"><span>Financial aid</span><svg class="listbox__checkmark" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li><li role="none"><button type="button" class="listbox__option" role="option" id="st-open-opt-2" aria-selected="true" data-value="Registrar" tabindex="-1"><span>Registrar</span><svg class="listbox__checkmark" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li><li role="none"><button type="button" class="listbox__option" role="option" id="st-open-opt-3" aria-selected="false" data-value="Career services" tabindex="-1"><span>Career services</span><svg class="listbox__checkmark" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li></ul></div>
+</div></div></div><p class="story-note">While the list is showing: focus border, blue label, the chevron turned up. Click any Select on this page to see it live. <b>Focus</b> (Tab onto a closed one) has the same border with the chevron still down.</p></div><div class="story"><h3>Disabled</h3><div class="story-preview"><div class="sel-demo"><div class="select-field" data-select data-value="" data-label="Department">
+  <button type="button" class="select is-placeholder" id="st-dis" aria-haspopup="listbox" aria-expanded="false" aria-controls="st-dis-list" aria-labelledby="st-dis-label st-dis-text" disabled><span class="select__stack"><span class="select__label" id="st-dis-label">Department</span><span class="select__value"><span class="select__text" id="st-dis-text">Department</span><span class="select__more" hidden>+0</span></span></span><svg class="select__chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+  <div class="listbox select__panel" id="st-dis-list" popover role="listbox" aria-labelledby="st-dis-label"><ul class="listbox__list" role="none"><li role="none"><button type="button" class="listbox__option" role="option" id="st-dis-opt-0" aria-selected="false" data-value="Advising" tabindex="-1"><span>Advising</span><svg class="listbox__checkmark" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li><li role="none"><button type="button" class="listbox__option" role="option" id="st-dis-opt-1" aria-selected="false" data-value="Financial aid" tabindex="-1"><span>Financial aid</span><svg class="listbox__checkmark" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li><li role="none"><button type="button" class="listbox__option" role="option" id="st-dis-opt-2" aria-selected="false" data-value="Registrar" tabindex="-1"><span>Registrar</span><svg class="listbox__checkmark" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li><li role="none"><button type="button" class="listbox__option" role="option" id="st-dis-opt-3" aria-selected="false" data-value="Career services" tabindex="-1"><span>Career services</span><svg class="listbox__checkmark" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li></ul></div>
+</div></div></div><pre class="code"><code>&lt;div class="select-field" data-select data-value="" data-label="Department"&gt;
+  &lt;button type="button" class="select is-placeholder" id="st-dis" aria-haspopup="listbox" aria-expanded="false" aria-controls="st-dis-list" aria-labelledby="st-dis-label st-dis-text" disabled&gt;&lt;span class="select__stack"&gt;&lt;span class="select__label" id="st-dis-label"&gt;Department&lt;/span&gt;&lt;span class="select__value"&gt;&lt;span class="select__text" id="st-dis-text"&gt;Department&lt;/span&gt;&lt;span class="select__more" hidden&gt;+0&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;…&lt;/button&gt;
+  &lt;div class="listbox select__panel" id="st-dis-list" popover role="listbox" aria-labelledby="st-dis-label"&gt;&lt;ul class="listbox__list" role="none"&gt;&lt;li role="none"&gt;&lt;button type="button" class="listbox__option" role="option" id="st-dis-opt-0" aria-selected="false" data-value="Advising" tabindex="-1"&gt;&lt;span&gt;Advising&lt;/span&gt;…&lt;/button&gt;&lt;/li&gt;&lt;li role="none"&gt;&lt;button type="button" class="listbox__option" role="option" id="st-dis-opt-1" aria-selected="false" data-value="Financial aid" tabindex="-1"&gt;&lt;span&gt;Financial aid&lt;/span&gt;…&lt;/button&gt;&lt;/li&gt;&lt;li role="none"&gt;&lt;button type="button" class="listbox__option" role="option" id="st-dis-opt-2" aria-selected="false" data-value="Registrar" tabindex="-1"&gt;&lt;span&gt;Registrar&lt;/span&gt;…&lt;/button&gt;&lt;/li&gt;&lt;li role="none"&gt;&lt;button type="button" class="listbox__option" role="option" id="st-dis-opt-3" aria-selected="false" data-value="Career services" tabindex="-1"&gt;&lt;span&gt;Career services&lt;/span&gt;…&lt;/button&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;
+&lt;/div&gt;</code></pre><p class="story-note">Unavailable right now — faded, skipped by Tab.</p></div><div class="story"><h3>Error</h3><div class="story-preview"><div class="sel-demo"><div class="select-field" data-select data-value="" data-label="Department">
+  <button type="button" class="select is-placeholder" id="st-err" aria-haspopup="listbox" aria-expanded="false" aria-controls="st-err-list" aria-labelledby="st-err-label st-err-text" aria-invalid="true"><span class="select__stack"><span class="select__label" id="st-err-label">Department</span><span class="select__value"><span class="select__text" id="st-err-text">Department</span><span class="select__more" hidden>+0</span></span></span><svg class="select__chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+  <div class="listbox select__panel" id="st-err-list" popover role="listbox" aria-labelledby="st-err-label"><ul class="listbox__list" role="none"><li role="none"><button type="button" class="listbox__option" role="option" id="st-err-opt-0" aria-selected="false" data-value="Advising" tabindex="-1"><span>Advising</span><svg class="listbox__checkmark" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li><li role="none"><button type="button" class="listbox__option" role="option" id="st-err-opt-1" aria-selected="false" data-value="Financial aid" tabindex="-1"><span>Financial aid</span><svg class="listbox__checkmark" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li><li role="none"><button type="button" class="listbox__option" role="option" id="st-err-opt-2" aria-selected="false" data-value="Registrar" tabindex="-1"><span>Registrar</span><svg class="listbox__checkmark" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li><li role="none"><button type="button" class="listbox__option" role="option" id="st-err-opt-3" aria-selected="false" data-value="Career services" tabindex="-1"><span>Career services</span><svg class="listbox__checkmark" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li></ul></div>
+</div></div></div><pre class="code"><code>&lt;div class="select-field" data-select data-value="" data-label="Department"&gt;
+  &lt;button type="button" class="select is-placeholder" id="st-err" aria-haspopup="listbox" aria-expanded="false" aria-controls="st-err-list" aria-labelledby="st-err-label st-err-text" aria-invalid="true"&gt;&lt;span class="select__stack"&gt;&lt;span class="select__label" id="st-err-label"&gt;Department&lt;/span&gt;&lt;span class="select__value"&gt;&lt;span class="select__text" id="st-err-text"&gt;Department&lt;/span&gt;&lt;span class="select__more" hidden&gt;+0&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;…&lt;/button&gt;
+  &lt;div class="listbox select__panel" id="st-err-list" popover role="listbox" aria-labelledby="st-err-label"&gt;&lt;ul class="listbox__list" role="none"&gt;&lt;li role="none"&gt;&lt;button type="button" class="listbox__option" role="option" id="st-err-opt-0" aria-selected="false" data-value="Advising" tabindex="-1"&gt;&lt;span&gt;Advising&lt;/span&gt;…&lt;/button&gt;&lt;/li&gt;&lt;li role="none"&gt;&lt;button type="button" class="listbox__option" role="option" id="st-err-opt-1" aria-selected="false" data-value="Financial aid" tabindex="-1"&gt;&lt;span&gt;Financial aid&lt;/span&gt;…&lt;/button&gt;&lt;/li&gt;&lt;li role="none"&gt;&lt;button type="button" class="listbox__option" role="option" id="st-err-opt-2" aria-selected="false" data-value="Registrar" tabindex="-1"&gt;&lt;span&gt;Registrar&lt;/span&gt;…&lt;/button&gt;&lt;/li&gt;&lt;li role="none"&gt;&lt;button type="button" class="listbox__option" role="option" id="st-err-opt-3" aria-selected="false" data-value="Career services" tabindex="-1"&gt;&lt;span&gt;Career services&lt;/span&gt;…&lt;/button&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;
+&lt;/div&gt;</code></pre><p class="story-note">border.dangerStrong. When: required and nothing chosen on Submit, or a choice that stopped working ("This section is full"). The message goes under it — see <a href="form.html">Form</a>.</p></div></div>
+
+    <h2 class="big-section">Content</h2>
+    <div class="story-grid"><div class="story"><h3>Icon left</h3><div class="story-preview"><div class="sel-demo"><div class="select-field" data-select data-value="Downtown" data-label="Campus">
+  <button type="button" class="select" id="c-ic" aria-haspopup="listbox" aria-expanded="false" aria-controls="c-ic-list" aria-labelledby="c-ic-label c-ic-text"><svg class="select__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg><span class="select__stack"><span class="select__label" id="c-ic-label">Campus</span><span class="select__value"><span class="select__text" id="c-ic-text">Downtown</span><span class="select__more" hidden>+0</span></span></span><svg class="select__chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+  <div class="listbox select__panel" id="c-ic-list" popover role="listbox" aria-labelledby="c-ic-label"><ul class="listbox__list" role="none"><li role="none"><button type="button" class="listbox__option" role="option" id="c-ic-opt-0" aria-selected="false" data-value="Main campus" tabindex="-1"><span>Main campus</span><svg class="listbox__checkmark" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li><li role="none"><button type="button" class="listbox__option" role="option" id="c-ic-opt-1" aria-selected="true" data-value="Downtown" tabindex="-1"><span>Downtown</span><svg class="listbox__checkmark" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li><li role="none"><button type="button" class="listbox__option" role="option" id="c-ic-opt-2" aria-selected="false" data-value="Online" tabindex="-1"><span>Online</span><svg class="listbox__checkmark" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li></ul></div>
+</div></div></div><pre class="code"><code>&lt;div class="select-field" data-select data-value="Downtown" data-label="Campus"&gt;
+  &lt;button type="button" class="select" id="c-ic" aria-haspopup="listbox" aria-expanded="false" aria-controls="c-ic-list" aria-labelledby="c-ic-label c-ic-text"&gt;…&lt;span class="select__stack"&gt;&lt;span class="select__label" id="c-ic-label"&gt;Campus&lt;/span&gt;&lt;span class="select__value"&gt;&lt;span class="select__text" id="c-ic-text"&gt;Downtown&lt;/span&gt;&lt;span class="select__more" hidden&gt;+0&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;…&lt;/button&gt;
+  &lt;div class="listbox select__panel" id="c-ic-list" popover role="listbox" aria-labelledby="c-ic-label"&gt;&lt;ul class="listbox__list" role="none"&gt;&lt;li role="none"&gt;&lt;button type="button" class="listbox__option" role="option" id="c-ic-opt-0" aria-selected="false" data-value="Main campus" tabindex="-1"&gt;&lt;span&gt;Main campus&lt;/span&gt;…&lt;/button&gt;&lt;/li&gt;&lt;li role="none"&gt;&lt;button type="button" class="listbox__option" role="option" id="c-ic-opt-1" aria-selected="true" data-value="Downtown" tabindex="-1"&gt;&lt;span&gt;Downtown&lt;/span&gt;…&lt;/button&gt;&lt;/li&gt;&lt;li role="none"&gt;&lt;button type="button" class="listbox__option" role="option" id="c-ic-opt-2" aria-selected="false" data-value="Online" tabindex="-1"&gt;&lt;span&gt;Online&lt;/span&gt;…&lt;/button&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;
+&lt;/div&gt;</code></pre></div><div class="story"><h3>Multiple</h3><div class="story-preview"><div class="sel-demo"><div class="select-field" data-select data-multiple data-value="Email,SMS,Push notifications" data-label="Notify me by">
+  <button type="button" class="select" id="c-multi" aria-haspopup="listbox" aria-expanded="false" aria-controls="c-multi-list" aria-labelledby="c-multi-label c-multi-text"><span class="select__stack"><span class="select__label" id="c-multi-label">Notify me by</span><span class="select__value"><span class="select__text" id="c-multi-text">Email</span><span class="select__more">+2</span></span></span><svg class="select__chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+  <div class="listbox select__panel" id="c-multi-list" popover role="listbox" aria-labelledby="c-multi-label" aria-multiselectable="true"><ul class="listbox__list" role="none"><li role="none"><button type="button" class="listbox__option" role="option" id="c-multi-opt-0" aria-selected="true" data-value="Email" tabindex="-1"><span class="listbox__cb-box"><svg class="listbox__cb-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="listbox__cb-label">Email</span></button></li><li role="none"><button type="button" class="listbox__option" role="option" id="c-multi-opt-1" aria-selected="true" data-value="SMS" tabindex="-1"><span class="listbox__cb-box"><svg class="listbox__cb-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="listbox__cb-label">SMS</span></button></li><li role="none"><button type="button" class="listbox__option" role="option" id="c-multi-opt-2" aria-selected="true" data-value="Push notifications" tabindex="-1"><span class="listbox__cb-box"><svg class="listbox__cb-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="listbox__cb-label">Push notifications</span></button></li><li role="none"><button type="button" class="listbox__option" role="option" id="c-multi-opt-3" aria-selected="false" data-value="Phone call" tabindex="-1"><span class="listbox__cb-box"><svg class="listbox__cb-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="listbox__cb-label">Phone call</span></button></li></ul></div>
+</div></div></div><pre class="code"><code>&lt;div class="select-field" data-select data-multiple data-value="Email,SMS,Push notifications" data-label="Notify me by"&gt;
+  &lt;button type="button" class="select" id="c-multi" aria-haspopup="listbox" aria-expanded="false" aria-controls="c-multi-list" aria-labelledby="c-multi-label c-multi-text"&gt;&lt;span class="select__stack"&gt;&lt;span class="select__label" id="c-multi-label"&gt;Notify me by&lt;/span&gt;&lt;span class="select__value"&gt;&lt;span class="select__text" id="c-multi-text"&gt;Email&lt;/span&gt;&lt;span class="select__more"&gt;+2&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;…&lt;/button&gt;
+  &lt;div class="listbox select__panel" id="c-multi-list" popover role="listbox" aria-labelledby="c-multi-label" aria-multiselectable="true"&gt;&lt;ul class="listbox__list" role="none"&gt;&lt;li role="none"&gt;&lt;button type="button" class="listbox__option" role="option" id="c-multi-opt-0" aria-selected="true" data-value="Email" tabindex="-1"&gt;&lt;span class="listbox__cb-box"&gt;…&lt;/span&gt;&lt;span class="listbox__cb-label"&gt;Email&lt;/span&gt;&lt;/button&gt;&lt;/li&gt;&lt;li role="none"&gt;&lt;button type="button" class="listbox__option" role="option" id="c-multi-opt-1" aria-selected="true" data-value="SMS" tabindex="-1"&gt;&lt;span class="listbox__cb-box"&gt;…&lt;/span&gt;&lt;span class="listbox__cb-label"&gt;SMS&lt;/span&gt;&lt;/button&gt;&lt;/li&gt;&lt;li role="none"&gt;&lt;button type="button" class="listbox__option" role="option" id="c-multi-opt-2" aria-selected="true" data-value="Push notifications" tabindex="-1"&gt;&lt;span class="listbox__cb-box"&gt;…&lt;/span&gt;&lt;span class="listbox__cb-label"&gt;Push notifications&lt;/span&gt;&lt;/button&gt;&lt;/li&gt;&lt;li role="none"&gt;&lt;button type="button" class="listbox__option" role="option" id="c-multi-opt-3" aria-selected="false" data-value="Phone call" tabindex="-1"&gt;&lt;span class="listbox__cb-box"&gt;…&lt;/span&gt;&lt;span class="listbox__cb-label"&gt;Phone call&lt;/span&gt;&lt;/button&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;
+&lt;/div&gt;</code></pre><p class="story-note">Checkbox options, the list stays open. The field shows the first choice + a Counter for the rest, so it never grows. A field that lists every choice as removable chips is MultiSelectBadges (Fields, later).</p></div><div class="story"><h3>With groups</h3><div class="story-preview"><div class="sel-demo"><div class="select-field" data-select data-value="" data-label="Food">
+  <button type="button" class="select is-placeholder" id="c-groups" aria-haspopup="listbox" aria-expanded="false" aria-controls="c-groups-list" aria-labelledby="c-groups-label c-groups-text"><span class="select__stack"><span class="select__label" id="c-groups-label">Food</span><span class="select__value"><span class="select__text" id="c-groups-text">Food</span><span class="select__more" hidden>+0</span></span></span><svg class="select__chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+  <div class="listbox select__panel" id="c-groups-list" popover role="listbox" aria-labelledby="c-groups-label"><ul class="listbox__list" role="none"><li role="none"><ul class="listbox__group" role="group" aria-labelledby="c-groups-g0"><li role="presentation" class="listbox__group-label" id="c-groups-g0">Fruits</li><li role="none"><button type="button" class="listbox__option" role="option" id="c-groups-opt-0" aria-selected="false" data-value="Apple" tabindex="-1"><span>Apple</span><svg class="listbox__checkmark" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li><li role="none"><button type="button" class="listbox__option" role="option" id="c-groups-opt-1" aria-selected="false" data-value="Banana" tabindex="-1"><span>Banana</span><svg class="listbox__checkmark" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li><li role="none"><button type="button" class="listbox__option" role="option" id="c-groups-opt-2" aria-selected="false" data-value="Cherry" tabindex="-1"><span>Cherry</span><svg class="listbox__checkmark" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li></ul></li><li role="none"><div class="listbox__divider" role="separator"></div></li><li role="none"><ul class="listbox__group" role="group" aria-labelledby="c-groups-g1"><li role="presentation" class="listbox__group-label" id="c-groups-g1">Vegetables</li><li role="none"><button type="button" class="listbox__option" role="option" id="c-groups-opt-3" aria-selected="false" data-value="Carrot" tabindex="-1"><span>Carrot</span><svg class="listbox__checkmark" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li><li role="none"><button type="button" class="listbox__option" role="option" id="c-groups-opt-4" aria-selected="false" data-value="Celery" tabindex="-1"><span>Celery</span><svg class="listbox__checkmark" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li><li role="none"><button type="button" class="listbox__option" role="option" id="c-groups-opt-5" aria-selected="false" data-value="Lettuce" tabindex="-1"><span>Lettuce</span><svg class="listbox__checkmark" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li></ul></li></ul></div>
+</div></div></div><pre class="code"><code>&lt;div class="select-field" data-select data-value="" data-label="Food"&gt;
+  &lt;button type="button" class="select is-placeholder" id="c-groups" aria-haspopup="listbox" aria-expanded="false" aria-controls="c-groups-list" aria-labelledby="c-groups-label c-groups-text"&gt;&lt;span class="select__stack"&gt;&lt;span class="select__label" id="c-groups-label"&gt;Food&lt;/span&gt;&lt;span class="select__value"&gt;&lt;span class="select__text" id="c-groups-text"&gt;Food&lt;/span&gt;&lt;span class="select__more" hidden&gt;+0&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;…&lt;/button&gt;
+  &lt;div class="listbox select__panel" id="c-groups-list" popover role="listbox" aria-labelledby="c-groups-label"&gt;&lt;ul class="listbox__list" role="none"&gt;&lt;li role="none"&gt;&lt;ul class="listbox__group" role="group" aria-labelledby="c-groups-g0"&gt;&lt;li role="presentation" class="listbox__group-label" id="c-groups-g0"&gt;Fruits&lt;/li&gt;&lt;li role="none"&gt;&lt;button type="button" class="listbox__option" role="option" id="c-groups-opt-0" aria-selected="false" data-value="Apple" tabindex="-1"&gt;&lt;span&gt;Apple&lt;/span&gt;…&lt;/button&gt;&lt;/li&gt;&lt;li role="none"&gt;&lt;button type="button" class="listbox__option" role="option" id="c-groups-opt-1" aria-selected="false" data-value="Banana" tabindex="-1"&gt;&lt;span&gt;Banana&lt;/span&gt;…&lt;/button&gt;&lt;/li&gt;&lt;li role="none"&gt;&lt;button type="button" class="listbox__option" role="option" id="c-groups-opt-2" aria-selected="false" data-value="Cherry" tabindex="-1"&gt;&lt;span&gt;Cherry&lt;/span&gt;…&lt;/button&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;&lt;li role="none"&gt;&lt;div class="listbox__divider" role="separator"&gt;&lt;/div&gt;&lt;/li&gt;&lt;li role="none"&gt;&lt;ul class="listbox__group" role="group" aria-labelledby="c-groups-g1"&gt;&lt;li role="presentation" class="listbox__group-label" id="c-groups-g1"&gt;Vegetables&lt;/li&gt;&lt;li role="none"&gt;&lt;button type="button" class="listbox__option" role="option" id="c-groups-opt-3" aria-selected="false" data-value="Carrot" tabindex="-1"&gt;&lt;span&gt;Carrot&lt;/span&gt;…&lt;/button&gt;&lt;/li&gt;&lt;li role="none"&gt;&lt;button type="button" class="listbox__option" role="option" id="c-groups-opt-4" aria-selected="false" data-value="Celery" tabindex="-1"&gt;&lt;span&gt;Celery&lt;/span&gt;…&lt;/button&gt;&lt;/li&gt;&lt;li role="none"&gt;&lt;button type="button" class="listbox__option" role="option" id="c-groups-opt-5" aria-selected="false" data-value="Lettuce" tabindex="-1"&gt;&lt;span&gt;Lettuce&lt;/span&gt;…&lt;/button&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;
+&lt;/div&gt;</code></pre><p class="story-note">Group headings (Command's heading-sm, text.muted) and a hairline between groups.</p></div></div>
+
     <h2 class="big-section">CSS</h2>
-    <p class="section-desc">Same structure as Input's stylesheet, plus <code class="tok">.select__chevron</code> — always rendered, pushed to the trailing edge.</p>
     <pre class="code"><code>:root {
-  --tok-surface-dim-hover: #e6e8eb;
-  --tok-surface-sunken: #e6e8eb;
   --tok-surface-dim: #f4f5f7;
-  --tok-surface-disabled: #e6e8eb;
   --tok-border-default: #dadde0;
-  --tok-border-strong: #adb5be;
-  --tok-border-focus: #0468c4;
-  --tok-border-danger: #febebd;
-  --tok-border-danger-strong: #c11435;
   --tok-text-muted: #758191;
   --tok-text-default: #121921;
-  --tok-text-disabled: #adb5be;
-  --tok-text-primary: #0468c4;
   --tok-icon-default: #485462;
+  --tok-surface-dim-hover: #e6e8eb;
+  --tok-border-strong: #adb5be;
+  --tok-border-focus: #0468c4;
+  --tok-text-primary: #0468c4;
+  --tok-surface-disabled: #e6e8eb;
+  --tok-text-disabled: #adb5be;
   --tok-icon-disabled: #adb5be;
+  --tok-border-danger-strong: #c11435;
+  --tok-surface-default: #ffffff;
+  --tok-fill-neutral-hover: #e6e8eb;
+  --tok-fill-primary: #077fec;
+  --tok-text-secondary: #5d6a7a;
+  --tok-bg-neutral-strong: #dadde0;
+  --tok-fill-neutral-active-strong: #adb5be;
+  --tok-icon-on-fill: #ffffff;
   --tok-family-sans: 'Sora', sans-serif;
 }
 
-.select {
-  display: inline-flex;
-  align-items: center;
-  box-sizing: border-box;
-  background: var(--tok-surface-dim);
-  border: 1px solid var(--tok-border-default);
-  border-radius: 8px;
-  font-family: var(--tok-family-sans);
-  cursor: pointer;
-}
-.select__icon { flex-shrink: 0; color: var(--tok-icon-default); }
-.select__chevron { flex-shrink: 0; margin-left: auto; color: var(--tok-icon-default); }
-.select__placeholder { color: var(--tok-text-muted); }
-.select__value { color: var(--tok-text-default); }
-.select__stack { display: flex; flex-direction: column; justify-content: center; flex: 1; min-width: 0; }
-.select__label { color: var(--tok-text-muted); }
-
+/* Select — the trigger. A real &lt;button&gt; on Input's box model; the value floats
+   a 12px label above it once something is chosen (base/lg). */
+.select-field { position: relative; display: block; min-width: 0; }
+.select { box-sizing: border-box; display: flex; align-items: center; width: 100%; margin: 0; background: var(--tok-surface-dim); border: 1px solid var(--tok-border-default); border-radius: 8px; font-family: var(--tok-family-sans); text-align: left; cursor: pointer; }
+.select { height: 40px; padding: 0 12px; gap: 8px; }
+.select .select__icon, .select .select__chevron { width: 20px; height: 20px; }
+.select .select__value { font-weight: 400; font-size: 14px; line-height: 1.2; }
+.select .select__stack { gap: 0px; }
+.select .select__label { font-weight: 400; font-size: 12px; line-height: 1.2; }
 .select--sm { height: 32px; padding: 0 8px; gap: 8px; }
 .select--sm .select__icon, .select--sm .select__chevron { width: 16px; height: 16px; }
-.select--sm .select__placeholder, .select--sm .select__value { font-weight: 400; font-size: 14px; line-height: 1.2; }
-
-.select--base { height: 40px; padding: 0 12px; gap: 8px; }
-.select--base .select__icon, .select--base .select__chevron { width: 20px; height: 20px; }
-.select--base .select__placeholder, .select--base .select__value { font-weight: 400; font-size: 14px; line-height: 1.2; }
-.select--base .select__stack { gap: 0px; }
-.select--base .select__label { font-weight: 400; font-size: 12px; line-height: 1.2; }
-
+.select--sm .select__value { font-weight: 400; font-size: 14px; line-height: 1.2; }
 .select--lg { height: 48px; padding: 0 16px; gap: 8px; }
 .select--lg .select__icon, .select--lg .select__chevron { width: 24px; height: 24px; }
-.select--lg .select__placeholder, .select--lg .select__value { font-weight: 400; font-size: 14px; line-height: 1.2; }
+.select--lg .select__value { font-weight: 400; font-size: 14px; line-height: 1.2; }
 .select--lg .select__stack { gap: 4px; }
 .select--lg .select__label { font-weight: 400; font-size: 12px; line-height: 1.2; }
+.select__stack { display: flex; flex-direction: column; justify-content: center; flex: 1; min-width: 0; }
+.select__label { color: var(--tok-text-muted); white-space: nowrap; }
+.select__value { display: flex; align-items: center; gap: 8px; min-width: 0; color: var(--tok-text-default); }
+.select__text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.select__icon { flex-shrink: 0; color: var(--tok-icon-default); }
+.select__chevron { flex-shrink: 0; margin-left: auto; color: var(--tok-icon-default); transition: transform 0.12s ease; }
+/* nothing chosen: the label's text is the placeholder; sm never floats */
+.select.is-placeholder .select__label, .select--sm .select__label { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.select.is-placeholder .select__value { color: var(--tok-text-muted); }
+/* multiple: the first choice + a Counter for the rest ("Email  +2") */
+.select__more { flex-shrink: 0; box-sizing: border-box; min-width: 16px; height: 16px; padding: 0 4px; display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; background: var(--tok-fill-neutral-active-strong); color: var(--tok-text-default); font-weight: 700; font-size: 10px; line-height: 1; }
+.select__more[hidden] { display: none; }
+/* states */
+.select:not(:disabled):hover { background: var(--tok-surface-dim-hover); border-color: var(--tok-border-strong); }
+.select:focus-visible { outline: none; border-color: var(--tok-border-focus); }
+/* open — the list is showing: focus border, blue label, the chevron turns up */
+.select[aria-expanded="true"], .select[aria-expanded="true"]:hover { border-color: var(--tok-border-focus); }
+.select[aria-expanded="true"] .select__label { color: var(--tok-text-primary); }
+.select[aria-expanded="true"] .select__chevron { transform: rotate(180deg); }
+.select:disabled { background: var(--tok-surface-disabled); border-color: var(--tok-border-default); cursor: not-allowed; }
+.select:disabled .select__value { color: var(--tok-text-disabled); }
+.select:disabled.is-placeholder .select__value { color: var(--tok-text-disabled); }
+.select:disabled .select__label { color: var(--tok-text-disabled); }
+.select:disabled .select__icon { color: var(--tok-icon-disabled); }
+.select:disabled .select__chevron { color: var(--tok-icon-disabled); }
+.select[aria-invalid="true"], .select[aria-invalid="true"]:hover { border-color: var(--tok-border-danger-strong); }
+/* the panel — Listbox, under the field, at least as wide as it */
+.select__panel { margin: 0; }
 
-.select:not(.select--disabled):hover, .select--hover { background: var(--tok-surface-dim-hover); border-color: var(--tok-border-strong); }
-.select--focus { border-color: var(--tok-border-focus); }
-.select--focus .select__label { color: var(--tok-text-primary); }
-.select--disabled { background: var(--tok-surface-disabled); cursor: not-allowed; }
-.select--disabled .select__placeholder, .select--disabled .select__value, .select--disabled .select__label { color: var(--tok-text-disabled); }
-.select--disabled .select__icon, .select--disabled .select__chevron { color: var(--tok-icon-disabled); }
-.select--error { border-color: var(--tok-border-danger-strong); }</code></pre>
+.listbox { margin: 0; box-sizing: border-box; padding: 4px; border-radius: 8px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); box-shadow: 0px 2px 8px 0px rgba(21, 25, 30, 0.10); font-family: var(--tok-family-sans); min-width: 220px; }
+.listbox__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; max-height: 288px; overflow: auto; }
+.listbox__option { width: 100%; box-sizing: border-box; display: flex; align-items: center; gap: 8px; padding: 8px 8px; border: none; background: none; border-radius: 4px; cursor: pointer; text-align: left; color: var(--tok-text-default); font-family: inherit; font-weight: 400; font-size: 14px; line-height: 1.4; }
+.listbox__option:hover, .listbox__option:focus-visible { background: var(--tok-fill-neutral-hover); outline: none; }
+/* An option with a description + a trailing kind badge. The text stack takes
+   the remaining width so a long programme name wraps instead of pushing the
+   badge out of the panel. */
+.listbox__stack { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+.listbox__desc { color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.listbox__trailing { flex-shrink: 0; margin-left: 8px; display: inline-flex; align-items: center; height: 16px; padding: 0 8px; border-radius: 999px; background: var(--tok-bg-neutral-strong); color: var(--tok-text-default); font-weight: 600; font-size: 10px; line-height: 1; }
+/* single-select: a trailing checkmark on the chosen option, no tint */
+.listbox__checkmark { width: 16px; height: 16px; margin-left: auto; color: var(--tok-fill-primary); flex-shrink: 0; }
+.listbox__option[aria-selected="false"] .listbox__checkmark { visibility: hidden; }
 
-    <h2 class="big-section">Sizes</h2>
-    <p class="section-desc">sm shows the resting layout. base/lg shown populated.</p>
-    <div class="story-grid">
-      
-      <div class="story">
-        <h3>sm — 32px</h3>
-        <div class="story-preview"><div class="select select--sm"><span class="select__placeholder">Country</span><svg class="select__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></div></div>
-        <pre class="code"><code>&lt;div class="select select--sm"&gt;&lt;span class="select__placeholder"&gt;Country&lt;/span&gt;&lt;svg class="select__chevron"&gt;&lt;!-- icon: expand_more --&gt;&lt;/svg&gt;&lt;/div&gt;</code></pre>
-        
-      </div>
+/* multi-select: a real Checkbox marker per option (checkbox.tokens.json) */
+.listbox__cb-option { width: 100%; box-sizing: border-box; display: flex; align-items: center; gap: 8px; padding: 8px 8px; border-radius: 4px; cursor: pointer; }
+.listbox__cb-option:hover { background: var(--tok-fill-neutral-hover); }
+.listbox__cb-input { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.listbox__cb-box { box-sizing: border-box; width: 20px; height: 20px; border-radius: 4px; border: 2px solid var(--tok-border-default); background: var(--tok-surface-default); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.listbox__cb-icon { width: 16px; height: 16px; display: none; color: var(--tok-icon-on-fill); }
+.listbox__cb-input:checked ~ .listbox__cb-box, .listbox__option[aria-selected="true"] .listbox__cb-box { background: var(--tok-fill-primary); border-color: var(--tok-fill-primary); }
+.listbox__cb-input:checked ~ .listbox__cb-box .listbox__cb-icon, .listbox__option[aria-selected="true"] .listbox__cb-box .listbox__cb-icon { display: block; }
+.listbox__cb-label { color: var(--tok-text-default); font-family: inherit; font-weight: 400; font-size: 14px; line-height: 1.4; }
 
-      <div class="story">
-        <h3>base — 40px</h3>
-        <div class="story-preview"><div class="select select--base"><div class="select__stack"><span class="select__label">Country</span><span class="select__value">Ukraine</span></div><svg class="select__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></div></div>
-        <pre class="code"><code>&lt;div class="select select--base"&gt;&lt;div class="select__stack"&gt;&lt;span class="select__label"&gt;Country&lt;/span&gt;&lt;span class="select__value"&gt;Ukraine&lt;/span&gt;&lt;/div&gt;&lt;svg class="select__chevron"&gt;&lt;!-- icon: expand_more --&gt;&lt;/svg&gt;&lt;/div&gt;</code></pre>
-        
-      </div>
+.listbox__search-wrap { padding: 4px 4px 4px; margin-bottom: 2px; border-bottom: 1px solid var(--tok-border-default); }
+.listbox__search { display: flex; align-items: center; box-sizing: border-box; height: 32px; padding: 0 8px; gap: 8px; border-radius: 8px; background: var(--tok-surface-dim); border: 1px solid var(--tok-border-default); }
+.listbox__search-icon { width: 16px; height: 16px; color: var(--tok-icon-default); flex-shrink: 0; }
+.listbox__search input { border: none; background: none; outline: none; width: 100%; color: var(--tok-text-default); font-family: inherit; font-weight: 400; font-size: 16px; line-height: 1.2; }
+.listbox__search input::placeholder { color: var(--tok-text-muted); }
 
-      <div class="story">
-        <h3>lg — 48px</h3>
-        <div class="story-preview"><div class="select select--lg"><div class="select__stack"><span class="select__label">Country</span><span class="select__value">Ukraine</span></div><svg class="select__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></div></div>
-        <pre class="code"><code>&lt;div class="select select--lg"&gt;&lt;div class="select__stack"&gt;&lt;span class="select__label"&gt;Country&lt;/span&gt;&lt;span class="select__value"&gt;Ukraine&lt;/span&gt;&lt;/div&gt;&lt;svg class="select__chevron"&gt;&lt;!-- icon: expand_more --&gt;&lt;/svg&gt;&lt;/div&gt;</code></pre>
-        
-      </div>
-    </div>
+.listbox__select-all { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 4px 8px; }
+.listbox__select-all-label { color: var(--tok-text-secondary); margin: 0; font-weight: 400; font-size: 12px; line-height: 1.4; }
+.listbox__clear { border: none; background: none; padding: 0; cursor: pointer; color: var(--tok-text-primary); font-weight: 400; font-size: 12px; line-height: 1.4; text-decoration: underline; }
 
-    <h2 class="big-section">Content variants</h2>
-    <p class="section-desc">Base size, populated.</p>
-    <div class="story-grid">
-      
-      <div class="story">
-        <h3>Value only</h3>
-        <div class="story-preview"><div class="select select--base"><div class="select__stack"><span class="select__label">Country</span><span class="select__value">Ukraine</span></div><svg class="select__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></div></div>
-        <pre class="code"><code>&lt;div class="select select--base"&gt;&lt;div class="select__stack"&gt;&lt;span class="select__label"&gt;Country&lt;/span&gt;&lt;span class="select__value"&gt;Ukraine&lt;/span&gt;&lt;/div&gt;&lt;svg class="select__chevron"&gt;&lt;!-- icon: expand_more --&gt;&lt;/svg&gt;&lt;/div&gt;</code></pre>
-        
-      </div>
-
-      <div class="story">
-        <h3>Icon left + value</h3>
-        <div class="story-preview"><div class="select select--base"><svg class="select__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg><div class="select__stack"><span class="select__label">Country</span><span class="select__value">Ukraine</span></div><svg class="select__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></div></div>
-        <pre class="code"><code>&lt;div class="select select--base"&gt;&lt;svg class="select__icon"&gt;&lt;!-- icon: search --&gt;&lt;/svg&gt;&lt;div class="select__stack"&gt;&lt;span class="select__label"&gt;Country&lt;/span&gt;&lt;span class="select__value"&gt;Ukraine&lt;/span&gt;&lt;/div&gt;&lt;svg class="select__chevron"&gt;&lt;!-- icon: expand_more --&gt;&lt;/svg&gt;&lt;/div&gt;</code></pre>
-        
-      </div>
-    </div>
-
-    <h2 class="big-section">States</h2>
-    <p class="section-desc">Base size.</p>
-    <div class="story-grid">
-      
-      <div class="story">
-        <h3>default</h3>
-        <div class="story-preview"><div class="select select--base"><span class="select__placeholder">Country</span><svg class="select__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></div></div>
-        <pre class="code"><code>&lt;div class="select select--base"&gt;&lt;span class="select__placeholder"&gt;Country&lt;/span&gt;&lt;svg class="select__chevron"&gt;&lt;!-- icon: expand_more --&gt;&lt;/svg&gt;&lt;/div&gt;</code></pre>
-        <p class="story-note">Empty, not focused.</p>
-      </div>
-
-      <div class="story">
-        <h3>hover</h3>
-        <div class="story-preview"><div class="select select--base select--hover"><span class="select__placeholder">Country</span><svg class="select__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></div></div>
-        <pre class="code"><code>&lt;div class="select select--base select--hover"&gt;&lt;span class="select__placeholder"&gt;Country&lt;/span&gt;&lt;svg class="select__chevron"&gt;&lt;!-- icon: expand_more --&gt;&lt;/svg&gt;&lt;/div&gt;</code></pre>
-        <p class="story-note">border.strong.</p>
-      </div>
-
-      <div class="story">
-        <h3>focus</h3>
-        <div class="story-preview"><div class="select select--base select--focus"><div class="select__stack"><span class="select__label">Country</span><span class="select__value"></span></div><svg class="select__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></div></div>
-        <pre class="code"><code>&lt;div class="select select--base select--focus"&gt;&lt;div class="select__stack"&gt;&lt;span class="select__label"&gt;Country&lt;/span&gt;&lt;span class="select__value"&gt;&lt;/span&gt;&lt;/div&gt;&lt;svg class="select__chevron"&gt;&lt;!-- icon: expand_more --&gt;&lt;/svg&gt;&lt;/div&gt;</code></pre>
-        <p class="story-note">Trigger is focused (e.g. via keyboard) — label floats the same as input.state.focus.</p>
-      </div>
-
-      <div class="story">
-        <h3>populated</h3>
-        <div class="story-preview"><div class="select select--base"><div class="select__stack"><span class="select__label">Country</span><span class="select__value">Ukraine</span></div><svg class="select__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></div></div>
-        <pre class="code"><code>&lt;div class="select select--base"&gt;&lt;div class="select__stack"&gt;&lt;span class="select__label"&gt;Country&lt;/span&gt;&lt;span class="select__value"&gt;Ukraine&lt;/span&gt;&lt;/div&gt;&lt;svg class="select__chevron"&gt;&lt;!-- icon: expand_more --&gt;&lt;/svg&gt;&lt;/div&gt;</code></pre>
-        <p class="story-note">Has a chosen value, not focused — label stays floated, colors revert to default.</p>
-      </div>
-
-      <div class="story">
-        <h3>disabled</h3>
-        <div class="story-preview"><div class="select select--base select--disabled"><span class="select__placeholder">Country</span><svg class="select__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></div></div>
-        <pre class="code"><code>&lt;div class="select select--base select--disabled"&gt;&lt;span class="select__placeholder"&gt;Country&lt;/span&gt;&lt;svg class="select__chevron"&gt;&lt;!-- icon: expand_more --&gt;&lt;/svg&gt;&lt;/div&gt;</code></pre>
-        <p class="story-note">surface.disabled equals surface.sunken — same pattern as input/secondary-button.</p>
-      </div>
-
-      <div class="story">
-        <h3>error</h3>
-        <div class="story-preview"><div class="select select--base select--error"><div class="select__stack"><span class="select__label">Country</span><span class="select__value">—</span></div><svg class="select__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></div></div>
-        <pre class="code"><code>&lt;div class="select select--base select--error"&gt;&lt;div class="select__stack"&gt;&lt;span class="select__label"&gt;Country&lt;/span&gt;&lt;span class="select__value"&gt;—&lt;/span&gt;&lt;/div&gt;&lt;svg class="select__chevron"&gt;&lt;!-- icon: expand_more --&gt;&lt;/svg&gt;&lt;/div&gt;</code></pre>
-        <p class="story-note">e.g. a required field left unselected.</p>
-      </div>
-    </div>
-
-    <p class="placeholder-note">Every code sample on this page is printed from the same resolved token values driving the live previews above it — copy it directly, nothing here is hand-typed.</p>
+/* groups ("Fruits", "Vegetables") — Command's group heading, a hairline between groups */
+.listbox__group { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.listbox__group-label { box-sizing: border-box; height: 28px; display: flex; align-items: center; padding: 0 8px; color: var(--tok-text-muted); font-weight: 600; font-size: 12px; line-height: 1.4; }
+.listbox__divider { height: 1px; margin: 4px 0; background: var(--tok-border-default); }</code></pre>
   </main>
 </div>
+<script>
+(function () {
+  var GAP = 4;
+  document.querySelectorAll("[data-select]").forEach(function (wrap) {
+    if (wrap._hpsel) return; wrap._hpsel = true;
+    var trigger = wrap.querySelector(".select"), panel = wrap.querySelector(".select__panel"), multiple = wrap.hasAttribute("data-multiple");
+    var text = wrap.querySelector(".select__text"), more = wrap.querySelector(".select__more");
+    // focus an option without scrolling the page; keep it in view inside a long list
+    function go(el) { if (!el) return; el.focus({ preventScroll: true }); el.scrollIntoView({ block: "nearest" }); }
+    var opts = function () { return Array.prototype.slice.call(panel.querySelectorAll(".listbox__option")); };
+    function place() {
+      var r = trigger.getBoundingClientRect(); panel.style.position = "fixed"; panel.style.right = "auto"; panel.style.bottom = "auto"; panel.style.minWidth = r.width + "px";
+      var h = panel.offsetHeight, top = r.bottom + GAP;
+      if (top + h > window.innerHeight - 8 && r.top - GAP - h > 8) top = r.top - GAP - h;
+      panel.style.top = top + "px"; panel.style.left = Math.max(8, Math.min(r.left, window.innerWidth - panel.offsetWidth - 8)) + "px";
+    }
+    function open(focusWhich) {
+      if (trigger.disabled) return;
+      if (!panel.matches(":popover-open")) { panel.showPopover(); place(); }
+      var list = opts(), sel = list.filter(function (o) { return o.getAttribute("aria-selected") === "true"; })[0];
+      var target = focusWhich === "last" ? list[list.length - 1] : (sel || list[0]);
+      go(target);
+    }
+    function close(refocus) { if (panel.matches(":popover-open")) panel.hidePopover(); if (refocus) trigger.focus(); }
+    function sync() {
+      var on = opts().filter(function (o) { return o.getAttribute("aria-selected") === "true"; });
+      wrap.dataset.value = on.map(function (o) { return o.dataset.value; }).join(",");
+      trigger.classList.toggle("is-placeholder", on.length === 0);
+      text.textContent = on.length ? on[0].textContent : wrap.dataset.label;
+      more.hidden = on.length < 2; more.textContent = "+" + Math.max(on.length - 1, 0);
+      wrap.dispatchEvent(new CustomEvent("selectchange", { bubbles: true, detail: { value: multiple ? on.map(function (o) { return o.dataset.value; }) : (on[0] ? on[0].dataset.value : "") } }));
+    }
+    function pick(o) {
+      if (multiple) { o.setAttribute("aria-selected", String(o.getAttribute("aria-selected") !== "true")); sync(); return; }
+      opts().forEach(function (x) { x.setAttribute("aria-selected", String(x === o)); });
+      sync(); close(true);
+    }
+    panel.addEventListener("toggle", function (e) { trigger.setAttribute("aria-expanded", String(e.newState === "open")); });
+    trigger.addEventListener("click", function () { if (panel.matches(":popover-open")) close(false); else open(); });
+    trigger.addEventListener("keydown", function (e) {
+      if (e.key === "ArrowDown" || e.key === "Enter" || e.key === " ") { e.preventDefault(); open(); }
+      else if (e.key === "ArrowUp") { e.preventDefault(); open("last"); }
+    });
+    panel.addEventListener("click", function (e) { var o = e.target.closest(".listbox__option"); if (o) pick(o); });
+    panel.addEventListener("keydown", function (e) {
+      var list = opts(), i = list.indexOf(document.activeElement);
+      if (e.key === "ArrowDown") { e.preventDefault(); go(list[i + 1] || list[i]); }
+      else if (e.key === "ArrowUp") { e.preventDefault(); go(list[i - 1] || list[i]); }
+      else if (e.key === "Home") { e.preventDefault(); go(list[0]); }
+      else if (e.key === "End") { e.preventDefault(); go(list[list.length - 1]); }
+      else if (e.key === "Enter" || e.key === " ") { e.preventDefault(); if (list[i]) pick(list[i]); }
+      else if (e.key === "Escape") { e.preventDefault(); close(true); }
+      else if (e.key === "Tab") { close(false); }
+    });
+  });
+})();
+</script>
 </body>
 </html>
