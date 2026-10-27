@@ -30,6 +30,8 @@ ${LISTBOX_CSS}`;
 const DEPTS = ["Advising", "Financial aid", "Registrar", "Career services"].map((label) => ({ label }));
 const FOOD = [["Fruits", ["Apple", "Banana", "Cherry"]], ["Vegetables", ["Carrot", "Celery", "Lettuce"]]].flatMap(([group, items]) => items.map((label) => ({ label, group })));
 const CHANNELS = ["Email", "SMS", "Push notifications", "Phone call"].map((label) => ({ label }));
+const COURSES = ["Intro to Computer Science", "Linear Algebra", "English Composition", "Quantum Mechanics", "World History", "Organic Chemistry", "Microeconomics", "Statistics for the Social Sciences", "Creative Writing", "Introduction to Psychology"].map((label) => ({ label }));
+const MAJORS = [["Majors", ["Biology", "Computer Science", "Economics", "English", "History", "Psychology"]], ["Minors", ["Data Science", "Film Studies", "Music", "Spanish"]]].flatMap(([group, items]) => items.map((label) => ({ label, group })));
 
 const code = (html) => html.replace(/<svg[\s\S]*?<\/svg>/g, "…");
 const story = (title, opts, note = "", wrapStyle = "") => {
@@ -55,6 +57,12 @@ const content = [
   story("Icon left", { id: "c-ic", label: "Campus", icon: "location_on", options: ["Main campus", "Downtown", "Online"].map((label) => ({ label })), value: "Downtown" }),
   story("Multiple", { id: "c-multi", label: "Notify me by", options: CHANNELS, value: ["Email", "SMS", "Push notifications"], multiple: true }, "Checkbox options, the list stays open. The field shows the first choice + a Counter for the rest, so it never grows. A field that lists every choice as removable chips is MultiSelectBadges (Fields, later)."),
   story("With groups", { id: "c-groups", label: "Food", options: FOOD }, "Group headings (Command's heading-sm, text.muted) and a hairline between groups."),
+];
+
+const combobox = [
+  story("Single", { id: "cb-single", label: "Course", options: COURSES, searchable: true, searchPlaceholder: "Search courses…" }, "Type to narrow the list; ↓ goes into it, Enter picks the first match. One choice → a checkmark, not checkboxes (a checkbox promises 'pick several'). No 'Clear selection' row — pick another; an optional field clears with a None option if it needs one."),
+  story("Multi", { id: "cb-multi", label: "Courses", options: COURSES, value: ["Linear Algebra", "English Composition"], multiple: true, searchable: true, searchPlaceholder: "Search courses…" }, "Checkboxes, the list stays open while you search and tick. The field keeps one line: the first choice + a Counter."),
+  story("With groups", { id: "cb-groups", label: "Program", options: MAJORS, searchable: true, searchPlaceholder: "Search programs…" }, "Search across groups; a group with nothing left hides, and so does the hairline. Try 'sci'. Nothing at all → 'No results'."),
 ];
 
 const html = `<!doctype html>
@@ -109,6 +117,7 @@ const html = `<!doctype html>
       <div class="row"><b>Focus vs open</b><span><b>Focus</b> — the field is active but closed (you Tabbed onto it): border.focus. <b>Open</b> — the list is showing: the same border, the label turns blue and the chevron turns up. Fields show focus on click too; the keyboard-only ring (focus-visible) is for buttons and checks.</span></div>
       <div class="row"><b>Error</b><span>Not "typed something wrong" — a choice can still be wrong: required and nothing chosen on Submit, or a choice that stopped working (the section filled up, the advisor isn't free that day). border.dangerStrong + the Field message.</span></div>
       <div class="row"><b>Multiple</b><span>The first choice + a Counter ("Email  +2") — the field keeps one line whatever you pick. Every choice as removable chips is a different field (MultiSelectBadges).</span></div>
+      <div class="row"><b>Searchable</b><span><code class="tok">searchable: true</code> puts a search box at the top of the list — Storybook's <b>ComboboxField</b> (and SimpleCombobox, the same without a Field). Same Select, same field, Single or Multi. Use it past ~10 options, or when people know the name they want (courses, programs, people).</span></div>
       <div class="row"><b>Keyboard</b><span>↓ / ↑ / Enter / Space open; ↑ ↓ Home End move; Enter or Space pick; Escape closes back to the field; Tab closes. Single-select closes on pick.</span></div>
     </div>
 
@@ -120,6 +129,10 @@ const html = `<!doctype html>
 
     <h2 class="big-section">Content</h2>
     <div class="story-grid">${content.join("")}</div>
+
+    <h2 class="big-section" id="combobox">Searchable — ComboboxField</h2>
+    <p class="section-desc">Storybook's ComboboxField is a Select with a search box in its list. Here it's one option on Select, not a second component: <code class="tok">selectHtml({ …, searchable: true, searchPlaceholder: "Search courses…" })</code>. Opening focuses the search; the list filters as you type (anywhere in the name, case-insensitive); closing clears it.</p>
+    <div class="story-grid">${combobox.join("")}</div>
 
     <h2 class="big-section">CSS</h2>
     <pre class="code"><code>${esc(css)}</code></pre>

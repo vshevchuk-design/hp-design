@@ -115,6 +115,10 @@ export const LISTBOX_CSS = `
 .listbox__search-icon { width: ${D(search.size.sm.iconSize)}; height: ${D(search.size.sm.iconSize)}; color: ${cv("icon.default")}; flex-shrink: 0; }
 .listbox__search input { border: none; background: none; outline: none; width: 100%; color: ${cv("text.default")}; font-family: inherit; ${T(search.value)} }
 .listbox__search input::placeholder { color: ${cv("text.muted")}; }
+/* searchable Select (ComboboxField): typing filters; nothing left → "No results" */
+.listbox__empty { margin: 0; padding: ${D(lb.optionPaddingY)} ${D(lb.optionPaddingX)}; color: ${cv("text.muted")}; ${T(lb.label)} }
+.listbox__empty[hidden] { display: none; }
+.listbox__search:focus-within { border-color: ${cv("border.focus")}; }
 
 .listbox__select-all { display: flex; align-items: center; justify-content: space-between; gap: ${P("dim.2")}; padding: ${P("dim.1")} ${P("dim.2")}; }
 .listbox__select-all-label { color: ${cv("text.secondary")}; margin: 0; ${T(lb.selectAllRow.label)} }
@@ -178,7 +182,7 @@ const cbGlyph = () => icon("check", "listbox__cb-icon");
 
 /** A Select. options: [{ label, value, group }] — consecutive options with the same `group` render under its heading.
  *  value: a value (single) or an array (multiple). */
-export function selectHtml({ id, label, options, value = "", multiple = false, size = "base", icon: iconName = "", disabled = false, invalid = false, describedBy = "", panelWidth = "" }) {
+export function selectHtml({ id, label, options, value = "", multiple = false, searchable = false, searchPlaceholder = "Search…", size = "base", icon: iconName = "", disabled = false, invalid = false, describedBy = "", panelWidth = "" }) {
   const chosen = new Set([].concat(value).filter(Boolean));
   const picked = options.filter((o) => chosen.has(o.value ?? o.label));
   const empty = picked.length === 0;
@@ -196,9 +200,12 @@ export function selectHtml({ id, label, options, value = "", multiple = false, s
     ? `${bi ? `<li role="none"><div class="listbox__divider" role="separator"></div></li>` : ""}<li role="none"><ul class="listbox__group" role="group" aria-labelledby="${id}-g${bi}"><li role="presentation" class="listbox__group-label" id="${id}-g${bi}">${b.g}</li>${b.items.map(([o, i]) => opt(o, i)).join("")}</ul></li>`
     : b.items.map(([o, i]) => opt(o, i)).join("")).join("");
   const cls = `select${size !== "base" ? ` select--${size}` : ""}${empty ? " is-placeholder" : ""}`;
-  return `<div class="select-field" data-select${multiple ? " data-multiple" : ""} data-value="${[...chosen].join(",")}" data-label="${label}">
+  return `<div class="select-field" data-select${multiple ? " data-multiple" : ""}${searchable ? " data-searchable" : ""} data-value="${[...chosen].join(",")}" data-label="${label}">
   <button type="button" class="${cls}" id="${id}" aria-haspopup="listbox" aria-expanded="false" aria-controls="${lid}" aria-labelledby="${id}-label ${id}-text"${disabled ? " disabled" : ""}${invalid ? ' aria-invalid="true"' : ""}${describedBy ? ` aria-describedby="${describedBy}"` : ""}>${iconName ? icon(iconName, "select__icon") : ""}<span class="select__stack"><span class="select__label" id="${id}-label">${label}</span><span class="select__value"><span class="select__text" id="${id}-text">${first}</span><span class="select__more"${picked.length > 1 ? "" : " hidden"}>+${Math.max(picked.length - 1, 0)}</span></span></span>${chevron()}</button>
-  <div class="listbox select__panel" id="${lid}" popover role="listbox" aria-labelledby="${id}-label"${multiple ? ' aria-multiselectable="true"' : ""}${panelWidth ? ` style="width:${panelWidth}"` : ""}><ul class="listbox__list" role="none">${body}</ul></div>
+  ${searchable
+    // searchable: the panel holds a search box + the list, so the listbox role moves onto the list
+    ? `<div class="listbox select__panel" popover${panelWidth ? ` style="width:${panelWidth}"` : ""}><div class="listbox__search-wrap"><div class="listbox__search">${icon("search", "listbox__search-icon")}<input type="text" class="listbox__search-input" placeholder="${searchPlaceholder}" aria-label="${searchPlaceholder.replace(/…$/, "")}" aria-controls="${lid}" autocomplete="off" /></div></div><ul class="listbox__list" id="${lid}" role="listbox" aria-labelledby="${id}-label"${multiple ? ' aria-multiselectable="true"' : ""}>${body}</ul><p class="listbox__empty" hidden>No results</p></div>`
+    : `<div class="listbox select__panel" id="${lid}" popover role="listbox" aria-labelledby="${id}-label"${multiple ? ' aria-multiselectable="true"' : ""}${panelWidth ? ` style="width:${panelWidth}"` : ""}><ul class="listbox__list" role="none">${body}</ul></div>`}
 </div>`;
 }
 
@@ -206,6 +213,10 @@ export function selectHtml({ id, label, options, value = "", multiple = false, s
 // as it. Keyboard: ↓/↑/Enter/Space open; in the list ↑/↓/Home/End move, Enter
 // or Space pick, Escape closes back to the field, Tab closes. Single-select
 // closes on pick; multiple stays open and the field shows "first +N".
+// Searchable: opening focuses the search box; typing filters (case-insensitive,
+// anywhere in the label), groups and dividers hide when empty; ↓ goes into the
+// list, ↑ from the first option back to the box, Enter in the box picks the
+// first match; typing on an option goes to the box. Closing clears the search.
 export const SELECT_JS = `(function () {
   var GAP = ${resolveToken(get("dim.1")).value};
   document.querySelectorAll("[data-select]").forEach(function (wrap) {
@@ -214,7 +225,15 @@ export const SELECT_JS = `(function () {
     var text = wrap.querySelector(".select__text"), more = wrap.querySelector(".select__more");
     // focus an option without scrolling the page; keep it in view inside a long list
     function go(el) { if (!el) return; el.focus({ preventScroll: true }); el.scrollIntoView({ block: "nearest" }); }
-    var opts = function () { return Array.prototype.slice.call(panel.querySelectorAll(".listbox__option")); };
+    var search = panel.querySelector(".listbox__search-input"), empty = panel.querySelector(".listbox__empty");
+    var opts = function () { return Array.prototype.slice.call(panel.querySelectorAll(".listbox__option")).filter(function (o) { return !o.parentNode.hidden; }); };
+    function filter(q) {
+      q = q.trim().toLowerCase();
+      panel.querySelectorAll(".listbox__option").forEach(function (o) { o.parentNode.hidden = !!q && o.textContent.toLowerCase().indexOf(q) < 0; });
+      panel.querySelectorAll(".listbox__group").forEach(function (g) { g.parentNode.hidden = !Array.prototype.some.call(g.querySelectorAll(".listbox__option"), function (o) { return !o.parentNode.hidden; }); });
+      panel.querySelectorAll(".listbox__divider").forEach(function (d) { d.parentNode.hidden = !!q; });
+      if (empty) empty.hidden = opts().length > 0;
+    }
     function place() {
       var r = trigger.getBoundingClientRect(); panel.style.position = "fixed"; panel.style.right = "auto"; panel.style.bottom = "auto"; panel.style.minWidth = r.width + "px";
       var h = panel.offsetHeight, top = r.bottom + GAP;
@@ -225,6 +244,7 @@ export const SELECT_JS = `(function () {
       if (trigger.disabled) return;
       if (!panel.matches(":popover-open")) { panel.showPopover(); place(); }
       var list = opts(), sel = list.filter(function (o) { return o.getAttribute("aria-selected") === "true"; })[0];
+      if (search) { search.focus({ preventScroll: true }); if (sel) sel.scrollIntoView({ block: "nearest" }); return; }
       var target = focusWhich === "last" ? list[list.length - 1] : (sel || list[0]);
       go(target);
     }
@@ -242,7 +262,18 @@ export const SELECT_JS = `(function () {
       opts().forEach(function (x) { x.setAttribute("aria-selected", String(x === o)); });
       sync(); close(true);
     }
-    panel.addEventListener("toggle", function (e) { trigger.setAttribute("aria-expanded", String(e.newState === "open")); });
+    panel.addEventListener("toggle", function (e) { trigger.setAttribute("aria-expanded", String(e.newState === "open")); if (e.newState !== "open" && search) { search.value = ""; filter(""); } });
+    if (search) {
+      search.addEventListener("input", function () { filter(search.value); place(); });
+      search.addEventListener("keydown", function (e) {
+        var list = opts();
+        if (e.key === "ArrowDown") { e.preventDefault(); e.stopPropagation(); go(list[0]); }
+        else if (e.key === "Enter") { e.preventDefault(); e.stopPropagation(); if (list[0]) pick(list[0]); }
+        else if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); close(true); }
+        else if (e.key === "Tab") { close(false); }
+        else e.stopPropagation();
+      });
+    }
     trigger.addEventListener("click", function () { if (panel.matches(":popover-open")) close(false); else open(); });
     trigger.addEventListener("keydown", function (e) {
       if (e.key === "ArrowDown" || e.key === "Enter" || e.key === " ") { e.preventDefault(); open(); }
@@ -252,7 +283,8 @@ export const SELECT_JS = `(function () {
     panel.addEventListener("keydown", function (e) {
       var list = opts(), i = list.indexOf(document.activeElement);
       if (e.key === "ArrowDown") { e.preventDefault(); go(list[i + 1] || list[i]); }
-      else if (e.key === "ArrowUp") { e.preventDefault(); go(list[i - 1] || list[i]); }
+      else if (e.key === "ArrowUp") { e.preventDefault(); if (search && i <= 0) search.focus(); else go(list[i - 1] || list[i]); }
+      else if (search && e.key.length === 1 && e.key !== " " && !e.ctrlKey && !e.metaKey) { search.focus(); }
       else if (e.key === "Home") { e.preventDefault(); go(list[0]); }
       else if (e.key === "End") { e.preventDefault(); go(list[list.length - 1]); }
       else if (e.key === "Enter" || e.key === " ") { e.preventDefault(); if (list[i]) pick(list[i]); }

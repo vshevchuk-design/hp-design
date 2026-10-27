@@ -132,6 +132,10 @@
 .listbox__search-icon { width: 16px; height: 16px; color: var(--tok-icon-default); flex-shrink: 0; }
 .listbox__search input { border: none; background: none; outline: none; width: 100%; color: var(--tok-text-default); font-family: inherit; font-weight: 400; font-size: 16px; line-height: 1.2; }
 .listbox__search input::placeholder { color: var(--tok-text-muted); }
+/* searchable Select (ComboboxField): typing filters; nothing left → "No results" */
+.listbox__empty { margin: 0; padding: 8px 8px; color: var(--tok-text-muted); font-weight: 400; font-size: 14px; line-height: 1.4; }
+.listbox__empty[hidden] { display: none; }
+.listbox__search:focus-within { border-color: var(--tok-border-focus); }
 
 .listbox__select-all { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 4px 8px; }
 .listbox__select-all-label { color: var(--tok-text-secondary); margin: 0; font-weight: 400; font-size: 12px; line-height: 1.4; }
@@ -189,6 +193,7 @@
     <a class="navlink" href="input.html">Input</a>
     <a class="navlink" href="form.html">Form</a>
     <a class="navlink" href="select.html">Select</a>
+    <a class="navlink" href="select.html#combobox">ComboboxField</a>
     <a class="navlink" href="calendar.html">Calendar</a>
     <a class="navlink" href="date-picker.html">DatePicker</a>
     <a class="navlink" href="date-range-picker.html">DateRangePicker</a>
@@ -342,6 +347,10 @@
 .listbox__search-icon { width: 16px; height: 16px; color: var(--tok-icon-default); flex-shrink: 0; }
 .listbox__search input { border: none; background: none; outline: none; width: 100%; color: var(--tok-text-default); font-family: inherit; font-weight: 400; font-size: 16px; line-height: 1.2; }
 .listbox__search input::placeholder { color: var(--tok-text-muted); }
+/* searchable Select (ComboboxField): typing filters; nothing left → "No results" */
+.listbox__empty { margin: 0; padding: 8px 8px; color: var(--tok-text-muted); font-weight: 400; font-size: 14px; line-height: 1.4; }
+.listbox__empty[hidden] { display: none; }
+.listbox__search:focus-within { border-color: var(--tok-border-focus); }
 
 .listbox__select-all { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 4px 8px; }
 .listbox__select-all-label { color: var(--tok-text-secondary); margin: 0; font-weight: 400; font-size: 12px; line-height: 1.4; }

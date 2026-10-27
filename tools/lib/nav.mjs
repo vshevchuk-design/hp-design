@@ -38,6 +38,7 @@ export const NAV_ITEMS = {
   form: { label: "Form", href: "form.html" },
   select: { label: "Select", href: "select.html" },
   search: { label: "Search", href: "search.html" },
+  "combobox-field": { label: "ComboboxField", href: "select.html#combobox" },
   pagination: { label: "Pagination", href: "pagination.html" },
   slider: { label: "Slider", href: "slider.html" },
   separator: { label: "Separator", href: "separator.html" },
@@ -189,6 +190,7 @@ export function renderNav(activeKey, { basePath = "" } = {}) {
     ${link("input")}
     ${link("form")}
     ${link("select")}
+    ${link("combobox-field")}
     ${link("calendar")}
     ${link("date-picker")}
     ${link("date-range-picker")}
