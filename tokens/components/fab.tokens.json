@@ -5,7 +5,7 @@
       "size": { "$type": "dimension", "$value": "{dim.12}", "$description": "48px on every width (user, 2026-10-20 — 64, then 56, were too big)." },
       "iconSize": { "$type": "dimension", "$value": "{dim.6}", "$description": "24px — half the diameter, the same 50% rule Button's icons follow." },
       "radius": { "$type": "dimension", "$value": "{radius.full}" },
-      "shadow": { "$type": "shadow", "$value": "{shadow.md}", "$description": "The one button with elevation: it floats over content, so it needs to read as above it. Same tier as Drawer." },
+      "shadow": { "$type": "shadow", "$value": "{shadow.md}", "$description": "The one button with elevation: it floats over content, so it needs to read as above it. Same tier as SlideOverPanel." },
       "offset": { "$type": "dimension", "$value": "{dim.6}", "$description": "24px from the right and bottom edges (plus the safe-area inset) from 768px up." },
       "offsetPhone": { "$type": "dimension", "$value": "{dim.4}", "$description": "16px under 768px — the page gutter." }
     }

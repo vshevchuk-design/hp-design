@@ -1,7 +1,7 @@
 // Regenerates docs/dialog.html from tokens/components/dialog.tokens.json,
 // resolving aliases back through semantic/*.tokens.json and primitives/*.tokens.json.
 // Native <dialog> with showModal() — free focus-trap, Escape-to-close,
-// ::backdrop, top-layer. Unlike Drawer, needs almost no positioning CSS:
+// ::backdrop, top-layer. Unlike SlideOverPanel, needs almost no positioning CSS:
 // showModal()'s own UA stylesheet already centers a <dialog>. Close buttons
 // use <form method="dialog">, the fully-declarative native way to close.
 // The generated <style> block IS the code shown in the "CSS" section below —
@@ -24,8 +24,8 @@ const typo = load("tokens/primitives/typography.tokens.json");
 const textStyle = load("tokens/primitives/text-styles.tokens.json")["text-style"];
 const semantic = load("tokens/semantic/color.tokens.json");
 const dialog = load("tokens/components/dialog.tokens.json").component.dialog;
-// Below breakpoint.md, md/lg/xl take Drawer's bottom placement — its shape is read from drawer.tokens.json.
-const drawer = load("tokens/components/drawer.tokens.json").component.drawer;
+// Below breakpoint.md, md/lg/xl take SlideOverPanel's bottom placement — its shape is read from slide-over-panel.tokens.json.
+const drawer = load("tokens/components/slide-over-panel.tokens.json").component.slideOverPanel;
 const breakpoint = load("tokens/primitives/breakpoint.tokens.json").breakpoint;
 // Close (×) IS a Button — ghost, sm, icon-only — so its size/colors come from button.tokens.json, not a local recipe.
 const ghost = load("tokens/components/button.tokens.json").component.button.ghost;
@@ -85,7 +85,7 @@ const capped = (w) => `min(${w}, calc(100vw - ${gutter} * 2))`;
 const bp = resolve(dialog.sheet.breakpoint.$value);
 const descType = resolveToken(dialog.description);
 const headerGap = px(resolve(dialog.headerGap.$value));
-const drRadius = px(resolve(drawer.radius.$value));
+const drRadius = `${px(resolve(drawer.bottomRadius.$value))} ${px(resolve(drawer.bottomRadius.$value))} 0 0`;
 const drMax = `${drawer.bottomMaxHeight.$value.value}${drawer.bottomMaxHeight.$value.unit}`;
 const drDur = `${drawer.transitionDuration.$value.value}${drawer.transitionDuration.$value.unit}`;
 const drShadow = resolveToken(drawer.shadow);
@@ -119,8 +119,8 @@ dialog.dialog--md { width: ${capped(sizes.md)}; }
 dialog.dialog--lg { width: ${capped(sizes.lg)}; }
 dialog.dialog--xl { width: ${capped(sizes.xl)}; }
 
-/* Phone (< breakpoint.md): md/lg/xl take Drawer's bottom placement — shape
-   from drawer.tokens.json. sm stays a centered card. */
+/* Phone (< breakpoint.md): md/lg/xl take SlideOverPanel's bottom placement — shape
+   from slide-over-panel.tokens.json. sm stays a centered card. */
 @media (max-width: ${bp.value - 0.02}${bp.unit}) {
   dialog.dialog--md, dialog.dialog--lg, dialog.dialog--xl { margin: 0; inset: auto 0 0 0; width: 100%; max-height: ${drMax}; border-radius: ${drRadius}; box-shadow: ${drShadowCss};
     opacity: 1; transform: translateY(100%); transition: transform ${drDur} ease, overlay ${drDur} allow-discrete, display ${drDur} allow-discrete; }
@@ -229,7 +229,7 @@ const openScript = `document.querySelectorAll('[data-dialog-open]').forEach((btn
 });`;
 
 // showModal() gives Escape-to-close for free, but NOT click-outside-to-close —
-// same gotcha as Drawer, same fix: the dialog's own padding is 0 and
+// same gotcha as SlideOverPanel, same fix: the dialog's own padding is 0 and
 // .dialog__content fills 100% of it, so a click landing on the <dialog>
 // element itself (not a descendant) can only mean it hit the backdrop.
 const dismissScript = `document.querySelectorAll('dialog.dialog').forEach((dlg) => {
@@ -324,15 +324,15 @@ const html = `<!doctype html>
 
     <div class="legend">
       <div class="row"><b>Native &lt;dialog&gt;</b><span>Real <code class="tok">showModal()</code> — free focus-trap, Escape-to-close, ::backdrop, top-layer (no z-index). This demo is genuinely interactive.</span></div>
-      <div class="row"><b>Centering is free</b><span>Unlike Drawer, no positioning CSS needed at all — showModal()'s own UA stylesheet already centers a &lt;dialog&gt; via position:fixed + inset:0 + margin:auto.</span></div>
+      <div class="row"><b>Centering is free</b><span>Unlike SlideOverPanel, no positioning CSS needed at all — showModal()'s own UA stylesheet already centers a &lt;dialog&gt; via position:fixed + inset:0 + margin:auto.</span></div>
       <div class="row"><b>Sizes</b><span><code class="tok">sm</code> ${sizes.sm} (default — a short task, one field), <code class="tok">.dialog--md</code> ${sizes.md} (forms), <code class="tok">.dialog--lg</code> ${sizes.lg} (two columns, a list or table), <code class="tok">.dialog--xl</code> ${sizes.xl} (a working view). Every size is capped at the viewport minus ${gutter} each side. The body is a slot — anything goes there.</span></div>
-      <div class="row"><b>Phone</b><span>Below <code class="tok">breakpoint.md</code> (${bp.value}${bp.unit}) md/lg/xl take <a href="drawer.html">Drawer</a>'s bottom placement — shape read from <code class="tok">drawer.tokens.json</code>. sm stays a centered card: a short question reads as a question in the middle, from the bottom it reads like a menu. Still one Dialog in code — resize this window under ${bp.value}${bp.unit} and open md to see it.</span></div>
+      <div class="row"><b>Phone</b><span>Below <code class="tok">breakpoint.md</code> (${bp.value}${bp.unit}) md/lg/xl take <a href="slide-over-panel.html">SlideOverPanel</a>'s bottom placement — shape read from <code class="tok">slide-over-panel.tokens.json</code>. sm stays a centered card: a short question reads as a question in the middle, from the bottom it reads like a menu. Still one Dialog in code — resize this window under ${bp.value}${bp.unit} and open md to see it.</span></div>
       <div class="row"><b>Description</b><span>Optional line under the title, <code class="tok">body-sm</code> · <code class="tok">text.secondary</code>, ${headerGap} below it — same as Card's. Wire it with <code class="tok">aria-describedby</code>: a screen reader reads it right after the title on open.</span></div>
       <div class="row"><b>radius.xl</b><span>Already named for exactly this case in radius's own legend ('modals, large panels, hero cards') — not a new choice.</span></div>
       <div class="row"><b>Nested dialogs</b><span>A dialog opened from within another dialog 'just works' via the browser's native top-layer stacking — the z-index.tokens.json modal-2/modal-overlay-2 tiers were designed for a non-native implementation and aren't needed here.</span></div>
-      <div class="row"><b>Native close</b><span><code class="tok">&lt;form method="dialog"&gt;</code> around each action button, same as Drawer.</span></div>
-      <div class="row"><b>Click-outside</b><span>Not native — showModal() only gives Escape for free. A small script (below) closes on backdrop click, same as Drawer.</span></div>
-      <div class="row"><b>Header/footer optional</b><span>Same composition philosophy as Card/Drawer — a Dialog can be body-only. Each section is its own full-width band with its own padding, so the divider spans the whole modal edge to edge.</span></div>
+      <div class="row"><b>Native close</b><span><code class="tok">&lt;form method="dialog"&gt;</code> around each action button, same as SlideOverPanel.</span></div>
+      <div class="row"><b>Click-outside</b><span>Not native — showModal() only gives Escape for free. A small script (below) closes on backdrop click, same as SlideOverPanel.</span></div>
+      <div class="row"><b>Header/footer optional</b><span>Same composition philosophy as Card/SlideOverPanel — a Dialog can be body-only. Each section is its own full-width band with its own padding, so the divider spans the whole modal edge to edge.</span></div>
       <div class="row"><b>Real button states</b><span>Close (×) and the footer actions are genuine interactive elements — the same fill.neutral/fill.neutralHover/fill.neutralActive/fill.danger recipe Button itself uses, not unstyled placeholders.</span></div>
       <div class="row"><b>In code</b><span>Two ways to open the same Dialog (Storybook's ButtonDialog / PageDialog — code patterns, nothing new to design). <b>Owned by its button</b> when one trigger opens it ("Edit profile", "Invite"): the trigger and its dialog live together, the dialog keeps its own open state. <b>One per page</b> when many rows open the same dialog ("User details" from a table): one Dialog, filled with whichever row opened it, and its state in the URL (<code class="tok">?user=1</code>) so a reload or a shared link reopens it and the browser's Back closes it. Confirmations go through DialogManager — see <a href="alert-dialog.html">AlertDialog</a>.</span></div>
       <div class="row"><b>Not for questions</b><span>"Discard this draft?", "Delete project?" — a question the user has to answer is an <a href="alert-dialog.html">AlertDialog</a> (no ×), not a Dialog with a Cancel button. A Dialog holds a task; the × just means "not now".</span></div>
@@ -343,11 +343,11 @@ const html = `<!doctype html>
     <pre class="code"><code>${esc(css)}</code></pre>
 
     <h2 class="big-section">Open script</h2>
-    <p class="section-desc">The only JS needed to open — focus-trap/Escape/::backdrop are native, same reasoning as Drawer.</p>
+    <p class="section-desc">The only JS needed to open — focus-trap/Escape/::backdrop are native, same reasoning as SlideOverPanel.</p>
     <pre class="code"><code>${esc(openScript)}</code></pre>
 
     <h2 class="big-section">Click-outside-to-close</h2>
-    <p class="section-desc">showModal() doesn't give this for free — same gotcha and same fix as Drawer.</p>
+    <p class="section-desc">showModal() doesn't give this for free — same gotcha and same fix as SlideOverPanel.</p>
     <pre class="code"><code>${esc(dismissScript)}</code></pre>
 
     <h2 class="big-section">Examples</h2>

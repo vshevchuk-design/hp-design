@@ -55,7 +55,7 @@ export const NAV_ITEMS = {
   stepper: { label: "Stepper", href: "stepper.html" },
   tooltip: { label: "Tooltip", href: "tooltip.html" },
   popover: { label: "Popover", href: "popover.html" },
-  drawer: { label: "Drawer", href: "drawer.html" },
+  "slide-over-panel": { label: "SlideOverPanel", href: "slide-over-panel.html" },
   dialog: { label: "Dialog", href: "dialog.html" },
   "alert-dialog": { label: "AlertDialog", href: "alert-dialog.html" },
   "dropdown-menu": { label: "DropdownMenu", href: "dropdown-menu.html" },
@@ -212,7 +212,7 @@ export function renderNav(activeKey, { basePath = "" } = {}) {
     ${link("stepper")}
     ${link("tooltip")}
     ${link("popover")}
-    ${link("drawer")}
+    ${link("slide-over-panel")}
     ${link("dialog")}
     ${link("alert-dialog")}
     ${link("dropdown-menu")}

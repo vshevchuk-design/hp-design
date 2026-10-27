@@ -4,7 +4,7 @@
 // Same panel shell as Menu/Popover (native popover attribute, border+shadow.sm+
 // radius.default) — kept as its own component because options carry selection
 // state (checked/selected), unlike Menu's one-shot action items. Separate from
-// Menu for the same reason Modal/Drawer stayed separate despite sharing <dialog>.
+// Menu for the same reason Modal/SlideOverPanel stayed separate despite sharing <dialog>.
 // The generated <style> block IS the code shown in the "CSS" section below —
 // one source, so the live preview and the printed snippet can't drift apart.
 // Run: node tools/build-listbox-doc.mjs

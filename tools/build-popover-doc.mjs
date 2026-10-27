@@ -249,7 +249,7 @@ const html = `<!doctype html>
       <div class="row"><b>No animation</b><span>Instant show/hide, on purpose — kept the scope on the core native-dismissal behavior rather than entrance/exit polish.</span></div>
       <div class="row"><b>In code</b><span>Open or close it from anywhere — another button, after a save, on a timer — with <code class="tok">el.showPopover()</code> / <code class="tok">hidePopover()</code> / <code class="tok">togglePopover()</code>; listen to the <code class="tok">toggle</code> event (<code class="tok">e.newState</code>) to know whether it's open. That's Storybook's "Controlled" story — the native Popover API does it, no wrapper needed.</span></div>
       <div class="row"><b>No arrow</b><span>It sits ${px(gap)} under its trigger with a border and a shadow, so where it came from is clear. An arrow has to flip with the panel and fights the rounded corner — Tooltip, DropdownMenu and DatePicker have none either.</span></div>
-      <div class="row"><b>Not modal</b><span>The rest of the page stays interactive while a Popover is open — that's the whole distinction from <a href="dialog.html">Dialog</a>/<a href="drawer.html">Drawer</a>.</span></div>
+      <div class="row"><b>Not modal</b><span>The rest of the page stays interactive while a Popover is open — that's the whole distinction from <a href="dialog.html">Dialog</a>/<a href="slide-over-panel.html">SlideOverPanel</a>.</span></div>
     </div>
 
     <h2 class="big-section">CSS</h2>

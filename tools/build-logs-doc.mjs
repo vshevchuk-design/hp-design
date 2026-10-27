@@ -179,7 +179,7 @@ const POSTS = [
     links: [
       { label: "Tooltip", href: "tooltip.html" },
       { label: "Popover", href: "popover.html" },
-      { label: "Drawer", href: "drawer.html" },
+      { label: "SlideOverPanel", href: "slide-over-panel.html" },
       { label: "Dialog", href: "dialog.html" },
     ],
   },

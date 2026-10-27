@@ -55,9 +55,9 @@ const zContext = {
   dropdown: "Floating on page — no drawer/modal open",
   popover: "Floating on page",
   tooltip: "Floating on page",
-  "drawer-overlay": "Drawer — backdrop",
-  drawer: "Drawer — panel",
-  "drawer-floating": "Drawer — dropdown/tooltip mounted inside an open Drawer",
+  "slide-over-panel-overlay": "SlideOverPanel — backdrop",
+  "slide-over-panel": "SlideOverPanel — panel",
+  "slide-over-panel-floating": "SlideOverPanel — dropdown/tooltip mounted inside an open SlideOverPanel",
   "modal-overlay": "Modal L1 — backdrop",
   modal: "Modal L1 — panel",
   "modal-floating": "Modal L1 — dropdown/tooltip mounted inside an open Modal",
@@ -194,14 +194,14 @@ const html = `<!doctype html>
 
     <h3 class="sub-section">Shadow</h3>
     <div class="legend">
-      <div class="row"><b>Floating UI only</b><span>Added 2026-07-21, specifically for Tooltip/Popover/Drawer/Modal — every other surface in this system (Input/Select/Search fields, Card) draws separation with a border.default hairline, never a shadow. Not a general-purpose elevation scale to reach for elsewhere.</span></div>
+      <div class="row"><b>Floating UI only</b><span>Added 2026-07-21, specifically for Tooltip/Popover/SlideOverPanel/Modal — every other surface in this system (Input/Select/Search fields, Card) draws separation with a border.default hairline, never a shadow. Not a general-purpose elevation scale to reach for elsewhere.</span></div>
     </div>
     <div class="table-wrap">
     <table class="scale">
       <tr><th>Token</th><th>Used by</th><th>CSS</th><th>Preview</th></tr>
       ${shadowRows
         .map(([k, v]) => {
-          const used = { sm: "Tooltip, Popover", md: "Drawer", lg: "Modal" }[k] || "";
+          const used = { sm: "Tooltip, Popover", md: "SlideOverPanel", lg: "Modal" }[k] || "";
           return `<tr><td><code class="tok">--shadow-${k}</code></td><td class="ctx">${used}</td><td class="ctx">${shadowCss(v.$value)}</td><td><div class="shadow-box" style="box-shadow:${shadowCss(v.$value)}"></div></td></tr>`;
         })
         .join("\n      ")}

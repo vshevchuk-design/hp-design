@@ -101,7 +101,7 @@ const css = `${rootVars}
 .toast__label { color: ${cv(labelColor)}; ${typoCss(labelType)} white-space: nowrap; }
 ${ROLES.map((r) => `.toast--${r} .toast__icon { color: ${cv(refPath(toast.role[r].icon.$value))}; }`).join("\n")}
 
-/* entry transition — same @starting-style approach as Drawer/Modal */
+/* entry transition — same @starting-style approach as SlideOverPanel/Modal */
 .toast:popover-open { opacity: 1; translate: 0 0; transition: opacity 0.18s ease, translate 0.18s ease; }
 @starting-style {
   .toast:popover-open { opacity: 0; translate: 0 -8px; }
@@ -241,7 +241,7 @@ const html = `<!doctype html>
       <div class="row"><b>Why "Toast"</b><span>The industry name for transient, self-dismissing feedback — Radix Toast, shadcn's toast, Sonner, Material's Snackbar and Ant's <code class="tok">message</code> are all this one pattern with different default positions. "Notification" usually means the richer, longer-lived card with a title, body and actions — deliberately NOT built yet.</span></div>
       <div class="row"><b>Top-center, one line</b><span>Role icon + text, fixed at <code class="tok">toast.offsetTop</code> from the viewport top, horizontally centered. Auto-dismisses (default 3200ms in the helper below).</span></div>
       <div class="row"><b>Neutral surface, colored icon</b><span>The shell stays white + hairline + shadow.sm at every role (Popover's own floating recipe) — only the icon carries the meaning: <code class="tok">status.success/danger/warning</code>, the status.* group's first consumer ("badges, alerts, form validation" per its own $description).</span></div>
-      <div class="row"><b>Native-first</b><span><code class="tok">popover="manual"</code> + <code class="tok">showPopover()</code> — free top-layer, and "manual" opts out of light-dismiss: a toast leaves on its own timer, not because the user clicked elsewhere. Entry via @starting-style, same as Drawer/Modal.</span></div>
+      <div class="row"><b>Native-first</b><span><code class="tok">popover="manual"</code> + <code class="tok">showPopover()</code> — free top-layer, and "manual" opts out of light-dismiss: a toast leaves on its own timer, not because the user clicked elsewhere. Entry via @starting-style, same as SlideOverPanel/Modal.</span></div>
       <div class="row"><b>Deferred</b><span>Close (×) button, inline action link, title+body notification variant, stacking manager for simultaneous toasts — none needed by the driving use case (Message Center's archive confirmation), none built speculatively.</span></div>
     </div>
 

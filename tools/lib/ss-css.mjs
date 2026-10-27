@@ -20,7 +20,7 @@ export function ssCss(h) {
     return `${px(s.offsetX)} ${px(s.offsetY)} ${px(s.blur)} ${px(s.spread)} ${s.color}`;
   };
 
-  const { tabs, button, select, search, chip, listbox: lb, card, badge, pagination: pg, choiceTile: ct, radio, alert, toast, tooltip: tt, emptyState: es, dialog: modal, input, counter, progress, attachment: att, accordion: acc, datePicker: dp, calendar: cal, drawer, box, dropdownMenu: menu } = t;
+  const { tabs, button, select, search, chip, listbox: lb, card, badge, pagination: pg, choiceTile: ct, radio, alert, toast, tooltip: tt, emptyState: es, dialog: modal, input, counter, progress, attachment: att, accordion: acc, datePicker: dp, calendar: cal, slideOverPanel: drawer, box, dropdownMenu: menu } = t;
 
   const btn = (variant, size) => ({
     height: D(button[variant].size[size].height),
@@ -731,10 +731,10 @@ ${COLLAPSIBLE_CSS}
   .ss-cal { display: grid; grid-template-columns: minmax(0, 1fr) ${dim(80)}; align-items: start; gap: ${dim(6)}; }
   .ss-cal__side { display: block; position: sticky; top: calc(${dim(16)} + ${D(tabs.size.base.height)} + ${dim(6)}); max-height: calc(100dvh - ${dim(16)} - ${D(tabs.size.base.height)} - ${dim(12)}); overflow-y: auto; }
 }
-/* Tablet: the day in a Drawer, bottom placement — edge-attached, Drawer's
-   own (zero) radius, shadow, scrim and 250ms slide; as tall as its rows, up
+/* Tablet: the day in a SlideOverPanel, bottom placement — edge-attached, its
+   rounded top corners, shadow, scrim and 250ms slide; as tall as its rows, up
    to 80% of the screen. */
-.ss-drawer { border: none; padding: 0; margin: 0; position: fixed; inset: auto 0 0 0; width: 100%; max-width: 100%; max-height: 80dvh; border-radius: ${D(drawer.radius)}; background: ${R(drawer.bg)}; box-shadow: ${shadowCss(drawer.shadow)}; font-family: ${cv("family.sans")}; }
+.ss-drawer { border: none; padding: 0; margin: 0; position: fixed; inset: auto 0 0 0; width: 100%; max-width: 100%; max-height: 80dvh; border-radius: ${D(drawer.bottomRadius)} ${D(drawer.bottomRadius)} 0 0; background: ${R(drawer.bg)}; box-shadow: ${shadowCss(drawer.shadow)}; font-family: ${cv("family.sans")}; }
 .ss-drawer[open] { display: flex; flex-direction: column; transform: translateY(0); transition: transform ${px(h.resolveToken(drawer.transitionDuration))} ease; }
 @starting-style { .ss-drawer[open] { transform: translateY(100%); } }
 .ss-drawer::backdrop { background: ${R(drawer.overlay)}; }

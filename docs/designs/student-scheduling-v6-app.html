@@ -822,10 +822,10 @@ html:has(.modal[open]) { overflow: hidden; }
   .ss-cal { display: grid; grid-template-columns: minmax(0, 1fr) 320px; align-items: start; gap: 24px; }
   .ss-cal__side { display: block; position: sticky; top: calc(64px + 40px + 24px); max-height: calc(100dvh - 64px - 40px - 48px); overflow-y: auto; }
 }
-/* Tablet: the day in a Drawer, bottom placement — edge-attached, Drawer's
-   own (zero) radius, shadow, scrim and 250ms slide; as tall as its rows, up
+/* Tablet: the day in a SlideOverPanel, bottom placement — edge-attached, its
+   rounded top corners, shadow, scrim and 250ms slide; as tall as its rows, up
    to 80% of the screen. */
-.ss-drawer { border: none; padding: 0; margin: 0; position: fixed; inset: auto 0 0 0; width: 100%; max-width: 100%; max-height: 80dvh; border-radius: 0px; background: var(--tok-surface-default); box-shadow: 0px 4px 16px 0px rgba(21, 25, 30, 0.12); font-family: var(--tok-family-sans); }
+.ss-drawer { border: none; padding: 0; margin: 0; position: fixed; inset: auto 0 0 0; width: 100%; max-width: 100%; max-height: 80dvh; border-radius: 24px 24px 0 0; background: var(--tok-surface-default); box-shadow: 0px 4px 16px 0px rgba(21, 25, 30, 0.12); font-family: var(--tok-family-sans); }
 .ss-drawer[open] { display: flex; flex-direction: column; transform: translateY(0); transition: transform 250ms ease; }
 @starting-style { .ss-drawer[open] { transform: translateY(100%); } }
 .ss-drawer::backdrop { background: var(--tok-surface-overlay); }
@@ -1232,7 +1232,7 @@ html:has(.ss-drawer[open]) { overflow: hidden; }
           </div>
         </div>
         <!-- the chosen day: a sticky card beside the month from 1024; on a
-             tablet the same rows open in a bottom Drawer instead -->
+             tablet the same rows open in a bottom SlideOverPanel instead -->
         <aside class="card ss-cal__side" aria-labelledby="ss-cal-day-title">
           <div class="card__head"><h3 class="card__title" id="ss-cal-day-title"></h3></div>
           <div class="ss-cal-rows" id="ss-cal-day"></div>

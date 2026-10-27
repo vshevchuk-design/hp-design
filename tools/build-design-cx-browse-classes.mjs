@@ -32,7 +32,7 @@ const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const pageCss = (X) => {
   const { tokens, R, D, T, dim, cv, typoCss, style, textExt, px } = X;
   const h = X;
-  const { card, table: tb, button, select, drawer } = tokens;
+  const { card, table: tb, button, select, slideOverPanel: drawer } = tokens;
   const bSm = button.secondary.size.sm;
   const lbl = style("label-sm");
   const lblCase = textExt("text-style.label-sm").textTransform || "none";

@@ -1,0 +1,98 @@
+{
+  "component": {
+    "slideOverPanel": {
+      "$description": "SlideOverPanel (renamed from Drawer 2026-10-27 — the Storybook name) — a modal panel attached to an edge (right by default, left, or bottom). unlike Popover, blocks interaction with the rest of the page while open (that's what makes it a true dialog, not a floating panel). Uses the native <dialog> element with showModal(): free focus-trap, free Escape-to-close, free ::backdrop, top-layer rendering with no z-index needed. Kept as a token file/build script separate from Modal per explicit prior decision, even though both are '<dialog> with showModal()' underneath — their sizing/positioning/radius differ enough (edge-attached vs. free-floating centered) to earn their own files rather than a shared one with position variants. No outer border — 3 of its 4 edges sit flush against the viewport boundary (no page visible around them to define an edge against), and shadow.md + the backdrop scrim already read as a distinct raised layer; a border would be redundant. radius: none for the same flush-edge reason (Modal, which floats free on all sides, does get one). Three widths for the side placements (2026-10-27): sm 320 (filters, settings), md 480 (a record's detail), lg 640 (dense content, editing); on a phone a side panel leaves a strip of the page visible. Header: title + optional description (Dialog's recipe, resolved from dialog.tokens.json) + an optional header-end slot before the × (a status Badge, a button, a ⋯ menu). Footer is a slot too — any actions, right-aligned. Corners: square on the side placements (three edges sit flush to the screen); the bottom placement rounds its top corners (bottomRadius) — Dialog md/lg/xl take that shape on a phone. Animated open/close via native CSS (@starting-style + transitions on transform/::backdrop, allow-discrete) — no JS animation library. Header and footer are both optional composition, same as Card — a Drawer can be body-only. The close button and footer actions are real interactive elements with their own hover/active/focus states (the same fill.neutral/fill.neutralHover/fill.neutralActive/fill.primary/fill.primaryHover recipe Button itself uses), not unstyled placeholders — anything a user can click deserves real states, doc demo or not. Close (×) is a real Button — ghost, sm, icon-only (32×32, 16px icon) resolved from button.tokens.json — not a component-local recipe; it used to be a hand-sized 28px/18–20px copy of the same ghost colors (changed 2026-09-30).",
+      "size": {
+        "sm": {
+          "$type": "dimension",
+          "$value": "{dim.80}",
+          "$description": "320px — filters, settings. Default."
+        },
+        "md": {
+          "$type": "dimension",
+          "$value": "{dim.120}",
+          "$description": "480px — a record's detail (row-click drill-in)."
+        },
+        "lg": {
+          "$type": "dimension",
+          "$value": "{dim.160}",
+          "$description": "640px — dense content, editing."
+        }
+      },
+      "phoneGutter": {
+        "$type": "dimension",
+        "$value": "{dim.12}",
+        "$description": "48px of the page left visible beside a side panel on a narrow screen, so it still reads as a layer over the page."
+      },
+      "bottomMaxHeight": {
+        "$type": "dimension",
+        "$value": {
+          "value": 80,
+          "unit": "dvh"
+        },
+        "$description": "Bottom placement height cap — literal viewport unit (was a literal in the builder; tokenized 2026-10-26 because Modal md/lg/xl take this placement on a phone)."
+      },
+      "radius": {
+        "$type": "dimension",
+        "$value": "{radius.none}",
+        "$description": "Square on the side placements — three edges sit flush to the screen, there is nothing for a curve to sit against."
+      },
+      "bottomRadius": {
+        "$type": "dimension",
+        "$value": "{radius.xl}",
+        "$description": "Top corners of the bottom placement (2026-10-27) — the one free edge; same radius as Dialog, so a Dialog that becomes a bottom panel on a phone keeps its corner. Bottom corners stay square."
+      },
+      "padding": {
+        "$type": "dimension",
+        "$value": "{dim.6}",
+        "$description": "24px — one step more generous than Popover's 16px, proportionate to Drawer being a full modal panel, not a small anchored one."
+      },
+      "gap": {
+        "$type": "dimension",
+        "$value": "{dim.3}",
+        "$description": "12px — internal flex gap within the header row (title-to-close-button) and footer row (button-to-button). Section-to-section spacing (header-to-body, body-to-footer) comes from each section having its own full padding, not from this gap — every section is a full-width band with its own padding.default of 24px, so the divider between them spans the whole drawer width instead of sitting inset (a header/footer border scoped to a single shared-padding wrapper looked wrong once built — a divider that stops short of the edges reads as misaligned on a big edge-attached panel, unlike Card's small inset dividers, which are fine at that scale)."
+      },
+      "transitionDuration": {
+        "$type": "dimension",
+        "$value": {
+          "value": 250,
+          "unit": "ms"
+        },
+        "$description": "Literal, not a token — no duration scale exists in this system yet (same 'literal, not invented' precedent as Tooltip's showDelay)."
+      },
+      "bg": {
+        "$type": "color",
+        "$value": "{surface.default}"
+      },
+      "overlay": {
+        "$type": "color",
+        "$value": "{surface.overlay}"
+      },
+      "shadow": {
+        "$type": "shadow",
+        "$value": "{shadow.md}"
+      },
+      "divider": {
+        "$type": "color",
+        "$value": "{border.default}",
+        "$description": "Header/footer section dividers — internal only, the drawer's own outer edge has no border (see $description)."
+      },
+      "title": {
+        "$type": "typography",
+        "$value": "{text-style.heading-base}"
+      },
+      "titleColor": {
+        "$type": "color",
+        "$value": "{text.default}"
+      },
+      "body": {
+        "$type": "typography",
+        "$value": "{text-style.body-base}"
+      },
+      "bodyColor": {
+        "$type": "color",
+        "$value": "{text.secondary}"
+      }
+    }
+  }
+}

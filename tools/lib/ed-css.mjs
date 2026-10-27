@@ -31,7 +31,7 @@ export function edCss(h) {
   const card = t.card, alert = t.alert, acc = t.accordion, pg = t.progress, sp = t.spinner;
   const badge = t.badge, chip = t.chip, lb = t.listbox, table = t.table;
   const button = t.button, input = t.input, select = t.select, search = t.search;
-  const es = t.emptyState, avatar = t.avatar, modal = t.dialog, cb = t.checkbox, drawer = t.drawer;
+  const es = t.emptyState, avatar = t.avatar, modal = t.dialog, cb = t.checkbox, drawer = t.slideOverPanel;
   const drShadow = h.resolveToken(drawer.shadow);
   const drShadowCss = `${px(drShadow.offsetX)} ${px(drShadow.offsetY)} ${px(drShadow.blur)} ${px(drShadow.spread)} ${drShadow.color}`;
   const drMs = px(h.resolveToken(drawer.transitionDuration));
@@ -481,12 +481,12 @@ ${["neutral", "primary", "success", "warning"].map((r) => `.badge--${r} { backgr
 .ed-choose__label { color: ${cv(refPath(ct.labelColor.$value))}; ${typoCss(h.resolveToken(ct.label))} }
 .ed-choose__hint { color: ${cv(refPath(ct.descriptionColor.$value))}; ${typoCss(h.resolveToken(ct.description))} }
 
-/* On a phone this is Drawer, bottom placement — its own recipe, not a modal
+/* On a phone this is SlideOverPanel, bottom placement — its own recipe, not a modal
    made to look like one: edge-attached, ${px(resolve(drawer.radius.$value))} radius (all four edges sit
-   flush, which is why the component has none), Drawer's shadow and overlay,
+   flush, which is why the component has none), SlideOverPanel's shadow and overlay,
    and its 250ms slide. @starting-style plus allow-discrete gives the entry
    animation natively, so it arrives from the bottom instead of appearing.
-   Full height, not the 80dvh the Drawer doc page shows: that is the doc's own
+   Full height, not the 80dvh the SlideOverPanel doc page shows: that is the doc's own
    demo value — the token file has no height at all — and it suits a short
    sheet, not a searchable catalogue of thirty-odd programmes with a search, two filters and a footer. Leaving a fifth of
    the screen to a scrim over a page you cannot touch costs list, which is the

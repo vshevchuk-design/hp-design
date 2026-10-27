@@ -2782,7 +2782,7 @@ const gwizMarkup = `<dialog class="mc-gwiz" id="mc-gwiz" aria-labelledby="mc-gwi
 
 // ---- Group detail: a broadcast's grouped card in Resolved opens a full-page
 // group view (sent bubble + delivery Stat tiles + replies list + a recipients
-// Drawer). A seeded group makes it visible without sending one. ----
+// SlideOverPanel). A seeded group makes it visible without sending one. ----
 const GROUPS = [
   {
     id: "grp-seed", n: 37, subject: "Fall registration opens Monday", date: "Jul 12",
@@ -4857,7 +4857,7 @@ const appJs = `(function () {
 
   // ===== Group detail + recipients drawer =====
   // A grouped card opens a full-page group view (if a matching pane exists);
-  // "See All Recipients" opens the right-docked recipients Drawer.
+  // "See All Recipients" opens the right-docked recipients SlideOverPanel.
   function bindGroupRow(row) {
     row.addEventListener("click", function () {
       var id = row.dataset.thread;

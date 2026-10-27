@@ -3,7 +3,7 @@
 // Built on Popover's exact shell (native `popover` attribute, border+shadow.sm+
 // radius.default, the same small positioning script) — Menu is a list of
 // actions (role=menu/menuitem in a real port), not a Popover variant, same
-// reasoning Modal/Drawer stayed separate files despite sharing <dialog>.
+// reasoning Modal/SlideOverPanel stayed separate files despite sharing <dialog>.
 // The generated <style> block IS the code shown in the "CSS" section below —
 // one source, so the live preview and the printed snippet can't drift apart.
 // Run: node tools/build-dropdown-menu-doc.mjs
@@ -350,7 +350,7 @@ const html = `<!doctype html>
     <p class="sub">tokens/components/dropdown-menu.tokens.json · generated — the CSS below is generated from the same resolved tokens driving every preview on this page, not hand-copied. Colors are CSS custom properties, not literal hex.</p>
 
     <div class="legend">
-      <div class="row"><b>Not a Popover variant</b><span>Radix/Storybook's DropdownMenu (renamed from Menu 2026-10-26). Built on Popover's exact shell (native <code class="tok">popover</code> attribute, border+shadow.sm+radius.default, same positioning script) but kept as its own component — a list of actions has a different content/keyboard model than arbitrary Popover content, same reasoning Dialog/Drawer stayed separate despite sharing &lt;dialog&gt;.</span></div>
+      <div class="row"><b>Not a Popover variant</b><span>Radix/Storybook's DropdownMenu (renamed from Menu 2026-10-26). Built on Popover's exact shell (native <code class="tok">popover</code> attribute, border+shadow.sm+radius.default, same positioning script) but kept as its own component — a list of actions has a different content/keyboard model than arbitrary Popover content, same reasoning Dialog/SlideOverPanel stayed separate despite sharing &lt;dialog&gt;.</span></div>
       <div class="row"><b>Not Listbox</b><span>Items here are things you <em>do</em> (Rename, Duplicate, Delete) or view settings that apply at once — a list of selectable <em>options</em> (checkboxes, single/multi-select) is <a href="listbox.html">Listbox</a>, a separate component with a different ARIA role (listbox/option vs. menu/menuitem).</span></div>
       <div class="row"><b>Group label</b><span>Heads a group ("Actions", "Sort order") — Command's group heading, resolved from <code class="tok">command.tokens.json</code>: <code class="tok">heading-sm</code> · <code class="tok">${headingRole}</code>, ${headingHeight} tall. Not clickable.</span></div>
       <div class="row"><b>Checkbox items</b><span><code class="tok">role="menuitemcheckbox"</code> — toggles a view setting (which columns show). The mark is the real <a href="checkbox.html">Checkbox</a> (${cbBox}, its own tokens), and hovering the row hovers it, as its label would. Several can be on; the menu stays open.</span></div>

@@ -8,7 +8,7 @@
       "line": {
         "height": { "$type": "dimension", "$value": "{dim.4}", "$description": "16px — a text-line placeholder's height." }
       },
-      "duration": { "$type": "duration", "$value": "1400ms", "$description": "One shimmer sweep. A literal, not tokenized — no motion scale exists in this system yet, same call as Drawer/Modal's transition timings." }
+      "duration": { "$type": "duration", "$value": "1400ms", "$description": "One shimmer sweep. A literal, not tokenized — no motion scale exists in this system yet, same call as SlideOverPanel/Modal's transition timings." }
     }
   }
 }

@@ -1,9 +1,9 @@
 // The CX app shell — one definition for every CX prototype page (Dashboard,
 // Browse Classes, …): the Sidebar, a 64px topbar, the page column, the footer
-// links, the Assistant (FAB + right-hand Drawer, with the page's own
+// links, the Assistant (FAB + right-hand SlideOverPanel, with the page's own
 // suggested questions), a Toast helper, and the resolved component recipes
 // (Scheduling's ssCss() — Button, Card, Tabs, Select, Listbox, ChoiceTile,
-// Chip, Badge, EmptyState, Toast, Drawer… — plus Checkbox and Table here).
+// Chip, Badge, EmptyState, Toast, SlideOverPanel… — plus Checkbox and Table here).
 // Extracted 2026-10-15 when the second CX page arrived, before a second copy
 // could exist (the same rule app-shell.mjs / nav.mjs follow).
 //
@@ -40,7 +40,7 @@ const registry = {
 };
 
 // Everything ss-css.mjs destructures, plus Checkbox and Table.
-const COMPONENTS = ["tabs", "button", "select", "search", "chip", "listbox", "card", "badge", "pagination", "choice-tile", "radio", "alert", "toast", "tooltip", "empty-state", "dialog", "input", "counter", "progress", "attachment", "accordion", "calendar", "date-picker", "drawer", "box", "dropdown-menu", "checkbox", "stat", "table"];
+const COMPONENTS = ["tabs", "button", "select", "search", "chip", "listbox", "card", "badge", "pagination", "choice-tile", "radio", "alert", "toast", "tooltip", "empty-state", "dialog", "input", "counter", "progress", "attachment", "accordion", "calendar", "date-picker", "slide-over-panel", "box", "dropdown-menu", "checkbox", "stat", "table"];
 const tokens = Object.assign({}, ...COMPONENTS.map((n) => load(`tokens/components/${n}.tokens.json`).component));
 
 function get(ref) {
@@ -84,7 +84,7 @@ export const X = {
   shadow: (node) => { const s = resolveToken(node); return `${px(s.offsetX)} ${px(s.offsetY)} ${px(s.blur)} ${px(s.spread)} ${s.color}`; },
 };
 const { R, D, T, style, dim } = X;
-const { checkbox: cb, card, button, drawer, chip, table: tb } = tokens;
+const { checkbox: cb, card, button, slideOverPanel: drawer, chip, table: tb } = tokens;
 const bBase = button.secondary.size.base;
 
 const componentColorPaths = [];
@@ -136,7 +136,7 @@ html, body { height: auto; min-height: 100%; }
 .table__row--link:hover { background: ${R(tb.row.hoverBg)}; }
 .table__muted { color: ${R(tb.cell.mutedColor)}; }
 
-/* ============ Assistant: a floating button → a right-hand Drawer ============ */
+/* ============ Assistant: a floating button → a right-hand SlideOverPanel ============ */
 /* the DS FAB (tools/lib/fab.mjs): 48px round, Button primary colours, bottom-right */
 ${FAB_CSS}
 /* pinned to the top and bottom of the visible area, not a 100dvh height —

@@ -47,7 +47,7 @@
       },
       "descriptionColor": { "$type": "color", "$value": "{text.muted}" },
       "action": {
-        "$description": "The trailing remove/cancel button (idle/uploading only) — resolved from Popover/Drawer/Modal's own close-button recipe, not re-invented.",
+        "$description": "The trailing remove/cancel button (idle/uploading only) — resolved from Popover/SlideOverPanel/Modal's own close-button recipe, not re-invented.",
         "icon": { "$type": "color", "$value": "{icon.secondary}" },
         "hoverBg": { "$type": "color", "$value": "{fill.neutralHover}" },
         "activeBg": { "$type": "color", "$value": "{fill.neutralActive}" }

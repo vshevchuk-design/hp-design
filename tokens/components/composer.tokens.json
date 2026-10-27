@@ -56,7 +56,7 @@
         "$value": "{text.muted}"
       },
       "iconButton": {
-        "$description": "The attach icon (simple) and each B/I/U toolbar button (rich) — resolved from Popover/Drawer/Modal's own close-button recipe (transparent → fill.neutralHover → fill.neutralActive), not re-invented, the same reuse Chip's remove button and Attachment's remove button already established.",
+        "$description": "The attach icon (simple) and each B/I/U toolbar button (rich) — resolved from Popover/SlideOverPanel/Modal's own close-button recipe (transparent → fill.neutralHover → fill.neutralActive), not re-invented, the same reuse Chip's remove button and Attachment's remove button already established.",
         "size": {
           "$type": "dimension",
           "$value": "{dim.7}"

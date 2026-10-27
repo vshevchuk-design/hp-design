@@ -223,7 +223,7 @@
           }
         },
         "remove": {
-          "$description": "The trailing (×) button's own recipe — resolved from Popover/Drawer/Modal's own close-button tokens, not retyped: transparent → fill.neutralHover → fill.neutralActive, icon.secondary at rest.",
+          "$description": "The trailing (×) button's own recipe — resolved from Popover/SlideOverPanel/Modal's own close-button tokens, not retyped: transparent → fill.neutralHover → fill.neutralActive, icon.secondary at rest.",
           "icon": {
             "$type": "color",
             "$value": "{icon.secondary}"

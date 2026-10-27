@@ -209,7 +209,7 @@
     <a class="navlink" href="stepper.html">Stepper</a>
     <a class="navlink" href="tooltip.html">Tooltip</a>
     <a class="navlink" href="popover.html">Popover</a>
-    <a class="navlink" href="drawer.html">Drawer</a>
+    <a class="navlink" href="slide-over-panel.html">SlideOverPanel</a>
     <a class="navlink" href="dialog.html">Dialog</a>
     <a class="navlink" href="alert-dialog.html">AlertDialog</a>
     <a class="navlink active" href="dropdown-menu.html">DropdownMenu</a>
@@ -272,7 +272,7 @@
     <p class="sub">tokens/components/dropdown-menu.tokens.json · generated — the CSS below is generated from the same resolved tokens driving every preview on this page, not hand-copied. Colors are CSS custom properties, not literal hex.</p>
 
     <div class="legend">
-      <div class="row"><b>Not a Popover variant</b><span>Radix/Storybook's DropdownMenu (renamed from Menu 2026-10-26). Built on Popover's exact shell (native <code class="tok">popover</code> attribute, border+shadow.sm+radius.default, same positioning script) but kept as its own component — a list of actions has a different content/keyboard model than arbitrary Popover content, same reasoning Dialog/Drawer stayed separate despite sharing &lt;dialog&gt;.</span></div>
+      <div class="row"><b>Not a Popover variant</b><span>Radix/Storybook's DropdownMenu (renamed from Menu 2026-10-26). Built on Popover's exact shell (native <code class="tok">popover</code> attribute, border+shadow.sm+radius.default, same positioning script) but kept as its own component — a list of actions has a different content/keyboard model than arbitrary Popover content, same reasoning Dialog/SlideOverPanel stayed separate despite sharing &lt;dialog&gt;.</span></div>
       <div class="row"><b>Not Listbox</b><span>Items here are things you <em>do</em> (Rename, Duplicate, Delete) or view settings that apply at once — a list of selectable <em>options</em> (checkboxes, single/multi-select) is <a href="listbox.html">Listbox</a>, a separate component with a different ARIA role (listbox/option vs. menu/menuitem).</span></div>
       <div class="row"><b>Group label</b><span>Heads a group ("Actions", "Sort order") — Command's group heading, resolved from <code class="tok">command.tokens.json</code>: <code class="tok">heading-sm</code> · <code class="tok">text.muted</code>, 28px tall. Not clickable.</span></div>
       <div class="row"><b>Checkbox items</b><span><code class="tok">role="menuitemcheckbox"</code> — toggles a view setting (which columns show). The mark is the real <a href="checkbox.html">Checkbox</a> (20px, its own tokens), and hovering the row hovers it, as its label would. Several can be on; the menu stays open.</span></div>

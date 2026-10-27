@@ -502,12 +502,12 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .ed-choose__label { color: var(--tok-text-default); font-weight: 600; font-size: 14px; line-height: 1.4; }
 .ed-choose__hint { color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
 
-/* On a phone this is Drawer, bottom placement — its own recipe, not a modal
+/* On a phone this is SlideOverPanel, bottom placement — its own recipe, not a modal
    made to look like one: edge-attached, 0px radius (all four edges sit
-   flush, which is why the component has none), Drawer's shadow and overlay,
+   flush, which is why the component has none), SlideOverPanel's shadow and overlay,
    and its 250ms slide. @starting-style plus allow-discrete gives the entry
    animation natively, so it arrives from the bottom instead of appearing.
-   Full height, not the 80dvh the Drawer doc page shows: that is the doc's own
+   Full height, not the 80dvh the SlideOverPanel doc page shows: that is the doc's own
    demo value — the token file has no height at all — and it suits a short
    sheet, not a searchable catalogue of thirty-odd programmes with a search, two filters and a footer. Leaving a fifth of
    the screen to a scrim over a page you cannot touch costs list, which is the
