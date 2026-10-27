@@ -1804,3 +1804,4 @@ Same day: the user asked whether the Wizard is a component. In code it already w
 ## 2026-10-27 — Underline tab hover: a rounded wash off the line
 
 User: the underline hover — a fill with top corners only, glued to the underline — looked wrong; round it and add a couple of pixels. The wash is now a `::before` pill with all corners at the segmented pillRadius, inset 2px from the top and 4px above the 2px underline (`tabs.underline.hover`: insetTop / gap / bg) — 32px on a base tab, 24 on sm. Same in the prototypes (ss-css) and the docs' forced hover demo. Figma: the Underline Hover variants carry a "hover wash" rectangle (radius/default, 24 / 32) instead of a top-rounded frame fill.
+Then: the label sat ~1px below the wash's centre (the wash is lifted 2px top / 4px bottom). Underline tabs now get padding-bottom = gap − insetTop (2px) so the label is in the wash's exact centre (measured: 0.15px apart); Figma Underline variants paddingBottom dim/0_5.

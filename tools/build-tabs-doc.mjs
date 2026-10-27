@@ -137,7 +137,8 @@ ${sizes
 
 .tabs--underline { display: inline-flex; align-items: stretch; gap: ${und.gap}; border-bottom: 1px solid ${cv("border.default")}; max-width: 100%; overflow-x: auto; }
 /* hover: a fully rounded wash lifted off the underline (::before), not a flat-bottomed fill on the tab */
-.tabs--underline .tab { position: relative; isolation: isolate; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.tabs--underline .tab { position: relative; isolation: isolate; border-bottom: 2px solid transparent; margin-bottom: -1px; padding-bottom: calc(${px(resolve(tabs.underline.hover.gap.$value))} - ${px(resolve(tabs.underline.hover.insetTop.$value))}); }
+/* ^ the content sits in the wash's centre: the wash is lifted (2px top, 4px bottom), so the label is lifted by the difference */
 .tabs--underline .tab::before { content: ""; position: absolute; z-index: -1; left: 0; right: 0; top: ${px(resolve(tabs.underline.hover.insetTop.$value))}; bottom: ${px(resolve(tabs.underline.hover.gap.$value))}; border-radius: ${seg.pillRadius}; background: transparent; }
 .tabs--underline .tab:not(.tab--active):not(.tab--disabled):hover { color: ${cv("text.default")}; }
 .tabs--underline .tab:not(.tab--active):not(.tab--disabled):hover::before { background: ${cv(tabs.underline.hover.bg.$value.replace(/[{}]/g, ""))}; }

@@ -145,7 +145,7 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .tab:focus-visible { outline: ${ringW} solid ${cv("border.focus")}; outline-offset: -${ringW}; }
 .tabs--underline { display: flex; align-items: stretch; gap: ${D(tabs.underline.gap)}; border-bottom: 1px solid ${R(tabs.underline.baselineColor)}; max-width: 100%; overflow-x: auto; scrollbar-width: none; }
 /* hover: a fully rounded wash lifted off the underline (::before) */
-.tabs--underline .tab { position: relative; isolation: isolate; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.tabs--underline .tab { position: relative; isolation: isolate; border-bottom: 2px solid transparent; margin-bottom: -1px; padding-bottom: calc(${D(tabs.underline.hover.gap)} - ${D(tabs.underline.hover.insetTop)}); }
 .tabs--underline .tab::before { content: ""; position: absolute; z-index: -1; left: 0; right: 0; top: ${D(tabs.underline.hover.insetTop)}; bottom: ${D(tabs.underline.hover.gap)}; border-radius: ${D(tabs.segmented.pillRadius)}; background: transparent; }
 .tabs--underline .tab:not(.tab--active):not(:disabled):hover { color: ${R(tabs.underline.state.hover.label)}; }
 .tabs--underline .tab:not(.tab--active):not(:disabled):hover::before { background: ${R(tabs.underline.hover.bg)}; }
