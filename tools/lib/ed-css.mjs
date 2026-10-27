@@ -260,7 +260,7 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .alert__detail { margin: 0; color: ${cv(refPath(alert.detailColor.$value))}; ${typoCss(h.resolveToken(alert.detail))} }
 .alert__action { margin-top: ${px(resolve(alert.stackGap.$value))}; }
 ${["info", "success", "warning", "danger"].map((r) => `.alert--${r} { background: ${cv(refPath(alert.role[r].bg.$value))}; border-color: ${cv(refPath(alert.role[r].border.$value))}; }
-.alert--${r} .alert__icon { color: ${cv(refPath(alert.role[r].icon.$value))}; }`).join("\n")}
+.alert--${r} .alert__icon { color: ${cv(refPath(t.statusIcon[{ info: "info", success: "success", warning: "warning", danger: "error" }[r]].color.$value))}; }`).join("\n")}
 
 /* ============ Spinner / Progress ============ */
 .spinner { display: inline-block; flex-shrink: 0; border-style: solid; border-color: ${cv(refPath(sp.track.$value))}; border-top-color: ${cv(refPath(sp.indicator.$value))}; border-radius: ${px(resolve("radius.full"))}; animation: ed-spin ${sp.duration.$value} linear infinite; }

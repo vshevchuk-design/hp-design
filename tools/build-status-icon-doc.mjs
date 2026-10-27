@@ -76,12 +76,15 @@ const html = `<!doctype html>
   <nav class="side">${renderNav("status-icon")}</nav>
   <main>
     <h1>StatusIcon</h1>
-    <p class="sub">tokens/components/status-icon.tokens.json · generated — one 20px mark for done, still to do, or a problem. Content you put into another component's slot: the leading slot of an <a href="accordion.html">Accordion</a> row, a checklist line, a table cell.</p>
+    <p class="sub">tokens/components/status-icon.tokens.json · generated — one 20px icon per state — success, to do, info, warning, error — the state icons of the whole system. Content you put into another component's slot: the leading slot of an <a href="accordion.html">Accordion</a> row, a checklist line, a table cell.</p>
 
     <div class="legend">
-      <div class="row"><b>done</b><span><code class="tok">check</code> in <code class="tok">status.success</code> — covered, complete, passed.</span></div>
-      <div class="row"><b>todo</b><span><code class="tok">radio_button_unchecked</code> in <code class="tok">icon.muted</code> — outstanding, not a problem.</span></div>
+      <div class="row"><b>success</b><span><code class="tok">check_circle</code> in <code class="tok">status.success</code> — done, covered, saved. (Was <code class="tok">done</code> with a bare check; <code class="tok">"done"</code> still works in code.)</span></div>
+      <div class="row"><b>todo</b><span><code class="tok">radio_button_unchecked</code> in <code class="tok">icon.muted</code> — outstanding, not a problem. With success: a filled and an empty circle.</span></div>
+      <div class="row"><b>info</b><span><code class="tok">info</code> in <code class="tok">icon.primary</code> — neutral news.</span></div>
+      <div class="row"><b>warning</b><span><code class="tok">warning</code> in <code class="tok">status.warning</code> — needs attention before it becomes a problem.</span></div>
       <div class="row"><b>error</b><span><code class="tok">error</code> in <code class="tok">status.danger</code> — something here needs fixing.</span></div>
+      <div class="row"><b>One set</b><span>The state icons of the whole system: checklists, Accordion rows, tables — and <a href="alert.html">Alert</a> and <a href="toast.html">Toast</a> take theirs from here. One icon + colour per state, so nobody picks check vs check_circle or a different green per screen.</span></div>
       <div class="row"><b>Size</b><span>20px only — the same box as Accordion's chevron and every icon in a 40px row.</span></div>
       <div class="row"><b>A11y</b><span>Colour and shape carry the state, so say it in text too: visible text beside it (“Covered”), or <code class="tok">label</code> → <code class="tok">role="img"</code> + <code class="tok">aria-label</code>. Without a label it is <code class="tok">aria-hidden</code>.</span></div>
       <div class="row"><b>Why separate</b><span>It used to be Accordion's “status”. The state belongs to the content, not to the row that discloses it — the same mark is wanted in lists, tables and steps, and an Accordion with a Status axis implied a <code class="tok">status</code> prop no Accordion has.</span></div>
@@ -89,12 +92,12 @@ const html = `<!doctype html>
 
     <h2 class="big-section">Stories</h2>
     <div class="story-grid">
-      ${story("All three", `<div class="si-trio">${statusIcon("done", { label: "Done" })}${statusIcon("todo", { label: "To do" })}${statusIcon("error", { label: "Error" })}</div>`, "Standalone, so each carries an aria-label.")}
-      ${story("In a list", row("done", "Social Science Courses", "Covered") + row("todo", "Physical Science", "Still to do") + row("error", "Unnamed restriction line", "Needs a name"), "Visible text says the state, so the icons are aria-hidden.")}
+      ${story("All five", `<div class="si-trio">${statusIcon("success", { label: "Done" })}${statusIcon("todo", { label: "To do" })}${statusIcon("info", { label: "Info" })}${statusIcon("warning", { label: "Warning" })}${statusIcon("error", { label: "Error" })}</div>`, "Standalone, so each carries an aria-label.")}
+      ${story("In a list", row("success", "Social Science Courses", "Covered") + row("todo", "Physical Science", "Still to do") + row("error", "Unnamed restriction line", "Needs a name"), "Visible text says the state, so the icons are aria-hidden.")}
     </div>
 
     <h2 class="big-section">Markup</h2>
-    <pre class="code"><code>${esc(statusIcon("done", { label: "Done" }).replace(/<path[^>]*>/, "…"))}</code></pre>
+    <pre class="code"><code>${esc(statusIcon("success", { label: "Done" }).replace(/<path[^>]*>/, "…"))}</code></pre>
 
     <h2 class="big-section">CSS</h2>
     <pre class="code"><code>${esc(css)}</code></pre>

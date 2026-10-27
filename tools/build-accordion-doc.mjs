@@ -232,7 +232,7 @@ const html = `<!doctype html>
       ], "accordion--chevron-primary")}</div>`, ".accordion--chevron-primary — chevron in icon.primary, for a list whose rows should read as openable at a glance.")}
       ${storyCard("With icon", `<div class="acc-card">${group([
         item({ index: "1", status: "error", title: "Unnamed restriction line", body: `<span class="acc-sub">This line has no name yet — give it one before saving.</span>` }),
-        item({ index: "2", status: "done", title: "Freshmen only", body: `<span class="acc-sub">Class standing: Freshman.</span>` }),
+        item({ index: "2", status: "success", title: "Freshmen only", body: `<span class="acc-sub">Class standing: Freshman.</span>` }),
         item({ index: "3", status: "todo", title: "Majors only", body: `<span class="acc-sub">Not checked yet.</span>` }),
       ])}</div>`, "Leading slot: a number + a StatusIcon (error, done, to do).")}
       ${storyCard("Trailing slot", `<div class="acc-card">${group([
@@ -253,7 +253,7 @@ const html = `<!doctype html>
         item({ title: "Life Science", meta: "3.5 units", quiet: true, body: requirementBody }),
       ]), "accordion.titleQuiet — normal weight at the same size, for rows under a heading that is already bold (compare the bold rows beside this). The first two are .accordion__row: nothing to disclose, so no chevron and no hover.")}
       ${storyCard("Status and state label", group([
-        item({ title: "Social Science Courses", status: "done", meta: "Covered", body: `<span class="acc-sub">Satisfied by your transferred credit.</span>` }),
+        item({ title: "Social Science Courses", status: "success", meta: "Covered", body: `<span class="acc-sub">Satisfied by your transferred credit.</span>` }),
         item({ title: "Physical Science", status: "todo", meta: "Still to do", body: `<span class="acc-sub">No class applied to this yet.</span>` }),
       ]), "check + status.success for covered, an empty circle + icon.muted for outstanding.")}
     </div>
@@ -264,11 +264,11 @@ const html = `<!doctype html>
       ${storyCard("Requirement group", `<div class="acc-card">
         <div class="acc-card__head"><span class="acc-card__title">LAU GE Distribution</span><span class="badge">2 of 6 covered</span></div>
         ${group([
-          row({ title: "Social Science Courses", status: "done", meta: "Covered", quiet: true }),
-          item({ title: "Life Science", status: "done", meta: "Covered", open: true, quiet: true, body: requirementBody }),
+          row({ title: "Social Science Courses", status: "success", meta: "Covered", quiet: true }),
+          item({ title: "Life Science", status: "success", meta: "Covered", open: true, quiet: true, body: requirementBody }),
           row({ title: "Physical Science", status: "todo", meta: "Still to do", quiet: true }),
           row({ title: "Lab Requirements", status: "todo", meta: "Still to do", quiet: true }),
-          row({ title: "LAU Math Requirement", status: "done", meta: "Covered", quiet: true }),
+          row({ title: "LAU Math Requirement", status: "success", meta: "Covered", quiet: true }),
         ])}
       </div>`, "", true)}
     </div>

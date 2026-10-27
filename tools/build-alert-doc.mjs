@@ -6,6 +6,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { renderNav } from "./lib/nav.mjs";
 import { cssVarName, renderRootVars } from "./lib/css-vars.mjs";
+import { STATUS_ICON_COLOR_PATHS, STATUS_ICON_CSS, statusIcon } from "./lib/status-icon.mjs";
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const load = (p) => JSON.parse(fs.readFileSync(path.join(root, p)));
@@ -30,12 +31,11 @@ const refPath = (r) => r.replace(/[{}]/g, "");
 const typoCss = (t) => `font-weight: ${t.fontWeight}; font-size: ${px(t.fontSize)}; line-height: ${t.lineHeight};`;
 
 const ROLES = ["info", "success", "warning", "danger"];
-// Icon per role, from the shared Material set — the same glyphs Toast picked,
-// plus `info` for the fourth role Toast doesn't have.
-const ROLE_ICON = { info: "info", success: "check_circle", warning: "warning", danger: "error" };
+// The icon per role is the shared StatusIcon (icon + colour), not a local pick.
+const ROLE_KIND = { info: "info", success: "success", warning: "warning", danger: "error" };
 
 // Every colour this page paints, read off the token file — never retyped.
-const rolePaths = ROLES.flatMap((r) => ["bg", "border", "icon"].map((k) => refPath(alert.role[r][k].$value)));
+const rolePaths = [...ROLES.flatMap((r) => ["bg", "border"].map((k) => refPath(alert.role[r][k].$value))), ...STATUS_ICON_COLOR_PATHS];
 const colorPaths = [...new Set([
   ...rolePaths,
   refPath(alert.titleColor.$value), refPath(alert.bodyColor.$value), refPath(alert.detailColor.$value),
@@ -76,7 +76,8 @@ const css = `${rootVars}
 .alert__detail { margin: 0; color: ${cv(refPath(alert.detailColor.$value))}; ${typoCss(detailType)} }
 .alert__action { margin-top: ${stackGap}; }
 ${ROLES.map((r) => `.alert--${r} { background: ${cv(refPath(alert.role[r].bg.$value))}; border-color: ${cv(refPath(alert.role[r].border.$value))}; }
-.alert--${r} .alert__icon { color: ${cv(refPath(alert.role[r].icon.$value))}; }`).join("\n")}
+`).join("\n")}
+${STATUS_ICON_CSS}
 
 /* the optional action slot is a real Button ghost sm, resolved from button.tokens.json */
 .btn { display: inline-flex; align-items: center; justify-content: center; border: none; background: transparent; cursor: pointer; font-family: inherit; border-radius: ${btnGhostSm.radius}; }
@@ -89,7 +90,7 @@ const icon = (name, cls) => fs.readFileSync(path.join(root, `assets/icons/materi
 
 function alertMarkup(role, { title = "", body = "", detail = "", action = "" } = {}) {
   return `<div class="alert alert--${role}" role="${role === "danger" ? "alert" : "status"}">
-  ${icon(ROLE_ICON[role], "alert__icon")}
+  ${statusIcon(ROLE_KIND[role], { extraClass: "alert__icon" })}
   <div class="alert__stack">
     <p class="alert__message">${title ? `<span class="alert__title">${esc(title)}</span> ` : ""}${esc(body)}</p>
     ${detail ? `<p class="alert__detail">${esc(detail)}</p>` : ""}

@@ -14,6 +14,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { renderNav } from "./lib/nav.mjs";
 import { cssVarName, renderRootVars } from "./lib/css-vars.mjs";
+import { STATUS_ICON_COLOR_PATHS, STATUS_ICON_CSS, statusIcon } from "./lib/status-icon.mjs";
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const load = (p) => JSON.parse(fs.readFileSync(path.join(root, p)));
@@ -69,7 +70,7 @@ const refPath = (ref) => ref.replace(/[{}]/g, "");
 const ROLES = ["success", "danger", "warning"];
 const colorPaths = [
   "surface.default", "border.default", "text.default",
-  ...ROLES.map((r) => refPath(toast.role[r].icon.$value)),
+  ...STATUS_ICON_COLOR_PATHS,
 ];
 const colorValue = Object.fromEntries(colorPaths.map((p) => [p, resolve(p)]));
 const fontSans = resolve("family.sans");
@@ -90,16 +91,16 @@ function typoCss(t) {
   return `font-weight: ${t.fontWeight}; font-size: ${px(t.fontSize)}; line-height: ${t.lineHeight};`;
 }
 
-const ROLE_ICONS = { success: "check_circle", danger: "error", warning: "warning" };
-const iconOf = (name) => fs.readFileSync(path.join(root, `assets/icons/material-filled/${name}.svg`), "utf8").replace("<svg ", '<svg class="toast__icon" ');
-const roleIconSvg = Object.fromEntries(ROLES.map((r) => [r, iconOf(ROLE_ICONS[r])]));
+// the icon per role is the shared StatusIcon (icon + colour)
+const ROLE_KIND = { success: "success", danger: "error", warning: "warning" };
+const roleIconSvg = Object.fromEntries(ROLES.map((r) => [r, statusIcon(ROLE_KIND[r], { extraClass: "toast__icon" })]));
 
 const css = `${rootVars}
 
 .toast { position: fixed; inset: auto; top: ${offsetTop}; left: 50%; transform: translateX(-50%); margin: 0; box-sizing: border-box; display: flex; align-items: center; gap: ${gap}; padding: ${paddingY} ${paddingX}; border-radius: ${radius}; background: ${cv("surface.default")}; border: 1px solid ${cv("border.default")}; box-shadow: ${shadowCss}; font-family: ${cv("family.sans")}; }
 .toast__icon { flex-shrink: 0; width: ${iconSize}; height: ${iconSize}; }
 .toast__label { color: ${cv(labelColor)}; ${typoCss(labelType)} white-space: nowrap; }
-${ROLES.map((r) => `.toast--${r} .toast__icon { color: ${cv(refPath(toast.role[r].icon.$value))}; }`).join("\n")}
+${STATUS_ICON_CSS}
 
 /* entry transition — same @starting-style approach as SlideOverPanel/Modal */
 .toast:popover-open { opacity: 1; translate: 0 0; transition: opacity 0.18s ease, translate 0.18s ease; }

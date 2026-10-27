@@ -1,4 +1,5 @@
-// Status Icon — done / todo / error as one 20px mark. One shared definition
+// Status Icon — the system's state icons (success / todo / info / warning /
+// error) as one 20px mark; Alert and Toast take theirs from here. One shared definition
 // (CSS + markup) so the DS page, Accordion's stories and the Explore Degrees
 // requirement rows render the same thing. Self-resolving like calendar.mjs:
 // a consumer adds STATUS_ICON_COLOR_PATHS to its :root vars and STATUS_ICON_CSS
@@ -18,7 +19,9 @@ const R = (node) => `var(${cssVarName(refPath(node.$value))})`;
 const sizeNode = dim[refPath(si.size.$value).split(".")[1]].$value;
 const size = `${sizeNode.value}${sizeNode.unit}`;
 
-export const STATUS_KINDS = { done: "check", todo: "radio_button_unchecked", error: "error" };
+export const STATUS_KINDS = { success: "check_circle", todo: "radio_button_unchecked", info: "info", warning: "warning", error: "error" };
+// earlier name for success, kept so existing callers keep working
+const ALIAS = { done: "success" };
 export const STATUS_ICON_COLOR_PATHS = Object.keys(STATUS_KINDS).map((k) => refPath(si[k].color.$value));
 
 export const STATUS_ICON_CSS = `
@@ -29,6 +32,7 @@ const svg = (name) => fs.readFileSync(path.join(root, `assets/icons/material-fil
 
 /** The icon's markup. Pass `label` when there's no visible text saying the same thing. */
 export function statusIcon(kind, { label = "", extraClass = "" } = {}) {
+  kind = ALIAS[kind] || kind;
   if (!STATUS_KINDS[kind]) throw new Error(`status-icon: unknown kind ${kind}`);
   const a11y = label ? `role="img" aria-label="${label}"` : `aria-hidden="true"`;
   return svg(STATUS_KINDS[kind]).replace("<svg ", `<svg class="status-icon status-icon--${kind}${extraClass ? ` ${extraClass}` : ""}" ${a11y} `);

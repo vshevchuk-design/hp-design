@@ -20,7 +20,7 @@ export function ssCss(h) {
     return `${px(s.offsetX)} ${px(s.offsetY)} ${px(s.blur)} ${px(s.spread)} ${s.color}`;
   };
 
-  const { tabs, button, select, search, chip, listbox: lb, card, badge, pagination: pg, choiceTile: ct, radio, alert, toast, tooltip: tt, emptyState: es, dialog: modal, input, counter, progress, attachment: att, accordion: acc, datePicker: dp, calendar: cal, slideOverPanel: drawer, box, dropdownMenu: menu } = t;
+  const { tabs, button, select, search, chip, listbox: lb, card, badge, pagination: pg, choiceTile: ct, radio, alert, toast, tooltip: tt, emptyState: es, dialog: modal, input, counter, progress, attachment: att, accordion: acc, datePicker: dp, calendar: cal, slideOverPanel: drawer, box, dropdownMenu: menu, statusIcon: si } = t;
 
   const btn = (variant, size) => ({
     height: D(button[variant].size[size].height),
@@ -311,7 +311,7 @@ ${["neutral", "primary", "success", "warning", "danger"].map((r) => `.badge--${r
 
 /* ============ Alert (info) ============ */
 .alert { display: flex; align-items: flex-start; gap: ${D(alert.gap)}; padding: ${D(alert.paddingY)} ${D(alert.paddingX)}; border-radius: ${D(alert.radius)}; border: 1px solid ${R(alert.role.info.border)}; background: ${R(alert.role.info.bg)}; }
-.alert__icon { flex-shrink: 0; width: ${D(alert.iconSize)}; height: ${D(alert.iconSize)}; color: ${R(alert.role.info.icon)}; }
+.alert__icon { flex-shrink: 0; width: ${D(alert.iconSize)}; height: ${D(alert.iconSize)}; color: ${R(si.info.color)}; }
 .alert__stack { display: flex; flex-direction: column; gap: ${D(alert.stackGap)}; min-width: 0; }
 .alert__message { margin: 0; color: ${R(alert.bodyColor)}; ${typoCss(T(alert.body))} }
 .alert__title { color: ${R(alert.titleColor)}; font-weight: ${T(alert.title).fontWeight}; }
@@ -330,7 +330,7 @@ ${["neutral", "primary", "success", "warning", "danger"].map((r) => `.badge--${r
 
 /* ============ Toast ============ */
 .toast { position: fixed; inset: auto; top: ${D(toast.offsetTop)}; left: 50%; transform: translateX(-50%); margin: 0; width: max-content; display: flex; align-items: center; gap: ${D(toast.gap)}; padding: ${D(toast.paddingY)} ${D(toast.paddingX)}; border-radius: ${D(toast.radius)}; background: ${R(toast.bg)}; border: 1px solid ${R(toast.border)}; box-shadow: ${shadowCss(toast.shadow)}; font-family: ${cv("family.sans")}; max-width: calc(100vw - ${dim(8)}); }
-.toast__icon { flex-shrink: 0; width: ${D(toast.iconSize)}; height: ${D(toast.iconSize)}; color: ${R(toast.role.success.icon)}; }
+.toast__icon { flex-shrink: 0; width: ${D(toast.iconSize)}; height: ${D(toast.iconSize)}; color: ${R(si.success.color)}; }
 .toast__label { color: ${R(toast.labelColor)}; ${typoCss(T(toast.label))} }
 .toast:popover-open { opacity: 1; translate: 0 0; transition: opacity 0.18s ease, translate 0.18s ease; }
 @starting-style { .toast:popover-open { opacity: 0; translate: 0 -${dim(2)}; } }
@@ -662,7 +662,7 @@ ${COLLAPSIBLE_CSS}
 /* ============ v6 — drop-in visit + queue banner ============ */
 /* Alert success: an advisor is calling you */
 .alert--success { background: ${R(alert.role.success.bg)}; border-color: ${R(alert.role.success.border)}; }
-.alert--success .alert__icon { color: ${R(alert.role.success.icon)}; }
+.alert--success .alert__icon { color: ${R(si.success.color)}; }
 /* the banner: one line — status + desk, View on the right */
 .ss-banner { align-items: center; }
 .ss-banner .alert__stack { flex: 1; }

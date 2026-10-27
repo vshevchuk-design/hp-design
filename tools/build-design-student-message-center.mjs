@@ -216,7 +216,8 @@ const toastLabelType = resolveToken(get(toast.label.$value));
 const toastLabelColor = refPath(toast.labelColor.$value);
 const toastShadow = resolveToken(toast.shadow);
 const toastShadowCss = `${px(toastShadow.offsetX)} ${px(toastShadow.offsetY)} ${px(toastShadow.blur)} ${px(toastShadow.spread)} ${toastShadow.color}`;
-const toastSuccessIconPath = refPath(toast.role.success.icon.$value);
+// the toast's icon colour is StatusIcon's (alert/toast take their state icons from there)
+const toastSuccessIconPath = refPath(load("tokens/components/status-icon.tokens.json").component.statusIcon.success.color.$value);
 const iconToastSuccess = fs.readFileSync(path.join(root, "assets/icons/material-filled/check_circle.svg"), "utf8").replace("<svg ", '<svg class="toast__icon" ');
 
 // ---- Select (base) — the compose dialog's Department trigger; the same

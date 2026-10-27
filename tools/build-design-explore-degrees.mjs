@@ -67,7 +67,7 @@ const tokens = {
   ...comp("accordion"), ...comp("progress"), ...comp("spinner"), ...comp("badge"),
   ...comp("chip"), ...comp("listbox"), ...comp("table"), ...comp("button"),
   ...comp("input"), ...comp("select"), ...comp("search"), ...comp("empty-state"),
-  ...comp("avatar"), ...comp("dialog"), ...comp("checkbox"), ...comp("slide-over-panel"),
+  ...comp("avatar"), ...comp("dialog"), ...comp("checkbox"), ...comp("slide-over-panel"), ...comp("status-icon"),
 };
 
 function get(ref) {

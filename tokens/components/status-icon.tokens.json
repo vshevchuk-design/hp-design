@@ -1,19 +1,27 @@
 {
   "component": {
     "statusIcon": {
-      "$description": "A single icon that says whether something is done, still to do, or has a problem — the leading mark on a requirement row, a checklist line, a restriction line. Split out of Accordion on 2026-10-21: the state belongs to the content, not to the row that discloses it (Radix's AccordionTrigger takes children, it has no status prop), and the same mark is wanted in lists, tables and steps. One size — 20px, the same box as Accordion's chevron and every 20px icon in a 40px row. The icon carries the state, so it needs a text equivalent: either visible text next to it ('Covered', 'Still to do') or an aria-label.",
-      "size": { "$type": "dimension", "$value": "{dim.5}" },
-      "done": {
+      "$description": "One 20px icon that says a state — the single set of state icons for the whole system (2026-10-27): the leading mark of a checklist or requirement row, an Accordion row's Leading slot, a table cell, and the icon of Alert and Toast, which take it from here instead of keeping their own. Five kinds, each a fixed icon + colour pair so nobody picks check vs check_circle or green.500 vs green.600 per screen: success (check_circle), todo (radio_button_unchecked), info (info), warning (warning), error (error). success and todo are a filled and an empty circle, so a checklist reads as done / not yet at a glance. Split out of Accordion on 2026-10-21. The icon carries the state, so it needs a text equivalent: visible text next to it, or an aria-label.",
+      "size": { "$type": "dimension", "$value": "{dim.5}", "$description": "20px — Accordion's chevron box, Alert's and Toast's icon, every icon in a 40px row." },
+      "success": {
         "color": { "$type": "color", "$value": "{status.success}" },
-        "$description": "Icon: check. Covered / complete / passed."
+        "$description": "Icon: check_circle. Done / covered / complete / saved. Was 'done' with a bare check until 2026-10-27; `done` stays an alias in code."
       },
       "todo": {
         "color": { "$type": "color", "$value": "{icon.muted}" },
         "$description": "Icon: radio_button_unchecked. Outstanding — not a problem, just not done."
       },
+      "info": {
+        "color": { "$type": "color", "$value": "{icon.primary}" },
+        "$description": "Icon: info. Neutral news — 'Registration opens Monday'."
+      },
+      "warning": {
+        "color": { "$type": "color", "$value": "{status.warning}" },
+        "$description": "Icon: warning. Needs attention before it becomes a problem — 'Two courses overlap'."
+      },
       "error": {
         "color": { "$type": "color", "$value": "{status.danger}" },
-        "$description": "Icon: error. Something on this line needs fixing (an unnamed restriction line, a failed check)."
+        "$description": "Icon: error. Something needs fixing — a failed payment, a missing prerequisite."
       }
     }
   }

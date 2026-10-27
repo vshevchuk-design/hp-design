@@ -35,15 +35,16 @@
   :root {
   --tok-bg-primary: #d9eaff;
   --tok-border-primary: #b2d4fe;
-  --tok-icon-primary: #077fec;
   --tok-bg-success: #d4f1da;
   --tok-border-success: #a5e2b4;
-  --tok-status-success: #0a994e;
   --tok-bg-warning: #ffe2c5;
   --tok-border-warning: #fec486;
-  --tok-status-warning: #b26f07;
   --tok-bg-danger: #ffdfde;
   --tok-border-danger: #febebd;
+  --tok-status-success: #0a994e;
+  --tok-icon-muted: #8e99a7;
+  --tok-icon-primary: #077fec;
+  --tok-status-warning: #b26f07;
   --tok-status-danger: #de394b;
   --tok-text-default: #121921;
   --tok-text-secondary: #5d6a7a;
@@ -64,13 +65,20 @@
 .alert__detail { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
 .alert__action { margin-top: 4px; }
 .alert--info { background: var(--tok-bg-primary); border-color: var(--tok-border-primary); }
-.alert--info .alert__icon { color: var(--tok-icon-primary); }
+
 .alert--success { background: var(--tok-bg-success); border-color: var(--tok-border-success); }
-.alert--success .alert__icon { color: var(--tok-status-success); }
+
 .alert--warning { background: var(--tok-bg-warning); border-color: var(--tok-border-warning); }
-.alert--warning .alert__icon { color: var(--tok-status-warning); }
+
 .alert--danger { background: var(--tok-bg-danger); border-color: var(--tok-border-danger); }
-.alert--danger .alert__icon { color: var(--tok-status-danger); }
+
+
+.status-icon { flex-shrink: 0; display: block; width: 20px; height: 20px; }
+.status-icon--success { color: var(--tok-status-success); }
+.status-icon--todo { color: var(--tok-icon-muted); }
+.status-icon--info { color: var(--tok-icon-primary); }
+.status-icon--warning { color: var(--tok-status-warning); }
+.status-icon--error { color: var(--tok-status-danger); }
 
 /* the optional action slot is a real Button ghost sm, resolved from button.tokens.json */
 .btn { display: inline-flex; align-items: center; justify-content: center; border: none; background: transparent; cursor: pointer; font-family: inherit; border-radius: 8px; }
@@ -222,7 +230,7 @@
     <h2 class="big-section">Roles</h2>
     <div class="story-grid">
       <div class="story"><h3>info</h3><div class="story-preview"><div class="alert alert--info" role="status">
-  <svg class="alert__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+  <svg class="status-icon status-icon--info alert__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
   <div class="alert__stack">
     <p class="alert__message">Read as a transcript from Bainbridge Junior College.</p>
     
@@ -230,7 +238,7 @@
   </div>
 </div></div><p class="story-note">Body only — the quietest shape.</p></div>
       <div class="story"><h3>success</h3><div class="story-preview"><div class="alert alert--success" role="status">
-  <svg class="alert__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+  <svg class="status-icon status-icon--success alert__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
   <div class="alert__stack">
     <p class="alert__message">We found 10 classes we can import from your transcript. Review the grades and remove anything you don't want below.</p>
     
@@ -238,7 +246,7 @@
   </div>
 </div></div></div>
       <div class="story"><h3>warning</h3><div class="story-preview"><div class="alert alert--warning" role="status">
-  <svg class="alert__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
+  <svg class="status-icon status-icon--warning alert__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
   <div class="alert__stack">
     <p class="alert__message">Four classes still need a quick review by an advisor before they count.</p>
     
@@ -246,7 +254,7 @@
   </div>
 </div></div></div>
       <div class="story"><h3>danger</h3><div class="story-preview"><div class="alert alert--danger" role="alert">
-  <svg class="alert__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+  <svg class="status-icon status-icon--error alert__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
   <div class="alert__stack">
     <p class="alert__message">This is a photograph of a house and pool, not a transcript — it contains no coursework, grades, or academic information. Please upload an official or unofficial transcript from your student portal.</p>
     
@@ -259,7 +267,7 @@
     <p class="section-desc">The full anatomy — a bold lead clause inline with the body, then the quieter detail line for an enumeration that shouldn't compete with the message.</p>
     <div class="story-grid">
       <div class="story story--full"><h3>Lead, body and detail</h3><div class="story-preview"><div class="alert alert--success" role="status">
-  <svg class="alert__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+  <svg class="status-icon status-icon--success alert__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
   <div class="alert__stack">
     <p class="alert__message"><span class="alert__title">9 classes applied to your plan.</span> 4 more need a quick advisor review. They're checked off in your Degree Requirements.</p>
     <p class="alert__detail">Applied to: HISTORY 120, PSYCH 120, PSYCH 210, MATH 111, ENGLCOMP 200, ENGLCOMP 100, ECON 140, BIOLOGY 100</p>
@@ -272,15 +280,16 @@
     <pre class="code"><code>:root {
   --tok-bg-primary: #d9eaff;
   --tok-border-primary: #b2d4fe;
-  --tok-icon-primary: #077fec;
   --tok-bg-success: #d4f1da;
   --tok-border-success: #a5e2b4;
-  --tok-status-success: #0a994e;
   --tok-bg-warning: #ffe2c5;
   --tok-border-warning: #fec486;
-  --tok-status-warning: #b26f07;
   --tok-bg-danger: #ffdfde;
   --tok-border-danger: #febebd;
+  --tok-status-success: #0a994e;
+  --tok-icon-muted: #8e99a7;
+  --tok-icon-primary: #077fec;
+  --tok-status-warning: #b26f07;
   --tok-status-danger: #de394b;
   --tok-text-default: #121921;
   --tok-text-secondary: #5d6a7a;
@@ -301,13 +310,20 @@
 .alert__detail { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
 .alert__action { margin-top: 4px; }
 .alert--info { background: var(--tok-bg-primary); border-color: var(--tok-border-primary); }
-.alert--info .alert__icon { color: var(--tok-icon-primary); }
+
 .alert--success { background: var(--tok-bg-success); border-color: var(--tok-border-success); }
-.alert--success .alert__icon { color: var(--tok-status-success); }
+
 .alert--warning { background: var(--tok-bg-warning); border-color: var(--tok-border-warning); }
-.alert--warning .alert__icon { color: var(--tok-status-warning); }
+
 .alert--danger { background: var(--tok-bg-danger); border-color: var(--tok-border-danger); }
-.alert--danger .alert__icon { color: var(--tok-status-danger); }
+
+
+.status-icon { flex-shrink: 0; display: block; width: 20px; height: 20px; }
+.status-icon--success { color: var(--tok-status-success); }
+.status-icon--todo { color: var(--tok-icon-muted); }
+.status-icon--info { color: var(--tok-icon-primary); }
+.status-icon--warning { color: var(--tok-status-warning); }
+.status-icon--error { color: var(--tok-status-danger); }
 
 /* the optional action slot is a real Button ghost sm, resolved from button.tokens.json */
 .btn { display: inline-flex; align-items: center; justify-content: center; border: none; background: transparent; cursor: pointer; font-family: inherit; border-radius: 8px; }
