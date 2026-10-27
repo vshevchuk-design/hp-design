@@ -309,6 +309,10 @@ button.stepper__step:focus-visible { outline: 2px solid var(--tok-border-focus);
 /* searchable Select (ComboboxField): typing filters; nothing left → "No results" */
 .listbox__empty { margin: 0; padding: 8px 8px; color: var(--tok-text-muted); font-weight: 400; font-size: 14px; line-height: 1.4; }
 .listbox__empty[hidden] { display: none; }
+/* creatable: the first row offers what you typed ("Add "Vue"") when nothing matches it exactly */
+.listbox__create { color: var(--tok-text-primary); }
+.listbox__create-icon { width: 20px; height: 20px; flex-shrink: 0; color: var(--tok-text-primary); }
+.listbox__create-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .listbox__search:focus-within { border-color: var(--tok-border-focus); }
 /* infinite Select (InfiniteComboboxField): the last row of the list is its status —
    "Loading…" while there's more (scrolling to it loads the next page), "No results",
@@ -429,6 +433,7 @@ button.stepper__step:focus-visible { outline: 2px solid var(--tok-border-focus);
     <a class="navlink" href="select.html#combobox">ComboboxField</a>
     <a class="navlink" href="select.html#infinite">InfiniteComboboxField</a>
     <a class="navlink" href="multi-select-badges.html">MultiSelectBadges</a>
+    <a class="navlink" href="select.html#creatable">FormBadgeList</a>
     <a class="navlink" href="calendar.html">Calendar</a>
     <a class="navlink" href="date-picker.html">DatePicker</a>
     <a class="navlink" href="date-range-picker.html">DateRangePicker</a>
@@ -928,12 +933,27 @@ window.hpCalendar = window.hpCalendar || (function () {
       list.addEventListener("scroll", function () { if (list.scrollTop + list.clientHeight >= list.scrollHeight - status.offsetHeight * 2) load(); }, { passive: true });
       status.addEventListener("click", function (e) { if (e.target.closest(".listbox__retry")) load(); });
     }
+    var creatable = wrap.hasAttribute("data-creatable"), createBtn = panel.querySelector("[data-create]");
+    function exact(q) { q = q.trim().toLowerCase(); return Array.prototype.filter.call(panel.querySelectorAll(".listbox__option:not([data-create])"), function (o) { return o.textContent.trim().toLowerCase() === q; })[0]; }
     function filter(q) {
-      q = q.trim().toLowerCase();
-      panel.querySelectorAll(".listbox__option").forEach(function (o) { o.parentNode.hidden = !!q && o.textContent.toLowerCase().indexOf(q) < 0; });
+      var raw = q.trim(); q = raw.toLowerCase();
+      panel.querySelectorAll(".listbox__option:not([data-create])").forEach(function (o) { o.parentNode.hidden = !!q && o.textContent.toLowerCase().indexOf(q) < 0; });
+      if (createBtn) { createBtn.parentNode.hidden = !raw || !!exact(raw); createBtn.querySelector(".listbox__create-text").textContent = "Add “" + raw + "”"; createBtn.dataset.value = raw; }
       panel.querySelectorAll(".listbox__group").forEach(function (g) { g.parentNode.hidden = !Array.prototype.some.call(g.querySelectorAll(".listbox__option"), function (o) { return !o.parentNode.hidden; }); });
       panel.querySelectorAll(".listbox__divider").forEach(function (d) { d.parentNode.hidden = !!q; });
-      if (empty) empty.hidden = opts().length > 0;
+      if (empty) { empty.hidden = opts().length > 0; if (empty.dataset.hint) empty.textContent = q ? "No results" : empty.dataset.hint; }
+    }
+    function create(text) {
+      text = text.trim(); if (!text) return;
+      var hit = exact(text);
+      if (hit) { if (hit.getAttribute("aria-selected") !== "true") pick(hit); }
+      else {
+        var li = document.createElement("li"), b = document.createElement("button"), l = document.createElement("span");
+        li.setAttribute("role", "none"); b.type = "button"; b.className = "listbox__option"; b.setAttribute("role", "option"); b.id = trigger.id + "-new-" + (seq++); b.tabIndex = -1; b.dataset.value = text; b.setAttribute("aria-selected", "true");
+        b.innerHTML = CB; l.className = "listbox__cb-label"; l.textContent = text; b.appendChild(l); li.appendChild(b); list.appendChild(li);
+        sync(); wrap.dispatchEvent(new CustomEvent("selectcreate", { bubbles: true, detail: { value: text } }));
+      }
+      search.value = ""; filter(""); search.focus(); place();
     }
     function place() {
       var r = box.getBoundingClientRect(); panel.style.position = "fixed"; panel.style.right = "auto"; panel.style.bottom = "auto"; panel.style.minWidth = r.width + "px";
@@ -993,6 +1013,7 @@ window.hpCalendar = window.hpCalendar || (function () {
       trigger.addEventListener("keydown", function (e) { if (e.key === "Backspace" && chipList.lastElementChild) { e.preventDefault(); unpick(chipList.lastElementChild.dataset.value); } });
     }
     function pick(o) {
+      if (o.hasAttribute("data-create")) { create(o.dataset.value); return; }
       if (source) {
         var v = o.dataset.value, label = o.textContent;
         if (multiple) { if (v in chosen) delete chosen[v]; else chosen[v] = label; o.setAttribute("aria-selected", String(v in chosen)); sync(); return; }
@@ -1011,6 +1032,7 @@ window.hpCalendar = window.hpCalendar || (function () {
       search.addEventListener("keydown", function (e) {
         var list = opts();
         if (e.key === "ArrowDown") { e.preventDefault(); e.stopPropagation(); go(list[0]); }
+        else if (creatable && (e.key === "Enter" || e.key === ",")) { e.preventDefault(); e.stopPropagation(); create(search.value); }
         else if (e.key === "Enter") { e.preventDefault(); e.stopPropagation(); if (list[0]) pick(list[0]); }
         else if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); close(true); }
         else if (e.key === "Tab") { close(false); }

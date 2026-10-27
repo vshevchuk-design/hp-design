@@ -87,6 +87,12 @@ const badges = [
   chipStory("Disabled", { id: "ch-dis", label: "Courses", options: COURSES, value: [C[1], C[3]], disabled: true }, "Chips stay readable; the × go away."),
 ];
 
+const TOPICS = ["React", "TypeScript", "Accessibility", "Design systems", "Testing"].map((label) => ({ label }));
+const creatable = [
+  chipStory("Suggestions + your own", { id: "cr-topics", label: "Topics", options: TOPICS, value: ["React", "TypeScript"], creatable: true, searchPlaceholder: "Search or add a topic…", placeholder: "Add topics" }, "Type 'vue': nothing matches, so the first row offers Add “vue” — Enter (or a comma) adds it as a chip. Type 'react': it's already there, so Enter just keeps it."),
+  chipStory("Free tags", { id: "cr-free", label: "Keywords", creatable: true, searchPlaceholder: "Type a keyword…", placeholder: "Add keywords", emptyHint: "Type a keyword and press Enter" }, "No suggestions at all — Storybook's FormBadgeList. The list says how it works until you type."),
+];
+
 const html = `<!doctype html>
 <html lang="en">
 <head>
@@ -142,6 +148,7 @@ const html = `<!doctype html>
       <div class="row"><b>Searchable</b><span><code class="tok">searchable: true</code> puts a search box at the top of the list — Storybook's <b>ComboboxField</b> (and SimpleCombobox, the same without a Field). Same Select, same field, Single or Multi. Use it past ~10 options, or when people know the name they want (courses, programs, people).</span></div>
       <div class="row"><b>Infinite</b><span><code class="tok">source: "fnName"</code> — options come from the server a page at a time: <code class="tok">window[fnName](query, offset)</code> returns <code class="tok">{ items, hasMore }</code>. Storybook's <b>InfiniteComboboxField</b>. The list's last row says what's happening: Loading… (and loads the next page when you reach it), No results, or Couldn't load + Retry. Search goes to the server.</span></div>
       <div class="row"><b>Chips</b><span><code class="tok">chips: true</code> — every choice as a removable Chip in the field. Use it when people need to see all of what they picked (a handful); for many, the first + Counter keeps the form tidy. Not Storybook's MultiSelectBadges — that's a summary of choices made somewhere else (<a href="multi-select-badges.html">MultiSelectBadges</a>). The label moves above (Field) — chips leave no room to float one.</span></div>
+      <div class="row"><b>Creatable</b><span><code class="tok">creatable: true</code> — chips you can also type in yourself (Storybook's <b>FormBadgeList</b>). Searchable, multiple, chips. Type something new → the first row is Add “…”, Enter or a comma adds it. Use it for open-ended sets (topics, keywords); for a fixed set, plain chips.</span></div>
       <div class="row"><b>Keyboard</b><span>↓ / ↑ / Enter / Space open; ↑ ↓ Home End move; Enter or Space pick; Escape closes back to the field; Tab closes. Single-select closes on pick.</span></div>
     </div>
 
@@ -165,6 +172,10 @@ const html = `<!doctype html>
     <h2 class="big-section" id="chips">Chips — every choice in the field</h2>
     <p class="section-desc">The same multi-select, with every choice shown as a removable Chip sm inside the field: <code class="tok">selectHtml({ …, chips: true, placeholder: "Choose courses" })</code>, inside <code class="tok">fieldHtml</code> for the label. Chips hold their own × buttons, so the box is a <code class="tok">div</code> and the part after the chips is the toggle <code class="tok">button</code>. × removes one (focus goes to the next ×); Backspace on the toggle removes the last; clicking anywhere else on the box opens the list.</p>
     <div class="story-grid">${badges.join("")}</div>
+
+    <h2 class="big-section" id="creatable">Creatable — FormBadgeList</h2>
+    <p class="section-desc">Storybook's FormBadgeList is a tag input: type, Enter, a chip. Here it's Select chips that also take what you type: <code class="tok">selectHtml({ …, chips: true, creatable: true })</code> inside a Field. Suggestions stay one tap away; something new is offered as the first row ("Add “vue”"), so it's clear Enter will create it. An exact match is picked instead of duplicated. Each new one fires <code class="tok">selectcreate</code>.</p>
+    <div class="story-grid">${creatable.join("")}</div>
 
     <h2 class="big-section">CSS</h2>
     <pre class="code"><code>${esc(css)}</code></pre>

@@ -121,6 +121,10 @@ export const LISTBOX_CSS = `
 /* searchable Select (ComboboxField): typing filters; nothing left → "No results" */
 .listbox__empty { margin: 0; padding: ${D(lb.optionPaddingY)} ${D(lb.optionPaddingX)}; color: ${cv("text.muted")}; ${T(lb.label)} }
 .listbox__empty[hidden] { display: none; }
+/* creatable: the first row offers what you typed ("Add "Vue"") when nothing matches it exactly */
+.listbox__create { color: ${cv("text.primary")}; }
+.listbox__create-icon { width: ${D(lb.checkbox.box)}; height: ${D(lb.checkbox.box)}; flex-shrink: 0; color: ${cv("text.primary")}; }
+.listbox__create-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .listbox__search:focus-within { border-color: ${cv("border.focus")}; }
 /* infinite Select (InfiniteComboboxField): the last row of the list is its status —
    "Loading…" while there's more (scrolling to it loads the next page), "No results",
@@ -225,8 +229,9 @@ const cbGlyph = () => icon("check", "listbox__cb-icon");
 
 /** A Select. options: [{ label, value, group }] — consecutive options with the same `group` render under its heading.
  *  value: a value (single) or an array (multiple). */
-export function selectHtml({ id, label, options = [], value = "", multiple = false, chips = false, placeholder = "", searchable = false, searchPlaceholder = "Search…", source = "", size = "base", icon: iconName = "", disabled = false, invalid = false, describedBy = "", panelWidth = "" }) {
+export function selectHtml({ id, label, options = [], value = "", multiple = false, chips = false, placeholder = "", searchable = false, searchPlaceholder = "Search…", source = "", creatable = false, emptyHint = "", size = "base", icon: iconName = "", disabled = false, invalid = false, describedBy = "", panelWidth = "" }) {
   if (chips) multiple = true; // chips are always a multi-select
+  if (creatable) { searchable = true; multiple = true; } // a creatable list is a multi-select you can type into
   const chosen = new Set([].concat(value).filter(Boolean));
   const picked = options.filter((o) => chosen.has(o.value ?? o.label));
   const empty = picked.length === 0;
@@ -246,6 +251,8 @@ export function selectHtml({ id, label, options = [], value = "", multiple = fal
   const cls = `select${size !== "base" ? ` select--${size}` : ""}${empty ? " is-placeholder" : ""}`;
   // infinite: the options come from window[source](query, offset) a page at a time; `options` only names
   // what's already chosen (so the field can show it before anything loads)
+  // creatable: an "Add "…"" row first in the list (hidden until you type something new)
+  const createRow = creatable ? `<li role="none" hidden><button type="button" class="listbox__option listbox__create" role="option" aria-selected="false" tabindex="-1" data-create>${icon("add", "listbox__create-icon")}<span class="listbox__create-text"></span></button></li>` : "";
   const list = source ? `<li role="none" class="listbox__status" aria-live="polite"><span class="listbox__spinner" aria-hidden="true"></span><span class="listbox__status-text">Loading…</span></li>` : body;
   const labels = source ? ` data-source="${source}" data-labels='${JSON.stringify(Object.fromEntries(picked.map((o) => [o.value ?? o.label, o.label]))).replace(/'/g, "&#39;")}'` : "";
   if (source) searchable = true;
@@ -256,11 +263,11 @@ export function selectHtml({ id, label, options = [], value = "", multiple = fal
     // Its label is the Field's (<label id="ID-label" for="ID">), so wrap this in fieldHtml.
     ? `<div class="select select--chips${empty ? " is-placeholder" : ""}${disabled ? " is-disabled" : ""}"><ul class="select__chips" aria-label="Chosen">${picked.map(chipHtml).join("")}</ul><button type="button" class="select__toggle" id="${id}" aria-haspopup="listbox" aria-expanded="false" aria-controls="${lid}" aria-labelledby="${id}-label ${id}-text"${disabled ? " disabled" : ""}${invalid ? ' aria-invalid="true"' : ""}${describedBy ? ` aria-describedby="${describedBy}"` : ""}><span class="select__text" id="${id}-text">${empty ? placeholder || label : ""}</span>${chevron()}</button></div>`
     : "";
-  return `<div class="select-field" data-select${multiple ? " data-multiple" : ""}${chips ? ` data-chips data-placeholder="${placeholder || label}"` : ""}${searchable ? " data-searchable" : ""}${labels} data-value="${[...chosen].join(",")}" data-label="${label}">
+  return `<div class="select-field" data-select${creatable ? " data-creatable" : ""}${multiple ? " data-multiple" : ""}${chips ? ` data-chips data-placeholder="${placeholder || label}"` : ""}${searchable ? " data-searchable" : ""}${labels} data-value="${[...chosen].join(",")}" data-label="${label}">
   ${chips ? triggerHtml : `<button type="button" class="${cls}" id="${id}" aria-haspopup="listbox" aria-expanded="false" aria-controls="${lid}" aria-labelledby="${id}-label ${id}-text"${disabled ? " disabled" : ""}${invalid ? ' aria-invalid="true"' : ""}${describedBy ? ` aria-describedby="${describedBy}"` : ""}>${iconName ? icon(iconName, "select__icon") : ""}<span class="select__stack"><span class="select__label" id="${id}-label">${label}</span><span class="select__value"><span class="select__text" id="${id}-text">${first}</span><span class="select__more"${picked.length > 1 ? "" : " hidden"}>+${Math.max(picked.length - 1, 0)}</span></span></span>${chevron()}</button>`}
   ${searchable
     // searchable: the panel holds a search box + the list, so the listbox role moves onto the list
-    ? `<div class="listbox select__panel" popover${panelWidth ? ` style="width:${panelWidth}"` : ""}><div class="listbox__search-wrap"><div class="listbox__search">${icon("search", "listbox__search-icon")}<input type="text" class="listbox__search-input" placeholder="${searchPlaceholder}" aria-label="${searchPlaceholder.replace(/…$/, "")}" aria-controls="${lid}" autocomplete="off" /></div></div>${multiple ? `<div class="listbox__select-all"${picked.length ? "" : " hidden"}><p class="listbox__select-all-label" aria-live="polite">${picked.length} selected</p><button type="button" class="listbox__clear">Clear all</button></div>` : ""}<ul class="listbox__list" id="${lid}" role="listbox" aria-labelledby="${id}-label"${multiple ? ' aria-multiselectable="true"' : ""}>${list}</ul>${source ? "" : `<p class="listbox__empty" hidden>No results</p>`}</div>`
+    ? `<div class="listbox select__panel" popover${panelWidth ? ` style="width:${panelWidth}"` : ""}><div class="listbox__search-wrap"><div class="listbox__search">${icon("search", "listbox__search-icon")}<input type="text" class="listbox__search-input" placeholder="${searchPlaceholder}" aria-label="${searchPlaceholder.replace(/…$/, "")}" aria-controls="${lid}" autocomplete="off" /></div></div>${multiple ? `<div class="listbox__select-all"${picked.length ? "" : " hidden"}><p class="listbox__select-all-label" aria-live="polite">${picked.length} selected</p><button type="button" class="listbox__clear">Clear all</button></div>` : ""}<ul class="listbox__list" id="${lid}" role="listbox" aria-labelledby="${id}-label"${multiple ? ' aria-multiselectable="true"' : ""}>${createRow}${list}</ul>${source ? "" : `<p class="listbox__empty"${creatable && !options.length ? "" : " hidden"}${emptyHint ? ` data-hint="${emptyHint}"` : ""}>${creatable && !options.length && emptyHint ? emptyHint : "No results"}</p>`}</div>`
     : `<div class="listbox select__panel" id="${lid}" popover role="listbox" aria-labelledby="${id}-label"${multiple ? ' aria-multiselectable="true"' : ""}${panelWidth ? ` style="width:${panelWidth}"` : ""}><ul class="listbox__list" role="none">${body}</ul></div>`}
 </div>`;
 }
@@ -278,6 +285,11 @@ export function selectHtml({ id, label, options = [], value = "", multiple = fal
 // row ("Loading…") — scrolling near it loads the next page; typing asks
 // the source again after a 250ms pause (the server filters, not the list).
 // Choices are kept by value, so they survive a new search.
+// Creatable (data-creatable): typing something no option matches exactly shows
+// "Add "…"" first; Enter (or a comma) adds it — a new chosen option, the search
+// clears, the list stays open; an exact match is picked instead (never
+// un-picked); fires `selectcreate` (detail.value). With no options at all the
+// list shows the hint ("Type a topic and press Enter").
 export const SELECT_JS = `(function () {
   var GAP = ${resolveToken(get("dim.1")).value};
   var XICON = ${JSON.stringify(icon("close", ""))}, CHECK = ${JSON.stringify(check())}, CB = ${JSON.stringify(`<span class="listbox__cb-box">${cbGlyph()}</span>`)};
@@ -320,12 +332,27 @@ export const SELECT_JS = `(function () {
       list.addEventListener("scroll", function () { if (list.scrollTop + list.clientHeight >= list.scrollHeight - status.offsetHeight * 2) load(); }, { passive: true });
       status.addEventListener("click", function (e) { if (e.target.closest(".listbox__retry")) load(); });
     }
+    var creatable = wrap.hasAttribute("data-creatable"), createBtn = panel.querySelector("[data-create]");
+    function exact(q) { q = q.trim().toLowerCase(); return Array.prototype.filter.call(panel.querySelectorAll(".listbox__option:not([data-create])"), function (o) { return o.textContent.trim().toLowerCase() === q; })[0]; }
     function filter(q) {
-      q = q.trim().toLowerCase();
-      panel.querySelectorAll(".listbox__option").forEach(function (o) { o.parentNode.hidden = !!q && o.textContent.toLowerCase().indexOf(q) < 0; });
+      var raw = q.trim(); q = raw.toLowerCase();
+      panel.querySelectorAll(".listbox__option:not([data-create])").forEach(function (o) { o.parentNode.hidden = !!q && o.textContent.toLowerCase().indexOf(q) < 0; });
+      if (createBtn) { createBtn.parentNode.hidden = !raw || !!exact(raw); createBtn.querySelector(".listbox__create-text").textContent = "Add \u201c" + raw + "\u201d"; createBtn.dataset.value = raw; }
       panel.querySelectorAll(".listbox__group").forEach(function (g) { g.parentNode.hidden = !Array.prototype.some.call(g.querySelectorAll(".listbox__option"), function (o) { return !o.parentNode.hidden; }); });
       panel.querySelectorAll(".listbox__divider").forEach(function (d) { d.parentNode.hidden = !!q; });
-      if (empty) empty.hidden = opts().length > 0;
+      if (empty) { empty.hidden = opts().length > 0; if (empty.dataset.hint) empty.textContent = q ? "No results" : empty.dataset.hint; }
+    }
+    function create(text) {
+      text = text.trim(); if (!text) return;
+      var hit = exact(text);
+      if (hit) { if (hit.getAttribute("aria-selected") !== "true") pick(hit); }
+      else {
+        var li = document.createElement("li"), b = document.createElement("button"), l = document.createElement("span");
+        li.setAttribute("role", "none"); b.type = "button"; b.className = "listbox__option"; b.setAttribute("role", "option"); b.id = trigger.id + "-new-" + (seq++); b.tabIndex = -1; b.dataset.value = text; b.setAttribute("aria-selected", "true");
+        b.innerHTML = CB; l.className = "listbox__cb-label"; l.textContent = text; b.appendChild(l); li.appendChild(b); list.appendChild(li);
+        sync(); wrap.dispatchEvent(new CustomEvent("selectcreate", { bubbles: true, detail: { value: text } }));
+      }
+      search.value = ""; filter(""); search.focus(); place();
     }
     function place() {
       var r = box.getBoundingClientRect(); panel.style.position = "fixed"; panel.style.right = "auto"; panel.style.bottom = "auto"; panel.style.minWidth = r.width + "px";
@@ -385,6 +412,7 @@ export const SELECT_JS = `(function () {
       trigger.addEventListener("keydown", function (e) { if (e.key === "Backspace" && chipList.lastElementChild) { e.preventDefault(); unpick(chipList.lastElementChild.dataset.value); } });
     }
     function pick(o) {
+      if (o.hasAttribute("data-create")) { create(o.dataset.value); return; }
       if (source) {
         var v = o.dataset.value, label = o.textContent;
         if (multiple) { if (v in chosen) delete chosen[v]; else chosen[v] = label; o.setAttribute("aria-selected", String(v in chosen)); sync(); return; }
@@ -403,6 +431,7 @@ export const SELECT_JS = `(function () {
       search.addEventListener("keydown", function (e) {
         var list = opts();
         if (e.key === "ArrowDown") { e.preventDefault(); e.stopPropagation(); go(list[0]); }
+        else if (creatable && (e.key === "Enter" || e.key === ",")) { e.preventDefault(); e.stopPropagation(); create(search.value); }
         else if (e.key === "Enter") { e.preventDefault(); e.stopPropagation(); if (list[0]) pick(list[0]); }
         else if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); close(true); }
         else if (e.key === "Tab") { close(false); }

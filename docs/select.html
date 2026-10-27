@@ -164,6 +164,10 @@
 /* searchable Select (ComboboxField): typing filters; nothing left → "No results" */
 .listbox__empty { margin: 0; padding: 8px 8px; color: var(--tok-text-muted); font-weight: 400; font-size: 14px; line-height: 1.4; }
 .listbox__empty[hidden] { display: none; }
+/* creatable: the first row offers what you typed ("Add "Vue"") when nothing matches it exactly */
+.listbox__create { color: var(--tok-text-primary); }
+.listbox__create-icon { width: 20px; height: 20px; flex-shrink: 0; color: var(--tok-text-primary); }
+.listbox__create-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .listbox__search:focus-within { border-color: var(--tok-border-focus); }
 /* infinite Select (InfiniteComboboxField): the last row of the list is its status —
    "Loading…" while there's more (scrolling to it loads the next page), "No results",
@@ -248,6 +252,7 @@
     <a class="navlink" href="select.html#combobox">ComboboxField</a>
     <a class="navlink" href="select.html#infinite">InfiniteComboboxField</a>
     <a class="navlink" href="multi-select-badges.html">MultiSelectBadges</a>
+    <a class="navlink" href="select.html#creatable">FormBadgeList</a>
     <a class="navlink" href="calendar.html">Calendar</a>
     <a class="navlink" href="date-picker.html">DatePicker</a>
     <a class="navlink" href="date-range-picker.html">DateRangePicker</a>
@@ -343,6 +348,7 @@
       <div class="row"><b>Searchable</b><span><code class="tok">searchable: true</code> puts a search box at the top of the list — Storybook's <b>ComboboxField</b> (and SimpleCombobox, the same without a Field). Same Select, same field, Single or Multi. Use it past ~10 options, or when people know the name they want (courses, programs, people).</span></div>
       <div class="row"><b>Infinite</b><span><code class="tok">source: "fnName"</code> — options come from the server a page at a time: <code class="tok">window[fnName](query, offset)</code> returns <code class="tok">{ items, hasMore }</code>. Storybook's <b>InfiniteComboboxField</b>. The list's last row says what's happening: Loading… (and loads the next page when you reach it), No results, or Couldn't load + Retry. Search goes to the server.</span></div>
       <div class="row"><b>Chips</b><span><code class="tok">chips: true</code> — every choice as a removable Chip in the field. Use it when people need to see all of what they picked (a handful); for many, the first + Counter keeps the form tidy. Not Storybook's MultiSelectBadges — that's a summary of choices made somewhere else (<a href="multi-select-badges.html">MultiSelectBadges</a>). The label moves above (Field) — chips leave no room to float one.</span></div>
+      <div class="row"><b>Creatable</b><span><code class="tok">creatable: true</code> — chips you can also type in yourself (Storybook's <b>FormBadgeList</b>). Searchable, multiple, chips. Type something new → the first row is Add “…”, Enter or a comma adds it. Use it for open-ended sets (topics, keywords); for a fixed set, plain chips.</span></div>
       <div class="row"><b>Keyboard</b><span>↓ / ↑ / Enter / Space open; ↑ ↓ Home End move; Enter or Space pick; Escape closes back to the field; Tab closes. Single-select closes on pick.</span></div>
     </div>
 
@@ -536,6 +542,38 @@
   &lt;p class="field__error" id="ch-dis-error" hidden&gt;…&lt;span&gt;&lt;/span&gt;&lt;/p&gt;
 &lt;/div&gt;</code></pre><p class="story-note">Chips stay readable; the × go away.</p></div></div>
 
+    <h2 class="big-section" id="creatable">Creatable — FormBadgeList</h2>
+    <p class="section-desc">Storybook's FormBadgeList is a tag input: type, Enter, a chip. Here it's Select chips that also take what you type: <code class="tok">selectHtml({ …, chips: true, creatable: true })</code> inside a Field. Suggestions stay one tap away; something new is offered as the first row ("Add “vue”"), so it's clear Enter will create it. An exact match is picked instead of duplicated. Each new one fires <code class="tok">selectcreate</code>.</p>
+    <div class="story-grid"><div class="story"><h3>Suggestions + your own</h3><div class="story-preview"><div class="sel-demo" style="width: 360px"><div class="field" data-field>
+  <label class="field__label" id="cr-topics-label" for="cr-topics">Topics</label>
+  <div class="select-field" data-select data-creatable data-multiple data-chips data-placeholder="Add topics" data-searchable data-value="React,TypeScript" data-label="Topics">
+  <div class="select select--chips"><ul class="select__chips" aria-label="Chosen"><li class="select__chip" data-value="React"><span class="select__chip-label">React</span><button type="button" class="select__chip-remove" aria-label="Remove React"><svg class="" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button></li><li class="select__chip" data-value="TypeScript"><span class="select__chip-label">TypeScript</span><button type="button" class="select__chip-remove" aria-label="Remove TypeScript"><svg class="" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button></li></ul><button type="button" class="select__toggle" id="cr-topics" aria-haspopup="listbox" aria-expanded="false" aria-controls="cr-topics-list" aria-labelledby="cr-topics-label cr-topics-text"><span class="select__text" id="cr-topics-text"></span><svg class="select__chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button></div>
+  <div class="listbox select__panel" popover><div class="listbox__search-wrap"><div class="listbox__search"><svg class="listbox__search-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg><input type="text" class="listbox__search-input" placeholder="Search or add a topic…" aria-label="Search or add a topic" aria-controls="cr-topics-list" autocomplete="off" /></div></div><div class="listbox__select-all"><p class="listbox__select-all-label" aria-live="polite">2 selected</p><button type="button" class="listbox__clear">Clear all</button></div><ul class="listbox__list" id="cr-topics-list" role="listbox" aria-labelledby="cr-topics-label" aria-multiselectable="true"><li role="none" hidden><button type="button" class="listbox__option listbox__create" role="option" aria-selected="false" tabindex="-1" data-create><svg class="listbox__create-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg><span class="listbox__create-text"></span></button></li><li role="none"><button type="button" class="listbox__option" role="option" id="cr-topics-opt-0" aria-selected="true" data-value="React" tabindex="-1"><span class="listbox__cb-box"><svg class="listbox__cb-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="listbox__cb-label">React</span></button></li><li role="none"><button type="button" class="listbox__option" role="option" id="cr-topics-opt-1" aria-selected="true" data-value="TypeScript" tabindex="-1"><span class="listbox__cb-box"><svg class="listbox__cb-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="listbox__cb-label">TypeScript</span></button></li><li role="none"><button type="button" class="listbox__option" role="option" id="cr-topics-opt-2" aria-selected="false" data-value="Accessibility" tabindex="-1"><span class="listbox__cb-box"><svg class="listbox__cb-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="listbox__cb-label">Accessibility</span></button></li><li role="none"><button type="button" class="listbox__option" role="option" id="cr-topics-opt-3" aria-selected="false" data-value="Design systems" tabindex="-1"><span class="listbox__cb-box"><svg class="listbox__cb-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="listbox__cb-label">Design systems</span></button></li><li role="none"><button type="button" class="listbox__option" role="option" id="cr-topics-opt-4" aria-selected="false" data-value="Testing" tabindex="-1"><span class="listbox__cb-box"><svg class="listbox__cb-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="listbox__cb-label">Testing</span></button></li></ul><p class="listbox__empty" hidden>No results</p></div>
+</div>
+  <p class="field__error" id="cr-topics-error" hidden><svg class="field__error-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg><span></span></p>
+</div></div></div><pre class="code"><code>&lt;div class="field" data-field&gt;
+  &lt;label class="field__label" id="cr-topics-label" for="cr-topics"&gt;Topics&lt;/label&gt;
+  &lt;div class="select-field" data-select data-creatable data-multiple data-chips data-placeholder="Add topics" data-searchable data-value="React,TypeScript" data-label="Topics"&gt;
+  &lt;div class="select select--chips"&gt;&lt;ul class="select__chips" aria-label="Chosen"&gt;&lt;li class="select__chip" data-value="React"&gt;&lt;span class="select__chip-label"&gt;React&lt;/span&gt;&lt;button type="button" class="select__chip-remove" aria-label="Remove React"&gt;…&lt;/button&gt;&lt;/li&gt;&lt;li class="select__chip" data-value="TypeScript"&gt;&lt;span class="select__chip-label"&gt;TypeScript&lt;/span&gt;&lt;button type="button" class="select__chip-remove" aria-label="Remove TypeScript"&gt;…&lt;/button&gt;&lt;/li&gt;&lt;/ul&gt;&lt;button type="button" class="select__toggle" id="cr-topics" aria-haspopup="listbox" aria-expanded="false" aria-controls="cr-topics-list" aria-labelledby="cr-topics-label cr-topics-text"&gt;&lt;span class="select__text" id="cr-topics-text"&gt;&lt;/span&gt;…&lt;/button&gt;&lt;/div&gt;
+  &lt;div class="listbox select__panel" popover&gt;&lt;div class="listbox__search-wrap"&gt;&lt;div class="listbox__search"&gt;…&lt;input type="text" class="listbox__search-input" placeholder="Search or add a topic…" aria-label="Search or add a topic" aria-controls="cr-topics-list" autocomplete="off" /&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="listbox__select-all"&gt;&lt;p class="listbox__select-all-label" aria-live="polite"&gt;2 selected&lt;/p&gt;&lt;button type="button" class="listbox__clear"&gt;Clear all&lt;/button&gt;&lt;/div&gt;&lt;ul class="listbox__list" id="cr-topics-list" role="listbox" aria-labelledby="cr-topics-label" aria-multiselectable="true"&gt;&lt;li role="none" hidden&gt;&lt;button type="button" class="listbox__option listbox__create" role="option" aria-selected="false" tabindex="-1" data-create&gt;…&lt;span class="listbox__create-text"&gt;&lt;/span&gt;&lt;/button&gt;&lt;/li&gt;&lt;li role="none"&gt;&lt;button type="button" class="listbox__option" role="option" id="cr-topics-opt-0" aria-selected="true" data-value="React" tabindex="-1"&gt;&lt;span class="listbox__cb-box"&gt;…&lt;/span&gt;&lt;span class="listbox__cb-label"&gt;React&lt;/span&gt;&lt;/button&gt;&lt;/li&gt;&lt;li role="none"&gt;&lt;button type="button" class="listbox__option" role="option" id="cr-topics-opt-1" aria-selected="true" data-value="TypeScript" tabindex="-1"&gt;&lt;span class="listbox__cb-box"&gt;…&lt;/span&gt;&lt;span class="listbox__cb-label"&gt;TypeScript&lt;/span&gt;&lt;/button&gt;&lt;/li&gt;&lt;li role="none"&gt;&lt;button type="button" class="listbox__option" role="option" id="cr-topics-opt-2" aria-selected="false" data-value="Accessibility" tabindex="-1"&gt;&lt;span class="listbox__cb-box"&gt;…&lt;/span&gt;&lt;span class="listbox__cb-label"&gt;Accessibility&lt;/span&gt;&lt;/button&gt;&lt;/li&gt;&lt;li role="none"&gt;&lt;button type="button" class="listbox__option" role="option" id="cr-topics-opt-3" aria-selected="false" data-value="Design systems" tabindex="-1"&gt;&lt;span class="listbox__cb-box"&gt;…&lt;/span&gt;&lt;span class="listbox__cb-label"&gt;Design systems&lt;/span&gt;&lt;/button&gt;&lt;/li&gt;&lt;li role="none"&gt;&lt;button type="button" class="listbox__option" role="option" id="cr-topics-opt-4" aria-selected="false" data-value="Testing" tabindex="-1"&gt;&lt;span class="listbox__cb-box"&gt;…&lt;/span&gt;&lt;span class="listbox__cb-label"&gt;Testing&lt;/span&gt;&lt;/button&gt;&lt;/li&gt;&lt;/ul&gt;&lt;p class="listbox__empty" hidden&gt;No results&lt;/p&gt;&lt;/div&gt;
+&lt;/div&gt;
+  &lt;p class="field__error" id="cr-topics-error" hidden&gt;…&lt;span&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;/div&gt;</code></pre><p class="story-note">Type 'vue': nothing matches, so the first row offers Add “vue” — Enter (or a comma) adds it as a chip. Type 'react': it's already there, so Enter just keeps it.</p></div><div class="story"><h3>Free tags</h3><div class="story-preview"><div class="sel-demo" style="width: 360px"><div class="field" data-field>
+  <label class="field__label" id="cr-free-label" for="cr-free">Keywords</label>
+  <div class="select-field" data-select data-creatable data-multiple data-chips data-placeholder="Add keywords" data-searchable data-value="" data-label="Keywords">
+  <div class="select select--chips is-placeholder"><ul class="select__chips" aria-label="Chosen"></ul><button type="button" class="select__toggle" id="cr-free" aria-haspopup="listbox" aria-expanded="false" aria-controls="cr-free-list" aria-labelledby="cr-free-label cr-free-text"><span class="select__text" id="cr-free-text">Add keywords</span><svg class="select__chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button></div>
+  <div class="listbox select__panel" popover><div class="listbox__search-wrap"><div class="listbox__search"><svg class="listbox__search-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg><input type="text" class="listbox__search-input" placeholder="Type a keyword…" aria-label="Type a keyword" aria-controls="cr-free-list" autocomplete="off" /></div></div><div class="listbox__select-all" hidden><p class="listbox__select-all-label" aria-live="polite">0 selected</p><button type="button" class="listbox__clear">Clear all</button></div><ul class="listbox__list" id="cr-free-list" role="listbox" aria-labelledby="cr-free-label" aria-multiselectable="true"><li role="none" hidden><button type="button" class="listbox__option listbox__create" role="option" aria-selected="false" tabindex="-1" data-create><svg class="listbox__create-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg><span class="listbox__create-text"></span></button></li></ul><p class="listbox__empty" data-hint="Type a keyword and press Enter">Type a keyword and press Enter</p></div>
+</div>
+  <p class="field__error" id="cr-free-error" hidden><svg class="field__error-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg><span></span></p>
+</div></div></div><pre class="code"><code>&lt;div class="field" data-field&gt;
+  &lt;label class="field__label" id="cr-free-label" for="cr-free"&gt;Keywords&lt;/label&gt;
+  &lt;div class="select-field" data-select data-creatable data-multiple data-chips data-placeholder="Add keywords" data-searchable data-value="" data-label="Keywords"&gt;
+  &lt;div class="select select--chips is-placeholder"&gt;&lt;ul class="select__chips" aria-label="Chosen"&gt;&lt;/ul&gt;&lt;button type="button" class="select__toggle" id="cr-free" aria-haspopup="listbox" aria-expanded="false" aria-controls="cr-free-list" aria-labelledby="cr-free-label cr-free-text"&gt;&lt;span class="select__text" id="cr-free-text"&gt;Add keywords&lt;/span&gt;…&lt;/button&gt;&lt;/div&gt;
+  &lt;div class="listbox select__panel" popover&gt;&lt;div class="listbox__search-wrap"&gt;&lt;div class="listbox__search"&gt;…&lt;input type="text" class="listbox__search-input" placeholder="Type a keyword…" aria-label="Type a keyword" aria-controls="cr-free-list" autocomplete="off" /&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="listbox__select-all" hidden&gt;&lt;p class="listbox__select-all-label" aria-live="polite"&gt;0 selected&lt;/p&gt;&lt;button type="button" class="listbox__clear"&gt;Clear all&lt;/button&gt;&lt;/div&gt;&lt;ul class="listbox__list" id="cr-free-list" role="listbox" aria-labelledby="cr-free-label" aria-multiselectable="true"&gt;&lt;li role="none" hidden&gt;&lt;button type="button" class="listbox__option listbox__create" role="option" aria-selected="false" tabindex="-1" data-create&gt;…&lt;span class="listbox__create-text"&gt;&lt;/span&gt;&lt;/button&gt;&lt;/li&gt;&lt;/ul&gt;&lt;p class="listbox__empty" data-hint="Type a keyword and press Enter"&gt;Type a keyword and press Enter&lt;/p&gt;&lt;/div&gt;
+&lt;/div&gt;
+  &lt;p class="field__error" id="cr-free-error" hidden&gt;…&lt;span&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;/div&gt;</code></pre><p class="story-note">No suggestions at all — Storybook's FormBadgeList. The list says how it works until you type.</p></div></div>
+
     <h2 class="big-section">CSS</h2>
     <pre class="code"><code>:root {
   --tok-surface-dim: #f4f5f7;
@@ -667,6 +705,10 @@
 /* searchable Select (ComboboxField): typing filters; nothing left → "No results" */
 .listbox__empty { margin: 0; padding: 8px 8px; color: var(--tok-text-muted); font-weight: 400; font-size: 14px; line-height: 1.4; }
 .listbox__empty[hidden] { display: none; }
+/* creatable: the first row offers what you typed ("Add "Vue"") when nothing matches it exactly */
+.listbox__create { color: var(--tok-text-primary); }
+.listbox__create-icon { width: 20px; height: 20px; flex-shrink: 0; color: var(--tok-text-primary); }
+.listbox__create-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .listbox__search:focus-within { border-color: var(--tok-border-focus); }
 /* infinite Select (InfiniteComboboxField): the last row of the list is its status —
    "Loading…" while there's more (scrolling to it loads the next page), "No results",
@@ -758,12 +800,27 @@
       list.addEventListener("scroll", function () { if (list.scrollTop + list.clientHeight >= list.scrollHeight - status.offsetHeight * 2) load(); }, { passive: true });
       status.addEventListener("click", function (e) { if (e.target.closest(".listbox__retry")) load(); });
     }
+    var creatable = wrap.hasAttribute("data-creatable"), createBtn = panel.querySelector("[data-create]");
+    function exact(q) { q = q.trim().toLowerCase(); return Array.prototype.filter.call(panel.querySelectorAll(".listbox__option:not([data-create])"), function (o) { return o.textContent.trim().toLowerCase() === q; })[0]; }
     function filter(q) {
-      q = q.trim().toLowerCase();
-      panel.querySelectorAll(".listbox__option").forEach(function (o) { o.parentNode.hidden = !!q && o.textContent.toLowerCase().indexOf(q) < 0; });
+      var raw = q.trim(); q = raw.toLowerCase();
+      panel.querySelectorAll(".listbox__option:not([data-create])").forEach(function (o) { o.parentNode.hidden = !!q && o.textContent.toLowerCase().indexOf(q) < 0; });
+      if (createBtn) { createBtn.parentNode.hidden = !raw || !!exact(raw); createBtn.querySelector(".listbox__create-text").textContent = "Add “" + raw + "”"; createBtn.dataset.value = raw; }
       panel.querySelectorAll(".listbox__group").forEach(function (g) { g.parentNode.hidden = !Array.prototype.some.call(g.querySelectorAll(".listbox__option"), function (o) { return !o.parentNode.hidden; }); });
       panel.querySelectorAll(".listbox__divider").forEach(function (d) { d.parentNode.hidden = !!q; });
-      if (empty) empty.hidden = opts().length > 0;
+      if (empty) { empty.hidden = opts().length > 0; if (empty.dataset.hint) empty.textContent = q ? "No results" : empty.dataset.hint; }
+    }
+    function create(text) {
+      text = text.trim(); if (!text) return;
+      var hit = exact(text);
+      if (hit) { if (hit.getAttribute("aria-selected") !== "true") pick(hit); }
+      else {
+        var li = document.createElement("li"), b = document.createElement("button"), l = document.createElement("span");
+        li.setAttribute("role", "none"); b.type = "button"; b.className = "listbox__option"; b.setAttribute("role", "option"); b.id = trigger.id + "-new-" + (seq++); b.tabIndex = -1; b.dataset.value = text; b.setAttribute("aria-selected", "true");
+        b.innerHTML = CB; l.className = "listbox__cb-label"; l.textContent = text; b.appendChild(l); li.appendChild(b); list.appendChild(li);
+        sync(); wrap.dispatchEvent(new CustomEvent("selectcreate", { bubbles: true, detail: { value: text } }));
+      }
+      search.value = ""; filter(""); search.focus(); place();
     }
     function place() {
       var r = box.getBoundingClientRect(); panel.style.position = "fixed"; panel.style.right = "auto"; panel.style.bottom = "auto"; panel.style.minWidth = r.width + "px";
@@ -823,6 +880,7 @@
       trigger.addEventListener("keydown", function (e) { if (e.key === "Backspace" && chipList.lastElementChild) { e.preventDefault(); unpick(chipList.lastElementChild.dataset.value); } });
     }
     function pick(o) {
+      if (o.hasAttribute("data-create")) { create(o.dataset.value); return; }
       if (source) {
         var v = o.dataset.value, label = o.textContent;
         if (multiple) { if (v in chosen) delete chosen[v]; else chosen[v] = label; o.setAttribute("aria-selected", String(v in chosen)); sync(); return; }
@@ -841,6 +899,7 @@
       search.addEventListener("keydown", function (e) {
         var list = opts();
         if (e.key === "ArrowDown") { e.preventDefault(); e.stopPropagation(); go(list[0]); }
+        else if (creatable && (e.key === "Enter" || e.key === ",")) { e.preventDefault(); e.stopPropagation(); create(search.value); }
         else if (e.key === "Enter") { e.preventDefault(); e.stopPropagation(); if (list[0]) pick(list[0]); }
         else if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); close(true); }
         else if (e.key === "Tab") { close(false); }

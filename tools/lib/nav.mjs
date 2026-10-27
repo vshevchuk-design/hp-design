@@ -42,6 +42,7 @@ export const NAV_ITEMS = {
   "infinite-combobox-field": { label: "InfiniteComboboxField", href: "select.html#infinite" },
   "multi-select-badges": { label: "MultiSelectBadges", href: "multi-select-badges.html" },
   "number-field": { label: "NumberField", href: "input.html#number" },
+  "form-badge-list": { label: "FormBadgeList", href: "select.html#creatable" },
   pagination: { label: "Pagination", href: "pagination.html" },
   slider: { label: "Slider", href: "slider.html" },
   separator: { label: "Separator", href: "separator.html" },
@@ -197,6 +198,7 @@ export function renderNav(activeKey, { basePath = "" } = {}) {
     ${link("combobox-field")}
     ${link("infinite-combobox-field")}
     ${link("multi-select-badges")}
+    ${link("form-badge-list")}
     ${link("calendar")}
     ${link("date-picker")}
     ${link("date-range-picker")}

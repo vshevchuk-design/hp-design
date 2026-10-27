@@ -136,6 +136,10 @@
 /* searchable Select (ComboboxField): typing filters; nothing left → "No results" */
 .listbox__empty { margin: 0; padding: 8px 8px; color: var(--tok-text-muted); font-weight: 400; font-size: 14px; line-height: 1.4; }
 .listbox__empty[hidden] { display: none; }
+/* creatable: the first row offers what you typed ("Add "Vue"") when nothing matches it exactly */
+.listbox__create { color: var(--tok-text-primary); }
+.listbox__create-icon { width: 20px; height: 20px; flex-shrink: 0; color: var(--tok-text-primary); }
+.listbox__create-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .listbox__search:focus-within { border-color: var(--tok-border-focus); }
 /* infinite Select (InfiniteComboboxField): the last row of the list is its status —
    "Loading…" while there's more (scrolling to it loads the next page), "No results",
@@ -209,6 +213,7 @@
     <a class="navlink" href="select.html#combobox">ComboboxField</a>
     <a class="navlink" href="select.html#infinite">InfiniteComboboxField</a>
     <a class="navlink" href="multi-select-badges.html">MultiSelectBadges</a>
+    <a class="navlink" href="select.html#creatable">FormBadgeList</a>
     <a class="navlink" href="calendar.html">Calendar</a>
     <a class="navlink" href="date-picker.html">DatePicker</a>
     <a class="navlink" href="date-range-picker.html">DateRangePicker</a>
@@ -366,6 +371,10 @@
 /* searchable Select (ComboboxField): typing filters; nothing left → "No results" */
 .listbox__empty { margin: 0; padding: 8px 8px; color: var(--tok-text-muted); font-weight: 400; font-size: 14px; line-height: 1.4; }
 .listbox__empty[hidden] { display: none; }
+/* creatable: the first row offers what you typed ("Add "Vue"") when nothing matches it exactly */
+.listbox__create { color: var(--tok-text-primary); }
+.listbox__create-icon { width: 20px; height: 20px; flex-shrink: 0; color: var(--tok-text-primary); }
+.listbox__create-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .listbox__search:focus-within { border-color: var(--tok-border-focus); }
 /* infinite Select (InfiniteComboboxField): the last row of the list is its status —
    "Loading…" while there's more (scrolling to it loads the next page), "No results",
