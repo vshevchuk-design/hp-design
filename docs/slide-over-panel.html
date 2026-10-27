@@ -112,7 +112,7 @@ dialog.slide-over-panel--bottom[open] { transform: translateY(0); }
 @starting-style { dialog.slide-over-panel--bottom[open] { transform: translateY(100%); } }
 
 .slide-over-panel__content { display: flex; flex-direction: column; height: 100%; max-height: inherit; box-sizing: border-box; font-family: var(--tok-family-sans); }
-.slide-over-panel__header { flex-shrink: 0; box-sizing: border-box; display: flex; align-items: flex-start; gap: 12px; padding: 24px; border-bottom: 1px solid var(--tok-border-default); }
+.slide-over-panel__header { flex-shrink: 0; box-sizing: border-box; display: flex; align-items: flex-start; gap: 12px; padding: 16px 24px; box-shadow: inset 0 -1px 0 var(--tok-border-default); }
 /* title + description: at least as tall as the × and centred in it */
 .slide-over-panel__heading { flex: 1; min-width: 0; min-height: 32px; display: flex; flex-direction: column; justify-content: center; gap: 4px; }
 .slide-over-panel__title { margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 14px; line-height: 1.4; }
@@ -123,7 +123,7 @@ dialog.slide-over-panel--bottom[open] { transform: translateY(0); }
 .slide-over-panel__body { flex: 1; min-height: 0; box-sizing: border-box; overflow: auto; padding: 24px; }
 .slide-over-panel__body-text { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 14px; line-height: 1.4; }
 /* footer: a slot — any actions, right-aligned */
-.slide-over-panel__footer { flex-shrink: 0; box-sizing: border-box; display: flex; flex-wrap: wrap; gap: 12px; justify-content: flex-end; padding: 24px; border-top: 1px solid var(--tok-border-default); }
+.slide-over-panel__footer { flex-shrink: 0; box-sizing: border-box; display: flex; flex-wrap: wrap; gap: 12px; justify-content: flex-end; padding: 16px 24px; box-shadow: inset 0 1px 0 var(--tok-border-default); }
 
 .slide-over-panel__close { flex-shrink: 0; box-sizing: border-box; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border: none; border-radius: 8px; background: transparent; padding: 0; cursor: pointer; color: var(--tok-icon-secondary); }
 .slide-over-panel__close:hover { background: var(--tok-fill-neutral-hover); }
@@ -624,7 +624,7 @@ dialog.slide-over-panel--bottom[open] { transform: translateY(0); }
 @starting-style { dialog.slide-over-panel--bottom[open] { transform: translateY(100%); } }
 
 .slide-over-panel__content { display: flex; flex-direction: column; height: 100%; max-height: inherit; box-sizing: border-box; font-family: var(--tok-family-sans); }
-.slide-over-panel__header { flex-shrink: 0; box-sizing: border-box; display: flex; align-items: flex-start; gap: 12px; padding: 24px; border-bottom: 1px solid var(--tok-border-default); }
+.slide-over-panel__header { flex-shrink: 0; box-sizing: border-box; display: flex; align-items: flex-start; gap: 12px; padding: 16px 24px; box-shadow: inset 0 -1px 0 var(--tok-border-default); }
 /* title + description: at least as tall as the × and centred in it */
 .slide-over-panel__heading { flex: 1; min-width: 0; min-height: 32px; display: flex; flex-direction: column; justify-content: center; gap: 4px; }
 .slide-over-panel__title { margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 14px; line-height: 1.4; }
@@ -635,7 +635,7 @@ dialog.slide-over-panel--bottom[open] { transform: translateY(0); }
 .slide-over-panel__body { flex: 1; min-height: 0; box-sizing: border-box; overflow: auto; padding: 24px; }
 .slide-over-panel__body-text { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 14px; line-height: 1.4; }
 /* footer: a slot — any actions, right-aligned */
-.slide-over-panel__footer { flex-shrink: 0; box-sizing: border-box; display: flex; flex-wrap: wrap; gap: 12px; justify-content: flex-end; padding: 24px; border-top: 1px solid var(--tok-border-default); }
+.slide-over-panel__footer { flex-shrink: 0; box-sizing: border-box; display: flex; flex-wrap: wrap; gap: 12px; justify-content: flex-end; padding: 16px 24px; box-shadow: inset 0 1px 0 var(--tok-border-default); }
 
 .slide-over-panel__close { flex-shrink: 0; box-sizing: border-box; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border: none; border-radius: 8px; background: transparent; padding: 0; cursor: pointer; color: var(--tok-icon-secondary); }
 .slide-over-panel__close:hover { background: var(--tok-fill-neutral-hover); }

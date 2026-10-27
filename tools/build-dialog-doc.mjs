@@ -106,6 +106,8 @@ function typoCss(t) {
   return `font-weight: ${t.fontWeight}; font-size: ${px(t.fontSize)}; line-height: ${t.lineHeight};`;
 }
 
+// header/footer bands: 16px vertical, the hairline inside (no extra height)
+const barY = px(resolve(dialog.barPaddingY.$value));
 const css = `${rootVars}
 
 dialog.dialog { margin: auto; padding: 0; border: none; box-sizing: border-box; width: ${capped(sizes.sm)}; max-width: none; max-height: 85dvh; border-radius: ${radius}; background: ${cv("surface.default")}; box-shadow: ${shadowCss};
@@ -130,7 +132,7 @@ dialog.dialog--xl { width: ${capped(sizes.xl)}; }
 }
 
 .dialog__content { display: flex; flex-direction: column; max-height: 85dvh; box-sizing: border-box; font-family: ${cv("family.sans")}; }
-.dialog__header { flex-shrink: 0; box-sizing: border-box; display: flex; align-items: flex-start; justify-content: space-between; gap: ${gap}; padding: ${padding}; border-bottom: 1px solid ${cv("border.default")}; }
+.dialog__header { flex-shrink: 0; box-sizing: border-box; display: flex; align-items: flex-start; justify-content: space-between; gap: ${gap}; padding: ${barY} ${padding}; box-shadow: inset 0 -1px 0 ${cv("border.default")}; }
 /* At least as tall as the × and centered in it: a lone title lines up with
    the ×, a title + description grows down from the top. */
 .dialog__heading { display: flex; flex-direction: column; justify-content: center; gap: ${headerGap}; min-width: 0; min-height: ${px(resolve(ghost.size.sm.height.$value))}; }
@@ -138,7 +140,7 @@ dialog.dialog--xl { width: ${capped(sizes.xl)}; }
 .dialog__description { margin: 0; color: ${cv(dialog.descriptionColor.$value.replace(/[{}]/g, ""))}; ${typoCss(descType)} }
 .dialog__body { flex: 1; box-sizing: border-box; overflow: auto; padding: ${padding}; }
 .dialog__body-text { margin: 0; color: ${cv("text.secondary")}; ${typoCss(bodyType)} }
-.dialog__footer { flex-shrink: 0; box-sizing: border-box; display: flex; gap: ${gap}; justify-content: flex-end; padding: ${padding}; border-top: 1px solid ${cv("border.default")}; }
+.dialog__footer { flex-shrink: 0; box-sizing: border-box; display: flex; gap: ${gap}; justify-content: flex-end; padding: ${barY} ${padding}; box-shadow: inset 0 1px 0 ${cv("border.default")}; }
 
 .dialog__close { flex-shrink: 0; box-sizing: border-box; width: ${px(resolve(ghost.size.sm.height.$value))}; height: ${px(resolve(ghost.size.sm.height.$value))}; display: inline-flex; align-items: center; justify-content: center; border: none; border-radius: ${px(resolve(ghost.radius.$value))}; background: transparent; padding: 0; cursor: pointer; color: ${cv(ghostRole(ghost.state.default.icon))}; }
 .dialog__close:hover { background: ${cv(ghostRole(ghost.state.hover.fill))}; }

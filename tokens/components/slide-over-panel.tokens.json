@@ -47,6 +47,11 @@
         "$value": "{dim.6}",
         "$description": "24px — one step more generous than Popover's 16px, proportionate to Drawer being a full modal panel, not a small anchored one."
       },
+      "barPaddingY": {
+        "$type": "dimension",
+        "$value": "{dim.4}",
+        "$description": "16px above and below the header and footer bands (2026-10-27). The full 24px padding made them 81 and 89px tall (user: too tall); with 16: header 64 (the 32px × + 2×16), footer 72 (a 40px button + 2×16). The dividing hairline sits inside the band (inset shadow), so it adds no height. The body keeps the full 24."
+      },
       "gap": {
         "$type": "dimension",
         "$value": "{dim.3}",

@@ -97,6 +97,8 @@ const closeSize = P(ghost.size.sm.height);
 const iconClose = fs.readFileSync(path.join(root, "assets/icons/material-filled/close.svg"), "utf8").replace("<svg ", '<svg class="slide-over-panel__close-icon" aria-hidden="true" ');
 const slide = (axis, from) => `transform: translate${axis}(${from}); transition: transform ${dur} ease, overlay ${dur} allow-discrete, display ${dur} allow-discrete;`;
 
+// header/footer bands: 16px vertical, the hairline inside (no extra height)
+const barY = px(resolve(sop.barPaddingY.$value));
 const css = `${rootVars}
 
 dialog.slide-over-panel { position: fixed; margin: 0; padding: 0; border: none; box-sizing: border-box; background: ${cv(role(sop.bg))}; box-shadow: ${shadowCss}; }
@@ -119,7 +121,7 @@ dialog.slide-over-panel--bottom[open] { transform: translateY(0); }
 @starting-style { dialog.slide-over-panel--bottom[open] { transform: translateY(100%); } }
 
 .slide-over-panel__content { display: flex; flex-direction: column; height: 100%; max-height: inherit; box-sizing: border-box; font-family: ${cv("family.sans")}; }
-.slide-over-panel__header { flex-shrink: 0; box-sizing: border-box; display: flex; align-items: flex-start; gap: ${gap}; padding: ${padding}; border-bottom: 1px solid ${cv(role(sop.divider))}; }
+.slide-over-panel__header { flex-shrink: 0; box-sizing: border-box; display: flex; align-items: flex-start; gap: ${gap}; padding: ${barY} ${padding}; box-shadow: inset 0 -1px 0 ${cv(role(sop.divider))}; }
 /* title + description: at least as tall as the × and centred in it */
 .slide-over-panel__heading { flex: 1; min-width: 0; min-height: ${closeSize}; display: flex; flex-direction: column; justify-content: center; gap: ${P(dialog.headerGap)}; }
 .slide-over-panel__title { margin: 0; color: ${cv(role(sop.titleColor))}; ${typoCss(resolveToken(sop.title))} }
@@ -130,7 +132,7 @@ dialog.slide-over-panel--bottom[open] { transform: translateY(0); }
 .slide-over-panel__body { flex: 1; min-height: 0; box-sizing: border-box; overflow: auto; padding: ${padding}; }
 .slide-over-panel__body-text { margin: 0; color: ${cv(role(sop.bodyColor))}; ${typoCss(resolveToken(sop.body))} }
 /* footer: a slot — any actions, right-aligned */
-.slide-over-panel__footer { flex-shrink: 0; box-sizing: border-box; display: flex; flex-wrap: wrap; gap: ${gap}; justify-content: flex-end; padding: ${padding}; border-top: 1px solid ${cv(role(sop.divider))}; }
+.slide-over-panel__footer { flex-shrink: 0; box-sizing: border-box; display: flex; flex-wrap: wrap; gap: ${gap}; justify-content: flex-end; padding: ${barY} ${padding}; box-shadow: inset 0 1px 0 ${cv(role(sop.divider))}; }
 
 .slide-over-panel__close { flex-shrink: 0; box-sizing: border-box; width: ${closeSize}; height: ${closeSize}; display: inline-flex; align-items: center; justify-content: center; border: none; border-radius: ${P(ghost.radius)}; background: transparent; padding: 0; cursor: pointer; color: ${cv(ghostRole(ghost.state.default.icon))}; }
 .slide-over-panel__close:hover { background: ${cv(ghostRole(ghost.state.hover.fill))}; }
