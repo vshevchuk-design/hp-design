@@ -6,26 +6,16 @@
 <title>hp-design — Stepper</title>
 <link rel="stylesheet" href="../assets/fonts/sora/sora.css" />
 <style>
-  :root {
-    --bg-page: #f7f7f5; --bg-card: #ffffff; --bg-card-hover: #fbfbfa; --border: #e4e3df; --border-strong: #d2d1cb;
-    --text-primary: #0e0e10; --text-secondary: #63625c; --text-muted: #918f87; --accent: #0468c4; --accent-bg: #eff6ff;
-    --code-bg: #1e1e22; --code-text: #e4e3df; --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace; --sans: -apple-system, "Segoe UI", system-ui, sans-serif; color-scheme: light;
-  }
-  @media (prefers-color-scheme: dark) { :root:where(:not([data-theme="light"])) {
-    --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327; --border: #313035; --border-strong: #403f45;
-    --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68; --accent: #5aa4ec; --accent-bg: #16283b;
-    --code-bg: #0d0d0f; --code-text: #d7d6d2; color-scheme: dark; } }
-  :root[data-theme="dark"] {
-    --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327; --border: #313035; --border-strong: #403f45;
-    --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68; --accent: #5aa4ec; --accent-bg: #16283b;
-    --code-bg: #0d0d0f; --code-text: #d7d6d2; color-scheme: dark; }
+  :root { --bg-page: #f7f7f5; --bg-card: #ffffff; --bg-card-hover: #fbfbfa; --border: #e4e3df; --border-strong: #d2d1cb; --text-primary: #0e0e10; --text-secondary: #63625c; --text-muted: #918f87; --accent: #0468c4; --accent-bg: #eff6ff; --code-bg: #1e1e22; --code-text: #e4e3df; --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace; --sans: -apple-system, "Segoe UI", system-ui, sans-serif; color-scheme: light; }
+  @media (prefers-color-scheme: dark) { :root:where(:not([data-theme="light"])) { --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327; --border: #313035; --border-strong: #403f45; --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68; --accent: #5aa4ec; --accent-bg: #16283b; --code-bg: #0d0d0f; --code-text: #d7d6d2; color-scheme: dark; } }
+  :root[data-theme="dark"] { --bg-page: #17171a; --bg-card: #1e1e22; --bg-card-hover: #232327; --border: #313035; --border-strong: #403f45; --text-primary: #f2f1ee; --text-secondary: #a7a5a0; --text-muted: #706e68; --accent: #5aa4ec; --accent-bg: #16283b; --code-bg: #0d0d0f; --code-text: #d7d6d2; color-scheme: dark; }
   * { box-sizing: border-box; } body { margin: 0; background: var(--bg-page); color: var(--text-primary); font-family: var(--sans); }
   .shell { display: flex; min-height: 100vh; }
   nav.side { width: 220px; flex-shrink: 0; border-right: 0.5px solid var(--border); padding: 1.5rem 1rem; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
   .navlink { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 8px; border-radius: 7px; font-size: 13px; text-decoration: none; color: var(--text-primary); margin-bottom: 1px; }
   .navlink:hover { background: var(--bg-card-hover); } .navlink.active { background: var(--accent-bg); color: var(--accent); font-weight: 600; }
   .nav-category { font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin: 16px 8px 6px; }
-  main { flex: 1; padding: 4rem 4rem 6rem; max-width: 1120px; }
+  main { flex: 1; padding: 4rem 4rem 6rem; max-width: 1120px; min-width: 0; }
   h1 { font-size: 36px; font-weight: 700; margin: 0 0 10px; letter-spacing: -0.02em; }
   .sub { font-size: 14px; color: var(--text-secondary); margin: 0 0 2.5rem; }
   h2.big-section { font-size: 24px; font-weight: 700; margin: 5.5rem 0 1.5rem; letter-spacing: -0.01em; padding-top: 2.5rem; border-top: 1px solid var(--border); }
@@ -33,45 +23,309 @@
   .section-desc { font-size: 13.5px; color: var(--text-secondary); margin: -0.5rem 0 1.5rem; max-width: 68ch; line-height: 1.6; }
   .legend { font-size: 12.5px; color: var(--text-secondary); padding: 14px 18px; background: var(--bg-card); border: 0.5px solid var(--border); border-radius: 10px; margin-bottom: 1rem; line-height: 1.6; }
   .legend .row { display: flex; gap: 14px; padding: 6px 0; border-bottom: 0.5px solid var(--border); } .legend .row:last-child { border-bottom: none; }
-  .legend .row b { width: 120px; flex-shrink: 0; color: var(--text-primary); font-weight: 600; font-family: var(--mono); font-size: 11.5px; }
+  .legend .row b { width: 110px; flex-shrink: 0; color: var(--text-primary); font-weight: 600; font-family: var(--mono); font-size: 11.5px; }
   code.tok { font-family: var(--mono); font-size: 12px; color: var(--accent); }
   pre.code { background: var(--code-bg); color: var(--code-text); border-radius: 10px; padding: 16px 18px; margin: 0; overflow-x: auto; font-family: var(--mono); font-size: 12px; line-height: 1.7; } pre.code code { font-family: inherit; }
-  .story-grid { display: grid; grid-template-columns: 1fr; gap: 24px; }
-  .story { border: 0.5px solid var(--border); border-radius: 14px; background: var(--bg-card); padding: 22px; display: flex; flex-direction: column; gap: 12px; }
+  .story-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; }
+  .story { border: 0.5px solid var(--border); border-radius: 14px; background: var(--bg-card); padding: 22px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+  .story--wide { grid-column: 1 / -1; }
   .story h3 { font-size: 14px; font-weight: 600; margin: 0; font-family: var(--mono); }
-  .story-preview { padding: 8px 0; max-width: 460px; }
+  .story-preview { padding: 8px 0; }
   .story-note { font-size: 11.5px; color: var(--text-muted); margin: 0; line-height: 1.5; }
+  @media (max-width: 760px) { .shell { display: block; } nav.side { display: none; } main { padding: 2rem 16px 4rem; } }
+  .wz-demo { max-width: 480px; }
   :root {
+  --tok-text-default: #121921;
+  --tok-border-default: #dadde0;
+  --tok-fill-primary: #077fec;
   --tok-surface-sunken: #e6e8eb;
   --tok-text-muted: #758191;
-  --tok-fill-primary: #077fec;
   --tok-text-on-fill: #ffffff;
-  --tok-text-default: #121921;
   --tok-icon-on-fill: #ffffff;
-  --tok-border-default: #dadde0;
+  --tok-fill-primary-hover: #0468c4;
+  --tok-text-primary: #0468c4;
+  --tok-border-focus: #0468c4;
+  --tok-text-secondary: #5d6a7a;
+  --tok-bg-neutral: #e6e8eb;
+  --tok-surface-dim: #f4f5f7;
+  --tok-surface-dim-hover: #e6e8eb;
+  --tok-border-strong: #adb5be;
+  --tok-border-danger-strong: #c11435;
+  --tok-icon-default: #485462;
+  --tok-surface-disabled: #e6e8eb;
+  --tok-text-disabled: #adb5be;
+  --tok-icon-disabled: #adb5be;
+  --tok-surface-default: #ffffff;
+  --tok-text-danger: #c11435;
+  --tok-icon-danger: #de394b;
+  --tok-icon-secondary: #758191;
+  --tok-fill-neutral-hover: #e6e8eb;
+  --tok-fill-neutral-active: #cdd1d6;
+  --tok-bg-neutral-strong: #dadde0;
+  --tok-bg-primary: #d9eaff;
+  --tok-fill-primary-active: #01519c;
+  --tok-fill-neutral: #e6e8eb;
+  --tok-fill-neutral-hover-strong: #cdd1d6;
+  --tok-fill-neutral-active-strong: #adb5be;
+  --tok-text-success: #057e3f;
   --tok-family-sans: 'Sora', sans-serif;
 }
 
-.stepper { display: flex; align-items: center; font-family: var(--tok-family-sans); }
-.stepper__step { display: inline-flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.stepper { display: flex; align-items: center; margin: 0; padding: 0; list-style: none; font-family: var(--tok-family-sans); }
+.stepper__step { display: inline-flex; align-items: center; gap: 8px; flex-shrink: 0; margin: 0; padding: 0; border: none; background: none; font-family: inherit; border-radius: 8px; }
 .stepper__circle { box-sizing: border-box; flex-shrink: 0; width: 28px; height: 28px; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; font-weight: 600; font-size: 12px; line-height: 1; }
-.stepper__num { display: block; }
 .stepper__check { width: 16px; height: 16px; display: none; }
 .stepper__label { font-weight: 600; font-size: 12px; line-height: 1.4; white-space: nowrap; }
 .stepper__connector { flex: 1; min-width: 24px; height: 2px; background: var(--tok-border-default); margin: 0 8px; }
-/* inactive */
+.stepper__connector--filled { background: var(--tok-fill-primary); }
 .stepper__step--inactive .stepper__circle { background: var(--tok-surface-sunken); color: var(--tok-text-muted); }
 .stepper__step--inactive .stepper__label { color: var(--tok-text-muted); }
-/* active */
 .stepper__step--active .stepper__circle { background: var(--tok-fill-primary); color: var(--tok-text-on-fill); }
 .stepper__step--active .stepper__label { color: var(--tok-text-default); }
-/* complete */
 .stepper__step--complete .stepper__circle { background: var(--tok-fill-primary); color: var(--tok-icon-on-fill); }
 .stepper__step--complete .stepper__label { color: var(--tok-text-default); }
 .stepper__step--complete .stepper__num { display: none; }
 .stepper__step--complete .stepper__check { display: block; }
-/* a connector leading into a reached (active/complete) step fills brand blue */
-.stepper__connector--filled { background: var(--tok-fill-primary); }
+/* a completed step you can go back to */
+button.stepper__step--complete { cursor: pointer; }
+button.stepper__step--complete:hover .stepper__circle { background: var(--tok-fill-primary-hover); }
+button.stepper__step--complete:hover .stepper__label { color: var(--tok-text-primary); }
+button.stepper__step:focus-visible { outline: 2px solid var(--tok-border-focus); outline-offset: 2px; }
+/* compact — "Step 2 of 3 · Time" over a Progress sm bar */
+.stepper-compact { display: none; flex-direction: column; gap: 8px; font-family: var(--tok-family-sans); }
+.stepper-compact__text { margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 12px; line-height: 1.4; }
+.stepper-compact__count { color: var(--tok-text-secondary); }
+.stepper-compact__bar { height: 4px; border-radius: 999px; background: var(--tok-bg-neutral); overflow: hidden; }
+.stepper-compact__fill { height: 100%; border-radius: inherit; background: var(--tok-fill-primary); transition: width 0.2s ease; }
+.stepper-wrap--compact .stepper { display: none; }
+.stepper-wrap--compact .stepper-compact { display: flex; }
+.stepper .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+@media (max-width: 767.98px) {
+  .stepper-wrap .stepper { display: none; }
+  .stepper-wrap .stepper-compact { display: flex; }
+}
+
+.wizard { display: flex; flex-direction: column; gap: 24px; }
+.wizard__panel { display: flex; flex-direction: column; gap: 24px; }
+.wizard__panel[hidden], .wizard__footer [hidden] { display: none; }
+.wizard__title { margin: 0 0 calc(16px - 24px); padding: 0; outline: none; color: var(--tok-text-default); font-weight: 600; font-size: 16px; line-height: 1.4; }
+.wizard__footer { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 12px; }
+  
+/* Button primary / secondary base (see button.html) */
+.btn { box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; height: 40px; padding: 0 12px; border: none; border-radius: 8px; cursor: pointer; white-space: nowrap; font-family: var(--tok-family-sans); font-weight: 600; font-size: 14px; line-height: 1.4; }
+.btn:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
+.btn--primary { background: var(--tok-fill-primary); color: var(--tok-text-on-fill); }
+.btn--primary:hover { background: var(--tok-fill-primary-hover); }
+.btn--primary:active { background: var(--tok-fill-primary-active); }
+.btn--secondary { background: var(--tok-fill-neutral); color: var(--tok-text-default); }
+.btn--secondary:hover { background: var(--tok-fill-neutral-hover-strong); }
+.btn--secondary:active { background: var(--tok-fill-neutral-active-strong); }
+
+/* Text field — a real <input> on Input's recipe. base/lg float the label in at
+   12px on focus or once there is a value; resting, the placeholder shows the
+   label's text and the label itself is kept for screen readers only. sm never
+   floats (too short for two lines) — its label is screen-reader only. */
+.text-field { box-sizing: border-box; display: flex; align-items: center; background: var(--tok-surface-dim); border: 1px solid var(--tok-border-default); border-radius: 8px; cursor: text; font-family: var(--tok-family-sans); }
+.text-field__stack { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; }
+.text-field { height: 40px; padding: 0 12px; gap: 8px; }
+.text-field .text-field__icon { width: 20px; height: 20px; }
+.text-field .text-field__action { margin-inline-end: -8px; }
+.text-field .text-field__stack { gap: 0px; }
+.text-field .text-field__label { font-weight: 400; font-size: 12px; line-height: 1.2; }
+.text-field--sm { height: 32px; padding: 0 8px; gap: 8px; }
+.text-field--sm .text-field__icon { width: 16px; height: 16px; }
+.text-field--sm .text-field__action { margin-inline-end: -4px; }
+.text-field--lg { height: 48px; padding: 0 16px; gap: 8px; }
+.text-field--lg .text-field__icon { width: 24px; height: 24px; }
+.text-field--lg .text-field__action { margin-inline-end: -12px; }
+.text-field--lg .text-field__stack { gap: 4px; }
+.text-field--lg .text-field__label { font-weight: 400; font-size: 12px; line-height: 1.2; }
+.text-field__icon { flex-shrink: 0; color: var(--tok-icon-default); }
+.text-field__label { color: var(--tok-text-muted); cursor: text; }
+.text-field__control { box-sizing: border-box; width: 100%; margin: 0; padding: 0; border: none; outline: none; background: transparent; color: var(--tok-text-default); font-family: inherit; font-weight: 400; font-size: 16px; line-height: 1.2; }
+.text-field__control::placeholder { color: var(--tok-text-muted); opacity: 1; }
+.text-field:not(:focus-within):has(.text-field__control:placeholder-shown) .text-field__label,
+.text-field--sm .text-field__label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.text-field:focus-within .text-field__control::placeholder { color: transparent; }
+/* hover / focus — not on a disabled or read-only field */
+.text-field:not(:has(:disabled, [readonly])):hover { background: var(--tok-surface-dim-hover); border-color: var(--tok-border-strong); }
+.text-field:focus-within { border-color: var(--tok-border-focus); }
+.text-field:not(:has([readonly])):focus-within .text-field__label { color: var(--tok-text-primary); }
+/* disabled — unavailable right now: faded, not focusable */
+.text-field:has(.text-field__control:disabled) { background: var(--tok-surface-disabled); border-color: var(--tok-border-default); cursor: not-allowed; }
+.text-field:has(.text-field__control:disabled) .text-field__control { color: var(--tok-text-disabled); cursor: not-allowed; }
+.text-field:has(.text-field__control:disabled) .text-field__control::placeholder { color: var(--tok-text-disabled); }
+.text-field:has(.text-field__control:disabled) .text-field__label { color: var(--tok-text-disabled); }
+.text-field:has(.text-field__control:disabled) .text-field__icon { color: var(--tok-icon-disabled); }
+/* read-only — can't change, can read, select and copy: full contrast, no recessed fill */
+.text-field:has(.text-field__control[readonly]) { background: var(--tok-surface-default); border-color: var(--tok-border-default); cursor: default; }
+.text-field:has(.text-field__control[readonly]) .text-field__label { color: var(--tok-text-muted); }
+.text-field:has(.text-field__control[readonly]) .text-field__control { color: var(--tok-text-default); }
+/* error — set aria-invalid on the control (FORM_JS does) */
+.text-field:has(.text-field__control[aria-invalid="true"]), .text-field:has(.text-field__control[aria-invalid="true"]):hover { border-color: var(--tok-border-danger-strong); }
+/* trailing action (password reveal) — Button ghost sm icon-only, pulled to 4px from the edge */
+.text-field__action { flex-shrink: 0; box-sizing: border-box; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; padding: 0; border: none; border-radius: 8px; background: transparent; color: var(--tok-icon-secondary); cursor: pointer; }
+.text-field__action:hover { background: var(--tok-fill-neutral-hover); }
+.text-field__action:active { background: var(--tok-fill-neutral-active); }
+.text-field__action:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: -4px; }
+.text-field__action svg { width: 16px; height: 16px; }
+.text-field__action[aria-pressed="true"] .text-field__show, .text-field__action[aria-pressed="false"] .text-field__hide { display: none; }
+.text-field--sm .text-field__action { width: 24px; height: 24px; }
+/* Text area — the same field, growing downward; the label sits on top */
+.text-field--area { height: auto; min-height: 96px; align-items: stretch; padding-top: 8px; padding-bottom: 8px; }
+.text-field--area .text-field__stack { justify-content: flex-start; }
+.text-field--area .text-field__control { flex: 1; min-height: 64px; resize: vertical; }
+
+/* Field — label (only for controls without a floating one), control, description, error */
+.field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.field__label { margin-bottom: 4px; color: var(--tok-text-default); font-weight: 600; font-size: 12px; line-height: 1.4; }
+.field__optional { color: var(--tok-text-muted); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.field__description { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.field__error { margin: 0; display: flex; align-items: flex-start; gap: 4px; color: var(--tok-text-danger); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.field__error[hidden] { display: none; }
+.field__error-icon { width: 16px; height: 16px; flex-shrink: 0; color: var(--tok-icon-danger); }
+/* invalid: a DatePicker takes Input's error border too (a text field does via aria-invalid) */
+.field[data-invalid] .datepicker__trigger, .field[data-invalid] .datepicker__trigger:hover, .field[data-invalid] .datepicker__trigger:focus-visible { border-color: var(--tok-border-danger-strong); }
+
+/* Form — one column, sections, actions under the last field */
+.form { display: flex; flex-direction: column; gap: 24px; max-width: 480px; margin: 0; font-family: var(--tok-family-sans); }
+.form__section { display: flex; flex-direction: column; gap: 24px; margin: 0; padding: 0; border: none; min-width: 0; }
+.form__section + .form__section { margin-top: 16px; }
+.form__section-title { margin: 0; padding: 0 0 16px; color: var(--tok-text-default); font-weight: 600; font-size: 16px; line-height: 1.4; }
+.form__actions { display: flex; flex-wrap: wrap; gap: 12px; }
+
+/* Select — the trigger. A real <button> on Input's box model; the value floats
+   a 12px label above it once something is chosen (base/lg). */
+.select-field { position: relative; display: block; min-width: 0; }
+.select { box-sizing: border-box; display: flex; align-items: center; width: 100%; margin: 0; background: var(--tok-surface-dim); border: 1px solid var(--tok-border-default); border-radius: 8px; font-family: var(--tok-family-sans); text-align: left; cursor: pointer; }
+.select { height: 40px; padding: 0 12px; gap: 8px; }
+.select .select__icon, .select .select__chevron { width: 20px; height: 20px; }
+.select .select__value { font-weight: 400; font-size: 14px; line-height: 1.2; }
+.select .select__stack { gap: 0px; }
+.select .select__label { font-weight: 400; font-size: 12px; line-height: 1.2; }
+.select--sm { height: 32px; padding: 0 8px; gap: 8px; }
+.select--sm .select__icon, .select--sm .select__chevron { width: 16px; height: 16px; }
+.select--sm .select__value { font-weight: 400; font-size: 14px; line-height: 1.2; }
+.select--lg { height: 48px; padding: 0 16px; gap: 8px; }
+.select--lg .select__icon, .select--lg .select__chevron { width: 24px; height: 24px; }
+.select--lg .select__value { font-weight: 400; font-size: 14px; line-height: 1.2; }
+.select--lg .select__stack { gap: 4px; }
+.select--lg .select__label { font-weight: 400; font-size: 12px; line-height: 1.2; }
+.select__stack { display: flex; flex-direction: column; justify-content: center; flex: 1; min-width: 0; }
+.select__label { color: var(--tok-text-muted); white-space: nowrap; }
+.select__value { display: flex; align-items: center; gap: 8px; min-width: 0; color: var(--tok-text-default); }
+.select__text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.select__icon { flex-shrink: 0; color: var(--tok-icon-default); }
+.select__chevron { flex-shrink: 0; margin-left: auto; color: var(--tok-icon-default); transition: transform 0.12s ease; }
+/* nothing chosen: the label's text is the placeholder; sm never floats */
+.select.is-placeholder .select__label, .select--sm .select__label { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.select.is-placeholder .select__value { color: var(--tok-text-muted); }
+/* multiple: the first choice + "+N" for the rest ("Email  +2") — Counter's size, select.more's quieter colours */
+.select__more { flex-shrink: 0; box-sizing: border-box; min-width: 16px; height: 16px; padding: 0 4px; display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; background: var(--tok-bg-neutral-strong); color: var(--tok-text-secondary); font-weight: 700; font-size: 10px; line-height: 1; }
+.select__more[hidden] { display: none; }
+/* states */
+.select:not(:disabled):hover { background: var(--tok-surface-dim-hover); border-color: var(--tok-border-strong); }
+.select:focus-visible { outline: none; border-color: var(--tok-border-focus); }
+/* open — the list is showing: focus border, blue label, the chevron turns up */
+.select[aria-expanded="true"], .select[aria-expanded="true"]:hover { border-color: var(--tok-border-focus); }
+.select[aria-expanded="true"] .select__label { color: var(--tok-text-primary); }
+.select[aria-expanded="true"] .select__chevron { transform: rotate(180deg); }
+.select:disabled { background: var(--tok-surface-disabled); border-color: var(--tok-border-default); cursor: not-allowed; }
+.select:disabled .select__value { color: var(--tok-text-disabled); }
+.select:disabled.is-placeholder .select__value { color: var(--tok-text-disabled); }
+.select:disabled .select__label { color: var(--tok-text-disabled); }
+.select:disabled .select__icon { color: var(--tok-icon-disabled); }
+.select:disabled .select__chevron { color: var(--tok-icon-disabled); }
+.select[aria-invalid="true"], .select[aria-invalid="true"]:hover { border-color: var(--tok-border-danger-strong); }
+/* the panel — Listbox, under the field, at least as wide as it */
+.select__panel { margin: 0; }
+
+.listbox { margin: 0; box-sizing: border-box; padding: 4px; border-radius: 8px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); box-shadow: 0px 2px 8px 0px rgba(21, 25, 30, 0.10); font-family: var(--tok-family-sans); min-width: 220px; }
+.listbox__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; max-height: 288px; overflow: auto; }
+.listbox__option { width: 100%; box-sizing: border-box; display: flex; align-items: center; gap: 8px; padding: 8px 8px; border: none; background: none; border-radius: 4px; cursor: pointer; text-align: left; color: var(--tok-text-default); font-family: inherit; font-weight: 400; font-size: 14px; line-height: 1.4; }
+.listbox__option:hover, .listbox__option:focus-visible { background: var(--tok-fill-neutral-hover); outline: none; }
+/* An option with a description + a trailing kind badge. The text stack takes
+   the remaining width so a long programme name wraps instead of pushing the
+   badge out of the panel. */
+.listbox__stack { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+.listbox__desc { color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.listbox__trailing { flex-shrink: 0; margin-left: 8px; display: inline-flex; align-items: center; height: 16px; padding: 0 8px; border-radius: 999px; background: var(--tok-bg-neutral-strong); color: var(--tok-text-default); font-weight: 600; font-size: 10px; line-height: 1; }
+/* single-select: a trailing checkmark on the chosen option, no tint */
+.listbox__checkmark { width: 16px; height: 16px; margin-left: auto; color: var(--tok-fill-primary); flex-shrink: 0; }
+.listbox__option[aria-selected="false"] .listbox__checkmark { visibility: hidden; }
+
+/* multi-select: a real Checkbox marker per option (checkbox.tokens.json) */
+.listbox__cb-option { width: 100%; box-sizing: border-box; display: flex; align-items: center; gap: 8px; padding: 8px 8px; border-radius: 4px; cursor: pointer; }
+.listbox__cb-option:hover { background: var(--tok-fill-neutral-hover); }
+.listbox__cb-input { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.listbox__cb-box { box-sizing: border-box; width: 20px; height: 20px; border-radius: 4px; border: 2px solid var(--tok-border-default); background: var(--tok-surface-default); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.listbox__cb-icon { width: 16px; height: 16px; display: none; color: var(--tok-icon-on-fill); }
+.listbox__cb-input:checked ~ .listbox__cb-box, .listbox__option[aria-selected="true"] .listbox__cb-box { background: var(--tok-fill-primary); border-color: var(--tok-fill-primary); }
+.listbox__cb-input:checked ~ .listbox__cb-box .listbox__cb-icon, .listbox__option[aria-selected="true"] .listbox__cb-box .listbox__cb-icon { display: block; }
+.listbox__cb-label { color: var(--tok-text-default); font-family: inherit; font-weight: 400; font-size: 14px; line-height: 1.4; }
+
+.listbox__search-wrap { padding: 4px 4px 4px; margin-bottom: 2px; border-bottom: 1px solid var(--tok-border-default); }
+.listbox__search { display: flex; align-items: center; box-sizing: border-box; height: 32px; padding: 0 8px; gap: 8px; border-radius: 8px; background: var(--tok-surface-dim); border: 1px solid var(--tok-border-default); }
+.listbox__search-icon { width: 16px; height: 16px; color: var(--tok-icon-default); flex-shrink: 0; }
+.listbox__search input { border: none; background: none; outline: none; width: 100%; color: var(--tok-text-default); font-family: inherit; font-weight: 400; font-size: 16px; line-height: 1.2; }
+.listbox__search input::placeholder { color: var(--tok-text-muted); }
+
+.listbox__select-all { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 4px 8px; }
+.listbox__select-all-label { color: var(--tok-text-secondary); margin: 0; font-weight: 400; font-size: 12px; line-height: 1.4; }
+.listbox__clear { border: none; background: none; padding: 0; cursor: pointer; color: var(--tok-text-primary); font-weight: 400; font-size: 12px; line-height: 1.4; text-decoration: underline; }
+
+/* groups ("Fruits", "Vegetables") — Command's group heading, a hairline between groups */
+.listbox__group { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.listbox__group-label { box-sizing: border-box; height: 28px; display: flex; align-items: center; padding: 0 8px; color: var(--tok-text-muted); font-weight: 600; font-size: 12px; line-height: 1.4; }
+.listbox__divider { height: 1px; margin: 4px 0; background: var(--tok-border-default); }
+
+.calendar { display: inline-block; vertical-align: top; }
+.calendar__months { display: flex; gap: 20px; }
+.calendar__head { display: flex; align-items: center; justify-content: space-between; gap: 4px; margin-bottom: 8px; }
+.calendar__selects { display: flex; align-items: center; gap: 4px; }
+/* month / year select — a 32px control in the field family, chevron = expand_more */
+.calendar__sel { position: relative; display: inline-flex; }
+.calendar__select { appearance: none; -webkit-appearance: none; box-sizing: border-box; height: 32px; margin: 0; padding: 0 24px 0 8px; border: 1px solid var(--tok-border-default); border-radius: 8px; background: var(--tok-surface-default); color: var(--tok-text-default); font-family: inherit; font-weight: 400; font-size: 12px; line-height: 1.4; cursor: pointer; }
+.calendar__select:hover { border-color: var(--tok-border-strong); }
+.calendar__select:focus-visible { outline: none; border-color: var(--tok-border-focus); }
+.calendar__sel-chevron { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--tok-icon-default); pointer-events: none; }
+/* paging arrows; with two months the inner sides keep a same-width spacer */
+.calendar__nav { box-sizing: border-box; width: 32px; height: 32px; padding: 0; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; border: none; background: none; border-radius: 8px; cursor: pointer; color: var(--tok-icon-default); }
+.calendar__nav:hover { background: var(--tok-fill-neutral-hover); }
+.calendar__nav:disabled { color: var(--tok-icon-disabled); background: none; cursor: default; }
+.calendar__nav:focus-visible { outline: 2px solid var(--tok-border-focus); outline-offset: -2px; }
+.calendar__nav-icon { width: 20px; height: 20px; }
+.calendar__nav-sp { width: 32px; flex-shrink: 0; }
+.calendar__grid { display: grid; grid-template-columns: repeat(7, 36px); gap: 4px 0; }
+.calendar__weekday { width: 36px; height: 28px; display: inline-flex; align-items: center; justify-content: center; color: var(--tok-text-muted); font-weight: 700; font-size: 12px; line-height: 1.4; text-transform: uppercase; }
+.calendar__day { box-sizing: border-box; width: 36px; height: 36px; margin: 0; padding: 0; display: inline-flex; align-items: center; justify-content: center; border: 1px solid transparent; border-radius: 8px; background: none; cursor: pointer; color: var(--tok-text-default); font-weight: 400; font-size: 12px; line-height: 1.4; font-family: inherit; }
+.calendar__day:hover { background: var(--tok-fill-neutral-hover); }
+.calendar__day:focus-visible { outline: 2px solid var(--tok-border-focus); outline-offset: -2px; }
+.calendar__day--outside { color: var(--tok-text-muted); cursor: default; }
+.calendar__day--outside:hover { background: none; }
+.calendar__day--today { border-color: var(--tok-border-strong); }
+.calendar__day:disabled { color: var(--tok-text-disabled); background: none; cursor: default; }
+/* range: the wash runs edge-to-edge; the ends round on their outer side */
+.calendar__day--mid, .calendar__day--mid:hover { background: var(--tok-bg-primary); color: var(--tok-text-default); border-radius: 0; }
+.calendar__day--selected, .calendar__day--selected:hover { background: var(--tok-fill-primary); color: var(--tok-text-on-fill); border-color: var(--tok-fill-primary); }
+.calendar__day--start { border-radius: 8px 0 0 8px; }
+.calendar__day--end { border-radius: 0 8px 8px 0; }
+.calendar__day--start.calendar__day--end { border-radius: 8px; }
+/* narrow containers: two months stack */
+@media (max-width: 560px) { .calendar__months { flex-direction: column; gap: 12px; } }
+
+.datepicker { display: inline-block; vertical-align: top; font-family: var(--tok-family-sans); }
+.datepicker--block { display: block; }
+.datepicker__trigger { box-sizing: border-box; display: inline-flex; align-items: center; gap: 8px; height: 40px; margin: 0; padding: 0 12px; border-radius: 8px; background: var(--tok-surface-dim); border: 1px solid var(--tok-border-default); cursor: pointer; color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; font-family: inherit; text-align: left; }
+.datepicker--block .datepicker__trigger { width: 100%; }
+.datepicker__trigger:hover { border-color: var(--tok-border-strong); }
+.datepicker__trigger:focus-visible { outline: none; border-color: var(--tok-border-focus); }
+.datepicker__icon, .datepicker__chevron { width: 20px; height: 20px; color: var(--tok-icon-default); flex-shrink: 0; }
+.datepicker__chevron { margin-left: auto; }
+.datepicker__value { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.datepicker__value--placeholder { color: var(--tok-text-muted); }
+.datepicker__panel { margin: 0; box-sizing: border-box; padding: 12px; border-radius: 8px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); box-shadow: 0px 2px 8px 0px rgba(21, 25, 30, 0.10); font-family: inherit; color: inherit; }
+.form-status { margin: 0; min-height: 1.4em; color: var(--tok-text-success); font-weight: 400; font-size: 12px; line-height: 1.4; }
 </style>
 </head>
 <body>
@@ -202,90 +456,472 @@
 </script></nav>
   <main>
     <h1>Stepper</h1>
-    <p class="sub">tokens/components/stepper.tokens.json · generated — a horizontal step indicator for short 2–3 step wizards (the New Group Message flow). Numbered circles joined by connectors; each step inactive / active / complete.</p>
+    <p class="sub">tokens/components/stepper.tokens.json · generated — the step indicator for a short (2–4 step) flow, and the <b>Wizard</b> around it. Recipe and behaviour in <code class="tok">tools/lib/stepper.mjs</code>.</p>
 
     <div class="legend">
-      <div class="row"><b>States</b><span><code class="tok">inactive</code> = gray disc + muted ink · <code class="tok">active</code> = <code class="tok">fill.primary</code> disc + on-fill number · <code class="tok">complete</code> = same brand fill but the number becomes a check (check.svg). Complete stays the same fill as active — it's "done and reachable", the glyph is the only difference.</span></div>
-      <div class="row"><b>Connector</b><span>A 2px line between steps; the connector leading INTO a reached (active/complete) step fills <code class="tok">fill.primary</code>, so progress reads left-to-right.</span></div>
-      <div class="row"><b>Scope</b><span>Horizontal only, no per-step descriptions — built for 2–3 step wizards, not page-length onboarding.</span></div>
+      <div class="row"><b>States</b><span>inactive = gray disc · active = fill.primary disc + number · complete = the same fill, the number becomes a check. The connector into a reached step fills blue.</span></div>
+      <div class="row"><b>Going back</b><span>Completed steps are buttons back to that step (hover: the disc darkens, the label turns link blue). Upcoming steps never are. Turn it off when a step can't be undone (after a payment).</span></div>
+      <div class="row"><b>Phone</b><span>Below 768px: "Step 2 of 3 · Time" over a Progress sm bar — the full row doesn't fit.</span></div>
+      <div class="row"><b>Wizard footer</b><span>Right-aligned, Secondary then Primary. First step: <b>Cancel</b> (nowhere to go back to). Middle steps: <b>Back</b> + <b>Next</b>. Last step: the action's own name — "Book appointment", "Send" — never "Submit" or "Finish".</span></div>
+      <div class="row"><b>Validation</b><span>Next is never disabled (a gray button doesn't say why). It checks the step's Fields like <a href="form.html">Form</a> does — messages under the fields, focus on the first — and only then moves on. The last step checks every step and opens the first one that isn't right.</span></div>
+      <div class="row"><b>A11y</b><span>An ordered list with <code class="tok">aria-current="step"</code>; completed steps say so; each step's title takes focus when it opens, so a screen reader announces where you are.</span></div>
     </div>
 
-    <h2 class="big-section">Wizard progress</h2>
-    <p class="section-desc">The New Group Message wizard at each step.</p>
-    <div class="story-grid">
-      <div class="story"><h3>Step 1 of 2 — Select Students</h3><div class="story-preview"><div class="stepper" role="list">
-      <div class="stepper__step stepper__step--active">
-        <span class="stepper__circle"><span class="stepper__num">1</span><svg class="stepper__check" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
-        <span class="stepper__label">Select Students</span>
-      </div>
-      <div class="stepper__connector"></div>
-      <div class="stepper__step stepper__step--inactive">
-        <span class="stepper__circle"><span class="stepper__num">2</span><svg class="stepper__check" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
-        <span class="stepper__label">Message Details</span>
-      </div>
-    </div></div><p class="story-note">First step active, second not yet reached (gray connector).</p></div>
-      <div class="story"><h3>Step 2 of 2 — Message Details</h3><div class="story-preview"><div class="stepper" role="list">
-      <div class="stepper__step stepper__step--complete">
-        <span class="stepper__circle"><span class="stepper__num">1</span><svg class="stepper__check" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
-        <span class="stepper__label">Select Students</span>
-      </div>
-      <div class="stepper__connector stepper__connector--filled"></div>
-      <div class="stepper__step stepper__step--active">
-        <span class="stepper__circle"><span class="stepper__num">2</span><svg class="stepper__check" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
-        <span class="stepper__label">Message Details</span>
-      </div>
-    </div></div><p class="story-note">Step 1 complete (check + filled connector), step 2 active.</p></div>
-      <div class="story"><h3>Three steps, mid-flow</h3><div class="story-preview"><div class="stepper" role="list">
-      <div class="stepper__step stepper__step--complete">
-        <span class="stepper__circle"><span class="stepper__num">1</span><svg class="stepper__check" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
-        <span class="stepper__label">Audience</span>
-      </div>
-      <div class="stepper__connector stepper__connector--filled"></div>
-      <div class="stepper__step stepper__step--active">
-        <span class="stepper__circle"><span class="stepper__num">2</span><svg class="stepper__check" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
-        <span class="stepper__label">Compose</span>
-      </div>
-      <div class="stepper__connector"></div>
-      <div class="stepper__step stepper__step--inactive">
-        <span class="stepper__circle"><span class="stepper__num">3</span><svg class="stepper__check" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
-        <span class="stepper__label">Review</span>
-      </div>
-    </div></div><p class="story-note">Scales to a third step.</p></div>
+    <h2 class="big-section">Indicator</h2>
+    <div class="story-grid" style="grid-template-columns: 1fr"><div class="story"><h3>Step 1 of 2</h3><div class="story-preview"><div class="stepper-wrap">
+  <ol class="stepper" aria-label="Progress"><li class="stepper__step stepper__step--active" aria-current="step"><span class="stepper__circle"><span class="stepper__num">1</span><svg class="stepper__check" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="stepper__label">Select students</span></li><li class="stepper__connector" aria-hidden="true"></li><li class="stepper__step stepper__step--inactive"><span class="stepper__circle"><span class="stepper__num">2</span><svg class="stepper__check" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="stepper__label">Message details</span></li></ol>
+  <div class="stepper-compact" aria-hidden="true"><p class="stepper-compact__text"><span class="stepper-compact__count">Step 1 of 2</span> · Select students</p><div class="stepper-compact__bar"><div class="stepper-compact__fill" style="width:50%"></div></div></div>
+</div></div><p class="story-note">First step active, the next not yet reached (gray connector).</p></div><div class="story"><h3>Step 2 of 2</h3><div class="story-preview"><div class="stepper-wrap">
+  <ol class="stepper" aria-label="Progress"><li class="stepper__step stepper__step--complete"><span class="stepper__circle"><span class="stepper__num">1</span><svg class="stepper__check" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="stepper__label">Select students</span><span class="visually-hidden"> (completed)</span></li><li class="stepper__connector stepper__connector--filled" aria-hidden="true"></li><li class="stepper__step stepper__step--active" aria-current="step"><span class="stepper__circle"><span class="stepper__num">2</span><svg class="stepper__check" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="stepper__label">Message details</span></li></ol>
+  <div class="stepper-compact" aria-hidden="true"><p class="stepper-compact__text"><span class="stepper-compact__count">Step 2 of 2</span> · Message details</p><div class="stepper-compact__bar"><div class="stepper-compact__fill" style="width:100%"></div></div></div>
+</div></div><p class="story-note">Step 1 complete (check, filled connector).</p></div><div class="story"><h3>Going back — completed steps are buttons</h3><div class="story-preview"><div class="stepper-wrap">
+  <ol class="stepper" aria-label="Progress"><li style="display:contents"><button type="button" class="stepper__step stepper__step--complete" data-goto="0"><span class="stepper__circle"><span class="stepper__num">1</span><svg class="stepper__check" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="stepper__label">Details</span><span class="visually-hidden"> (completed — go back)</span></button></li><li class="stepper__connector stepper__connector--filled" aria-hidden="true"></li><li style="display:contents"><button type="button" class="stepper__step stepper__step--complete" data-goto="1"><span class="stepper__circle"><span class="stepper__num">2</span><svg class="stepper__check" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="stepper__label">Time</span><span class="visually-hidden"> (completed — go back)</span></button></li><li class="stepper__connector stepper__connector--filled" aria-hidden="true"></li><li class="stepper__step stepper__step--active" aria-current="step"><span class="stepper__circle"><span class="stepper__num">3</span><svg class="stepper__check" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="stepper__label">Review</span></li></ol>
+  <div class="stepper-compact" aria-hidden="true"><p class="stepper-compact__text"><span class="stepper-compact__count">Step 3 of 3</span> · Review</p><div class="stepper-compact__bar"><div class="stepper-compact__fill" style="width:100%"></div></div></div>
+</div></div><p class="story-note">Hover a completed step: the disc darkens and the label turns link blue. Upcoming steps are never clickable — no skipping ahead.</p></div><div class="story"><h3>Compact — a phone</h3><div class="story-preview"><div class="stepper-wrap stepper-wrap--compact">
+  <ol class="stepper" aria-label="Progress"><li class="stepper__step stepper__step--complete"><span class="stepper__circle"><span class="stepper__num">1</span><svg class="stepper__check" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="stepper__label">Details</span><span class="visually-hidden"> (completed)</span></li><li class="stepper__connector stepper__connector--filled" aria-hidden="true"></li><li class="stepper__step stepper__step--active" aria-current="step"><span class="stepper__circle"><span class="stepper__num">2</span><svg class="stepper__check" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="stepper__label">Time</span></li><li class="stepper__connector" aria-hidden="true"></li><li class="stepper__step stepper__step--inactive"><span class="stepper__circle"><span class="stepper__num">3</span><svg class="stepper__check" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="stepper__label">Review</span></li></ol>
+  <div class="stepper-compact" aria-hidden="true"><p class="stepper-compact__text"><span class="stepper-compact__count">Step 2 of 3</span> · Time</p><div class="stepper-compact__bar"><div class="stepper-compact__fill" style="width:67%"></div></div></div>
+</div></div><p class="story-note">Below 768px the row becomes 'Step 2 of 3 · Time' over a Progress sm bar (forced here).</p></div></div>
+
+    <h2 class="big-section">Wizard</h2>
+    <p class="section-desc">A real three-step flow. Press Next with the fields empty, fill them in, go back through a completed step, press Cancel on the first step.</p>
+    <div class="story-grid"><div class="story"><h3>Book an appointment</h3><div class="story-preview"><div class="wz-demo"><form class="form wizard" id="wz" data-wizard data-navigable data-labels='["Details","Time","Review"]'>
+  <div class="stepper-wrap">
+  <ol class="stepper" aria-label="Progress"><li class="stepper__step stepper__step--active" aria-current="step"><span class="stepper__circle"><span class="stepper__num">1</span><svg class="stepper__check" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="stepper__label">Details</span></li><li class="stepper__connector" aria-hidden="true"></li><li class="stepper__step stepper__step--inactive"><span class="stepper__circle"><span class="stepper__num">2</span><svg class="stepper__check" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="stepper__label">Time</span></li><li class="stepper__connector" aria-hidden="true"></li><li class="stepper__step stepper__step--inactive"><span class="stepper__circle"><span class="stepper__num">3</span><svg class="stepper__check" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span class="stepper__label">Review</span></li></ol>
+  <div class="stepper-compact" aria-hidden="true"><p class="stepper-compact__text"><span class="stepper-compact__count">Step 1 of 3</span> · Details</p><div class="stepper-compact__bar"><div class="stepper-compact__fill" style="width:33%"></div></div></div>
+</div>
+  <section class="wizard__panel" data-step="0" aria-labelledby="wz-t0">
+    <h2 class="wizard__title" id="wz-t0" tabindex="-1">Your details</h2>
+    <div class="field" data-field data-required data-error-required="Enter your full name.">
+  <div class="text-field"><div class="text-field__stack"><label class="text-field__label" for="wz-name">Full name</label><input class="text-field__control" id="wz-name" name="wz-name" placeholder="Full name" required autocomplete="name" aria-describedby="wz-name-error" type="text" /></div></div>
+  <p class="field__error" id="wz-name-error" hidden><svg class="field__error-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg><span></span></p>
+</div>
+    <div class="field" data-field data-required data-error-required="Enter your email." data-error-format="Enter an email like name@school.edu.">
+  <div class="text-field"><div class="text-field__stack"><label class="text-field__label" for="wz-email">Email</label><input class="text-field__control" id="wz-email" name="wz-email" placeholder="Email" required autocomplete="email" aria-describedby="wz-email-desc wz-email-error" type="email" /></div></div>
+  <p class="field__description" id="wz-email-desc">We send the confirmation there.</p>
+  <p class="field__error" id="wz-email-error" hidden><svg class="field__error-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg><span></span></p>
+</div>
+  </section>
+  <section class="wizard__panel" data-step="1" hidden aria-labelledby="wz-t1">
+    <h2 class="wizard__title" id="wz-t1" tabindex="-1">When and with whom</h2>
+    <div class="field" data-field data-required data-error-required="Choose a department.">
+  <div class="select-field" data-select data-value="" data-label="Department">
+  <button type="button" class="select is-placeholder" id="wz-dept" aria-haspopup="listbox" aria-expanded="false" aria-controls="wz-dept-list" aria-labelledby="wz-dept-label wz-dept-text" aria-describedby="wz-dept-error"><span class="select__stack"><span class="select__label" id="wz-dept-label">Department</span><span class="select__value"><span class="select__text" id="wz-dept-text">Department</span><span class="select__more" hidden>+0</span></span></span><svg class="select__chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+  <div class="listbox select__panel" id="wz-dept-list" popover role="listbox" aria-labelledby="wz-dept-label"><ul class="listbox__list" role="none"><li role="none"><button type="button" class="listbox__option" role="option" id="wz-dept-opt-0" aria-selected="false" data-value="Advising" tabindex="-1"><span>Advising</span><svg class="listbox__checkmark" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li><li role="none"><button type="button" class="listbox__option" role="option" id="wz-dept-opt-1" aria-selected="false" data-value="Financial aid" tabindex="-1"><span>Financial aid</span><svg class="listbox__checkmark" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li><li role="none"><button type="button" class="listbox__option" role="option" id="wz-dept-opt-2" aria-selected="false" data-value="Registrar" tabindex="-1"><span>Registrar</span><svg class="listbox__checkmark" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li></ul></div>
+</div>
+  <p class="field__error" id="wz-dept-error" hidden><svg class="field__error-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg><span></span></p>
+</div>
+    <div class="field" data-field data-required data-error-required="Choose a date.">
+  <label class="field__label" id="wz-date-trigger-label" for="wz-date-trigger">Preferred date</label>
+  <div class="datepicker datepicker--block" id="wz-date" data-placeholder="Select date">
+      <button class="datepicker__trigger" type="button" id="wz-date-trigger" popovertarget="wz-date-panel" aria-haspopup="dialog" aria-labelledby="wz-date-trigger-label wz-date-trigger" aria-describedby="wz-date-trigger-error"><svg class="datepicker__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 3h-1V1h-2v2H7V1H5v2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H4V8h16v13z"/></svg><span class="datepicker__value datepicker__value--placeholder">Select date</span><svg class="datepicker__chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+      <div class="datepicker__panel" id="wz-date-panel" popover role="dialog" aria-label="Choose a date"><div class="calendar" role="group" aria-label="Date" data-mode="single" data-view="2026-10" data-today="2026-10-27" data-min="2026-10-27"><div class="calendar__months"><div class="calendar__month"><div class="calendar__head"><button class="calendar__nav calendar__nav--prev" type="button" aria-label="Previous month"><svg class="calendar__nav-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg></button><span class="calendar__selects"><span class="calendar__sel"><select class="calendar__select calendar__select--month" aria-label="Month"><option value="0">January</option><option value="1">February</option><option value="2">March</option><option value="3">April</option><option value="4">May</option><option value="5">June</option><option value="6">July</option><option value="7">August</option><option value="8">September</option><option value="9" selected>October</option><option value="10">November</option><option value="11">December</option></select><svg class="calendar__sel-chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></span><span class="calendar__sel"><select class="calendar__select calendar__select--year" aria-label="Year"><option value="2026" selected>2026</option></select><svg class="calendar__sel-chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></span></span><button class="calendar__nav calendar__nav--next" type="button" aria-label="Next month"><svg class="calendar__nav-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button></div><div class="calendar__grid" role="group"></div></div></div></div></div>
     </div>
+  <p class="field__error" id="wz-date-trigger-error" hidden><svg class="field__error-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg><span></span></p>
+</div>
+  </section>
+  <section class="wizard__panel" data-step="2" hidden aria-labelledby="wz-t2">
+    <h2 class="wizard__title" id="wz-t2" tabindex="-1">Anything else?</h2>
+    <div class="field" data-field>
+  <div class="text-field text-field--area"><div class="text-field__stack"><label class="text-field__label" for="wz-notes">Notes (optional)</label><textarea class="text-field__control" id="wz-notes" name="wz-notes" placeholder="Notes (optional)" aria-describedby="wz-notes-desc wz-notes-error" rows="3"></textarea></div></div>
+  <p class="field__description" id="wz-notes-desc">Anything your advisor should know before you meet.</p>
+  <p class="field__error" id="wz-notes-error" hidden><svg class="field__error-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg><span></span></p>
+</div>
+  </section>
+  <div class="wizard__footer">
+    <button class="btn btn--secondary" type="button" data-back>Cancel</button>
+    <button class="btn btn--primary" type="button" data-next>Next</button>
+    <button class="btn btn--primary" type="submit" data-submit hidden>Book appointment</button>
+  </div>
+  <p class="form-status" role="status"></p>
+</form></div></div></div></div>
 
     <h2 class="big-section">CSS</h2>
     <pre class="code"><code>:root {
+  --tok-text-default: #121921;
+  --tok-border-default: #dadde0;
+  --tok-fill-primary: #077fec;
   --tok-surface-sunken: #e6e8eb;
   --tok-text-muted: #758191;
-  --tok-fill-primary: #077fec;
   --tok-text-on-fill: #ffffff;
-  --tok-text-default: #121921;
   --tok-icon-on-fill: #ffffff;
-  --tok-border-default: #dadde0;
+  --tok-fill-primary-hover: #0468c4;
+  --tok-text-primary: #0468c4;
+  --tok-border-focus: #0468c4;
+  --tok-text-secondary: #5d6a7a;
+  --tok-bg-neutral: #e6e8eb;
+  --tok-surface-dim: #f4f5f7;
+  --tok-surface-dim-hover: #e6e8eb;
+  --tok-border-strong: #adb5be;
+  --tok-border-danger-strong: #c11435;
+  --tok-icon-default: #485462;
+  --tok-surface-disabled: #e6e8eb;
+  --tok-text-disabled: #adb5be;
+  --tok-icon-disabled: #adb5be;
+  --tok-surface-default: #ffffff;
+  --tok-text-danger: #c11435;
+  --tok-icon-danger: #de394b;
+  --tok-icon-secondary: #758191;
+  --tok-fill-neutral-hover: #e6e8eb;
+  --tok-fill-neutral-active: #cdd1d6;
+  --tok-bg-neutral-strong: #dadde0;
+  --tok-bg-primary: #d9eaff;
+  --tok-fill-primary-active: #01519c;
+  --tok-fill-neutral: #e6e8eb;
+  --tok-fill-neutral-hover-strong: #cdd1d6;
+  --tok-fill-neutral-active-strong: #adb5be;
+  --tok-text-success: #057e3f;
   --tok-family-sans: 'Sora', sans-serif;
 }
 
-.stepper { display: flex; align-items: center; font-family: var(--tok-family-sans); }
-.stepper__step { display: inline-flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.stepper { display: flex; align-items: center; margin: 0; padding: 0; list-style: none; font-family: var(--tok-family-sans); }
+.stepper__step { display: inline-flex; align-items: center; gap: 8px; flex-shrink: 0; margin: 0; padding: 0; border: none; background: none; font-family: inherit; border-radius: 8px; }
 .stepper__circle { box-sizing: border-box; flex-shrink: 0; width: 28px; height: 28px; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; font-weight: 600; font-size: 12px; line-height: 1; }
-.stepper__num { display: block; }
 .stepper__check { width: 16px; height: 16px; display: none; }
 .stepper__label { font-weight: 600; font-size: 12px; line-height: 1.4; white-space: nowrap; }
 .stepper__connector { flex: 1; min-width: 24px; height: 2px; background: var(--tok-border-default); margin: 0 8px; }
-/* inactive */
+.stepper__connector--filled { background: var(--tok-fill-primary); }
 .stepper__step--inactive .stepper__circle { background: var(--tok-surface-sunken); color: var(--tok-text-muted); }
 .stepper__step--inactive .stepper__label { color: var(--tok-text-muted); }
-/* active */
 .stepper__step--active .stepper__circle { background: var(--tok-fill-primary); color: var(--tok-text-on-fill); }
 .stepper__step--active .stepper__label { color: var(--tok-text-default); }
-/* complete */
 .stepper__step--complete .stepper__circle { background: var(--tok-fill-primary); color: var(--tok-icon-on-fill); }
 .stepper__step--complete .stepper__label { color: var(--tok-text-default); }
 .stepper__step--complete .stepper__num { display: none; }
 .stepper__step--complete .stepper__check { display: block; }
-/* a connector leading into a reached (active/complete) step fills brand blue */
-.stepper__connector--filled { background: var(--tok-fill-primary); }</code></pre>
+/* a completed step you can go back to */
+button.stepper__step--complete { cursor: pointer; }
+button.stepper__step--complete:hover .stepper__circle { background: var(--tok-fill-primary-hover); }
+button.stepper__step--complete:hover .stepper__label { color: var(--tok-text-primary); }
+button.stepper__step:focus-visible { outline: 2px solid var(--tok-border-focus); outline-offset: 2px; }
+/* compact — "Step 2 of 3 · Time" over a Progress sm bar */
+.stepper-compact { display: none; flex-direction: column; gap: 8px; font-family: var(--tok-family-sans); }
+.stepper-compact__text { margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 12px; line-height: 1.4; }
+.stepper-compact__count { color: var(--tok-text-secondary); }
+.stepper-compact__bar { height: 4px; border-radius: 999px; background: var(--tok-bg-neutral); overflow: hidden; }
+.stepper-compact__fill { height: 100%; border-radius: inherit; background: var(--tok-fill-primary); transition: width 0.2s ease; }
+.stepper-wrap--compact .stepper { display: none; }
+.stepper-wrap--compact .stepper-compact { display: flex; }
+.stepper .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+@media (max-width: 767.98px) {
+  .stepper-wrap .stepper { display: none; }
+  .stepper-wrap .stepper-compact { display: flex; }
+}
+
+.wizard { display: flex; flex-direction: column; gap: 24px; }
+.wizard__panel { display: flex; flex-direction: column; gap: 24px; }
+.wizard__panel[hidden], .wizard__footer [hidden] { display: none; }
+.wizard__title { margin: 0 0 calc(16px - 24px); padding: 0; outline: none; color: var(--tok-text-default); font-weight: 600; font-size: 16px; line-height: 1.4; }
+.wizard__footer { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 12px; }</code></pre>
   </main>
 </div>
+<script>
+window.hpCalendar = window.hpCalendar || (function () {
+  var MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  var WD = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
+  var WD_FULL = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  function pad(n) { return ("0" + n).slice(-2); }
+  function parse(s) { if (!s) return null; var p = s.split("-").map(Number); return { y: p[0], m: p[1] - 1, d: p[2] || 1 }; }
+  function iso(a) { return a ? a.y + "-" + pad(a.m + 1) + "-" + pad(a.d) : ""; }
+  function key(a) { return a.y * 10000 + a.m * 100 + a.d; }
+  function mkey(a) { return a.y * 100 + a.m; }
+  function fromDate(dt) { return { y: dt.getFullYear(), m: dt.getMonth(), d: dt.getDate() }; }
+  function addDays(a, n) { return fromDate(new Date(a.y, a.m, a.d + n)); }
+  function viewAdd(v, n) { var dt = new Date(v.y, v.m + n, 1); return { y: dt.getFullYear(), m: dt.getMonth() }; }
+  function addMonths(a, n) { var last = new Date(a.y, a.m + n + 1, 0).getDate(); var dt = new Date(a.y, a.m + n, Math.min(a.d, last)); return fromDate(dt); }
+
+  function mount(el, opts) {
+    opts = opts || {};
+    var ds = el.dataset, mode = ds.mode || "single";
+    var monthEls = [].slice.call(el.querySelectorAll(".calendar__month"));
+    var today = parse(ds.today) || fromDate(new Date());
+    var min = parse(ds.min), max = parse(ds.max);
+    var st = { value: parse(ds.value), start: parse(ds.start), end: parse(ds.end) };
+    var anchor = parse(ds.view) || st.value || st.start || today;
+    var view = { y: anchor.y, m: anchor.m };
+    var focusDate = null;
+    function allowed(a) { var k = key(a); return !(min && k < key(min)) && !(max && k > key(max)); }
+    function visible(a) { var k = mkey(a); return k >= mkey(view) && k <= mkey(viewAdd(view, monthEls.length - 1)); }
+    function tabTarget() {
+      var c = [focusDate, mode === "single" ? st.value : st.start, today];
+      for (var i = 0; i < c.length; i++) if (c[i] && visible(c[i]) && allowed(c[i])) return iso(c[i]);
+      for (var d = 1; d <= 31; d++) { var f = { y: view.y, m: view.m, d: d }; if (allowed(f)) return iso(f); }
+      return null;
+    }
+    function render() {
+      var tab = tabTarget();
+      var s = st.start, e = st.end;
+      monthEls.forEach(function (mEl, i) {
+        var v = viewAdd(view, i);
+        var mSel = mEl.querySelector(".calendar__select--month"), ySel = mEl.querySelector(".calendar__select--year");
+        mSel.value = v.m;
+        var y0 = (min ? Math.min(min.y, v.y) : v.y - 10), y1 = (max ? Math.max(max.y, v.y) : v.y + 10), yo = "";
+        for (var y = y0; y <= y1; y++) yo += '<option value="' + y + '"' + (y === v.y ? " selected" : "") + ">" + y + "</option>";
+        ySel.innerHTML = yo;
+        var first = new Date(v.y, v.m, 1).getDay(), days = new Date(v.y, v.m + 1, 0).getDate(), prevDays = new Date(v.y, v.m, 0).getDate();
+        var html = WD.map(function (w, k) { return '<span class="calendar__weekday" title="' + WD_FULL[k] + '">' + w + "</span>"; }).join("");
+        var i2, n = first + days;
+        for (i2 = 0; i2 < first; i2++) html += '<span class="calendar__day calendar__day--outside" aria-hidden="true">' + (prevDays - first + 1 + i2) + "</span>";
+        for (var d = 1; d <= days; d++) {
+          var a = { y: v.y, m: v.m, d: d }, k = key(a), cls = ["calendar__day"], on = false;
+          if (k === key(today)) cls.push("calendar__day--today");
+          if (mode === "single") { if (st.value && k === key(st.value)) { cls.push("calendar__day--selected"); on = true; } }
+          else if (s) {
+            var eK = e ? key(e) : key(s);
+            if (k === key(s)) { cls.push("calendar__day--selected", "calendar__day--start"); on = true; }
+            if (k === eK) { cls.push("calendar__day--selected", "calendar__day--end"); on = true; }
+            if (k > key(s) && k < eK) cls.push("calendar__day--mid");
+          }
+          var label = WD_FULL[new Date(v.y, v.m, d).getDay()] + ", " + MONTHS[v.m] + " " + d + ", " + v.y;
+          html += '<button type="button" class="' + cls.join(" ") + '" data-iso="' + iso(a) + '" aria-label="' + label + '" aria-pressed="' + on + '"' +
+            (k === key(today) ? ' aria-current="date"' : "") + (allowed(a) ? "" : " disabled") + ' tabindex="' + (iso(a) === tab ? 0 : -1) + '">' + d + "</button>";
+        }
+        for (i2 = 1; (n + i2 - 1) % 7 !== 0; i2++) html += '<span class="calendar__day calendar__day--outside" aria-hidden="true">' + i2 + "</span>";
+        var grid = mEl.querySelector(".calendar__grid");
+        grid.innerHTML = html;
+        grid.setAttribute("aria-label", MONTHS[v.m] + " " + v.y);
+      });
+      var prev = el.querySelector(".calendar__nav--prev"), next = el.querySelector(".calendar__nav--next");
+      if (prev) prev.disabled = !!(min && mkey(viewAdd(view, -1)) < mkey(min));
+      if (next) next.disabled = !!(max && mkey(viewAdd(view, monthEls.length)) > mkey(max));
+    }
+    function setView(v) { view = { y: v.y, m: v.m }; render(); }
+    function pick(a) {
+      if (mode === "single") st.value = a;
+      else if (!st.start || st.end) { st.start = a; st.end = null; }
+      else if (key(a) < key(st.start)) { st.end = st.start; st.start = a; }
+      else st.end = a;
+      focusDate = a; render();
+      if (opts.onChange) opts.onChange(api.getValue());
+    }
+    function moveFocus(a) {
+      if (!allowed(a)) return;
+      focusDate = a;
+      if (!visible(a)) view = mkey(a) < mkey(view) ? { y: a.y, m: a.m } : viewAdd({ y: a.y, m: a.m }, -(monthEls.length - 1));
+      render();
+      var b = el.querySelector('.calendar__day[data-iso="' + iso(a) + '"]'); if (b) b.focus();
+    }
+    el.addEventListener("click", function (e) {
+      var b = e.target.closest(".calendar__day[data-iso]");
+      if (b && !b.disabled) { pick(parse(b.dataset.iso)); var f = el.querySelector('.calendar__day[data-iso="' + b.dataset.iso + '"]'); if (f) f.focus(); return; }
+      if (e.target.closest(".calendar__nav--prev")) setView(viewAdd(view, -1));
+      else if (e.target.closest(".calendar__nav--next")) setView(viewAdd(view, 1));
+    });
+    el.addEventListener("change", function (e) {
+      var mEl = e.target.closest(".calendar__month"); if (!mEl) return;
+      var i = monthEls.indexOf(mEl), v = viewAdd(view, i);
+      if (e.target.classList.contains("calendar__select--month")) v.m = parseInt(e.target.value, 10);
+      else v.y = parseInt(e.target.value, 10);
+      setView(viewAdd(v, -i));
+    });
+    el.addEventListener("keydown", function (e) {
+      var b = e.target.closest(".calendar__day[data-iso]"); if (!b) return;
+      var a = parse(b.dataset.iso), wdn = new Date(a.y, a.m, a.d).getDay(), t = null;
+      switch (e.key) {
+        case "ArrowLeft": t = addDays(a, -1); break;
+        case "ArrowRight": t = addDays(a, 1); break;
+        case "ArrowUp": t = addDays(a, -7); break;
+        case "ArrowDown": t = addDays(a, 7); break;
+        case "Home": t = addDays(a, -wdn); break;
+        case "End": t = addDays(a, 6 - wdn); break;
+        case "PageUp": t = addMonths(a, e.shiftKey ? -12 : -1); break;
+        case "PageDown": t = addMonths(a, e.shiftKey ? 12 : 1); break;
+      }
+      if (t) { e.preventDefault(); moveFocus(t); }
+    });
+    var api = {
+      el: el, render: render, setView: setView,
+      getValue: function () { return mode === "single" ? st.value : { start: st.start, end: st.end }; },
+      setValue: function (v) { if (mode === "single") st.value = v; else { st.start = v ? v.start : null; st.end = v ? v.end : null; } focusDate = null; render(); },
+      focus: function () { var b = el.querySelector('.calendar__day[tabindex="0"]'); if (b) b.focus(); }
+    };
+    render();
+    return api;
+  }
+  return { mount: mount, parse: parse, iso: iso, key: key, viewAdd: viewAdd, addMonths: addMonths, MONTHS: MONTHS };
+})();
+(function () {
+  var ABBR = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  function fmt(a) { return ABBR[a.m] + " " + a.d + ", " + a.y; }
+  document.querySelectorAll(".datepicker").forEach(function (el) {
+    if (el._hpdp) return; el._hpdp = true;
+    var trigger = el.querySelector(".datepicker__trigger"), panel = el.querySelector(".datepicker__panel"), valEl = el.querySelector(".datepicker__value");
+    var calEl = panel.querySelector(".calendar");
+    var cal = hpCalendar.mount(calEl, { onChange: function (a) {
+      valEl.textContent = fmt(a); valEl.classList.remove("datepicker__value--placeholder");
+      el.dataset.value = hpCalendar.iso(a);
+      panel.hidePopover(); trigger.focus();
+      el.dispatchEvent(new CustomEvent("datechange", { bubbles: true, detail: { iso: el.dataset.value } }));
+    } });
+    panel.addEventListener("toggle", function (e) {
+      if (e.newState !== "open") return;
+      var v = cal.getValue(), today = hpCalendar.parse(calEl.dataset.today), min = hpCalendar.parse(calEl.dataset.min);
+      var at = v || (today && (!min || hpCalendar.key(today) >= hpCalendar.key(min)) ? today : min) || today;
+      if (at) cal.setView(at);
+      // float under the trigger; flip above if it doesn't fit; clamp to the viewport
+      var r = trigger.getBoundingClientRect(), pr = panel.getBoundingClientRect(), vw = window.innerWidth, vh = window.innerHeight, top;
+      if (r.bottom + 4 + pr.height <= vh - 8) top = r.bottom + 4;
+      else if (r.top - 4 - pr.height >= 8) top = r.top - 4 - pr.height;
+      else top = Math.max(8, vh - pr.height - 8);
+      panel.style.position = "fixed"; panel.style.margin = "0";
+      panel.style.top = top + "px";
+      panel.style.left = Math.max(8, Math.min(r.left, vw - pr.width - 8)) + "px";
+      cal.focus();
+    });
+  });
+})();
+(function () {
+  document.querySelectorAll("[data-reveal]").forEach(function (btn) {
+    if (btn._hpreveal) return; btn._hpreveal = true;
+    var input = document.getElementById(btn.getAttribute("aria-controls"));
+    btn.addEventListener("click", function () {
+      var show = input.type === "password";
+      input.type = show ? "text" : "password";
+      btn.setAttribute("aria-pressed", String(show));
+      btn.setAttribute("aria-label", show ? "Hide password" : "Show password");
+    });
+  });
+})();
+(function () {
+  var GAP = 4;
+  document.querySelectorAll("[data-select]").forEach(function (wrap) {
+    if (wrap._hpsel) return; wrap._hpsel = true;
+    var trigger = wrap.querySelector(".select"), panel = wrap.querySelector(".select__panel"), multiple = wrap.hasAttribute("data-multiple");
+    var text = wrap.querySelector(".select__text"), more = wrap.querySelector(".select__more");
+    // focus an option without scrolling the page; keep it in view inside a long list
+    function go(el) { if (!el) return; el.focus({ preventScroll: true }); el.scrollIntoView({ block: "nearest" }); }
+    var opts = function () { return Array.prototype.slice.call(panel.querySelectorAll(".listbox__option")); };
+    function place() {
+      var r = trigger.getBoundingClientRect(); panel.style.position = "fixed"; panel.style.right = "auto"; panel.style.bottom = "auto"; panel.style.minWidth = r.width + "px";
+      var h = panel.offsetHeight, top = r.bottom + GAP;
+      if (top + h > window.innerHeight - 8 && r.top - GAP - h > 8) top = r.top - GAP - h;
+      panel.style.top = top + "px"; panel.style.left = Math.max(8, Math.min(r.left, window.innerWidth - panel.offsetWidth - 8)) + "px";
+    }
+    function open(focusWhich) {
+      if (trigger.disabled) return;
+      if (!panel.matches(":popover-open")) { panel.showPopover(); place(); }
+      var list = opts(), sel = list.filter(function (o) { return o.getAttribute("aria-selected") === "true"; })[0];
+      var target = focusWhich === "last" ? list[list.length - 1] : (sel || list[0]);
+      go(target);
+    }
+    function close(refocus) { if (panel.matches(":popover-open")) panel.hidePopover(); if (refocus) trigger.focus(); }
+    function sync() {
+      var on = opts().filter(function (o) { return o.getAttribute("aria-selected") === "true"; });
+      wrap.dataset.value = on.map(function (o) { return o.dataset.value; }).join(",");
+      trigger.classList.toggle("is-placeholder", on.length === 0);
+      text.textContent = on.length ? on[0].textContent : wrap.dataset.label;
+      more.hidden = on.length < 2; more.textContent = "+" + Math.max(on.length - 1, 0);
+      wrap.dispatchEvent(new CustomEvent("selectchange", { bubbles: true, detail: { value: multiple ? on.map(function (o) { return o.dataset.value; }) : (on[0] ? on[0].dataset.value : "") } }));
+    }
+    function pick(o) {
+      if (multiple) { o.setAttribute("aria-selected", String(o.getAttribute("aria-selected") !== "true")); sync(); return; }
+      opts().forEach(function (x) { x.setAttribute("aria-selected", String(x === o)); });
+      sync(); close(true);
+    }
+    panel.addEventListener("toggle", function (e) { trigger.setAttribute("aria-expanded", String(e.newState === "open")); });
+    trigger.addEventListener("click", function () { if (panel.matches(":popover-open")) close(false); else open(); });
+    trigger.addEventListener("keydown", function (e) {
+      if (e.key === "ArrowDown" || e.key === "Enter" || e.key === " ") { e.preventDefault(); open(); }
+      else if (e.key === "ArrowUp") { e.preventDefault(); open("last"); }
+    });
+    panel.addEventListener("click", function (e) { var o = e.target.closest(".listbox__option"); if (o) pick(o); });
+    panel.addEventListener("keydown", function (e) {
+      var list = opts(), i = list.indexOf(document.activeElement);
+      if (e.key === "ArrowDown") { e.preventDefault(); go(list[i + 1] || list[i]); }
+      else if (e.key === "ArrowUp") { e.preventDefault(); go(list[i - 1] || list[i]); }
+      else if (e.key === "Home") { e.preventDefault(); go(list[0]); }
+      else if (e.key === "End") { e.preventDefault(); go(list[list.length - 1]); }
+      else if (e.key === "Enter" || e.key === " ") { e.preventDefault(); if (list[i]) pick(list[i]); }
+      else if (e.key === "Escape") { e.preventDefault(); close(true); }
+      else if (e.key === "Tab") { close(false); }
+    });
+  });
+})();
+(function () {
+  document.querySelectorAll("form.form").forEach(function (form) {
+    if (form._hpform) return; form._hpform = true;
+    form.noValidate = true;
+    var tried = false;
+    function controlOf(f) { return f.querySelector(".choice-group__items input:checked") || f.querySelector(".select, input, textarea, .datepicker__trigger"); }
+    function check(f) {
+      var ctl = controlOf(f), dp = f.querySelector(".datepicker"), msg = "";
+      var group = f.classList.contains("choice-group");
+      if (group) {
+        // a RadioGroup / CheckboxGroup: required = at least one picked
+        var picked = f.querySelector(".choice-group__items input:checked");
+        if (f.hasAttribute("data-required") && !picked && !f.disabled) msg = f.dataset.errorRequired;
+      }
+      else if (dp) { if (f.hasAttribute("data-required") && !dp.dataset.value) msg = f.dataset.errorRequired; }
+      else if (f.querySelector("[data-select]")) { if (f.hasAttribute("data-required") && !f.querySelector("[data-select]").dataset.value) msg = f.dataset.errorRequired; }
+      else if (ctl && ctl.validity) {
+        if (ctl.validity.valueMissing) msg = f.dataset.errorRequired || ctl.validationMessage;
+        else if (!ctl.validity.valid) msg = f.dataset.errorFormat || ctl.validationMessage;
+      }
+      var err = f.querySelector(".field__error");
+      f.toggleAttribute("data-invalid", !!msg);
+      err.hidden = !msg; err.querySelector("span").textContent = msg || "";
+      var marked = group ? f.querySelectorAll(".choice-group__items input") : [ctl];
+      Array.prototype.forEach.call(marked, function (c) { if (msg) c.setAttribute("aria-invalid", "true"); else c.removeAttribute("aria-invalid"); });
+      return !msg;
+    }
+    // check every Field inside scope (the whole form, or one wizard step); focus the first invalid
+    form._hpValidate = function (scope) {
+      tried = true;
+      var bad = Array.prototype.filter.call((scope || form).querySelectorAll("[data-field]"), function (f) { return !check(f); });
+      if (bad.length) { controlOf(bad[0]).focus(); return false; }
+      return true;
+    };
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      if (form._hpValidate(form)) form.dispatchEvent(new CustomEvent("formvalid", { bubbles: true }));
+    });
+    function recheck(e) { if (!tried) return; var f = e.target.closest("[data-field]"); if (f) check(f); }
+    form.addEventListener("input", recheck);
+    form.addEventListener("change", recheck);
+    form.addEventListener("datechange", recheck);
+    form.addEventListener("selectchange", recheck);
+    form.addEventListener("reset", function () { tried = false; setTimeout(function () { form.querySelectorAll("[data-field]").forEach(function (f) { f.removeAttribute("data-invalid"); f.querySelector(".field__error").hidden = true; f.querySelectorAll("[aria-invalid]").forEach(function (c) { c.removeAttribute("aria-invalid"); }); }); }); });
+  });
+})();
+(function () {
+  document.querySelectorAll("[data-wizard]").forEach(function (form) {
+    if (form._hpwiz) return; form._hpwiz = true;
+    var labels = JSON.parse(form.dataset.labels), n = labels.length, cur = 0, navigable = form.hasAttribute("data-navigable");
+    var panels = form.querySelectorAll(".wizard__panel"), back = form.querySelector("[data-back]"), next = form.querySelector("[data-next]"), submit = form.querySelector("[data-submit]");
+    var list = form.querySelector(".stepper"), ctext = form.querySelector(".stepper-compact__text"), cfill = form.querySelector(".stepper-compact__fill");
+    var check = list.querySelector(".stepper__check") ? list.querySelector(".stepper__check").outerHTML : "";
+    function render() {
+      var html = "";
+      labels.forEach(function (label, i) {
+        var state = i < cur ? "complete" : i === cur ? "active" : "inactive";
+        if (i) html += '<li class="stepper__connector' + (i <= cur ? " stepper__connector--filled" : "") + '" aria-hidden="true"></li>';
+        var inner = '<span class="stepper__circle"><span class="stepper__num">' + (i + 1) + "</span>" + check + '</span><span class="stepper__label">' + label + "</span>";
+        html += state === "complete" && navigable
+          ? '<li style="display:contents"><button type="button" class="stepper__step stepper__step--complete" data-goto="' + i + '">' + inner + '<span class="visually-hidden"> (completed — go back)</span></button></li>'
+          : '<li class="stepper__step stepper__step--' + state + '"' + (state === "active" ? ' aria-current="step"' : "") + ">" + inner + (state === "complete" ? '<span class="visually-hidden"> (completed)</span>' : "") + "</li>";
+      });
+      list.innerHTML = html;
+      ctext.innerHTML = '<span class="stepper-compact__count">Step ' + (cur + 1) + " of " + n + "</span> · " + labels[cur];
+      cfill.style.width = Math.round(((cur + 1) / n) * 100) + "%";
+      panels.forEach(function (p, i) { p.hidden = i !== cur; });
+      back.textContent = cur === 0 ? "Cancel" : "Back";
+      next.hidden = cur === n - 1; submit.hidden = cur !== n - 1;
+    }
+    function go(i, focus) { cur = i; render(); if (focus !== false) { var t = panels[cur].querySelector(".wizard__title"); if (t) t.focus(); } }
+    next.addEventListener("click", function () { if (form._hpValidate(panels[cur])) go(cur + 1); });
+    back.addEventListener("click", function () {
+      if (cur > 0) { go(cur - 1); return; }
+      form.reset(); go(0, false); form.dispatchEvent(new CustomEvent("wizardcancel", { bubbles: true }));
+    });
+    list.addEventListener("click", function (e) { var b = e.target.closest("[data-goto]"); if (b) go(+b.dataset.goto); });
+    // the last step submits the whole form: check the steps in order and open the first that isn't right
+    form.addEventListener("submit", function (e) {
+      for (var i = 0; i < n; i++) if (!form._hpValidate(panels[i])) { e.preventDefault(); e.stopImmediatePropagation(); go(i, false); form._hpValidate(panels[i]); return; }
+    }, true);
+    render();
+  });
+})();
+document.addEventListener("formvalid", (e) => { const s = e.target.querySelector(".form-status"); if (s) s.textContent = "Booked."; });
+document.addEventListener("wizardcancel", (e) => { const s = e.target.querySelector(".form-status"); if (s) s.textContent = "Cancelled — back to the start."; });
+</script>
 </body>
 </html>

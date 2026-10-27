@@ -1,9 +1,13 @@
 {
   "component": {
     "stepper": {
-      "$description": "Horizontal step indicator for a short multi-step flow — the New Group Message wizard ('1 Select Students — 2 Message Details') is its driving use case. Numbered circles joined by connector lines, each step inactive / active / complete. A complete step's circle fills and swaps its number for a check; the connector leading INTO a reached step fills too, so progress reads left-to-right. Deliberately minimal (no vertical variant, no descriptions) — built for 2–3 step wizards, not a page-length onboarding.",
+      "$description": "Horizontal step indicator for a short multi-step flow — the New Group Message wizard ('1 Select Students — 2 Message Details') is its driving use case. Numbered circles joined by connector lines, each step inactive / active / complete. A complete step's circle fills and swaps its number for a check; the connector leading INTO a reached step fills too, so progress reads left-to-right. Deliberately minimal (no vertical variant, no descriptions) — built for 2–3 step wizards, not a page-length onboarding. 2026-10-27 (from Storybook's Stepper, which is a whole wizard): completed steps can be buttons that go back to that step (navigable, the default in a Wizard; turn it off when a step can't be undone, e.g. after a payment) — upcoming steps never are; below breakpoint.md the row becomes a compact line ('Step 2 of 3 · Time' + a Progress sm bar); and the Wizard pattern around it: one step's Fields at a time, a footer with Cancel (first step) / Back, Next, and on the last step the action's own name ('Book appointment', never 'Submit'). Next is never disabled: it checks the step's Fields like Form does, shows the messages and focuses the first one.",
       "circle": {
-        "size": { "$type": "dimension", "$value": "{dim.7}", "$description": "28px." },
+        "size": {
+          "$type": "dimension",
+          "$value": "{dim.7}",
+          "$description": "28px."
+        },
         "label": {
           "$type": "typography",
           "$value": {
@@ -15,13 +19,32 @@
           },
           "$description": "The number inside the circle."
         },
-        "iconSize": { "$type": "dimension", "$value": "{dim.4}", "$description": "The check glyph on a complete step (check.svg, the shared Material icon)." }
+        "iconSize": {
+          "$type": "dimension",
+          "$value": "{dim.4}",
+          "$description": "The check glyph on a complete step (check.svg, the shared Material icon)."
+        }
       },
-      "gap": { "$type": "dimension", "$value": "{dim.2}", "$description": "Circle ↔ its label." },
+      "gap": {
+        "$type": "dimension",
+        "$value": "{dim.2}",
+        "$description": "Circle ↔ its label."
+      },
       "connector": {
-        "thickness": { "$type": "dimension", "$value": "{dim.0_5}", "$description": "2px line between steps." },
-        "color": { "$type": "color", "$value": "{border.default}" },
-        "completeColor": { "$type": "color", "$value": "{fill.primary}", "$description": "The connector into a reached step fills brand blue." }
+        "thickness": {
+          "$type": "dimension",
+          "$value": "{dim.0_5}",
+          "$description": "2px line between steps."
+        },
+        "color": {
+          "$type": "color",
+          "$value": "{border.default}"
+        },
+        "completeColor": {
+          "$type": "color",
+          "$value": "{fill.primary}",
+          "$description": "The connector into a reached step fills brand blue."
+        }
       },
       "text": {
         "$type": "typography",
@@ -31,21 +54,100 @@
       "state": {
         "inactive": {
           "$description": "Not yet reached — a hollow-reading gray disc + muted ink.",
-          "circleBg": { "$type": "color", "$value": "{surface.sunken}" },
-          "circleText": { "$type": "color", "$value": "{text.muted}" },
-          "labelColor": { "$type": "color", "$value": "{text.muted}" }
+          "circleBg": {
+            "$type": "color",
+            "$value": "{surface.sunken}"
+          },
+          "circleText": {
+            "$type": "color",
+            "$value": "{text.muted}"
+          },
+          "labelColor": {
+            "$type": "color",
+            "$value": "{text.muted}"
+          }
         },
         "active": {
           "$description": "The current step — solid brand fill, on-fill number, default-ink label.",
-          "circleBg": { "$type": "color", "$value": "{fill.primary}" },
-          "circleText": { "$type": "color", "$value": "{text.onFill}" },
-          "labelColor": { "$type": "color", "$value": "{text.default}" }
+          "circleBg": {
+            "$type": "color",
+            "$value": "{fill.primary}"
+          },
+          "circleText": {
+            "$type": "color",
+            "$value": "{text.onFill}"
+          },
+          "labelColor": {
+            "$type": "color",
+            "$value": "{text.default}"
+          }
         },
         "complete": {
           "$description": "A finished step — solid brand fill with a check glyph, default-ink label. Same fill as active (it stays 'done and reachable'); the check vs. number is the only difference.",
-          "circleBg": { "$type": "color", "$value": "{fill.primary}" },
-          "circleIcon": { "$type": "color", "$value": "{icon.onFill}" },
-          "labelColor": { "$type": "color", "$value": "{text.default}" }
+          "circleBg": {
+            "$type": "color",
+            "$value": "{fill.primary}"
+          },
+          "circleIcon": {
+            "$type": "color",
+            "$value": "{icon.onFill}"
+          },
+          "labelColor": {
+            "$type": "color",
+            "$value": "{text.default}"
+          },
+          "hoverCircleBg": {
+            "$type": "color",
+            "$value": "{fill.primaryHover}",
+            "$description": "A completed step you can click back to: the disc darkens like a primary Button."
+          },
+          "hoverLabelColor": {
+            "$type": "color",
+            "$value": "{text.primary}",
+            "$description": "…and its label turns link blue."
+          }
+        }
+      },
+      "focus": {
+        "ringColor": {
+          "$type": "color",
+          "$value": "{border.focus}"
+        },
+        "ringWidth": {
+          "$type": "dimension",
+          "$value": "{dim.0_5}"
+        },
+        "ringOffset": {
+          "$type": "dimension",
+          "$value": "{dim.0_5}"
+        },
+        "radius": {
+          "$type": "dimension",
+          "$value": "{radius.default}"
+        }
+      },
+      "compact": {
+        "$description": "Below breakpoint.md: 'Step 2 of 3' (text.secondary) + the step name (text.default), heading-sm, over a Progress sm bar filled to the step.",
+        "count": {
+          "$type": "color",
+          "$value": "{text.secondary}"
+        },
+        "gap": {
+          "$type": "dimension",
+          "$value": "{dim.2}"
+        }
+      },
+      "wizard": {
+        "$description": "The flow around the Stepper: Stepper, the current step's Fields, a footer.",
+        "gap": {
+          "$type": "dimension",
+          "$value": "{dim.6}",
+          "$description": "24px stepper → step → footer."
+        },
+        "footerGap": {
+          "$type": "dimension",
+          "$value": "{dim.3}",
+          "$description": "12px between the footer buttons — Dialog's footer gap; right-aligned, Secondary (Cancel/Back) then Primary (Next / the action)."
         }
       }
     }

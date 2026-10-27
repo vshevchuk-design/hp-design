@@ -940,11 +940,16 @@ window.hpCalendar = window.hpCalendar || (function () {
       Array.prototype.forEach.call(marked, function (c) { if (msg) c.setAttribute("aria-invalid", "true"); else c.removeAttribute("aria-invalid"); });
       return !msg;
     }
+    // check every Field inside scope (the whole form, or one wizard step); focus the first invalid
+    form._hpValidate = function (scope) {
+      tried = true;
+      var bad = Array.prototype.filter.call((scope || form).querySelectorAll("[data-field]"), function (f) { return !check(f); });
+      if (bad.length) { controlOf(bad[0]).focus(); return false; }
+      return true;
+    };
     form.addEventListener("submit", function (e) {
-      e.preventDefault(); tried = true;
-      var bad = Array.prototype.filter.call(form.querySelectorAll("[data-field]"), function (f) { return !check(f); });
-      if (bad.length) { controlOf(bad[0]).focus(); return; }
-      form.dispatchEvent(new CustomEvent("formvalid", { bubbles: true }));
+      e.preventDefault();
+      if (form._hpValidate(form)) form.dispatchEvent(new CustomEvent("formvalid", { bubbles: true }));
     });
     function recheck(e) { if (!tried) return; var f = e.target.closest("[data-field]"); if (f) check(f); }
     form.addEventListener("input", recheck);
