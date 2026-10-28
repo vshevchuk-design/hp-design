@@ -31,6 +31,8 @@ import { ssCss, SS_COLOR_PATHS } from "./lib/ss-css.mjs";
 import { ssAppJs } from "./lib/ss-app.mjs";
 import { hoverGuard } from "./lib/hover-guard.mjs";
 import * as DATA from "./lib/ss-data.mjs";
+import { SIDEBAR_CSS, SIDEBAR_COLOR_PATHS, SIDEBAR_JS, SIDEBAR_MENU_BUTTON, sidebarHtml } from "./lib/sidebar.mjs";
+import { CX_NAV, CX_USER } from "./lib/cx-data.mjs";
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const load = (p) => JSON.parse(fs.readFileSync(path.join(root, p)));
@@ -96,7 +98,7 @@ const componentColorPaths = [];
   for (const [k, v] of Object.entries(node)) if (!k.startsWith("$")) walk(v);
 })(tokens);
 
-const colorPaths = [...new Set([...SHELL_COLOR_PATHS, ...SS_COLOR_PATHS, ...componentColorPaths])];
+const colorPaths = [...new Set([...SHELL_COLOR_PATHS, ...SS_COLOR_PATHS, ...componentColorPaths, ...SIDEBAR_COLOR_PATHS])];
 const fontSans = resolve("family.sans");
 const rootVars = renderRootVars([...colorPaths.map((p) => [p, resolve(p)]), ["family.sans", `'${fontSans}', sans-serif`]]);
 
@@ -695,21 +697,95 @@ const markupV6 = () =>
 // copies: v5 (departments as text under the name) is current, v1 (the
 // original list) stays comparable in the viewer's Versions dropdown.
 // (v2/v3 card grids and v4 inline department badges were dropped.)
+// ---------------- v7: v6 inside the CX app ----------------
+// Same app, now a page of CX: the gray Sidebar (Advisor → Scheduling) on the
+// left, and the section switch is the DS segmented Tabs as it ships — its own
+// gray track with radius, not a track stretched into a full-width band
+// (user, 2026-10-28). From 768 it sits centred in the 64px topbar (title |
+// tabs | settings); on a phone the topbar gets a second row for it. The
+// band's tuck-on-scroll goes with the band.
+const V7_TABS = `<nav class="ss-sections ss-sections--seg ss-sections--center" aria-label="Scheduling sections">
+    <div class="tabs--segmented" role="tablist">`;
+const V7_APP_END = `</div>
+<dialog class="modal modal--alert" id="ss-leave-modal"`;
+const v7Css = () => {
+  const tabs = tokens.tabs;
+  const dm = (k) => px(resolve(`dim.${k}`));
+  const track = `calc(${px(resolve(tabs.size.base.height.$value))} + 2 * ${px(resolve(tabs.segmented.trackPadding.$value))})`;
+  return `
+/* ============ v7: CX shell — Sidebar + topbar with the section Tabs ============ */
+html { background: ${cv("surface.page")}; }
+.cx { display: flex; min-height: 100dvh; }
+.cx__main { flex: 1; min-width: 0; }
+.cx .app__topbar { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); grid-template-areas: "title tabs actions"; align-items: center; }
+.cx .app__brand { grid-area: title; }
+.cx .app__topbar > .btn:last-child { grid-area: actions; justify-self: end; }
+.cx .sidebar-open { display: none; }
+/* the Tabs as the component ships: track gray, track radius, 4px padding */
+.cx .ss-sections--top { grid-area: tabs; position: static; padding: 0; background: none; }
+.cx .ss-sections--top .tabs--segmented { height: ${track}; }
+/* sticky columns sit under the 64px topbar alone now (no band under it) */
+@media (min-width: 1024px) {
+  .cx .ss-summary { top: calc(${dm(16)} + ${dm(6)}); }
+  .cx .ss-cal__side { top: calc(${dm(16)} + ${dm(6)}); max-height: calc(100dvh - ${dm(16)} - ${dm(12)}); }
+}
+@media (max-width: 767px) {
+  .cx .app__topbar { height: calc(${dm(16)} + ${track} + ${dm(3)}); grid-template-columns: auto minmax(0, 1fr) auto; grid-template-rows: ${dm(16)} 1fr; grid-template-areas: "menu title actions" "tabs tabs tabs"; gap: 0 ${dm(3)}; align-items: start; }
+  .cx .app__topbar > * { align-self: center; }
+  .cx .sidebar-open { display: inline-flex; grid-area: menu; }
+  .cx .ss-sections--top { align-self: start; }
+  .cx .ss-sections--top .tabs--segmented { display: flex; width: 100%; }
+  .cx .ss-sections--top .tab { flex: 1 1 0; }
+  /* full-screen nav needs no scrim; a dark one turned iOS Safari's bar dark */
+  .has-nav-open .sidebar-scrim { background: transparent; }
+}
+${SIDEBAR_CSS}`;
+};
+const markupV7 = () => {
+  let m = markupV6();
+  const tabsAt = m.indexOf(V7_TABS), navEnd = m.indexOf("</nav>", tabsAt) + "</nav>".length;
+  const topEnd = m.indexOf("</header>");
+  if (tabsAt < 0 || topEnd < 0 || topEnd > tabsAt || !m.includes(V7_APP_END) || !m.startsWith('<div class="app">')) throw new Error("v7: markup drifted — update V7_TABS / V7_APP_END");
+  const nav = m.slice(tabsAt, navEnd).replace("ss-sections--seg ss-sections--center", "ss-sections--top");
+  m = m.slice(0, tabsAt) + m.slice(navEnd);
+  // the section Tabs go between the title and the settings button
+  const settingsAt = m.lastIndexOf('<button class="btn btn--secondary btn--base btn--icon-only" type="button" aria-label="Settings">', m.indexOf("</header>"));
+  m = m.slice(0, settingsAt) + nav + "\n    " + m.slice(settingsAt);
+  return m
+    .replace('<header class="app__topbar">', `<header class="app__topbar">\n    ${SIDEBAR_MENU_BUTTON("btn btn--secondary btn--base btn--icon-only")}`)
+    .replace('<div class="app">', `<div class="cx has-sidebar">\n  ${sidebarHtml({ nav: CX_NAV, active: "advisor-scheduling", user: CX_USER, id: "cx", theme: "neutral" })}\n  <div class="sidebar-scrim"></div>\n<div class="app cx__main">`)
+    .replace(V7_APP_END, "</div>\n" + V7_APP_END);
+};
+// Sidebar links lead outside the prototype: say so instead of jumping to "#".
+const V7_JS = `document.querySelector(".sidebar").addEventListener("click", function (e) {
+  var a = e.target.closest("[data-nav], .sidebar__logo, .sidebar__account");
+  if (!a) return;
+  e.preventDefault();
+  if (a.getAttribute("aria-current") === "page") return;
+  var t = document.createElement("div");
+  t.className = "toast"; t.setAttribute("popover", "manual"); t.setAttribute("role", "status");
+  t.innerHTML = '<span class="toast__label">Prototype \\u2014 this page isn\\u2019t designed yet</span>';
+  document.body.appendChild(t); t.showPopover();
+  setTimeout(function () { t.hidePopover(); t.remove(); }, 3200);
+});
+${SIDEBAR_JS}`;
+
 const appHtmlFor = (layout) => `<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Scheduling</title>
+<meta name="viewport" content="width=device-width, initial-scale=1${layout === "v7" ? ", viewport-fit=cover" : ""}" />
+${layout === "v7" ? `<meta name="theme-color" content="${(() => { const v = resolve("surface.page"); return typeof v === "string" ? v : v.hex; })()}" />\n` : ""}<title>Scheduling</title>
 <link rel="stylesheet" href="../../assets/fonts/sora/sora.css" />
 <style>
-${appCss}
+${appCss}${layout === "v7" ? hoverGuard(v7Css()) : ""}
 </style>
 </head>
 <body>
-${layout === "v6" ? markupV6() : markupFor(layout)}
+${layout === "v7" ? markupV7() : layout === "v6" ? markupV6() : markupFor(layout)}
 <script>
-${ssAppJs({ ...DATA, ICONS, LAYOUT: layout === "v6" ? "text" : layout, V6: layout === "v6" })}
+${ssAppJs({ ...DATA, ICONS, LAYOUT: layout === "v6" || layout === "v7" ? "text" : layout, V6: layout === "v6" || layout === "v7" })}
+${layout === "v7" ? V7_JS : ""}
 </script>
 </body>
 </html>
@@ -719,9 +795,10 @@ const viewerHtml = renderDesignViewer({
   activeKey: "student-scheduling",
   title: "Student Scheduling",
   heading: "Student Scheduling",
-  sub: `The student side of Scheduling — browse services, pick a time, confirm. Same flow and content as the live app, rebuilt strictly from hp-design components. <b>What changed is the UI, not the flow:</b> sort is a ghost Button + Listbox on the results line instead of a third filter-looking dropdown; "Drop-in available" is a toggle Chip that clears itself (no separate Clear button); Department is the dropdown chip. <b>v6 (current)</b> folds the live app's six tabs into <b>Book</b>, <b>My schedule</b> and (from 768) <b>Calendar</b>, centred in the top bar. Book is one catalogue of appointments (Pick a time), drop-in desks (Join queue while open, Reserve a seat before it opens) and workshops (Register), with Department and sort on one row and the kind as underline Tabs (All / Appointments / Drop-ins / Workshops) under it. A workshop page lists every schedule as a ChoiceTile (no carousel), the chosen schedule's sessions, and a sticky registration card — on a phone, Register sits in a bar at the bottom. Every booking ends on one success screen. Try <b>Resume Writing Workshop</b> (three schedules, one full), <b>Interview Prep</b> (pick one date) and <b>Time Management Essentials</b> (full). <b>My schedule</b> is Upcoming / Past (Done, Missed and Cancelled as neutral badges in Past): appointments plus each workshop's next session. A registered workshop opens its own page — progress (sessions done, attended), the next session with check-in and Can't make it, what's coming up, past sessions as an Accordion with attendance and the organizer's note and files, materials, and Leave workshop behind an AlertDialog. Try <b>First-Year Success Seminar</b> (in progress) and, under Past, <b>Library Research Basics</b> (finished). <b>Drop-ins</b>: Join queue / Reserve a seat in Book opens the desk's page first — who's waiting (or when it opens), the optional "What would you like help with?" Select and a note — and you commit with the button there; then the queue page — your place and wait with a Progress bar, Step away / I'm back, Leave queue (AlertDialog). The prototype's clock is frozen, so the line moves on its own (one student every 4 seconds): the advisor calls you (success Alert, "I'm on my way"), the meeting starts, and it ends with the advisor's summary and a three-chip rating. While you're in line or holding a seat, every other screen shows a banner at the top. Reserve a seat holds your place before the desk opens. A past drop-in with a summary and attachment: <b>Writing Center</b> under Past. <b>Calendar</b> (third top-nav section, from 768 — hidden on a phone): a month on DatePicker's day recipe — dots per event on a phone, time + title chips from 768, coloured like each kind's Badge (appointment violet, drop-in blue, workshop teal) — with every workshop session, not just the next; the chosen day's rows sit in a card to the right on desktop and open in a bottom SlideOverPanel on a tablet. <b>v5</b> is cards on a phone and list rows from 768px: the 16px service name, the departments that offer it as plain comma-separated text right under it, then duration and the booking-mode Badge (base, regular weight; Appointment in violet), then Pick a time in the Button <b>tint</b> variant. The department is chosen on the pick-a-time page — pre-set when the browse filter already named one. <b>v1</b> wears the same shell but picks the department in the list: a Select in the row when several departments offer the service, an outline Badge when only one does, and Pick a time in Button secondary. Picking a time is one page — day and time ChoiceTiles on the left, a sticky <b>Your appointment</b> Card on the right with the advisor RadioGroup and the one Confirm — instead of a time popup followed by a side drawer. Try <b>Academic Difficulty</b> for the no-openings state, <b>Career Counseling</b> or <b>Degree Planning</b> for a service offered by several departments. <b>Appointments</b> is built too: Upcoming (with a count) / Past / Cancelled as segmented Tabs, rows grouped by day, check-in that opens 15 minutes ahead (the 10:30 one today is open — the prototype's clock is 10:20 AM), a details page with the advisor's questions in a Modal, Reschedule back into pick-a-time, and Cancel behind an AlertDialog. Booking on Browse lands in Upcoming. Drop-Ins, Workshops, Reserve a Seat and Calendar are placeholders.`,
+  sub: `The student side of Scheduling — browse services, pick a time, confirm. Same flow and content as the live app, rebuilt strictly from hp-design components. <b>What changed is the UI, not the flow:</b> sort is a ghost Button + Listbox on the results line instead of a third filter-looking dropdown; "Drop-in available" is a toggle Chip that clears itself (no separate Clear button); Department is the dropdown chip. <b>v7 (current)</b> is v6 as a page of the CX app: the gray Sidebar with Advisor → Scheduling selected, and Book / My schedule / Calendar as the DS segmented Tabs as they ship — their own rounded track, centred in the topbar (on a phone, in a second topbar row) — instead of a track stretched into a gray band. <b>v6</b> folds the live app's six tabs into <b>Book</b>, <b>My schedule</b> and (from 768) <b>Calendar</b>, centred in the top bar. Book is one catalogue of appointments (Pick a time), drop-in desks (Join queue while open, Reserve a seat before it opens) and workshops (Register), with Department and sort on one row and the kind as underline Tabs (All / Appointments / Drop-ins / Workshops) under it. A workshop page lists every schedule as a ChoiceTile (no carousel), the chosen schedule's sessions, and a sticky registration card — on a phone, Register sits in a bar at the bottom. Every booking ends on one success screen. Try <b>Resume Writing Workshop</b> (three schedules, one full), <b>Interview Prep</b> (pick one date) and <b>Time Management Essentials</b> (full). <b>My schedule</b> is Upcoming / Past (Done, Missed and Cancelled as neutral badges in Past): appointments plus each workshop's next session. A registered workshop opens its own page — progress (sessions done, attended), the next session with check-in and Can't make it, what's coming up, past sessions as an Accordion with attendance and the organizer's note and files, materials, and Leave workshop behind an AlertDialog. Try <b>First-Year Success Seminar</b> (in progress) and, under Past, <b>Library Research Basics</b> (finished). <b>Drop-ins</b>: Join queue / Reserve a seat in Book opens the desk's page first — who's waiting (or when it opens), the optional "What would you like help with?" Select and a note — and you commit with the button there; then the queue page — your place and wait with a Progress bar, Step away / I'm back, Leave queue (AlertDialog). The prototype's clock is frozen, so the line moves on its own (one student every 4 seconds): the advisor calls you (success Alert, "I'm on my way"), the meeting starts, and it ends with the advisor's summary and a three-chip rating. While you're in line or holding a seat, every other screen shows a banner at the top. Reserve a seat holds your place before the desk opens. A past drop-in with a summary and attachment: <b>Writing Center</b> under Past. <b>Calendar</b> (third top-nav section, from 768 — hidden on a phone): a month on DatePicker's day recipe — dots per event on a phone, time + title chips from 768, coloured like each kind's Badge (appointment violet, drop-in blue, workshop teal) — with every workshop session, not just the next; the chosen day's rows sit in a card to the right on desktop and open in a bottom SlideOverPanel on a tablet. <b>v5</b> is cards on a phone and list rows from 768px: the 16px service name, the departments that offer it as plain comma-separated text right under it, then duration and the booking-mode Badge (base, regular weight; Appointment in violet), then Pick a time in the Button <b>tint</b> variant. The department is chosen on the pick-a-time page — pre-set when the browse filter already named one. <b>v1</b> wears the same shell but picks the department in the list: a Select in the row when several departments offer the service, an outline Badge when only one does, and Pick a time in Button secondary. Picking a time is one page — day and time ChoiceTiles on the left, a sticky <b>Your appointment</b> Card on the right with the advisor RadioGroup and the one Confirm — instead of a time popup followed by a side drawer. Try <b>Academic Difficulty</b> for the no-openings state, <b>Career Counseling</b> or <b>Degree Planning</b> for a service offered by several departments. <b>Appointments</b> is built too: Upcoming (with a count) / Past / Cancelled as segmented Tabs, rows grouped by day, check-in that opens 15 minutes ahead (the 10:30 one today is open — the prototype's clock is 10:20 AM), a details page with the advisor's questions in a Modal, Reschedule back into pick-a-time, and Cancel behind an AlertDialog. Booking on Browse lands in Upcoming. Drop-Ins, Workshops, Reserve a Seat and Calendar are placeholders.`,
   versions: [
-    { label: "v6", note: "Book + My schedule · workshops · current", file: "student-scheduling-v6-app.html" },
+    { label: "v7", note: "in the CX app · gray sidebar · current", file: "student-scheduling-v7-app.html" },
+    { label: "v6", note: "Book + My schedule · workshops", file: "student-scheduling-v6-app.html" },
     { label: "v5", note: "departments as text", file: "student-scheduling-app.html" },
     { label: "v1", note: "department picked in the list", file: "student-scheduling-v1-app.html" },
   ],
@@ -731,6 +808,7 @@ fs.mkdirSync(path.join(root, "docs/designs"), { recursive: true });
 fs.writeFileSync(path.join(root, "docs/designs/student-scheduling-app.html"), appHtmlFor("text"));
 fs.writeFileSync(path.join(root, "docs/designs/student-scheduling-v1-app.html"), appHtmlFor("list"));
 fs.writeFileSync(path.join(root, "docs/designs/student-scheduling-v6-app.html"), appHtmlFor("v6"));
+fs.writeFileSync(path.join(root, "docs/designs/student-scheduling-v7-app.html"), appHtmlFor("v7"));
 fs.writeFileSync(path.join(root, "docs/designs/student-scheduling.html"), viewerHtml);
 console.log("wrote docs/designs/student-scheduling-app.html (v5, departments as text)");
 console.log("wrote docs/designs/student-scheduling-v1-app.html (v1, list)");
