@@ -707,10 +707,10 @@ ${COLLAPSIBLE_CSS}
 /* Alert success: an advisor is calling you */
 .alert--success { background: ${R(alert.role.success.bg)}; border-color: ${R(alert.role.success.border)}; }
 .alert--success .alert__icon { color: ${R(si.success.color)}; }
-/* the banner: one line — status + desk, View on the right */
-.ss-banner { align-items: center; }
-.ss-banner .alert__stack { flex: 1; }
-.ss-banner > .btn { flex-shrink: 0; }
+/* DS Alert, action at the end (the queue banner: status + desk, View on the right) */
+.alert--action-end { align-items: center; }
+.alert--action-end .alert__stack { flex: 1; }
+.alert--action-end > .btn, .alert--action-end > .alert__action { margin-top: 0; flex-shrink: 0; }
 .ss-visit { gap: ${dim(2)}; }
 .ss-visit__title { margin: 0; color: ${cv("text.default")}; ${typoCss(style("heading-lg"))} }
 .ss-visit__text { margin: 0; color: ${cv("text.secondary")}; ${typoCss(style("body-base"))} }

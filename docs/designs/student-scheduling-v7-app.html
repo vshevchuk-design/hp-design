@@ -1009,10 +1009,10 @@ html:has(dialog.dialog[open], dialog.alert-dialog[open]) { overflow: hidden; }
 /* Alert success: an advisor is calling you */
 .alert--success { background: var(--tok-bg-success); border-color: var(--tok-border-success); }
 .alert--success .alert__icon { color: var(--tok-status-success); }
-/* the banner: one line — status + desk, View on the right */
-.ss-banner { align-items: center; }
-.ss-banner .alert__stack { flex: 1; }
-.ss-banner > .btn { flex-shrink: 0; }
+/* DS Alert, action at the end (the queue banner: status + desk, View on the right) */
+.alert--action-end { align-items: center; }
+.alert--action-end .alert__stack { flex: 1; }
+.alert--action-end > .btn, .alert--action-end > .alert__action { margin-top: 0; flex-shrink: 0; }
 .ss-visit { gap: 8px; }
 .ss-visit__title { margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 18px; line-height: 1.4; }
 .ss-visit__text { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 14px; line-height: 1.4; }
@@ -1361,7 +1361,7 @@ html { background: var(--tok-surface-page); }
   </header>
   
   <main class="ss__main">
-    <div class="alert ss-banner is-hidden" id="ss-banner" role="status">
+    <div class="alert alert--action-end ss-banner is-hidden" id="ss-banner" role="status">
       <span id="ss-banner-icon"></span>
       <div class="alert__stack"><p class="alert__message"><span class="alert__title" id="ss-banner-title"></span> <span id="ss-banner-text"></span></p></div>
       <button class="btn btn--secondary btn--sm" id="ss-banner-view" type="button">View</button>

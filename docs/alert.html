@@ -64,6 +64,10 @@
 .alert__title { color: var(--tok-text-default); font-weight: 600; }
 .alert__detail { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
 .alert__action { margin-top: 4px; }
+/* action at the end: one line of status + its one action on the right, centred on the row (a live-status banner). Wraps nothing — keep the message short. */
+.alert--action-end { align-items: center; }
+.alert--action-end .alert__stack { flex: 1; }
+.alert--action-end > .alert__action { margin-top: 0; flex-shrink: 0; }
 .alert--info { background: var(--tok-bg-primary); border-color: var(--tok-border-primary); }
 
 .alert--success { background: var(--tok-bg-success); border-color: var(--tok-border-success); }
@@ -242,6 +246,7 @@
     
     
   </div>
+  
 </div></div><p class="story-note">Body only — the quietest shape.</p></div>
       <div class="story"><h3>success</h3><div class="story-preview"><div class="alert alert--success" role="status">
   <svg class="status-icon status-icon--success alert__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
@@ -250,6 +255,7 @@
     
     
   </div>
+  
 </div></div></div>
       <div class="story"><h3>warning</h3><div class="story-preview"><div class="alert alert--warning" role="status">
   <svg class="status-icon status-icon--warning alert__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
@@ -258,6 +264,7 @@
     
     
   </div>
+  
 </div></div></div>
       <div class="story"><h3>danger</h3><div class="story-preview"><div class="alert alert--danger" role="alert">
   <svg class="status-icon status-icon--error alert__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
@@ -266,7 +273,31 @@
     
     <div class="alert__action"><button class="btn btn--ghost btn--sm" type="button">Try another file</button></div>
   </div>
+  
 </div></div><p class="story-note">Danger with an action slot: a real Button ghost sm.</p></div>
+    </div>
+
+    <h2 class="big-section">Action at the end</h2>
+    <p class="section-desc">For a one-line live status with one action — the action moves out of the stack to the right edge, centred on the row (<code>alert--action-end</code>). Below it is the default: the action under the message.</p>
+    <div class="story-grid">
+      <div class="story"><h3>Action: End</h3><div class="story-preview"><div class="alert alert--info alert--action-end" role="status">
+  <svg class="status-icon status-icon--info alert__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+  <div class="alert__stack">
+    <p class="alert__message"><span class="alert__title">You’re #3 in line.</span> Math Tutoring — about 16 min.</p>
+    
+    
+  </div>
+  <div class="alert__action"><button class="btn btn--ghost btn--sm" type="button">View</button></div>
+</div></div><p class="story-note">Student Scheduling’s queue banner.</p></div>
+      <div class="story"><h3>Action: Below (default)</h3><div class="story-preview"><div class="alert alert--info" role="status">
+  <svg class="status-icon status-icon--info alert__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+  <div class="alert__stack">
+    <p class="alert__message"><span class="alert__title">You’re #3 in line.</span> Math Tutoring — about 16 min.</p>
+    
+    <div class="alert__action"><button class="btn btn--ghost btn--sm" type="button">View</button></div>
+  </div>
+  
+</div></div></div>
     </div>
 
     <h2 class="big-section">Lead + detail</h2>
@@ -279,6 +310,7 @@
     <p class="alert__detail">Applied to: HISTORY 120, PSYCH 120, PSYCH 210, MATH 111, ENGLCOMP 200, ENGLCOMP 100, ECON 140, BIOLOGY 100</p>
     
   </div>
+  
 </div></div><p class="story-note">The results-summary alert from the Explore Degrees flow.</p></div>
     </div>
 
@@ -315,6 +347,10 @@
 .alert__title { color: var(--tok-text-default); font-weight: 600; }
 .alert__detail { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
 .alert__action { margin-top: 4px; }
+/* action at the end: one line of status + its one action on the right, centred on the row (a live-status banner). Wraps nothing — keep the message short. */
+.alert--action-end { align-items: center; }
+.alert--action-end .alert__stack { flex: 1; }
+.alert--action-end &gt; .alert__action { margin-top: 0; flex-shrink: 0; }
 .alert--info { background: var(--tok-bg-primary); border-color: var(--tok-border-primary); }
 
 .alert--success { background: var(--tok-bg-success); border-color: var(--tok-border-success); }

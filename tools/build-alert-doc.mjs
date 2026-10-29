@@ -75,6 +75,10 @@ const css = `${rootVars}
 .alert__title { color: ${cv(refPath(alert.titleColor.$value))}; font-weight: ${titleType.fontWeight}; }
 .alert__detail { margin: 0; color: ${cv(refPath(alert.detailColor.$value))}; ${typoCss(detailType)} }
 .alert__action { margin-top: ${stackGap}; }
+/* action at the end: one line of status + its one action on the right, centred on the row (a live-status banner). Wraps nothing — keep the message short. */
+.alert--action-end { align-items: center; }
+.alert--action-end .alert__stack { flex: 1; }
+.alert--action-end > .alert__action { margin-top: 0; flex-shrink: 0; }
 ${ROLES.map((r) => `.alert--${r} { background: ${cv(refPath(alert.role[r].bg.$value))}; border-color: ${cv(refPath(alert.role[r].border.$value))}; }
 `).join("\n")}
 ${STATUS_ICON_CSS}
@@ -88,14 +92,16 @@ ${STATUS_ICON_CSS}
 
 const icon = (name, cls) => fs.readFileSync(path.join(root, `assets/icons/material-filled/${name}.svg`), "utf8").replace("<svg ", `<svg class="${cls}" `);
 
-function alertMarkup(role, { title = "", body = "", detail = "", action = "" } = {}) {
-  return `<div class="alert alert--${role}" role="${role === "danger" ? "alert" : "status"}">
+function alertMarkup(role, { title = "", body = "", detail = "", action = "", actionEnd = false } = {}) {
+  const act = action ? `<div class="alert__action"><button class="btn btn--ghost btn--sm" type="button">${esc(action)}</button></div>` : "";
+  return `<div class="alert alert--${role}${actionEnd ? " alert--action-end" : ""}" role="${role === "danger" ? "alert" : "status"}">
   ${statusIcon(ROLE_KIND[role], { extraClass: "alert__icon" })}
   <div class="alert__stack">
     <p class="alert__message">${title ? `<span class="alert__title">${esc(title)}</span> ` : ""}${esc(body)}</p>
     ${detail ? `<p class="alert__detail">${esc(detail)}</p>` : ""}
-    ${action ? `<div class="alert__action"><button class="btn btn--ghost btn--sm" type="button">${esc(action)}</button></div>` : ""}
+    ${actionEnd ? "" : act}
   </div>
+  ${actionEnd ? act : ""}
 </div>`;
 }
 
@@ -161,6 +167,13 @@ const html = `<!doctype html>
       ${storyCard("success", alertMarkup("success", { body: "We found 10 classes we can import from your transcript. Review the grades and remove anything you don't want below." }))}
       ${storyCard("warning", alertMarkup("warning", { body: "Four classes still need a quick review by an advisor before they count." }))}
       ${storyCard("danger", alertMarkup("danger", { body: "This is a photograph of a house and pool, not a transcript — it contains no coursework, grades, or academic information. Please upload an official or unofficial transcript from your student portal.", action: "Try another file" }), "Danger with an action slot: a real Button ghost sm.")}
+    </div>
+
+    <h2 class="big-section">Action at the end</h2>
+    <p class="section-desc">For a one-line live status with one action — the action moves out of the stack to the right edge, centred on the row (<code>alert--action-end</code>). Below it is the default: the action under the message.</p>
+    <div class="story-grid">
+      ${storyCard("Action: End", alertMarkup("info", { title: "You\u2019re #3 in line.", body: "Math Tutoring — about 16 min.", action: "View", actionEnd: true }), "Student Scheduling\u2019s queue banner.")}
+      ${storyCard("Action: Below (default)", alertMarkup("info", { title: "You\u2019re #3 in line.", body: "Math Tutoring — about 16 min.", action: "View" }))}
     </div>
 
     <h2 class="big-section">Lead + detail</h2>

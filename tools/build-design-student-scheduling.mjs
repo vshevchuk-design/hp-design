@@ -620,7 +620,7 @@ const LEAVE_DIALOG = `<dialog class="alert-dialog" id="ss-leave-modal" role="ale
 // While you're in a drop-in queue (or hold a seat), every other screen shows
 // where you are: an Alert band at the top of the page column — info while
 // waiting, success when an advisor calls you.
-const QUEUE_BANNER = `<div class="alert ss-banner is-hidden" id="ss-banner" role="status">
+const QUEUE_BANNER = `<div class="alert alert--action-end ss-banner is-hidden" id="ss-banner" role="status">
       <span id="ss-banner-icon"></span>
       <div class="alert__stack"><p class="alert__message"><span class="alert__title" id="ss-banner-title"></span> <span id="ss-banner-text"></span></p></div>
       <button class="btn btn--secondary btn--sm" id="ss-banner-view" type="button">View</button>
