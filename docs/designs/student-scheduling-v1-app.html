@@ -42,17 +42,17 @@
   --tok-status-danger: #de394b;
   --tok-text-danger: #c11435;
   --tok-icon-danger: #de394b;
-  --tok-text-on-fill: #ffffff;
-  --tok-bg-primary: #d9eaff;
   --tok-fill-danger: #de394b;
   --tok-fill-danger-hover: #c11435;
   --tok-fill-danger-active: #9c0326;
+  --tok-text-on-fill: #ffffff;
   --tok-icon-success: #0a994e;
   --tok-surface-sunken: #e6e8eb;
   --tok-fill-primary-hover: #0468c4;
   --tok-fill-primary-active: #01519c;
   --tok-fill-disabled: #e6e8eb;
   --tok-bg-primary-hover: #eff6ff;
+  --tok-bg-primary: #d9eaff;
   --tok-tag-gray-solid-bg: #758191;
   --tok-tag-gray-solid-text: #ffffff;
   --tok-bg-success: #d4f1da;
@@ -930,42 +930,6 @@ html:has(dialog.dialog[open], dialog.alert-dialog[open]) { overflow: hidden; }
 /* Read more: clamp the text until it is opened */
 .collapsible--clamp > .collapsible__content { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; }
 .collapsible--clamp.is-open > .collapsible__content { display: block; -webkit-line-clamp: none; overflow: visible; }
-/* Calendar — its month / year select pair heads the Calendar section's month (user, 2026-10-29: switch months fast) */
-
-.calendar { display: inline-block; vertical-align: top; }
-.calendar__months { display: flex; gap: 20px; }
-.calendar__head { display: flex; align-items: center; justify-content: space-between; gap: 4px; margin-bottom: 8px; }
-.calendar__selects { display: flex; align-items: center; gap: 4px; }
-/* month / year select — a 32px control in the field family, chevron = expand_more */
-.calendar__sel { position: relative; display: inline-flex; }
-.calendar__select { appearance: none; -webkit-appearance: none; box-sizing: border-box; height: 32px; margin: 0; padding: 0 24px 0 8px; border: 1px solid var(--tok-border-default); border-radius: 8px; background: var(--tok-surface-default); color: var(--tok-text-default); font-family: inherit; font-weight: 400; font-size: 12px; line-height: 1.4; cursor: pointer; }
-@media (hover: hover) { .calendar__select:hover { border-color: var(--tok-border-strong); } }
-.calendar__select:focus-visible { outline: none; border-color: var(--tok-border-focus); }
-.calendar__sel-chevron { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--tok-icon-default); pointer-events: none; }
-/* paging arrows; with two months the inner sides keep a same-width spacer */
-.calendar__nav { box-sizing: border-box; width: 32px; height: 32px; padding: 0; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; border: none; background: none; border-radius: 8px; cursor: pointer; color: var(--tok-icon-default); }
-@media (hover: hover) { .calendar__nav:hover { background: var(--tok-fill-neutral-hover); } }
-.calendar__nav:disabled { color: var(--tok-icon-disabled); background: none; cursor: default; }
-.calendar__nav:focus-visible { outline: 2px solid var(--tok-border-focus); outline-offset: -2px; }
-.calendar__nav-icon { width: 20px; height: 20px; }
-.calendar__nav-sp { width: 32px; flex-shrink: 0; }
-.calendar__grid { display: grid; grid-template-columns: repeat(7, 36px); gap: 4px 0; }
-.calendar__weekday { width: 36px; height: 28px; display: inline-flex; align-items: center; justify-content: center; color: var(--tok-text-muted); font-weight: 700; font-size: 12px; line-height: 1.4; text-transform: uppercase; }
-.calendar__day { box-sizing: border-box; width: 36px; height: 36px; margin: 0; padding: 0; display: inline-flex; align-items: center; justify-content: center; border: 1px solid transparent; border-radius: 8px; background: none; cursor: pointer; color: var(--tok-text-default); font-weight: 400; font-size: 12px; line-height: 1.4; font-family: inherit; }
-@media (hover: hover) { .calendar__day:hover { background: var(--tok-fill-neutral-hover); } }
-.calendar__day:focus-visible { outline: 2px solid var(--tok-border-focus); outline-offset: -2px; }
-.calendar__day--outside { color: var(--tok-text-muted); cursor: default; }
-@media (hover: hover) { .calendar__day--outside:hover { background: none; } }
-.calendar__day--today { border-color: var(--tok-border-strong); }
-.calendar__day:disabled { color: var(--tok-text-disabled); background: none; cursor: default; }
-@media (hover: hover) { /* range: the wash runs edge-to-edge; the ends round on their outer side */
-.calendar__day--mid, .calendar__day--mid:hover { background: var(--tok-bg-primary); color: var(--tok-text-default); border-radius: 0; } }
-@media (hover: hover) { .calendar__day--selected, .calendar__day--selected:hover { background: var(--tok-fill-primary); color: var(--tok-text-on-fill); border-color: var(--tok-fill-primary); } }
-.calendar__day--start { border-radius: 8px 0 0 8px; }
-.calendar__day--end { border-radius: 0 8px 8px 0; }
-.calendar__day--start.calendar__day--end { border-radius: 8px; }
-/* narrow containers: two months stack */
-@media (max-width: 560px) { .calendar__months { flex-direction: column; gap: 12px; } }
 /* Below 1024 the summary card falls under the choices, so Register rides in
    a bar pinned to the bottom of the screen instead of in the card's foot. */
 .ss-cta-bar { display: none; }
@@ -1068,7 +1032,8 @@ html:has(dialog.dialog[open], dialog.alert-dialog[open]) { overflow: hidden; }
 .ss-cal { display: flex; flex-direction: column; gap: 20px; }
 .ss-cal__month { gap: 12px; }
 .ss-cal__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-/* the month's name is the selects now; the h3 stays for screen readers */
+/* the month's name is the month Select now (one list to scroll — user, 2026-10-29); the h3 stays for screen readers. Fixed width, so it doesn't jump month to month */
+.ss-cal-pick { width: 160px; flex: 0 1 auto; min-width: 0; }
 .ss-cal__label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 /* the month: 7 columns, DatePicker's weekday + day recipe, stretched */
 .ss-cal__grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
@@ -3178,10 +3143,7 @@ dialog.slide-over-panel--bottom[open] { transform: translateY(0); animation: sli
     events.forEach(function (e) { (byDay[e.date] = byDay[e.date] || []).push(e); });
     var first = new Date(cal.y, cal.m, 1);
     $("ss-cal-label").textContent = MON_LONG[cal.m] + " " + cal.y;
-    // the year list grows if the arrows page past it
-    var ys = $("ss-cal-year"), yrs = [].map.call(ys.options, function (o) { return +o.value; });
-    if (yrs.indexOf(cal.y) < 0) ys.add(new Option(cal.y, cal.y), cal.y < yrs[0] ? 0 : null);
-    $("ss-cal-month").value = String(cal.m); ys.value = String(cal.y);
+    $("ss-cal-pick-value").textContent = MON_LONG[cal.m] + " " + cal.y;
     // six-week grid from the Sunday on or before the 1st
     var start = addDays(first, -first.getDay());
     var weeks = Math.ceil((first.getDay() + new Date(cal.y, cal.m + 1, 0).getDate()) / 7);
@@ -3239,10 +3201,16 @@ dialog.slide-over-panel--bottom[open] { transform: translateY(0); animation: sli
     cal.sel = t.getFullYear() === cal.y && t.getMonth() === cal.m ? TODAY : isoDate(d);
     renderCal();
   }
-  // jump: the month / year selects (DS Calendar's header) and Today
+  // jump: one month Select (a year either side of today, plus wherever the
+  // arrows have paged to) and Today
   function calJump(y, m) { calShift(0, new Date(y, m, 1)); }
-  on("ss-cal-month", "change", function () { calJump(cal.y, +this.value); });
-  on("ss-cal-year", "change", function () { calJump(+this.value, cal.m); });
+  on("ss-cal-pick", "click", function () {
+    var t = new Date(TODAY + "T00:00:00"), at = cal.y * 12 + cal.m, now = t.getFullYear() * 12 + t.getMonth(), opts = [];
+    for (var k = Math.min(now - 12, at); k <= Math.max(now + 12, at); k++) {
+      opts.push({ value: String(k), label: MON_LONG[k % 12] + " " + Math.floor(k / 12) });
+    }
+    openListbox(this, opts, String(at), function (v) { calJump(Math.floor(+v / 12), +v % 12); });
+  });
   on("ss-cal-today", "click", function () { var t = new Date(TODAY + "T00:00:00"); calJump(t.getFullYear(), t.getMonth()); });
   on("ss-cal-prev", "click", function () { calShift(-1); });
   on("ss-cal-next", "click", function () { calShift(1); });

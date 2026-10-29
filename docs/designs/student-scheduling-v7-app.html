@@ -43,17 +43,17 @@
   --tok-status-danger: #de394b;
   --tok-text-danger: #c11435;
   --tok-icon-danger: #de394b;
-  --tok-text-on-fill: #ffffff;
-  --tok-bg-primary: #d9eaff;
   --tok-fill-danger: #de394b;
   --tok-fill-danger-hover: #c11435;
   --tok-fill-danger-active: #9c0326;
+  --tok-text-on-fill: #ffffff;
   --tok-icon-success: #0a994e;
   --tok-surface-sunken: #e6e8eb;
   --tok-fill-primary-hover: #0468c4;
   --tok-fill-primary-active: #01519c;
   --tok-fill-disabled: #e6e8eb;
   --tok-bg-primary-hover: #eff6ff;
+  --tok-bg-primary: #d9eaff;
   --tok-tag-gray-solid-bg: #758191;
   --tok-tag-gray-solid-text: #ffffff;
   --tok-bg-success: #d4f1da;
@@ -931,42 +931,6 @@ html:has(dialog.dialog[open], dialog.alert-dialog[open]) { overflow: hidden; }
 /* Read more: clamp the text until it is opened */
 .collapsible--clamp > .collapsible__content { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; }
 .collapsible--clamp.is-open > .collapsible__content { display: block; -webkit-line-clamp: none; overflow: visible; }
-/* Calendar — its month / year select pair heads the Calendar section's month (user, 2026-10-29: switch months fast) */
-
-.calendar { display: inline-block; vertical-align: top; }
-.calendar__months { display: flex; gap: 20px; }
-.calendar__head { display: flex; align-items: center; justify-content: space-between; gap: 4px; margin-bottom: 8px; }
-.calendar__selects { display: flex; align-items: center; gap: 4px; }
-/* month / year select — a 32px control in the field family, chevron = expand_more */
-.calendar__sel { position: relative; display: inline-flex; }
-.calendar__select { appearance: none; -webkit-appearance: none; box-sizing: border-box; height: 32px; margin: 0; padding: 0 24px 0 8px; border: 1px solid var(--tok-border-default); border-radius: 8px; background: var(--tok-surface-default); color: var(--tok-text-default); font-family: inherit; font-weight: 400; font-size: 12px; line-height: 1.4; cursor: pointer; }
-@media (hover: hover) { .calendar__select:hover { border-color: var(--tok-border-strong); } }
-.calendar__select:focus-visible { outline: none; border-color: var(--tok-border-focus); }
-.calendar__sel-chevron { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--tok-icon-default); pointer-events: none; }
-/* paging arrows; with two months the inner sides keep a same-width spacer */
-.calendar__nav { box-sizing: border-box; width: 32px; height: 32px; padding: 0; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; border: none; background: none; border-radius: 8px; cursor: pointer; color: var(--tok-icon-default); }
-@media (hover: hover) { .calendar__nav:hover { background: var(--tok-fill-neutral-hover); } }
-.calendar__nav:disabled { color: var(--tok-icon-disabled); background: none; cursor: default; }
-.calendar__nav:focus-visible { outline: 2px solid var(--tok-border-focus); outline-offset: -2px; }
-.calendar__nav-icon { width: 20px; height: 20px; }
-.calendar__nav-sp { width: 32px; flex-shrink: 0; }
-.calendar__grid { display: grid; grid-template-columns: repeat(7, 36px); gap: 4px 0; }
-.calendar__weekday { width: 36px; height: 28px; display: inline-flex; align-items: center; justify-content: center; color: var(--tok-text-muted); font-weight: 700; font-size: 12px; line-height: 1.4; text-transform: uppercase; }
-.calendar__day { box-sizing: border-box; width: 36px; height: 36px; margin: 0; padding: 0; display: inline-flex; align-items: center; justify-content: center; border: 1px solid transparent; border-radius: 8px; background: none; cursor: pointer; color: var(--tok-text-default); font-weight: 400; font-size: 12px; line-height: 1.4; font-family: inherit; }
-@media (hover: hover) { .calendar__day:hover { background: var(--tok-fill-neutral-hover); } }
-.calendar__day:focus-visible { outline: 2px solid var(--tok-border-focus); outline-offset: -2px; }
-.calendar__day--outside { color: var(--tok-text-muted); cursor: default; }
-@media (hover: hover) { .calendar__day--outside:hover { background: none; } }
-.calendar__day--today { border-color: var(--tok-border-strong); }
-.calendar__day:disabled { color: var(--tok-text-disabled); background: none; cursor: default; }
-@media (hover: hover) { /* range: the wash runs edge-to-edge; the ends round on their outer side */
-.calendar__day--mid, .calendar__day--mid:hover { background: var(--tok-bg-primary); color: var(--tok-text-default); border-radius: 0; } }
-@media (hover: hover) { .calendar__day--selected, .calendar__day--selected:hover { background: var(--tok-fill-primary); color: var(--tok-text-on-fill); border-color: var(--tok-fill-primary); } }
-.calendar__day--start { border-radius: 8px 0 0 8px; }
-.calendar__day--end { border-radius: 0 8px 8px 0; }
-.calendar__day--start.calendar__day--end { border-radius: 8px; }
-/* narrow containers: two months stack */
-@media (max-width: 560px) { .calendar__months { flex-direction: column; gap: 12px; } }
 /* Below 1024 the summary card falls under the choices, so Register rides in
    a bar pinned to the bottom of the screen instead of in the card's foot. */
 .ss-cta-bar { display: none; }
@@ -1069,7 +1033,8 @@ html:has(dialog.dialog[open], dialog.alert-dialog[open]) { overflow: hidden; }
 .ss-cal { display: flex; flex-direction: column; gap: 20px; }
 .ss-cal__month { gap: 12px; }
 .ss-cal__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-/* the month's name is the selects now; the h3 stays for screen readers */
+/* the month's name is the month Select now (one list to scroll — user, 2026-10-29); the h3 stays for screen readers. Fixed width, so it doesn't jump month to month */
+.ss-cal-pick { width: 160px; flex: 0 1 auto; min-width: 0; }
 .ss-cal__label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 /* the month: 7 columns, DatePicker's weekday + day recipe, stretched */
 .ss-cal__grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
@@ -1164,9 +1129,9 @@ html { background: var(--tok-surface-page); }
 .cx .app__brand { grid-area: title; }
 .cx .app__topbar > .btn:last-child { grid-area: actions; justify-self: end; }
 .cx .sidebar-open { display: none; }
-/* the Tabs as the component ships: track gray, track radius, 4px padding; sm — a 40px track, the height of the topbar's controls */
+/* the Tabs as the component ships: track gray, track radius, 4px padding — base (48) in the topbar, sm (40) on a phone */
 .cx .ss-sections--top { grid-area: tabs; position: static; padding: 0; background: none; }
-.cx .ss-sections--top .tabs--segmented { height: calc(32px + 2 * 4px); }
+.cx .ss-sections--top .tabs--segmented { height: calc(40px + 2 * 4px); }
 /* Department: a Select beside Search, up to 240 wide */
 .cx .ss-filters .ss-dept-select { width: 240px; flex: 0 1 auto; min-width: 0; }
 /* sticky columns sit under the 64px topbar alone now (no band under it) */
@@ -1180,7 +1145,7 @@ html { background: var(--tok-surface-page); }
      (the script moves the element — one set of tabs, not two) */
   .cx .app__topbar { grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "menu title actions"; }
   .cx .sidebar-open { display: inline-flex; grid-area: menu; }
-  .cx .ss__main > .ss-sections--top .tabs--segmented { display: flex; width: 100%; }
+  .cx .ss__main > .ss-sections--top .tabs--segmented { display: flex; width: 100%; height: calc(32px + 2 * 4px); }
   /* the section's own title + subtitle go (screen readers keep the h2): the
      selected tab already says where you are (user, 2026-10-29). One 16px
      rhythm — topbar → tabs → the section's controls; 12 inside a section. */
@@ -1374,9 +1339,9 @@ html { background: var(--tok-surface-page); }
     <div class="app__brand"><h1 class="app__title">Scheduling</h1></div>
     <nav class="ss-sections ss-sections--top" aria-label="Scheduling sections">
     <div class="tabs--segmented" role="tablist">
-      <button class="tab tab--sm tab--active" type="button" role="tab" aria-selected="true">Book</button>
-      <button class="tab tab--sm" type="button" role="tab" aria-selected="false">My schedule</button>
-      <button class="tab tab--sm ss-tab--wide" type="button" role="tab" aria-selected="false">Calendar</button>
+      <button class="tab tab--base tab--active" type="button" role="tab" aria-selected="true">Book</button>
+      <button class="tab tab--base" type="button" role="tab" aria-selected="false">My schedule</button>
+      <button class="tab tab--base ss-tab--wide" type="button" role="tab" aria-selected="false">Calendar</button>
     </div>
   </nav>
     <button class="btn btn--secondary btn--base btn--icon-only" type="button" aria-label="Settings"><svg class="btn__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"><g><path d="M0,0h24v24H0V0z" fill="none"/><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></g></svg></button>
@@ -1736,10 +1701,7 @@ html { background: var(--tok-surface-page); }
         <div class="card ss-cal__month">
           <div class="ss-cal__head">
             <h3 class="ss-cal__label" id="ss-cal-label"></h3>
-            <span class="calendar__selects">
-              <span class="calendar__sel"><select class="calendar__select calendar__select--month" id="ss-cal-month" aria-label="Month"><option value="0">January</option><option value="1">February</option><option value="2">March</option><option value="3">April</option><option value="4">May</option><option value="5">June</option><option value="6">July</option><option value="7">August</option><option value="8">September</option><option value="9">October</option><option value="10">November</option><option value="11">December</option></select><svg class="calendar__sel-chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></span>
-              <span class="calendar__sel"><select class="calendar__select calendar__select--year" id="ss-cal-year" aria-label="Year"><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option></select><svg class="calendar__sel-chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></span>
-            </span>
+            <button class="select select--sm ss-cal-pick" id="ss-cal-pick" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Month"><span class="select__value" id="ss-cal-pick-value"></span><svg class="select__chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
             <div class="ss-week__nav">
               <button class="btn btn--secondary btn--sm" id="ss-cal-today" type="button">Today</button>
               <button class="btn btn--secondary btn--sm btn--icon-only" id="ss-cal-prev" type="button" aria-label="Previous month"><svg class="btn__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg></button>
@@ -3607,10 +3569,7 @@ html { background: var(--tok-surface-page); }
     events.forEach(function (e) { (byDay[e.date] = byDay[e.date] || []).push(e); });
     var first = new Date(cal.y, cal.m, 1);
     $("ss-cal-label").textContent = MON_LONG[cal.m] + " " + cal.y;
-    // the year list grows if the arrows page past it
-    var ys = $("ss-cal-year"), yrs = [].map.call(ys.options, function (o) { return +o.value; });
-    if (yrs.indexOf(cal.y) < 0) ys.add(new Option(cal.y, cal.y), cal.y < yrs[0] ? 0 : null);
-    $("ss-cal-month").value = String(cal.m); ys.value = String(cal.y);
+    $("ss-cal-pick-value").textContent = MON_LONG[cal.m] + " " + cal.y;
     // six-week grid from the Sunday on or before the 1st
     var start = addDays(first, -first.getDay());
     var weeks = Math.ceil((first.getDay() + new Date(cal.y, cal.m + 1, 0).getDate()) / 7);
@@ -3668,10 +3627,16 @@ html { background: var(--tok-surface-page); }
     cal.sel = t.getFullYear() === cal.y && t.getMonth() === cal.m ? TODAY : isoDate(d);
     renderCal();
   }
-  // jump: the month / year selects (DS Calendar's header) and Today
+  // jump: one month Select (a year either side of today, plus wherever the
+  // arrows have paged to) and Today
   function calJump(y, m) { calShift(0, new Date(y, m, 1)); }
-  on("ss-cal-month", "change", function () { calJump(cal.y, +this.value); });
-  on("ss-cal-year", "change", function () { calJump(+this.value, cal.m); });
+  on("ss-cal-pick", "click", function () {
+    var t = new Date(TODAY + "T00:00:00"), at = cal.y * 12 + cal.m, now = t.getFullYear() * 12 + t.getMonth(), opts = [];
+    for (var k = Math.min(now - 12, at); k <= Math.max(now + 12, at); k++) {
+      opts.push({ value: String(k), label: MON_LONG[k % 12] + " " + Math.floor(k / 12) });
+    }
+    openListbox(this, opts, String(at), function (v) { calJump(Math.floor(+v / 12), +v % 12); });
+  });
   on("ss-cal-today", "click", function () { var t = new Date(TODAY + "T00:00:00"); calJump(t.getFullYear(), t.getMonth()); });
   on("ss-cal-prev", "click", function () { calShift(-1); });
   on("ss-cal-next", "click", function () { calShift(1); });
@@ -3711,6 +3676,9 @@ html { background: var(--tok-surface-page); }
   var openBtn = document.getElementById("ss-search-open"), searchBox = document.getElementById("ss-search"), headRow = document.getElementById("ss-head-row");
   function place() {
     if (phone.matches) main.insertBefore(nav, main.firstChild); else bar.insertBefore(nav, settings);
+    // section Tabs: sm on a phone (a 40 track in the page), base in the topbar —
+    // sm up there got lost (user, 2026-10-29)
+    nav.querySelectorAll(".tab").forEach(function (t) { t.classList.toggle("tab--sm", phone.matches); t.classList.toggle("tab--base", !phone.matches); });
     // phone: the search button (base, like the Select) and the field it opens sit
     // in the filter row, before Department — where Search is from 768
     if (phone.matches) { filters.insertBefore(searchBox, dept); filters.insertBefore(openBtn, searchBox); }

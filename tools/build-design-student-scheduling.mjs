@@ -641,10 +641,7 @@ const CALENDAR = `
         <div class="card ss-cal__month">
           <div class="ss-cal__head">
             <h3 class="ss-cal__label" id="ss-cal-label"></h3>
-            <span class="calendar__selects">
-              <span class="calendar__sel"><select class="calendar__select calendar__select--month" id="ss-cal-month" aria-label="Month">${["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"].map((m, i) => `<option value="${i}">${m}</option>`).join("")}</select>${icon("expand_more", "calendar__sel-chevron")}</span>
-              <span class="calendar__sel"><select class="calendar__select calendar__select--year" id="ss-cal-year" aria-label="Year">${[-1, 0, 1].map((d) => +DATA.TODAY.slice(0, 4) + d).map((y) => `<option value="${y}">${y}</option>`).join("")}</select>${icon("expand_more", "calendar__sel-chevron")}</span>
-            </span>
+            <button class="select select--sm ss-cal-pick" id="ss-cal-pick" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Month"><span class="select__value" id="ss-cal-pick-value"></span>${icon("expand_more", "select__chevron")}</button>
             <div class="ss-week__nav">
               <button class="btn btn--secondary btn--sm" id="ss-cal-today" type="button">Today</button>
               <button class="btn btn--secondary btn--sm btn--icon-only" id="ss-cal-prev" type="button" aria-label="Previous month">${icon("chevron_left", "btn__icon")}</button>
@@ -724,6 +721,7 @@ const V7_APP_END = `</div>
 const v7Css = () => {
   const tabs = tokens.tabs;
   const dm = (k) => px(resolve(`dim.${k}`));
+  const track = `calc(${px(resolve(tabs.size.base.height.$value))} + 2 * ${px(resolve(tabs.segmented.trackPadding.$value))})`;
   const trackSm = `calc(${px(resolve(tabs.size.sm.height.$value))} + 2 * ${px(resolve(tabs.segmented.trackPadding.$value))})`;
   return `
 /* ============ v7: CX shell — Sidebar + topbar with the section Tabs ============ */
@@ -734,9 +732,9 @@ html { background: ${cv("surface.page")}; }
 .cx .app__brand { grid-area: title; }
 .cx .app__topbar > .btn:last-child { grid-area: actions; justify-self: end; }
 .cx .sidebar-open { display: none; }
-/* the Tabs as the component ships: track gray, track radius, 4px padding; sm — a 40px track, the height of the topbar's controls */
+/* the Tabs as the component ships: track gray, track radius, 4px padding — base (48) in the topbar, sm (40) on a phone */
 .cx .ss-sections--top { grid-area: tabs; position: static; padding: 0; background: none; }
-.cx .ss-sections--top .tabs--segmented { height: ${trackSm}; }
+.cx .ss-sections--top .tabs--segmented { height: ${track}; }
 /* Department: a Select beside Search, up to 240 wide */
 .cx .ss-filters .ss-dept-select { width: ${dm(60)}; flex: 0 1 auto; min-width: 0; }
 /* sticky columns sit under the 64px topbar alone now (no band under it) */
@@ -750,7 +748,7 @@ html { background: ${cv("surface.page")}; }
      (the script moves the element — one set of tabs, not two) */
   .cx .app__topbar { grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "menu title actions"; }
   .cx .sidebar-open { display: inline-flex; grid-area: menu; }
-  .cx .ss__main > .ss-sections--top .tabs--segmented { display: flex; width: 100%; }
+  .cx .ss__main > .ss-sections--top .tabs--segmented { display: flex; width: 100%; height: ${trackSm}; }
   /* the section's own title + subtitle go (screen readers keep the h2): the
      selected tab already says where you are (user, 2026-10-29). One 16px
      rhythm — topbar → tabs → the section's controls; 12 inside a section. */
@@ -801,7 +799,7 @@ const markupV7 = () => {
   const tabsAt = m.indexOf(V7_TABS), navEnd = m.indexOf("</nav>", tabsAt) + "</nav>".length;
   const topEnd = m.indexOf("</header>");
   if (tabsAt < 0 || topEnd < 0 || topEnd > tabsAt || !m.includes(V7_APP_END) || !m.startsWith('<div class="app">')) throw new Error("v7: markup drifted — update V7_TABS / V7_APP_END");
-  const nav = m.slice(tabsAt, navEnd).replace("ss-sections--seg ss-sections--center", "ss-sections--top").replaceAll("tab tab--base", "tab tab--sm"); // sm everywhere: a 40px track (user, 2026-10-29)
+  const nav = m.slice(tabsAt, navEnd).replace("ss-sections--seg ss-sections--center", "ss-sections--top");
   m = m.slice(0, tabsAt) + m.slice(navEnd);
   // the section Tabs go between the title and the settings button
   const settingsAt = m.lastIndexOf('<button class="btn btn--secondary btn--base btn--icon-only" type="button" aria-label="Settings">', m.indexOf("</header>"));
@@ -820,6 +818,9 @@ const V7_JS = `(function () {
   var openBtn = document.getElementById("ss-search-open"), searchBox = document.getElementById("ss-search"), headRow = document.getElementById("ss-head-row");
   function place() {
     if (phone.matches) main.insertBefore(nav, main.firstChild); else bar.insertBefore(nav, settings);
+    // section Tabs: sm on a phone (a 40 track in the page), base in the topbar —
+    // sm up there got lost (user, 2026-10-29)
+    nav.querySelectorAll(".tab").forEach(function (t) { t.classList.toggle("tab--sm", phone.matches); t.classList.toggle("tab--base", !phone.matches); });
     // phone: the search button (base, like the Select) and the field it opens sit
     // in the filter row, before Department — where Search is from 768
     if (phone.matches) { filters.insertBefore(searchBox, dept); filters.insertBefore(openBtn, searchBox); }

@@ -1774,10 +1774,7 @@ export function ssAppJs(d) {
     events.forEach(function (e) { (byDay[e.date] = byDay[e.date] || []).push(e); });
     var first = new Date(cal.y, cal.m, 1);
     $("ss-cal-label").textContent = MON_LONG[cal.m] + " " + cal.y;
-    // the year list grows if the arrows page past it
-    var ys = $("ss-cal-year"), yrs = [].map.call(ys.options, function (o) { return +o.value; });
-    if (yrs.indexOf(cal.y) < 0) ys.add(new Option(cal.y, cal.y), cal.y < yrs[0] ? 0 : null);
-    $("ss-cal-month").value = String(cal.m); ys.value = String(cal.y);
+    $("ss-cal-pick-value").textContent = MON_LONG[cal.m] + " " + cal.y;
     // six-week grid from the Sunday on or before the 1st
     var start = addDays(first, -first.getDay());
     var weeks = Math.ceil((first.getDay() + new Date(cal.y, cal.m + 1, 0).getDate()) / 7);
@@ -1835,10 +1832,16 @@ export function ssAppJs(d) {
     cal.sel = t.getFullYear() === cal.y && t.getMonth() === cal.m ? TODAY : isoDate(d);
     renderCal();
   }
-  // jump: the month / year selects (DS Calendar's header) and Today
+  // jump: one month Select (a year either side of today, plus wherever the
+  // arrows have paged to) and Today
   function calJump(y, m) { calShift(0, new Date(y, m, 1)); }
-  on("ss-cal-month", "change", function () { calJump(cal.y, +this.value); });
-  on("ss-cal-year", "change", function () { calJump(+this.value, cal.m); });
+  on("ss-cal-pick", "click", function () {
+    var t = new Date(TODAY + "T00:00:00"), at = cal.y * 12 + cal.m, now = t.getFullYear() * 12 + t.getMonth(), opts = [];
+    for (var k = Math.min(now - 12, at); k <= Math.max(now + 12, at); k++) {
+      opts.push({ value: String(k), label: MON_LONG[k % 12] + " " + Math.floor(k / 12) });
+    }
+    openListbox(this, opts, String(at), function (v) { calJump(Math.floor(+v / 12), +v % 12); });
+  });
   on("ss-cal-today", "click", function () { var t = new Date(TODAY + "T00:00:00"); calJump(t.getFullYear(), t.getMonth()); });
   on("ss-cal-prev", "click", function () { calShift(-1); });
   on("ss-cal-next", "click", function () { calShift(1); });
