@@ -640,8 +640,13 @@ const CALENDAR = `
       <div class="ss-cal" id="ss-cal">
         <div class="card ss-cal__month">
           <div class="ss-cal__head">
-            <h3 class="ss-week__label" id="ss-cal-label"></h3>
+            <h3 class="ss-cal__label" id="ss-cal-label"></h3>
+            <span class="calendar__selects">
+              <span class="calendar__sel"><select class="calendar__select calendar__select--month" id="ss-cal-month" aria-label="Month">${["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"].map((m, i) => `<option value="${i}">${m}</option>`).join("")}</select>${icon("expand_more", "calendar__sel-chevron")}</span>
+              <span class="calendar__sel"><select class="calendar__select calendar__select--year" id="ss-cal-year" aria-label="Year">${[-1, 0, 1].map((d) => +DATA.TODAY.slice(0, 4) + d).map((y) => `<option value="${y}">${y}</option>`).join("")}</select>${icon("expand_more", "calendar__sel-chevron")}</span>
+            </span>
             <div class="ss-week__nav">
+              <button class="btn btn--secondary btn--sm" id="ss-cal-today" type="button">Today</button>
               <button class="btn btn--secondary btn--sm btn--icon-only" id="ss-cal-prev" type="button" aria-label="Previous month">${icon("chevron_left", "btn__icon")}</button>
               <button class="btn btn--secondary btn--sm btn--icon-only" id="ss-cal-next" type="button" aria-label="Next month">${icon("chevron_right", "btn__icon")}</button>
             </div>

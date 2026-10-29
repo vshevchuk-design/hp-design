@@ -1774,6 +1774,10 @@ export function ssAppJs(d) {
     events.forEach(function (e) { (byDay[e.date] = byDay[e.date] || []).push(e); });
     var first = new Date(cal.y, cal.m, 1);
     $("ss-cal-label").textContent = MON_LONG[cal.m] + " " + cal.y;
+    // the year list grows if the arrows page past it
+    var ys = $("ss-cal-year"), yrs = [].map.call(ys.options, function (o) { return +o.value; });
+    if (yrs.indexOf(cal.y) < 0) ys.add(new Option(cal.y, cal.y), cal.y < yrs[0] ? 0 : null);
+    $("ss-cal-month").value = String(cal.m); ys.value = String(cal.y);
     // six-week grid from the Sunday on or before the 1st
     var start = addDays(first, -first.getDay());
     var weeks = Math.ceil((first.getDay() + new Date(cal.y, cal.m + 1, 0).getDate()) / 7);
@@ -1823,14 +1827,19 @@ export function ssAppJs(d) {
     var btn = document.querySelector('[data-cal-date="' + cal.sel + '"]');
     if (btn) btn.focus();
   });
-  function calShift(n) {
-    var d = new Date(cal.y, cal.m + n, 1);
+  function calShift(n, to) {
+    var d = to || new Date(cal.y, cal.m + n, 1);
     cal.y = d.getFullYear(); cal.m = d.getMonth();
     // keep a day of the shown month selected: today if it's here, else the 1st
     var t = new Date(TODAY + "T00:00:00");
     cal.sel = t.getFullYear() === cal.y && t.getMonth() === cal.m ? TODAY : isoDate(d);
     renderCal();
   }
+  // jump: the month / year selects (DS Calendar's header) and Today
+  function calJump(y, m) { calShift(0, new Date(y, m, 1)); }
+  on("ss-cal-month", "change", function () { calJump(cal.y, +this.value); });
+  on("ss-cal-year", "change", function () { calJump(+this.value, cal.m); });
+  on("ss-cal-today", "click", function () { var t = new Date(TODAY + "T00:00:00"); calJump(t.getFullYear(), t.getMonth()); });
   on("ss-cal-prev", "click", function () { calShift(-1); });
   on("ss-cal-next", "click", function () { calShift(1); });
 

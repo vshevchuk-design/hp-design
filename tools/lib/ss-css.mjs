@@ -9,6 +9,7 @@
 import { COLLAPSIBLE_CSS } from "./collapsible.mjs";
 import { LISTBOX_CSS, SELECT_CSS, SELECT_COLOR_PATHS } from "./select.mjs";
 import { TOAST_CSS, TOAST_COLOR_PATHS } from "./toast.mjs";
+import { CALENDAR_CSS, CALENDAR_COLOR_PATHS } from "./calendar.mjs";
 import { TEXT_FIELD_CSS, FIELD_WRAPPER_CSS, FIELD_COLOR_PATHS } from "./field.mjs";
 /** @param h  { tokens, resolve, resolveToken, cv, px, refPath, typoCss, textExt, get } */
 export function ssCss(h) {
@@ -629,6 +630,8 @@ html:has(dialog.dialog[open], dialog.alert-dialog[open]) { overflow: hidden; }
 .ss-session__time { color: ${cv("text.secondary")}; ${typoCss(style("body-sm"))} white-space: nowrap; }
 /* the show-all trigger is the DS Collapsible trigger (tools/lib/collapsible.mjs) */
 ${COLLAPSIBLE_CSS}
+/* Calendar — its month / year select pair heads the Calendar section's month (user, 2026-10-29: switch months fast) */
+${CALENDAR_CSS}
 /* Below 1024 the summary card falls under the choices, so Register rides in
    a bar pinned to the bottom of the screen instead of in the card's foot. */
 .ss-cta-bar { display: none; }
@@ -731,6 +734,8 @@ ${COLLAPSIBLE_CSS}
 .ss-cal { display: flex; flex-direction: column; gap: ${dim(5)}; }
 .ss-cal__month { gap: ${dim(3)}; }
 .ss-cal__head { display: flex; align-items: center; justify-content: space-between; gap: ${dim(3)}; }
+/* the month's name is the selects now; the h3 stays for screen readers */
+.ss-cal__label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 /* the month: 7 columns, DatePicker's weekday + day recipe, stretched */
 .ss-cal__grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: ${dim(1)}; }
 .ss-cal__dow { text-align: center; color: ${R(cal.weekday.color)}; ${typoCss(T(cal.weekday.label))} text-transform: ${labelSmCase}; letter-spacing: ${labelSm.letterSpacing}; padding-bottom: ${dim(1)}; }
@@ -795,7 +800,7 @@ ${slideOverPanelCss}
 /** Colour roles the CSS above references directly (by name, not via a
  *  component token) — merged with every component token's role in the builder. */
 export const SS_COLOR_PATHS = [
-  ...SELECT_COLOR_PATHS, ...TOAST_COLOR_PATHS, ...FIELD_COLOR_PATHS,
+  ...SELECT_COLOR_PATHS, ...TOAST_COLOR_PATHS, ...FIELD_COLOR_PATHS, ...CALENDAR_COLOR_PATHS,
   "surface.page", "surface.default", "border.default", "border.focus",
   "text.default", "text.secondary", "text.muted", "icon.secondary", "fill.neutralHover",
   "fill.danger", "fill.dangerHover", "fill.dangerActive", "text.onFill", "icon.success",
