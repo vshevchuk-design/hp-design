@@ -739,7 +739,8 @@ html { background: ${cv("surface.page")}; }
 .cx .ss-filters .ss-dept-select { width: ${dm(60)}; flex: 0 1 auto; min-width: 0; }
 /* My schedule: title + subtitle on the left, the Type Select on the right */
 .cx .ss-sched-top { display: flex; align-items: flex-end; justify-content: space-between; gap: ${dm(4)}; }
-.cx .ss-type-pick { width: ${dm(40)}; flex: none; min-width: 0; }
+/* as wide as Book's Department, and like it a placeholder ("Type") until a type is picked */
+.cx .ss-type-pick { width: ${dm(60)}; flex: 0 1 auto; min-width: 0; }
 /* and Book's 12px rhythm (head → type tabs → list), not 24 — the 24s made the tabs float (user, 2026-10-29) */
 .cx [data-view="appointments"] { gap: ${dm(3)}; }
 /* sticky columns sit under the 64px topbar alone now (no band under it) */
@@ -819,7 +820,7 @@ const markupV7 = () => {
     .replace('<span class="counter" id="ss-upcoming-count">0</span>', '<span class="counter ss-attn is-hidden" id="ss-upcoming-count"></span>');
   m = m.slice(0, headAt) + `<div class="ss-sched-top">
       ${schedHead}
-        <button class="select ss-type-pick" id="ss-sched-type-pick" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Type"><span class="select__value" id="ss-sched-type-value">All types</span>${icon("expand_more", "select__chevron")}</button>
+        <button class="select is-placeholder ss-type-pick" id="ss-sched-type-pick" type="button" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="ss-sched-type-name ss-sched-type-value"><span class="select__stack"><span class="select__label" id="ss-sched-type-name">Type</span><span class="select__value" id="ss-sched-type-value">Type</span></span>${icon("expand_more", "select__chevron")}</button>
       </div>
       ${whenTabs}` + m.slice(segEnd);
   m = m.replace(typeTabsMy, "");

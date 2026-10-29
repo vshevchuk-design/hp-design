@@ -3333,9 +3333,11 @@ dialog.slide-over-panel--bottom[open] { transform: translateY(0); animation: sli
   // v7: the type is a Select (beside the title), not tabs
   on("ss-sched-type-pick", "click", function () {
     var opts = [{ value: "", label: "All types" }, { value: "appointment", label: "Appointments" }, { value: "dropin", label: "Drop-ins" }, { value: "workshop", label: "Workshops" }];
+    var this_ = this;
     openListbox(this, opts, schedType, function (v) {
       schedType = v;
-      $("ss-sched-type-value").textContent = opts.filter(function (o) { return o.value === v; })[0].label;
+      $("ss-sched-type-value").textContent = v ? opts.filter(function (o) { return o.value === v; })[0].label : "Type";
+      this_.classList.toggle("is-placeholder", !v);
       rerenderSchedule();
     });
   });
