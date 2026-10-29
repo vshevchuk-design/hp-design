@@ -1161,7 +1161,8 @@ html { background: var(--tok-surface-page); }
   .cx [data-view="browse"] .ss-type-tabs { margin-inline: -16px; padding-inline: 16px; width: calc(100% + 2 * 16px); max-width: none; }
   .cx [data-view="browse"] .ss-type-tabs + .ss-results { margin-top: -12px; }
   .cx [data-view="browse"] .ss-hybrid--flush { border-top: none; }
-  .cx .ss__main > .ss-sections--top .tab { flex: 1 1 0; padding-inline: 0; }
+  /* each tab is its label + an equal share of what's left — My schedule (with its counter) gets the room it needs, Book and Calendar don't need more (user, 2026-10-29) */
+  .cx .ss__main > .ss-sections--top .tab { flex: 1 1 auto; padding-inline: 8px; }
   /* Calendar is a section on a phone too (user, 2026-10-29): the month with
      dots; a day opens its events in the bottom SlideOverPanel */
   .cx .ss-tab--wide { display: inline-flex; }

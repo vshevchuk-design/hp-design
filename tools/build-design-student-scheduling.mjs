@@ -761,7 +761,8 @@ html { background: ${cv("surface.page")}; }
   .cx [data-view="browse"] .ss-type-tabs { margin-inline: -${dm(4)}; padding-inline: ${dm(4)}; width: calc(100% + 2 * ${dm(4)}); max-width: none; }
   .cx [data-view="browse"] .ss-type-tabs + .ss-results { margin-top: -${dm(3)}; }
   .cx [data-view="browse"] .ss-hybrid--flush { border-top: none; }
-  .cx .ss__main > .ss-sections--top .tab { flex: 1 1 0; padding-inline: 0; }
+  /* each tab is its label + an equal share of what's left — My schedule (with its counter) gets the room it needs, Book and Calendar don't need more (user, 2026-10-29) */
+  .cx .ss__main > .ss-sections--top .tab { flex: 1 1 auto; padding-inline: ${dm(2)}; }
   /* Calendar is a section on a phone too (user, 2026-10-29): the month with
      dots; a day opens its events in the bottom SlideOverPanel */
   .cx .ss-tab--wide { display: inline-flex; }
