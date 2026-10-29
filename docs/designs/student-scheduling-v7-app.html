@@ -255,13 +255,13 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .btn--secondary .btn__icon { color: var(--tok-icon-default); }
 @media (hover: hover) { .btn--secondary:not(:disabled):hover { background: var(--tok-fill-neutral-hover-strong); } }
 .btn--secondary:not(:disabled):active { background: var(--tok-fill-neutral-active-strong); }
-.btn--secondary:disabled { color: var(--tok-text-disabled); }
+.btn--secondary:disabled { background: var(--tok-fill-disabled); color: var(--tok-text-disabled); }
 .btn--secondary:disabled .btn__icon { color: var(--tok-icon-disabled); }
 .btn--ghost { background: transparent; color: var(--tok-text-secondary); }
 .btn--ghost .btn__icon { color: var(--tok-icon-secondary); }
 @media (hover: hover) { .btn--ghost:not(:disabled):hover { background: var(--tok-fill-neutral-hover); } }
 .btn--ghost:not(:disabled):active { background: var(--tok-fill-neutral-active); }
-.btn--ghost:disabled { color: var(--tok-text-disabled); }
+.btn--ghost:disabled { background: transparent; color: var(--tok-text-disabled); }
 /* Tint — pale brand fill, blue label: the repeated per-card action. */
 .btn--tint { background: var(--tok-fill-primary-tint); color: var(--tok-text-primary); }
 .btn--tint .btn__icon { color: var(--tok-icon-primary); }
@@ -339,11 +339,21 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .select__chevron { flex-shrink: 0; width: 20px; height: 20px; color: var(--tok-icon-default); }
 
 /* ============ Card ============ */
-.card { background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); border-radius: 8px; }
-.card__head { padding: 16px; border-bottom: 1px solid var(--tok-border-default); }
+/* Card as the DS ships it (docs/card.html): padding on the card, 12px
+   between parts, header / footer hairlines inset by that padding, footer
+   actions right-aligned. */
+.card { display: flex; flex-direction: column; gap: 12px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); border-radius: 8px; padding: 16px; min-width: 0; }
+.card__header { display: flex; flex-direction: column; gap: 4px; padding-bottom: 12px; border-bottom: 1px solid var(--tok-border-default); }
 .card__title { margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 14px; line-height: 1.4; }
-.card__body { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
-.card__foot { padding: 16px; border-top: 1px solid var(--tok-border-default); }
+.card__description { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.card__footer { padding-top: 12px; border-top: 1px solid var(--tok-border-default); display: flex; justify-content: flex-end; gap: 8px; }
+/* composition: a group of the card's content (no padding of its own) */
+.card__body { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+/* composition: content that runs edge to edge (a list, an Accordion) — the
+   card's padding moves onto its header / footer, their hairlines go full width */
+.card--flush { padding: 0; gap: 0; overflow: hidden; }
+.card--flush > .card__header { padding: 16px; }
+.card--flush > .card__footer { padding: 12px 16px; }
 
 /* ============ Badge ============ */
 .badge { display: inline-flex; align-items: center; flex-shrink: 0; height: 16px; padding: 0 8px; border-radius: 999px; white-space: nowrap; font-weight: 600; font-size: 10px; line-height: 1; }
@@ -568,16 +578,37 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 @media (hover: hover) { .btn--danger:not(:disabled):hover { background: var(--tok-fill-danger-hover); } }
 .btn--danger:not(:disabled):active { background: var(--tok-fill-danger-active); }
 
-/* ============ Modal / AlertDialog (native <dialog>) ============ */
-.modal { border: none; padding: 0; width: min(480px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); border-radius: 24px; background: var(--tok-surface-default); box-shadow: 0px 8px 24px -2px rgba(21, 25, 30, 0.16); font-family: var(--tok-family-sans); }
-.modal[open] { display: flex; flex-direction: column; }
-.modal::backdrop { background: var(--tok-surface-overlay); }
-html:has(.modal[open]) { overflow: hidden; }
-.modal__head { padding: 24px 24px 0; }
-.modal__title { margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 18px; line-height: 1.4; }
-.modal__body { padding: 24px; display: flex; flex-direction: column; gap: 12px; overflow-y: auto; color: var(--tok-text-secondary); font-weight: 400; font-size: 14px; line-height: 1.4; }
-.modal__body p { margin: 0; }
-.modal__foot { display: flex; justify-content: flex-end; gap: 8px; padding: 16px 24px; border-top: 1px solid var(--tok-border-default); }
+/* ============ Dialog + AlertDialog (native <dialog>) — as the DS ships them ============ */
+/* Dialog (docs/dialog.html): header band (title, description, ×) and footer
+   band, 16px vertical, hairlines inside; body scrolls. Size sm (480). */
+dialog.dialog, dialog.alert-dialog { margin: auto; padding: 0; border: none; width: min(480px, calc(100vw - 16px * 2)); max-width: none; max-height: 85dvh; border-radius: 24px; background: var(--tok-surface-default); box-shadow: 0px 8px 24px -2px rgba(21, 25, 30, 0.16);
+  opacity: 0; transform: scale(0.96); transition: opacity 200ms ease, transform 200ms ease, overlay 200ms allow-discrete, display 200ms allow-discrete; }
+dialog.dialog[open], dialog.alert-dialog[open] { opacity: 1; transform: scale(1); }
+@starting-style { dialog.dialog[open], dialog.alert-dialog[open] { opacity: 0; transform: scale(0.96); } }
+dialog.dialog::backdrop, dialog.alert-dialog::backdrop { background: var(--tok-surface-overlay); opacity: 0; transition: opacity 200ms ease allow-discrete; }
+dialog.dialog[open]::backdrop, dialog.alert-dialog[open]::backdrop { opacity: 1; }
+@starting-style { dialog.dialog[open]::backdrop, dialog.alert-dialog[open]::backdrop { opacity: 0; } }
+html:has(dialog.dialog[open], dialog.alert-dialog[open]) { overflow: hidden; }
+.dialog__content { display: flex; flex-direction: column; max-height: 85dvh; font-family: var(--tok-family-sans); }
+.dialog__header { flex-shrink: 0; display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 16px 24px; box-shadow: inset 0 -1px 0 var(--tok-border-default); }
+.dialog__heading { display: flex; flex-direction: column; justify-content: center; gap: 4px; min-width: 0; min-height: 32px; }
+.dialog__title { margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 18px; line-height: 1.4; }
+.dialog__description { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.dialog__body { flex: 1; overflow: auto; padding: 24px; }
+.dialog__body-text { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 14px; line-height: 1.4; }
+.dialog__footer { flex-shrink: 0; display: flex; gap: 12px; justify-content: flex-end; padding: 16px 24px; box-shadow: inset 0 1px 0 var(--tok-border-default); }
+.dialog__close { flex-shrink: 0; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border: none; border-radius: 8px; background: transparent; padding: 0; cursor: pointer; color: var(--tok-icon-secondary); }
+@media (hover: hover) { .dialog__close:hover { background: var(--tok-fill-neutral-hover); } }
+.dialog__close:active { background: var(--tok-fill-neutral-active); }
+.dialog__close:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
+.dialog__close-icon { width: 16px; height: 16px; display: block; }
+/* AlertDialog (docs/alert-dialog.html): one padded block — title over
+   description over actions, no bands, no hairlines */
+.alert-dialog__content { display: flex; flex-direction: column; gap: 24px; max-height: 85dvh; overflow: auto; padding: 24px; font-family: var(--tok-family-sans); }
+.alert-dialog__text { display: flex; flex-direction: column; gap: 8px; }
+.alert-dialog__title { margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 18px; line-height: 1.4; }
+.alert-dialog__description { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 14px; line-height: 1.4; }
+.alert-dialog__actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 12px; margin: 0; }
 /* a text area on Input's own field recipe (fill + hairline → strong → focus) */
 .ss-q { display: flex; flex-direction: column; gap: 8px; }
 .ss-q__label { color: var(--tok-text-default); font-weight: 600; font-size: 12px; line-height: 1.4; }
@@ -635,7 +666,7 @@ html:has(.modal[open]) { overflow: hidden; }
 .ss-detail__section p { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 14px; line-height: 1.4; }
 /* A card head with an action on the right: the ghost icon button's 32px is
    pulled into the title's line box, so the head keeps its height. */
-.ss-card-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.ss-card-head { display: flex; flex-direction: row; align-items: center; justify-content: space-between; gap: 8px; }
 .ss-card-head__more { margin-block: -6px; margin-inline-end: -8px; }
 /* ============ Menu (popover; one destructive item) ============ */
 .menu { margin: 0; padding: 4px; border-radius: 8px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); box-shadow: 0px 2px 8px 0px rgba(21, 25, 30, 0.10); font-family: var(--tok-family-sans); min-width: 192px; }
@@ -700,10 +731,10 @@ html:has(.modal[open]) { overflow: hidden; }
 @media (min-width: 768px) and (max-width: 1023px) { .ss-view[data-view="workshop"].is-active .ss-cta-bar { padding-inline: 24px; } }
 /* Done: one centred Card — the check, what happened, the facts, what next. */
 .ss-done { width: 100%; max-width: 560px; align-self: center; }
-.ss-done__body { align-items: center; text-align: center; gap: 8px; padding-top: 32px; }
+.ss-done__body { align-items: center; text-align: center; gap: 8px; padding-top: 16px; }
 .ss-done__icon { display: flex; margin-bottom: 8px; }
 .ss-done__icon svg { width: 48px; height: 48px; color: var(--tok-icon-success); }
-.ss-done__facts { border-top: 1px solid var(--tok-border-default); }
+.ss-done__facts { padding-top: 12px; border-top: 1px solid var(--tok-border-default); }
 .ss-done__actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
 @media (max-width: 559px) { .ss-done__actions > .btn { flex: 1 1 100%; } }
 
@@ -774,7 +805,7 @@ html:has(.modal[open]) { overflow: hidden; }
 .ss-visit .progress { margin-top: 8px; }
 .ss-v-rate { display: flex; flex-wrap: wrap; gap: 8px; }
 /* before joining: the optional fields, in their own band of the card */
-.ss-pre-fields { border-top: 1px solid var(--tok-border-default); gap: 16px; }
+.ss-pre-fields { padding-top: 12px; border-top: 1px solid var(--tok-border-default); gap: 16px; }
 .ss-field { display: flex; flex-direction: column; gap: 8px; }
 .ss-field__label { color: var(--tok-text-default); font-weight: 600; font-size: 12px; line-height: 1.4; }
 .ss-field__opt { color: var(--tok-text-muted); font-weight: 400; font-size: 12px; line-height: 1.4; margin-inline-start: 4px; }
@@ -793,7 +824,7 @@ html:has(.modal[open]) { overflow: hidden; }
 .ss-sections--center .tabs--segmented { flex: 0 1 auto; }
 @media (max-width: 767px) { .ss-tab--wide { display: none; } }
 .ss-cal { display: flex; flex-direction: column; gap: 20px; }
-.ss-cal__month { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.ss-cal__month { gap: 12px; }
 .ss-cal__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 /* the month: 7 columns, DatePicker's weekday + day recipe, stretched */
 .ss-cal__grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
@@ -1164,7 +1195,7 @@ html { background: var(--tok-surface-page); }
         </div>
 
         <aside class="card ss-summary" id="ss-summary" aria-label="Your appointment">
-          <div class="card__head"><h3 class="card__title">Your appointment</h3></div>
+          <div class="card__header"><h3 class="card__title">Your appointment</h3></div>
           <div class="card__body">
             <dl class="ss-facts">
               <dt>Service</dt><dd id="ss-sum-service"></dd>
@@ -1185,7 +1216,7 @@ html { background: var(--tok-surface-page); }
               <p class="ss-note" id="ss-sum-formats"></p>
             </div>
           </div>
-          <div class="card__foot ss-sum-booking">
+          <div class="card__footer ss-sum-booking">
             <button class="btn btn--primary btn--base btn--block" id="ss-confirm" type="button" disabled>Confirm appointment</button>
           </div>
         </aside>
@@ -1246,7 +1277,7 @@ html { background: var(--tok-surface-page); }
                  appointment rather than a caption under the card -->
             <div class="ss-detail__section ss-about" id="ss-d-about"><h3>About this service</h3><p id="ss-d-about-text"></p></div>
           </div>
-          <div class="card__foot ss-detail__actions" id="ss-d-actions"></div>
+          <div class="card__footer ss-detail__actions" id="ss-d-actions"></div>
         </div>
       </div>
     </section>
@@ -1274,7 +1305,7 @@ html { background: var(--tok-surface-page); }
           <div class="ss-step" id="ss-ws-choose">
             <div class="ss-step__head"><h3 class="ss-step__title" id="ss-ws-choose-title"></h3><span class="ss-note" id="ss-ws-choose-hint"></span></div>
             <div class="ss-ws-options" id="ss-ws-options" role="radiogroup" aria-labelledby="ss-ws-choose-title"></div>
-            <div class="ss-ws-fixed card is-hidden" id="ss-ws-fixed"></div>
+            <div class="ss-ws-fixed card card--flush is-hidden" id="ss-ws-fixed"></div>
           </div>
           <div class="ss-step is-hidden" id="ss-ws-sessions-step">
             <div class="ss-step__head"><h3 class="ss-step__title">Sessions</h3><span class="ss-note" id="ss-ws-sessions-count"></span></div>
@@ -1283,7 +1314,7 @@ html { background: var(--tok-surface-page); }
           </div>
         </div>
         <aside class="card ss-summary" id="ss-ws-summary" aria-label="Your registration">
-          <div class="card__head"><h3 class="card__title">Your registration</h3></div>
+          <div class="card__header"><h3 class="card__title">Your registration</h3></div>
           <div class="card__body">
             <dl class="ss-facts" id="ss-ws-facts"></dl>
             <div class="ss-detail__section ss-about"><h3>About this workshop</h3><p id="ss-ws-about"></p></div>
@@ -1293,7 +1324,7 @@ html { background: var(--tok-surface-page); }
               <p class="ss-loc__text" id="ss-ws-location"></p>
             </div>
           </div>
-          <div class="card__foot ss-ws-foot">
+          <div class="card__footer ss-ws-foot">
             <button class="btn btn--primary btn--base btn--block" id="ss-ws-register" type="button" disabled>Register</button>
           </div>
         </aside>
@@ -1361,7 +1392,7 @@ html { background: var(--tok-surface-page); }
           </div>
           <div class="ss-step" id="ss-mw-past-step">
             <div class="ss-step__head"><h3 class="ss-step__title">Past sessions</h3><span class="ss-note" id="ss-mw-past-count"></span></div>
-            <div class="card accordion" id="ss-mw-past"></div>
+            <div class="card card--flush accordion" id="ss-mw-past"></div>
           </div>
           <div class="ss-step" id="ss-mw-mat-step">
             <h3 class="ss-step__title">Materials</h3>
@@ -1370,7 +1401,7 @@ html { background: var(--tok-surface-page); }
         </div>
         <aside class="card ss-summary" aria-label="Workshop details">
           <!-- Leave is rare and final: it lives in the ⋯ menu, not as a button -->
-          <div class="card__head ss-card-head"><h3 class="card__title">Your workshop</h3><button class="btn btn--ghost btn--sm btn--icon-only ss-card-head__more" id="ss-mw-more-btn" type="button" popovertarget="ss-mw-menu" aria-haspopup="menu" aria-label="More actions"><svg class="btn__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg></button></div>
+          <div class="card__header ss-card-head"><h3 class="card__title">Your workshop</h3><button class="btn btn--ghost btn--sm btn--icon-only ss-card-head__more" id="ss-mw-more-btn" type="button" popovertarget="ss-mw-menu" aria-haspopup="menu" aria-label="More actions"><svg class="btn__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg></button></div>
           <div class="card__body">
             <dl class="ss-facts" id="ss-mw-facts"></dl>
             <div class="ss-detail__section ss-about"><h3>About this workshop</h3><p id="ss-mw-about"></p></div>
@@ -1393,7 +1424,7 @@ html { background: var(--tok-surface-page); }
           <p class="ss-sub" id="ss-done-text"></p>
         </div>
         <div class="card__body ss-done__facts"><dl class="ss-dl" id="ss-done-facts"></dl></div>
-        <div class="card__foot ss-done__actions" id="ss-done-actions"></div>
+        <div class="card__footer ss-done__actions" id="ss-done-actions"></div>
       </div>
     </section>
 
@@ -1422,8 +1453,8 @@ html { background: var(--tok-surface-page); }
         </div>
         <!-- the chosen day: a sticky card beside the month from 1024; on a
              tablet the same rows open in a bottom SlideOverPanel instead -->
-        <aside class="card ss-cal__side" aria-labelledby="ss-cal-day-title">
-          <div class="card__head"><h3 class="card__title" id="ss-cal-day-title"></h3></div>
+        <aside class="card card--flush ss-cal__side" aria-labelledby="ss-cal-day-title">
+          <div class="card__header"><h3 class="card__title" id="ss-cal-day-title"></h3></div>
           <div class="ss-cal-rows" id="ss-cal-day"></div>
           <div class="empty-state is-hidden" id="ss-cal-empty"><span class="empty-state__text">Nothing on this day</span></div>
         </aside>
@@ -1437,12 +1468,13 @@ html { background: var(--tok-surface-page); }
   </main>
 </div>
 </div>
-<dialog class="modal modal--alert" id="ss-leave-modal" data-alert aria-labelledby="ss-leave-title">
-  <div class="modal__head"><h2 class="modal__title" id="ss-leave-title"></h2></div>
-  <div class="modal__body"><p id="ss-leave-text"></p></div>
-  <div class="modal__foot">
-    <button class="btn btn--secondary btn--base" type="button" id="ss-leave-keep">Stay registered</button>
-    <button class="btn btn--danger btn--base" type="button" id="ss-leave-confirm"></button>
+<dialog class="alert-dialog" id="ss-leave-modal" role="alertdialog" aria-labelledby="ss-leave-title" aria-describedby="ss-leave-text">
+  <div class="alert-dialog__content">
+    <div class="alert-dialog__text"><h2 class="alert-dialog__title" id="ss-leave-title"></h2><p class="alert-dialog__description" id="ss-leave-text"></p></div>
+    <div class="alert-dialog__actions">
+      <button class="btn btn--secondary btn--base" type="button" id="ss-leave-keep" autofocus>Stay registered</button>
+      <button class="btn btn--danger btn--base" type="button" id="ss-leave-confirm"></button>
+    </div>
   </div>
 </dialog>
 <dialog class="ss-drawer" id="ss-cal-drawer" aria-labelledby="ss-cal-drawer-title">
@@ -1456,24 +1488,28 @@ html { background: var(--tok-surface-page); }
   <div class="menu__list"><button class="menu__item menu__item--destructive" type="button" role="menuitem" id="ss-mw-leave"><svg class="menu__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg><span id="ss-mw-leave-label">Leave workshop</span></button></div>
 </div>
 <div class="listbox" id="ss-lb" popover role="listbox"><div class="listbox__list"></div></div>
-<!-- Questions the advisor asked before the meeting — Modal -->
-<dialog class="modal" id="ss-q-modal" aria-labelledby="ss-q-title">
-  <form method="dialog" id="ss-q-form" style="display:contents">
-    <div class="modal__head"><h2 class="modal__title" id="ss-q-title">Before your appointment</h2></div>
-    <div class="modal__body"><p id="ss-q-intro"></p><div id="ss-q-fields" class="ss-detail"></div></div>
-    <div class="modal__foot">
+<!-- Questions the advisor asked before the meeting — Dialog -->
+<dialog class="dialog" id="ss-q-modal" aria-labelledby="ss-q-title" aria-describedby="ss-q-intro">
+  <form method="dialog" id="ss-q-form" class="dialog__content">
+    <div class="dialog__header">
+      <div class="dialog__heading"><h2 class="dialog__title" id="ss-q-title">Before your appointment</h2><p class="dialog__description" id="ss-q-intro"></p></div>
+      <button class="dialog__close" type="button" id="ss-q-close" aria-label="Close"><svg class="dialog__close-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
+    </div>
+    <div class="dialog__body"><div id="ss-q-fields" class="ss-detail"></div></div>
+    <div class="dialog__footer">
       <button class="btn btn--secondary btn--base" type="button" id="ss-q-cancel">Not now</button>
       <button class="btn btn--primary btn--base" type="submit" id="ss-q-send">Send answers</button>
     </div>
   </form>
 </dialog>
 <!-- Cancel confirmation — AlertDialog: no backdrop or Escape dismiss -->
-<dialog class="modal modal--alert" id="ss-cancel-modal" data-alert aria-labelledby="ss-cancel-title">
-  <div class="modal__head"><h2 class="modal__title" id="ss-cancel-title">Cancel this appointment?</h2></div>
-  <div class="modal__body"><p id="ss-cancel-text"></p></div>
-  <div class="modal__foot">
-    <button class="btn btn--secondary btn--base" type="button" id="ss-cancel-keep">Keep it</button>
-    <button class="btn btn--danger btn--base" type="button" id="ss-cancel-confirm">Cancel appointment</button>
+<dialog class="alert-dialog" id="ss-cancel-modal" role="alertdialog" aria-labelledby="ss-cancel-title" aria-describedby="ss-cancel-text">
+  <div class="alert-dialog__content">
+    <div class="alert-dialog__text"><h2 class="alert-dialog__title" id="ss-cancel-title">Cancel this appointment?</h2><p class="alert-dialog__description" id="ss-cancel-text"></p></div>
+    <div class="alert-dialog__actions">
+      <button class="btn btn--secondary btn--base" type="button" id="ss-cancel-keep" autofocus>Keep it</button>
+      <button class="btn btn--danger btn--base" type="button" id="ss-cancel-confirm">Cancel appointment</button>
+    </div>
   </div>
 </dialog>
 <script>
@@ -2412,6 +2448,7 @@ html { background: var(--tok-surface-page); }
     qDlg.showModal();
   });
   $("ss-q-cancel").addEventListener("click", function () { qDlg.close(); });
+  $("ss-q-close").addEventListener("click", function () { qDlg.close(); });
   $("ss-q-form").addEventListener("submit", function () {
     var a = apptById(openId);
     a.answered = true;
@@ -2519,7 +2556,7 @@ html { background: var(--tok-surface-page); }
       (eyebrow ? '<span class="ss-eyebrow">' + esc(eyebrow) + "</span>" : "") +
       '<h3 class="ss-visit__title">' + esc(title) + "</h3>" +
       (text ? '<p class="ss-visit__text">' + esc(text) + "</p>" : "") + (extra || "") + "</div>" +
-      (actions ? '<div class="card__foot ss-detail__actions">' + actions + "</div>" : "") + "</div>";
+      (actions ? '<div class="card__footer ss-detail__actions">' + actions + "</div>" : "") + "</div>";
   }
   // before joining / reserving
   function renderDropinPre() {
@@ -2546,7 +2583,7 @@ html { background: var(--tok-surface-page); }
       '<span class="ss-eyebrow">' + (open ? "Open now" : "Not open yet") + "</span>" +
       '<h3 class="ss-visit__title">' + esc(title) + '</h3><p class="ss-visit__text">' + esc(text) + "</p></div>" +
       '<div class="card__body ss-pre-fields">' + fields + "</div>" +
-      '<div class="card__foot ss-detail__actions"><button type="button" class="btn btn--primary btn--base ss-pre-go" data-pre-go' + (cur ? " disabled" : "") + ">" + (open ? "Join queue" : "Reserve a seat") + "</button></div></div>";
+      '<div class="card__footer ss-detail__actions"><button type="button" class="btn btn--primary btn--base ss-pre-go" data-pre-go' + (cur ? " disabled" : "") + ">" + (open ? "Join queue" : "Reserve a seat") + "</button></div></div>";
     $("ss-v-summary-step").classList.add("is-hidden");
     $("ss-v-rate-step").classList.add("is-hidden");
     var facts = [["Department", esc(dept)], ["Where", esc(LOCATIONS[dept])], ["Hours", open ? "Today until " + fmtTime(h.until) : "Today " + fmtTime(h.opens) + " – " + fmtTime(h.until)]];

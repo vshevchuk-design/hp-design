@@ -36,11 +36,11 @@ const pageCss = ({ tokens, R, D, dim, cv, typoCss, style }) => {
 .cx-widgets > * { break-inside: avoid; margin-bottom: ${dim(6)}; }
 .cx-widgets > .cx-empty-tab { column-span: all; }
 @media (max-width: 767px) { .cx-widgets > * { margin-bottom: ${dim(4)}; } }
-.cx-widget .card__head { display: flex; align-items: center; gap: ${dim(2)}; min-height: ${dim(14)}; padding-block: 0; }
+.cx-widget .card__header { flex-direction: row; display: flex; align-items: center; gap: ${dim(2)}; min-height: ${dim(14)}; padding-block: 0; }
 .cx-widget .card__title { flex: 1; min-width: 0; }
 .cx-widget__meta { color: ${cv("text.secondary")}; ${typoCss(style("body-sm"))} white-space: nowrap; }
 .cx-widget .card__body { padding: 0; gap: 0; }
-.cx-widget .card__foot { padding-block: ${dim(2)}; }
+.cx-widget .card__footer { padding-block: ${dim(2)}; }
 /* the day switcher under Today's Schedule's title */
 .cx-daynav { display: flex; align-items: center; gap: ${dim(2)}; padding: ${dim(3)} ${D(card.padding)}; border-bottom: 1px solid ${R(card.divider)}; }
 .cx-daynav__label { flex: 1; text-align: center; color: ${cv("text.default")}; ${typoCss(style("heading-sm"))} }
@@ -152,7 +152,7 @@ const appJs = `(function () {
   }
   function empty(text) { return '<div class="empty-state"><span class="empty-state__text">' + text + "</span></div>"; }
   function card(key, title, meta, body, foot) {
-    return '<article class="card cx-widget" data-widget="' + key + '"><div class="card__head"><h3 class="card__title">' + title + "</h3>" + (meta ? '<span class="cx-widget__meta">' + meta + "</span>" : "") + '</div><div class="card__body">' + body + "</div>" + (foot ? '<div class="card__foot">' + foot + "</div>" : "") + "</article>";
+    return '<article class="card card--flush cx-widget" data-widget="' + key + '"><div class="card__header"><h3 class="card__title">' + title + "</h3>" + (meta ? '<span class="cx-widget__meta">' + meta + "</span>" : "") + '</div><div class="card__body">' + body + "</div>" + (foot ? '<div class="card__footer">' + foot + "</div>" : "") + "</article>";
   }
   function link(text) { return '<button type="button" class="btn btn--ghost btn--sm cx-link" data-go><span>' + text + "</span>" + ICONS.arrow + "</button>"; }
   function dur(a, b) { return (b - a) + " min"; }

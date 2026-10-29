@@ -17,10 +17,10 @@ export function ssCss(h) {
   const dim = (k) => px(resolve(`dim.${k}`));
   const shadowCss = (node) => {
     const s = h.resolveToken(node);
-    return `${px(s.offsetX)} ${px(s.offsetY)} ${px(s.blur)} ${px(s.spread)} ${s.color}`;
+  return `${px(s.offsetX)} ${px(s.offsetY)} ${px(s.blur)} ${px(s.spread)} ${s.color}`;
   };
 
-  const { tabs, button, select, search, chip, listbox: lb, card, badge, pagination: pg, choiceTile: ct, radio, alert, toast, tooltip: tt, emptyState: es, dialog: modal, input, counter, progress, attachment: att, accordion: acc, datePicker: dp, calendar: cal, slideOverPanel: drawer, box, dropdownMenu: menu, statusIcon: si } = t;
+  const { tabs, button, select, search, chip, listbox: lb, card, badge, pagination: pg, choiceTile: ct, radio, alert, toast, tooltip: tt, emptyState: es, dialog: modal, alertDialog: ad, input, counter, progress, attachment: att, accordion: acc, datePicker: dp, calendar: cal, slideOverPanel: drawer, box, dropdownMenu: menu, statusIcon: si } = t;
 
   const btn = (variant, size) => ({
     height: D(button[variant].size[size].height),
@@ -59,6 +59,7 @@ export function ssCss(h) {
 
   const ttShow = h.resolveToken(tt.showDelay);
 
+  const modalDur = `${modal.transitionDuration.$value.value}${modal.transitionDuration.$value.unit}`;
   return `
 /* ============ page frame (ss-* composition) ============ */
 * { box-sizing: border-box; }
@@ -170,13 +171,13 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .btn--secondary .btn__icon { color: ${R(button.secondary.state.default.icon)}; }
 .btn--secondary:not(:disabled):hover { background: ${R(button.secondary.state.hover.fill)}; }
 .btn--secondary:not(:disabled):active { background: ${R(button.secondary.state.pressed.fill)}; }
-.btn--secondary:disabled { color: ${R(button.secondary.state.disabled.label)}; }
+.btn--secondary:disabled { background: ${R(button.secondary.state.disabled.fill)}; color: ${R(button.secondary.state.disabled.label)}; }
 .btn--secondary:disabled .btn__icon { color: ${R(button.secondary.state.disabled.icon)}; }
 .btn--ghost { background: transparent; color: ${R(button.ghost.state.default.label)}; }
 .btn--ghost .btn__icon { color: ${R(button.ghost.state.default.icon)}; }
 .btn--ghost:not(:disabled):hover { background: ${R(button.ghost.state.hover.fill)}; }
 .btn--ghost:not(:disabled):active { background: ${R(button.ghost.state.pressed.fill)}; }
-.btn--ghost:disabled { color: ${R(button.ghost.state.disabled.label)}; }
+.btn--ghost:disabled { background: transparent; color: ${R(button.ghost.state.disabled.label)}; }
 /* Tint — pale brand fill, blue label: the repeated per-card action. */
 .btn--tint { background: ${R(button.tint.state.default.fill)}; color: ${R(button.tint.state.default.label)}; }
 .btn--tint .btn__icon { color: ${R(button.tint.state.default.icon)}; }
@@ -254,11 +255,21 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .select__chevron { flex-shrink: 0; width: ${selRow.iconSize}; height: ${selRow.iconSize}; color: ${R(select.state.default.chevron)}; }
 
 /* ============ Card ============ */
-.card { background: ${R(card.bg)}; border: 1px solid ${R(card.border)}; border-radius: ${D(card.radius)}; }
-.card__head { padding: ${D(card.padding)}; border-bottom: 1px solid ${R(card.divider)}; }
+/* Card as the DS ships it (docs/card.html): padding on the card, 12px
+   between parts, header / footer hairlines inset by that padding, footer
+   actions right-aligned. */
+.card { display: flex; flex-direction: column; gap: ${D(card.gap)}; background: ${R(card.bg)}; border: 1px solid ${R(card.border)}; border-radius: ${D(card.radius)}; padding: ${D(card.padding)}; min-width: 0; }
+.card__header { display: flex; flex-direction: column; gap: ${D(card.headerGap)}; padding-bottom: ${D(card.gap)}; border-bottom: 1px solid ${R(card.divider)}; }
 .card__title { margin: 0; color: ${R(card.titleColor)}; ${typoCss(T(card.title))} }
-.card__body { padding: ${D(card.padding)}; display: flex; flex-direction: column; gap: ${D(card.gap)}; }
-.card__foot { padding: ${D(card.padding)}; border-top: 1px solid ${R(card.divider)}; }
+.card__description { margin: 0; color: ${R(card.descriptionColor)}; ${typoCss(T(card.description))} }
+.card__footer { padding-top: ${D(card.gap)}; border-top: 1px solid ${R(card.divider)}; display: flex; justify-content: flex-end; gap: ${dim(2)}; }
+/* composition: a group of the card's content (no padding of its own) */
+.card__body { display: flex; flex-direction: column; gap: ${D(card.gap)}; min-width: 0; }
+/* composition: content that runs edge to edge (a list, an Accordion) — the
+   card's padding moves onto its header / footer, their hairlines go full width */
+.card--flush { padding: 0; gap: 0; overflow: hidden; }
+.card--flush > .card__header { padding: ${D(card.padding)}; }
+.card--flush > .card__footer { padding: ${D(card.gap)} ${D(card.padding)}; }
 
 /* ============ Badge ============ */
 .badge { display: inline-flex; align-items: center; flex-shrink: 0; height: ${badgeSm.height}; padding: 0 ${badgeSm.paddingX}; border-radius: ${badgeSm.radius}; white-space: nowrap; ${typoCss(badgeSm.label)} }
@@ -479,16 +490,37 @@ ${["neutral", "primary", "success", "warning", "danger"].map((r) => `.badge--${r
 .btn--danger:not(:disabled):hover { background: ${R(button.danger.state.hover.fill)}; }
 .btn--danger:not(:disabled):active { background: ${R(button.danger.state.pressed.fill)}; }
 
-/* ============ Modal / AlertDialog (native <dialog>) ============ */
-.modal { border: none; padding: 0; width: min(${D(modal.size.sm)}, calc(100vw - ${dim(8)})); max-height: calc(100dvh - ${dim(8)}); border-radius: ${D(modal.radius)}; background: ${R(modal.bg)}; box-shadow: ${shadowCss(modal.shadow)}; font-family: ${cv("family.sans")}; }
-.modal[open] { display: flex; flex-direction: column; }
-.modal::backdrop { background: ${R(modal.overlay)}; }
-html:has(.modal[open]) { overflow: hidden; }
-.modal__head { padding: ${D(modal.padding)} ${D(modal.padding)} 0; }
-.modal__title { margin: 0; color: ${R(modal.titleColor)}; ${typoCss(T(modal.title))} }
-.modal__body { padding: ${D(modal.padding)}; display: flex; flex-direction: column; gap: ${D(modal.gap)}; overflow-y: auto; color: ${R(modal.bodyColor)}; ${typoCss(T(modal.body))} }
-.modal__body p { margin: 0; }
-.modal__foot { display: flex; justify-content: flex-end; gap: ${dim(2)}; padding: ${dim(4)} ${D(modal.padding)}; border-top: 1px solid ${R(modal.divider)}; }
+/* ============ Dialog + AlertDialog (native <dialog>) — as the DS ships them ============ */
+/* Dialog (docs/dialog.html): header band (title, description, ×) and footer
+   band, 16px vertical, hairlines inside; body scrolls. Size sm (480). */
+dialog.dialog, dialog.alert-dialog { margin: auto; padding: 0; border: none; width: min(${D(modal.size.sm)}, calc(100vw - ${D(modal.viewportGutter)} * 2)); max-width: none; max-height: 85dvh; border-radius: ${D(modal.radius)}; background: ${R(modal.bg)}; box-shadow: ${shadowCss(modal.shadow)};
+  opacity: 0; transform: scale(0.96); transition: opacity ${modalDur} ease, transform ${modalDur} ease, overlay ${modalDur} allow-discrete, display ${modalDur} allow-discrete; }
+dialog.dialog[open], dialog.alert-dialog[open] { opacity: 1; transform: scale(1); }
+@starting-style { dialog.dialog[open], dialog.alert-dialog[open] { opacity: 0; transform: scale(0.96); } }
+dialog.dialog::backdrop, dialog.alert-dialog::backdrop { background: ${R(modal.overlay)}; opacity: 0; transition: opacity ${modalDur} ease allow-discrete; }
+dialog.dialog[open]::backdrop, dialog.alert-dialog[open]::backdrop { opacity: 1; }
+@starting-style { dialog.dialog[open]::backdrop, dialog.alert-dialog[open]::backdrop { opacity: 0; } }
+html:has(dialog.dialog[open], dialog.alert-dialog[open]) { overflow: hidden; }
+.dialog__content { display: flex; flex-direction: column; max-height: 85dvh; font-family: ${cv("family.sans")}; }
+.dialog__header { flex-shrink: 0; display: flex; align-items: flex-start; justify-content: space-between; gap: ${D(modal.gap)}; padding: ${D(modal.barPaddingY)} ${D(modal.padding)}; box-shadow: inset 0 -1px 0 ${R(modal.divider)}; }
+.dialog__heading { display: flex; flex-direction: column; justify-content: center; gap: ${D(modal.headerGap)}; min-width: 0; min-height: ${D(button.ghost.size.sm.height)}; }
+.dialog__title { margin: 0; color: ${R(modal.titleColor)}; ${typoCss(T(modal.title))} }
+.dialog__description { margin: 0; color: ${R(modal.descriptionColor)}; ${typoCss(T(modal.description))} }
+.dialog__body { flex: 1; overflow: auto; padding: ${D(modal.padding)}; }
+.dialog__body-text { margin: 0; color: ${R(modal.bodyColor)}; ${typoCss(T(modal.body))} }
+.dialog__footer { flex-shrink: 0; display: flex; gap: ${D(modal.gap)}; justify-content: flex-end; padding: ${D(modal.barPaddingY)} ${D(modal.padding)}; box-shadow: inset 0 1px 0 ${R(modal.divider)}; }
+.dialog__close { flex-shrink: 0; width: ${D(button.ghost.size.sm.height)}; height: ${D(button.ghost.size.sm.height)}; display: inline-flex; align-items: center; justify-content: center; border: none; border-radius: ${D(button.ghost.radius)}; background: transparent; padding: 0; cursor: pointer; color: ${R(button.ghost.state.default.icon)}; }
+.dialog__close:hover { background: ${R(button.ghost.state.hover.fill)}; }
+.dialog__close:active { background: ${R(button.ghost.state.pressed.fill)}; }
+.dialog__close:focus-visible { outline: ${D(button.ghost.state.focused.ringWidth)} solid ${R(button.ghost.state.focused.ringColor)}; outline-offset: ${D(button.ghost.state.focused.ringOffset)}; }
+.dialog__close-icon { width: ${dim(4)}; height: ${dim(4)}; display: block; }
+/* AlertDialog (docs/alert-dialog.html): one padded block — title over
+   description over actions, no bands, no hairlines */
+.alert-dialog__content { display: flex; flex-direction: column; gap: ${D(ad.actionsGap)}; max-height: 85dvh; overflow: auto; padding: ${D(modal.padding)}; font-family: ${cv("family.sans")}; }
+.alert-dialog__text { display: flex; flex-direction: column; gap: ${D(ad.stackGap)}; }
+.alert-dialog__title { margin: 0; color: ${R(modal.titleColor)}; ${typoCss(T(modal.title))} }
+.alert-dialog__description { margin: 0; color: ${R(modal.bodyColor)}; ${typoCss(T(modal.body))} }
+.alert-dialog__actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: ${D(modal.gap)}; margin: 0; }
 /* a text area on Input's own field recipe (fill + hairline → strong → focus) */
 .ss-q { display: flex; flex-direction: column; gap: ${dim(2)}; }
 .ss-q__label { color: ${cv("text.default")}; ${typoCss(style("heading-sm"))} }
@@ -546,7 +578,7 @@ html:has(.modal[open]) { overflow: hidden; }
 .ss-detail__section p { margin: 0; color: ${cv("text.secondary")}; ${typoCss(style("body-base"))} }
 /* A card head with an action on the right: the ghost icon button's 32px is
    pulled into the title's line box, so the head keeps its height. */
-.ss-card-head { display: flex; align-items: center; justify-content: space-between; gap: ${dim(2)}; }
+.ss-card-head { display: flex; flex-direction: row; align-items: center; justify-content: space-between; gap: ${dim(2)}; }
 .ss-card-head__more { margin-block: -${dim("1_5")}; margin-inline-end: -${dim(2)}; }
 /* ============ Menu (popover; one destructive item) ============ */
 .menu { margin: 0; padding: ${D(menu.padding)}; border-radius: ${D(menu.radius)}; background: ${R(menu.bg)}; border: 1px solid ${R(menu.border)}; box-shadow: ${shadowCss(menu.shadow)}; font-family: ${cv("family.sans")}; min-width: ${dim(48)}; }
@@ -602,10 +634,10 @@ ${COLLAPSIBLE_CSS}
 @media (min-width: 768px) and (max-width: 1023px) { .ss-view[data-view="workshop"].is-active .ss-cta-bar { padding-inline: ${dim(6)}; } }
 /* Done: one centred Card — the check, what happened, the facts, what next. */
 .ss-done { width: 100%; max-width: 560px; align-self: center; }
-.ss-done__body { align-items: center; text-align: center; gap: ${dim(2)}; padding-top: ${dim(8)}; }
+.ss-done__body { align-items: center; text-align: center; gap: ${dim(2)}; padding-top: ${dim(4)}; }
 .ss-done__icon { display: flex; margin-bottom: ${dim(2)}; }
 .ss-done__icon svg { width: ${dim(12)}; height: ${dim(12)}; color: ${cv("icon.success")}; }
-.ss-done__facts { border-top: 1px solid ${R(card.divider)}; }
+.ss-done__facts { padding-top: ${D(card.gap)}; border-top: 1px solid ${R(card.divider)}; }
 .ss-done__actions { display: flex; flex-wrap: wrap; justify-content: center; gap: ${dim(2)}; }
 @media (max-width: 559px) { .ss-done__actions > .btn { flex: 1 1 100%; } }
 
@@ -676,7 +708,7 @@ ${COLLAPSIBLE_CSS}
 .ss-visit .progress { margin-top: ${dim(2)}; }
 .ss-v-rate { display: flex; flex-wrap: wrap; gap: ${dim(2)}; }
 /* before joining: the optional fields, in their own band of the card */
-.ss-pre-fields { border-top: 1px solid ${R(card.divider)}; gap: ${dim(4)}; }
+.ss-pre-fields { padding-top: ${D(card.gap)}; border-top: 1px solid ${R(card.divider)}; gap: ${dim(4)}; }
 .ss-field { display: flex; flex-direction: column; gap: ${dim(2)}; }
 .ss-field__label { color: ${cv("text.default")}; ${typoCss(style("heading-sm"))} }
 .ss-field__opt { color: ${cv("text.muted")}; ${typoCss(style("body-sm"))} margin-inline-start: ${dim(1)}; }
@@ -695,7 +727,7 @@ ${COLLAPSIBLE_CSS}
 .ss-sections--center .tabs--segmented { flex: 0 1 auto; }
 @media (max-width: 767px) { .ss-tab--wide { display: none; } }
 .ss-cal { display: flex; flex-direction: column; gap: ${dim(5)}; }
-.ss-cal__month { padding: ${D(card.padding)}; display: flex; flex-direction: column; gap: ${dim(3)}; }
+.ss-cal__month { gap: ${dim(3)}; }
 .ss-cal__head { display: flex; align-items: center; justify-content: space-between; gap: ${dim(3)}; }
 /* the month: 7 columns, DatePicker's weekday + day recipe, stretched */
 .ss-cal__grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: ${dim(1)}; }

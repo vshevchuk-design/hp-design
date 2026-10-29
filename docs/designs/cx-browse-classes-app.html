@@ -228,13 +228,13 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .btn--secondary .btn__icon { color: var(--tok-icon-default); }
 @media (hover: hover) { .btn--secondary:not(:disabled):hover { background: var(--tok-fill-neutral-hover-strong); } }
 .btn--secondary:not(:disabled):active { background: var(--tok-fill-neutral-active-strong); }
-.btn--secondary:disabled { color: var(--tok-text-disabled); }
+.btn--secondary:disabled { background: var(--tok-fill-disabled); color: var(--tok-text-disabled); }
 .btn--secondary:disabled .btn__icon { color: var(--tok-icon-disabled); }
 .btn--ghost { background: transparent; color: var(--tok-text-secondary); }
 .btn--ghost .btn__icon { color: var(--tok-icon-secondary); }
 @media (hover: hover) { .btn--ghost:not(:disabled):hover { background: var(--tok-fill-neutral-hover); } }
 .btn--ghost:not(:disabled):active { background: var(--tok-fill-neutral-active); }
-.btn--ghost:disabled { color: var(--tok-text-disabled); }
+.btn--ghost:disabled { background: transparent; color: var(--tok-text-disabled); }
 /* Tint — pale brand fill, blue label: the repeated per-card action. */
 .btn--tint { background: var(--tok-fill-primary-tint); color: var(--tok-text-primary); }
 .btn--tint .btn__icon { color: var(--tok-icon-primary); }
@@ -312,11 +312,21 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .select__chevron { flex-shrink: 0; width: 20px; height: 20px; color: var(--tok-icon-default); }
 
 /* ============ Card ============ */
-.card { background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); border-radius: 8px; }
-.card__head { padding: 16px; border-bottom: 1px solid var(--tok-border-default); }
+/* Card as the DS ships it (docs/card.html): padding on the card, 12px
+   between parts, header / footer hairlines inset by that padding, footer
+   actions right-aligned. */
+.card { display: flex; flex-direction: column; gap: 12px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); border-radius: 8px; padding: 16px; min-width: 0; }
+.card__header { display: flex; flex-direction: column; gap: 4px; padding-bottom: 12px; border-bottom: 1px solid var(--tok-border-default); }
 .card__title { margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 14px; line-height: 1.4; }
-.card__body { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
-.card__foot { padding: 16px; border-top: 1px solid var(--tok-border-default); }
+.card__description { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.card__footer { padding-top: 12px; border-top: 1px solid var(--tok-border-default); display: flex; justify-content: flex-end; gap: 8px; }
+/* composition: a group of the card's content (no padding of its own) */
+.card__body { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+/* composition: content that runs edge to edge (a list, an Accordion) — the
+   card's padding moves onto its header / footer, their hairlines go full width */
+.card--flush { padding: 0; gap: 0; overflow: hidden; }
+.card--flush > .card__header { padding: 16px; }
+.card--flush > .card__footer { padding: 12px 16px; }
 
 /* ============ Badge ============ */
 .badge { display: inline-flex; align-items: center; flex-shrink: 0; height: 16px; padding: 0 8px; border-radius: 999px; white-space: nowrap; font-weight: 600; font-size: 10px; line-height: 1; }
@@ -541,16 +551,37 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 @media (hover: hover) { .btn--danger:not(:disabled):hover { background: var(--tok-fill-danger-hover); } }
 .btn--danger:not(:disabled):active { background: var(--tok-fill-danger-active); }
 
-/* ============ Modal / AlertDialog (native <dialog>) ============ */
-.modal { border: none; padding: 0; width: min(480px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); border-radius: 24px; background: var(--tok-surface-default); box-shadow: 0px 8px 24px -2px rgba(21, 25, 30, 0.16); font-family: var(--tok-family-sans); }
-.modal[open] { display: flex; flex-direction: column; }
-.modal::backdrop { background: var(--tok-surface-overlay); }
-html:has(.modal[open]) { overflow: hidden; }
-.modal__head { padding: 24px 24px 0; }
-.modal__title { margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 18px; line-height: 1.4; }
-.modal__body { padding: 24px; display: flex; flex-direction: column; gap: 12px; overflow-y: auto; color: var(--tok-text-secondary); font-weight: 400; font-size: 14px; line-height: 1.4; }
-.modal__body p { margin: 0; }
-.modal__foot { display: flex; justify-content: flex-end; gap: 8px; padding: 16px 24px; border-top: 1px solid var(--tok-border-default); }
+/* ============ Dialog + AlertDialog (native <dialog>) — as the DS ships them ============ */
+/* Dialog (docs/dialog.html): header band (title, description, ×) and footer
+   band, 16px vertical, hairlines inside; body scrolls. Size sm (480). */
+dialog.dialog, dialog.alert-dialog { margin: auto; padding: 0; border: none; width: min(480px, calc(100vw - 16px * 2)); max-width: none; max-height: 85dvh; border-radius: 24px; background: var(--tok-surface-default); box-shadow: 0px 8px 24px -2px rgba(21, 25, 30, 0.16);
+  opacity: 0; transform: scale(0.96); transition: opacity 200ms ease, transform 200ms ease, overlay 200ms allow-discrete, display 200ms allow-discrete; }
+dialog.dialog[open], dialog.alert-dialog[open] { opacity: 1; transform: scale(1); }
+@starting-style { dialog.dialog[open], dialog.alert-dialog[open] { opacity: 0; transform: scale(0.96); } }
+dialog.dialog::backdrop, dialog.alert-dialog::backdrop { background: var(--tok-surface-overlay); opacity: 0; transition: opacity 200ms ease allow-discrete; }
+dialog.dialog[open]::backdrop, dialog.alert-dialog[open]::backdrop { opacity: 1; }
+@starting-style { dialog.dialog[open]::backdrop, dialog.alert-dialog[open]::backdrop { opacity: 0; } }
+html:has(dialog.dialog[open], dialog.alert-dialog[open]) { overflow: hidden; }
+.dialog__content { display: flex; flex-direction: column; max-height: 85dvh; font-family: var(--tok-family-sans); }
+.dialog__header { flex-shrink: 0; display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 16px 24px; box-shadow: inset 0 -1px 0 var(--tok-border-default); }
+.dialog__heading { display: flex; flex-direction: column; justify-content: center; gap: 4px; min-width: 0; min-height: 32px; }
+.dialog__title { margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 18px; line-height: 1.4; }
+.dialog__description { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.dialog__body { flex: 1; overflow: auto; padding: 24px; }
+.dialog__body-text { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 14px; line-height: 1.4; }
+.dialog__footer { flex-shrink: 0; display: flex; gap: 12px; justify-content: flex-end; padding: 16px 24px; box-shadow: inset 0 1px 0 var(--tok-border-default); }
+.dialog__close { flex-shrink: 0; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border: none; border-radius: 8px; background: transparent; padding: 0; cursor: pointer; color: var(--tok-icon-secondary); }
+@media (hover: hover) { .dialog__close:hover { background: var(--tok-fill-neutral-hover); } }
+.dialog__close:active { background: var(--tok-fill-neutral-active); }
+.dialog__close:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
+.dialog__close-icon { width: 16px; height: 16px; display: block; }
+/* AlertDialog (docs/alert-dialog.html): one padded block — title over
+   description over actions, no bands, no hairlines */
+.alert-dialog__content { display: flex; flex-direction: column; gap: 24px; max-height: 85dvh; overflow: auto; padding: 24px; font-family: var(--tok-family-sans); }
+.alert-dialog__text { display: flex; flex-direction: column; gap: 8px; }
+.alert-dialog__title { margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 18px; line-height: 1.4; }
+.alert-dialog__description { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 14px; line-height: 1.4; }
+.alert-dialog__actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 12px; margin: 0; }
 /* a text area on Input's own field recipe (fill + hairline → strong → focus) */
 .ss-q { display: flex; flex-direction: column; gap: 8px; }
 .ss-q__label { color: var(--tok-text-default); font-weight: 600; font-size: 12px; line-height: 1.4; }
@@ -673,10 +704,10 @@ html:has(.modal[open]) { overflow: hidden; }
 @media (min-width: 768px) and (max-width: 1023px) { .ss-view[data-view="workshop"].is-active .ss-cta-bar { padding-inline: 24px; } }
 /* Done: one centred Card — the check, what happened, the facts, what next. */
 .ss-done { width: 100%; max-width: 560px; align-self: center; }
-.ss-done__body { align-items: center; text-align: center; gap: 8px; padding-top: 32px; }
+.ss-done__body { align-items: center; text-align: center; gap: 8px; padding-top: 16px; }
 .ss-done__icon { display: flex; margin-bottom: 8px; }
 .ss-done__icon svg { width: 48px; height: 48px; color: var(--tok-icon-success); }
-.ss-done__facts { border-top: 1px solid var(--tok-border-default); }
+.ss-done__facts { padding-top: 12px; border-top: 1px solid var(--tok-border-default); }
 .ss-done__actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
 @media (max-width: 559px) { .ss-done__actions > .btn { flex: 1 1 100%; } }
 
@@ -747,7 +778,7 @@ html:has(.modal[open]) { overflow: hidden; }
 .ss-visit .progress { margin-top: 8px; }
 .ss-v-rate { display: flex; flex-wrap: wrap; gap: 8px; }
 /* before joining: the optional fields, in their own band of the card */
-.ss-pre-fields { border-top: 1px solid var(--tok-border-default); gap: 16px; }
+.ss-pre-fields { padding-top: 12px; border-top: 1px solid var(--tok-border-default); gap: 16px; }
 .ss-field { display: flex; flex-direction: column; gap: 8px; }
 .ss-field__label { color: var(--tok-text-default); font-weight: 600; font-size: 12px; line-height: 1.4; }
 .ss-field__opt { color: var(--tok-text-muted); font-weight: 400; font-size: 12px; line-height: 1.4; margin-inline-start: 4px; }
@@ -766,7 +797,7 @@ html:has(.modal[open]) { overflow: hidden; }
 .ss-sections--center .tabs--segmented { flex: 0 1 auto; }
 @media (max-width: 767px) { .ss-tab--wide { display: none; } }
 .ss-cal { display: flex; flex-direction: column; gap: 20px; }
-.ss-cal__month { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.ss-cal__month { gap: 12px; }
 .ss-cal__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 /* the month: 7 columns, DatePicker's weekday + day recipe, stretched */
 .ss-cal__grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }

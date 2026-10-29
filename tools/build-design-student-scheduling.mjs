@@ -52,7 +52,7 @@ const registry = {
   ...load("tokens/semantic/color.tokens.json"),
 };
 
-const COMPONENTS = ["tabs", "button", "select", "search", "chip", "listbox", "card", "badge", "pagination", "choice-tile", "radio", "alert", "toast", "tooltip", "empty-state", "dialog", "input", "counter", "progress", "attachment", "accordion", "calendar", "date-picker", "slide-over-panel", "box", "dropdown-menu", "status-icon"];
+const COMPONENTS = ["tabs", "button", "select", "search", "chip", "listbox", "card", "badge", "pagination", "choice-tile", "radio", "alert", "toast", "tooltip", "empty-state", "dialog", "alert-dialog", "input", "counter", "progress", "attachment", "accordion", "calendar", "date-picker", "slide-over-panel", "box", "dropdown-menu", "status-icon"];
 const comp = (name) => load(`tokens/components/${name}.tokens.json`).component;
 const tokens = Object.assign({}, ...COMPONENTS.map(comp));
 
@@ -154,7 +154,7 @@ ${shellTopbar({ title: "Scheduling", actions: settingsBtn })}
         <div class="ss-results__bar">
           <button class="btn btn--ghost btn--sm" id="ss-sort" type="button" aria-haspopup="listbox" aria-expanded="false">${icon("sort", "btn__icon")}<span id="ss-sort-label">Name (A–Z)</span></button>
         </div>
-        <div class="card ss-list" id="ss-list"></div>
+        <div class="card card--flush ss-list" id="ss-list"></div>
         <div class="ss-pager" id="ss-pager">
           <span class="ss-note" id="ss-range"></span>
           <nav class="pagination" id="ss-pages" aria-label="Pages"></nav>
@@ -225,7 +225,7 @@ ${shellTopbar({ title: "Scheduling", actions: settingsBtn })}
         </div>
 
         <aside class="card ss-summary" id="ss-summary" aria-label="Your appointment">
-          <div class="card__head"><h3 class="card__title">Your appointment</h3></div>
+          <div class="card__header"><h3 class="card__title">Your appointment</h3></div>
           <div class="card__body">
             <dl class="ss-facts">
               <dt>Service</dt><dd id="ss-sum-service"></dd>
@@ -246,7 +246,7 @@ ${shellTopbar({ title: "Scheduling", actions: settingsBtn })}
               <p class="ss-note" id="ss-sum-formats"></p>
             </div>
           </div>
-          <div class="card__foot ss-sum-booking">
+          <div class="card__footer ss-sum-booking">
             <button class="btn btn--primary btn--base btn--block" id="ss-confirm" type="button" disabled>Confirm appointment</button>
           </div>
         </aside>
@@ -302,7 +302,7 @@ ${shellTopbar({ title: "Scheduling", actions: settingsBtn })}
                  appointment rather than a caption under the card -->
             <div class="ss-detail__section ss-about" id="ss-d-about"><h3>About this service</h3><p id="ss-d-about-text"></p></div>
           </div>
-          <div class="card__foot ss-detail__actions" id="ss-d-actions"></div>
+          <div class="card__footer ss-detail__actions" id="ss-d-actions"></div>
         </div>
       </div>
     </section>
@@ -314,24 +314,28 @@ ${shellTopbar({ title: "Scheduling", actions: settingsBtn })}
   </main>
 </div>
 <div class="listbox" id="ss-lb" popover role="listbox"><div class="listbox__list"></div></div>
-<!-- Questions the advisor asked before the meeting — Modal -->
-<dialog class="modal" id="ss-q-modal" aria-labelledby="ss-q-title">
-  <form method="dialog" id="ss-q-form" style="display:contents">
-    <div class="modal__head"><h2 class="modal__title" id="ss-q-title">Before your appointment</h2></div>
-    <div class="modal__body"><p id="ss-q-intro"></p><div id="ss-q-fields" class="ss-detail"></div></div>
-    <div class="modal__foot">
+<!-- Questions the advisor asked before the meeting — Dialog -->
+<dialog class="dialog" id="ss-q-modal" aria-labelledby="ss-q-title" aria-describedby="ss-q-intro">
+  <form method="dialog" id="ss-q-form" class="dialog__content">
+    <div class="dialog__header">
+      <div class="dialog__heading"><h2 class="dialog__title" id="ss-q-title">Before your appointment</h2><p class="dialog__description" id="ss-q-intro"></p></div>
+      <button class="dialog__close" type="button" id="ss-q-close" aria-label="Close">${icon("close", "dialog__close-icon")}</button>
+    </div>
+    <div class="dialog__body"><div id="ss-q-fields" class="ss-detail"></div></div>
+    <div class="dialog__footer">
       <button class="btn btn--secondary btn--base" type="button" id="ss-q-cancel">Not now</button>
       <button class="btn btn--primary btn--base" type="submit" id="ss-q-send">Send answers</button>
     </div>
   </form>
 </dialog>
 <!-- Cancel confirmation — AlertDialog: no backdrop or Escape dismiss -->
-<dialog class="modal modal--alert" id="ss-cancel-modal" data-alert aria-labelledby="ss-cancel-title">
-  <div class="modal__head"><h2 class="modal__title" id="ss-cancel-title">Cancel this appointment?</h2></div>
-  <div class="modal__body"><p id="ss-cancel-text"></p></div>
-  <div class="modal__foot">
-    <button class="btn btn--secondary btn--base" type="button" id="ss-cancel-keep">Keep it</button>
-    <button class="btn btn--danger btn--base" type="button" id="ss-cancel-confirm">Cancel appointment</button>
+<dialog class="alert-dialog" id="ss-cancel-modal" role="alertdialog" aria-labelledby="ss-cancel-title" aria-describedby="ss-cancel-text">
+  <div class="alert-dialog__content">
+    <div class="alert-dialog__text"><h2 class="alert-dialog__title" id="ss-cancel-title">Cancel this appointment?</h2><p class="alert-dialog__description" id="ss-cancel-text"></p></div>
+    <div class="alert-dialog__actions">
+      <button class="btn btn--secondary btn--base" type="button" id="ss-cancel-keep" autofocus>Keep it</button>
+      <button class="btn btn--danger btn--base" type="button" id="ss-cancel-confirm">Cancel appointment</button>
+    </div>
   </div>
 </dialog>`;
 
@@ -389,7 +393,7 @@ if (!markup.includes(BROWSE_HEAD)) throw new Error("browse head markup drifted �
 // item template and where the department is chosen.
 const markupFor = () =>
   markup
-    .replace('class="card ss-list" id="ss-list"', 'class="ss-hybrid ss-hybrid--flush" id="ss-list"')
+    .replace('class="card card--flush ss-list" id="ss-list"', 'class="ss-hybrid ss-hybrid--flush" id="ss-list"')
     .replace(UNDERLINE_NAV, SEGMENTED_NAV)
     .replace(BROWSE_HEAD, BROWSE_HEAD_V5);
 
@@ -459,7 +463,7 @@ const V6_VIEWS = `<!-- ============ Workshop ============ -->
           <div class="ss-step" id="ss-ws-choose">
             <div class="ss-step__head"><h3 class="ss-step__title" id="ss-ws-choose-title"></h3><span class="ss-note" id="ss-ws-choose-hint"></span></div>
             <div class="ss-ws-options" id="ss-ws-options" role="radiogroup" aria-labelledby="ss-ws-choose-title"></div>
-            <div class="ss-ws-fixed card is-hidden" id="ss-ws-fixed"></div>
+            <div class="ss-ws-fixed card card--flush is-hidden" id="ss-ws-fixed"></div>
           </div>
           <div class="ss-step is-hidden" id="ss-ws-sessions-step">
             <div class="ss-step__head"><h3 class="ss-step__title">Sessions</h3><span class="ss-note" id="ss-ws-sessions-count"></span></div>
@@ -468,7 +472,7 @@ const V6_VIEWS = `<!-- ============ Workshop ============ -->
           </div>
         </div>
         <aside class="card ss-summary" id="ss-ws-summary" aria-label="Your registration">
-          <div class="card__head"><h3 class="card__title">Your registration</h3></div>
+          <div class="card__header"><h3 class="card__title">Your registration</h3></div>
           <div class="card__body">
             <dl class="ss-facts" id="ss-ws-facts"></dl>
             <div class="ss-detail__section ss-about"><h3>About this workshop</h3><p id="ss-ws-about"></p></div>
@@ -478,7 +482,7 @@ const V6_VIEWS = `<!-- ============ Workshop ============ -->
               <p class="ss-loc__text" id="ss-ws-location"></p>
             </div>
           </div>
-          <div class="card__foot ss-ws-foot">
+          <div class="card__footer ss-ws-foot">
             <button class="btn btn--primary btn--base btn--block" id="ss-ws-register" type="button" disabled>Register</button>
           </div>
         </aside>
@@ -546,7 +550,7 @@ const V6_VIEWS = `<!-- ============ Workshop ============ -->
           </div>
           <div class="ss-step" id="ss-mw-past-step">
             <div class="ss-step__head"><h3 class="ss-step__title">Past sessions</h3><span class="ss-note" id="ss-mw-past-count"></span></div>
-            <div class="card accordion" id="ss-mw-past"></div>
+            <div class="card card--flush accordion" id="ss-mw-past"></div>
           </div>
           <div class="ss-step" id="ss-mw-mat-step">
             <h3 class="ss-step__title">Materials</h3>
@@ -555,7 +559,7 @@ const V6_VIEWS = `<!-- ============ Workshop ============ -->
         </div>
         <aside class="card ss-summary" aria-label="Workshop details">
           <!-- Leave is rare and final: it lives in the ⋯ menu, not as a button -->
-          <div class="card__head ss-card-head"><h3 class="card__title">Your workshop</h3><button class="btn btn--ghost btn--sm btn--icon-only ss-card-head__more" id="ss-mw-more-btn" type="button" popovertarget="ss-mw-menu" aria-haspopup="menu" aria-label="More actions">${icon("more_horiz", "btn__icon")}</button></div>
+          <div class="card__header ss-card-head"><h3 class="card__title">Your workshop</h3><button class="btn btn--ghost btn--sm btn--icon-only ss-card-head__more" id="ss-mw-more-btn" type="button" popovertarget="ss-mw-menu" aria-haspopup="menu" aria-label="More actions">${icon("more_horiz", "btn__icon")}</button></div>
           <div class="card__body">
             <dl class="ss-facts" id="ss-mw-facts"></dl>
             <div class="ss-detail__section ss-about"><h3>About this workshop</h3><p id="ss-mw-about"></p></div>
@@ -578,7 +582,7 @@ const V6_VIEWS = `<!-- ============ Workshop ============ -->
           <p class="ss-sub" id="ss-done-text"></p>
         </div>
         <div class="card__body ss-done__facts"><dl class="ss-dl" id="ss-done-facts"></dl></div>
-        <div class="card__foot ss-done__actions" id="ss-done-actions"></div>
+        <div class="card__footer ss-done__actions" id="ss-done-actions"></div>
       </div>
     </section>
 
@@ -599,12 +603,13 @@ const CAL_DRAWER = `<dialog class="ss-drawer" id="ss-cal-drawer" aria-labelledby
   </div>
 </dialog>
 `;
-const LEAVE_DIALOG = `<dialog class="modal modal--alert" id="ss-leave-modal" data-alert aria-labelledby="ss-leave-title">
-  <div class="modal__head"><h2 class="modal__title" id="ss-leave-title"></h2></div>
-  <div class="modal__body"><p id="ss-leave-text"></p></div>
-  <div class="modal__foot">
-    <button class="btn btn--secondary btn--base" type="button" id="ss-leave-keep">Stay registered</button>
-    <button class="btn btn--danger btn--base" type="button" id="ss-leave-confirm"></button>
+const LEAVE_DIALOG = `<dialog class="alert-dialog" id="ss-leave-modal" role="alertdialog" aria-labelledby="ss-leave-title" aria-describedby="ss-leave-text">
+  <div class="alert-dialog__content">
+    <div class="alert-dialog__text"><h2 class="alert-dialog__title" id="ss-leave-title"></h2><p class="alert-dialog__description" id="ss-leave-text"></p></div>
+    <div class="alert-dialog__actions">
+      <button class="btn btn--secondary btn--base" type="button" id="ss-leave-keep" autofocus>Stay registered</button>
+      <button class="btn btn--danger btn--base" type="button" id="ss-leave-confirm"></button>
+    </div>
   </div>
 </dialog>
 `;
@@ -647,8 +652,8 @@ const CALENDAR = `
         </div>
         <!-- the chosen day: a sticky card beside the month from 1024; on a
              tablet the same rows open in a bottom SlideOverPanel instead -->
-        <aside class="card ss-cal__side" aria-labelledby="ss-cal-day-title">
-          <div class="card__head"><h3 class="card__title" id="ss-cal-day-title"></h3></div>
+        <aside class="card card--flush ss-cal__side" aria-labelledby="ss-cal-day-title">
+          <div class="card__header"><h3 class="card__title" id="ss-cal-day-title"></h3></div>
           <div class="ss-cal-rows" id="ss-cal-day"></div>
           <div class="empty-state is-hidden" id="ss-cal-empty"><span class="empty-state__text">Nothing on this day</span></div>
         </aside>
@@ -707,7 +712,7 @@ const markupV6 = () =>
 const V7_TABS = `<nav class="ss-sections ss-sections--seg ss-sections--center" aria-label="Scheduling sections">
     <div class="tabs--segmented" role="tablist">`;
 const V7_APP_END = `</div>
-<dialog class="modal modal--alert" id="ss-leave-modal"`;
+<dialog class="alert-dialog" id="ss-leave-modal"`;
 const v7Css = () => {
   const tabs = tokens.tabs;
   const dm = (k) => px(resolve(`dim.${k}`));

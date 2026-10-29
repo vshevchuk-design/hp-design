@@ -945,6 +945,7 @@ export function ssAppJs(d) {
     qDlg.showModal();
   });
   $("ss-q-cancel").addEventListener("click", function () { qDlg.close(); });
+  $("ss-q-close").addEventListener("click", function () { qDlg.close(); });
   $("ss-q-form").addEventListener("submit", function () {
     var a = apptById(openId);
     a.answered = true;
@@ -1052,7 +1053,7 @@ export function ssAppJs(d) {
       (eyebrow ? '<span class="ss-eyebrow">' + esc(eyebrow) + "</span>" : "") +
       '<h3 class="ss-visit__title">' + esc(title) + "</h3>" +
       (text ? '<p class="ss-visit__text">' + esc(text) + "</p>" : "") + (extra || "") + "</div>" +
-      (actions ? '<div class="card__foot ss-detail__actions">' + actions + "</div>" : "") + "</div>";
+      (actions ? '<div class="card__footer ss-detail__actions">' + actions + "</div>" : "") + "</div>";
   }
   // before joining / reserving
   function renderDropinPre() {
@@ -1079,7 +1080,7 @@ export function ssAppJs(d) {
       '<span class="ss-eyebrow">' + (open ? "Open now" : "Not open yet") + "</span>" +
       '<h3 class="ss-visit__title">' + esc(title) + '</h3><p class="ss-visit__text">' + esc(text) + "</p></div>" +
       '<div class="card__body ss-pre-fields">' + fields + "</div>" +
-      '<div class="card__foot ss-detail__actions"><button type="button" class="btn btn--primary btn--base ss-pre-go" data-pre-go' + (cur ? " disabled" : "") + ">" + (open ? "Join queue" : "Reserve a seat") + "</button></div></div>";
+      '<div class="card__footer ss-detail__actions"><button type="button" class="btn btn--primary btn--base ss-pre-go" data-pre-go' + (cur ? " disabled" : "") + ">" + (open ? "Join queue" : "Reserve a seat") + "</button></div></div>";
     $("ss-v-summary-step").classList.add("is-hidden");
     $("ss-v-rate-step").classList.add("is-hidden");
     var facts = [["Department", esc(dept)], ["Where", esc(LOCATIONS[dept])], ["Hours", open ? "Today until " + fmtTime(h.until) : "Today " + fmtTime(h.opens) + " – " + fmtTime(h.until)]];
