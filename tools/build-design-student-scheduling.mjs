@@ -720,6 +720,7 @@ const v7Css = () => {
   const tabs = tokens.tabs;
   const dm = (k) => px(resolve(`dim.${k}`));
   const track = `calc(${px(resolve(tabs.size.base.height.$value))} + 2 * ${px(resolve(tabs.segmented.trackPadding.$value))})`;
+  const trackSm = `calc(${px(resolve(tabs.size.sm.height.$value))} + 2 * ${px(resolve(tabs.segmented.trackPadding.$value))})`;
   return `
 /* ============ v7: CX shell — Sidebar + topbar with the section Tabs ============ */
 html { background: ${cv("surface.page")}; }
@@ -745,7 +746,13 @@ html { background: ${cv("surface.page")}; }
      (the script moves the element — one set of tabs, not two) */
   .cx .app__topbar { grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "menu title actions"; }
   .cx .sidebar-open { display: inline-flex; grid-area: menu; }
-  .cx .ss__main > .ss-sections--top .tabs--segmented { display: flex; width: 100%; }
+  .cx .ss__main > .ss-sections--top .tabs--segmented { display: flex; width: 100%; height: ${trackSm}; }
+  /* the section's own title + subtitle go (screen readers keep the h2): the
+     selected tab already says where you are (user, 2026-10-29). One 16px
+     rhythm — topbar → tabs → the section's controls; 12 inside a section. */
+  .cx .ss__main { padding-top: ${dm(4)}; gap: ${dm(4)}; }
+  .cx :is([data-view="browse"], [data-view="appointments"], [data-view="calendar"]) > .ss-head { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .cx :is([data-view="appointments"], [data-view="calendar"]) { gap: ${dm(3)}; }
   .cx .ss__main > .ss-sections--top .tab { flex: 1 1 0; padding-inline: 0; }
   /* Calendar is a section on a phone too (user, 2026-10-29): the month with
      dots; a day opens its events in the bottom SlideOverPanel */
@@ -800,6 +807,8 @@ const V7_JS = `(function () {
   function place() {
     if (phone.matches) main.insertBefore(nav, main.firstChild); else bar.insertBefore(nav, settings);
     dept.classList.toggle("select--sm", phone.matches);
+    // section Tabs: sm on a phone (beside the sm Select), base in the topbar
+    nav.querySelectorAll(".tab").forEach(function (t) { t.classList.toggle("tab--sm", phone.matches); t.classList.toggle("tab--base", !phone.matches); });
     // phone: the search button (sm, like the Select) and the field it opens sit
     // in the filter row, before Department — where Search is from 768
     if (phone.matches) { filters.insertBefore(searchBox, dept); filters.insertBefore(openBtn, searchBox); }
