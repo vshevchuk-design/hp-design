@@ -267,6 +267,12 @@ export const VISITS = [
       files: [{ name: "Thesis feedback.pdf", meta: "PDF · 180 KB" }],
     },
   },
+  // today (user, 2026-10-29: a drop-in on the calendar's today, beside the appointment and the workshop session)
+  {
+    id: "v2", name: "Math Tutoring", dept: "Tutoring Center", date: "2026-10-02", min: 9 * 60 + 5, end: 9 * 60 + 25,
+    advisor: "Priya Natarajan", state: "done",
+    summary: { text: "We went through the related-rates problems from section 3.9. You've got the setup — practise drawing the diagram first, then write down what changes." },
+  },
 ];
 // The prototype's queue moves on its own: one student ahead is served every
 // QUEUE_TICK_MS (a stand-in for DROPIN_MINUTES_PER_STUDENT of real time).

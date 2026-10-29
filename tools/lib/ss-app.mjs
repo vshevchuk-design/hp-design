@@ -756,7 +756,7 @@ export function ssAppJs(d) {
     }
     return '<article class="ss-appt">' +
       '<div class="ss-appt__time"><span class="ss-appt__clock">' + fmtTime(a.min) + '</span><span class="ss-appt__dur">' + minutesOf(a) + " min</span></div>" +
-      '<div class="ss-appt__main"><div class="ss-appt__title"><h3 class="ss-appt__name">' + esc(a.service) + "</h3>" + statusBadges(a) + "</div>" +
+      '<div class="ss-appt__main"><div class="ss-appt__title"><h3 class="ss-appt__name">' + esc(a.service) + "</h3>" + vbadge("violet", "Appointment") + statusBadges(a) + "</div>" +
       '<div class="ss-appt__meta">' +
       '<span class="ss-fact">' + ICONS.person + '<span class="ss-fact__text">' + esc(a.advisor) + " · " + esc(a.dept) + "</span></span>" +
       '<span class="ss-fact">' + FORMAT_ICON[a.format] + '<span class="ss-fact__text">' + esc(where(a)) + "</span></span>" +
