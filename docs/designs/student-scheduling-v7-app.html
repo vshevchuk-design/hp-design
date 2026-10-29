@@ -1137,9 +1137,9 @@ html { background: var(--tok-surface-page); }
 .cx .ss-sections--top .tabs--segmented { height: calc(40px + 2 * 4px); }
 /* Department: a Select beside Search, up to 240 wide */
 .cx .ss-filters .ss-dept-select { width: 240px; flex: 0 1 auto; min-width: 0; }
-/* My schedule: title + subtitle on the left, the Upcoming / Past Select on the right */
+/* My schedule: title + subtitle on the left, the Type Select on the right */
 .cx .ss-sched-top { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; }
-.cx .ss-appt-pick { width: 160px; flex: none; }
+.cx .ss-type-pick { width: 160px; flex: none; min-width: 0; }
 /* and Book's 12px rhythm (head → type tabs → list), not 24 — the 24s made the tabs float (user, 2026-10-29) */
 .cx [data-view="appointments"] { gap: 12px; }
 /* sticky columns sit under the 64px topbar alone now (no band under it) */
@@ -1177,6 +1177,7 @@ html { background: var(--tok-surface-page); }
   .cx #ss-browse-head.is-search-open .ss-title { display: flex; }
   .cx .ss-filters { flex-wrap: wrap; }
   .cx .ss-filters .ss-dept-select { flex: 1 1 0; max-width: 240px; }
+
   .cx .ss-filters > .search { display: none; }
   /* open, the field takes the whole row — over Department, not pushing it down (user, 2026-10-29) */
   .cx .ss-view:has(#ss-browse-head.is-search-open) .ss-filters > .search { display: flex; flex: 1 1 100%; order: -1; }
@@ -1503,13 +1504,11 @@ html { background: var(--tok-surface-page); }
         <h2 class="ss-title">My schedule</h2>
         <p class="ss-sub ss-sub--sm">Everything you've booked — appointments, drop-ins and workshops.</p>
       </div>
-        <button class="select ss-appt-pick" id="ss-appt-pick" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Show"><span class="select__value" id="ss-appt-pick-value">Upcoming</span><svg class="select__chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+        <button class="select ss-type-pick" id="ss-sched-type-pick" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Type"><span class="select__value" id="ss-sched-type-value">All types</span><svg class="select__chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
       </div>
-      <div class="tabs--underline ss-type-tabs" id="ss-sched-type" role="tablist" aria-label="Type">
-        <button class="tab tab--base tab--active" type="button" role="tab" aria-selected="true" data-type="">All</button>
-        <button class="tab tab--base" type="button" role="tab" aria-selected="false" data-type="appointment">Appointments</button>
-        <button class="tab tab--base" type="button" role="tab" aria-selected="false" data-type="dropin">Drop-ins</button>
-        <button class="tab tab--base" type="button" role="tab" aria-selected="false" data-type="workshop">Workshops</button>
+      <div class="tabs--underline ss-type-tabs" id="ss-appt-tabs" role="tablist" aria-label="When">
+        <button class="tab tab--base tab--active" type="button" role="tab" aria-selected="true" data-appt-tab="upcoming">Upcoming <span class="counter" id="ss-upcoming-count">0</span></button>
+        <button class="tab tab--base" type="button" role="tab" aria-selected="false" data-appt-tab="past">Past</button>
       </div>
       <div class="ss-appts" id="ss-appts"></div>
       <div class="card is-hidden" id="ss-appts-empty">
@@ -2551,7 +2550,7 @@ html { background: var(--tok-surface-page); }
     var n = (!schedType || schedType === "appointment" ? APPTS.filter(function (a) { return a.status === "upcoming"; }).length : 0) +
       (!schedType || schedType === "workshop" ? workshopEntries("upcoming").length : 0) +
       (!schedType || schedType === "dropin" ? visitEntries("upcoming").length : 0);
-    if ($("ss-upcoming-count")) $("ss-upcoming-count").textContent = n;
+    $("ss-upcoming-count").textContent = n;
   }
   function apptRow(a) {
     var actions = "";
@@ -2575,7 +2574,6 @@ html { background: var(--tok-surface-page); }
   function renderAppts() {
     updateUpcomingCount();
     if (V6) updateAttention();
-    if ($("ss-appt-pick-value")) $("ss-appt-pick-value").textContent = apptTab === "past" ? "Past" : "Upcoming";
     document.querySelectorAll("#ss-appt-tabs .tab").forEach(function (t) {
       var on = t.dataset.apptTab === apptTab;
       t.classList.toggle("tab--active", on);
@@ -2609,10 +2607,6 @@ html { background: var(--tok-surface-page); }
       : { upcoming: "No upcoming appointments", past: "No past appointments yet", cancelled: "Nothing cancelled" }[apptTab];
     $("ss-appts-browse").classList.toggle("is-hidden", apptTab !== "upcoming");
   }
-  // v7: Upcoming / Past is a Select beside the title, not a row of tabs
-  on("ss-appt-pick", "click", function () {
-    openListbox(this, [{ value: "upcoming", label: "Upcoming" }, { value: "past", label: "Past" }], apptTab, function (v) { apptTab = v; renderAppts(); });
-  });
   document.querySelectorAll("#ss-appt-tabs .tab").forEach(function (t) {
     t.addEventListener("click", function () { apptTab = t.dataset.apptTab; renderAppts(); });
   });
@@ -3549,6 +3543,15 @@ html { background: var(--tok-surface-page); }
   var schedType = "";
   var SCHED_TYPE_LABEL = { appointment: "appointments", dropin: "drop-ins", workshop: "workshops" };
   var schedTypeTabs = document.querySelectorAll("#ss-sched-type .tab");
+  // v7: the type is a Select (beside the title), not tabs
+  on("ss-sched-type-pick", "click", function () {
+    var opts = [{ value: "", label: "All types" }, { value: "appointment", label: "Appointments" }, { value: "dropin", label: "Drop-ins" }, { value: "workshop", label: "Workshops" }];
+    openListbox(this, opts, schedType, function (v) {
+      schedType = v;
+      $("ss-sched-type-value").textContent = opts.filter(function (o) { return o.value === v; })[0].label;
+      rerenderSchedule();
+    });
+  });
   schedTypeTabs.forEach(function (t) {
     t.addEventListener("click", function () {
       schedType = t.dataset.type;

@@ -737,9 +737,9 @@ html { background: ${cv("surface.page")}; }
 .cx .ss-sections--top .tabs--segmented { height: ${track}; }
 /* Department: a Select beside Search, up to 240 wide */
 .cx .ss-filters .ss-dept-select { width: ${dm(60)}; flex: 0 1 auto; min-width: 0; }
-/* My schedule: title + subtitle on the left, the Upcoming / Past Select on the right */
+/* My schedule: title + subtitle on the left, the Type Select on the right */
 .cx .ss-sched-top { display: flex; align-items: flex-end; justify-content: space-between; gap: ${dm(4)}; }
-.cx .ss-appt-pick { width: ${dm(40)}; flex: none; }
+.cx .ss-type-pick { width: ${dm(40)}; flex: none; min-width: 0; }
 /* and Book's 12px rhythm (head → type tabs → list), not 24 — the 24s made the tabs float (user, 2026-10-29) */
 .cx [data-view="appointments"] { gap: ${dm(3)}; }
 /* sticky columns sit under the 64px topbar alone now (no band under it) */
@@ -777,6 +777,7 @@ html { background: ${cv("surface.page")}; }
   .cx #ss-browse-head.is-search-open .ss-title { display: flex; }
   .cx .ss-filters { flex-wrap: wrap; }
   .cx .ss-filters .ss-dept-select { flex: 1 1 0; max-width: ${dm(60)}; }
+
   .cx .ss-filters > .search { display: none; }
   /* open, the field takes the whole row — over Department, not pushing it down (user, 2026-10-29) */
   .cx .ss-view:has(#ss-browse-head.is-search-open) .ss-filters > .search { display: flex; flex: 1 1 100%; order: -1; }
@@ -802,17 +803,24 @@ const markupV7 = () => {
   // a start time means something different for each kind of service
   if (!m.includes(SORT_BTN)) throw new Error("v7: markup drifted — update SORT_BTN");
   m = m.replace(SORT_BTN, "");
-  // My schedule (user, 2026-10-29): Upcoming / Past is a Select beside the
-  // title, not a third row of tabs (section tabs → Upcoming/Past → type tabs).
-  // Past is the rare look back — one more tap there is the price.
+  // My schedule (user, 2026-10-29): the Type is a Select beside the title (on a
+  // phone, the controls row) — Book's Department — and Upcoming / Past become
+  // the underline Tabs on the list, where Book has its type Tabs. Not three
+  // rows of tabs (section → Upcoming/Past → type) on a phone.
   const segAt = m.indexOf('<div class="tabs--segmented" id="ss-appt-tabs"'), segEnd = m.indexOf("</div>", segAt) + "</div>".length;
   const headAt = m.lastIndexOf('<div class="ss-head">', segAt);
-  if (segAt < 0 || headAt < 0 || !m.slice(headAt, segAt).includes("My schedule")) throw new Error("v7: markup drifted — My schedule's Upcoming/Past tabs");
+  const typeTabsMy = typeTabs("ss-sched-type");
+  if (segAt < 0 || headAt < 0 || !m.slice(headAt, segAt).includes("My schedule") || !m.includes(typeTabsMy)) throw new Error("v7: markup drifted — My schedule's tabs");
   const schedHead = m.slice(headAt, segAt).trimEnd();
+  const whenTabs = m.slice(segAt, segEnd)
+    .replace('class="tabs--segmented" id="ss-appt-tabs" role="tablist" aria-label="Appointments" style="align-self:flex-start"', 'class="tabs--underline ss-type-tabs" id="ss-appt-tabs" role="tablist" aria-label="When"')
+    .replaceAll("tab tab--sm", "tab tab--base");
   m = m.slice(0, headAt) + `<div class="ss-sched-top">
       ${schedHead}
-        <button class="select ss-appt-pick" id="ss-appt-pick" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Show"><span class="select__value" id="ss-appt-pick-value">Upcoming</span>${icon("expand_more", "select__chevron")}</button>
-      </div>` + m.slice(segEnd);
+        <button class="select ss-type-pick" id="ss-sched-type-pick" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Type"><span class="select__value" id="ss-sched-type-value">All types</span>${icon("expand_more", "select__chevron")}</button>
+      </div>
+      ${whenTabs}` + m.slice(segEnd);
+  m = m.replace(typeTabsMy, "");
   const tabsAt = m.indexOf(V7_TABS), navEnd = m.indexOf("</nav>", tabsAt) + "</nav>".length;
   const topEnd = m.indexOf("</header>");
   if (tabsAt < 0 || topEnd < 0 || topEnd > tabsAt || !m.includes(V7_APP_END) || !m.startsWith('<div class="app">')) throw new Error("v7: markup drifted — update V7_TABS / V7_APP_END");
