@@ -3654,14 +3654,12 @@ html { background: var(--tok-surface-page); }
   var openBtn = document.getElementById("ss-search-open"), searchBox = document.getElementById("ss-search"), headRow = document.getElementById("ss-head-row");
   function place() {
     if (phone.matches) main.insertBefore(nav, main.firstChild); else bar.insertBefore(nav, settings);
-    dept.classList.toggle("select--sm", phone.matches);
     // section Tabs: sm on a phone (beside the sm Select), base in the topbar
     nav.querySelectorAll(".tab").forEach(function (t) { t.classList.toggle("tab--sm", phone.matches); t.classList.toggle("tab--base", !phone.matches); });
-    // phone: the search button (sm, like the Select) and the field it opens sit
+    // phone: the search button (base, like the Select) and the field it opens sit
     // in the filter row, before Department — where Search is from 768
     if (phone.matches) { filters.insertBefore(searchBox, dept); filters.insertBefore(openBtn, searchBox); }
     else headRow.appendChild(openBtn);
-    openBtn.classList.toggle("btn--sm", phone.matches); openBtn.classList.toggle("btn--base", !phone.matches);
   }
   phone.addEventListener("change", place); place();
 })();

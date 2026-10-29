@@ -778,8 +778,8 @@ html { background: ${cv("surface.page")}; }
 }
 ${SIDEBAR_CSS}`;
 };
-// Department is a Select in v7, not a dropdown Chip (user, 2026-10-29): sm on
-// a phone, base from 768 (V7_JS swaps the size class on the breakpoint).
+// Department is a Select in v7, not a dropdown Chip (user, 2026-10-29), base
+// at every width — on a phone too, beside the base search button.
 // Same id / label id, so the browse script drives it unchanged.
 const DEPT_SELECT = `<button class="select is-placeholder ss-dept-select" id="ss-dept-chip" type="button" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="ss-dept-name ss-dept-label"><span class="select__stack"><span class="select__label" id="ss-dept-name">Department</span><span class="select__value" id="ss-dept-label">Department</span></span>${icon("expand_more", "select__chevron")}</button>`;
 const markupV7 = () => {
@@ -812,14 +812,12 @@ const V7_JS = `(function () {
   var openBtn = document.getElementById("ss-search-open"), searchBox = document.getElementById("ss-search"), headRow = document.getElementById("ss-head-row");
   function place() {
     if (phone.matches) main.insertBefore(nav, main.firstChild); else bar.insertBefore(nav, settings);
-    dept.classList.toggle("select--sm", phone.matches);
     // section Tabs: sm on a phone (beside the sm Select), base in the topbar
     nav.querySelectorAll(".tab").forEach(function (t) { t.classList.toggle("tab--sm", phone.matches); t.classList.toggle("tab--base", !phone.matches); });
-    // phone: the search button (sm, like the Select) and the field it opens sit
+    // phone: the search button (base, like the Select) and the field it opens sit
     // in the filter row, before Department — where Search is from 768
     if (phone.matches) { filters.insertBefore(searchBox, dept); filters.insertBefore(openBtn, searchBox); }
     else headRow.appendChild(openBtn);
-    openBtn.classList.toggle("btn--sm", phone.matches); openBtn.classList.toggle("btn--base", !phone.matches);
   }
   phone.addEventListener("change", place); place();
 })();
