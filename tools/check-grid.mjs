@@ -25,6 +25,8 @@ const HALF_STEPS = new Set([2, 6, 10, 14]);
 
 // Documented deliberate exceptions, each with the reason it isn't a bug.
 const ALLOWED = [
+  // Select chips (tools/lib/select.mjs, the DS's own): a 24px Chip centred in the 40px box with its 1px border = 7px — the 4px grid is the box (40 / 68 / 96), not the inset
+  { selector: /\.select--chips|\.select__toggle/, why: "Select chips: 24px chip centred in a 40px bordered box" },
   {
     // status.md: "Fake keyboard: docs-only scaffolding (device mock,
     // non-tokenized geometry, token colours)" — it mimics an iOS keyboard, not

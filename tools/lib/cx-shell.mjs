@@ -20,6 +20,7 @@ import { ssCss, SS_COLOR_PATHS } from "./ss-css.mjs";
 import { hoverGuard } from "./hover-guard.mjs";
 import { SIDEBAR_CSS, SIDEBAR_COLOR_PATHS, SIDEBAR_JS, SIDEBAR_MENU_BUTTON, sidebarHtml } from "./sidebar.mjs";
 import { CX_NAV, CX_USER } from "./cx-data.mjs";
+import { TOAST_JS } from "./toast.mjs";
 
 const root = path.dirname(path.dirname(path.dirname(fileURLToPath(import.meta.url))));
 const load = (p) => JSON.parse(fs.readFileSync(path.join(root, p)));
@@ -141,29 +142,28 @@ html, body { height: auto; min-height: 100%; }
 ${FAB_CSS}
 /* pinned to the top and bottom of the visible area, not a 100dvh height —
    iOS Safari's bottom toolbar hid the foot of a 100dvh panel */
-.cx-assistant { border: none; padding: 0; margin: 0 0 0 auto; position: fixed; inset: 0 0 auto auto; height: 100lvh; max-height: none; width: min(${dim(96)}, 100vw); max-width: 100vw; background: ${R(drawer.bg)}; box-shadow: ${X.shadow(drawer.shadow)}; font-family: ${cv("family.sans")}; }
-.cx-assistant[open] { display: flex; flex-direction: column; transform: none; transition: transform ${px(resolveToken(drawer.transitionDuration))} ease; }
-@starting-style { .cx-assistant[open] { transform: translateX(100%); } }
+/* the Assistant: a right SlideOverPanel, md (480). Pinned to the top at
+   100lvh, not 100dvh — iOS Safari's floating bottom bar hid the foot of a dvh panel */
+dialog.cx-assistant { bottom: auto; height: 100lvh; }
+@media (max-width: 767px) { dialog.cx-assistant, dialog.cb-sheet { width: 100vw; max-width: 100vw; } }
 /* On a phone the full-screen panels need no scrim — and iOS Safari shows
    whatever is under its floating bottom bar, so a dark scrim turned the bar
    dark. The page behind is gray.25 there instead (html + theme-color). */
 html { background: ${cv("surface.page")}; }
 @media (max-width: 767px) {
-  .cx-assistant::backdrop, .cb-sheet::backdrop { background: transparent; }
+  dialog.cx-assistant::backdrop, dialog.cb-sheet::backdrop { background: transparent; }
   .has-nav-open .sidebar-scrim { background: transparent; }
 }
-.cx-assistant::backdrop { background: ${R(drawer.overlay)}; }
-.cx-assistant .ss-drawer__head { padding: 0 ${dim(4)} 0 ${D(drawer.padding)}; height: ${dim(16)}; }
-.cx-assistant__body { flex: 1; min-height: 0; overflow-y: auto; padding: ${D(drawer.padding)}; display: flex; flex-direction: column; gap: ${dim(4)}; }
+.cx-assistant__body { display: flex; flex-direction: column; gap: ${dim(4)}; }
 .cx-assistant__intro { margin: 0; color: ${R(drawer.bodyColor)}; ${typoCss(T(drawer.body))} }
 .cx-prompts { display: flex; flex-wrap: wrap; gap: ${dim(2)}; }
-.cx-prompts .chip { height: auto; min-height: ${D(chip.size.base.height)}; padding-block: ${dim(1)}; white-space: normal; text-align: left; }
+.cx-prompts .chip { max-width: 100%; height: auto; min-height: ${D(chip.size.base.height)}; padding-block: ${dim(1)}; white-space: normal; text-align: left; }
 .cx-msg { max-width: 85%; padding: ${dim(2)} ${dim(3)}; border-radius: ${D(card.radius)}; ${typoCss(style("body-base"))} }
 .cx-msg--me { align-self: flex-end; background: ${cv("bg.primary")}; color: ${cv("text.default")}; }
 .cx-msg--bot { align-self: flex-start; background: ${cv("surface.sunken")}; color: ${cv("text.default")}; }
 /* lifted over iOS Safari's floating bottom bar: the panel is 100lvh, the
    foot pads by the bar (100lvh − 100dvh) + the home-indicator inset */
-.cx-assistant__foot { flex-shrink: 0; display: flex; flex-direction: column; gap: ${dim(2)}; padding: ${dim(3)} ${D(drawer.padding)} calc(${dim(3)} + env(safe-area-inset-bottom) + 100lvh - 100dvh); border-top: 1px solid ${R(drawer.divider)}; }
+.cx-assistant__foot { flex-direction: column; flex-wrap: nowrap; justify-content: flex-start; gap: ${dim(2)}; padding-bottom: calc(${D(drawer.barPaddingY)} + env(safe-area-inset-bottom) + 100lvh - 100dvh); }
 .cx-compose { display: flex; align-items: flex-end; gap: ${dim(2)}; }
 .cx-compose .ss-q__field { min-height: ${D(bBase.height)}; height: ${D(bBase.height)}; resize: none; }
 .cx-compose__count { align-self: flex-end; color: ${cv("text.muted")}; ${typoCss(style("body-xs"))} }
@@ -173,20 +173,15 @@ const SHELL_JS = `window.cx = (function () {
   function $(id) { return document.getElementById(id); }
   function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
   var CHECK = ${JSON.stringify(icon("check_circle", "toast__icon"))};
-  function toast(text) {
-    var t = document.createElement("div");
-    t.className = "toast"; t.setAttribute("popover", "manual"); t.setAttribute("role", "status");
-    t.innerHTML = CHECK + '<span class="toast__label"></span>';
-    t.querySelector(".toast__label").textContent = text;
-    document.body.appendChild(t); t.showPopover();
-    setTimeout(function () { t.hidePopover(); t.remove(); }, 3200);
-  }
-  function notDesigned() { toast("Prototype — this page isn\\u2019t designed yet"); }
+  // the DS Toast (tools/lib/toast.mjs → window.showToast)
+  function toast(text, role) { window.showToast({ role: role || "success", text: text }); }
+
+  function notDesigned() { toast("Prototype — this page isn\\u2019t designed yet", "info"); }
   // nav links outside this page, the account row, footer links
   document.querySelector(".sidebar").addEventListener("click", function (e) {
     var a = e.target.closest("[data-nav]");
     if (a) { e.preventDefault(); if (a.getAttribute("aria-current") !== "page") notDesigned(); return; }
-    if (e.target.closest(".sidebar__account")) toast("Profile and sign out live here");
+    if (e.target.closest(".sidebar__account")) toast("Profile and sign out live here", "info");
   });
   // Assistant
   var dlg = $("cx-assistant"), inp = $("cx-assistant-input");
@@ -254,22 +249,25 @@ ${views}
   </div>
 </div>
 ${fabHtml({ icon: "auto_awesome", label: "Assistant", id: "cx-fab", attrs: 'aria-haspopup="dialog"' })}
-<dialog class="cx-assistant" id="cx-assistant" aria-labelledby="cx-assistant-title">
-  <div class="ss-drawer__head"><h2 class="ss-drawer__title" id="cx-assistant-title">Assistant</h2><button class="btn btn--ghost btn--sm btn--icon-only" type="button" id="cx-assistant-close" aria-label="Close">${icon("close", "btn__icon")}</button></div>
-  <div class="cx-assistant__body" id="cx-assistant-body">
+<dialog class="slide-over-panel slide-over-panel--right slide-over-panel--md cx-assistant" id="cx-assistant" aria-labelledby="cx-assistant-title">
+<div class="slide-over-panel__content">
+  <div class="slide-over-panel__header"><div class="slide-over-panel__heading"><h2 class="slide-over-panel__title" id="cx-assistant-title">Assistant</h2></div><button class="slide-over-panel__close" type="button" id="cx-assistant-close" aria-label="Close">${icon("close", "slide-over-panel__close-icon")}</button></div>
+  <div class="slide-over-panel__body cx-assistant__body" id="cx-assistant-body">
     <p class="cx-assistant__intro">Ask a question — or start with one of these.</p>
     <div class="cx-prompts">${prompts.map((p) => `<button class="chip" type="button" data-prompt>${p}</button>`).join("")}</div>
   </div>
-  <form class="cx-assistant__foot" id="cx-assistant-form">
+  <form class="slide-over-panel__footer cx-assistant__foot" id="cx-assistant-form">
     <div class="cx-compose">
       <textarea class="ss-q__field" id="cx-assistant-input" rows="1" maxlength="8000" placeholder="Ask a question" aria-label="Ask the Assistant"></textarea>
       <button class="btn btn--primary btn--base btn--icon-only" type="submit" aria-label="Send">${icon("send", "btn__icon")}</button>
     </div>
     <span class="cx-compose__count" id="cx-assistant-count">0/8000</span>
   </form>
+</div>
 </dialog>
 ${after}
 <script>
+${TOAST_JS}
 ${SHELL_JS}
 ${pageJs}
 ${SIDEBAR_JS}

@@ -7,6 +7,9 @@
 // from the component's token file, never retype the role name.
 
 import { COLLAPSIBLE_CSS } from "./collapsible.mjs";
+import { LISTBOX_CSS, SELECT_CSS, SELECT_COLOR_PATHS } from "./select.mjs";
+import { TOAST_CSS, TOAST_COLOR_PATHS } from "./toast.mjs";
+import { TEXT_FIELD_CSS, FIELD_WRAPPER_CSS, FIELD_COLOR_PATHS } from "./field.mjs";
 /** @param h  { tokens, resolve, resolveToken, cv, px, refPath, typoCss, textExt, get } */
 export function ssCss(h) {
   const { tokens: t, resolve, cv, px, refPath, typoCss, textExt } = h;
@@ -59,6 +62,35 @@ export function ssCss(h) {
 
   const ttShow = h.resolveToken(tt.showDelay);
 
+  const sopDur = `${drawer.transitionDuration.$value.value}${drawer.transitionDuration.$value.unit}`;
+  const sopMax = `${drawer.bottomMaxHeight.$value.value}${drawer.bottomMaxHeight.$value.unit}`;
+  const sopSlide = (axis, from) => `transform: translate${axis}(${from}); transition: transform ${sopDur} ease, overlay ${sopDur} allow-discrete, display ${sopDur} allow-discrete;`;
+  const slideOverPanelCss = `/* ============ SlideOverPanel — as docs/slide-over-panel.html ============ */
+dialog.slide-over-panel { position: fixed; margin: 0; padding: 0; border: none; background: ${R(drawer.bg)}; box-shadow: ${shadowCss(drawer.shadow)}; }
+dialog.slide-over-panel::backdrop { background: ${R(drawer.overlay)}; opacity: 0; transition: opacity ${sopDur} ease allow-discrete; }
+dialog.slide-over-panel[open]::backdrop { opacity: 1; }
+@starting-style { dialog.slide-over-panel[open]::backdrop { opacity: 0; } }
+html:has(dialog.slide-over-panel[open]) { overflow: hidden; }
+dialog.slide-over-panel--right { top: 0; bottom: 0; right: 0; left: auto; height: 100dvh; max-height: none; width: ${D(drawer.size.sm)}; max-width: calc(100vw - ${D(drawer.phoneGutter)}); border-radius: ${D(drawer.radius)}; ${sopSlide("X", "100%")} }
+dialog.slide-over-panel--md { width: ${D(drawer.size.md)}; }
+dialog.slide-over-panel--right[open] { transform: translateX(0); }
+@starting-style { dialog.slide-over-panel--right[open] { transform: translateX(100%); } }
+dialog.slide-over-panel--bottom { top: auto; bottom: 0; left: 0; right: 0; width: 100%; max-width: 100%; max-height: ${sopMax}; border-radius: ${D(drawer.bottomRadius)} ${D(drawer.bottomRadius)} 0 0; ${sopSlide("Y", "100%")} }
+dialog.slide-over-panel--bottom[open] { transform: translateY(0); }
+@starting-style { dialog.slide-over-panel--bottom[open] { transform: translateY(100%); } }
+@media (prefers-reduced-motion: reduce) { dialog.slide-over-panel { transition: none; } }
+.slide-over-panel__content { display: flex; flex-direction: column; height: 100%; max-height: inherit; font-family: ${cv("family.sans")}; }
+.slide-over-panel__header { flex-shrink: 0; display: flex; align-items: flex-start; gap: ${D(drawer.gap)}; padding: ${D(drawer.barPaddingY)} ${D(drawer.padding)}; box-shadow: inset 0 -1px 0 ${R(drawer.divider)}; }
+.slide-over-panel__heading { flex: 1; min-width: 0; min-height: ${D(button.ghost.size.sm.height)}; display: flex; flex-direction: column; justify-content: center; gap: ${D(modal.headerGap)}; }
+.slide-over-panel__title { margin: 0; color: ${R(drawer.titleColor)}; ${typoCss(T(drawer.title))} }
+.slide-over-panel__description { margin: 0; color: ${R(modal.descriptionColor)}; ${typoCss(T(modal.description))} }
+.slide-over-panel__body { flex: 1; min-height: 0; overflow: auto; padding: ${D(drawer.padding)}; }
+.slide-over-panel__footer { flex-shrink: 0; display: flex; flex-wrap: wrap; gap: ${D(drawer.gap)}; justify-content: flex-end; padding: ${D(drawer.barPaddingY)} ${D(drawer.padding)}; box-shadow: inset 0 1px 0 ${R(drawer.divider)}; }
+.slide-over-panel__close { flex-shrink: 0; width: ${D(button.ghost.size.sm.height)}; height: ${D(button.ghost.size.sm.height)}; display: inline-flex; align-items: center; justify-content: center; border: none; border-radius: ${D(button.ghost.radius)}; background: transparent; padding: 0; cursor: pointer; color: ${R(button.ghost.state.default.icon)}; }
+.slide-over-panel__close:hover { background: ${R(button.ghost.state.hover.fill)}; }
+.slide-over-panel__close:active { background: ${R(button.ghost.state.pressed.fill)}; }
+.slide-over-panel__close:focus-visible { outline: ${D(button.ghost.state.focused.ringWidth)} solid ${R(button.ghost.state.focused.ringColor)}; outline-offset: ${D(button.ghost.state.focused.ringOffset)}; }
+.slide-over-panel__close-icon { width: ${D(button.ghost.size.sm.iconSize)}; height: ${D(button.ghost.size.sm.iconSize)}; display: block; }`;
   const modalDur = `${modal.transitionDuration.$value.value}${modal.transitionDuration.$value.unit}`;
   return `
 /* ============ page frame (ss-* composition) ============ */
@@ -230,29 +262,13 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 .chip--dropdown { flex-shrink: 1; min-width: 0; max-width: 100%; }
 .chip__label { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 
-/* ============ Listbox (single-select popover) ============ */
-.listbox { margin: 0; padding: ${D(lb.padding)}; border-radius: ${D(lb.radius)}; background: ${R(lb.bg)}; border: 1px solid ${R(lb.border)}; box-shadow: ${shadowCss(lb.shadow)}; font-family: ${cv("family.sans")}; min-width: 220px; max-width: calc(100vw - ${dim(8)}); }
-.listbox__list { display: flex; flex-direction: column; gap: ${D(lb.gap)}; max-height: ${D(lb.maxHeight)}; overflow-y: auto; }
-.listbox__option { width: 100%; display: flex; align-items: center; gap: ${D(lb.optionGap)}; padding: ${D(lb.optionPaddingY)} ${D(lb.optionPaddingX)}; border: none; background: none; border-radius: ${D(lb.optionRadius)}; cursor: pointer; text-align: left; white-space: nowrap; color: ${R(lb.state.default.text)}; font-family: inherit; ${typoCss(T(lb.label))} }
-.listbox__option:hover { background: ${R(lb.state.hover.bg)}; }
-.listbox__option:focus-visible { outline: ${ringW} solid ${cv("border.focus")}; outline-offset: -${ringW}; }
-.listbox__checkmark { flex-shrink: 0; margin-left: auto; width: ${D(lb.checkmarkSize)}; height: ${D(lb.checkmarkSize)}; color: ${R(lb.state.selected.checkmark)}; visibility: hidden; }
-.listbox__option[aria-selected="true"] .listbox__checkmark { visibility: visible; }
-
-/* ============ Select (closed trigger, sm — the per-row department) ============ */
-.select { display: inline-flex; align-items: center; max-width: 100%; height: ${selRow.height}; padding: 0 ${selRow.paddingX}; gap: ${selRow.gap}; background: ${R(select.state.default.bg)}; border: 1px solid ${R(select.state.default.border)}; border-radius: ${D(select.radius)}; cursor: pointer; text-align: left; font-family: inherit; }
-.select:hover { background: ${R(select.state.hover.bg)}; border-color: ${R(select.state.hover.border)}; }
-.select:focus-visible, .select[aria-expanded="true"] { outline: none; border-color: ${R(select.state.focus.border)}; }
-/* Base Select's populated state: the floating label ("Department") over the
-   value — says what the control picks without a separate caption. */
-.select__stack { display: flex; flex-direction: column; justify-content: center; gap: ${selRow.labelGap}; flex: 1; min-width: 0; }
-.select__label { color: ${R(select.state.populated.label)}; ${typoCss(selRow.label)} white-space: nowrap; }
-.select[aria-expanded="true"] .select__label { color: ${R(select.state.focus.label)}; }
-/* Resting (no value yet): the placeholder alone, no floating label. */
-.select.is-placeholder .select__label { display: none; }
-.select.is-placeholder .select__value { color: ${R(select.state.default.placeholder)}; }
-.select__value { min-width: 0; color: ${R(select.state.default.value)}; ${typoCss(selRow.value)} white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.select__chevron { flex-shrink: 0; width: ${selRow.iconSize}; height: ${selRow.iconSize}; color: ${R(select.state.default.chevron)}; }
+/* ============ Listbox + Select — the DS's own (tools/lib/select.mjs) ============ */
+${LISTBOX_CSS}
+${SELECT_CSS}
+/* composition: the prototype's own script writes the value straight into
+   .select__value (no .select__text inside) — keep its ellipsis */
+.select__value:not(:has(.select__text)) { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.listbox { max-width: calc(100vw - ${dim(8)}); }
 
 /* ============ Card ============ */
 /* Card as the DS ships it (docs/card.html): padding on the card, 12px
@@ -342,12 +358,12 @@ ${["neutral", "primary", "success", "warning", "danger"].map((r) => `.badge--${r
 .tooltip::after { content: ""; position: absolute; bottom: -${px({ value: resolve(tt.arrowSize.$value).value / 2, unit: "px" })}; left: 50%; margin-left: -${px({ value: resolve(tt.arrowSize.$value).value / 2, unit: "px" })}; width: ${D(tt.arrowSize)}; height: ${D(tt.arrowSize)}; background: ${R(tt.bg)}; transform: rotate(45deg); }
 .tooltip-wrapper:hover .tooltip { opacity: 1; transition: opacity 0.12s ease ${ttShow.value}${ttShow.unit}; }
 
-/* ============ Toast ============ */
-.toast { position: fixed; inset: auto; top: ${D(toast.offsetTop)}; left: 50%; transform: translateX(-50%); margin: 0; width: max-content; display: flex; align-items: center; gap: ${D(toast.gap)}; padding: ${D(toast.paddingY)} ${D(toast.paddingX)}; border-radius: ${D(toast.radius)}; background: ${R(toast.bg)}; border: 1px solid ${R(toast.border)}; box-shadow: ${shadowCss(toast.shadow)}; font-family: ${cv("family.sans")}; max-width: calc(100vw - ${dim(8)}); }
-.toast__icon { flex-shrink: 0; width: ${D(toast.iconSize)}; height: ${D(toast.iconSize)}; color: ${R(si.success.color)}; }
-.toast__label { color: ${R(toast.labelColor)}; ${typoCss(T(toast.label))} }
-.toast:popover-open { opacity: 1; translate: 0 0; transition: opacity 0.18s ease, translate 0.18s ease; }
-@starting-style { .toast:popover-open { opacity: 0; translate: 0 -${dim(2)}; } }
+/* ============ Toast — the DS's own (tools/lib/toast.mjs, with StatusIcon) ============ */
+${TOAST_CSS}
+
+/* ============ Field + text area — the DS's own (tools/lib/field.mjs) ============ */
+${TEXT_FIELD_CSS}
+${FIELD_WRAPPER_CSS}
 
 /* ============ browse (ss-*) ============ */
 /* Search on its own line on a phone; from 768 it shares one row with the
@@ -375,9 +391,6 @@ ${["neutral", "primary", "success", "warning", "danger"].map((r) => `.badge--${r
 .ss-step__value { margin: 0; color: ${cv("text.default")}; ${typoCss(style("body-base"))} }
 .ss-pick-dept { align-self: flex-start; width: min(100%, 320px); }
 /* Select sm — no floating label at this size (DS), the step heading names it */
-.select--sm { height: ${D(select.size.sm.height)}; padding: 0 ${D(select.size.sm.paddingX)}; gap: ${D(select.size.sm.gap)}; }
-.select--sm .select__value { ${typoCss(T(select.size.sm.value))} flex: 1; }
-.select--sm .select__chevron { width: ${D(select.size.sm.iconSize)}; height: ${D(select.size.sm.iconSize)}; }
 /* ---- v5: one item, two shapes ----
    Phone: a card per service (12px padding — Card's 16 plus the 16 page gutter
    spent 64px of a 375 screen on air). From 768: rows inside one Card — name
@@ -522,8 +535,6 @@ html:has(dialog.dialog[open], dialog.alert-dialog[open]) { overflow: hidden; }
 .alert-dialog__description { margin: 0; color: ${R(modal.bodyColor)}; ${typoCss(T(modal.body))} }
 .alert-dialog__actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: ${D(modal.gap)}; margin: 0; }
 /* a text area on Input's own field recipe (fill + hairline → strong → focus) */
-.ss-q { display: flex; flex-direction: column; gap: ${dim(2)}; }
-.ss-q__label { color: ${cv("text.default")}; ${typoCss(style("heading-sm"))} }
 .ss-q__field { width: 100%; min-height: ${dim(24)}; resize: vertical; padding: ${dim(2)} ${D(input.size.base.paddingX)}; border-radius: ${D(input.radius)}; background: ${R(input.state.default.bg)}; border: 1px solid ${R(input.state.default.border)}; color: ${R(input.state.default.value)}; font-family: inherit; ${typoCss(T(input.size.base.value))} line-height: ${style("body-base").lineHeight}; }
 .ss-q__field:hover { background: ${R(input.state.hover.bg)}; border-color: ${R(input.state.hover.border)}; }
 .ss-q__field:focus { outline: none; border-color: ${R(input.state.focus.border)}; }
@@ -580,21 +591,15 @@ html:has(dialog.dialog[open], dialog.alert-dialog[open]) { overflow: hidden; }
    pulled into the title's line box, so the head keeps its height. */
 .ss-card-head { display: flex; flex-direction: row; align-items: center; justify-content: space-between; gap: ${dim(2)}; }
 .ss-card-head__more { margin-block: -${dim("1_5")}; margin-inline-end: -${dim(2)}; }
-/* ============ Menu (popover; one destructive item) ============ */
-.menu { margin: 0; padding: ${D(menu.padding)}; border-radius: ${D(menu.radius)}; background: ${R(menu.bg)}; border: 1px solid ${R(menu.border)}; box-shadow: ${shadowCss(menu.shadow)}; font-family: ${cv("family.sans")}; min-width: ${dim(48)}; }
-.menu__list { display: flex; flex-direction: column; gap: ${D(menu.gap)}; }
-.menu__item { width: 100%; display: flex; align-items: center; gap: ${D(menu.itemGap)}; height: ${D(menu.itemHeight)}; padding: 0 ${D(menu.itemPaddingX)}; border: none; background: none; border-radius: ${D(menu.itemRadius)}; cursor: pointer; text-align: left; white-space: nowrap; color: ${R(menu.state.default.text)}; font-family: inherit; ${typoCss(T(menu.label))} }
-.menu__icon { flex-shrink: 0; width: ${D(menu.iconSize)}; height: ${D(menu.iconSize)}; color: ${R(menu.state.default.icon)}; }
-.menu__item:hover { background: ${R(menu.state.hover.bg)}; }
-.menu__item:focus-visible { outline: ${ringW} solid ${cv("border.focus")}; outline-offset: -${ringW}; }
-.menu__item--destructive { color: ${R(menu.state.destructive.text)}; }
-.menu__item--destructive .menu__icon { color: ${R(menu.state.destructive.icon)}; }
-.menu__item--destructive:hover { background: ${R(menu.state.destructive.hoverBg)}; }
-/* Box: sunken surface, md padding, the card's radius */
-.ss-about { padding: ${D(box.padding.md)}; background: ${R(box.surface.sunken)}; border-radius: ${D(card.radius)}; }
-.ss-detail__actions { display: flex; flex-wrap: wrap; align-items: center; gap: ${dim(2)}; }
-.ss-detail__actions .ss-push { margin-left: auto; }
-@media (max-width: 559px) { .ss-detail__actions > .btn { flex: 1 1 100%; } .ss-detail__actions .ss-push { margin-left: 0; } }
+/* ============ DropdownMenu (popover) — as docs/dropdown-menu.html ============ */
+.dropdown-menu { margin: 0; padding: ${D(menu.padding)}; border-radius: ${D(menu.radius)}; background: ${R(menu.bg)}; border: 1px solid ${R(menu.border)}; box-shadow: ${shadowCss(menu.shadow)}; font-family: ${cv("family.sans")}; min-width: 180px; }
+.dropdown-menu__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: ${D(menu.gap)}; }
+.dropdown-menu__item { width: 100%; display: flex; align-items: center; gap: ${D(menu.itemGap)}; height: ${D(menu.itemHeight)}; padding: 0 ${D(menu.itemPaddingX)}; border: none; background: none; border-radius: ${D(menu.itemRadius)}; cursor: pointer; text-align: left; color: ${R(menu.state.default.text)}; font-family: inherit; ${typoCss(T(menu.label))} }
+.dropdown-menu__item:hover, .dropdown-menu__item:focus-visible { background: ${R(menu.state.hover.bg)}; outline: none; }
+.dropdown-menu__icon { width: ${D(menu.iconSize)}; height: ${D(menu.iconSize)}; flex-shrink: 0; color: ${R(menu.state.default.icon)}; }
+.dropdown-menu__item--destructive { color: ${R(menu.state.destructive.text)}; }
+.dropdown-menu__item--destructive .dropdown-menu__icon { color: ${R(menu.state.destructive.icon)}; }
+.dropdown-menu__item--destructive:hover, .dropdown-menu__item--destructive:focus-visible { background: ${R(menu.state.destructive.hoverBg)}; }
 
 /* ============ v6 — Book catalogue, workshop page, done screen ============ */
 /* Workshop is the catalogue's third kind — the teal tag hue, so the three
@@ -709,11 +714,7 @@ ${COLLAPSIBLE_CSS}
 .ss-v-rate { display: flex; flex-wrap: wrap; gap: ${dim(2)}; }
 /* before joining: the optional fields, in their own band of the card */
 .ss-pre-fields { padding-top: ${D(card.gap)}; border-top: 1px solid ${R(card.divider)}; gap: ${dim(4)}; }
-.ss-field { display: flex; flex-direction: column; gap: ${dim(2)}; }
-.ss-field__label { color: ${cv("text.default")}; ${typoCss(style("heading-sm"))} }
-.ss-field__opt { color: ${cv("text.muted")}; ${typoCss(style("body-sm"))} margin-inline-start: ${dim(1)}; }
 .ss-field__select { width: min(100%, 400px); }
-.ss-field__select .select__value { flex: 1; }
 .ss-pre-go { min-width: ${dim(40)}; }
 @media (max-width: 559px) { .ss-pre-go { flex: 1 1 100%; } }
 
@@ -769,17 +770,10 @@ ${COLLAPSIBLE_CSS}
 /* Tablet: the day in a SlideOverPanel, bottom placement — edge-attached, its
    rounded top corners, shadow, scrim and 250ms slide; as tall as its rows, up
    to 80% of the screen. */
-.ss-drawer { border: none; padding: 0; margin: 0; position: fixed; inset: auto 0 0 0; width: 100%; max-width: 100%; max-height: 80dvh; border-radius: ${D(drawer.bottomRadius)} ${D(drawer.bottomRadius)} 0 0; background: ${R(drawer.bg)}; box-shadow: ${shadowCss(drawer.shadow)}; font-family: ${cv("family.sans")}; }
-.ss-drawer[open] { display: flex; flex-direction: column; transform: translateY(0); transition: transform ${px(h.resolveToken(drawer.transitionDuration))} ease; }
-@starting-style { .ss-drawer[open] { transform: translateY(100%); } }
-.ss-drawer::backdrop { background: ${R(drawer.overlay)}; }
-html:has(.ss-drawer[open]) { overflow: hidden; }
-.ss-drawer__head { flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: ${D(drawer.gap)}; padding: ${dim(4)} ${D(drawer.padding)}; border-bottom: 1px solid ${R(drawer.divider)}; }
-.ss-drawer__title { margin: 0; color: ${R(drawer.titleColor)}; ${typoCss(T(drawer.title))} }
-.ss-drawer__head .btn--ghost { margin-inline-end: -${dim(2)}; }
-.ss-drawer__body { flex: 1; min-height: 0; overflow-y: auto; padding-bottom: env(safe-area-inset-bottom); }
-.ss-drawer .ss-appt { padding-inline: ${D(drawer.padding)}; }
-@media (prefers-reduced-motion: reduce) { .ss-drawer[open] { transition: none; } }
+${slideOverPanelCss}
+/* composition: the day's rows carry their own padding — the body doesn't */
+.ss-cal-drawer .slide-over-panel__body { padding: 0 0 env(safe-area-inset-bottom); }
+.ss-cal-drawer .ss-appt { padding-inline: ${D(drawer.padding)}; }
 /* from 768 a day shows its first two events as chips (time + title) */
 @media (min-width: 768px) {
   .ss-cal__cell { align-items: stretch; min-height: ${dim(24)}; padding: ${dim(1)}; }
@@ -799,6 +793,7 @@ html:has(.ss-drawer[open]) { overflow: hidden; }
 /** Colour roles the CSS above references directly (by name, not via a
  *  component token) — merged with every component token's role in the builder. */
 export const SS_COLOR_PATHS = [
+  ...SELECT_COLOR_PATHS, ...TOAST_COLOR_PATHS, ...FIELD_COLOR_PATHS,
   "surface.page", "surface.default", "border.default", "border.focus",
   "text.default", "text.secondary", "text.muted", "icon.secondary", "fill.neutralHover",
   "fill.danger", "fill.dangerHover", "fill.dangerActive", "text.onFill", "icon.success",

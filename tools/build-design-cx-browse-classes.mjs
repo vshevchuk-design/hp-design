@@ -151,18 +151,11 @@ const pageCss = (X) => {
 @container (max-width: 559px) { .cb-cards { grid-template-columns: minmax(0, 1fr); } }
 
 /* ---- the section sheet: a right-hand panel; full screen on a phone ---- */
-.cb-sheet { border: none; padding: 0; margin: 0 0 0 auto; position: fixed; inset: 0 0 auto auto; height: 100lvh; max-height: none; width: min(480px /* composition literal: two-column detail lists need more than the 384px top of the dim scale */, 100vw); max-width: 100vw; background: ${cv("surface.page")}; box-shadow: ${X.shadow(drawer.shadow)}; font-family: ${cv("family.sans")}; }
-.cb-sheet[open] { display: flex; flex-direction: column; transform: none; transition: transform ${px(h.resolveToken(drawer.transitionDuration))} ease; }
-@starting-style { .cb-sheet[open] { transform: translateX(100%); } }
-.cb-sheet::backdrop { background: ${R(drawer.overlay)}; }
-html:has(.cb-sheet[open]) { overflow: hidden; }
-.cb-sheet__head { flex-shrink: 0; height: ${dim(16)}; display: flex; align-items: center; justify-content: space-between; gap: ${dim(3)}; padding: 0 ${dim(4)} 0 ${D(card.padding)}; background: ${cv("surface.default")}; border-bottom: 1px solid ${R(drawer.divider)}; }
-.cb-sheet__titles { display: flex; flex-direction: column; min-width: 0; }
-.cb-sheet__title { margin: 0; color: ${R(drawer.titleColor)}; ${typoCss(T(drawer.title))} white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.cb-sheet__sub { color: ${cv("text.secondary")}; ${typoCss(style("body-sm"))} }
-.cb-sheet__body { flex: 1; min-height: 0; overflow-y: auto; padding: ${D(card.padding)}; }
+/* the section's details: a right SlideOverPanel md (480), top-pinned at 100lvh for iOS */
+dialog.cb-sheet { bottom: auto; height: 100lvh; }
+.cb-sheet__title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .cb-sheet__body .cb-groups { grid-template-columns: minmax(0, 1fr); }
-.cb-sheet__foot { flex-shrink: 0; display: flex; gap: ${dim(2)}; padding: ${dim(3)} ${D(card.padding)} calc(${dim(3)} + env(safe-area-inset-bottom) + 100lvh - 100dvh); background: ${cv("surface.default")}; border-top: 1px solid ${R(drawer.divider)}; }
+.cb-sheet__foot { flex-wrap: nowrap; justify-content: flex-start; gap: ${dim(2)}; padding-bottom: calc(${dim(4)} + env(safe-area-inset-bottom) + 100lvh - 100dvh); }
 .cb-sheet__foot .btn--primary { flex: 1; }
 `;
 };
@@ -216,13 +209,15 @@ const views = `
       </section>
 `;
 
-const after = `<dialog class="cb-sheet" id="cb-sheet" aria-labelledby="cb-sheet-title">
-  <div class="cb-sheet__head"><div class="cb-sheet__titles"><h2 class="cb-sheet__title" id="cb-sheet-title"></h2><span class="cb-sheet__sub" id="cb-sheet-sub"></span></div><button class="btn btn--ghost btn--sm btn--icon-only" type="button" id="cb-sheet-close" aria-label="Close">${ICONS.close.replace("<svg ", '<svg class="btn__icon" ')}</button></div>
-  <div class="cb-sheet__body" id="cb-sheet-body"></div>
-  <div class="cb-sheet__foot" id="cb-sheet-foot"></div>
+const after = `<dialog class="slide-over-panel slide-over-panel--right slide-over-panel--md cb-sheet" id="cb-sheet" aria-labelledby="cb-sheet-title" aria-describedby="cb-sheet-sub">
+  <div class="slide-over-panel__content">
+    <div class="slide-over-panel__header"><div class="slide-over-panel__heading"><h2 class="slide-over-panel__title cb-sheet__title" id="cb-sheet-title"></h2><p class="slide-over-panel__description" id="cb-sheet-sub"></p></div><button class="slide-over-panel__close" type="button" id="cb-sheet-close" aria-label="Close">${ICONS.close.replace("<svg ", '<svg class="slide-over-panel__close-icon" ')}</button></div>
+    <div class="slide-over-panel__body cb-sheet__body" id="cb-sheet-body"></div>
+    <div class="slide-over-panel__footer cb-sheet__foot" id="cb-sheet-foot"></div>
+  </div>
 </dialog>
 <div class="listbox" id="cb-lb" popover role="listbox"><div class="listbox__list"></div></div>
-<div class="menu" id="cb-menu" popover role="menu" aria-label="Section actions"><div class="menu__list" id="cb-menu-list"></div></div>`;
+<div class="dropdown-menu" id="cb-menu" popover role="menu" aria-label="Section actions"><div class="dropdown-menu__list" id="cb-menu-list" role="none"></div></div>`;
 
 const pageJs = `(function () {
   var B = ${JSON.stringify(B)};
@@ -459,13 +454,13 @@ const pageJs = `(function () {
     if (menu.matches(":popover-open") && menuBtn === btn) { menu.hidePopover(); return; }
     menuFor = btn.dataset.menu; menuBtn = btn;
     var acts = btn.hasAttribute("data-menu-rest") ? B.SECTION_ACTIONS.slice(3) : btn.hasAttribute("data-menu-sheet") ? B.SECTION_ACTIONS.slice(2) : B.SECTION_ACTIONS;
-    $("cb-menu-list").innerHTML = acts.map(function (a) { return '<button type="button" class="menu__item" role="menuitem" data-mact="' + esc(a) + '">' + esc(a) + "</button>"; }).join("");
+    $("cb-menu-list").innerHTML = acts.map(function (a) { return '<button type="button" class="dropdown-menu__item" role="menuitem" data-mact="' + esc(a) + '">' + esc(a) + "</button>"; }).join("");
     menu.showPopover();
     var r = btn.getBoundingClientRect();
     menu.style.position = "fixed";
     var top = r.bottom + 4; if (top + menu.offsetHeight > innerHeight - 8) top = r.top - 4 - menu.offsetHeight;
     menu.style.top = top + "px"; menu.style.left = Math.max(8, r.right - menu.offsetWidth) + "px";
-    menu.querySelector(".menu__item").focus();
+    menu.querySelector(".dropdown-menu__item").focus();
   }
   menu.addEventListener("click", function (e) { var it = e.target.closest("[data-mact]"); if (!it) return; menu.hidePopover(); act(it.dataset.mact, menuFor); });
 

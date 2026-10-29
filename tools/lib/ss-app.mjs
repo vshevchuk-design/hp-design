@@ -100,17 +100,8 @@ export function ssAppJs(d) {
   });
 
   // ---------------- toast ----------------
-  function showToast(text) {
-    var t = document.createElement("div");
-    t.className = "toast";
-    t.setAttribute("popover", "manual");
-    t.setAttribute("role", "status");
-    t.innerHTML = ICONS.checkCircle + '<span class="toast__label"></span>';
-    t.querySelector(".toast__label").textContent = text;
-    document.body.appendChild(t);
-    t.showPopover();
-    setTimeout(function () { t.hidePopover(); t.remove(); }, 3600);
-  }
+  // the DS Toast (tools/lib/toast.mjs → window.showToast): success role, one line
+  function showToast(text) { window.showToast({ text: text }); }
 
   // ---------------- sections + views ----------------
   var views = document.querySelectorAll(".ss-view");
@@ -940,7 +931,7 @@ export function ssAppJs(d) {
     var a = apptById(openId);
     $("ss-q-intro").textContent = a.advisor + " asked these before your " + a.service + " appointment on " + whenShort(a) + ".";
     $("ss-q-fields").innerHTML = a.questions.map(function (q, i) {
-      return '<label class="ss-q"><span class="ss-q__label">' + esc(q) + '</span><textarea class="ss-q__field" rows="3" placeholder="Your answer" data-q="' + i + '"></textarea></label>';
+      return '<div class="field"><label class="field__label" for="ss-q-' + i + '">' + esc(q) + '</label><div class="text-field text-field--area"><div class="text-field__stack"><textarea class="text-field__control" id="ss-q-' + i + '" rows="3" placeholder="Your answer" data-q="' + i + '"></textarea></div></div></div>';
     }).join("");
     qDlg.showModal();
   });
@@ -1072,10 +1063,10 @@ export function ssAppJs(d) {
     var busy = cur ? '<div class="alert" role="status">' + ICONS.alertInfo + '<div class="alert__stack"><p class="alert__message"><span class="alert__title">You\u2019re already in line for ' + esc(cur.name) + ".</span> Leave that queue first — you can only wait in one at a time.</p>" +
       '<div class="alert__actions"><button type="button" class="btn btn--secondary btn--sm" data-pre-view="' + cur.id + '">View my queue</button></div></div></div>' : "";
     var fields =
-      '<div class="ss-field"><span class="ss-field__label" id="ss-pre-topic-label">What would you like help with? <span class="ss-field__opt">Optional</span></span>' +
+      '<div class="field"><span class="field__label" id="ss-pre-topic-label">What would you like help with? <span class="field__optional">(optional)</span></span>' +
       '<button type="button" class="select' + (p.topic ? "" : " is-placeholder") + ' ss-field__select" data-pre-topic aria-haspopup="listbox" aria-expanded="false" aria-labelledby="ss-pre-topic-label ss-pre-topic-value"><span class="select__value" id="ss-pre-topic-value">' + esc(p.topic || "Choose a topic") + "</span>" + ICONS.chevron + "</button></div>" +
-      '<label class="ss-field"><span class="ss-field__label">Anything the advisor should know? <span class="ss-field__opt">Optional</span></span>' +
-      '<textarea class="ss-q__field" rows="3" data-pre-note placeholder="A question, a document you\u2019ll bring…">' + esc(p.note) + "</textarea></label>";
+      '<div class="field"><label class="field__label" for="ss-pre-note">Anything the advisor should know? <span class="field__optional">(optional)</span></label>' +
+      '<div class="text-field text-field--area"><div class="text-field__stack"><textarea class="text-field__control" id="ss-pre-note" rows="3" data-pre-note placeholder="A question, a document you\u2019ll bring…">' + esc(p.note) + "</textarea></div></div></div>";
     $("ss-v-status").innerHTML = busy + '<div class="card"><div class="card__body ss-visit">' +
       '<span class="ss-eyebrow">' + (open ? "Open now" : "Not open yet") + "</span>" +
       '<h3 class="ss-visit__title">' + esc(title) + '</h3><p class="ss-visit__text">' + esc(text) + "</p></div>" +
@@ -1668,7 +1659,7 @@ export function ssAppJs(d) {
     mwMenu.style.position = "fixed";
     mwMenu.style.top = r.bottom + 4 + "px";
     mwMenu.style.left = Math.max(8, r.right - mwMenu.offsetWidth) + "px";
-    var first = mwMenu.querySelector(".menu__item");
+    var first = mwMenu.querySelector(".dropdown-menu__item");
     if (first) first.focus();
   });
 

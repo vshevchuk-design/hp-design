@@ -29,6 +29,7 @@ import { renderDesignViewer } from "./lib/design-viewer.mjs";
 import { SHELL_TOPBAR_CSS, SHELL_COLOR_PATHS, shellTopbar } from "./lib/app-shell.mjs";
 import { ssCss, SS_COLOR_PATHS } from "./lib/ss-css.mjs";
 import { ssAppJs } from "./lib/ss-app.mjs";
+import { TOAST_JS } from "./lib/toast.mjs";
 import { hoverGuard } from "./lib/hover-guard.mjs";
 import * as DATA from "./lib/ss-data.mjs";
 import { SIDEBAR_CSS, SIDEBAR_COLOR_PATHS, SIDEBAR_JS, SIDEBAR_MENU_BUTTON, sidebarHtml } from "./lib/sidebar.mjs";
@@ -591,15 +592,17 @@ const V6_VIEWS = `<!-- ============ Workshop ============ -->
 // Leaving a workshop — AlertDialog, like cancelling an appointment.
 // Tablet: the chosen day in a SlideOverPanel, bottom placement.
 // The my-workshop card's ⋯ menu (Menu, one destructive item).
-const MW_MENU = `<div class="menu" id="ss-mw-menu" popover role="menu" aria-label="Workshop actions">
-  <div class="menu__list"><button class="menu__item menu__item--destructive" type="button" role="menuitem" id="ss-mw-leave">${icon("logout", "menu__icon")}<span id="ss-mw-leave-label">Leave workshop</span></button></div>
+const MW_MENU = `<div class="dropdown-menu" id="ss-mw-menu" popover role="menu" aria-label="Workshop actions">
+  <div class="dropdown-menu__list" role="none"><button class="dropdown-menu__item dropdown-menu__item--destructive" type="button" role="menuitem" id="ss-mw-leave">${icon("logout", "dropdown-menu__icon")}<span id="ss-mw-leave-label">Leave workshop</span></button></div>
 </div>
 `;
-const CAL_DRAWER = `<dialog class="ss-drawer" id="ss-cal-drawer" aria-labelledby="ss-cal-drawer-title">
-  <div class="ss-drawer__head"><h2 class="ss-drawer__title" id="ss-cal-drawer-title"></h2><button class="btn btn--ghost btn--sm btn--icon-only" type="button" id="ss-cal-drawer-close" aria-label="Close">${icon("close", "btn__icon")}</button></div>
-  <div class="ss-drawer__body">
-    <div class="ss-cal-rows" id="ss-cal-drawer-day"></div>
-    <div class="empty-state is-hidden" id="ss-cal-drawer-empty"><span class="empty-state__text">Nothing on this day</span></div>
+const CAL_DRAWER = `<dialog class="slide-over-panel slide-over-panel--bottom ss-cal-drawer" id="ss-cal-drawer" aria-labelledby="ss-cal-drawer-title">
+  <div class="slide-over-panel__content">
+    <div class="slide-over-panel__header"><div class="slide-over-panel__heading"><h2 class="slide-over-panel__title" id="ss-cal-drawer-title"></h2></div><button class="slide-over-panel__close" type="button" id="ss-cal-drawer-close" aria-label="Close">${icon("close", "slide-over-panel__close-icon")}</button></div>
+    <div class="slide-over-panel__body">
+      <div class="ss-cal-rows" id="ss-cal-drawer-day"></div>
+      <div class="empty-state is-hidden" id="ss-cal-drawer-empty"><span class="empty-state__text">Nothing on this day</span></div>
+    </div>
   </div>
 </dialog>
 `;
@@ -767,11 +770,7 @@ const V7_JS = `document.querySelector(".sidebar").addEventListener("click", func
   if (!a) return;
   e.preventDefault();
   if (a.getAttribute("aria-current") === "page") return;
-  var t = document.createElement("div");
-  t.className = "toast"; t.setAttribute("popover", "manual"); t.setAttribute("role", "status");
-  t.innerHTML = '<span class="toast__label">Prototype \\u2014 this page isn\\u2019t designed yet</span>';
-  document.body.appendChild(t); t.showPopover();
-  setTimeout(function () { t.hidePopover(); t.remove(); }, 3200);
+  window.showToast({ role: "info", text: "Prototype \\u2014 this page isn\\u2019t designed yet" });
 });
 ${SIDEBAR_JS}`;
 
@@ -789,6 +788,7 @@ ${appCss}${layout === "v7" ? hoverGuard(v7Css()) : ""}
 <body>
 ${layout === "v7" ? markupV7() : layout === "v6" ? markupV6() : markupFor(layout)}
 <script>
+${TOAST_JS}
 ${ssAppJs({ ...DATA, ICONS, LAYOUT: layout === "v6" || layout === "v7" ? "text" : layout, V6: layout === "v6" || layout === "v7" })}
 ${layout === "v7" ? V7_JS : ""}
 </script>
