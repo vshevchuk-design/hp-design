@@ -733,7 +733,7 @@ html { background: ${cv("surface.page")}; }
 .cx .ss-sections--top { grid-area: tabs; position: static; padding: 0; background: none; }
 .cx .ss-sections--top .tabs--segmented { height: ${track}; }
 /* Department: a Select beside Search, up to 240 wide */
-.cx .ss-filters .ss-dept-select { width: auto; flex: 0 1 ${dm(60)}; min-width: 0; }
+.cx .ss-filters .ss-dept-select { width: ${dm(60)}; flex: 0 1 auto; min-width: 0; }
 /* sticky columns sit under the 64px topbar alone now (no band under it) */
 @media (min-width: 1024px) {
   .cx .ss-summary { top: calc(${dm(16)} + ${dm(6)}); }
@@ -773,6 +773,10 @@ const markupV7 = () => {
   let m = markupV6();
   if (!m.includes(DEPT_CHIP)) throw new Error("v7: markup drifted — update DEPT_CHIP");
   m = m.replace(DEPT_CHIP, DEPT_SELECT);
+  // no sort in v7 (user, 2026-10-29): A–Z only — Type is already the tabs, and
+  // a start time means something different for each kind of service
+  if (!m.includes(SORT_BTN)) throw new Error("v7: markup drifted — update SORT_BTN");
+  m = m.replace(SORT_BTN, "");
   const tabsAt = m.indexOf(V7_TABS), navEnd = m.indexOf("</nav>", tabsAt) + "</nav>".length;
   const topEnd = m.indexOf("</header>");
   if (tabsAt < 0 || topEnd < 0 || topEnd > tabsAt || !m.includes(V7_APP_END) || !m.startsWith('<div class="app">')) throw new Error("v7: markup drifted — update V7_TABS / V7_APP_END");

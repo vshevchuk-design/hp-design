@@ -1605,8 +1605,10 @@ dialog.slide-over-panel--bottom[open] { transform: translateY(0); }
   var SORTS = V6
     ? [{ value: "name", label: "Name (A–Z)" }, { value: "kind", label: "Type" }]
     : [{ value: "name", label: "Name (A–Z)" }, { value: "duration", label: "Duration (shortest first)" }];
+  // v7 has no sort (always A–Z): Type is the tabs, a "start time" means a
+  // different thing per kind of service
   var sortBtn = $("ss-sort");
-  sortBtn.addEventListener("click", function () {
+  if (sortBtn) sortBtn.addEventListener("click", function () {
     openListbox(sortBtn, SORTS, st.sort, function (v) {
       st.sort = v;
       $("ss-sort-label").textContent = v === "name" ? "Name (A–Z)" : v === "kind" ? "Type" : "Duration";

@@ -1129,7 +1129,7 @@ html { background: var(--tok-surface-page); }
 .cx .ss-sections--top { grid-area: tabs; position: static; padding: 0; background: none; }
 .cx .ss-sections--top .tabs--segmented { height: calc(40px + 2 * 4px); }
 /* Department: a Select beside Search, up to 240 wide */
-.cx .ss-filters .ss-dept-select { width: auto; flex: 0 1 240px; min-width: 0; }
+.cx .ss-filters .ss-dept-select { width: 240px; flex: 0 1 auto; min-width: 0; }
 /* sticky columns sit under the 64px topbar alone now (no band under it) */
 @media (min-width: 1024px) {
   .cx .ss-summary { top: calc(64px + 24px); }
@@ -1351,7 +1351,7 @@ html { background: var(--tok-surface-page); }
         </label>
         <div class="ss-filters">
           <button class="select is-placeholder ss-dept-select" id="ss-dept-chip" type="button" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="ss-dept-name ss-dept-label"><span class="select__stack"><span class="select__label" id="ss-dept-name">Department</span><span class="select__value" id="ss-dept-label">Department</span></span><svg class="select__chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
-          <button class="btn btn--ghost btn--sm ss-sort-inline" id="ss-sort" type="button" aria-haspopup="listbox" aria-expanded="false"><svg class="btn__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3 18h6v-2H3v2zM3 6v2h18V6H3zm0 7h12v-2H3v2z"/></svg><span id="ss-sort-label">Name (A–Z)</span></button>
+          
           
         </div>
       </div>
@@ -2013,8 +2013,10 @@ html { background: var(--tok-surface-page); }
   var SORTS = V6
     ? [{ value: "name", label: "Name (A–Z)" }, { value: "kind", label: "Type" }]
     : [{ value: "name", label: "Name (A–Z)" }, { value: "duration", label: "Duration (shortest first)" }];
+  // v7 has no sort (always A–Z): Type is the tabs, a "start time" means a
+  // different thing per kind of service
   var sortBtn = $("ss-sort");
-  sortBtn.addEventListener("click", function () {
+  if (sortBtn) sortBtn.addEventListener("click", function () {
     openListbox(sortBtn, SORTS, st.sort, function (v) {
       st.sort = v;
       $("ss-sort-label").textContent = v === "name" ? "Name (A–Z)" : v === "kind" ? "Type" : "Duration";
