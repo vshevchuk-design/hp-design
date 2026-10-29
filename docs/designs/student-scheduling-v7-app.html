@@ -1507,7 +1507,7 @@ html { background: var(--tok-surface-page); }
         <button class="select ss-type-pick" id="ss-sched-type-pick" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Type"><span class="select__value" id="ss-sched-type-value">All types</span><svg class="select__chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
       </div>
       <div class="tabs--underline ss-type-tabs" id="ss-appt-tabs" role="tablist" aria-label="When">
-        <button class="tab tab--base tab--active" type="button" role="tab" aria-selected="true" data-appt-tab="upcoming">Upcoming <span class="counter" id="ss-upcoming-count">0</span></button>
+        <button class="tab tab--base tab--active" type="button" role="tab" aria-selected="true" data-appt-tab="upcoming">Upcoming <span class="counter ss-attn is-hidden" id="ss-upcoming-count"></span></button>
         <button class="tab tab--base" type="button" role="tab" aria-selected="false" data-appt-tab="past">Past</button>
       </div>
       <div class="ss-appts" id="ss-appts"></div>
@@ -2545,6 +2545,7 @@ html { background: var(--tok-surface-page); }
     return '<span class="ss-note ss-note--icon">' + ICONS.noteClock + "Check-in opens at " + fmtTime(a.min - CHECKIN_BEFORE) + "</span>";
   }
   function updateUpcomingCount() {
+    if ($("ss-upcoming-count").classList.contains("ss-attn")) return; // v7: updateAttention owns it
     if (!V6) { $("ss-upcoming-count").textContent = APPTS.filter(function (a) { return a.status === "upcoming"; }).length; return; }
     // v6: the count follows the type tab — it counts what Upcoming shows
     var n = (!schedType || schedType === "appointment" ? APPTS.filter(function (a) { return a.status === "upcoming"; }).length : 0) +
@@ -3013,9 +3014,12 @@ html { background: var(--tok-surface-page); }
       var all = sessionsOf(w.schedules[r.sched]);
       myIdx(w, r).forEach(function (k) { if (!r.checkedIn[k] && !r.skipped[k] && sessCheckinOpen(w, all[k])) n++; });
     });
-    el.textContent = n;
-    el.classList.toggle("is-hidden", !n);
-    el.setAttribute("aria-label", n + " need" + (n === 1 ? "s" : "") + " you now");
+    [el, $("ss-upcoming-count")].forEach(function (c) {
+      if (!c || !c.classList.contains("ss-attn")) return;
+      c.textContent = n;
+      c.classList.toggle("is-hidden", !n);
+      c.setAttribute("aria-label", n + " need" + (n === 1 ? "s" : "") + " you now");
+    });
   }
   function updateBanner() {
     updateAttention();

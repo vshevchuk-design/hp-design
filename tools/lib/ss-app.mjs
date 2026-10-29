@@ -743,6 +743,7 @@ export function ssAppJs(d) {
     return '<span class="ss-note ss-note--icon">' + ICONS.noteClock + "Check-in opens at " + fmtTime(a.min - CHECKIN_BEFORE) + "</span>";
   }
   function updateUpcomingCount() {
+    if ($("ss-upcoming-count").classList.contains("ss-attn")) return; // v7: updateAttention owns it
     if (!V6) { $("ss-upcoming-count").textContent = APPTS.filter(function (a) { return a.status === "upcoming"; }).length; return; }
     // v6: the count follows the type tab — it counts what Upcoming shows
     var n = (!schedType || schedType === "appointment" ? APPTS.filter(function (a) { return a.status === "upcoming"; }).length : 0) +
@@ -1211,9 +1212,12 @@ export function ssAppJs(d) {
       var all = sessionsOf(w.schedules[r.sched]);
       myIdx(w, r).forEach(function (k) { if (!r.checkedIn[k] && !r.skipped[k] && sessCheckinOpen(w, all[k])) n++; });
     });
-    el.textContent = n;
-    el.classList.toggle("is-hidden", !n);
-    el.setAttribute("aria-label", n + " need" + (n === 1 ? "s" : "") + " you now");
+    [el, $("ss-upcoming-count")].forEach(function (c) {
+      if (!c || !c.classList.contains("ss-attn")) return;
+      c.textContent = n;
+      c.classList.toggle("is-hidden", !n);
+      c.setAttribute("aria-label", n + " need" + (n === 1 ? "s" : "") + " you now");
+    });
   }
   function updateBanner() {
     updateAttention();

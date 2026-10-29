@@ -814,7 +814,9 @@ const markupV7 = () => {
   const schedHead = m.slice(headAt, segAt).trimEnd();
   const whenTabs = m.slice(segAt, segEnd)
     .replace('class="tabs--segmented" id="ss-appt-tabs" role="tablist" aria-label="Appointments" style="align-self:flex-start"', 'class="tabs--underline ss-type-tabs" id="ss-appt-tabs" role="tablist" aria-label="When"')
-    .replaceAll("tab tab--sm", "tab tab--base");
+    .replaceAll("tab tab--sm", "tab tab--base")
+    // Upcoming's count repeats the section tab's "needs you now" one (user, 2026-10-29), not a total
+    .replace('<span class="counter" id="ss-upcoming-count">0</span>', '<span class="counter ss-attn is-hidden" id="ss-upcoming-count"></span>');
   m = m.slice(0, headAt) + `<div class="ss-sched-top">
       ${schedHead}
         <button class="select ss-type-pick" id="ss-sched-type-pick" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Type"><span class="select__value" id="ss-sched-type-value">All types</span>${icon("expand_more", "select__chevron")}</button>
