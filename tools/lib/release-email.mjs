@@ -219,19 +219,23 @@ function tocBlock(rel) {
 }
 
 function itemHtml(item, ticketUrl, first) {
-  const tickets = item.tickets
+  const tickets = (item.tickets || [])
     .map((t) => `<a href="${esc(ticketUrl(t))}" style="color: ${C("text.primary")}; text-decoration: none;">#${esc(t)}</a>`)
     .join(`<span style="color: ${C("text.muted")};">, </span>`);
   const meta = [item.area ? esc(item.area) : null, tickets].filter(Boolean).join(`<span style="color: ${C("text.muted")};"> · </span>`);
   const body = item.body
     .map((p, i) => `<tr><td style="padding-top: ${i ? D("dim.2") : D("dim.2")}; ${T("text-style.body-base")} color: ${C("text.secondaryStrong")};">${inline(p)}</td></tr>`)
     .join("\n              ");
+  // The institution that suggested or reported it — its own quieter line, so the
+  // body stays about the product and the thanks is still easy to find.
+  const credit = item.credit ? `<tr><td style="padding-top: ${D("dim.2")}; ${T("text-style.body-sm")} color: ${C("text.secondary")};">${inline(item.credit)}</td></tr>` : "";
   return `${first ? "" : spacer(dimPx("dim.6"))}
           <tr><td>
             <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
               <tr><td><h3 style="margin: 0; ${T("text-style.heading-md")} color: ${C("text.default")};">${esc(item.title)}</h3></td></tr>
               <tr><td style="padding-top: ${D("dim.1")}; ${T("text-style.body-sm")} color: ${C("text.secondary")};">${meta}</td></tr>
               ${body}
+              ${credit}
             </table>
           </td></tr>`;
 }
@@ -357,8 +361,9 @@ export function renderReleaseEmailText(rel, { ticketUrl = (t) => `#${t}` } = {})
     for (const g of s.groups) {
       if (g.title) out.push(``, `${g.title}:`);
       for (const it of g.items) {
-        out.push(``, `* ${it.title}`, `  ${[it.area, ...it.tickets.map((t) => `#${t}`)].filter(Boolean).join(" · ")}`);
+        out.push(``, `* ${it.title}`, `  ${[it.area, ...(it.tickets || []).map((t) => `#${t}`)].filter(Boolean).join(" · ")}`);
         for (const p of it.body) out.push(`  ${plain(p)}`);
+        if (it.credit) out.push(`  ${plain(it.credit)}`);
       }
     }
   }

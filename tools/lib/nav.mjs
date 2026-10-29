@@ -132,6 +132,7 @@ export const DESIGN_PRODUCTS = {
     items: {
       "release-email-schedule-builder": { label: "Schedule Builder 26.3.0", href: "designs/release-email-schedule-builder.html" },
       "release-email-degree-audit-wizard": { label: "Degree Audit Wizard 1.3.7", href: "designs/release-email-degree-audit-wizard.html" },
+      "release-email-campus-experience": { label: "Campus Experience 26.2.1", href: "designs/release-email-campus-experience.html" },
     },
   },
 };

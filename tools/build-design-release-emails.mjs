@@ -11,7 +11,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { renderDesignViewer } from "./lib/design-viewer.mjs";
 import { renderReleaseEmail, renderReleaseEmailText } from "./lib/release-email.mjs";
-import { SCHEDULE_BUILDER_26_3_0, DEGREE_AUDIT_WIZARD_1_3_7, TICKET_URL } from "./lib/release-email-data.mjs";
+import { SCHEDULE_BUILDER_26_3_0, DEGREE_AUDIT_WIZARD_1_3_7, CAMPUS_EXPERIENCE_26_2_1, TICKET_URL } from "./lib/release-email-data.mjs";
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 
@@ -31,6 +31,13 @@ const RELEASES = [
     label: "Degree Audit Wizard 1.3.7",
     rel: DEGREE_AUDIT_WIZARD_1_3_7,
     sub: `The long shape: four sections (Performance, Enhancements, Analytics, Bug fixes) with an "In this release" table up top. The permission change (<code>HPT_DAW_WRITE</code>) was buried mid-email under Enhancements — it's now a warning Alert right under the links, since it's the one thing an admin must act on before updating; Analytics' "figures will move" note is an info Alert. Content is the 10/09/2026 announcement, restructured. ${ANATOMY}`,
+  },
+  {
+    key: "release-email-campus-experience",
+    slug: "campus-experience",
+    label: "Campus Experience 26.2.1",
+    rel: CAMPUS_EXPERIENCE_26_2_1,
+    sub: `Two long sections (11 enhancements, 10 fixes) — the shape most CX releases take. Each change names its product area (Rules Builder, Class Search, …) in the meta line, and the "Thanks to … for this idea / for reporting this issue" sentence moved out of the body into its own <b>credit</b> line under it. The USPS requirement that takes effect August 1 was a sentence inside Profile; it's now a warning Alert under the links. Content is the 07/27/2026 announcement, restructured — one item (Rules Builder — External Course Creation During Rule Setup) is missing because its text wasn't in the screenshots. ${ANATOMY}`,
   },
 ];
 

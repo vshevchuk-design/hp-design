@@ -1,0 +1,129 @@
+HIGHPOINT RELEASE NOTES
+
+Campus Experience 26.2.1 is available
+=====================================
+Released Jul 27, 2026 · Jourdy Thro, HighPoint Support
+
+This release expands Rules Builder workflows and organization matching, improves class and enrollment information across Campus Experience, adds new controls for transfer credit and shopping cart details, and resolves issues affecting acting-as widgets, course history, enrollment messages, migrations, and other CX pages.
+
+Installation guide: https://support.highpoint.io/projects/technical-guides/wiki/Installation_Guide
+Documentation: https://support.highpoint.io/projects/campus-experience/wiki
+
+! Check before August 1, 2026. If you use USPS Address Validation, keep a USPS Addresses API license and associate your CX API credentials with it. No code change is needed.
+
+IN THIS RELEASE
+- Enhancements: Rules Builder workflows, class and cart details (11)
+- Bug fixes: Course history, widgets, messages, migrations (10)
+
+
+ENHANCEMENTS
+------------
+
+* Accessibility improvements
+  General
+  Improved expandable-row semantics so elements with the row role contain only cell-like children, helping screen readers interpret the content structure correctly.
+  Hid decorative page headers from the accessibility tree to reduce unnecessary announcements and improve screen-reader clarity.
+
+* Create School Courses workflow
+  Rules Builder
+  Added a dedicated Create School Courses workflow for defining a sending school's course catalog independently of building a rule. The guided workflow is available from the Create menu and covers organization selection, transcript source-school matching, career and program criteria, effective dates, and a review of existing and new courses.
+  The selected organization and source schools remain visible throughout the workflow. Missing External Subject Area values can be completed during review, input lengths align with PeopleSoft field limits, and a breadcrumb provides a clear path back.
+  The initial count is now labeled Transcript Rows and includes an explanatory tooltip.
+
+* External organizations and source schools
+  Rules Builder
+  The manual rule editor now manages source schools and external organizations together in one External Organizations section. Each organization can have one or more transcript source-school names, and existing associations are pre-filled when a rule opens.
+  Organizations can be added or removed, duplicate selections are prevented, and unassigned source schools are listed separately. Associations are saved when the rule is validated and saved.
+
+* Organization selector
+  Rules Builder
+  Replaced the blocking organization dialog with a searchable popover attached to the field. Selecting an organization adds it and closes the popover in one action. The selector supports keyboard navigation, disables organizations that are already attached, and remains responsive with large organization lists.
+
+* Organization matching controls
+  Rules Builder
+  Organization matching now uses Loose, Balanced, and Strict presets instead of exposing raw tuning values to most users. Balanced preserves the previous default behavior.
+  Advanced settings include plain-language tooltips, and each result displays a Confident, Probable, or Weak confidence band alongside its score.
+
+* Configurable start-of-time date
+  Rules Builder
+  New external-course begin dates and the Create School Courses search and course-effective dates now default to the institution's configured start-of-time date. If no date is configured, Rules Builder uses the previous default.
+
+* Performance improvements
+  Rules Builder
+  Shared reference data, including lists of values and partition options, now loads once per session and is reused across Rules Builder screens. The rule preview-to-save workflow also prepares its data only once, reducing network traffic and improving responsiveness without changing behavior.
+
+* Reserve capacity descriptions for combined sections
+  Class Search · #33149
+  Reserve capacity descriptions now display with the Reserved Seats Open value for combined sections, matching the information available for regular sections. When a combined section has multiple reserve capacities, CX lists all descriptions followed by the total pooled number of reserved seats open. The updated display is available throughout class search and enrollment surfaces.
+  Thanks to the Washington State Board for Community and Technical Colleges for this idea.
+
+* USPS Address API account requirements
+  Profile · #43144
+  Validated CX address validation against the USPS Addresses API account requirements taking effect August 1, 2026. The CX integration remains compatible without a code change. Institutions using USPS Address Validation must maintain a USPS Addresses API license and associate their CX API credentials with that license.
+
+* Instructor permission expiration date
+  Shopping Cart · #16793
+  Classes with a granted student-specific instructor permission now show the permission expiration date directly below Granted. The date is available in desktop, tablet, and phone views.
+  Thanks to the University of Virginia for this idea.
+
+* Expand and collapse all
+  Transfer Credit · #42162
+  Added an Expand All control to the top of Transfer Credit so users can open all credit groups at once. The control changes to Collapse All when the groups are expanded.
+  Thanks to California State University, Channel Islands for this idea.
+
+
+BUG FIXES
+---------
+
+* Configuration table migration
+  Application Settings · #42739
+  Updated the CX DMS export bundle to include previously omitted Application Settings tables, so their configuration data is carried between PeopleSoft environments.
+  Thanks to Cerritos College for reporting this issue.
+
+* Multiple sections of the same course
+  Course History · #42803
+  Course History now displays every distinct class section when a student takes multiple sections of the same course in one term, including different sessions or topics.
+  Thanks to the University of Maine System Central Office for reporting this issue.
+
+* Transfer course details
+  Course History · #43313
+  Repeat Code and Requirement Designation values now populate in their Course History columns for transferred courses.
+  Thanks to the University of Wisconsin-Platteville for reporting this issue.
+
+* Shopping Cart and Wait List career selection
+  Dashboard · #42310
+  Shopping Cart and Wait List widgets now fall back to an available career for the selected term when the session career does not match the student's enrollable career. Widget headers include the career description with the term, preventing misleading empty or not-authorized messages, particularly in Acting As mode.
+  Thanks to California State University, Channel Islands for reporting this issue.
+
+* User messages
+  Drop Classes and General Notifications · #43224
+  Restored user-facing notifications in Drop Classes, Wait List, What If, Friends, Cumulative Borrowing, Report Other Aid, Student Permissions, Guest Users, and Degree Progress. For example, students who are not allowed to drop their last class now see the applicable explanation instead of a generic error. Developer diagnostic details are now shown only when error-message display is enabled.
+  Thanks to the University of Southern Mississippi for reporting this issue.
+
+* Undefined labels
+  Enrollment Verification · #43115
+  Restored the report-option labels on Enrollment Verification that could display as undefined after upgrading to CX 26.1.2 or later.
+  Thanks to the University of Maine System Central Office for reporting this issue.
+
+* Course numbers in print and PDF
+  Grades · #43105
+  Grades print and PDF output now includes each catalog number with its course subject, matching the on-screen class list.
+  Thanks to the University of North Carolina at Chapel Hill for reporting this issue.
+
+* Hyphenated last names
+  Lookup Student · #42792
+  Name searches now return one result per student when the student's last name is hyphenated, instead of displaying a duplicate row.
+  Thanks to Boston University for reporting this issue.
+
+* Zero-unit variable-credit courses
+  Planner · #43222
+  Students can now save zero units for courses whose variable-credit range includes zero. The Edit action remains available after saving so the units can be changed again.
+  Thanks to Duke University for reporting this issue.
+
+* Organization matching exact-match score
+  Rules Builder
+  Corrected an issue where an exact match between an organization name and a transcript source-school name could receive a misleadingly low similarity score. Exact matches now receive a fully Confident score, and the similarity threshold is applied correctly when finding schools for an organization or organizations for a name.
+
+--
+You're receiving this because you subscribed to Campus Experience release notes, or you're involved in them.
+Notification preferences: https://support.highpoint.io

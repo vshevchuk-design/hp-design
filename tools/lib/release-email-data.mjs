@@ -8,7 +8,7 @@
 //   product, version, posted, author, headline, preheader, overview
 //   links:    [{ label, href, primary? }]            — at most two, top of the email
 //   notices:  [{ role: info|warning, lead, body }]   — above the sections; "Action needed" lives here
-//   sections: [{ id, title, tag, blurb, intro?, notice?, groups: [{ title?, items: [{ title, tickets, body: [] }] }] }]
+//   sections: [{ id, title, tag, blurb, intro?, notice?, groups: [{ title?, items: [{ area?, title, tickets, body: [], credit? }] }] }]
 //   tag = a tag.* hue for the section's Badge; blurb = its one line in "In this release"
 
 export const TICKET_URL = (id) => `https://support.highpoint.io/#ticket-${id}`;
@@ -245,6 +245,239 @@ export const DEGREE_AUDIT_WIZARD_1_3_7 = {
               tickets: ["44212"],
               body: [
                 "Entity group resolution is corrected for conditions that reference a group by only one of its identifiers. The message for an unresolved entity group now distinguishes a missing identifier from one that was not found, and names the identifier it looked up.",
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  ],
+};
+
+// One item from the source email isn't here: "Rules Builder — External Course
+// Creation During Rule Setup". Its text fell between the screenshots it was
+// carried over from; add it once the original is at hand.
+const IDEA = (who) => `Thanks to ${who} for this idea.`;
+const REPORTED = (who) => `Thanks to ${who} for reporting this issue.`;
+
+export const CAMPUS_EXPERIENCE_26_2_1 = {
+  product: "Campus Experience",
+  version: "26.2.1",
+  posted: "Jul 27, 2026",
+  author: "Jourdy Thro",
+  headline: "Campus Experience 26.2.1 is available",
+  preheader: "Rules Builder workflows, clearer class and enrollment details — and a USPS requirement to check before August 1.",
+  overview:
+    "This release expands Rules Builder workflows and organization matching, improves class and enrollment information across Campus Experience, adds new controls for transfer credit and shopping cart details, and resolves issues affecting acting-as widgets, course history, enrollment messages, migrations, and other CX pages.",
+  links: [
+    { label: "Installation guide", href: "https://support.highpoint.io/projects/technical-guides/wiki/Installation_Guide", primary: true },
+    { label: "Documentation", href: "https://support.highpoint.io/projects/campus-experience/wiki" },
+  ],
+  notices: [
+    {
+      role: "warning",
+      lead: "Check before August 1, 2026.",
+      body: "If you use USPS Address Validation, keep a USPS Addresses API license and associate your CX API credentials with it. No code change is needed.",
+      href: "#enhancements",
+      linkLabel: "See the change",
+    },
+  ],
+  sections: [
+    {
+      id: "enhancements",
+      title: "Enhancements",
+      tag: "green",
+      blurb: "Rules Builder workflows, class and cart details",
+      groups: [
+        {
+          items: [
+            {
+              area: "General",
+              title: "Accessibility improvements",
+              tickets: [],
+              body: [
+                "Improved expandable-row semantics so elements with the `row` role contain only cell-like children, helping screen readers interpret the content structure correctly.",
+                "Hid decorative page headers from the accessibility tree to reduce unnecessary announcements and improve screen-reader clarity.",
+              ],
+            },
+            {
+              area: "Rules Builder",
+              title: "Create School Courses workflow",
+              tickets: [],
+              body: [
+                "Added a dedicated **Create School Courses** workflow for defining a sending school's course catalog independently of building a rule. The guided workflow is available from the **Create** menu and covers organization selection, transcript source-school matching, career and program criteria, effective dates, and a review of existing and new courses.",
+                "The selected organization and source schools remain visible throughout the workflow. Missing External Subject Area values can be completed during review, input lengths align with PeopleSoft field limits, and a breadcrumb provides a clear path back.",
+                "The initial count is now labeled **Transcript Rows** and includes an explanatory tooltip.",
+              ],
+            },
+            {
+              area: "Rules Builder",
+              title: "External organizations and source schools",
+              tickets: [],
+              body: [
+                "The manual rule editor now manages source schools and external organizations together in one **External Organizations** section. Each organization can have one or more transcript source-school names, and existing associations are pre-filled when a rule opens.",
+                "Organizations can be added or removed, duplicate selections are prevented, and unassigned source schools are listed separately. Associations are saved when the rule is validated and saved.",
+              ],
+            },
+            {
+              area: "Rules Builder",
+              title: "Organization selector",
+              tickets: [],
+              body: [
+                "Replaced the blocking organization dialog with a searchable popover attached to the field. Selecting an organization adds it and closes the popover in one action. The selector supports keyboard navigation, disables organizations that are already attached, and remains responsive with large organization lists.",
+              ],
+            },
+            {
+              area: "Rules Builder",
+              title: "Organization matching controls",
+              tickets: [],
+              body: [
+                "Organization matching now uses **Loose**, **Balanced**, and **Strict** presets instead of exposing raw tuning values to most users. **Balanced** preserves the previous default behavior.",
+                "Advanced settings include plain-language tooltips, and each result displays a **Confident**, **Probable**, or **Weak** confidence band alongside its score.",
+              ],
+            },
+            {
+              area: "Rules Builder",
+              title: "Configurable start-of-time date",
+              tickets: [],
+              body: [
+                "New external-course begin dates and the Create School Courses search and course-effective dates now default to the institution's configured start-of-time date. If no date is configured, Rules Builder uses the previous default.",
+              ],
+            },
+            {
+              area: "Rules Builder",
+              title: "Performance improvements",
+              tickets: [],
+              body: [
+                "Shared reference data, including lists of values and partition options, now loads once per session and is reused across Rules Builder screens. The rule preview-to-save workflow also prepares its data only once, reducing network traffic and improving responsiveness without changing behavior.",
+              ],
+            },
+            {
+              area: "Class Search",
+              title: "Reserve capacity descriptions for combined sections",
+              tickets: ["33149"],
+              body: [
+                "Reserve capacity descriptions now display with the Reserved Seats Open value for combined sections, matching the information available for regular sections. When a combined section has multiple reserve capacities, CX lists all descriptions followed by the total pooled number of reserved seats open. The updated display is available throughout class search and enrollment surfaces.",
+              ],
+              credit: IDEA("the Washington State Board for Community and Technical Colleges"),
+            },
+            {
+              area: "Profile",
+              title: "USPS Address API account requirements",
+              tickets: ["43144"],
+              body: [
+                "Validated CX address validation against the USPS Addresses API account requirements taking effect August 1, 2026. The CX integration remains compatible without a code change. Institutions using USPS Address Validation must maintain a USPS Addresses API license and associate their CX API credentials with that license.",
+              ],
+            },
+            {
+              area: "Shopping Cart",
+              title: "Instructor permission expiration date",
+              tickets: ["16793"],
+              body: [
+                "Classes with a granted student-specific instructor permission now show the permission expiration date directly below **Granted**. The date is available in desktop, tablet, and phone views.",
+              ],
+              credit: IDEA("the University of Virginia"),
+            },
+            {
+              area: "Transfer Credit",
+              title: "Expand and collapse all",
+              tickets: ["42162"],
+              body: [
+                "Added an **Expand All** control to the top of Transfer Credit so users can open all credit groups at once. The control changes to **Collapse All** when the groups are expanded.",
+              ],
+              credit: IDEA("California State University, Channel Islands"),
+            },
+          ],
+        },
+      ],
+    },
+    {
+      id: "bug-fixes",
+      title: "Bug fixes",
+      tag: "gray",
+      blurb: "Course history, widgets, messages, migrations",
+      groups: [
+        {
+          items: [
+            {
+              area: "Application Settings",
+              title: "Configuration table migration",
+              tickets: ["42739"],
+              body: [
+                "Updated the CX DMS export bundle to include previously omitted Application Settings tables, so their configuration data is carried between PeopleSoft environments.",
+              ],
+              credit: REPORTED("Cerritos College"),
+            },
+            {
+              area: "Course History",
+              title: "Multiple sections of the same course",
+              tickets: ["42803"],
+              body: [
+                "Course History now displays every distinct class section when a student takes multiple sections of the same course in one term, including different sessions or topics.",
+              ],
+              credit: REPORTED("the University of Maine System Central Office"),
+            },
+            {
+              area: "Course History",
+              title: "Transfer course details",
+              tickets: ["43313"],
+              body: ["Repeat Code and Requirement Designation values now populate in their Course History columns for transferred courses."],
+              credit: REPORTED("the University of Wisconsin-Platteville"),
+            },
+            {
+              area: "Dashboard",
+              title: "Shopping Cart and Wait List career selection",
+              tickets: ["42310"],
+              body: [
+                "Shopping Cart and Wait List widgets now fall back to an available career for the selected term when the session career does not match the student's enrollable career. Widget headers include the career description with the term, preventing misleading empty or not-authorized messages, particularly in Acting As mode.",
+              ],
+              credit: REPORTED("California State University, Channel Islands"),
+            },
+            {
+              area: "Drop Classes and General Notifications",
+              title: "User messages",
+              tickets: ["43224"],
+              body: [
+                "Restored user-facing notifications in Drop Classes, Wait List, What If, Friends, Cumulative Borrowing, Report Other Aid, Student Permissions, Guest Users, and Degree Progress. For example, students who are not allowed to drop their last class now see the applicable explanation instead of a generic error. Developer diagnostic details are now shown only when error-message display is enabled.",
+              ],
+              credit: REPORTED("the University of Southern Mississippi"),
+            },
+            {
+              area: "Enrollment Verification",
+              title: "Undefined labels",
+              tickets: ["43115"],
+              body: ["Restored the report-option labels on Enrollment Verification that could display as `undefined` after upgrading to CX 26.1.2 or later."],
+              credit: REPORTED("the University of Maine System Central Office"),
+            },
+            {
+              area: "Grades",
+              title: "Course numbers in print and PDF",
+              tickets: ["43105"],
+              body: ["Grades print and PDF output now includes each catalog number with its course subject, matching the on-screen class list."],
+              credit: REPORTED("the University of North Carolina at Chapel Hill"),
+            },
+            {
+              area: "Lookup Student",
+              title: "Hyphenated last names",
+              tickets: ["42792"],
+              body: ["Name searches now return one result per student when the student's last name is hyphenated, instead of displaying a duplicate row."],
+              credit: REPORTED("Boston University"),
+            },
+            {
+              area: "Planner",
+              title: "Zero-unit variable-credit courses",
+              tickets: ["43222"],
+              body: [
+                "Students can now save zero units for courses whose variable-credit range includes zero. The **Edit** action remains available after saving so the units can be changed again.",
+              ],
+              credit: REPORTED("Duke University"),
+            },
+            {
+              area: "Rules Builder",
+              title: "Organization matching exact-match score",
+              tickets: [],
+              body: [
+                "Corrected an issue where an exact match between an organization name and a transcript source-school name could receive a misleadingly low similarity score. Exact matches now receive a fully **Confident** score, and the similarity threshold is applied correctly when finding schools for an organization or organizations for a name.",
               ],
             },
           ],
