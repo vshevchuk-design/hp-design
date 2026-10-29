@@ -766,6 +766,8 @@ html { background: ${cv("surface.page")}; }
      and the white results, not two 12px apart. (My schedule keeps the gap.) */
   .cx [data-view="browse"] .ss-type-tabs { margin-inline: -${dm(4)}; padding-inline: ${dm(4)}; width: calc(100% + 2 * ${dm(4)}); max-width: none; }
   .cx [data-view="browse"] .ss-type-tabs + .ss-results { margin-top: -${dm(3)}; }
+  /* My schedule's Upcoming / Past: two tabs, so equal halves (user, 2026-10-29) */
+  .cx #ss-appt-tabs .tab { flex: 1 1 0; }
   .cx [data-view="browse"] .ss-hybrid--flush { border-top: none; }
   /* each tab is its label + an equal share of what's left — My schedule (with its counter) gets the room it needs, Book and Calendar don't need more (user, 2026-10-29) */
   .cx .ss__main > .ss-sections--top .tab { flex: 1 1 auto; padding-inline: ${dm(2)}; }
