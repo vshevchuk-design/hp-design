@@ -753,6 +753,12 @@ html { background: ${cv("surface.page")}; }
   .cx .ss__main { padding-top: ${dm(4)}; gap: ${dm(4)}; }
   .cx :is([data-view="browse"], [data-view="appointments"], [data-view="calendar"]) > .ss-head { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   .cx :is([data-view="appointments"], [data-view="calendar"]) { gap: ${dm(3)}; }
+  /* Book: the type Tabs sit on the list (user, 2026-10-29) — their baseline,
+     edge to edge, is the list's top edge: one line between the gray controls
+     and the white results, not two 12px apart. (My schedule keeps the gap.) */
+  .cx [data-view="browse"] .ss-type-tabs { margin-inline: -${dm(4)}; padding-inline: ${dm(4)}; width: calc(100% + 2 * ${dm(4)}); max-width: none; }
+  .cx [data-view="browse"] .ss-type-tabs + .ss-results { margin-top: -${dm(3)}; }
+  .cx [data-view="browse"] .ss-hybrid--flush { border-top: none; }
   .cx .ss__main > .ss-sections--top .tab { flex: 1 1 0; padding-inline: 0; }
   /* Calendar is a section on a phone too (user, 2026-10-29): the month with
      dots; a day opens its events in the bottom SlideOverPanel */
