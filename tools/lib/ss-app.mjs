@@ -771,6 +771,7 @@ export function ssAppJs(d) {
   }
   function renderAppts() {
     updateUpcomingCount();
+    if (V6) updateAttention();
     document.querySelectorAll("#ss-appt-tabs .tab").forEach(function (t) {
       var on = t.dataset.apptTab === apptTab;
       t.classList.toggle("tab--active", on);
@@ -1198,7 +1199,24 @@ export function ssAppJs(d) {
   });
 
   // ---- the banner: where you are in line, on every other screen ----
+  // My schedule's section tab: how many things need you right now — an open
+  // check-in (appointment or workshop session) or a drop-in calling you
+  function updateAttention() {
+    var el = $("ss-attn-count");
+    if (!el) return;
+    var n = APPTS.filter(checkinOpen).length + VISITS.filter(function (v) { return v.state === "called"; }).length;
+    WORKSHOPS.forEach(function (w) {
+      var r = WS_REG[w.id];
+      if (!r) return;
+      var all = sessionsOf(w.schedules[r.sched]);
+      myIdx(w, r).forEach(function (k) { if (!r.checkedIn[k] && !r.skipped[k] && sessCheckinOpen(w, all[k])) n++; });
+    });
+    el.textContent = n;
+    el.classList.toggle("is-hidden", !n);
+    el.setAttribute("aria-label", n + " need" + (n === 1 ? "s" : "") + " you now");
+  }
   function updateBanner() {
+    updateAttention();
     var bn = $("ss-banner");
     if (!bn) return;
     var v = liveVisit() || VISITS.filter(function (x) { return x.state === "reserved"; })[0];
@@ -1861,6 +1879,7 @@ export function ssAppJs(d) {
     var calPhone = window.matchMedia("(max-width: 767px)");
     calPhone.addEventListener("change", function () { if (calPhone.matches && activeViewName() === "calendar") goSection(1); });
   }
+  if (V6) updateAttention();
 
   // ---------------- v6: done — the one screen every booking ends on ----------------
   var doneActions = [];

@@ -788,6 +788,9 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 /* ============ Counter (onNeutral sm — on the Upcoming tab) ============ */
 .counter { display: inline-flex; align-items: center; justify-content: center; height: 16px; min-width: 16px; padding: 0 4px; border-radius: 999px; background: var(--tok-fill-neutral-active); color: var(--tok-text-secondary-strong); font-weight: 700; font-size: 10px; line-height: 1; }
 .tab--active .counter { background: var(--tok-fill-primary); color: var(--tok-text-on-fill); }
+/* My schedule's "needs you now" count (check-in open, a drop-in calling you) — always the
+   counter's blue (onNeutral active), selected tab or not: it asks for attention (user, 2026-10-29) */
+.ss-attn, .tab--active .ss-attn { background: var(--tok-fill-primary); color: var(--tok-text-on-fill); }
 
 /* ============ Button — danger (AlertDialog's confirm, Modal's own recipe) ============ */
 /* Button danger — roles read from button.tokens.json (button.danger) */
@@ -2140,6 +2143,7 @@ dialog.slide-over-panel--bottom[open] { transform: translateY(0); animation: sli
   }
   function renderAppts() {
     updateUpcomingCount();
+    if (V6) updateAttention();
     document.querySelectorAll("#ss-appt-tabs .tab").forEach(function (t) {
       var on = t.dataset.apptTab === apptTab;
       t.classList.toggle("tab--active", on);
@@ -2567,7 +2571,24 @@ dialog.slide-over-panel--bottom[open] { transform: translateY(0); animation: sli
   });
 
   // ---- the banner: where you are in line, on every other screen ----
+  // My schedule's section tab: how many things need you right now — an open
+  // check-in (appointment or workshop session) or a drop-in calling you
+  function updateAttention() {
+    var el = $("ss-attn-count");
+    if (!el) return;
+    var n = APPTS.filter(checkinOpen).length + VISITS.filter(function (v) { return v.state === "called"; }).length;
+    WORKSHOPS.forEach(function (w) {
+      var r = WS_REG[w.id];
+      if (!r) return;
+      var all = sessionsOf(w.schedules[r.sched]);
+      myIdx(w, r).forEach(function (k) { if (!r.checkedIn[k] && !r.skipped[k] && sessCheckinOpen(w, all[k])) n++; });
+    });
+    el.textContent = n;
+    el.classList.toggle("is-hidden", !n);
+    el.setAttribute("aria-label", n + " need" + (n === 1 ? "s" : "") + " you now");
+  }
   function updateBanner() {
+    updateAttention();
     var bn = $("ss-banner");
     if (!bn) return;
     var v = liveVisit() || VISITS.filter(function (x) { return x.state === "reserved"; })[0];
@@ -3230,6 +3251,7 @@ dialog.slide-over-panel--bottom[open] { transform: translateY(0); animation: sli
     var calPhone = window.matchMedia("(max-width: 767px)");
     calPhone.addEventListener("change", function () { if (calPhone.matches && activeViewName() === "calendar") goSection(1); });
   }
+  if (V6) updateAttention();
 
   // ---------------- v6: done — the one screen every booking ends on ----------------
   var doneActions = [];

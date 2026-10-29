@@ -496,6 +496,9 @@ ${FIELD_WRAPPER_CSS}
 /* ============ Counter (onNeutral sm — on the Upcoming tab) ============ */
 .counter { display: inline-flex; align-items: center; justify-content: center; height: ${D(counter.size.sm.height)}; min-width: ${D(counter.size.sm.minWidth)}; padding: 0 ${D(counter.size.sm.paddingX)}; border-radius: ${D(counter.radius)}; background: ${R(counter.onNeutral.state.inactive.bg)}; color: ${R(counter.onNeutral.state.inactive.label)}; ${typoCss(T(counter.size.sm.label))} }
 .tab--active .counter { background: ${R(counter.onNeutral.state.active.bg)}; color: ${R(counter.onNeutral.state.active.label)}; }
+/* My schedule's "needs you now" count (check-in open, a drop-in calling you) — always the
+   counter's blue (onNeutral active), selected tab or not: it asks for attention (user, 2026-10-29) */
+.ss-attn, .tab--active .ss-attn { background: ${R(counter.onNeutral.state.active.bg)}; color: ${R(counter.onNeutral.state.active.label)}; }
 
 /* ============ Button — danger (AlertDialog's confirm, Modal's own recipe) ============ */
 /* Button danger — roles read from button.tokens.json (button.danger) */

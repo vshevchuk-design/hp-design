@@ -762,6 +762,9 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 /* ============ Counter (onNeutral sm — on the Upcoming tab) ============ */
 .counter { display: inline-flex; align-items: center; justify-content: center; height: 16px; min-width: 16px; padding: 0 4px; border-radius: 999px; background: var(--tok-fill-neutral-active); color: var(--tok-text-secondary-strong); font-weight: 700; font-size: 10px; line-height: 1; }
 .tab--active .counter { background: var(--tok-fill-primary); color: var(--tok-text-on-fill); }
+/* My schedule's "needs you now" count (check-in open, a drop-in calling you) — always the
+   counter's blue (onNeutral active), selected tab or not: it asks for attention (user, 2026-10-29) */
+.ss-attn, .tab--active .ss-attn { background: var(--tok-fill-primary); color: var(--tok-text-on-fill); }
 
 /* ============ Button — danger (AlertDialog's confirm, Modal's own recipe) ============ */
 /* Button danger — roles read from button.tokens.json (button.danger) */

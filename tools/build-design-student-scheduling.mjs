@@ -406,7 +406,7 @@ const markupFor = () =>
 // screen every booking ends on.
 // Calendar is a top-level section from 768 up; on a phone its tab is hidden.
 const sectionsV6 = DATA.SECTIONS_V6.map(
-  (s, i) => `<button class="tab tab--base${i === 0 ? " tab--active" : ""}${s === "Calendar" ? " ss-tab--wide" : ""}" type="button" role="tab" aria-selected="${i === 0}">${s}</button>`
+  (s, i) => `<button class="tab tab--base${i === 0 ? " tab--active" : ""}${s === "Calendar" ? " ss-tab--wide" : ""}" type="button" role="tab" aria-selected="${i === 0}">${s}${s === "My schedule" ? `<span class="counter ss-attn is-hidden" id="ss-attn-count"></span>` : ""}</button>`
 ).join("\n      ");
 const SEGMENTED_NAV_V6 = SEGMENTED_NAV.replace(sectionsSeg, sectionsV6).replace('class="ss-sections ss-sections--seg"', 'class="ss-sections ss-sections--seg ss-sections--center"');
 const DROP_CHIP = `<button class="chip chip--lg" id="ss-drop-chip" type="button" aria-pressed="false">Drop-in available</button>`;
