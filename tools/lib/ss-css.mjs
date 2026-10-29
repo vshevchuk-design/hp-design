@@ -73,12 +73,13 @@ dialog.slide-over-panel[open]::backdrop { opacity: 1; }
 html:has(dialog.slide-over-panel[open]) { overflow: hidden; }
 dialog.slide-over-panel--right { top: 0; bottom: 0; right: 0; left: auto; height: 100dvh; max-height: none; width: ${D(drawer.size.sm)}; max-width: calc(100vw - ${D(drawer.phoneGutter)}); border-radius: ${D(drawer.radius)}; ${sopSlide("X", "100%")} }
 dialog.slide-over-panel--md { width: ${D(drawer.size.md)}; }
-dialog.slide-over-panel--right[open] { transform: translateX(0); }
-@starting-style { dialog.slide-over-panel--right[open] { transform: translateX(100%); } }
+/* entry is a keyframe animation, not @starting-style: in iOS WebKit (Telegram's in-app browser) the transform transition stuck at its start — scrim on, panel off-screen (2026-10-29). Exit stays a transition. */
+dialog.slide-over-panel--right[open] { transform: translateX(0); animation: slide-over-panel-in-right ${sopDur} ease; }
+@keyframes slide-over-panel-in-right { from { transform: translateX(100%); } }
 dialog.slide-over-panel--bottom { top: auto; bottom: 0; left: 0; right: 0; width: 100%; max-width: 100%; max-height: ${sopMax}; border-radius: ${D(drawer.bottomRadius)} ${D(drawer.bottomRadius)} 0 0; ${sopSlide("Y", "100%")} }
-dialog.slide-over-panel--bottom[open] { transform: translateY(0); }
-@starting-style { dialog.slide-over-panel--bottom[open] { transform: translateY(100%); } }
-@media (prefers-reduced-motion: reduce) { dialog.slide-over-panel { transition: none; } }
+dialog.slide-over-panel--bottom[open] { transform: translateY(0); animation: slide-over-panel-in-bottom ${sopDur} ease; }
+@keyframes slide-over-panel-in-bottom { from { transform: translateY(100%); } }
+@media (prefers-reduced-motion: reduce) { dialog.slide-over-panel, dialog.slide-over-panel[open] { transition: none; animation: none; } }
 .slide-over-panel__content { display: flex; flex-direction: column; height: 100%; max-height: inherit; font-family: ${cv("family.sans")}; }
 .slide-over-panel__header { flex-shrink: 0; display: flex; align-items: flex-start; gap: ${D(drawer.gap)}; padding: ${D(drawer.barPaddingY)} ${D(drawer.padding)}; box-shadow: inset 0 -1px 0 ${R(drawer.divider)}; }
 .slide-over-panel__heading { flex: 1; min-width: 0; min-height: ${D(button.ghost.size.sm.height)}; display: flex; flex-direction: column; justify-content: center; gap: ${D(modal.headerGap)}; }

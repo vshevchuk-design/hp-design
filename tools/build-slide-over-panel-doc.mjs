@@ -4,8 +4,9 @@
 // Escape-to-close, ::backdrop, top-layer rendering, no z-index needed.
 // Close button uses <form method="dialog">, the fully-declarative native way
 // to close a dialog, no onclick handler. Open/close animates via
-// @starting-style + transitions on transform/::backdrop (allow-discrete) —
-// no JS animation.
+// a keyframe animation in (an @starting-style transform transition stuck at
+// its start in iOS WebKit — scrim on, panel off-screen), transitions out
+// (allow-discrete), @starting-style for the ::backdrop fade — no JS animation.
 // The generated <style> block IS the code shown in the "CSS" section below —
 // one source, so the live preview and the printed snippet can't drift apart.
 // Run: node tools/build-slide-over-panel-doc.mjs
@@ -112,13 +113,17 @@ dialog.slide-over-panel--md { width: ${sizes.md}; }
 dialog.slide-over-panel--lg { width: ${sizes.lg}; }
 dialog.slide-over-panel--right { right: 0; left: auto; ${slide("X", "100%")} }
 dialog.slide-over-panel--left { left: 0; right: auto; ${slide("X", "-100%")} }
+/* entry is a keyframe animation, not @starting-style: in iOS WebKit (Telegram's in-app browser) the transform transition stuck at its start — scrim on, panel off-screen (2026-10-29). Exit stays a transition. */
 dialog.slide-over-panel--right[open], dialog.slide-over-panel--left[open] { transform: translateX(0); }
-@starting-style { dialog.slide-over-panel--right[open] { transform: translateX(100%); } dialog.slide-over-panel--left[open] { transform: translateX(-100%); } }
+dialog.slide-over-panel--right[open] { animation: slide-over-panel-in-right ${dur} ease; }
+dialog.slide-over-panel--left[open] { animation: slide-over-panel-in-left ${dur} ease; }
+@keyframes slide-over-panel-in-right { from { transform: translateX(100%); } }
+@keyframes slide-over-panel-in-left { from { transform: translateX(-100%); } }
 
 /* bottom placement: full width, as tall as its content up to ${maxH}, top corners rounded (its one free edge) */
 dialog.slide-over-panel--bottom { top: auto; bottom: 0; left: 0; right: 0; width: 100%; max-width: 100%; max-height: ${maxH}; border-radius: ${bottomRadius} ${bottomRadius} 0 0; ${slide("Y", "100%")} }
-dialog.slide-over-panel--bottom[open] { transform: translateY(0); }
-@starting-style { dialog.slide-over-panel--bottom[open] { transform: translateY(100%); } }
+dialog.slide-over-panel--bottom[open] { transform: translateY(0); animation: slide-over-panel-in-bottom ${dur} ease; }
+@keyframes slide-over-panel-in-bottom { from { transform: translateY(100%); } }
 
 .slide-over-panel__content { display: flex; flex-direction: column; height: 100%; max-height: inherit; box-sizing: border-box; font-family: ${cv("family.sans")}; }
 .slide-over-panel__header { flex-shrink: 0; box-sizing: border-box; display: flex; align-items: flex-start; gap: ${gap}; padding: ${barY} ${padding}; box-shadow: inset 0 -1px 0 ${cv(role(sop.divider))}; }
