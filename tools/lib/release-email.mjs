@@ -188,7 +188,7 @@ function heroBlock(rel, assetBase) {
           <tr><td><h1 class="hp-h1" style="margin: 0; ${T("text-style.title-2xl")} color: ${C("text.default")};">${esc(rel.headline)}</h1></td></tr>
           ${spacer(dimPx("dim.2"))}
           <tr><td style="${T("text-style.body-sm")} color: ${C("text.secondary")};">Released ${esc(rel.posted)} · ${esc(rel.author)}, HighPoint Support</td></tr>
-          ${spacer(dimPx("dim.5"))}
+          ${spacer(dimPx("dim.4"))}
           <tr><td style="${T("text-style.body-md")} color: ${C("text.secondaryStrong")};">${inline(rel.overview)}</td></tr>
           ${links}
           ${notices}
@@ -239,7 +239,7 @@ function itemHtml(item, ticketUrl, first) {
 function sectionBlock(s, ticketUrl) {
   const n = countItems(s);
   const intro = s.intro ? `${spacer(dimPx("dim.2"))}\n          <tr><td style="${T("text-style.body-base")} color: ${C("text.secondary")};">${inline(s.intro)}</td></tr>` : "";
-  const notice = s.notice ? `${spacer(dimPx("dim.4"))}\n          <tr><td>${alertHtml(s.notice)}</td></tr>` : "";
+  const notice = s.notice ? `${spacer(dimPx("dim.6"))}\n          <tr><td>${alertHtml(s.notice)}</td></tr>` : "";
   const groups = s.groups
     .map((g, gi) => {
       const head = g.title
