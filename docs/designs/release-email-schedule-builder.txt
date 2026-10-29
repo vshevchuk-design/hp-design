@@ -1,0 +1,23 @@
+HIGHPOINT RELEASE NOTES
+
+Schedule Builder 26.3.0 is available
+====================================
+Released Oct 9, 2026 · Jourdy Thro, HighPoint Support
+
+This release delivers PUM 39 compatibility for Schedule Builder and resolves an issue that prevented the AI Assistant from building schedules for courses that had open sections.
+
+Installation guide: https://support.highpoint.io/
+Documentation: https://support.highpoint.io/
+
+
+BUG FIXES
+---------
+
+* Building schedules from the AI Assistant
+  Chat Assistant · #44379
+  Resolved an issue where the AI Assistant reported courses as not found when asked to build schedules, even though the same courses had open sections in class search. The subject lookup also reported zero available classes for those courses.
+  The assistant now matches catalog numbers independently of how they are stored, selects the course offering that has active classes in the requested term, and correctly reads subjects that contain a space, such as POL SCI 1. Subject lookups no longer report an available-class count that was never populated.
+
+--
+You're receiving this because you subscribed to Schedule Builder release notes, or you're involved in them.
+Notification preferences: https://support.highpoint.io

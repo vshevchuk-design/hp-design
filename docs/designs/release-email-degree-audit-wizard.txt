@@ -1,0 +1,111 @@
+HIGHPOINT RELEASE NOTES
+
+Degree Audit Wizard 1.3.7 is available
+======================================
+Released Oct 9, 2026 · Jourdy Thro, HighPoint Support
+
+Degree Audit Wizard 1.3.7 is mostly about speed. Opening an audit, filtering the Audits list, saving a requirement, publishing, and running Preview Audit all do noticeably less work than before, and the difference shows most on large audits and at institutions with many of them. Elsewhere, adding a requirement line now starts where you would expect it to, the Retention Rate and Time to Degree reports define their cohorts and benchmarks more precisely, and a run of fixes clears up audits that went missing from the list, course share sets that lost rows, and dialogs that took keyboard focus away mid-word.
+
+Installation guide: https://support.highpoint.io/
+Documentation: https://support.highpoint.io/
+
+! Review before you update. Publishing an audit now requires HPT_DAW_WRITE. Anyone who holds only HPT_DAW_READ can no longer publish. Users with the Highpoint DAW Full Access role are unaffected.
+
+IN THIS RELEASE
+- Performance: Audits, lists and publishing wait less (3)
+- Enhancements: Requirement lines, and who can publish (2)
+- Analytics: Cohorts and benchmarks, defined more precisely (3)
+- Bug fixes: Missing audits, lost focus, phantom counts (8)
+
+
+PERFORMANCE
+-----------
+A broad performance pass runs through this release. Nothing changes about what you see — the same audits, the same share sets, the same figures — only how long you wait for them. Thanks to the University of Maryland Global Campus for partnering with us on this work.
+
+* Opening an audit and the Audits list
+  #44555 · #44557 · #44559 · #44562
+  Opening an audit from the Audits list loaded the audit's data twice. It now loads once, and large audits open noticeably faster.
+  The Audits list loads faster at institutions that have Hide Audits Without Active Requirement Groups turned on, and filtering the list by plan or sub-plan is faster at institutions with many audits. Both show the same audits as before.
+  Degree Audit Wizard also combines the requests it sends when opening the Audits list, an audit, and the precondition and course criteria dialogs.
+
+* Editing an audit
+  #44561
+  Adding a requirement with Add Requirement, saving a requirement in Edit Requirement, making a requirement active or inactive, and saving a requirement group's settings no longer reload the whole audit. Only the changed requirement group refreshes, so the page responds sooner after each save, most noticeably on large audits.
+
+* Publishing and course share set usage
+  #44559 · #44560
+  Publishing finds a plan-level or sub-plan audit faster at institutions with many audits, and Course Sharing › View Usage loads course share set details faster at institutions with many requirement groups. Both show the same results as before.
+
+
+ENHANCEMENTS
+------------
+
+* Adding a requirement line starts as a Course Requirement
+  #44207
+  Adding a requirement line now starts as a Course Requirement, from a single button at the bottom of the line list. Other line types sit under More Lines, and the type can still be switched in the dialog before saving.
+
+* Publishing an audit requires DAW write access
+  #44558
+  Publishing an audit now requires HPT_DAW_WRITE. A user who holds only HPT_DAW_READ can no longer publish, so review anyone you have given read-only access who is expected to publish. Users with the Highpoint DAW Full Access role are unaffected.
+  Publishing an audit that has no warnings is also faster.
+
+
+ANALYTICS
+---------
+The reports introduced in 1.3.6 continue to be refined as they run against real institutional data.
+
+! Figures will move. Two of the changes below alter what is counted, so Retention Rate and Time to Degree won't match what you saw in 1.3.6.
+
+* Retention Rate measures the entering cohort by admit term
+  #44264
+  The Retention Rate report now always measures the entering cohort by admit term. The Anchor Mode control is removed, and Requirement Term becomes a filter that narrows that cohort to a catalog year. Cohort figures change accordingly.
+
+* Terms Under/Over now has a benchmark you can see
+  #44318
+  On Time to Degree, Terms Under/Over is now measured against the terms the program's own calendar carries, so it no longer disagrees with % of Normal Time. A new Terms Expected column shows that benchmark, a caption states where Normal Years comes from, and Time to Graduate reads in years.
+
+* Time to Degree plan filter lists only conferred plans
+  #44320
+  The Plan filter now lists only the plans carried by a conferred degree in the selected career, including second majors and minors, rather than every plan in the catalog. Changing the career clears a plan selection that no longer applies.
+
+
+BUG FIXES
+---------
+
+* Audits missing for requirement groups that are inactive in PeopleSoft
+  #44700
+  A requirement group marked inactive in PeopleSoft got no audit at all, or an audit that could not be opened. With Hide Audits without Active requirement groups off, these audits are now listed and open with their groups marked Inactive, and Abandon Changes no longer deletes them. Audits with active groups may also list terms from their inactive groups.
+
+* No audit created when another institution has the same code
+  #44573
+  The Audits list did not create an audit for a plan, program, or career at one institution when another institution already had an audit with the same code and Term was left blank. Missing audits are added on the first search after the update.
+
+* Published audit dropped terms after an unpublished group move
+  #44699
+  A published audit dropped terms, and was hidden by Hide Audits without Active requirement groups, when an unpublished change moved one of its requirement groups to a different academic structure. The affected term now shows as Unpublished, so the change can be published or abandoned.
+
+* Preferences menu opened behind the column headers
+  #44665
+  On the Audits, Course Sharing, and Entity Groups pages, the Preferences (gear) menu opened behind the table's column headers, which hid the Institutions option for users with access to more than one institution.
+
+* Description field lost focus after the first letter
+  #44495
+  Typing into a blank Description in the requirement group, requirement, and requirement line dialogs lost keyboard focus after the first letter. Focus now stays in the field.
+
+* Keyboard focus jumped to the top of the requirement line dialog
+  #44502
+  Toggling an advanced-field checkbox or resetting a field moved keyboard focus to the top of the requirement line dialog. Focus now stays on the field.
+
+Conditions and entity groups:
+
+* Phantom and missing condition counts on non-course requirement lines
+  #44188 · #43791
+  After a non-course requirement line was added with no condition, a line in that session could show a condition belonging to a different line, or read Conditions: 0 despite having one. Both are corrected, and stored condition data was never affected.
+
+* Misleading entity group error when saving a condition
+  #44212
+  Entity group resolution is corrected for conditions that reference a group by only one of its identifiers. The message for an unresolved entity group now distinguishes a missing identifier from one that was not found, and names the identifier it looked up.
+
+--
+You're receiving this because you subscribed to Degree Audit Wizard release notes, or you're involved in them.
+Notification preferences: https://support.highpoint.io

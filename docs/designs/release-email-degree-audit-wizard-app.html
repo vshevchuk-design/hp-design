@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="x-apple-disable-message-reformatting" />
+<meta name="color-scheme" content="light" />
+<meta name="supported-color-schemes" content="light" />
+<title>Degree Audit Wizard 1.3.7 release notes</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&amp;display=swap" rel="stylesheet" />
+<style>
+  body { margin: 0; padding: 0; width: 100% !important; -webkit-text-size-adjust: 100%; }
+  table { border-collapse: collapse; }
+  img { border: 0; display: block; }
+  a[x-apple-data-detectors] { color: inherit !important; text-decoration: none !important; }
+  @media (max-width: 599px) {
+    .hp-px { padding-left: 20px !important; padding-right: 20px !important; }
+    .hp-h1 { font-size: 20px !important; line-height: 24px !important; }
+    .hp-toc-blurb { display: none !important; }
+    .hp-card { border-radius: 0 !important; border-left: 0 !important; border-right: 0 !important; }
+  }
+</style>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f9fafb;">
+  <div role="article" aria-roledescription="email" aria-label="Degree Audit Wizard 1.3.7 release notes" lang="en">
+  <div style="display: none; max-height: 0; overflow: hidden; mso-hide: all;">Mostly about speed — plus one permission change to review before you update.&#8199;&#847;&#8199;&#847;&#8199;&#847;&#8199;&#847;&#8199;&#847;&#8199;&#847;</div>
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#f9fafb" style="background-color: #f9fafb;">
+    <tr><td align="center" style="padding: 32px 0 0;">
+      <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width: 100%; max-width: 600px;">
+        <tr><td class="hp-px" style="padding: 0 32px 20px;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+            <td><img src="../../assets/email/highpoint-logo@2x.png" width="126" height="28" alt="HighPoint" style="font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 18px; line-height: 24px; font-weight: 600; color: #121921;" /></td>
+            <td align="right" style="font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 12px; line-height: 16px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: #5d6a7a;">Release notes</td>
+          </tr></table>
+        </td></tr>
+        <tr><td>
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="hp-card" bgcolor="#ffffff" style="background-color: #ffffff; border: 1px solid #dadde0; border-radius: 8px; border-collapse: separate;">
+      <tr><td class="hp-px" style="padding: 32px 32px 32px;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+          <tr><td><span style="display: inline-block; background-color: #d9eaff; color: #0468c4; border-radius: 999px; padding: 0 8px; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 12px; line-height: 20px; font-weight: 600; white-space: nowrap; vertical-align: middle;">Degree Audit Wizard</span>&nbsp;<span style="display: inline-block; border: 1px solid #dadde0; background-color: transparent; color: #121921; border-radius: 999px; padding: 0 8px; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 12px; line-height: 18px; font-weight: 400; white-space: nowrap; vertical-align: middle;">v1.3.7</span></td></tr>
+          <tr><td height="16" style="height: 16px; font-size: 0; line-height: 0;">&nbsp;</td></tr>
+          <tr><td><h1 class="hp-h1" style="margin: 0; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 24px; line-height: 28px; font-weight: 700; color: #121921;">Degree Audit Wizard 1.3.7 is available</h1></td></tr>
+          <tr><td height="8" style="height: 8px; font-size: 0; line-height: 0;">&nbsp;</td></tr>
+          <tr><td style="font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 12px; line-height: 16px; font-weight: 400; color: #5d6a7a;">Released Oct 9, 2026 · Jourdy Thro, HighPoint Support</td></tr>
+          <tr><td height="20" style="height: 20px; font-size: 0; line-height: 0;">&nbsp;</td></tr>
+          <tr><td style="font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px; font-weight: 400; color: #485462;">Degree Audit Wizard 1.3.7 is mostly about speed. Opening an audit, filtering the Audits list, saving a requirement, publishing, and running Preview Audit all do noticeably less work than before, and the difference shows most on large audits and at institutions with many of them. Elsewhere, adding a requirement line now starts where you would expect it to, the Retention Rate and Time to Degree reports define their cohorts and benchmarks more precisely, and a run of fixes clears up audits that went missing from the list, course share sets that lost rows, and dialogs that took keyboard focus away mid-word.</td></tr>
+          <tr><td height="24" style="height: 24px; font-size: 0; line-height: 0;">&nbsp;</td></tr>
+          <tr><td><table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
+            <td class="hp-btn" style="padding: 0 8px 0 0;"><table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse: separate;"><tr>
+              <td align="center" height="48" bgcolor="#0468c4" style="height: 48px; padding: 0 16px; background-color: #0468c4; border-radius: 8px;">
+                <a href="https://support.highpoint.io/" style="display: block; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px; font-weight: 600; line-height: 48px; color: #ffffff; text-decoration: none; white-space: nowrap;">Installation guide</a>
+              </td>
+            </tr></table></td>
+            <td class="hp-btn" style="padding: 0 0 0 0;"><table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse: separate;"><tr>
+              <td align="center" height="48" bgcolor="#e6e8eb" style="height: 48px; padding: 0 16px; background-color: #e6e8eb; border-radius: 8px;">
+                <a href="https://support.highpoint.io/" style="display: block; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px; font-weight: 600; line-height: 48px; color: #121921; text-decoration: none; white-space: nowrap;">Documentation</a>
+              </td>
+            </tr></table></td>
+          </tr></table></td></tr>
+          <tr><td height="16" style="height: 16px; font-size: 0; line-height: 0;">&nbsp;</td></tr>
+          <tr><td><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse: separate;"><tr>
+              <td bgcolor="#ffe2c5" style="background-color: #ffe2c5; border: 1px solid #fec486; border-radius: 8px; padding: 12px 16px; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 20px; font-weight: 400; color: #121921;">
+                <strong style="font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 20px; font-weight: 600; color: #121921;">Review before you update.</strong> Publishing an audit now requires <code style="font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 12px; font-weight: 600; color: #121921; background-color: #f4f5f7; border: 1px solid #dadde0; border-radius: 4px; padding: 0 4px; white-space: nowrap;">HPT_DAW_WRITE</code>. Anyone who holds only <code style="font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 12px; font-weight: 600; color: #121921; background-color: #f4f5f7; border: 1px solid #dadde0; border-radius: 4px; padding: 0 4px; white-space: nowrap;">HPT_DAW_READ</code> can no longer publish. Users with the <strong style="font-weight: 600; color: #121921;">Highpoint DAW Full Access</strong> role are unaffected. <a href="#enhancements" style="color: #0468c4; font-weight: 600; text-decoration: underline;">See the change</a>
+              </td>
+            </tr></table></td></tr>
+        </table>
+      </td></tr>
+      <tr><td class="hp-px" style="padding: 0 32px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td height="1" style="height: 1px; font-size: 0; line-height: 0; background-color: #dadde0;">&nbsp;</td></tr></table></td></tr>
+      <tr><td class="hp-px" style="padding: 24px 32px 20px;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+          <tr><td colspan="3" style="font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 12px; line-height: 16px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: #5d6a7a; padding-bottom: 4px;">In this release</td></tr>
+            <tr>
+              <td width="128" class="hp-toc-tag" style="padding: 12px 0; vertical-align: middle;"><span style="display: inline-block; background-color: #cfefef; color: #057878; border-radius: 999px; padding: 0 8px; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 12px; line-height: 20px; font-weight: 600; white-space: nowrap; vertical-align: middle;">Performance</span></td>
+              <td class="hp-toc-blurb" style="padding: 12px 12px; vertical-align: middle; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 20px; font-weight: 400; color: #485462;"><a href="#performance" style="color: #485462; text-decoration: none;">Audits, lists and publishing wait less</a></td>
+              <td align="right" style="padding: 12px 0; vertical-align: middle; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 12px; line-height: 16px; font-weight: 400; color: #5d6a7a; white-space: nowrap;">3 changes</td>
+            </tr>
+            <tr>
+              <td width="128" class="hp-toc-tag" style="border-top: 1px solid #dadde0; padding: 12px 0; vertical-align: middle;"><span style="display: inline-block; background-color: #d4f1da; color: #057e3f; border-radius: 999px; padding: 0 8px; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 12px; line-height: 20px; font-weight: 600; white-space: nowrap; vertical-align: middle;">Enhancements</span></td>
+              <td class="hp-toc-blurb" style="border-top: 1px solid #dadde0; padding: 12px 12px; vertical-align: middle; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 20px; font-weight: 400; color: #485462;"><a href="#enhancements" style="color: #485462; text-decoration: none;">Requirement lines, and who can publish</a></td>
+              <td align="right" style="border-top: 1px solid #dadde0; padding: 12px 0; vertical-align: middle; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 12px; line-height: 16px; font-weight: 400; color: #5d6a7a; white-space: nowrap;">2 changes</td>
+            </tr>
+            <tr>
+              <td width="128" class="hp-toc-tag" style="border-top: 1px solid #dadde0; padding: 12px 0; vertical-align: middle;"><span style="display: inline-block; background-color: #d9eaff; color: #0468c4; border-radius: 999px; padding: 0 8px; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 12px; line-height: 20px; font-weight: 600; white-space: nowrap; vertical-align: middle;">Analytics</span></td>
+              <td class="hp-toc-blurb" style="border-top: 1px solid #dadde0; padding: 12px 12px; vertical-align: middle; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 20px; font-weight: 400; color: #485462;"><a href="#analytics" style="color: #485462; text-decoration: none;">Cohorts and benchmarks, defined more precisely</a></td>
+              <td align="right" style="border-top: 1px solid #dadde0; padding: 12px 0; vertical-align: middle; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 12px; line-height: 16px; font-weight: 400; color: #5d6a7a; white-space: nowrap;">3 changes</td>
+            </tr>
+            <tr>
+              <td width="128" class="hp-toc-tag" style="border-top: 1px solid #dadde0; padding: 12px 0; vertical-align: middle;"><span style="display: inline-block; background-color: #dadde0; color: #121921; border-radius: 999px; padding: 0 8px; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 12px; line-height: 20px; font-weight: 600; white-space: nowrap; vertical-align: middle;">Bug fixes</span></td>
+              <td class="hp-toc-blurb" style="border-top: 1px solid #dadde0; padding: 12px 12px; vertical-align: middle; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 20px; font-weight: 400; color: #485462;"><a href="#bug-fixes" style="color: #485462; text-decoration: none;">Missing audits, lost focus, phantom counts</a></td>
+              <td align="right" style="border-top: 1px solid #dadde0; padding: 12px 0; vertical-align: middle; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 12px; line-height: 16px; font-weight: 400; color: #5d6a7a; white-space: nowrap;">8 changes</td>
+            </tr>
+        </table>
+      </td></tr>
+      <tr><td class="hp-px" style="padding: 0 32px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td height="1" style="height: 1px; font-size: 0; line-height: 0; background-color: #dadde0;">&nbsp;</td></tr></table></td></tr>
+      <tr><td class="hp-px" id="performance" style="padding: 32px 32px;">
+        <a name="performance"></a>
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+          <tr><td>
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+              <td width="4" bgcolor="#0a9393" style="width: 4px; background-color: #0a9393; border-radius: 2px; font-size: 0; line-height: 0;">&nbsp;</td>
+              <td style="padding-left: 12px;"><h2 style="margin: 0; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 18px; line-height: 24px; font-weight: 600; color: #121921;">Performance</h2></td>
+              <td align="right" style="font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 12px; line-height: 16px; font-weight: 400; color: #5d6a7a; white-space: nowrap;">3 changes</td>
+            </tr></table>
+          </td></tr>
+          <tr><td height="8" style="height: 8px; font-size: 0; line-height: 0;">&nbsp;</td></tr>
+          <tr><td style="font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 20px; font-weight: 400; color: #5d6a7a;">A broad performance pass runs through this release. Nothing changes about what you see — the same audits, the same share sets, the same figures — only how long you wait for them. Thanks to the University of Maryland Global Campus for partnering with us on this work.</td></tr>
+          
+          <tr><td height="24" style="height: 24px; font-size: 0; line-height: 0;">&nbsp;</td></tr>
+          
+          <tr><td>
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr><td><h3 style="margin: 0; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px; font-weight: 600; color: #121921;">Opening an audit and the Audits list</h3></td></tr>
+              <tr><td style="padding-top: 4px; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 12px; line-height: 16px; font-weight: 400; color: #5d6a7a;"><a href="https://support.highpoint.io/#ticket-44555" style="color: #0468c4; text-decoration: none;">#44555</a><span style="color: #758191;">, </span><a href="https://support.highpoint.io/#ticket-44557" style="color: #0468c4; text-decoration: none;">#44557</a><span style="color: #758191;">, </span><a href="https://support.highpoint.io/#ticket-44559" style="color: #0468c4; text-decoration: none;">#44559</a><span style="color: #758191;">, </span><a href="https://support.highpoint.io/#ticket-44562" style="color: #0468c4; text-decoration: none;">#44562</a></td></tr>
+              <tr><td style="padding-top: 8px; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 20px; font-weight: 400; color: #485462;">Opening an audit from the Audits list loaded the audit's data twice. It now loads once, and large audits open noticeably faster.</td></tr>
+              <tr><td style="padding-top: 8px; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 20px; font-weight: 400; color: #485462;">The Audits list loads faster at institutions that have <strong style="font-weight: 600; color: #121921;">Hide Audits Without Active Requirement Groups</strong> turned on, and filtering the list by plan or sub-plan is faster at institutions with many audits. Both show the same audits as before.</td></tr>
+              <tr><td style="padding-top: 8px; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 20px; font-weight: 400; color: #485462;">Degree Audit Wizard also combines the requests it sends when opening the Audits list, an audit, and the precondition and course criteria dialogs.</td></tr>
+            </table>
+          </td></tr>
+          <tr><td height="24" style="height: 24px; font-size: 0; line-height: 0;">&nbsp;</td></tr>
+          <tr><td>
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr><td><h3 style="margin: 0; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px; font-weight: 600; color: #121921;">Editing an audit</h3></td></tr>
+              <tr><td style="padding-top: 4px; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 12px; line-height: 16px; font-weight: 400; color: #5d6a7a;"><a href="https://support.highpoint.io/#ticket-44561" style="color: #0468c4; text-decoration: none;">#44561</a></td></tr>
+              <tr><td style="padding-top: 8px; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 20px; font-weight: 400; color: #485462;">Adding a requirement with <strong style="font-weight: 600; color: #121921;">Add Requirement</strong>, saving a requirement in <strong style="font-weight: 600; color: #121921;">Edit Requirement</strong>, making a requirement active or inactive, and saving a requirement group's settings no longer reload the whole audit. Only the changed requirement group refreshes, so the page responds sooner after each save, most noticeably on large audits.</td></tr>
+            </table>
+          </td></tr>
+          <tr><td height="24" style="height: 24px; font-size: 0; line-height: 0;">&nbsp;</td></tr>
+          <tr><td>
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr><td><h3 style="margin: 0; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px; font-weight: 600; color: #121921;">Publishing and course share set usage</h3></td></tr>
+              <tr><td style="padding-top: 4px; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 12px; line-height: 16px; font-weight: 400; color: #5d6a7a;"><a href="https://support.highpoint.io/#ticket-44559" style="color: #0468c4; text-decoration: none;">#44559</a><span style="color: #758191;">, </span><a href="https://support.highpoint.io/#ticket-44560" style="color: #0468c4; text-decoration: none;">#44560</a></td></tr>
+              <tr><td style="padding-top: 8px; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 20px; font-weight: 400; color: #485462;">Publishing finds a plan-level or sub-plan audit faster at institutions with many audits, and <strong style="font-weight: 600; color: #121921;">Course Sharing › View Usage</strong> loads course share set details faster at institutions with many requirement groups. Both show the same results as before.</td></tr>
+            </table>
+          </td></tr>
+        </table>
+      </td></tr>
+      <tr><td class="hp-px" style="padding: 0 32px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td height="1" style="height: 1px; font-size: 0; line-height: 0; background-color: #dadde0;">&nbsp;</td></tr></table></td></tr>
+      <tr><td class="hp-px" id="enhancements" style="padding: 32px 32px;">
+        <a name="enhancements"></a>
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+          <tr><td>
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+              <td width="4" bgcolor="#0a994e" style="width: 4px; background-color: #0a994e; border-radius: 2px; font-size: 0; line-height: 0;">&nbsp;</td>
+              <td style="padding-left: 12px;"><h2 style="margin: 0; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 18px; line-height: 24px; font-weight: 600; color: #121921;">Enhancements</h2></td>
+              <td align="right" style="font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 12px; line-height: 16px; font-weight: 400; color: #5d6a7a; white-space: nowrap;">2 changes</td>
+            </tr></table>
+          </td></tr>
+          
+          
+          <tr><td height="24" style="height: 24px; font-size: 0; line-height: 0;">&nbsp;</td></tr>
+          
+          <tr><td>
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr><td><h3 style="margin: 0; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px; font-weight: 600; color: #121921;">Adding a requirement line starts as a Course Requirement</h3></td></tr>
+              <tr><td style="padding-top: 4px; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 12px; line-height: 16px; font-weight: 400; color: #5d6a7a;"><a href="https://support.highpoint.io/#ticket-44207" style="color: #0468c4; text-decoration: none;">#44207</a></td></tr>
+              <tr><td style="padding-top: 8px; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 20px; font-weight: 400; color: #485462;">Adding a requirement line now starts as a Course Requirement, from a single button at the bottom of the line list. Other line types sit under <strong style="font-weight: 600; color: #121921;">More Lines</strong>, and the type can still be switched in the dialog before saving.</td></tr>
+            </table>
+          </td></tr>
+          <tr><td height="24" style="height: 24px; font-size: 0; line-height: 0;">&nbsp;</td></tr>
+          <tr><td>
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr><td><h3 style="margin: 0; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px; font-weight: 600; color: #121921;">Publishing an audit requires DAW write access</h3></td></tr>
+              <tr><td style="padding-top: 4px; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 12px; line-height: 16px; font-weight: 400; color: #5d6a7a;"><a href="https://support.highpoint.io/#ticket-44558" style="color: #0468c4; text-decoration: none;">#44558</a></td></tr>
+              <tr><td style="padding-top: 8px; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 20px; font-weight: 400; color: #485462;">Publishing an audit now requires <code style="font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 12px; font-weight: 600; color: #121921; background-color: #f4f5f7; border: 1px solid #dadde0; border-radius: 4px; padding: 0 4px; white-space: nowrap;">HPT_DAW_WRITE</code>. A user who holds only <code style="font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 12px; font-weight: 600; color: #121921; background-color: #f4f5f7; border: 1px solid #dadde0; border-radius: 4px; padding: 0 4px; white-space: nowrap;">HPT_DAW_READ</code> can no longer publish, so review anyone you have given read-only access who is expected to publish. Users with the <strong style="font-weight: 600; color: #121921;">Highpoint DAW Full Access</strong> role are unaffected.</td></tr>
+              <tr><td style="padding-top: 8px; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 20px; font-weight: 400; color: #485462;">Publishing an audit that has no warnings is also faster.</td></tr>
+            </table>
+          </td></tr>
+        </table>
+      </td></tr>
+      <tr><td class="hp-px" style="padding: 0 32px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td height="1" style="height: 1px; font-size: 0; line-height: 0; background-color: #dadde0;">&nbsp;</td></tr></table></td></tr>
+      <tr><td class="hp-px" id="analytics" style="padding: 32px 32px;">
+        <a name="analytics"></a>
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+          <tr><td>
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+              <td width="4" bgcolor="#077fec" style="width: 4px; background-color: #077fec; border-radius: 2px; font-size: 0; line-height: 0;">&nbsp;</td>
+              <td style="padding-left: 12px;"><h2 style="margin: 0; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 18px; line-height: 24px; font-weight: 600; color: #121921;">Analytics</h2></td>
+              <td align="right" style="font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 12px; line-height: 16px; font-weight: 400; color: #5d6a7a; white-space: nowrap;">3 changes</td>
+            </tr></table>
+          </td></tr>
+          <tr><td height="8" style="height: 8px; font-size: 0; line-height: 0;">&nbsp;</td></tr>
+          <tr><td style="font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 20px; font-weight: 400; color: #5d6a7a;">The reports introduced in 1.3.6 continue to be refined as they run against real institutional data.</td></tr>
+          <tr><td height="16" style="height: 16px; font-size: 0; line-height: 0;">&nbsp;</td></tr>
+          <tr><td><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse: separate;"><tr>
+              <td bgcolor="#d9eaff" style="background-color: #d9eaff; border: 1px solid #b2d4fe; border-radius: 8px; padding: 12px 16px; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 20px; font-weight: 400; color: #121921;">
+                <strong style="font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 20px; font-weight: 600; color: #121921;">Figures will move.</strong> Two of the changes below alter what is counted, so Retention Rate and Time to Degree won't match what you saw in 1.3.6.
+              </td>
+            </tr></table></td></tr>
+          <tr><td height="24" style="height: 24px; font-size: 0; line-height: 0;">&nbsp;</td></tr>
+          
+          <tr><td>
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr><td><h3 style="margin: 0; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px; font-weight: 600; color: #121921;">Retention Rate measures the entering cohort by admit term</h3></td></tr>
+              <tr><td style="padding-top: 4px; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 12px; line-height: 16px; font-weight: 400; color: #5d6a7a;"><a href="https://support.highpoint.io/#ticket-44264" style="color: #0468c4; text-decoration: none;">#44264</a></td></tr>
+              <tr><td style="padding-top: 8px; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 20px; font-weight: 400; color: #485462;">The Retention Rate report now always measures the entering cohort by admit term. The Anchor Mode control is removed, and Requirement Term becomes a filter that narrows that cohort to a catalog year. Cohort figures change accordingly.</td></tr>
+            </table>
+          </td></tr>
+          <tr><td height="24" style="height: 24px; font-size: 0; line-height: 0;">&nbsp;</td></tr>
+          <tr><td>
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr><td><h3 style="margin: 0; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px; font-weight: 600; color: #121921;">Terms Under/Over now has a benchmark you can see</h3></td></tr>
+              <tr><td style="padding-top: 4px; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 12px; line-height: 16px; font-weight: 400; color: #5d6a7a;"><a href="https://support.highpoint.io/#ticket-44318" style="color: #0468c4; text-decoration: none;">#44318</a></td></tr>
+              <tr><td style="padding-top: 8px; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 20px; font-weight: 400; color: #485462;">On Time to Degree, Terms Under/Over is now measured against the terms the program's own calendar carries, so it no longer disagrees with % of Normal Time. A new <strong style="font-weight: 600; color: #121921;">Terms Expected</strong> column shows that benchmark, a caption states where Normal Years comes from, and Time to Graduate reads in years.</td></tr>
+            </table>
+          </td></tr>
+          <tr><td height="24" style="height: 24px; font-size: 0; line-height: 0;">&nbsp;</td></tr>
+          <tr><td>
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr><td><h3 style="margin: 0; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px; font-weight: 600; color: #121921;">Time to Degree plan filter lists only conferred plans</h3></td></tr>
+              <tr><td style="padding-top: 4px; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 12px; line-height: 16px; font-weight: 400; color: #5d6a7a;"><a href="https://support.highpoint.io/#ticket-44320" style="color: #0468c4; text-decoration: none;">#44320</a></td></tr>
+              <tr><td style="padding-top: 8px; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 20px; font-weight: 400; color: #485462;">The Plan filter now lists only the plans carried by a conferred degree in the selected career, including second majors and minors, rather than every plan in the catalog. Changing the career clears a plan selection that no longer applies.</td></tr>
+            </table>
+          </td></tr>
+        </table>
+      </td></tr>
+      <tr><td class="hp-px" style="padding: 0 32px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td height="1" style="height: 1px; font-size: 0; line-height: 0; background-color: #dadde0;">&nbsp;</td></tr></table></td></tr>
+      <tr><td class="hp-px" id="bug-fixes" style="padding: 32px 32px;">
+        <a name="bug-fixes"></a>
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+          <tr><td>
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+              <td width="4" bgcolor="#758191" style="width: 4px; background-color: #758191; border-radius: 2px; font-size: 0; line-height: 0;">&nbsp;</td>
+              <td style="padding-left: 12px;"><h2 style="margin: 0; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 18px; line-height: 24px; font-weight: 600; color: #121921;">Bug fixes</h2></td>
+              <td align="right" style="font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 12px; line-height: 16px; font-weight: 400; color: #5d6a7a; white-space: nowrap;">8 changes</td>
+            </tr></table>
+          </td></tr>
+          
+          
+          <tr><td height="24" style="height: 24px; font-size: 0; line-height: 0;">&nbsp;</td></tr>
+          
+          <tr><td>
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr><td><h3 style="margin: 0; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px; font-weight: 600; color: #121921;">Audits missing for requirement groups that are inactive in PeopleSoft</h3></td></tr>
+              <tr><td style="padding-top: 4px; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 12px; line-height: 16px; font-weight: 400; color: #5d6a7a;"><a href="https://support.highpoint.io/#ticket-44700" style="color: #0468c4; text-decoration: none;">#44700</a></td></tr>
+              <tr><td style="padding-top: 8px; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 20px; font-weight: 400; color: #485462;">A requirement group marked inactive in PeopleSoft got no audit at all, or an audit that could not be opened. With <strong style="font-weight: 600; color: #121921;">Hide Audits without Active requirement groups</strong> off, these audits are now listed and open with their groups marked Inactive, and <strong style="font-weight: 600; color: #121921;">Abandon Changes</strong> no longer deletes them. Audits with active groups may also list terms from their inactive groups.</td></tr>
+            </table>
+          </td></tr>
+          <tr><td height="24" style="height: 24px; font-size: 0; line-height: 0;">&nbsp;</td></tr>
+          <tr><td>
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr><td><h3 style="margin: 0; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px; font-weight: 600; color: #121921;">No audit created when another institution has the same code</h3></td></tr>
+              <tr><td style="padding-top: 4px; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 12px; line-height: 16px; font-weight: 400; color: #5d6a7a;"><a href="https://support.highpoint.io/#ticket-44573" style="color: #0468c4; text-decoration: none;">#44573</a></td></tr>
+              <tr><td style="padding-top: 8px; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 20px; font-weight: 400; color: #485462;">The Audits list did not create an audit for a plan, program, or career at one institution when another institution already had an audit with the same code and Term was left blank. Missing audits are added on the first search after the update.</td></tr>
+            </table>
+          </td></tr>
+          <tr><td height="24" style="height: 24px; font-size: 0; line-height: 0;">&nbsp;</td></tr>
+          <tr><td>
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr><td><h3 style="margin: 0; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px; font-weight: 600; color: #121921;">Published audit dropped terms after an unpublished group move</h3></td></tr>
+              <tr><td style="padding-top: 4px; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 12px; line-height: 16px; font-weight: 400; color: #5d6a7a;"><a href="https://support.highpoint.io/#ticket-44699" style="color: #0468c4; text-decoration: none;">#44699</a></td></tr>
+              <tr><td style="padding-top: 8px; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 20px; font-weight: 400; color: #485462;">A published audit dropped terms, and was hidden by <strong style="font-weight: 600; color: #121921;">Hide Audits without Active requirement groups</strong>, when an unpublished change moved one of its requirement groups to a different academic structure. The affected term now shows as Unpublished, so the change can be published or abandoned.</td></tr>
+            </table>
+          </td></tr>
+          <tr><td height="24" style="height: 24px; font-size: 0; line-height: 0;">&nbsp;</td></tr>
+          <tr><td>
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr><td><h3 style="margin: 0; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px; font-weight: 600; color: #121921;">Preferences menu opened behind the column headers</h3></td></tr>
+              <tr><td style="padding-top: 4px; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 12px; line-height: 16px; font-weight: 400; color: #5d6a7a;"><a href="https://support.highpoint.io/#ticket-44665" style="color: #0468c4; text-decoration: none;">#44665</a></td></tr>
+              <tr><td style="padding-top: 8px; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 20px; font-weight: 400; color: #485462;">On the Audits, Course Sharing, and Entity Groups pages, the Preferences (gear) menu opened behind the table's column headers, which hid the Institutions option for users with access to more than one institution.</td></tr>
+            </table>
+          </td></tr>
+          <tr><td height="24" style="height: 24px; font-size: 0; line-height: 0;">&nbsp;</td></tr>
+          <tr><td>
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr><td><h3 style="margin: 0; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px; font-weight: 600; color: #121921;">Description field lost focus after the first letter</h3></td></tr>
+              <tr><td style="padding-top: 4px; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 12px; line-height: 16px; font-weight: 400; color: #5d6a7a;"><a href="https://support.highpoint.io/#ticket-44495" style="color: #0468c4; text-decoration: none;">#44495</a></td></tr>
+              <tr><td style="padding-top: 8px; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 20px; font-weight: 400; color: #485462;">Typing into a blank Description in the requirement group, requirement, and requirement line dialogs lost keyboard focus after the first letter. Focus now stays in the field.</td></tr>
+            </table>
+          </td></tr>
+          <tr><td height="24" style="height: 24px; font-size: 0; line-height: 0;">&nbsp;</td></tr>
+          <tr><td>
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr><td><h3 style="margin: 0; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px; font-weight: 600; color: #121921;">Keyboard focus jumped to the top of the requirement line dialog</h3></td></tr>
+              <tr><td style="padding-top: 4px; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 12px; line-height: 16px; font-weight: 400; color: #5d6a7a;"><a href="https://support.highpoint.io/#ticket-44502" style="color: #0468c4; text-decoration: none;">#44502</a></td></tr>
+              <tr><td style="padding-top: 8px; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 20px; font-weight: 400; color: #485462;">Toggling an advanced-field checkbox or resetting a field moved keyboard focus to the top of the requirement line dialog. Focus now stays on the field.</td></tr>
+            </table>
+          </td></tr>
+          <tr><td height="32" style="height: 32px; font-size: 0; line-height: 0;">&nbsp;</td></tr>
+          <tr><td style="font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 12px; line-height: 16px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: #5d6a7a; padding-bottom: 12px; border-bottom: 1px solid #dadde0;">Conditions and entity groups</td></tr>
+          <tr><td height="16" style="height: 16px; font-size: 0; line-height: 0;">&nbsp;</td></tr>
+          
+          <tr><td>
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr><td><h3 style="margin: 0; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px; font-weight: 600; color: #121921;">Phantom and missing condition counts on non-course requirement lines</h3></td></tr>
+              <tr><td style="padding-top: 4px; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 12px; line-height: 16px; font-weight: 400; color: #5d6a7a;"><a href="https://support.highpoint.io/#ticket-44188" style="color: #0468c4; text-decoration: none;">#44188</a><span style="color: #758191;">, </span><a href="https://support.highpoint.io/#ticket-43791" style="color: #0468c4; text-decoration: none;">#43791</a></td></tr>
+              <tr><td style="padding-top: 8px; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 20px; font-weight: 400; color: #485462;">After a non-course requirement line was added with no condition, a line in that session could show a condition belonging to a different line, or read <strong style="font-weight: 600; color: #121921;">Conditions: 0</strong> despite having one. Both are corrected, and stored condition data was never affected.</td></tr>
+            </table>
+          </td></tr>
+          <tr><td height="24" style="height: 24px; font-size: 0; line-height: 0;">&nbsp;</td></tr>
+          <tr><td>
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr><td><h3 style="margin: 0; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px; font-weight: 600; color: #121921;">Misleading entity group error when saving a condition</h3></td></tr>
+              <tr><td style="padding-top: 4px; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 12px; line-height: 16px; font-weight: 400; color: #5d6a7a;"><a href="https://support.highpoint.io/#ticket-44212" style="color: #0468c4; text-decoration: none;">#44212</a></td></tr>
+              <tr><td style="padding-top: 8px; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 20px; font-weight: 400; color: #485462;">Entity group resolution is corrected for conditions that reference a group by only one of its identifiers. The message for an unresolved entity group now distinguishes a missing identifier from one that was not found, and names the identifier it looked up.</td></tr>
+            </table>
+          </td></tr>
+        </table>
+      </td></tr>
+          </table>
+        </td></tr>
+        <tr><td class="hp-px" style="padding: 24px 32px 40px; font-family: 'Sora', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 12px; line-height: 16px; font-weight: 400; color: #5d6a7a;">
+        You're receiving this because you subscribed to Degree Audit Wizard release notes, or you're involved in them.<br />
+        <a href="https://support.highpoint.io" style="color: #5d6a7a; text-decoration: underline;">Notification preferences</a> &nbsp;·&nbsp; <a href="https://support.highpoint.io" style="color: #5d6a7a; text-decoration: underline;">Support portal</a>
+      </td></tr>
+      </table>
+    </td></tr>
+  </table>
+  </div>
+</body>
+</html>

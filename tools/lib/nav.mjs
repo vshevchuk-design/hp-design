@@ -127,6 +127,13 @@ export const DESIGN_PRODUCTS = {
       "student-scheduling": { label: "Student Scheduling", href: "designs/student-scheduling.html" },
     },
   },
+  "release-emails": {
+    label: "Release Emails",
+    items: {
+      "release-email-schedule-builder": { label: "Schedule Builder 26.3.0", href: "designs/release-email-schedule-builder.html" },
+      "release-email-degree-audit-wizard": { label: "Degree Audit Wizard 1.3.7", href: "designs/release-email-degree-audit-wizard.html" },
+    },
+  },
 };
 
 const NAV_CHROME = `<style>
