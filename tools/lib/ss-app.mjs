@@ -748,7 +748,7 @@ export function ssAppJs(d) {
     var n = (!schedType || schedType === "appointment" ? APPTS.filter(function (a) { return a.status === "upcoming"; }).length : 0) +
       (!schedType || schedType === "workshop" ? workshopEntries("upcoming").length : 0) +
       (!schedType || schedType === "dropin" ? visitEntries("upcoming").length : 0);
-    $("ss-upcoming-count").textContent = n;
+    if ($("ss-upcoming-count")) $("ss-upcoming-count").textContent = n;
   }
   function apptRow(a) {
     var actions = "";
@@ -772,6 +772,7 @@ export function ssAppJs(d) {
   function renderAppts() {
     updateUpcomingCount();
     if (V6) updateAttention();
+    if ($("ss-appt-pick-value")) $("ss-appt-pick-value").textContent = apptTab === "past" ? "Past" : "Upcoming";
     document.querySelectorAll("#ss-appt-tabs .tab").forEach(function (t) {
       var on = t.dataset.apptTab === apptTab;
       t.classList.toggle("tab--active", on);
@@ -805,6 +806,10 @@ export function ssAppJs(d) {
       : { upcoming: "No upcoming appointments", past: "No past appointments yet", cancelled: "Nothing cancelled" }[apptTab];
     $("ss-appts-browse").classList.toggle("is-hidden", apptTab !== "upcoming");
   }
+  // v7: Upcoming / Past is a Select beside the title, not a row of tabs
+  on("ss-appt-pick", "click", function () {
+    openListbox(this, [{ value: "upcoming", label: "Upcoming" }, { value: "past", label: "Past" }], apptTab, function (v) { apptTab = v; renderAppts(); });
+  });
   document.querySelectorAll("#ss-appt-tabs .tab").forEach(function (t) {
     t.addEventListener("click", function () { apptTab = t.dataset.apptTab; renderAppts(); });
   });
