@@ -267,11 +267,13 @@ export const VISITS = [
       files: [{ name: "Thesis feedback.pdf", meta: "PDF · 180 KB" }],
     },
   },
-  // today (user, 2026-10-29: a drop-in on the calendar's today, beside the appointment and the workshop session)
+  // today, live (user, 2026-10-29): in line at Math Tutoring since 10:05 —
+  // #3, so the banner, My schedule → Upcoming and today's Calendar all show it.
+  // Seeded still: the line starts moving once its page is opened (or another
+  // queue is joined). key is filled in from the catalogue.
   {
-    id: "v2", name: "Math Tutoring", dept: "Tutoring Center", date: "2026-10-02", min: 9 * 60 + 5, end: 9 * 60 + 25,
-    advisor: "Priya Natarajan", state: "done",
-    summary: { text: "We went through the related-rates problems from section 3.9. You've got the setup — practise drawing the diagram first, then write down what changes." },
+    id: "v2", name: "Math Tutoring", dept: "Tutoring Center", date: "2026-10-02", min: 10 * 60 + 5, until: 20 * 60,
+    advisor: "Priya Natarajan", state: "waiting", pos: 3, startPos: 6, ticks: 0, topic: "Choosing or changing classes",
   },
 ];
 // The prototype's queue moves on its own: one student ahead is served every

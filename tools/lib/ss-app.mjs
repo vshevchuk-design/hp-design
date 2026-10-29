@@ -325,6 +325,11 @@ export function ssAppJs(d) {
       if (DROPIN_HOURS[s.name]) CATALOG.push({ kind: "dropin", si: i, key: "d" + i, name: s.name, depts: [s.depts[0]], hours: DROPIN_HOURS[s.name] });
     });
     WORKSHOPS.forEach(function (w, wi) { CATALOG.push({ kind: "workshop", wi: wi, name: w.name, depts: [w.dept] }); });
+    // seeded visits name their desk; the desk's key comes from the catalogue
+    VISITS.forEach(function (v) {
+      var c = CATALOG.filter(function (x) { return x.kind === "dropin" && x.name === v.name; })[0];
+      if (!v.key && c) v.key = c.key;
+    });
   }
   var WS_REG = {};
   // registrations the student already has (seed): skipped = sessions marked
@@ -1029,6 +1034,9 @@ export function ssAppJs(d) {
     $("ss-v-back").querySelector("span").textContent = FROM_LABEL[vw.from];
     renderVisit();
     showView("visit");
+    // a seeded live visit stands still until you look at it; then the line moves
+    var v = visitById(id);
+    if (v && LIVE[v.state]) startQueueClock();
   }
   on("ss-v-back", "click", function () { goSection(FROM_SECTION[vw.from]); });
   function visitWhere(v) { return LOCATIONS[v.dept]; }
