@@ -213,6 +213,7 @@ export function ssAppJs(d) {
       st.dept = v; st.page = 0;
       $("ss-dept-label").textContent = v || "Department";
       deptChip.classList.toggle("chip--checked-outline", !!v);
+      deptChip.classList.toggle("is-placeholder", !v); // v7: a Select
       renderBrowse();
     });
   });
@@ -253,6 +254,7 @@ export function ssAppJs(d) {
     searchInput.value = ""; searchBox.classList.remove("is-populated");
     $("ss-dept-label").textContent = "Department";
     deptChip.classList.remove("chip--checked-outline");
+    deptChip.classList.add("is-placeholder");
     dropChip.setAttribute("aria-pressed", "false");
     if (V6) setType("");
     renderBrowse();

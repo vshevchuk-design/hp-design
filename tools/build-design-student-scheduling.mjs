@@ -732,6 +732,8 @@ html { background: ${cv("surface.page")}; }
 /* the Tabs as the component ships: track gray, track radius, 4px padding */
 .cx .ss-sections--top { grid-area: tabs; position: static; padding: 0; background: none; }
 .cx .ss-sections--top .tabs--segmented { height: ${track}; }
+/* Department: a Select beside Search, up to 240 wide */
+.cx .ss-filters .ss-dept-select { width: auto; flex: 0 1 ${dm(60)}; min-width: 0; }
 /* sticky columns sit under the 64px topbar alone now (no band under it) */
 @media (min-width: 1024px) {
   .cx .ss-summary { top: calc(${dm(16)} + ${dm(6)}); }
@@ -748,13 +750,29 @@ html { background: ${cv("surface.page")}; }
   /* Calendar is a section on a phone too (user, 2026-10-29): the month with
      dots; a day opens its events in the bottom SlideOverPanel */
   .cx .ss-tab--wide { display: inline-flex; }
+  /* Search: a button before Department; open, the field takes its own full
+     row above Department and sort (the title stays) */
+  .cx #ss-browse-head { grid-template-columns: minmax(0, 1fr); }
+  .cx #ss-browse-head.is-search-open .ss-title { display: flex; }
+  .cx .ss-filters { flex-wrap: wrap; }
+  .cx .ss-filters .ss-dept-select { flex: 1 1 0; max-width: ${dm(60)}; }
+  .cx .ss-filters > .search { display: none; }
+  .cx .ss-view:has(#ss-browse-head.is-search-open) .ss-filters > .search { display: flex; flex: 1 1 100%; order: -1; }
+  .cx .ss-view:has(#ss-browse-head.is-search-open) .ss-filters .search__clear { display: inline-flex; }
+  .cx .ss-view:has(#ss-browse-head.is-search-open) .ss-filters > .ss-search-open { display: none; }
   /* full-screen nav needs no scrim; a dark one turned iOS Safari's bar dark */
   .has-nav-open .sidebar-scrim { background: transparent; }
 }
 ${SIDEBAR_CSS}`;
 };
+// Department is a Select in v7, not a dropdown Chip (user, 2026-10-29): sm on
+// a phone, base from 768 (V7_JS swaps the size class on the breakpoint).
+// Same id / label id, so the browse script drives it unchanged.
+const DEPT_SELECT = `<button class="select is-placeholder ss-dept-select" id="ss-dept-chip" type="button" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="ss-dept-name ss-dept-label"><span class="select__stack"><span class="select__label" id="ss-dept-name">Department</span><span class="select__value" id="ss-dept-label">Department</span></span>${icon("expand_more", "select__chevron")}</button>`;
 const markupV7 = () => {
   let m = markupV6();
+  if (!m.includes(DEPT_CHIP)) throw new Error("v7: markup drifted — update DEPT_CHIP");
+  m = m.replace(DEPT_CHIP, DEPT_SELECT);
   const tabsAt = m.indexOf(V7_TABS), navEnd = m.indexOf("</nav>", tabsAt) + "</nav>".length;
   const topEnd = m.indexOf("</header>");
   if (tabsAt < 0 || topEnd < 0 || topEnd > tabsAt || !m.includes(V7_APP_END) || !m.startsWith('<div class="app">')) throw new Error("v7: markup drifted — update V7_TABS / V7_APP_END");
@@ -773,7 +791,17 @@ const markupV7 = () => {
 const V7_JS = `(function () {
   var nav = document.querySelector(".ss-sections--top"), bar = document.querySelector(".app__topbar"), main = document.querySelector(".ss__main");
   var settings = bar.lastElementChild, phone = window.matchMedia("(max-width: 767px)");
-  function place() { if (phone.matches) main.insertBefore(nav, main.firstChild); else bar.insertBefore(nav, settings); }
+  var dept = document.getElementById("ss-dept-chip"), filters = dept.parentNode;
+  var openBtn = document.getElementById("ss-search-open"), searchBox = document.getElementById("ss-search"), headRow = document.getElementById("ss-head-row");
+  function place() {
+    if (phone.matches) main.insertBefore(nav, main.firstChild); else bar.insertBefore(nav, settings);
+    dept.classList.toggle("select--sm", phone.matches);
+    // phone: the search button (sm, like the Select) and the field it opens sit
+    // in the filter row, before Department — where Search is from 768
+    if (phone.matches) { filters.insertBefore(searchBox, dept); filters.insertBefore(openBtn, searchBox); }
+    else headRow.appendChild(openBtn);
+    openBtn.classList.toggle("btn--sm", phone.matches); openBtn.classList.toggle("btn--base", !phone.matches);
+  }
   phone.addEventListener("change", place); place();
 })();
 document.querySelector(".sidebar").addEventListener("click", function (e) {
