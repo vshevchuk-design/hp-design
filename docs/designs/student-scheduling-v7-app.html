@@ -1125,9 +1125,9 @@ html { background: var(--tok-surface-page); }
 .cx .app__brand { grid-area: title; }
 .cx .app__topbar > .btn:last-child { grid-area: actions; justify-self: end; }
 .cx .sidebar-open { display: none; }
-/* the Tabs as the component ships: track gray, track radius, 4px padding */
+/* the Tabs as the component ships: track gray, track radius, 4px padding; sm — a 40px track, the height of the topbar's controls */
 .cx .ss-sections--top { grid-area: tabs; position: static; padding: 0; background: none; }
-.cx .ss-sections--top .tabs--segmented { height: calc(40px + 2 * 4px); }
+.cx .ss-sections--top .tabs--segmented { height: calc(32px + 2 * 4px); }
 /* Department: a Select beside Search, up to 240 wide */
 .cx .ss-filters .ss-dept-select { width: 240px; flex: 0 1 auto; min-width: 0; }
 /* sticky columns sit under the 64px topbar alone now (no band under it) */
@@ -1141,7 +1141,7 @@ html { background: var(--tok-surface-page); }
      (the script moves the element — one set of tabs, not two) */
   .cx .app__topbar { grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "menu title actions"; }
   .cx .sidebar-open { display: inline-flex; grid-area: menu; }
-  .cx .ss__main > .ss-sections--top .tabs--segmented { display: flex; width: 100%; height: calc(32px + 2 * 4px); }
+  .cx .ss__main > .ss-sections--top .tabs--segmented { display: flex; width: 100%; }
   /* the section's own title + subtitle go (screen readers keep the h2): the
      selected tab already says where you are (user, 2026-10-29). One 16px
      rhythm — topbar → tabs → the section's controls; 12 inside a section. */
@@ -1165,7 +1165,11 @@ html { background: var(--tok-surface-page); }
   .cx .ss-filters { flex-wrap: wrap; }
   .cx .ss-filters .ss-dept-select { flex: 1 1 0; max-width: 240px; }
   .cx .ss-filters > .search { display: none; }
+  /* open, the field takes the whole row — over Department, not pushing it down (user, 2026-10-29) */
   .cx .ss-view:has(#ss-browse-head.is-search-open) .ss-filters > .search { display: flex; flex: 1 1 100%; order: -1; }
+  .cx .ss-view:has(#ss-browse-head.is-search-open) .ss-filters > .ss-dept-select { display: none; }
+  /* pagination: "Showing" and the pages centred, stacked */
+  .cx .ss-pager { flex-direction: column; justify-content: center; }
   .cx .ss-view:has(#ss-browse-head.is-search-open) .ss-filters .search__clear { display: inline-flex; }
   .cx .ss-view:has(#ss-browse-head.is-search-open) .ss-filters > .ss-search-open { display: none; }
   /* full-screen nav needs no scrim; a dark one turned iOS Safari's bar dark */
@@ -1331,9 +1335,9 @@ html { background: var(--tok-surface-page); }
     <div class="app__brand"><h1 class="app__title">Scheduling</h1></div>
     <nav class="ss-sections ss-sections--top" aria-label="Scheduling sections">
     <div class="tabs--segmented" role="tablist">
-      <button class="tab tab--base tab--active" type="button" role="tab" aria-selected="true">Book</button>
-      <button class="tab tab--base" type="button" role="tab" aria-selected="false">My schedule</button>
-      <button class="tab tab--base ss-tab--wide" type="button" role="tab" aria-selected="false">Calendar</button>
+      <button class="tab tab--sm tab--active" type="button" role="tab" aria-selected="true">Book</button>
+      <button class="tab tab--sm" type="button" role="tab" aria-selected="false">My schedule</button>
+      <button class="tab tab--sm ss-tab--wide" type="button" role="tab" aria-selected="false">Calendar</button>
     </div>
   </nav>
     <button class="btn btn--secondary btn--base btn--icon-only" type="button" aria-label="Settings"><svg class="btn__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"><g><path d="M0,0h24v24H0V0z" fill="none"/><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></g></svg></button>
@@ -3654,8 +3658,6 @@ html { background: var(--tok-surface-page); }
   var openBtn = document.getElementById("ss-search-open"), searchBox = document.getElementById("ss-search"), headRow = document.getElementById("ss-head-row");
   function place() {
     if (phone.matches) main.insertBefore(nav, main.firstChild); else bar.insertBefore(nav, settings);
-    // section Tabs: sm on a phone (beside the sm Select), base in the topbar
-    nav.querySelectorAll(".tab").forEach(function (t) { t.classList.toggle("tab--sm", phone.matches); t.classList.toggle("tab--base", !phone.matches); });
     // phone: the search button (base, like the Select) and the field it opens sit
     // in the filter row, before Department — where Search is from 768
     if (phone.matches) { filters.insertBefore(searchBox, dept); filters.insertBefore(openBtn, searchBox); }

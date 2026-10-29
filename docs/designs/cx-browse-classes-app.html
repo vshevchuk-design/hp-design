@@ -1073,7 +1073,8 @@ dialog.slide-over-panel--bottom[open] { transform: translateY(0); }
 .slide-over-panel__close:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
 .slide-over-panel__close-icon { width: 16px; height: 16px; display: block; }
 /* composition: the day's rows carry their own padding — the body doesn't */
-.ss-cal-drawer .slide-over-panel__body { padding: 0 0 env(safe-area-inset-bottom); }
+/* lifted over iOS Safari's floating bottom bar (100lvh − 100dvh) + the home indicator */
+.ss-cal-drawer .slide-over-panel__body { padding: 0 0 calc(env(safe-area-inset-bottom) + 100lvh - 100dvh); }
 .ss-cal-drawer .ss-appt { padding-inline: 24px; }
 /* from 768 a day shows its first two events as chips (time + title) */
 @media (min-width: 768px) {
