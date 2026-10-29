@@ -738,12 +738,16 @@ html { background: ${cv("surface.page")}; }
   .cx .ss-cal__side { top: calc(${dm(16)} + ${dm(6)}); max-height: calc(100dvh - ${dm(16)} - ${dm(12)}); }
 }
 @media (max-width: 767px) {
-  .cx .app__topbar { height: calc(${dm(16)} + ${track} + ${dm(3)}); grid-template-columns: auto minmax(0, 1fr) auto; grid-template-rows: ${dm(16)} 1fr; grid-template-areas: "menu title actions" "tabs tabs tabs"; gap: 0 ${dm(3)}; align-items: start; }
-  .cx .app__topbar > * { align-self: center; }
+  /* phone: the topbar is one 64px row again (menu | title | settings); the
+     section Tabs move to the top of the page, under it, and scroll with it
+     (the script moves the element — one set of tabs, not two) */
+  .cx .app__topbar { grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "menu title actions"; }
   .cx .sidebar-open { display: inline-flex; grid-area: menu; }
-  .cx .ss-sections--top { align-self: start; }
-  .cx .ss-sections--top .tabs--segmented { display: flex; width: 100%; }
-  .cx .ss-sections--top .tab { flex: 1 1 0; }
+  .cx .ss__main > .ss-sections--top .tabs--segmented { display: flex; width: 100%; }
+  .cx .ss__main > .ss-sections--top .tab { flex: 1 1 0; padding-inline: 0; }
+  /* Calendar is a section on a phone too (user, 2026-10-29): the month with
+     dots; a day opens its events in the bottom SlideOverPanel */
+  .cx .ss-tab--wide { display: inline-flex; }
   /* full-screen nav needs no scrim; a dark one turned iOS Safari's bar dark */
   .has-nav-open .sidebar-scrim { background: transparent; }
 }
@@ -765,7 +769,14 @@ const markupV7 = () => {
     .replace(V7_APP_END, "</div>\n" + V7_APP_END);
 };
 // Sidebar links lead outside the prototype: say so instead of jumping to "#".
-const V7_JS = `document.querySelector(".sidebar").addEventListener("click", function (e) {
+// Phone: the section Tabs live at the top of the page, not in the topbar.
+const V7_JS = `(function () {
+  var nav = document.querySelector(".ss-sections--top"), bar = document.querySelector(".app__topbar"), main = document.querySelector(".ss__main");
+  var settings = bar.lastElementChild, phone = window.matchMedia("(max-width: 767px)");
+  function place() { if (phone.matches) main.insertBefore(nav, main.firstChild); else bar.insertBefore(nav, settings); }
+  phone.addEventListener("change", place); place();
+})();
+document.querySelector(".sidebar").addEventListener("click", function (e) {
   var a = e.target.closest("[data-nav], .sidebar__logo, .sidebar__account");
   if (!a) return;
   e.preventDefault();

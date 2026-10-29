@@ -1788,7 +1788,7 @@ export function ssAppJs(d) {
     }
     $("ss-cal-grid").innerHTML = h;
     // the chosen day
-    // the chosen day — into the side card (desktop) and the drawer (tablet)
+    // the chosen day — into the side card (desktop) and the drawer (below 1024)
     var sel = new Date(cal.sel + "T00:00:00"), list = byDay[cal.sel] || [];
     var title = (cal.sel === TODAY ? "Today · " : "") + DOW_LONG[sel.getDay()] + ", " + MON[sel.getMonth()] + " " + sel.getDate();
     var rows = list.map(function (e) { return e.entry().html; }).join("");
@@ -1798,7 +1798,8 @@ export function ssAppJs(d) {
     ["ss-cal-empty", "ss-cal-drawer-empty"].forEach(function (id) { $(id).classList.toggle("is-hidden", !!list.length); });
   }
   var calDrawer = $("ss-cal-drawer");
-  var calTablet = window.matchMedia("(min-width: 768px) and (max-width: 1023px)");
+  // below 1024 the day opens in the bottom SlideOverPanel (tablet, and a phone in v7)
+  var calTablet = window.matchMedia("(max-width: 1023px)");
   if (calDrawer) {
     on("ss-cal-drawer-close", "click", function () { calDrawer.close(); });
     // the scrim closes it (a click that lands on the dialog box itself)

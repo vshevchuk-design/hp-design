@@ -772,7 +772,8 @@ ${COLLAPSIBLE_CSS}
    to 80% of the screen. */
 ${slideOverPanelCss}
 /* composition: the day's rows carry their own padding — the body doesn't */
-.ss-cal-drawer .slide-over-panel__body { padding: 0 0 env(safe-area-inset-bottom); }
+/* lifted over iOS Safari's floating bottom bar (100lvh − 100dvh) + the home indicator */
+.ss-cal-drawer .slide-over-panel__body { padding: 0 0 calc(env(safe-area-inset-bottom) + 100lvh - 100dvh); }
 .ss-cal-drawer .ss-appt { padding-inline: ${D(drawer.padding)}; }
 /* from 768 a day shows its first two events as chips (time + title) */
 @media (min-width: 768px) {
