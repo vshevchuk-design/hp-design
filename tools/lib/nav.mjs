@@ -135,6 +135,12 @@ export const DESIGN_PRODUCTS = {
       "release-email-campus-experience": { label: "Campus Experience 26.2.1", href: "designs/release-email-campus-experience.html" },
     },
   },
+  "arm-admin": {
+    label: "ARM Admin",
+    items: {
+      "arm-global-settings": { label: "Global Settings", href: "designs/arm-global-settings.html" },
+    },
+  },
 };
 
 const NAV_CHROME = `<style>
