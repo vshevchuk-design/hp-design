@@ -78,6 +78,7 @@ const colorPaths = [
   "fill.primary", "fill.primaryHover", "text.onFill", "icon.onFill",
   "text.secondary",
   "fill.primaryActive",
+  "surface.default",
 ];
 const colorValue = Object.fromEntries(colorPaths.map((p) => [p, resolve(p)]));
 const fontSans = resolve("family.sans");
@@ -90,6 +91,9 @@ const inputType = resolveToken(composer.input);
 const iconBtnSize = px(resolve(composer.iconButton.size.$value));
 const iconBtnIconSize = px(resolve(composer.iconButton.iconSize.$value));
 const settingsGap = px(resolve(composer.settings.gap.$value));
+// rich: toolbar + field in ONE bordered box (composer.rich)
+const richRole = (k) => composer.rich[k].$value.replace(/[{}]/g, "");
+const richToolbarPadding = `${px(resolve(composer.rich.toolbarPaddingY.$value))} ${px(resolve(composer.rich.toolbarPaddingX.$value))}`;
 
 function typoCss(t) {
   return `font-weight: ${t.fontWeight}; font-size: ${px(t.fontSize)}; line-height: ${t.lineHeight};`;
@@ -155,6 +159,14 @@ const css = `${rootVars}
 .composer__field { display: flex; align-items: center; gap: ${fieldGap}; padding: ${fieldPadding}; border-radius: ${radius}; background: ${cv("surface.dim")}; border: 1px solid ${cv("border.default")}; }
 .composer__field:hover { background: ${cv(fieldHoverBgRole)}; border-color: ${cv("border.strong")}; }
 .composer__field:focus-within { border-color: ${cv("border.focus")}; }
+
+/* rich: the toolbar is a header glued to the field — one bordered box, a hairline between */
+.composer__box { display: flex; flex-direction: column; border: 1px solid ${cv(richRole("border"))}; border-radius: ${radius}; background: ${cv(richRole("bg"))}; overflow: hidden; }
+.composer__box:hover { border-color: ${cv(richRole("borderHover"))}; }
+.composer__box:focus-within { border-color: ${cv(richRole("borderFocus"))}; }
+.composer__box .composer__toolbar { flex-wrap: wrap; padding: ${richToolbarPadding}; border-bottom: 1px solid ${cv(richRole("divider"))}; }
+.composer__box .composer__ai-assist { margin-left: auto; }
+.composer__box .composer__field, .composer__box .composer__field:hover, .composer__box .composer__field:focus-within { align-items: flex-start; border: none; border-radius: 0; background: transparent; }
 .composer__input { flex: 1; min-width: 0; border: none; outline: none; background: transparent; resize: none; color: ${cv("text.default")}; ${typoCss(inputType)} font-family: ${cv("family.sans")}; }
 .composer__input::placeholder { color: ${cv("text.muted")}; }
 
@@ -225,6 +237,7 @@ const simpleComposerCode = `<div class="composer composer--simple">
 
 // ---- Rich variant ----
 const richComposer = `<div class="composer composer--rich">
+      <div class="composer__box">
       <div class="composer__toolbar">
         ${iconBtn(iconBold, "Bold")}
         ${iconBtn(iconItalic, "Italic")}
@@ -234,6 +247,7 @@ const richComposer = `<div class="composer composer--rich">
       </div>
       <div class="composer__field">
         <textarea class="composer__input" rows="3" placeholder="Reply to Cait...">Hi Cait — yes, we can review the minor requirements too.</textarea>
+      </div>
       </div>
       <div class="composer__settings">
         <div class="composer__settings-row">
@@ -248,15 +262,17 @@ const richComposer = `<div class="composer composer--rich">
       <button class="btn btn--primary btn--base">${iconSend}Send</button>
     </div>`;
 const richComposerCode = `<div class="composer composer--rich">
-  <div class="composer__toolbar">
-    <button class="composer__icon-btn" aria-label="Bold"><!-- icon: format_bold --></button>
-    <button class="composer__icon-btn" aria-label="Italic"><!-- icon: format_italic --></button>
-    <button class="composer__icon-btn" aria-label="Underline"><!-- icon: format_underlined --></button>
-    <button class="btn btn--ghost btn--sm"><!-- icon: local_offer -->Merge Tags</button>
-    <button class="composer__ai-assist"><!-- icon: auto_awesome -->AI Assist</button>
-  </div>
-  <div class="composer__field">
-    <textarea class="composer__input" placeholder="Reply to Cait...">…</textarea>
+  <div class="composer__box">
+    <div class="composer__toolbar">
+      <button class="composer__icon-btn" aria-label="Bold"><!-- icon: format_bold --></button>
+      <button class="composer__icon-btn" aria-label="Italic"><!-- icon: format_italic --></button>
+      <button class="composer__icon-btn" aria-label="Underline"><!-- icon: format_underlined --></button>
+      <button class="btn btn--ghost btn--sm"><!-- icon: local_offer -->Merge Tags</button>
+      <button class="composer__ai-assist"><!-- icon: auto_awesome -->AI Assist</button>
+    </div>
+    <div class="composer__field">
+      <textarea class="composer__input" placeholder="Reply to Cait...">…</textarea>
+    </div>
   </div>
   <div class="composer__settings">
     <div class="composer__settings-row">
@@ -359,6 +375,7 @@ const html = `<!doctype html>
 
     <div class="legend">
       <div class="row"><b>simple vs. rich</b><span>Two variants, one field recipe. <code class="tok">simple</code> (student side) = input + attach + Send. <code class="tok">rich</code> (staff side) = B/I/U + AI Assist toolbar, a larger field, Allow Replies (a real Switch) + Expiration, then Send.</span></div>
+      <div class="row"><b>Rich = one box</b><span>In <code class="tok">rich</code> the toolbar and the field share ONE bordered box (<code class="tok">composer.rich</code>): the toolbar is a header glued to the text area with a hairline between, on white (surface.default); hover strengthens the border, focus anywhere inside turns it border.focus. AI Assist sits at the far end of the toolbar. A toolbar floating above its own field read as having no outline.</span></div>
       <div class="row"><b>Field reuses Input</b><span>surface.sunken + border.default, strengthening to border.strong on hover and border.focus on focus — the exact same locked-in convention Input/Select/Search already established, not a new field recipe. Value text is size.md (16px), the same Safari-iOS-auto-zoom reason Input's own value text is.</span></div>
       <div class="row"><b>AI Assist: the open call, resolved</b><span>New semantic roles — bg.ai/text.ai/icon.ai/fill.ai (tokens/semantic/color.tokens.json), violet, added specifically for this. Rest state is the pale bg.ai tint (matches Badge's own tint recipe); a border appears on hover using fill.ai — the same "border previews the role color" language Chip's unchecked-hover and Card's own hover already use.</span></div>
       <div class="row"><b>Every button/switch is real</b><span>Send is a real Button primary (icon-only sm for simple, icon+label base for rich). Merge Tags is a real Button ghost (sm). Allow Replies is a real Switch. None of them are lookalikes — all resolved from their own token files.</span></div>

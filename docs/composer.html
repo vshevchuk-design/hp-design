@@ -91,6 +91,7 @@
   --tok-icon-on-fill: #ffffff;
   --tok-text-secondary: #5d6a7a;
   --tok-fill-primary-active: #01519c;
+  --tok-surface-default: #ffffff;
   --tok-family-sans: 'Sora', sans-serif;
 }
 
@@ -109,6 +110,14 @@
 .composer__field { display: flex; align-items: center; gap: 8px; padding: 12px; border-radius: 8px; background: var(--tok-surface-dim); border: 1px solid var(--tok-border-default); }
 .composer__field:hover { background: var(--tok-surface-dim-hover); border-color: var(--tok-border-strong); }
 .composer__field:focus-within { border-color: var(--tok-border-focus); }
+
+/* rich: the toolbar is a header glued to the field — one bordered box, a hairline between */
+.composer__box { display: flex; flex-direction: column; border: 1px solid var(--tok-border-default); border-radius: 8px; background: var(--tok-surface-default); overflow: hidden; }
+.composer__box:hover { border-color: var(--tok-border-strong); }
+.composer__box:focus-within { border-color: var(--tok-border-focus); }
+.composer__box .composer__toolbar { flex-wrap: wrap; padding: 4px 8px; border-bottom: 1px solid var(--tok-border-default); }
+.composer__box .composer__ai-assist { margin-left: auto; }
+.composer__box .composer__field, .composer__box .composer__field:hover, .composer__box .composer__field:focus-within { align-items: flex-start; border: none; border-radius: 0; background: transparent; }
 .composer__input { flex: 1; min-width: 0; border: none; outline: none; background: transparent; resize: none; color: var(--tok-text-default); font-weight: 400; font-size: 16px; line-height: 1.4; font-family: var(--tok-family-sans); }
 .composer__input::placeholder { color: var(--tok-text-muted); }
 
@@ -292,6 +301,7 @@
 
     <div class="legend">
       <div class="row"><b>simple vs. rich</b><span>Two variants, one field recipe. <code class="tok">simple</code> (student side) = input + attach + Send. <code class="tok">rich</code> (staff side) = B/I/U + AI Assist toolbar, a larger field, Allow Replies (a real Switch) + Expiration, then Send.</span></div>
+      <div class="row"><b>Rich = one box</b><span>In <code class="tok">rich</code> the toolbar and the field share ONE bordered box (<code class="tok">composer.rich</code>): the toolbar is a header glued to the text area with a hairline between, on white (surface.default); hover strengthens the border, focus anywhere inside turns it border.focus. AI Assist sits at the far end of the toolbar. A toolbar floating above its own field read as having no outline.</span></div>
       <div class="row"><b>Field reuses Input</b><span>surface.sunken + border.default, strengthening to border.strong on hover and border.focus on focus — the exact same locked-in convention Input/Select/Search already established, not a new field recipe. Value text is size.md (16px), the same Safari-iOS-auto-zoom reason Input's own value text is.</span></div>
       <div class="row"><b>AI Assist: the open call, resolved</b><span>New semantic roles — bg.ai/text.ai/icon.ai/fill.ai (tokens/semantic/color.tokens.json), violet, added specifically for this. Rest state is the pale bg.ai tint (matches Badge's own tint recipe); a border appears on hover using fill.ai — the same "border previews the role color" language Chip's unchecked-hover and Card's own hover already use.</span></div>
       <div class="row"><b>Every button/switch is real</b><span>Send is a real Button primary (icon-only sm for simple, icon+label base for rich). Merge Tags is a real Button ghost (sm). Allow Replies is a real Switch. None of them are lookalikes — all resolved from their own token files.</span></div>
@@ -321,6 +331,7 @@
   --tok-icon-on-fill: #ffffff;
   --tok-text-secondary: #5d6a7a;
   --tok-fill-primary-active: #01519c;
+  --tok-surface-default: #ffffff;
   --tok-family-sans: 'Sora', sans-serif;
 }
 
@@ -339,6 +350,14 @@
 .composer__field { display: flex; align-items: center; gap: 8px; padding: 12px; border-radius: 8px; background: var(--tok-surface-dim); border: 1px solid var(--tok-border-default); }
 .composer__field:hover { background: var(--tok-surface-dim-hover); border-color: var(--tok-border-strong); }
 .composer__field:focus-within { border-color: var(--tok-border-focus); }
+
+/* rich: the toolbar is a header glued to the field — one bordered box, a hairline between */
+.composer__box { display: flex; flex-direction: column; border: 1px solid var(--tok-border-default); border-radius: 8px; background: var(--tok-surface-default); overflow: hidden; }
+.composer__box:hover { border-color: var(--tok-border-strong); }
+.composer__box:focus-within { border-color: var(--tok-border-focus); }
+.composer__box .composer__toolbar { flex-wrap: wrap; padding: 4px 8px; border-bottom: 1px solid var(--tok-border-default); }
+.composer__box .composer__ai-assist { margin-left: auto; }
+.composer__box .composer__field, .composer__box .composer__field:hover, .composer__box .composer__field:focus-within { align-items: flex-start; border: none; border-radius: 0; background: transparent; }
 .composer__input { flex: 1; min-width: 0; border: none; outline: none; background: transparent; resize: none; color: var(--tok-text-default); font-weight: 400; font-size: 16px; line-height: 1.4; font-family: var(--tok-family-sans); }
 .composer__input::placeholder { color: var(--tok-text-muted); }
 
@@ -391,6 +410,7 @@
     <h2 class="big-section">Rich</h2>
     <p class="section-desc">Staff side — matches the staff mobile mockups. Every control here is real: type in the field, toggle the switch, focus anything.</p>
     <div class="usage-preview"><div class="composer composer--rich">
+      <div class="composer__box">
       <div class="composer__toolbar">
         <button class="composer__icon-btn" aria-label="Bold"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.6 10.79c.97-.67 1.65-1.77 1.65-2.79 0-2.26-1.75-4-4-4H7v14h7.04c2.09 0 3.71-1.7 3.71-3.79 0-1.52-.86-2.82-2.15-3.42zM10 6.5h3c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-3v-3zm3.5 9H10v-3h3.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5z"/></svg></button>
         <button class="composer__icon-btn" aria-label="Italic"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 4v3h2.21l-3.42 8H6v3h8v-3h-2.21l3.42-8H18V4z"/></svg></button>
@@ -400,6 +420,7 @@
       </div>
       <div class="composer__field">
         <textarea class="composer__input" rows="3" placeholder="Reply to Cait...">Hi Cait — yes, we can review the minor requirements too.</textarea>
+      </div>
       </div>
       <div class="composer__settings">
         <div class="composer__settings-row">
@@ -417,15 +438,17 @@
       <button class="btn btn--primary btn--base"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>Send</button>
     </div></div>
     <pre class="code"><code>&lt;div class="composer composer--rich"&gt;
-  &lt;div class="composer__toolbar"&gt;
-    &lt;button class="composer__icon-btn" aria-label="Bold"&gt;&lt;!-- icon: format_bold --&gt;&lt;/button&gt;
-    &lt;button class="composer__icon-btn" aria-label="Italic"&gt;&lt;!-- icon: format_italic --&gt;&lt;/button&gt;
-    &lt;button class="composer__icon-btn" aria-label="Underline"&gt;&lt;!-- icon: format_underlined --&gt;&lt;/button&gt;
-    &lt;button class="btn btn--ghost btn--sm"&gt;&lt;!-- icon: local_offer --&gt;Merge Tags&lt;/button&gt;
-    &lt;button class="composer__ai-assist"&gt;&lt;!-- icon: auto_awesome --&gt;AI Assist&lt;/button&gt;
-  &lt;/div&gt;
-  &lt;div class="composer__field"&gt;
-    &lt;textarea class="composer__input" placeholder="Reply to Cait..."&gt;…&lt;/textarea&gt;
+  &lt;div class="composer__box"&gt;
+    &lt;div class="composer__toolbar"&gt;
+      &lt;button class="composer__icon-btn" aria-label="Bold"&gt;&lt;!-- icon: format_bold --&gt;&lt;/button&gt;
+      &lt;button class="composer__icon-btn" aria-label="Italic"&gt;&lt;!-- icon: format_italic --&gt;&lt;/button&gt;
+      &lt;button class="composer__icon-btn" aria-label="Underline"&gt;&lt;!-- icon: format_underlined --&gt;&lt;/button&gt;
+      &lt;button class="btn btn--ghost btn--sm"&gt;&lt;!-- icon: local_offer --&gt;Merge Tags&lt;/button&gt;
+      &lt;button class="composer__ai-assist"&gt;&lt;!-- icon: auto_awesome --&gt;AI Assist&lt;/button&gt;
+    &lt;/div&gt;
+    &lt;div class="composer__field"&gt;
+      &lt;textarea class="composer__input" placeholder="Reply to Cait..."&gt;…&lt;/textarea&gt;
+    &lt;/div&gt;
   &lt;/div&gt;
   &lt;div class="composer__settings"&gt;
     &lt;div class="composer__settings-row"&gt;

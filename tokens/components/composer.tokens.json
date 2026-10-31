@@ -37,6 +37,37 @@
           "$value": "{surface.dimHover}"
         }
       },
+      "rich": {
+        "$description": "Rich variant only: the toolbar and the field are ONE bordered box — the toolbar is a header glued to the text area with a hairline between them, the product's rich-text field (Staff Message Center compose + reply already draw it this way; user 2026-10-31: a toolbar floating above its field 'has no outline'). The box is white (surface.default) rather than the simple field's recessed fill, so the toolbar band and the text area read as one surface; hover strengthens the border, focus anywhere inside turns it border.focus — the same states as field.",
+        "bg": {
+          "$type": "color",
+          "$value": "{surface.default}"
+        },
+        "border": {
+          "$type": "color",
+          "$value": "{border.default}"
+        },
+        "borderHover": {
+          "$type": "color",
+          "$value": "{border.strong}"
+        },
+        "borderFocus": {
+          "$type": "color",
+          "$value": "{border.focus}"
+        },
+        "divider": {
+          "$type": "color",
+          "$value": "{border.default}"
+        },
+        "toolbarPaddingX": {
+          "$type": "dimension",
+          "$value": "{dim.2}"
+        },
+        "toolbarPaddingY": {
+          "$type": "dimension",
+          "$value": "{dim.1}"
+        }
+      },
       "input": {
         "$type": "typography",
         "$value": {

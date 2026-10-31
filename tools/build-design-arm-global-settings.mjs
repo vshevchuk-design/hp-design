@@ -108,11 +108,9 @@ ${card({
         <p class="field__error" id="arm-token-error" hidden><span></span></p>
       </div>
       ${text("arm-msid", "Message Service SID", { value: "MGxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" })}
-    </div>
-    <div class="arm-grid">
       ${text("arm-window", "Appointment Window", { value: "24", number: { min: 0, max: 168 } })}
-      ${text("arm-trailer", "Message Trailer", { value: "Reply STOP to unsubscribe. Msg&amp;Data Rates May Apply." })}
-    </div>`,
+    </div>
+    ${text("arm-trailer", "Message Trailer", { value: "Reply STOP to unsubscribe. Msg&amp;Data Rates May Apply." })}`,
 })}
 ${card({
   id: "arm-note",
@@ -125,6 +123,7 @@ ${card({
     <div class="field">
       <span class="field__label" id="arm-body-label">Body</span>
       <div class="composer composer--rich arm-editor">
+        <div class="composer__box">
         <div class="composer__toolbar arm-editor__toolbar" role="toolbar" aria-label="Formatting" aria-controls="arm-body">
           ${toolBtn("undo", "Undo", 'data-cmd="undo"')}
           ${toolBtn("redo", "Redo", 'data-cmd="redo"')}
@@ -143,6 +142,7 @@ ${card({
         </div>
         <div class="composer__field arm-editor__field">
           <div class="composer__input arm-editor__input" id="arm-body" contenteditable="true" role="textbox" aria-multiline="true" aria-labelledby="arm-body-label" aria-describedby="arm-body-desc"><p>Hi {{%studentFirstName%}},</p><p>A new note has been added to your profile. You can view it here: {{%noteLink%}}</p></div>
+        </div>
         </div>
       </div>
       <p class="field__description" id="arm-body-desc">Use the toolbar to format the message. Click “Insert Tag” to add ${TAGS.map((t, i) => `<span class="badge badge--neutral badge--regular arm-tag">${t.tag}</span>${t.note ? ` (${t.note})` : ""}${i < TAGS.length - 2 ? ", " : i === TAGS.length - 2 ? ", or " : ""}`).join("")} to personalize the greeting.</p>
@@ -240,6 +240,12 @@ ${CHECKBOX_CSS}
 .composer__field { display: flex; gap: ${D(c.field.gap)}; padding: ${D(c.field.padding)}; border-radius: ${D(c.radius)}; background: ${R(c.field.bg)}; border: 1px solid ${R(c.field.border)}; }
 .composer__field:hover { background: ${R(c.field.bgHover)}; border-color: ${R(c.field.borderHover)}; }
 .composer__field:focus-within { border-color: ${R(c.field.borderFocus)}; }
+/* rich: toolbar + field are one bordered box, a hairline between (composer.rich) */
+.composer__box { display: flex; flex-direction: column; border: 1px solid ${R(c.rich.border)}; border-radius: ${D(c.radius)}; background: ${R(c.rich.bg)}; overflow: hidden; }
+.composer__box:hover { border-color: ${R(c.rich.borderHover)}; }
+.composer__box:focus-within { border-color: ${R(c.rich.borderFocus)}; }
+.composer__box .composer__toolbar { padding: ${D(c.rich.toolbarPaddingY)} ${D(c.rich.toolbarPaddingX)}; border-bottom: 1px solid ${R(c.rich.divider)}; }
+.composer__box .composer__field, .composer__box .composer__field:hover, .composer__box .composer__field:focus-within { border: none; border-radius: 0; background: transparent; }
 .composer__input { flex: 1; min-width: 0; border: none; outline: none; background: transparent; color: ${R(c.textColor)}; ${typoCss(resolveToken(c.input))} font-family: ${cv("family.sans")}; }
 .arm-editor__input { min-height: 160px; overflow-wrap: anywhere; }
 .arm-editor__input > :first-child { margin-top: 0; }
