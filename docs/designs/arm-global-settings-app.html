@@ -1397,7 +1397,7 @@ html { background: var(--tok-surface-page); }
 .arm-ib__info { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; padding: 0; border: none; border-radius: 8px; background: transparent; color: var(--tok-icon-secondary); cursor: help; }
 .arm-ib__info:focus-visible { outline: 2px solid var(--tok-border-focus); outline-offset: 2px; }
 .arm-ib__icon { width: 16px; height: 16px; display: block; }
-.arm-ib .tooltip { width: max-content; max-width: 240px; white-space: normal; }
+.arm-ib .tooltip { width: max-content; max-width: min(360px, 80vw); white-space: normal; }
 .arm-ib .tooltip-wrapper:focus-within .tooltip { opacity: 1; }
 
 </style>
@@ -1665,7 +1665,7 @@ html { background: var(--tok-surface-page); }
 </div>
       <div class="arm-ib">
         <label class="checkbox"><input type="checkbox" class="checkbox__input" id="arm-te-ib" name="arm-te-ib" checked /><span class="checkbox__box"><svg class="checkbox__icon checkbox__icon--check" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg><svg class="checkbox__icon checkbox__icon--remove" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13H5v-2h14v2z"/></svg></span><span class="checkbox__label">Send via Integration Broker</span></label>
-        <span class="tooltip-wrapper"><button class="arm-ib__info" type="button" aria-label="About Integration Broker" aria-describedby="arm-te-ib-tip"><svg class="arm-ib__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></button><span class="tooltip" role="tooltip" id="arm-te-ib-tip">Sends through PeopleSoft Integration Broker instead of directly from ARM.</span></span>
+        <span class="tooltip-wrapper"><button class="arm-ib__info" type="button" aria-label="About Integration Broker" aria-describedby="arm-te-ib-tip"><svg class="arm-ib__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></button><span class="tooltip" role="tooltip" id="arm-te-ib-tip">When enabled, the test email is sent through the Integration Broker event queue (asynchronous). When disabled, the email is sent directly via SMTP (synchronous).</span></span>
       </div>
     </div>
     <div class="dialog__footer">

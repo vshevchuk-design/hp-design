@@ -138,7 +138,7 @@ ${card({
 </form>`;
 
 // Test Email / Test SMS — the live dialogs: title, fields, Cancel + Send, no description
-const IB_HINT = "Sends through PeopleSoft Integration Broker instead of directly from ARM.";
+const IB_HINT = "When enabled, the test email is sent through the Integration Broker event queue (asynchronous). When disabled, the email is sent directly via SMTP (synchronous).";
 const testDialog = (kind, title, fields) => `<dialog class="dialog" id="arm-test-${kind}" aria-labelledby="arm-test-${kind}-title">
   <form method="dialog" class="dialog__content" novalidate data-test-form="${kind}">
     <div class="dialog__header">
@@ -238,7 +238,7 @@ ${COMPOSER_BOX_CSS}
 .arm-ib__info { display: inline-flex; align-items: center; justify-content: center; width: ${dim(6)}; height: ${dim(6)}; padding: 0; border: none; border-radius: ${D(tokens.button.ghost.radius)}; background: transparent; color: ${cv("icon.secondary")}; cursor: help; }
 .arm-ib__info:focus-visible { outline: 2px solid ${cv("border.focus")}; outline-offset: 2px; }
 .arm-ib__icon { width: ${dim(4)}; height: ${dim(4)}; display: block; }
-.arm-ib .tooltip { width: max-content; max-width: 240px; white-space: normal; }
+.arm-ib .tooltip { width: max-content; max-width: min(360px, 80vw); white-space: normal; }
 .arm-ib .tooltip-wrapper:focus-within .tooltip { opacity: 1; }
 `;
 };
