@@ -9,8 +9,9 @@
 // CX_NAV), so the page sits on the shared CX shell (tools/lib/cx-shell.mjs).
 //
 // Deliberate changes from the live page, all "our language" rather than new UX:
-// the "Last Updated" card became a quiet meta line beside Save (context, not a
-// section); Test Email / Test SMS are the live dialogs on DS Dialog; the
+// the "Last Updated" card became a quiet meta line beside Save, both moved to
+// the top (context, not a section); Save is off until something changes and
+// leaving with unsaved changes asks first; Test Email / Test SMS are the live dialogs on DS Dialog; the
 // tag names in the Body's help text are neutral Badges. The live copy didn't
 // serialise the SMS credentials, so those values are sample data.
 // Run: node tools/build-design-arm-global-settings.mjs
@@ -67,6 +68,10 @@ const text = (id, label, { description = "", value = "", type = "text", number =
 const toolBtn = (name, label, attrs = "") => `<button class="composer__icon-btn" type="button" aria-label="${label}" title="${label}" ${attrs}>${icon(name, "composer__icon")}</button>`;
 
 const views = `<form class="arm-settings" id="arm-form" novalidate>
+<div class="arm-actions">
+  <p class="arm-actions__meta" id="arm-updated">Last updated <span id="arm-updated-at">${UPDATED.at}</span> by <span id="arm-updated-by">${UPDATED.by}</span></p>
+  <button class="btn btn--primary btn--base" type="submit" id="arm-save" disabled>Save</button>
+</div>
 ${card({
   id: "arm-email",
   title: "Email Settings",
@@ -143,10 +148,6 @@ ${card({
       <p class="field__description" id="arm-body-desc">Use the toolbar to format the message. Click “Insert Tag” to add ${TAGS.map((t, i) => `<span class="badge badge--neutral badge--regular arm-tag">${t.tag}</span>${t.note ? ` (${t.note})` : ""}${i < TAGS.length - 2 ? ", " : i === TAGS.length - 2 ? ", or " : ""}`).join("")} to personalize the greeting.</p>
     </div>`,
 })}
-<div class="arm-actions">
-  <p class="arm-actions__meta" id="arm-updated">Last updated <span id="arm-updated-at">${UPDATED.at}</span> by <span id="arm-updated-by">${UPDATED.by}</span></p>
-  <button class="btn btn--primary btn--base" type="submit">Save</button>
-</div>
 </form>`;
 
 const menu = (id, label, items, attr) => `<div class="dropdown-menu arm-menu" id="${id}" popover role="menu" aria-label="${label}">
@@ -181,6 +182,15 @@ ${testDialog("email", "Send Test Email", `
 ${testDialog("sms", "Send Test SMS", `
       ${fieldHtml({ id: "arm-ts-to", required: true, description: "Include the country code, e.g. +15551234567.", control: textFieldHtml({ id: "arm-ts-to", label: "Phone Number", type: "tel", required: true, autocomplete: "tel", describedBy: describedBy("arm-ts-to") }) })}
       ${fieldHtml({ id: "arm-ts-body", control: textFieldHtml({ id: "arm-ts-body", label: "Message Body", describedBy: describedBy("arm-ts-body", { description: false }) }) })}`)}
+<dialog class="alert-dialog" id="arm-leave" role="alertdialog" aria-labelledby="arm-leave-title" aria-describedby="arm-leave-text">
+  <div class="alert-dialog__content">
+    <div class="alert-dialog__text"><h2 class="alert-dialog__title" id="arm-leave-title">Leave without saving?</h2><p class="alert-dialog__description" id="arm-leave-text">Your changes to Global Settings will be lost.</p></div>
+    <div class="alert-dialog__actions">
+      <button class="btn btn--secondary btn--base" type="button" id="arm-leave-stay" autofocus>Keep editing</button>
+      <button class="btn btn--danger btn--base" type="button" id="arm-leave-go">Leave without saving</button>
+    </div>
+  </div>
+</dialog>
 <dialog class="dialog" id="arm-dlg" aria-labelledby="arm-dlg-title" aria-describedby="arm-dlg-desc">
   <form method="dialog" class="dialog__content" id="arm-dlg-form" novalidate>
     <div class="dialog__header">
@@ -242,7 +252,7 @@ ${CHECKBOX_CSS}
 .arm-editor__input a { color: ${cv("text.primary")}; }
 .arm-tag { vertical-align: baseline; }
 /* Save row: who last saved (quiet context) + the one primary action */
-.arm-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: ${dim(3)} ${dim(4)}; }
+.arm-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: ${dim(3)} ${dim(4)}; }
 .arm-actions__meta { margin: 0; flex: 1; min-width: 0; color: ${cv("text.secondary")}; ${typoCss(style("body-sm"))} }
 .arm-menu { position: fixed; inset: auto; margin: 0; }
 .arm-dlg__body { display: flex; flex-direction: column; gap: ${dim(5)}; }
@@ -400,8 +410,25 @@ ${TEXT_FIELD_JS}
     this.hidden = true;
   });
 
+  // ---- unsaved changes: Save is on only while there are some; leaving asks first ----
+  var form = $("arm-form"), save = $("arm-save"), dirty = false;
+  function setDirty(v) { dirty = v; save.disabled = !v; }
+  ["input", "change", "selectchange"].forEach(function (t) { form.addEventListener(t, function () { setDirty(true); }); });
+  var leave = $("arm-leave"), pending = null;
+  document.addEventListener("click", function (e) {
+    var a = e.target.closest(".sidebar [data-nav]");
+    if (!a || !dirty || a.getAttribute("aria-current") === "page") return;
+    e.preventDefault(); e.stopPropagation();
+    pending = a; leave.showModal();
+  }, true);
+  $("arm-leave-stay").addEventListener("click", function () { pending = null; leave.close(); });
+  leave.addEventListener("cancel", function () { pending = null; });
+  // the other pages aren't designed — leaving reloads this one, changes gone
+  $("arm-leave-go").addEventListener("click", function () { setDirty(false); leave.close(); location.reload(); });
+  window.addEventListener("beforeunload", function (e) { if (dirty) { e.preventDefault(); e.returnValue = ""; } });
+
   // ---- Save ----
-  $("arm-form").addEventListener("submit", function (e) {
+  form.addEventListener("submit", function (e) {
     e.preventDefault();
     var from = $("arm-from"), err = $("arm-from-error");
     if (from.value.trim() && !/^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$/.test(from.value.trim())) { err.querySelector("span").textContent = "Enter an email like name@school.edu."; err.hidden = false; from.setAttribute("aria-invalid", "true"); from.focus(); return; }
@@ -409,6 +436,7 @@ ${TEXT_FIELD_JS}
     var d = new Date(), p = function (n) { return String(n).padStart(2, "0"); }, h = d.getHours() % 12 || 12;
     $("arm-updated-at").textContent = p(d.getMonth() + 1) + "/" + p(d.getDate()) + "/" + d.getFullYear() + " " + p(h) + ":" + p(d.getMinutes()) + " " + (d.getHours() < 12 ? "AM" : "PM") + " PDT";
     $("arm-updated-by").textContent = ${JSON.stringify(CX_USER.name)};
+    setDirty(false);
     cx.toast("Global settings saved");
   });
 })();`;
@@ -421,6 +449,7 @@ const appHtml = cxApp({
   pageCss,
   pageJs,
   prompts: PROMPTS,
+  navTheme: "neutral",
   colorPaths: [...CHOICE_COLOR_PATHS, ...composerColorPaths, "border.focus", "text.primary"],
 });
 
@@ -428,7 +457,7 @@ const viewerHtml = renderDesignViewer({
   activeKey: "arm-global-settings",
   title: "Global Settings",
   heading: "Global Settings",
-  sub: `ARM Admin's Global Settings, restyled on hp-design components — same sections, fields, copy and order as the live page (read off a saved copy of it): <b>Email</b> (Enable Email + staff/student email type), <b>Phone</b>, <b>SMS</b> (the Twilio connection; the Auth Token stays read-only until Edit), <b>Advising Note Email</b> with a rich-text body on Composer's rich toolbar (text style, bold/italic/underline/strikethrough/code, link, email, Insert Tag), then <b>Save</b>. ARM Admin is a section of the CX app, so it sits on the CX shell. Changes from the live page are language only: section Cards with the test action in the header, and "Last Updated" is a quiet line beside Save instead of its own card. SMS credentials are sample values.`,
+  sub: `ARM Admin's Global Settings, restyled on hp-design components — same sections, fields, copy and order as the live page (read off a saved copy of it): <b>Email</b> (Enable Email + staff/student email type), <b>Phone</b>, <b>SMS</b> (the Twilio connection; the Auth Token stays read-only until Edit), <b>Advising Note Email</b> with a rich-text body on Composer's rich toolbar (text style, bold/italic/underline/strikethrough/code, link, email, Insert Tag), then <b>Save</b>. ARM Admin is a section of the CX app, so it sits on the CX shell. Changes from the live page are language only: section Cards with the test action in the header, "Last Updated" is a quiet line beside Save, both at the top instead of the bottom; Save stays off until something changes, and leaving the page with unsaved changes asks first (AlertDialog; the browser's own prompt on reload or close). The Sidebar wears its neutral (gray) theme. SMS credentials are sample values.`,
   versions: [{ label: "v1", note: "restyle of the live page", file: "arm-global-settings-app.html" }],
 });
 

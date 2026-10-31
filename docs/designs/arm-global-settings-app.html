@@ -1345,7 +1345,7 @@ html { background: var(--tok-surface-page); }
 .arm-editor__input a { color: var(--tok-text-primary); }
 .arm-tag { vertical-align: baseline; }
 /* Save row: who last saved (quiet context) + the one primary action */
-.arm-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 12px 16px; }
+.arm-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 16px; }
 .arm-actions__meta { margin: 0; flex: 1; min-width: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
 .arm-menu { position: fixed; inset: auto; margin: 0; }
 .arm-dlg__body { display: flex; flex-direction: column; gap: 20px; }
@@ -1362,7 +1362,7 @@ html { background: var(--tok-surface-page); }
 </head>
 <body>
 <div class="cx has-sidebar">
-  <nav class="sidebar" aria-label="Main">
+  <nav class="sidebar sidebar--neutral" aria-label="Main">
     <div class="sidebar__head">
       <a class="sidebar__logo" href="#" aria-label="HighPoint — Dashboard"><svg aria-hidden="true" width="122" height="24" viewBox="0 0 122 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 <rect class="sidebar__logo-mark" width="24" height="24"/>
@@ -1411,6 +1411,10 @@ html { background: var(--tok-surface-page); }
     </header>
     <main class="cx-page">
 <form class="arm-settings" id="arm-form" novalidate>
+<div class="arm-actions">
+  <p class="arm-actions__meta" id="arm-updated">Last updated <span id="arm-updated-at">10/23/2026 01:09 PM PDT</span> by <span id="arm-updated-by">Alexander Robinson</span></p>
+  <button class="btn btn--primary btn--base" type="submit" id="arm-save" disabled>Save</button>
+</div>
 <section class="card arm-card" aria-labelledby="arm-email-title">
   <div class="card__header arm-card__header">
     <div class="arm-card__heading"><h2 class="card__title" id="arm-email-title">Email Settings</h2><p class="card__description">The email switch and address types every product on this deployment sends by. Whether a product sends is set in that product — for Scheduling, on Scheduling Settings.</p></div>
@@ -1559,10 +1563,6 @@ html { background: var(--tok-surface-page); }
     </div>
   </div>
 </section>
-<div class="arm-actions">
-  <p class="arm-actions__meta" id="arm-updated">Last updated <span id="arm-updated-at">10/23/2026 01:09 PM PDT</span> by <span id="arm-updated-by">Alexander Robinson</span></p>
-  <button class="btn btn--primary btn--base" type="submit">Save</button>
-</div>
 </form>
     </main>
   </div>
@@ -1634,6 +1634,15 @@ html { background: var(--tok-surface-page); }
       <button class="btn btn--primary btn--base" type="submit">Send</button>
     </div>
   </form>
+</dialog>
+<dialog class="alert-dialog" id="arm-leave" role="alertdialog" aria-labelledby="arm-leave-title" aria-describedby="arm-leave-text">
+  <div class="alert-dialog__content">
+    <div class="alert-dialog__text"><h2 class="alert-dialog__title" id="arm-leave-title">Leave without saving?</h2><p class="alert-dialog__description" id="arm-leave-text">Your changes to Global Settings will be lost.</p></div>
+    <div class="alert-dialog__actions">
+      <button class="btn btn--secondary btn--base" type="button" id="arm-leave-stay" autofocus>Keep editing</button>
+      <button class="btn btn--danger btn--base" type="button" id="arm-leave-go">Leave without saving</button>
+    </div>
+  </div>
 </dialog>
 <dialog class="dialog" id="arm-dlg" aria-labelledby="arm-dlg-title" aria-describedby="arm-dlg-desc">
   <form method="dialog" class="dialog__content" id="arm-dlg-form" novalidate>
@@ -2084,8 +2093,25 @@ window.cx = (function () {
     this.hidden = true;
   });
 
+  // ---- unsaved changes: Save is on only while there are some; leaving asks first ----
+  var form = $("arm-form"), save = $("arm-save"), dirty = false;
+  function setDirty(v) { dirty = v; save.disabled = !v; }
+  ["input", "change", "selectchange"].forEach(function (t) { form.addEventListener(t, function () { setDirty(true); }); });
+  var leave = $("arm-leave"), pending = null;
+  document.addEventListener("click", function (e) {
+    var a = e.target.closest(".sidebar [data-nav]");
+    if (!a || !dirty || a.getAttribute("aria-current") === "page") return;
+    e.preventDefault(); e.stopPropagation();
+    pending = a; leave.showModal();
+  }, true);
+  $("arm-leave-stay").addEventListener("click", function () { pending = null; leave.close(); });
+  leave.addEventListener("cancel", function () { pending = null; });
+  // the other pages aren't designed — leaving reloads this one, changes gone
+  $("arm-leave-go").addEventListener("click", function () { setDirty(false); leave.close(); location.reload(); });
+  window.addEventListener("beforeunload", function (e) { if (dirty) { e.preventDefault(); e.returnValue = ""; } });
+
   // ---- Save ----
-  $("arm-form").addEventListener("submit", function (e) {
+  form.addEventListener("submit", function (e) {
     e.preventDefault();
     var from = $("arm-from"), err = $("arm-from-error");
     if (from.value.trim() && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(from.value.trim())) { err.querySelector("span").textContent = "Enter an email like name@school.edu."; err.hidden = false; from.setAttribute("aria-invalid", "true"); from.focus(); return; }
@@ -2093,6 +2119,7 @@ window.cx = (function () {
     var d = new Date(), p = function (n) { return String(n).padStart(2, "0"); }, h = d.getHours() % 12 || 12;
     $("arm-updated-at").textContent = p(d.getMonth() + 1) + "/" + p(d.getDate()) + "/" + d.getFullYear() + " " + p(h) + ":" + p(d.getMinutes()) + " " + (d.getHours() < 12 ? "AM" : "PM") + " PDT";
     $("arm-updated-by").textContent = "Ava Robinson";
+    setDirty(false);
     cx.toast("Global settings saved");
   });
 })();
