@@ -24,6 +24,7 @@ import { CX_USER } from "./lib/cx-data.mjs";
 import { fieldHtml, textFieldHtml, describedBy, TEXT_FIELD_JS } from "./lib/field.mjs";
 import { selectHtml, SELECT_JS } from "./lib/select.mjs";
 import { checkboxHtml, CHECKBOX_CSS, CHOICE_COLOR_PATHS } from "./lib/choice.mjs";
+import { COMPOSER_TOOLBAR_CSS, COMPOSER_BOX_CSS, COMPOSER_TOOLBAR_JS, COMPOSER_COLOR_PATHS, composerToolbarHtml } from "./lib/composer.mjs";
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const composer = JSON.parse(fs.readFileSync(path.join(root, "tokens/components/composer.tokens.json"))).component.composer;
@@ -65,7 +66,6 @@ const enable = (id, label, description, checked = true) => `<div class="arm-enab
 const sel = (id, label, options, value) => fieldHtml({ id, control: selectHtml({ id, label, options, value, describedBy: describedBy(id, { description: false }) }) });
 const text = (id, label, { description = "", value = "", type = "text", number = null } = {}) =>
   fieldHtml({ id, description, control: textFieldHtml({ id, label, value, type, number, describedBy: describedBy(id, { description: !!description }) }) });
-const toolBtn = (name, label, attrs = "") => `<button class="composer__icon-btn" type="button" aria-label="${label}" title="${label}" ${attrs}>${icon(name, "composer__icon")}</button>`;
 
 const views = `<form class="arm-settings" id="arm-form" novalidate>
 <div class="arm-actions">
@@ -126,22 +126,7 @@ ${card({
       <span class="field__label" id="arm-body-label">Body</span>
       <div class="composer composer--rich arm-editor">
         <div class="composer__box">
-        <div class="composer__toolbar arm-editor__toolbar" role="toolbar" aria-label="Formatting" aria-controls="arm-body">
-          ${toolBtn("undo", "Undo", 'data-cmd="undo"')}
-          ${toolBtn("redo", "Redo", 'data-cmd="redo"')}
-          <span class="arm-editor__sep" aria-hidden="true"></span>
-          <button class="btn btn--ghost btn--sm arm-editor__style" type="button" id="arm-style-btn" aria-haspopup="menu" aria-expanded="false" title="Text style"><span id="arm-style-label">Normal</span>${icon("expand_more", "btn__icon")}</button>
-          <span class="arm-editor__sep" aria-hidden="true"></span>
-          ${toolBtn("format_bold", "Bold", 'data-cmd="bold" aria-pressed="false"')}
-          ${toolBtn("format_italic", "Italic", 'data-cmd="italic" aria-pressed="false"')}
-          ${toolBtn("format_underlined", "Underline", 'data-cmd="underline" aria-pressed="false"')}
-          ${toolBtn("format_strikethrough", "Strikethrough", 'data-cmd="strikeThrough" aria-pressed="false"')}
-          ${toolBtn("code", "Code", 'data-cmd="code"')}
-          <span class="arm-editor__sep" aria-hidden="true"></span>
-          ${toolBtn("insert_link", "Insert link", 'data-insert="link"')}
-          ${toolBtn("mail", "Insert email", 'data-insert="email"')}
-          <button class="btn btn--ghost btn--sm arm-editor__tag" type="button" id="arm-tag-btn" aria-haspopup="menu" aria-expanded="false">${icon("local_offer", "btn__icon")}Insert Tag${icon("expand_more", "btn__icon")}</button>
-        </div>
+        ${composerToolbarHtml({ prefix: "arm-body", styles: TEXT_STYLES, menus: [{ kind: "tags", label: "Insert Tag", items: TAGS.map((t) => t.tag) }] })}
         <div class="composer__field arm-editor__field">
           <div class="composer__input arm-editor__input" id="arm-body" contenteditable="true" role="textbox" aria-multiline="true" aria-labelledby="arm-body-label" aria-describedby="arm-body-desc"><p>Hi {{%studentFirstName%}},</p><p>A new note has been added to your profile. You can view it here: {{%noteLink%}}</p></div>
         </div>
@@ -151,10 +136,6 @@ ${card({
     </div>`,
 })}
 </form>`;
-
-const menu = (id, label, items, attr) => `<div class="dropdown-menu arm-menu" id="${id}" popover role="menu" aria-label="${label}">
-  <div class="dropdown-menu__list" role="none">${items.map((it) => `<button class="dropdown-menu__item" type="button" role="menuitem" ${attr}="${it}">${it}</button>`).join("")}</div>
-</div>`;
 
 // Test Email / Test SMS — the live dialogs: title, fields, Cancel + Send, no description
 const IB_HINT = "Sends through PeopleSoft Integration Broker instead of directly from ARM.";
@@ -173,9 +154,7 @@ const testDialog = (kind, title, fields) => `<dialog class="dialog" id="arm-test
   </form>
 </dialog>`;
 
-const after = `${menu("arm-style-menu", "Text style", TEXT_STYLES, "data-style")}
-${menu("arm-tag-menu", "Insert tag", TAGS.map((t) => t.tag), "data-tag")}
-${testDialog("email", "Send Test Email", `
+const after = `${testDialog("email", "Send Test Email", `
       ${fieldHtml({ id: "arm-te-to", required: true, control: textFieldHtml({ id: "arm-te-to", label: "To", type: "email", required: true, autocomplete: "email", describedBy: describedBy("arm-te-to", { description: false }) }) })}
       <div class="arm-ib">
         ${checkboxHtml({ id: "arm-te-ib", label: "Send via Integration Broker", checked: true })}
@@ -232,22 +211,11 @@ ${CHECKBOX_CSS}
 .arm-secret .btn[hidden] { display: none; }
 /* Body = Composer rich: toolbar over the field, a multi-line editable area */
 .arm-editor { display: flex; flex-direction: column; gap: ${D(c.field.gap)}; }
-.composer__toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: ${dim(1)}; }
-.composer__icon-btn { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; width: ${D(c.iconButton.size)}; height: ${D(c.iconButton.size)}; border: none; border-radius: ${D(c.radius)}; background: transparent; padding: 0; cursor: pointer; color: ${R(c.iconButton.color)}; }
-.composer__icon-btn .composer__icon { width: ${D(c.iconButton.iconSize)}; height: ${D(c.iconButton.iconSize)}; display: block; }
-.composer__icon-btn:hover { background: ${R(c.iconButton.hoverBg)}; }
-.composer__icon-btn:active, .composer__icon-btn[aria-pressed="true"] { background: ${R(c.iconButton.activeBg)}; }
-.composer__icon-btn:focus-visible { outline: 2px solid ${cv("border.focus")}; outline-offset: 2px; }
-.arm-editor__sep { width: 1px; height: ${dim(5)}; margin: 0 ${dim(1)}; background: ${cv("border.default")}; }
 .composer__field { display: flex; gap: ${D(c.field.gap)}; padding: ${D(c.field.padding)}; border-radius: ${D(c.radius)}; background: ${R(c.field.bg)}; border: 1px solid ${R(c.field.border)}; }
 .composer__field:hover { background: ${R(c.field.bgHover)}; border-color: ${R(c.field.borderHover)}; }
 .composer__field:focus-within { border-color: ${R(c.field.borderFocus)}; }
-/* rich: toolbar + field are one bordered box, a hairline between (composer.rich) */
-.composer__box { display: flex; flex-direction: column; border: 1px solid ${R(c.rich.border)}; border-radius: ${D(c.radius)}; background: ${R(c.rich.bg)}; overflow: hidden; }
-.composer__box:hover { border-color: ${R(c.rich.borderHover)}; }
-.composer__box:focus-within { border-color: ${R(c.rich.borderFocus)}; }
-.composer__box .composer__toolbar { padding: ${D(c.rich.toolbarPaddingY)} ${D(c.rich.toolbarPaddingX)}; border-bottom: 1px solid ${R(c.rich.divider)}; }
-.composer__box .composer__field, .composer__box .composer__field:hover, .composer__box .composer__field:focus-within { border: none; border-radius: 0; background: transparent; }
+${COMPOSER_TOOLBAR_CSS}
+${COMPOSER_BOX_CSS}
 .composer__input { flex: 1; min-width: 0; border: none; outline: none; background: transparent; color: ${R(c.textColor)}; ${typoCss(resolveToken(c.input))} font-family: ${cv("family.sans")}; }
 .arm-editor__input { min-height: 160px; overflow-wrap: anywhere; }
 .arm-editor__input > :first-child { margin-top: 0; }
@@ -262,7 +230,7 @@ ${CHECKBOX_CSS}
 /* Save row: who last saved (quiet context) + the one primary action */
 .arm-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: ${dim(3)} ${dim(4)}; }
 .arm-actions__meta { margin: 0; flex: 1; min-width: 0; color: ${cv("text.secondary")}; ${typoCss(style("body-sm"))} }
-.arm-menu { position: fixed; inset: auto; margin: 0; }
+.composer__tb-lb { position: fixed; inset: auto; margin: 0; }
 .arm-dlg__body { display: flex; flex-direction: column; gap: ${dim(5)}; }
 #arm-dlg-b-wrap[hidden] { display: none; }
 /* Send via Integration Broker + its info tooltip */
@@ -276,62 +244,66 @@ ${CHECKBOX_CSS}
 };
 
 const pageJs = `${SELECT_JS}
+${COMPOSER_TOOLBAR_JS}
 ${TEXT_FIELD_JS}
 (function () {
   function $(id) { return document.getElementById(id); }
   var body = $("arm-body");
 
-  // ---- popover menus (Text style, Insert Tag), anchored under their button ----
+  // ---- formatting toolbar (DS Composer toolbar: tools/lib/composer.mjs) ----
+  var tools = document.querySelector(".arm-editor .composer__toolbar");
+  window.hpComposerToolbar(tools);
   var saved = null;
   function keepSelection() { var s = getSelection(); if (s.rangeCount && body.contains(s.anchorNode)) saved = s.getRangeAt(0).cloneRange(); }
   function restoreSelection() { body.focus(); if (saved) { var s = getSelection(); s.removeAllRanges(); s.addRange(saved); } }
   document.addEventListener("selectionchange", function () { keepSelection(); syncPressed(); });
-  function wireMenu(btn, menu, onPick) {
-    btn.addEventListener("mousedown", function (e) { e.preventDefault(); });
-    btn.addEventListener("click", function () { menu.togglePopover(); });
-    menu.addEventListener("toggle", function (e) {
-      var open = e.newState === "open";
-      btn.setAttribute("aria-expanded", open);
-      if (!open) return;
+  // keep the caret in the editor while a toolbar control is pressed
+  tools.addEventListener("mousedown", function (e) { if (e.target.closest("button")) e.preventDefault(); });
+  var PRESSABLE = ["bold", "italic", "underline", "strikeThrough"];
+  tools.querySelectorAll("[data-cmd]").forEach(function (b) { if (PRESSABLE.indexOf(b.getAttribute("data-cmd")) > -1) b.setAttribute("aria-pressed", "false"); });
+  var ALIGN = ["justifyLeft", "justifyCenter", "justifyRight"], align = 0;
+  tools.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-cmd]");
+    if (!b) return;
+    var cmd = b.getAttribute("data-cmd");
+    if (cmd === "link" || cmd === "email") return openInsert(cmd);
+    restoreSelection();
+    if (cmd === "code") { var t = getSelection().toString(); document.execCommand("insertHTML", false, "<code>" + (t || "code").replace(/&/g, "&amp;").replace(/</g, "&lt;") + "</code>"); }
+    else if (cmd === "align") { align = (align + 1) % ALIGN.length; document.execCommand(ALIGN[align]); }
+    else document.execCommand(cmd);
+    syncPressed();
+  });
+  // Text style + Insert Tag: Listbox popovers anchored under their button
+  var styleLabel = tools.querySelector(".composer__tb-style-label");
+  document.querySelectorAll(".arm-editor .composer__tb-lb").forEach(function (lb) {
+    var btn = document.querySelector('[popovertarget="' + lb.id + '"]');
+    lb.addEventListener("toggle", function (e) {
+      btn.setAttribute("aria-expanded", e.newState === "open");
+      if (e.newState !== "open") return;
       var r = btn.getBoundingClientRect();
-      menu.style.top = (r.bottom + ${4}) + "px";
-      menu.style.left = Math.max(8, Math.min(r.left, innerWidth - menu.offsetWidth - 8)) + "px";
-      menu.querySelector(".dropdown-menu__item").focus();
+      lb.style.top = (r.bottom + 4) + "px";
+      lb.style.left = Math.max(8, Math.min(r.left, innerWidth - lb.offsetWidth - 8)) + "px";
+      lb.querySelector(".listbox__option").focus();
     });
-    menu.addEventListener("click", function (e) { var it = e.target.closest(".dropdown-menu__item"); if (!it) return; menu.hidePopover(); restoreSelection(); onPick(it); });
-    menu.addEventListener("keydown", function (e) {
-      var items = [].slice.call(menu.querySelectorAll(".dropdown-menu__item")), i = items.indexOf(document.activeElement);
+    lb.addEventListener("keydown", function (e) {
+      var items = [].slice.call(lb.querySelectorAll(".listbox__option")), i = items.indexOf(document.activeElement);
       if (e.key === "ArrowDown") { e.preventDefault(); items[(i + 1) % items.length].focus(); }
       if (e.key === "ArrowUp") { e.preventDefault(); items[(i - 1 + items.length) % items.length].focus(); }
-      if (e.key === "Escape") { btn.focus(); }
     });
-  }
+    lb.addEventListener("click", function (e) {
+      var o = e.target.closest(".listbox__option"); if (!o) return;
+      lb.hidePopover(); restoreSelection();
+      if (o.hasAttribute("data-insert")) document.execCommand("insertText", false, o.getAttribute("data-insert"));
+      else pickStyle(o.getAttribute("data-style"));
+    });
+  });
   var BLOCKS = { "Normal": "p", "Heading 1": "h1", "Heading 2": "h2", "Heading 3": "h3", "Quote": "blockquote" };
-  wireMenu($("arm-style-btn"), $("arm-style-menu"), function (it) {
-    var s = it.getAttribute("data-style");
+  function pickStyle(s) {
     if (s === "Bulleted list") document.execCommand("insertUnorderedList");
     else if (s === "Numbered list") document.execCommand("insertOrderedList");
     else document.execCommand("formatBlock", false, BLOCKS[s]);
-    $("arm-style-label").textContent = s;
-  });
-  wireMenu($("arm-tag-btn"), $("arm-tag-menu"), function (it) { document.execCommand("insertText", false, it.getAttribute("data-tag")); });
-
-  // ---- formatting toolbar ----
-  var tools = document.querySelector(".arm-editor__toolbar");
-  tools.addEventListener("mousedown", function (e) { if (e.target.closest(".composer__icon-btn")) e.preventDefault(); });
-  tools.addEventListener("click", function (e) {
-    var b = e.target.closest("[data-cmd]");
-    if (b) {
-      restoreSelection();
-      var cmd = b.getAttribute("data-cmd");
-      if (cmd === "code") { var t = getSelection().toString(); document.execCommand("insertHTML", false, "<code>" + (t || "code").replace(/&/g, "&amp;").replace(/</g, "&lt;") + "</code>"); }
-      else document.execCommand(cmd);
-      syncPressed();
-      return;
-    }
-    var ins = e.target.closest("[data-insert]");
-    if (ins) openInsert(ins.getAttribute("data-insert"));
-  });
+    styleLabel.textContent = s;
+  }
   function syncPressed() {
     if (!body.contains(getSelection().anchorNode)) return;
     tools.querySelectorAll("[aria-pressed]").forEach(function (b) { b.setAttribute("aria-pressed", document.queryCommandState(b.getAttribute("data-cmd"))); });
@@ -339,7 +311,7 @@ ${TEXT_FIELD_JS}
     var name = Object.keys(BLOCKS).filter(function (k) { return BLOCKS[k] === block; })[0];
     if (document.queryCommandState("insertUnorderedList")) name = "Bulleted list";
     else if (document.queryCommandState("insertOrderedList")) name = "Numbered list";
-    $("arm-style-label").textContent = name || "Normal";
+    styleLabel.textContent = name || "Normal";
   }
 
   // ---- one Dialog for Test Email / Test SMS / Insert link / Insert email ----
@@ -458,7 +430,7 @@ const appHtml = cxApp({
   pageJs,
   prompts: PROMPTS,
   navTheme: "neutral",
-  colorPaths: [...CHOICE_COLOR_PATHS, ...composerColorPaths, "border.focus", "text.primary"],
+  colorPaths: [...CHOICE_COLOR_PATHS, ...composerColorPaths, ...COMPOSER_COLOR_PATHS, "border.focus", "text.primary"],
 });
 
 const viewerHtml = renderDesignViewer({

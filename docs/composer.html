@@ -92,32 +92,128 @@
   --tok-text-secondary: #5d6a7a;
   --tok-fill-primary-active: #01519c;
   --tok-surface-default: #ffffff;
+  --tok-fill-neutral-hover-strong: #cdd1d6;
+  --tok-icon-default: #485462;
+  --tok-text-primary: #0468c4;
+  --tok-surface-disabled: #e6e8eb;
+  --tok-text-disabled: #adb5be;
+  --tok-icon-disabled: #adb5be;
+  --tok-border-danger-strong: #c11435;
+  --tok-bg-neutral-strong: #dadde0;
   --tok-family-sans: 'Sora', sans-serif;
 }
 
 .composer { display: flex; flex-direction: column; gap: 8px; font-family: var(--tok-family-sans); max-width: 420px; }
-.composer__toolbar { display: flex; align-items: center; gap: 4px; }
-.composer__icon-btn { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border: none; border-radius: 8px; background: transparent; padding: 0; cursor: pointer; color: var(--tok-icon-secondary); }
-.composer__icon-btn .composer__icon { width: 16px; height: 16px; display: block; }
-.composer__icon-btn:hover { background: var(--tok-fill-neutral-hover); }
-.composer__icon-btn:active { background: var(--tok-fill-neutral-active); }
-.composer__icon-btn:focus-visible { outline: 2px solid var(--tok-border-focus); outline-offset: 2px; }
-
-.composer__ai-assist { flex-shrink: 0; display: inline-flex; align-items: center; gap: 4px; height: 32px; padding: 0 8px; border: 1px solid transparent; border-radius: 8px; background: var(--tok-bg-ai); color: var(--tok-text-ai); cursor: pointer; font-weight: 600; font-size: 12px; line-height: 1.4; }
-.composer__ai-assist .composer__icon { width: 16px; height: 16px; color: var(--tok-icon-ai); }
-.composer__ai-assist:hover { border-color: var(--tok-fill-ai); }
-
 .composer__field { display: flex; align-items: center; gap: 8px; padding: 12px; border-radius: 8px; background: var(--tok-surface-dim); border: 1px solid var(--tok-border-default); }
 .composer__field:hover { background: var(--tok-surface-dim-hover); border-color: var(--tok-border-strong); }
 .composer__field:focus-within { border-color: var(--tok-border-focus); }
 
-/* rich: the toolbar is a header glued to the field — one bordered box, a hairline between */
+
+/* ============ Composer rich toolbar (tools/lib/composer.mjs) ============ */
+.composer__icon-btn { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border: none; border-radius: 8px; background: transparent; padding: 0; cursor: pointer; color: var(--tok-icon-secondary); }
+.composer__icon-btn .composer__icon { width: 16px; height: 16px; display: block; }
+.composer__icon-btn:hover { background: var(--tok-fill-neutral-hover); }
+.composer__icon-btn:active, .composer__icon-btn[aria-pressed="true"] { background: var(--tok-fill-neutral-active); }
+.composer__icon-btn:focus-visible, .composer__tb-btn:focus-visible { outline: 2px solid var(--tok-border-focus); outline-offset: 2px; }
+.composer__toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; }
+.composer__tb-sep { flex-shrink: 0; width: 1px; align-self: stretch; margin: 2px 4px; background: var(--tok-border-default); }
+/* text style + insert menus — ghost sm triggers opening a Listbox */
+.composer__tb-btn { flex-shrink: 0; display: inline-flex; align-items: center; gap: 4px; height: 32px; padding: 0 8px; border: none; border-radius: 8px; background: transparent; cursor: pointer; color: var(--tok-text-secondary); font-family: var(--tok-family-sans); font-weight: 600; font-size: 12px; line-height: 1.4; }
+.composer__tb-btn:hover { background: var(--tok-fill-neutral-hover); }
+.composer__tb-btn .composer__icon { width: 16px; height: 16px; color: var(--tok-icon-secondary); flex-shrink: 0; }
+.composer__tb-chev { width: 16px; height: 16px; opacity: 0.7; flex-shrink: 0; }
+.composer__tb-lb { max-height: 260px; overflow-y: auto; }
+/* progressive overflow: JS hides .composer__tb-adv one by one (lowest
+   data-tb-order first) while the toolbar overflows and shows "More";
+   expanded, the hidden ones drop onto a second row — a zero-height
+   flex-basis:100% break forces the wrap, order:2 sends them past it */
+.composer__tb-collapsed { display: none; }
+.composer__toolbar.is-expanded .composer__tb-collapsed { display: inline-flex; order: 2; }
+.composer__tb-break { display: none; flex-basis: 100%; width: 0; height: 0; }
+.composer__toolbar.is-expanded .composer__tb-break { display: block; order: 1; }
+/* measuring: one line, so scrollWidth vs clientWidth shows real overflow */
+.composer__toolbar.is-measuring { flex-wrap: nowrap; overflow: hidden; }
+.composer__tb-more { display: none; background: var(--tok-surface-sunken); }
+.composer__toolbar.has-overflow .composer__tb-more { display: inline-flex; }
+/* rests on surface.sunken, so it hovers to the Strong tier */
+.composer__tb-more:hover { background: var(--tok-fill-neutral-hover-strong); }
+.composer__tb-more-chev { width: 16px; height: 16px; color: var(--tok-icon-secondary); flex-shrink: 0; transition: transform 0.15s ease; }
+.composer__toolbar.is-expanded .composer__tb-more-chev { transform: rotate(180deg); }
+.composer__ai-assist { flex-shrink: 0; display: inline-flex; align-items: center; gap: 4px; height: 32px; padding: 0 8px; border: 1px solid transparent; border-radius: 8px; background: var(--tok-bg-ai); color: var(--tok-text-ai); cursor: pointer; font-family: var(--tok-family-sans); font-weight: 600; font-size: 12px; line-height: 1.4; }
+.composer__ai-assist .composer__icon { width: 16px; height: 16px; color: var(--tok-icon-ai); }
+.composer__ai-assist:hover { border-color: var(--tok-fill-ai); }
+
+
 .composer__box { display: flex; flex-direction: column; border: 1px solid var(--tok-border-default); border-radius: 8px; background: var(--tok-surface-default); overflow: hidden; }
 .composer__box:hover { border-color: var(--tok-border-strong); }
 .composer__box:focus-within { border-color: var(--tok-border-focus); }
-.composer__box .composer__toolbar { flex-wrap: wrap; padding: 4px 8px; border-bottom: 1px solid var(--tok-border-default); }
+.composer__box .composer__toolbar { padding: 4px 8px; border-bottom: 1px solid var(--tok-border-default); }
 .composer__box .composer__ai-assist { margin-left: auto; }
-.composer__box .composer__field, .composer__box .composer__field:hover, .composer__box .composer__field:focus-within { align-items: flex-start; border: none; border-radius: 0; background: transparent; }
+/* the field drops its own outline and fill — kept apart from the :hover rule,
+   since hover-guarded pages lift :hover rules into @media (hover: hover) */
+.composer__box .composer__field, .composer__box .composer__field:focus-within { align-items: flex-start; border: none; border-radius: 0; background: transparent; }
+.composer__box .composer__field:hover { background: transparent; }
+
+
+.listbox { margin: 0; box-sizing: border-box; padding: 4px; border-radius: 8px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); box-shadow: 0px 2px 8px 0px rgba(21, 25, 30, 0.10); font-family: var(--tok-family-sans); min-width: 220px; }
+.listbox__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; max-height: 288px; overflow: auto; }
+.listbox__option { width: 100%; box-sizing: border-box; display: flex; align-items: center; gap: 8px; padding: 8px 8px; border: none; background: none; border-radius: 4px; cursor: pointer; text-align: left; color: var(--tok-text-default); font-family: inherit; font-weight: 400; font-size: 14px; line-height: 1.4; }
+.listbox__option:hover, .listbox__option:focus-visible { background: var(--tok-fill-neutral-hover); outline: none; }
+/* An option with a description + a trailing kind badge. The text stack takes
+   the remaining width so a long programme name wraps instead of pushing the
+   badge out of the panel. */
+.listbox__stack { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+.listbox__desc { color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.listbox__trailing { flex-shrink: 0; margin-left: 8px; display: inline-flex; align-items: center; height: 16px; padding: 0 8px; border-radius: 999px; background: var(--tok-bg-neutral-strong); color: var(--tok-text-default); font-weight: 600; font-size: 10px; line-height: 1; }
+/* single-select: a trailing checkmark on the chosen option, no tint */
+.listbox__checkmark { width: 16px; height: 16px; margin-left: auto; color: var(--tok-fill-primary); flex-shrink: 0; }
+.listbox__option[aria-selected="false"] .listbox__checkmark { visibility: hidden; }
+
+/* multi-select: a real Checkbox marker per option (checkbox.tokens.json) */
+.listbox__cb-option { width: 100%; box-sizing: border-box; display: flex; align-items: center; gap: 8px; padding: 8px 8px; border-radius: 4px; cursor: pointer; }
+.listbox__cb-option:hover { background: var(--tok-fill-neutral-hover); }
+.listbox__cb-input { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.listbox__cb-box { box-sizing: border-box; width: 20px; height: 20px; border-radius: 4px; border: 2px solid var(--tok-border-default); background: var(--tok-surface-default); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.listbox__cb-icon { width: 16px; height: 16px; display: none; color: var(--tok-icon-on-fill); }
+.listbox__cb-input:checked ~ .listbox__cb-box, .listbox__option[aria-selected="true"] .listbox__cb-box { background: var(--tok-fill-primary); border-color: var(--tok-fill-primary); }
+.listbox__cb-input:checked ~ .listbox__cb-box .listbox__cb-icon, .listbox__option[aria-selected="true"] .listbox__cb-box .listbox__cb-icon { display: block; }
+.listbox__cb-label { color: var(--tok-text-default); font-family: inherit; font-weight: 400; font-size: 14px; line-height: 1.4; }
+
+.listbox__search-wrap { padding: 4px 4px 4px; margin-bottom: 2px; border-bottom: 1px solid var(--tok-border-default); }
+.listbox__search { display: flex; align-items: center; box-sizing: border-box; height: 32px; padding: 0 8px; gap: 8px; border-radius: 8px; background: var(--tok-surface-dim); border: 1px solid var(--tok-border-default); }
+.listbox__search-icon { width: 16px; height: 16px; color: var(--tok-icon-default); flex-shrink: 0; }
+.listbox__search input { border: none; background: none; outline: none; width: 100%; color: var(--tok-text-default); font-family: inherit; font-weight: 400; font-size: 16px; line-height: 1.2; }
+.listbox__search input::placeholder { color: var(--tok-text-muted); }
+/* searchable Select (ComboboxField): typing filters; nothing left → "No results" */
+.listbox__empty { margin: 0; padding: 8px 8px; color: var(--tok-text-muted); font-weight: 400; font-size: 14px; line-height: 1.4; }
+.listbox__empty[hidden] { display: none; }
+/* creatable: the first row offers what you typed ("Add "Vue"") when nothing matches it exactly */
+.listbox__create { color: var(--tok-text-primary); }
+.listbox__create-icon { width: 20px; height: 20px; flex-shrink: 0; color: var(--tok-text-primary); }
+.listbox__create-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.listbox__search:focus-within { border-color: var(--tok-border-focus); }
+/* infinite Select (InfiniteComboboxField): the last row of the list is its status —
+   "Loading…" while there's more (scrolling to it loads the next page), "No results",
+   or "Couldn't load" + Retry. Spinner sm, resolved from spinner.tokens.json. */
+.listbox__status { list-style: none; display: flex; align-items: center; gap: 8px; padding: 8px 8px; color: var(--tok-text-muted); font-weight: 400; font-size: 14px; line-height: 1.4; }
+.listbox__status[hidden] { display: none; }
+.listbox__spinner { flex-shrink: 0; box-sizing: border-box; width: 16px; height: 16px; border: 2px solid var(--tok-border-default); border-top-color: var(--tok-fill-primary); border-radius: 50%; animation: listbox-spin 0.7s linear infinite; }
+@keyframes listbox-spin { to { transform: rotate(360deg); } }
+.listbox__retry { margin-left: auto; border: none; background: none; padding: 0; cursor: pointer; color: var(--tok-text-primary); font-family: inherit; font-weight: 400; font-size: 14px; line-height: 1.4; }
+.listbox__retry:focus-visible { outline: 2px solid var(--tok-border-focus); outline-offset: 2px; border-radius: 2px; }
+
+.listbox__select-all { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 4px 8px; }
+.listbox__select-all-label { color: var(--tok-text-secondary); margin: 0; font-weight: 400; font-size: 12px; line-height: 1.4; }
+.listbox__select-all[hidden] { display: none; }
+.listbox__clear:focus-visible { outline: 2px solid var(--tok-border-focus); outline-offset: 2px; border-radius: 2px; }
+.listbox__clear { border: none; background: none; padding: 0; cursor: pointer; color: var(--tok-text-primary); font-weight: 400; font-size: 12px; line-height: 1.4; text-decoration: underline; }
+
+/* groups ("Fruits", "Vegetables") — Command's group heading, a hairline between groups */
+.listbox__group { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.listbox__group-label { box-sizing: border-box; height: 28px; display: flex; align-items: center; padding: 0 8px; color: var(--tok-text-muted); font-weight: 600; font-size: 12px; line-height: 1.4; }
+.listbox__divider { height: 1px; margin: 4px 0; background: var(--tok-border-default); }
+.composer__tb-lb { position: fixed; inset: auto; margin: 0; }
+.composer--phone { max-width: 343px; }
 .composer__input { flex: 1; min-width: 0; border: none; outline: none; background: transparent; resize: none; color: var(--tok-text-default); font-weight: 400; font-size: 16px; line-height: 1.4; font-family: var(--tok-family-sans); }
 .composer__input::placeholder { color: var(--tok-text-muted); }
 
@@ -301,6 +397,7 @@
 
     <div class="legend">
       <div class="row"><b>simple vs. rich</b><span>Two variants, one field recipe. <code class="tok">simple</code> (student side) = input + attach + Send. <code class="tok">rich</code> (staff side) = B/I/U + AI Assist toolbar, a larger field, Allow Replies (a real Switch) + Expiration, then Send.</span></div>
+      <div class="row"><b>Toolbar = one lib</b><span>The rich toolbar (undo/redo, text style, B/I/U, strikethrough/code/align/link/email, insert menus, More overflow, AI Assist) is <code class="tok">tools/lib/composer.mjs</code> — built and tuned in Staff Message Center (phones especially), now the DS's own; every prototype renders it from there.</span></div>
       <div class="row"><b>Rich = one box</b><span>In <code class="tok">rich</code> the toolbar and the field share ONE bordered box (<code class="tok">composer.rich</code>): the toolbar is a header glued to the text area with a hairline between, on white (surface.default); hover strengthens the border, focus anywhere inside turns it border.focus. AI Assist sits at the far end of the toolbar. A toolbar floating above its own field read as having no outline.</span></div>
       <div class="row"><b>Field reuses Input</b><span>surface.sunken + border.default, strengthening to border.strong on hover and border.focus on focus — the exact same locked-in convention Input/Select/Search already established, not a new field recipe. Value text is size.md (16px), the same Safari-iOS-auto-zoom reason Input's own value text is.</span></div>
       <div class="row"><b>AI Assist: the open call, resolved</b><span>New semantic roles — bg.ai/text.ai/icon.ai/fill.ai (tokens/semantic/color.tokens.json), violet, added specifically for this. Rest state is the pale bg.ai tint (matches Badge's own tint recipe); a border appears on hover using fill.ai — the same "border previews the role color" language Chip's unchecked-hover and Card's own hover already use.</span></div>
@@ -332,32 +429,128 @@
   --tok-text-secondary: #5d6a7a;
   --tok-fill-primary-active: #01519c;
   --tok-surface-default: #ffffff;
+  --tok-fill-neutral-hover-strong: #cdd1d6;
+  --tok-icon-default: #485462;
+  --tok-text-primary: #0468c4;
+  --tok-surface-disabled: #e6e8eb;
+  --tok-text-disabled: #adb5be;
+  --tok-icon-disabled: #adb5be;
+  --tok-border-danger-strong: #c11435;
+  --tok-bg-neutral-strong: #dadde0;
   --tok-family-sans: 'Sora', sans-serif;
 }
 
 .composer { display: flex; flex-direction: column; gap: 8px; font-family: var(--tok-family-sans); max-width: 420px; }
-.composer__toolbar { display: flex; align-items: center; gap: 4px; }
-.composer__icon-btn { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border: none; border-radius: 8px; background: transparent; padding: 0; cursor: pointer; color: var(--tok-icon-secondary); }
-.composer__icon-btn .composer__icon { width: 16px; height: 16px; display: block; }
-.composer__icon-btn:hover { background: var(--tok-fill-neutral-hover); }
-.composer__icon-btn:active { background: var(--tok-fill-neutral-active); }
-.composer__icon-btn:focus-visible { outline: 2px solid var(--tok-border-focus); outline-offset: 2px; }
-
-.composer__ai-assist { flex-shrink: 0; display: inline-flex; align-items: center; gap: 4px; height: 32px; padding: 0 8px; border: 1px solid transparent; border-radius: 8px; background: var(--tok-bg-ai); color: var(--tok-text-ai); cursor: pointer; font-weight: 600; font-size: 12px; line-height: 1.4; }
-.composer__ai-assist .composer__icon { width: 16px; height: 16px; color: var(--tok-icon-ai); }
-.composer__ai-assist:hover { border-color: var(--tok-fill-ai); }
-
 .composer__field { display: flex; align-items: center; gap: 8px; padding: 12px; border-radius: 8px; background: var(--tok-surface-dim); border: 1px solid var(--tok-border-default); }
 .composer__field:hover { background: var(--tok-surface-dim-hover); border-color: var(--tok-border-strong); }
 .composer__field:focus-within { border-color: var(--tok-border-focus); }
 
-/* rich: the toolbar is a header glued to the field — one bordered box, a hairline between */
+
+/* ============ Composer rich toolbar (tools/lib/composer.mjs) ============ */
+.composer__icon-btn { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border: none; border-radius: 8px; background: transparent; padding: 0; cursor: pointer; color: var(--tok-icon-secondary); }
+.composer__icon-btn .composer__icon { width: 16px; height: 16px; display: block; }
+.composer__icon-btn:hover { background: var(--tok-fill-neutral-hover); }
+.composer__icon-btn:active, .composer__icon-btn[aria-pressed="true"] { background: var(--tok-fill-neutral-active); }
+.composer__icon-btn:focus-visible, .composer__tb-btn:focus-visible { outline: 2px solid var(--tok-border-focus); outline-offset: 2px; }
+.composer__toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; }
+.composer__tb-sep { flex-shrink: 0; width: 1px; align-self: stretch; margin: 2px 4px; background: var(--tok-border-default); }
+/* text style + insert menus — ghost sm triggers opening a Listbox */
+.composer__tb-btn { flex-shrink: 0; display: inline-flex; align-items: center; gap: 4px; height: 32px; padding: 0 8px; border: none; border-radius: 8px; background: transparent; cursor: pointer; color: var(--tok-text-secondary); font-family: var(--tok-family-sans); font-weight: 600; font-size: 12px; line-height: 1.4; }
+.composer__tb-btn:hover { background: var(--tok-fill-neutral-hover); }
+.composer__tb-btn .composer__icon { width: 16px; height: 16px; color: var(--tok-icon-secondary); flex-shrink: 0; }
+.composer__tb-chev { width: 16px; height: 16px; opacity: 0.7; flex-shrink: 0; }
+.composer__tb-lb { max-height: 260px; overflow-y: auto; }
+/* progressive overflow: JS hides .composer__tb-adv one by one (lowest
+   data-tb-order first) while the toolbar overflows and shows "More";
+   expanded, the hidden ones drop onto a second row — a zero-height
+   flex-basis:100% break forces the wrap, order:2 sends them past it */
+.composer__tb-collapsed { display: none; }
+.composer__toolbar.is-expanded .composer__tb-collapsed { display: inline-flex; order: 2; }
+.composer__tb-break { display: none; flex-basis: 100%; width: 0; height: 0; }
+.composer__toolbar.is-expanded .composer__tb-break { display: block; order: 1; }
+/* measuring: one line, so scrollWidth vs clientWidth shows real overflow */
+.composer__toolbar.is-measuring { flex-wrap: nowrap; overflow: hidden; }
+.composer__tb-more { display: none; background: var(--tok-surface-sunken); }
+.composer__toolbar.has-overflow .composer__tb-more { display: inline-flex; }
+/* rests on surface.sunken, so it hovers to the Strong tier */
+.composer__tb-more:hover { background: var(--tok-fill-neutral-hover-strong); }
+.composer__tb-more-chev { width: 16px; height: 16px; color: var(--tok-icon-secondary); flex-shrink: 0; transition: transform 0.15s ease; }
+.composer__toolbar.is-expanded .composer__tb-more-chev { transform: rotate(180deg); }
+.composer__ai-assist { flex-shrink: 0; display: inline-flex; align-items: center; gap: 4px; height: 32px; padding: 0 8px; border: 1px solid transparent; border-radius: 8px; background: var(--tok-bg-ai); color: var(--tok-text-ai); cursor: pointer; font-family: var(--tok-family-sans); font-weight: 600; font-size: 12px; line-height: 1.4; }
+.composer__ai-assist .composer__icon { width: 16px; height: 16px; color: var(--tok-icon-ai); }
+.composer__ai-assist:hover { border-color: var(--tok-fill-ai); }
+
+
 .composer__box { display: flex; flex-direction: column; border: 1px solid var(--tok-border-default); border-radius: 8px; background: var(--tok-surface-default); overflow: hidden; }
 .composer__box:hover { border-color: var(--tok-border-strong); }
 .composer__box:focus-within { border-color: var(--tok-border-focus); }
-.composer__box .composer__toolbar { flex-wrap: wrap; padding: 4px 8px; border-bottom: 1px solid var(--tok-border-default); }
+.composer__box .composer__toolbar { padding: 4px 8px; border-bottom: 1px solid var(--tok-border-default); }
 .composer__box .composer__ai-assist { margin-left: auto; }
-.composer__box .composer__field, .composer__box .composer__field:hover, .composer__box .composer__field:focus-within { align-items: flex-start; border: none; border-radius: 0; background: transparent; }
+/* the field drops its own outline and fill — kept apart from the :hover rule,
+   since hover-guarded pages lift :hover rules into @media (hover: hover) */
+.composer__box .composer__field, .composer__box .composer__field:focus-within { align-items: flex-start; border: none; border-radius: 0; background: transparent; }
+.composer__box .composer__field:hover { background: transparent; }
+
+
+.listbox { margin: 0; box-sizing: border-box; padding: 4px; border-radius: 8px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); box-shadow: 0px 2px 8px 0px rgba(21, 25, 30, 0.10); font-family: var(--tok-family-sans); min-width: 220px; }
+.listbox__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; max-height: 288px; overflow: auto; }
+.listbox__option { width: 100%; box-sizing: border-box; display: flex; align-items: center; gap: 8px; padding: 8px 8px; border: none; background: none; border-radius: 4px; cursor: pointer; text-align: left; color: var(--tok-text-default); font-family: inherit; font-weight: 400; font-size: 14px; line-height: 1.4; }
+.listbox__option:hover, .listbox__option:focus-visible { background: var(--tok-fill-neutral-hover); outline: none; }
+/* An option with a description + a trailing kind badge. The text stack takes
+   the remaining width so a long programme name wraps instead of pushing the
+   badge out of the panel. */
+.listbox__stack { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+.listbox__desc { color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.listbox__trailing { flex-shrink: 0; margin-left: 8px; display: inline-flex; align-items: center; height: 16px; padding: 0 8px; border-radius: 999px; background: var(--tok-bg-neutral-strong); color: var(--tok-text-default); font-weight: 600; font-size: 10px; line-height: 1; }
+/* single-select: a trailing checkmark on the chosen option, no tint */
+.listbox__checkmark { width: 16px; height: 16px; margin-left: auto; color: var(--tok-fill-primary); flex-shrink: 0; }
+.listbox__option[aria-selected="false"] .listbox__checkmark { visibility: hidden; }
+
+/* multi-select: a real Checkbox marker per option (checkbox.tokens.json) */
+.listbox__cb-option { width: 100%; box-sizing: border-box; display: flex; align-items: center; gap: 8px; padding: 8px 8px; border-radius: 4px; cursor: pointer; }
+.listbox__cb-option:hover { background: var(--tok-fill-neutral-hover); }
+.listbox__cb-input { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.listbox__cb-box { box-sizing: border-box; width: 20px; height: 20px; border-radius: 4px; border: 2px solid var(--tok-border-default); background: var(--tok-surface-default); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.listbox__cb-icon { width: 16px; height: 16px; display: none; color: var(--tok-icon-on-fill); }
+.listbox__cb-input:checked ~ .listbox__cb-box, .listbox__option[aria-selected="true"] .listbox__cb-box { background: var(--tok-fill-primary); border-color: var(--tok-fill-primary); }
+.listbox__cb-input:checked ~ .listbox__cb-box .listbox__cb-icon, .listbox__option[aria-selected="true"] .listbox__cb-box .listbox__cb-icon { display: block; }
+.listbox__cb-label { color: var(--tok-text-default); font-family: inherit; font-weight: 400; font-size: 14px; line-height: 1.4; }
+
+.listbox__search-wrap { padding: 4px 4px 4px; margin-bottom: 2px; border-bottom: 1px solid var(--tok-border-default); }
+.listbox__search { display: flex; align-items: center; box-sizing: border-box; height: 32px; padding: 0 8px; gap: 8px; border-radius: 8px; background: var(--tok-surface-dim); border: 1px solid var(--tok-border-default); }
+.listbox__search-icon { width: 16px; height: 16px; color: var(--tok-icon-default); flex-shrink: 0; }
+.listbox__search input { border: none; background: none; outline: none; width: 100%; color: var(--tok-text-default); font-family: inherit; font-weight: 400; font-size: 16px; line-height: 1.2; }
+.listbox__search input::placeholder { color: var(--tok-text-muted); }
+/* searchable Select (ComboboxField): typing filters; nothing left → "No results" */
+.listbox__empty { margin: 0; padding: 8px 8px; color: var(--tok-text-muted); font-weight: 400; font-size: 14px; line-height: 1.4; }
+.listbox__empty[hidden] { display: none; }
+/* creatable: the first row offers what you typed ("Add "Vue"") when nothing matches it exactly */
+.listbox__create { color: var(--tok-text-primary); }
+.listbox__create-icon { width: 20px; height: 20px; flex-shrink: 0; color: var(--tok-text-primary); }
+.listbox__create-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.listbox__search:focus-within { border-color: var(--tok-border-focus); }
+/* infinite Select (InfiniteComboboxField): the last row of the list is its status —
+   "Loading…" while there's more (scrolling to it loads the next page), "No results",
+   or "Couldn't load" + Retry. Spinner sm, resolved from spinner.tokens.json. */
+.listbox__status { list-style: none; display: flex; align-items: center; gap: 8px; padding: 8px 8px; color: var(--tok-text-muted); font-weight: 400; font-size: 14px; line-height: 1.4; }
+.listbox__status[hidden] { display: none; }
+.listbox__spinner { flex-shrink: 0; box-sizing: border-box; width: 16px; height: 16px; border: 2px solid var(--tok-border-default); border-top-color: var(--tok-fill-primary); border-radius: 50%; animation: listbox-spin 0.7s linear infinite; }
+@keyframes listbox-spin { to { transform: rotate(360deg); } }
+.listbox__retry { margin-left: auto; border: none; background: none; padding: 0; cursor: pointer; color: var(--tok-text-primary); font-family: inherit; font-weight: 400; font-size: 14px; line-height: 1.4; }
+.listbox__retry:focus-visible { outline: 2px solid var(--tok-border-focus); outline-offset: 2px; border-radius: 2px; }
+
+.listbox__select-all { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 4px 8px; }
+.listbox__select-all-label { color: var(--tok-text-secondary); margin: 0; font-weight: 400; font-size: 12px; line-height: 1.4; }
+.listbox__select-all[hidden] { display: none; }
+.listbox__clear:focus-visible { outline: 2px solid var(--tok-border-focus); outline-offset: 2px; border-radius: 2px; }
+.listbox__clear { border: none; background: none; padding: 0; cursor: pointer; color: var(--tok-text-primary); font-weight: 400; font-size: 12px; line-height: 1.4; text-decoration: underline; }
+
+/* groups ("Fruits", "Vegetables") — Command's group heading, a hairline between groups */
+.listbox__group { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.listbox__group-label { box-sizing: border-box; height: 28px; display: flex; align-items: center; padding: 0 8px; color: var(--tok-text-muted); font-weight: 600; font-size: 12px; line-height: 1.4; }
+.listbox__divider { height: 1px; margin: 4px 0; background: var(--tok-border-default); }
+.composer__tb-lb { position: fixed; inset: auto; margin: 0; }
+.composer--phone { max-width: 343px; }
 .composer__input { flex: 1; min-width: 0; border: none; outline: none; background: transparent; resize: none; color: var(--tok-text-default); font-weight: 400; font-size: 16px; line-height: 1.4; font-family: var(--tok-family-sans); }
 .composer__input::placeholder { color: var(--tok-text-muted); }
 
@@ -411,13 +604,50 @@
     <p class="section-desc">Staff side — matches the staff mobile mockups. Every control here is real: type in the field, toggle the switch, focus anything.</p>
     <div class="usage-preview"><div class="composer composer--rich">
       <div class="composer__box">
-      <div class="composer__toolbar">
-        <button class="composer__icon-btn" aria-label="Bold"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.6 10.79c.97-.67 1.65-1.77 1.65-2.79 0-2.26-1.75-4-4-4H7v14h7.04c2.09 0 3.71-1.7 3.71-3.79 0-1.52-.86-2.82-2.15-3.42zM10 6.5h3c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-3v-3zm3.5 9H10v-3h3.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5z"/></svg></button>
-        <button class="composer__icon-btn" aria-label="Italic"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 4v3h2.21l-3.42 8H6v3h8v-3h-2.21l3.42-8H18V4z"/></svg></button>
-        <button class="composer__icon-btn" aria-label="Underline"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 17c3.31 0 6-2.69 6-6V3h-2.5v8c0 1.93-1.57 3.5-3.5 3.5S8.5 12.93 8.5 11V3H6v8c0 3.31 2.69 6 6 6zm-7 2v2h14v-2H5z"/></svg></button>
-        <button class="btn btn--ghost btn--sm"><svg class="btn__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="m21.41 11.58-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.55-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z"/></svg>Merge Tags</button>
-        <button class="composer__ai-assist"><svg class="composer__icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
-      </div>
+      <div class="composer__toolbar" role="toolbar" aria-label="Formatting">
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="13" data-cmd="undo" aria-label="Undo" title="Undo" tabindex="-1"><svg class="composer__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="12" data-cmd="redo" aria-label="Redo" title="Redo" tabindex="-1"><svg class="composer__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M18.4 10.6C16.55 8.99 14.15 8 11.5 8c-4.65 0-8.58 3.03-9.96 7.22L3.9 16c1.05-3.19 4.05-5.5 7.6-5.5 1.95 0 3.73.72 5.12 1.88L13 16h9V7l-3.6 3.6z"/></svg>
+</button>
+              <span class="composer__tb-sep composer__tb-adv" data-tb-order="11"></span>
+              <button type="button" class="composer__tb-btn composer__tb-style composer__tb-adv" data-tb-order="9" tabindex="-1">Normal<svg class="composer__tb-chev" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <span class="composer__tb-sep composer__tb-adv" data-tb-order="10"></span>
+              <button type="button" class="composer__icon-btn" data-cmd="bold" aria-label="Bold" title="Bold"><svg class="composer__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.6 10.79c.97-.67 1.65-1.77 1.65-2.79 0-2.26-1.75-4-4-4H7v14h7.04c2.09 0 3.71-1.7 3.71-3.79 0-1.52-.86-2.82-2.15-3.42zM10 6.5h3c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-3v-3zm3.5 9H10v-3h3.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5z"/></svg></button>
+              <button type="button" class="composer__icon-btn" data-cmd="italic" aria-label="Italic" title="Italic"><svg class="composer__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 4v3h2.21l-3.42 8H6v3h8v-3h-2.21l3.42-8H18V4z"/></svg></button>
+              <button type="button" class="composer__icon-btn" data-cmd="underline" aria-label="Underline" title="Underline"><svg class="composer__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 17c3.31 0 6-2.69 6-6V3h-2.5v8c0 1.93-1.57 3.5-3.5 3.5S8.5 12.93 8.5 11V3H6v8c0 3.31 2.69 6 6 6zm-7 2v2h14v-2H5z"/></svg></button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="8" data-cmd="strikeThrough" aria-label="Strikethrough" title="Strikethrough" tabindex="-1"><svg class="composer__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 19h4v-3h-4v3zM5 4v3h5v3h4V7h5V4H5zM3 14h18v-2H3v2z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="7" data-cmd="code" aria-label="Code" title="Code" tabindex="-1"><svg class="composer__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="6" data-cmd="align" aria-label="Align" title="Align" tabindex="-1"><svg class="composer__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15 15H3v2h12v-2zm0-8H3v2h12V7zM3 13h18v-2H3v2zm0 8h18v-2H3v2zM3 3v2h18V3H3z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="5" data-cmd="link" aria-label="Insert link" title="Insert link" tabindex="-1"><svg class="composer__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="4" data-cmd="email" aria-label="Insert email" title="Insert email" tabindex="-1"><svg class="composer__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></button>
+              <span class="composer__tb-sep composer__tb-adv" data-tb-order="3"></span>
+              <button type="button" class="composer__tb-btn composer__tb-adv" id="doc-rich-merge-btn" data-tb-order="2" popovertarget="doc-rich-merge-lb" aria-haspopup="listbox" tabindex="-1">Merge Tags<svg class="composer__tb-chev" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <div class="listbox composer__tb-lb" id="doc-rich-merge-lb" data-tb="merge" popover>
+                <ul class="listbox__list" role="listbox" aria-label="Merge Tags">
+                  <li><button class="listbox__option" role="option" type="button" data-insert="{{studentName}}">{{studentName}}</button></li>
+                  <li><button class="listbox__option" role="option" type="button" data-insert="{{studentFirstName}}">{{studentFirstName}}</button></li>
+                  <li><button class="listbox__option" role="option" type="button" data-insert="{{studentLastName}}">{{studentLastName}}</button></li>
+                </ul>
+              </div>
+              <button type="button" class="composer__tb-btn composer__tb-adv" id="doc-rich-links-btn" data-tb-order="1" popovertarget="doc-rich-links-lb" aria-haspopup="listbox" tabindex="-1">Hyperlinks<svg class="composer__tb-chev" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <div class="listbox composer__tb-lb" id="doc-rich-links-lb" data-tb="links" popover>
+                <ul class="listbox__list" role="listbox" aria-label="Hyperlinks">
+                  <li><button class="listbox__option" role="option" type="button" data-insert="Address">Address</button></li>
+                  <li><button class="listbox__option" role="option" type="button" data-insert="ApplicationStatus">ApplicationStatus</button></li>
+                  <li><button class="listbox__option" role="option" type="button" data-insert="ApplyforGraduation">ApplyforGraduation</button></li>
+                  <li><button class="listbox__option" role="option" type="button" data-insert="FAFSA">FAFSA</button></li>
+                  <li><button class="listbox__option" role="option" type="button" data-insert="MessageCenter">MessageCenter</button></li>
+                  <li><button class="listbox__option" role="option" type="button" data-insert="ScheduleBuilder">ScheduleBuilder</button></li>
+                </ul>
+              </div>
+              <button type="button" class="composer__tb-btn composer__tb-more" id="doc-rich-tb-more" aria-expanded="false" aria-label="More formatting options"><svg class="composer__tb-more-chev" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <button type="button" class="composer__ai-assist" id="doc-rich-ai"><svg class="composer__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
+              <span class="composer__tb-break" aria-hidden="true"></span>
+            </div>
       <div class="composer__field">
         <textarea class="composer__input" rows="3" placeholder="Reply to Cait...">Hi Cait — yes, we can review the minor requirements too.</textarea>
       </div>
@@ -439,13 +669,10 @@
     </div></div>
     <pre class="code"><code>&lt;div class="composer composer--rich"&gt;
   &lt;div class="composer__box"&gt;
-    &lt;div class="composer__toolbar"&gt;
-      &lt;button class="composer__icon-btn" aria-label="Bold"&gt;&lt;!-- icon: format_bold --&gt;&lt;/button&gt;
-      &lt;button class="composer__icon-btn" aria-label="Italic"&gt;&lt;!-- icon: format_italic --&gt;&lt;/button&gt;
-      &lt;button class="composer__icon-btn" aria-label="Underline"&gt;&lt;!-- icon: format_underlined --&gt;&lt;/button&gt;
-      &lt;button class="btn btn--ghost btn--sm"&gt;&lt;!-- icon: local_offer --&gt;Merge Tags&lt;/button&gt;
-      &lt;button class="composer__ai-assist"&gt;&lt;!-- icon: auto_awesome --&gt;AI Assist&lt;/button&gt;
-    &lt;/div&gt;
+    &lt;!-- composerToolbarHtml({ prefix, menus, styles?, ai? }) from tools/lib/composer.mjs:
+         undo · redo | Normal | B I U · strikethrough · code · align · link · email |
+         insert menus (Listbox popovers) · More (hidden until something overflows) · AI Assist --&gt;
+    &lt;div class="composer__toolbar" role="toolbar" aria-label="Formatting"&gt;…&lt;/div&gt;
     &lt;div class="composer__field"&gt;
       &lt;textarea class="composer__input" placeholder="Reply to Cait..."&gt;…&lt;/textarea&gt;
     &lt;/div&gt;
@@ -463,6 +690,56 @@
   &lt;button class="btn btn--primary btn--base"&gt;&lt;!-- icon: send --&gt;Send&lt;/button&gt;
 &lt;/div&gt;</code></pre>
 
+    <h2 class="big-section">Rich · phone width</h2>
+    <p class="section-desc">The same toolbar at 343px (a 375px phone minus its 16px gutters). Controls that don't fit hide one at a time — the insert menus first, then email, link, align, code, strikethrough, the text style, redo, undo — and a <b>More</b> chevron appears; pressing it drops them onto a second row, pressing again folds them back. B / I / U, More and AI Assist never hide. Widen or narrow the window to watch it reflow. One definition for every consumer: <code class="tok">tools/lib/composer.mjs</code> (Staff Message Center's compose, reply and group wizard; ARM Global Settings).</p>
+    <div class="usage-preview"><div class="composer composer--rich composer--phone"><div class="composer__box">
+      <div class="composer__toolbar" role="toolbar" aria-label="Formatting">
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="13" data-cmd="undo" aria-label="Undo" title="Undo" tabindex="-1"><svg class="composer__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="12" data-cmd="redo" aria-label="Redo" title="Redo" tabindex="-1"><svg class="composer__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M18.4 10.6C16.55 8.99 14.15 8 11.5 8c-4.65 0-8.58 3.03-9.96 7.22L3.9 16c1.05-3.19 4.05-5.5 7.6-5.5 1.95 0 3.73.72 5.12 1.88L13 16h9V7l-3.6 3.6z"/></svg>
+</button>
+              <span class="composer__tb-sep composer__tb-adv" data-tb-order="11"></span>
+              <button type="button" class="composer__tb-btn composer__tb-style composer__tb-adv" data-tb-order="9" tabindex="-1">Normal<svg class="composer__tb-chev" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <span class="composer__tb-sep composer__tb-adv" data-tb-order="10"></span>
+              <button type="button" class="composer__icon-btn" data-cmd="bold" aria-label="Bold" title="Bold"><svg class="composer__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.6 10.79c.97-.67 1.65-1.77 1.65-2.79 0-2.26-1.75-4-4-4H7v14h7.04c2.09 0 3.71-1.7 3.71-3.79 0-1.52-.86-2.82-2.15-3.42zM10 6.5h3c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-3v-3zm3.5 9H10v-3h3.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5z"/></svg></button>
+              <button type="button" class="composer__icon-btn" data-cmd="italic" aria-label="Italic" title="Italic"><svg class="composer__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 4v3h2.21l-3.42 8H6v3h8v-3h-2.21l3.42-8H18V4z"/></svg></button>
+              <button type="button" class="composer__icon-btn" data-cmd="underline" aria-label="Underline" title="Underline"><svg class="composer__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 17c3.31 0 6-2.69 6-6V3h-2.5v8c0 1.93-1.57 3.5-3.5 3.5S8.5 12.93 8.5 11V3H6v8c0 3.31 2.69 6 6 6zm-7 2v2h14v-2H5z"/></svg></button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="8" data-cmd="strikeThrough" aria-label="Strikethrough" title="Strikethrough" tabindex="-1"><svg class="composer__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 19h4v-3h-4v3zM5 4v3h5v3h4V7h5V4H5zM3 14h18v-2H3v2z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="7" data-cmd="code" aria-label="Code" title="Code" tabindex="-1"><svg class="composer__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="6" data-cmd="align" aria-label="Align" title="Align" tabindex="-1"><svg class="composer__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15 15H3v2h12v-2zm0-8H3v2h12V7zM3 13h18v-2H3v2zm0 8h18v-2H3v2zM3 3v2h18V3H3z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="5" data-cmd="link" aria-label="Insert link" title="Insert link" tabindex="-1"><svg class="composer__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg>
+</button>
+              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="4" data-cmd="email" aria-label="Insert email" title="Insert email" tabindex="-1"><svg class="composer__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></button>
+              <span class="composer__tb-sep composer__tb-adv" data-tb-order="3"></span>
+              <button type="button" class="composer__tb-btn composer__tb-adv" id="doc-phone-merge-btn" data-tb-order="2" popovertarget="doc-phone-merge-lb" aria-haspopup="listbox" tabindex="-1">Merge Tags<svg class="composer__tb-chev" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <div class="listbox composer__tb-lb" id="doc-phone-merge-lb" data-tb="merge" popover>
+                <ul class="listbox__list" role="listbox" aria-label="Merge Tags">
+                  <li><button class="listbox__option" role="option" type="button" data-insert="{{studentName}}">{{studentName}}</button></li>
+                  <li><button class="listbox__option" role="option" type="button" data-insert="{{studentFirstName}}">{{studentFirstName}}</button></li>
+                  <li><button class="listbox__option" role="option" type="button" data-insert="{{studentLastName}}">{{studentLastName}}</button></li>
+                </ul>
+              </div>
+              <button type="button" class="composer__tb-btn composer__tb-adv" id="doc-phone-links-btn" data-tb-order="1" popovertarget="doc-phone-links-lb" aria-haspopup="listbox" tabindex="-1">Hyperlinks<svg class="composer__tb-chev" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <div class="listbox composer__tb-lb" id="doc-phone-links-lb" data-tb="links" popover>
+                <ul class="listbox__list" role="listbox" aria-label="Hyperlinks">
+                  <li><button class="listbox__option" role="option" type="button" data-insert="Address">Address</button></li>
+                  <li><button class="listbox__option" role="option" type="button" data-insert="ApplicationStatus">ApplicationStatus</button></li>
+                  <li><button class="listbox__option" role="option" type="button" data-insert="ApplyforGraduation">ApplyforGraduation</button></li>
+                  <li><button class="listbox__option" role="option" type="button" data-insert="FAFSA">FAFSA</button></li>
+                  <li><button class="listbox__option" role="option" type="button" data-insert="MessageCenter">MessageCenter</button></li>
+                  <li><button class="listbox__option" role="option" type="button" data-insert="ScheduleBuilder">ScheduleBuilder</button></li>
+                </ul>
+              </div>
+              <button type="button" class="composer__tb-btn composer__tb-more" id="doc-phone-tb-more" aria-expanded="false" aria-label="More formatting options"><svg class="composer__tb-more-chev" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+              <button type="button" class="composer__ai-assist" id="doc-phone-ai"><svg class="composer__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>AI Assist</button>
+              <span class="composer__tb-break" aria-hidden="true"></span>
+            </div>
+      <div class="composer__field"><textarea class="composer__input" rows="4" placeholder="Write your message..."></textarea></div>
+    </div></div></div>
+
     <h2 class="big-section">Merge Tags (isolated)</h2>
     <p class="section-desc">A real Button ghost, sm — resolved from button.tokens.json, not a lookalike.</p>
     <div class="story-grid">
@@ -476,5 +753,63 @@
     </div>
   </main>
 </div>
+<script>
+window.hpComposerToolbar = function (toolbar) {
+  if (!toolbar || toolbar._tbReflow) return;
+  var more = toolbar.querySelector(".composer__tb-more");
+  var items = Array.prototype.slice.call(toolbar.querySelectorAll(".composer__tb-adv"));
+  items.sort(function (a, b) { return (+a.dataset.tbOrder) - (+b.dataset.tbOrder); });
+  function overflowing() { return toolbar.scrollWidth > toolbar.clientWidth + 1; }
+  function reflow() {
+    if (toolbar.classList.contains("is-expanded")) return;
+    toolbar.classList.add("is-measuring");
+    items.forEach(function (el) { el.classList.remove("composer__tb-collapsed"); });
+    toolbar.classList.remove("has-overflow");
+    if (overflowing()) {
+      toolbar.classList.add("has-overflow");
+      for (var i = 0; i < items.length && overflowing(); i++) items[i].classList.add("composer__tb-collapsed");
+    }
+    toolbar.classList.remove("is-measuring");
+  }
+  more.addEventListener("click", function () {
+    var expanded = toolbar.classList.toggle("is-expanded");
+    more.setAttribute("aria-expanded", expanded ? "true" : "false");
+    if (!expanded) reflow();
+  });
+  var lastW = -1;
+  if (typeof ResizeObserver !== "undefined") {
+    new ResizeObserver(function () {
+      var w = Math.round(toolbar.clientWidth);
+      if (w === lastW) return;
+      lastW = w;
+      reflow();
+    }).observe(toolbar);
+  }
+  toolbar._tbReflow = function () { lastW = -1; reflow(); };
+  window.addEventListener("resize", toolbar._tbReflow);
+  requestAnimationFrame(reflow);
+  // label widths change once the web font arrives, the toolbar's own width doesn't
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(toolbar._tbReflow);
+};
+document.querySelectorAll(".composer__box .composer__toolbar").forEach(window.hpComposerToolbar);
+// insert menus: a Listbox under its button
+document.querySelectorAll(".composer__tb-lb").forEach(function (lb) {
+  var btn = document.querySelector('[popovertarget="' + lb.id + '"]');
+  lb.addEventListener("toggle", function (e) {
+    if (e.newState !== "open") return;
+    var r = btn.getBoundingClientRect();
+    lb.style.top = (r.bottom + 4) + "px";
+    lb.style.left = Math.max(8, Math.min(r.left, innerWidth - lb.offsetWidth - 8)) + "px";
+  });
+  lb.addEventListener("click", function (e) {
+    var o = e.target.closest("[data-insert]"); if (!o) return;
+    lb.hidePopover();
+    var ta = btn.closest(".composer__box").querySelector(".composer__input");
+    var at = ta.selectionStart || ta.value.length;
+    ta.value = ta.value.slice(0, at) + o.getAttribute("data-insert") + " " + ta.value.slice(ta.selectionEnd || at);
+    ta.focus();
+  });
+});
+</script>
 </body>
 </html>

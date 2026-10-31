@@ -23,6 +23,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { renderDesignViewer } from "./lib/design-viewer.mjs";
 import { cssVarName, renderRootVars } from "./lib/css-vars.mjs";
+import { COMPOSER_TOOLBAR_CSS, COMPOSER_TOOLBAR_JS, COMPOSER_COLOR_PATHS, composerToolbarHtml } from "./lib/composer.mjs";
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const load = (p) => JSON.parse(fs.readFileSync(path.join(root, p)));
@@ -153,6 +154,7 @@ const colorPaths = [
   "fill.danger", "fill.dangerHover", "fill.dangerActive", "fill.disabled", "text.disabled", "icon.disabled", "surface.disabled",
   "bg.ai", "text.ai", "icon.ai", "fill.ai",
   ...usedHues.flatMap((h) => [`avatar.${h}.bg`, `avatar.${h}.text`]),
+  ...COMPOSER_COLOR_PATHS,
 ];
 const colorValue = Object.fromEntries(colorPaths.map((p) => [p, resolve(p)]));
 const fontSans = resolve("family.sans");
@@ -777,37 +779,9 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
 .composer__icon-btn .composer__icon { width: ${compIconBtnIconSize}; height: ${compIconBtnIconSize}; display: block; }
 .composer__icon-btn:hover { background: ${cv("fill.neutralHover")}; }
 .composer__icon-btn:active { background: ${cv("fill.neutralActive")}; }
-/* rich variant (staff side) — toolbar + AI Assist + settings rows + labeled
-   Send, all straight from Composer's own docs recipe */
-.composer__toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: ${px(resolve("dim.1"))}; }
-.composer__tb-sep { flex-shrink: 0; width: 1px; align-self: stretch; margin: ${px(resolve("dim.0_5"))} ${px(resolve("dim.1"))}; background: ${cv("border.default")}; }
-/* Merge Tags / Hyperlinks — ghost triggers opening a listbox of insertable tokens */
-.composer__tb-btn { flex-shrink: 0; display: inline-flex; align-items: center; gap: ${px(resolve("dim.1"))}; height: ${btnGhostSmHeight}; padding: 0 ${px(resolve("dim.2"))}; border: none; border-radius: ${px(resolve("radius.default"))}; background: transparent; cursor: pointer; color: ${cv("text.secondary")}; font-family: ${cv("family.sans")}; ${typoCss(btnGhostSmLabelType)} }
-.composer__tb-btn:hover { background: ${cv("fill.neutralHover")}; }
-.composer__tb-btn .composer__icon { width: ${btnGhostSmIconSize}; height: ${btnGhostSmIconSize}; color: ${cv("icon.secondary")}; flex-shrink: 0; }
-.composer__tb-chev { width: 16px; height: 16px; opacity: 0.7; flex-shrink: 0; }
-.composer__tb-lb { max-height: 260px; overflow-y: auto; }
-/* progressive overflow: JS hides collapsible controls (.composer__tb-adv) one by
-   one — rightmost group first — as the toolbar narrows, and shows the "More"
-   chevron holding whatever overflowed. B/I/U + AI Assist never collapse.
-   Clicking More expands to reveal the hidden controls inline. */
-.composer__tb-collapsed { display: none; }
-/* expanded: the "More" chevron stays put on row one; the revealed controls drop
-   onto a fresh second row. A zero-height flex-basis:100% break forces the wrap,
-   and order:2 sends the revealed items past it. */
-.composer__toolbar.is-expanded .composer__tb-collapsed { display: inline-flex; order: 2; }
-.composer__tb-break { display: none; flex-basis: 100%; width: 0; height: 0; }
-.composer__toolbar.is-expanded .composer__tb-break { display: block; order: 1; }
-/* measurement pass: force a single line so scrollWidth vs clientWidth reveals
-   real overflow (offsetTop is unreliable inside a wrapping flex toolbar) */
-.composer__toolbar.is-measuring { flex-wrap: nowrap; overflow: hidden; }
-.composer__tb-more { display: none; background: ${cv("surface.sunken")}; }
-.composer__toolbar.has-overflow .composer__tb-more { display: inline-flex; }
-/* Rests on surface.sunken (gray.100), so the wash tier would be invisible
-   against it — the Strong tier is what a control on gray.100 hovers to. */
-.composer__tb-more:hover { background: ${cv("fill.neutralHoverStrong")}; }
-.composer__tb-more-chev { width: ${btnGhostSmIcon}; height: ${btnGhostSmIcon}; color: ${cv("icon.secondary")}; flex-shrink: 0; transition: transform 0.15s ease; }
-.composer__toolbar.is-expanded .composer__tb-more-chev { transform: rotate(180deg); }
+/* rich variant (staff side) — the toolbar (controls, insert menus, More
+   overflow, AI Assist) is the DS's own: tools/lib/composer.mjs */
+${COMPOSER_TOOLBAR_CSS}
 #mc-compose-merge-btn { anchor-name: --mc-mt-anchor; }
 #mc-compose-merge-lb { position: fixed; inset: auto; margin: ${px(resolve("dim.1"))} 0 0 0; position-anchor: --mc-mt-anchor; top: anchor(bottom); left: anchor(left); position-try-fallbacks: flip-block; }
 #mc-compose-links-btn { anchor-name: --mc-hl-anchor; }
@@ -816,9 +790,6 @@ ${usedHues.map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; }\n.
 #mc-gwiz-merge-lb { position: fixed; inset: auto; margin: ${px(resolve("dim.1"))} 0 0 0; position-anchor: --mc-gmt-anchor; top: anchor(bottom); left: anchor(left); position-try-fallbacks: flip-block; }
 #mc-gwiz-links-btn { anchor-name: --mc-ghl-anchor; }
 #mc-gwiz-links-lb { position: fixed; inset: auto; margin: ${px(resolve("dim.1"))} 0 0 0; position-anchor: --mc-ghl-anchor; top: anchor(bottom); left: anchor(left); position-try-fallbacks: flip-block; }
-.composer__ai-assist { flex-shrink: 0; display: inline-flex; align-items: center; gap: ${px(resolve("dim.1"))}; height: ${btnGhostSmHeight}; padding: 0 ${px(resolve("dim.2"))}; border: 1px solid transparent; border-radius: ${px(resolve("radius.default"))}; background: ${cv("bg.ai")}; color: ${cv("text.ai")}; cursor: pointer; font-family: ${cv("family.sans")}; ${typoCss(btnGhostSmLabelType)} }
-.composer__ai-assist .composer__icon { width: ${btnGhostSmIconSize}; height: ${btnGhostSmIconSize}; color: ${cv("icon.ai")}; }
-.composer__ai-assist:hover { border-color: ${cv("fill.ai")}; }
 .composer__settings { display: flex; flex-direction: column; gap: ${compSettingsGap}; }
 .composer__settings-row { display: flex; align-items: center; justify-content: space-between; }
 .composer__settings-label { color: ${cv("text.default")}; font-size: 13px; }
@@ -2241,27 +2212,10 @@ function dateRangeWidget(suffix, opts) {
 // `prefix` scopes the ids (${prefix}-tb-more, ${prefix}-merge-lb, …);
 // `aiBtnId` is the AI Assist button's id (bound per surface).
 function richToolbarMarkup(prefix, aiBtnId) {
-  return `<div class="composer__toolbar">
-              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="13" aria-label="Undo" tabindex="-1">${iconUndo}</button>
-              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="12" aria-label="Redo" tabindex="-1">${iconRedo}</button>
-              <span class="composer__tb-sep composer__tb-adv" data-tb-order="11"></span>
-              <button type="button" class="composer__tb-btn composer__tb-style composer__tb-adv" data-tb-order="9" tabindex="-1">Normal${iconTbChevron}</button>
-              <span class="composer__tb-sep composer__tb-adv" data-tb-order="10"></span>
-              <button type="button" class="composer__icon-btn" aria-label="Bold">${iconBold}</button>
-              <button type="button" class="composer__icon-btn" aria-label="Italic">${iconItalic}</button>
-              <button type="button" class="composer__icon-btn" aria-label="Underline">${iconUnderline}</button>
-              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="8" aria-label="Strikethrough" tabindex="-1">${iconStrike}</button>
-              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="7" aria-label="Code" tabindex="-1">${iconCode}</button>
-              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="6" aria-label="Align" tabindex="-1">${iconAlign}</button>
-              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="5" aria-label="Insert link" tabindex="-1">${iconLink}</button>
-              <button type="button" class="composer__icon-btn composer__tb-adv" data-tb-order="4" aria-label="Insert email" tabindex="-1">${iconEmail}</button>
-              <span class="composer__tb-sep composer__tb-adv" data-tb-order="3"></span>
-              ${composerTbMenu(prefix, "merge", "Merge Tags", MERGE_TAGS, 2)}
-              ${composerTbMenu(prefix, "links", "Hyperlinks", HYPERLINKS, 1)}
-              <button type="button" class="composer__tb-btn composer__tb-more" id="${prefix}-tb-more" aria-expanded="false" aria-label="More formatting options">${iconTbMore}</button>
-              <button type="button" class="composer__ai-assist" id="${aiBtnId}">${iconAi}AI Assist</button>
-              <span class="composer__tb-break" aria-hidden="true"></span>
-            </div>`;
+  return composerToolbarHtml({ prefix, ai: aiBtnId, menus: [
+    { kind: "merge", label: "Merge Tags", items: MERGE_TAGS },
+    { kind: "links", label: "Hyperlinks", items: HYPERLINKS },
+  ] });
 }
 // an inline single-select filter — a dropdown-CHIP (like "Filters" and the
 // student MC's Department), NOT a form Select. Chip trigger + Listbox popover;
@@ -2294,15 +2248,6 @@ const composeDepartments = ["Academic Advising", "Student Records", "Financial A
 const MERGE_TAGS = ["{{studentName}}", "{{studentFirstName}}", "{{studentLastName}}"];
 const HYPERLINKS = ["1098-TConsent", "Accept/DeclineAward", "Address", "ApplicationStatus", "ApplyforGraduation", "FAFSA", "FederalStudentAid", "FinancialAidAward", "MessageCenter", "ScheduleBuilder", "ShoppingCart"];
 // a toolbar dropdown: an icon/label trigger opening a listbox popover of insertable tokens
-function composerTbMenu(prefix, kind, label, items, order) {
-  const lbId = prefix + "-" + kind + "-lb";
-  return `<button type="button" class="composer__tb-btn composer__tb-adv" id="${prefix}-${kind}-btn" data-tb-order="${order}" popovertarget="${lbId}" aria-haspopup="listbox">${label}${iconTbChevron}</button>
-              <div class="listbox composer__tb-lb" id="${lbId}" data-tb="${kind}" popover>
-                <ul class="listbox__list" role="listbox" aria-label="${label}">
-                  ${items.map((t) => `<li><button class="listbox__option" role="option" type="button" data-insert="${esc(t)}">${t}</button></li>`).join("\n                  ")}
-                </ul>
-              </div>`;
-}
 // collapse / close as a round handle straddling the panel edge (per ref), not
 // a full-width header bar
 const composeCollapseAction = `<button type="button" class="mc-ai__handle mc-ai__handle--collapse" data-ai-collapse aria-label="Hide AI panel">${iconHandleCollapse}</button>`;
@@ -3922,48 +3867,8 @@ const appJs = `(function () {
         });
       });
     });
-    // as the editor narrows, hide collapsible controls one at a time (rightmost
-    // group first, per data-tb-order) and reveal the "More" chevron; B/I/U + AI
-    // Assist never collapse. Clicking More expands to show the hidden controls.
-    var tbMore = root.querySelector(".composer__tb-more");
-    var toolbar = tbMore ? tbMore.closest(".composer__toolbar") : null;
-    if (!toolbar) return;
-    var tbItems = Array.prototype.slice.call(toolbar.querySelectorAll(".composer__tb-adv"));
-    tbItems.sort(function (a, b) { return (+a.dataset.tbOrder) - (+b.dataset.tbOrder); });
-    function tbOverflowing() { return toolbar.scrollWidth > toolbar.clientWidth + 1; }
-    function tbReflow() {
-      if (toolbar.classList.contains("is-expanded")) return;
-      toolbar.classList.add("is-measuring");
-      tbItems.forEach(function (el) { el.classList.remove("composer__tb-collapsed"); });
-      toolbar.classList.remove("has-overflow");
-      if (tbOverflowing()) {
-        toolbar.classList.add("has-overflow");
-        for (var i = 0; i < tbItems.length && tbOverflowing(); i++) {
-          tbItems[i].classList.add("composer__tb-collapsed");
-        }
-      }
-      toolbar.classList.remove("is-measuring");
-    }
-    tbMore.addEventListener("click", function () {
-      var expanded = toolbar.classList.toggle("is-expanded");
-      tbMore.setAttribute("aria-expanded", expanded ? "true" : "false");
-      if (!expanded) tbReflow();
-    });
-    var lastW = -1;
-    if (typeof ResizeObserver !== "undefined") {
-      new ResizeObserver(function () {
-        var w = Math.round(toolbar.clientWidth);
-        if (w === lastW) return;
-        lastW = w;
-        tbReflow();
-      }).observe(toolbar);
-    }
-    // panes that start hidden don't always get a ResizeObserver tick when first
-    // revealed — expose the reflow so showPane can trigger it, and re-run on
-    // viewport resize as a belt-and-suspenders
-    toolbar._tbReflow = function () { lastW = -1; tbReflow(); };
-    window.addEventListener("resize", toolbar._tbReflow);
-    requestAnimationFrame(tbReflow);
+    // progressive toolbar overflow + More — the DS's own (tools/lib/composer.mjs)
+    window.hpComposerToolbar(root.querySelector(".composer__toolbar"));
   }
   bindEditorTools(composeDlg, composeMessage);
 
@@ -5074,6 +4979,7 @@ ${gwizMarkup}
 ${recipDrawerMarkup}
 
 <script>
+${COMPOSER_TOOLBAR_JS}
 ${appJs}
 </script>
 </body>

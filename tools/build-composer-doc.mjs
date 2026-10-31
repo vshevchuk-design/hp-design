@@ -18,6 +18,8 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { renderNav } from "./lib/nav.mjs";
 import { cssVarName, renderRootVars } from "./lib/css-vars.mjs";
+import { COMPOSER_TOOLBAR_CSS, COMPOSER_BOX_CSS, COMPOSER_TOOLBAR_JS, COMPOSER_COLOR_PATHS, composerToolbarHtml } from "./lib/composer.mjs";
+import { LISTBOX_CSS, SELECT_COLOR_PATHS } from "./lib/select.mjs";
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const load = (p) => JSON.parse(fs.readFileSync(path.join(root, p)));
@@ -79,10 +81,12 @@ const colorPaths = [
   "text.secondary",
   "fill.primaryActive",
   "surface.default",
+  ...COMPOSER_COLOR_PATHS,
+  ...SELECT_COLOR_PATHS,
 ];
-const colorValue = Object.fromEntries(colorPaths.map((p) => [p, resolve(p)]));
+const colorValue = Object.fromEntries([...new Set(colorPaths)].map((p) => [p, resolve(p)]));
 const fontSans = resolve("family.sans");
-const rootVars = renderRootVars([...colorPaths.map((p) => [p, colorValue[p]]), ["family.sans", `'${fontSans}', sans-serif`]]);
+const rootVars = renderRootVars([...[...new Set(colorPaths)].map((p) => [p, colorValue[p]]), ["family.sans", `'${fontSans}', sans-serif`]]);
 
 const radius = px(resolve(composer.radius.$value));
 const fieldPadding = px(resolve(composer.field.padding.$value));
@@ -145,28 +149,15 @@ const iconChevron = iconOf("chevron_right", "composer__icon");
 const css = `${rootVars}
 
 .composer { display: flex; flex-direction: column; gap: ${fieldGap}; font-family: ${cv("family.sans")}; max-width: 420px; }
-.composer__toolbar { display: flex; align-items: center; gap: ${px(resolve("dim.1"))}; }
-.composer__icon-btn { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; width: ${iconBtnSize}; height: ${iconBtnSize}; border: none; border-radius: ${px(resolve("radius.default"))}; background: transparent; padding: 0; cursor: pointer; color: ${cv("icon.secondary")}; }
-.composer__icon-btn .composer__icon { width: ${iconBtnIconSize}; height: ${iconBtnIconSize}; display: block; }
-.composer__icon-btn:hover { background: ${cv("fill.neutralHover")}; }
-.composer__icon-btn:active { background: ${cv("fill.neutralActive")}; }
-.composer__icon-btn:focus-visible { outline: 2px solid ${cv("border.focus")}; outline-offset: 2px; }
-
-.composer__ai-assist { flex-shrink: 0; display: inline-flex; align-items: center; gap: ${px(resolve("dim.1"))}; height: ${ghostSmHeight}; padding: 0 ${px(resolve("dim.2"))}; border: 1px solid transparent; border-radius: ${px(resolve("radius.default"))}; background: ${cv("bg.ai")}; color: ${cv("text.ai")}; cursor: pointer; ${typoCss(ghostSmLabelType)} }
-.composer__ai-assist .composer__icon { width: ${ghostSmIconSize}; height: ${ghostSmIconSize}; color: ${cv("icon.ai")}; }
-.composer__ai-assist:hover { border-color: ${cv("fill.ai")}; }
-
 .composer__field { display: flex; align-items: center; gap: ${fieldGap}; padding: ${fieldPadding}; border-radius: ${radius}; background: ${cv("surface.dim")}; border: 1px solid ${cv("border.default")}; }
 .composer__field:hover { background: ${cv(fieldHoverBgRole)}; border-color: ${cv("border.strong")}; }
 .composer__field:focus-within { border-color: ${cv("border.focus")}; }
 
-/* rich: the toolbar is a header glued to the field — one bordered box, a hairline between */
-.composer__box { display: flex; flex-direction: column; border: 1px solid ${cv(richRole("border"))}; border-radius: ${radius}; background: ${cv(richRole("bg"))}; overflow: hidden; }
-.composer__box:hover { border-color: ${cv(richRole("borderHover"))}; }
-.composer__box:focus-within { border-color: ${cv(richRole("borderFocus"))}; }
-.composer__box .composer__toolbar { flex-wrap: wrap; padding: ${richToolbarPadding}; border-bottom: 1px solid ${cv(richRole("divider"))}; }
-.composer__box .composer__ai-assist { margin-left: auto; }
-.composer__box .composer__field, .composer__box .composer__field:hover, .composer__box .composer__field:focus-within { align-items: flex-start; border: none; border-radius: 0; background: transparent; }
+${COMPOSER_TOOLBAR_CSS}
+${COMPOSER_BOX_CSS}
+${LISTBOX_CSS}
+.composer__tb-lb { position: fixed; inset: auto; margin: 0; }
+.composer--phone { max-width: 343px; }
 .composer__input { flex: 1; min-width: 0; border: none; outline: none; background: transparent; resize: none; color: ${cv("text.default")}; ${typoCss(inputType)} font-family: ${cv("family.sans")}; }
 .composer__input::placeholder { color: ${cv("text.muted")}; }
 
@@ -236,15 +227,15 @@ const simpleComposerCode = `<div class="composer composer--simple">
 </div>`;
 
 // ---- Rich variant ----
+const MERGE_TAGS = ["{{studentName}}", "{{studentFirstName}}", "{{studentLastName}}"];
+const HYPERLINKS = ["Address", "ApplicationStatus", "ApplyforGraduation", "FAFSA", "MessageCenter", "ScheduleBuilder"];
+const richToolbar = (prefix) => composerToolbarHtml({ prefix, ai: `${prefix}-ai`, menus: [
+  { kind: "merge", label: "Merge Tags", items: MERGE_TAGS },
+  { kind: "links", label: "Hyperlinks", items: HYPERLINKS },
+] });
 const richComposer = `<div class="composer composer--rich">
       <div class="composer__box">
-      <div class="composer__toolbar">
-        ${iconBtn(iconBold, "Bold")}
-        ${iconBtn(iconItalic, "Italic")}
-        ${iconBtn(iconUnderline, "Underline")}
-        <button class="btn btn--ghost btn--sm">${iconTag}Merge Tags</button>
-        <button class="composer__ai-assist">${iconAi}AI Assist</button>
-      </div>
+      ${richToolbar("doc-rich")}
       <div class="composer__field">
         <textarea class="composer__input" rows="3" placeholder="Reply to Cait...">Hi Cait — yes, we can review the minor requirements too.</textarea>
       </div>
@@ -263,13 +254,10 @@ const richComposer = `<div class="composer composer--rich">
     </div>`;
 const richComposerCode = `<div class="composer composer--rich">
   <div class="composer__box">
-    <div class="composer__toolbar">
-      <button class="composer__icon-btn" aria-label="Bold"><!-- icon: format_bold --></button>
-      <button class="composer__icon-btn" aria-label="Italic"><!-- icon: format_italic --></button>
-      <button class="composer__icon-btn" aria-label="Underline"><!-- icon: format_underlined --></button>
-      <button class="btn btn--ghost btn--sm"><!-- icon: local_offer -->Merge Tags</button>
-      <button class="composer__ai-assist"><!-- icon: auto_awesome -->AI Assist</button>
-    </div>
+    <!-- composerToolbarHtml({ prefix, menus, styles?, ai? }) from tools/lib/composer.mjs:
+         undo · redo | Normal | B I U · strikethrough · code · align · link · email |
+         insert menus (Listbox popovers) · More (hidden until something overflows) · AI Assist -->
+    <div class="composer__toolbar" role="toolbar" aria-label="Formatting">…</div>
     <div class="composer__field">
       <textarea class="composer__input" placeholder="Reply to Cait...">…</textarea>
     </div>
@@ -375,6 +363,7 @@ const html = `<!doctype html>
 
     <div class="legend">
       <div class="row"><b>simple vs. rich</b><span>Two variants, one field recipe. <code class="tok">simple</code> (student side) = input + attach + Send. <code class="tok">rich</code> (staff side) = B/I/U + AI Assist toolbar, a larger field, Allow Replies (a real Switch) + Expiration, then Send.</span></div>
+      <div class="row"><b>Toolbar = one lib</b><span>The rich toolbar (undo/redo, text style, B/I/U, strikethrough/code/align/link/email, insert menus, More overflow, AI Assist) is <code class="tok">tools/lib/composer.mjs</code> — built and tuned in Staff Message Center (phones especially), now the DS's own; every prototype renders it from there.</span></div>
       <div class="row"><b>Rich = one box</b><span>In <code class="tok">rich</code> the toolbar and the field share ONE bordered box (<code class="tok">composer.rich</code>): the toolbar is a header glued to the text area with a hairline between, on white (surface.default); hover strengthens the border, focus anywhere inside turns it border.focus. AI Assist sits at the far end of the toolbar. A toolbar floating above its own field read as having no outline.</span></div>
       <div class="row"><b>Field reuses Input</b><span>surface.sunken + border.default, strengthening to border.strong on hover and border.focus on focus — the exact same locked-in convention Input/Select/Search already established, not a new field recipe. Value text is size.md (16px), the same Safari-iOS-auto-zoom reason Input's own value text is.</span></div>
       <div class="row"><b>AI Assist: the open call, resolved</b><span>New semantic roles — bg.ai/text.ai/icon.ai/fill.ai (tokens/semantic/color.tokens.json), violet, added specifically for this. Rest state is the pale bg.ai tint (matches Badge's own tint recipe); a border appears on hover using fill.ai — the same "border previews the role color" language Chip's unchecked-hover and Card's own hover already use.</span></div>
@@ -395,6 +384,13 @@ const html = `<!doctype html>
     <div class="usage-preview">${richComposer}</div>
     <pre class="code"><code>${esc(richComposerCode)}</code></pre>
 
+    <h2 class="big-section">Rich · phone width</h2>
+    <p class="section-desc">The same toolbar at 343px (a 375px phone minus its 16px gutters). Controls that don't fit hide one at a time — the insert menus first, then email, link, align, code, strikethrough, the text style, redo, undo — and a <b>More</b> chevron appears; pressing it drops them onto a second row, pressing again folds them back. B / I / U, More and AI Assist never hide. Widen or narrow the window to watch it reflow. One definition for every consumer: <code class="tok">tools/lib/composer.mjs</code> (Staff Message Center's compose, reply and group wizard; ARM Global Settings).</p>
+    <div class="usage-preview"><div class="composer composer--rich composer--phone"><div class="composer__box">
+      ${richToolbar("doc-phone")}
+      <div class="composer__field"><textarea class="composer__input" rows="4" placeholder="Write your message..."></textarea></div>
+    </div></div></div>
+
     <h2 class="big-section">Merge Tags (isolated)</h2>
     <p class="section-desc">A real Button ghost, sm — resolved from button.tokens.json, not a lookalike.</p>
     <div class="story-grid">
@@ -402,6 +398,28 @@ const html = `<!doctype html>
     </div>
   </main>
 </div>
+<script>
+${COMPOSER_TOOLBAR_JS}
+document.querySelectorAll(".composer__box .composer__toolbar").forEach(window.hpComposerToolbar);
+// insert menus: a Listbox under its button
+document.querySelectorAll(".composer__tb-lb").forEach(function (lb) {
+  var btn = document.querySelector('[popovertarget="' + lb.id + '"]');
+  lb.addEventListener("toggle", function (e) {
+    if (e.newState !== "open") return;
+    var r = btn.getBoundingClientRect();
+    lb.style.top = (r.bottom + 4) + "px";
+    lb.style.left = Math.max(8, Math.min(r.left, innerWidth - lb.offsetWidth - 8)) + "px";
+  });
+  lb.addEventListener("click", function (e) {
+    var o = e.target.closest("[data-insert]"); if (!o) return;
+    lb.hidePopover();
+    var ta = btn.closest(".composer__box").querySelector(".composer__input");
+    var at = ta.selectionStart || ta.value.length;
+    ta.value = ta.value.slice(0, at) + o.getAttribute("data-insert") + " " + ta.value.slice(ta.selectionEnd || at);
+    ta.focus();
+  });
+});
+</script>
 </body>
 </html>
 `;
