@@ -116,6 +116,9 @@ export const COMPOSER_TOOLBAR_CSS = `
 .composer__tb-more:hover { background: ${cv("fill.neutralHoverStrong")}; }
 .composer__tb-more-chev { width: ${D(gSm.iconSize)}; height: ${D(gSm.iconSize)}; color: ${cv("icon.secondary")}; flex-shrink: 0; transition: transform 0.15s ease; }
 .composer__toolbar.is-expanded .composer__tb-more-chev { transform: rotate(180deg); }
+/* a separator left first, last or next to another one in its row (its
+   neighbour collapsed) hides — outranks the expanded-row display rule */
+.composer__toolbar .composer__tb-sep.composer__tb-adv.composer__tb-sep--off { display: none; }
 .composer__ai-assist { flex-shrink: 0; display: inline-flex; align-items: center; gap: ${dim(1)}; height: ${D(gSm.height)}; padding: 0 ${dim(2)}; border: 1px solid transparent; border-radius: ${D(c.radius)}; background: ${R(c.aiAssist.bg)}; color: ${R(c.aiAssist.text)}; cursor: pointer; font-family: ${cv("family.sans")}; ${typoCss(gSmLabel)} }
 .composer__ai-assist .composer__icon { width: ${D(gSm.iconSize)}; height: ${D(gSm.iconSize)}; color: ${R(c.aiAssist.icon)}; }
 .composer__ai-assist:hover { border-color: ${R(c.aiAssist.hoverBorder)}; }
@@ -192,21 +195,49 @@ export const COMPOSER_TOOLBAR_JS = `window.hpComposerToolbar = function (toolbar
   var items = Array.prototype.slice.call(toolbar.querySelectorAll(".composer__tb-adv"));
   items.sort(function (a, b) { return (+a.dataset.tbOrder) - (+b.dataset.tbOrder); });
   function overflowing() { return toolbar.scrollWidth > toolbar.clientWidth + 1; }
+  // per row (kept controls / collapsed ones), drop separators that would sit
+  // first, last or right after another separator
+  function tidySeps() {
+    var kids = Array.prototype.filter.call(toolbar.children, function (el) { return !el.matches(".composer__tb-more, .composer__ai-assist, .composer__tb-break, [popover]"); });
+    [false, true].forEach(function (collapsed) {
+      var prevSep = true, last = null;
+      kids.forEach(function (el) {
+        if (el.classList.contains("composer__tb-collapsed") !== collapsed) return;
+        if (el.classList.contains("composer__tb-sep")) {
+          el.classList.toggle("composer__tb-sep--off", prevSep);
+          if (!prevSep) last = el;
+          prevSep = true;
+        } else { prevSep = false; last = el; }
+      });
+      if (last && last.classList.contains("composer__tb-sep")) last.classList.add("composer__tb-sep--off");
+    });
+  }
   function reflow() {
     if (toolbar.classList.contains("is-expanded")) return;
     toolbar.classList.add("is-measuring");
+    items.forEach(function (el) { el.classList.remove("composer__tb-sep--off"); });
     items.forEach(function (el) { el.classList.remove("composer__tb-collapsed"); });
     toolbar.classList.remove("has-overflow");
     if (overflowing()) {
       toolbar.classList.add("has-overflow");
       for (var i = 0; i < items.length && overflowing(); i++) items[i].classList.add("composer__tb-collapsed");
     }
+    tidySeps();
     toolbar.classList.remove("is-measuring");
+  }
+  // expanded, the second row wraps: a separator left at the end of a line
+  // (what follows it wrapped below) hides too
+  function wrapSeps() {
+    Array.prototype.forEach.call(toolbar.querySelectorAll(".composer__tb-collapsed.composer__tb-sep:not(.composer__tb-sep--off)"), function (sep) {
+      var next = sep.nextElementSibling;
+      while (next && (next.matches("[popover]") || getComputedStyle(next).display === "none")) next = next.nextElementSibling;
+      if (next && next.offsetTop > sep.offsetTop + 4) sep.classList.add("composer__tb-sep--off");
+    });
   }
   more.addEventListener("click", function () {
     var expanded = toolbar.classList.toggle("is-expanded");
     more.setAttribute("aria-expanded", expanded ? "true" : "false");
-    if (!expanded) reflow();
+    if (expanded) wrapSeps(); else reflow();
   });
   var lastW = -1;
   if (typeof ResizeObserver !== "undefined") {
