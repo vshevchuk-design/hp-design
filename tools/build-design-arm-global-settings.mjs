@@ -107,7 +107,9 @@ ${card({
         </div>
         <p class="field__error" id="arm-token-error" hidden><span></span></p>
       </div>
-      ${text("arm-msid", "Message Service SID", { value: "MGxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" })}
+    </div>
+    ${text("arm-msid", "Message Service SID", { value: "MGxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" })}
+    <div class="arm-grid">
       ${text("arm-window", "Appointment Window", { value: "24", number: { min: 0, max: 168 } })}
     </div>
     ${text("arm-trailer", "Message Trailer", { value: "Reply STOP to unsubscribe. Msg&amp;Data Rates May Apply." })}`,
