@@ -121,8 +121,8 @@ export const DESIGN_PRODUCTS = {
       "cx-browse-classes": { label: "Browse Classes", href: "designs/cx-browse-classes.html" },
     },
   },
-  scheduling: {
-    label: "Scheduling",
+  advising: {
+    label: "Advising",
     items: {
       "student-scheduling": { label: "Student Scheduling", href: "designs/student-scheduling.html" },
     },
