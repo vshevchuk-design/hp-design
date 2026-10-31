@@ -105,7 +105,7 @@ html, body { height: auto; min-height: 100%; }
 .cx__main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
 /* topbar: 64px declared (the app-shell height), hairline inside it */
 .cx-topbar { position: sticky; top: 0; z-index: 5; height: ${dim(16)}; display: flex; align-items: center; gap: ${dim(3)}; padding: 0 ${dim(6)}; background: ${cv("surface.default")}; border-bottom: 1px solid ${cv("border.default")}; }
-.cx-topbar__title { margin: 0; flex: 1; min-width: 0; color: ${cv("text.default")}; ${typoCss(style("heading-md"))} white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cx-topbar__title { margin: 0; flex: 1; min-width: 0; color: ${cv("text.default")}; ${typoCss(style("heading-lg"))} white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .cx-topbar .sidebar-open { display: none; }
 @media (max-width: 767px) { .cx-topbar .sidebar-open { display: inline-flex; } .cx-topbar { padding: 0 ${dim(4)}; } }
 .cx-page { container-type: inline-size; flex: 1; width: 100%; max-width: 1280px; margin: 0 auto; padding: ${dim(8)} ${dim(8)} ${dim(12)}; display: flex; flex-direction: column; gap: ${dim(6)}; }
