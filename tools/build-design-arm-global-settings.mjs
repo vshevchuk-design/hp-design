@@ -10,7 +10,7 @@
 //
 // Deliberate changes from the live page, all "our language" rather than new UX:
 // the "Last Updated" card became a quiet meta line beside Save (context, not a
-// section); Test Email / Test SMS ask where to send the test in a Dialog; the
+// section); Test Email / Test SMS are the live dialogs on DS Dialog; the
 // tag names in the Body's help text are neutral Badges. The live copy didn't
 // serialise the SMS credentials, so those values are sample data.
 // Run: node tools/build-design-arm-global-settings.mjs
@@ -153,8 +153,34 @@ const menu = (id, label, items, attr) => `<div class="dropdown-menu arm-menu" id
   <div class="dropdown-menu__list" role="none">${items.map((it) => `<button class="dropdown-menu__item" type="button" role="menuitem" ${attr}="${it}">${it}</button>`).join("")}</div>
 </div>`;
 
+// Test Email / Test SMS — the live dialogs: title, fields, Cancel + Send, no description
+const IB_HINT = "Sends through PeopleSoft Integration Broker instead of directly from ARM.";
+const testDialog = (kind, title, fields) => `<dialog class="dialog" id="arm-test-${kind}" aria-labelledby="arm-test-${kind}-title">
+  <form method="dialog" class="dialog__content" novalidate data-test-form="${kind}">
+    <div class="dialog__header">
+      <div class="dialog__heading"><h2 class="dialog__title" id="arm-test-${kind}-title">${title}</h2></div>
+      <button class="dialog__close" type="button" data-close aria-label="Close">${icon("close", "dialog__close-icon")}</button>
+    </div>
+    <div class="dialog__body arm-dlg__body">${fields}
+    </div>
+    <div class="dialog__footer">
+      <button class="btn btn--secondary btn--base" type="button" data-close>Cancel</button>
+      <button class="btn btn--primary btn--base" type="submit">Send</button>
+    </div>
+  </form>
+</dialog>`;
+
 const after = `${menu("arm-style-menu", "Text style", TEXT_STYLES, "data-style")}
 ${menu("arm-tag-menu", "Insert tag", TAGS.map((t) => t.tag), "data-tag")}
+${testDialog("email", "Send Test Email", `
+      ${fieldHtml({ id: "arm-te-to", required: true, control: textFieldHtml({ id: "arm-te-to", label: "To", type: "email", required: true, autocomplete: "email", describedBy: describedBy("arm-te-to", { description: false }) }) })}
+      <div class="arm-ib">
+        ${checkboxHtml({ id: "arm-te-ib", label: "Send via Integration Broker", checked: true })}
+        <span class="tooltip-wrapper"><button class="arm-ib__info" type="button" aria-label="About Integration Broker" aria-describedby="arm-te-ib-tip">${icon("info", "arm-ib__icon")}</button><span class="tooltip" role="tooltip" id="arm-te-ib-tip">${IB_HINT}</span></span>
+      </div>`)}
+${testDialog("sms", "Send Test SMS", `
+      ${fieldHtml({ id: "arm-ts-to", required: true, description: "Include the country code, e.g. +15551234567.", control: textFieldHtml({ id: "arm-ts-to", label: "Phone Number", type: "tel", required: true, autocomplete: "tel", describedBy: describedBy("arm-ts-to") }) })}
+      ${fieldHtml({ id: "arm-ts-body", control: textFieldHtml({ id: "arm-ts-body", label: "Message Body", describedBy: describedBy("arm-ts-body", { description: false }) }) })}`)}
 <dialog class="dialog" id="arm-dlg" aria-labelledby="arm-dlg-title" aria-describedby="arm-dlg-desc">
   <form method="dialog" class="dialog__content" id="arm-dlg-form" novalidate>
     <div class="dialog__header">
@@ -221,6 +247,13 @@ ${CHECKBOX_CSS}
 .arm-menu { position: fixed; inset: auto; margin: 0; }
 .arm-dlg__body { display: flex; flex-direction: column; gap: ${dim(5)}; }
 #arm-dlg-b-wrap[hidden] { display: none; }
+/* Send via Integration Broker + its info tooltip */
+.arm-ib { display: flex; align-items: center; gap: ${dim(1)}; }
+.arm-ib__info { display: inline-flex; align-items: center; justify-content: center; width: ${dim(6)}; height: ${dim(6)}; padding: 0; border: none; border-radius: ${D(tokens.button.ghost.radius)}; background: transparent; color: ${cv("icon.secondary")}; cursor: help; }
+.arm-ib__info:focus-visible { outline: 2px solid ${cv("border.focus")}; outline-offset: 2px; }
+.arm-ib__icon { width: ${dim(4)}; height: ${dim(4)}; display: block; }
+.arm-ib .tooltip { width: max-content; max-width: 240px; white-space: normal; }
+.arm-ib .tooltip-wrapper:focus-within .tooltip { opacity: 1; }
 `;
 };
 
@@ -317,10 +350,30 @@ ${TEXT_FIELD_JS}
     dlg.close(); onSend(v, b.value.trim());
   });
   dlg.addEventListener("click", function (e) { if (e.target === dlg || e.target.closest("[data-close]")) dlg.close(); });
+  // Test Email / Test SMS
+  var EMAIL_RE = /^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$/;
+  function fieldError(input, msg) { var err = $(input.id + "-error"); err.querySelector("span").textContent = msg; err.hidden = !msg; if (msg) { input.setAttribute("aria-invalid", "true"); input.focus(); } else input.removeAttribute("aria-invalid"); return !msg; }
   document.querySelectorAll("[data-test]").forEach(function (btn) {
     btn.addEventListener("click", function () {
-      if (btn.getAttribute("data-test") === "email") openDialog({ title: "Send a test email", description: "Sends a test message with the current email settings.", submit: "Send test", a: { label: "Email address", type: "email" }, onSend: function (v) { cx.toast("Test email sent to " + v); } });
-      else openDialog({ title: "Send a test SMS", description: "Sends a test text through the Twilio connection above.", submit: "Send test", a: { label: "Phone number", type: "tel" }, onSend: function (v) { cx.toast("Test SMS sent to " + v); } });
+      var d = $("arm-test-" + btn.getAttribute("data-test"));
+      d.querySelectorAll(".text-field__control").forEach(function (i) { i.value = ""; fieldError(i, ""); });
+      d.showModal(); d.querySelector(".text-field__control").focus();
+    });
+  });
+  document.querySelectorAll("[data-test-form]").forEach(function (form) {
+    var d = form.closest("dialog");
+    d.addEventListener("click", function (e) { if (e.target === d || e.target.closest("[data-close]")) d.close(); });
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      if (form.getAttribute("data-test-form") === "email") {
+        var to = $("arm-te-to"), v = to.value.trim();
+        if (!fieldError(to, !v ? "Enter an email address." : !EMAIL_RE.test(v) ? "Enter an email like name@school.edu." : "")) return;
+        d.close(); cx.toast("Test email sent to " + v + ($("arm-te-ib").checked ? " via Integration Broker" : ""));
+      } else {
+        var ph = $("arm-ts-to"), n = ph.value.replace(/[\\s().-]/g, "");
+        if (!fieldError(ph, !n ? "Enter a phone number." : !/^\\+\\d{8,15}$/.test(n) ? "Enter the number with its country code, like +15551234567." : "")) return;
+        d.close(); cx.toast("Test SMS sent to " + n);
+      }
     });
   });
   function esc(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;"); }
@@ -375,7 +428,7 @@ const viewerHtml = renderDesignViewer({
   activeKey: "arm-global-settings",
   title: "Global Settings",
   heading: "Global Settings",
-  sub: `ARM Admin's Global Settings, restyled on hp-design components — same sections, fields, copy and order as the live page (read off a saved copy of it): <b>Email</b> (Enable Email + staff/student email type), <b>Phone</b>, <b>SMS</b> (the Twilio connection; the Auth Token stays read-only until Edit), <b>Advising Note Email</b> with a rich-text body on Composer's rich toolbar (text style, bold/italic/underline/strikethrough/code, link, email, Insert Tag), then <b>Save</b>. ARM Admin is a section of the CX app, so it sits on the CX shell. Changes from the live page are language only: section Cards with the test action in the header, Test Email / Test SMS ask where to send in a Dialog, and "Last Updated" is a quiet line beside Save instead of its own card. SMS credentials are sample values.`,
+  sub: `ARM Admin's Global Settings, restyled on hp-design components — same sections, fields, copy and order as the live page (read off a saved copy of it): <b>Email</b> (Enable Email + staff/student email type), <b>Phone</b>, <b>SMS</b> (the Twilio connection; the Auth Token stays read-only until Edit), <b>Advising Note Email</b> with a rich-text body on Composer's rich toolbar (text style, bold/italic/underline/strikethrough/code, link, email, Insert Tag), then <b>Save</b>. ARM Admin is a section of the CX app, so it sits on the CX shell. Changes from the live page are language only: section Cards with the test action in the header, and "Last Updated" is a quiet line beside Save instead of its own card. SMS credentials are sample values.`,
   versions: [{ label: "v1", note: "restyle of the live page", file: "arm-global-settings-app.html" }],
 });
 

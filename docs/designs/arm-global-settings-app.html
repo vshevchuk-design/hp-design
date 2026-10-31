@@ -1350,6 +1350,13 @@ html { background: var(--tok-surface-page); }
 .arm-menu { position: fixed; inset: auto; margin: 0; }
 .arm-dlg__body { display: flex; flex-direction: column; gap: 20px; }
 #arm-dlg-b-wrap[hidden] { display: none; }
+/* Send via Integration Broker + its info tooltip */
+.arm-ib { display: flex; align-items: center; gap: 4px; }
+.arm-ib__info { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; padding: 0; border: none; border-radius: 8px; background: transparent; color: var(--tok-icon-secondary); cursor: help; }
+.arm-ib__info:focus-visible { outline: 2px solid var(--tok-border-focus); outline-offset: 2px; }
+.arm-ib__icon { width: 16px; height: 16px; display: block; }
+.arm-ib .tooltip { width: max-content; max-width: 240px; white-space: normal; }
+.arm-ib .tooltip-wrapper:focus-within .tooltip { opacity: 1; }
 
 </style>
 </head>
@@ -1583,6 +1590,51 @@ html { background: var(--tok-surface-page); }
 <div class="dropdown-menu arm-menu" id="arm-tag-menu" popover role="menu" aria-label="Insert tag">
   <div class="dropdown-menu__list" role="none"><button class="dropdown-menu__item" type="button" role="menuitem" data-tag="{{%noteLink%}}">{{%noteLink%}}</button><button class="dropdown-menu__item" type="button" role="menuitem" data-tag="{{%noteSubject%}}">{{%noteSubject%}}</button><button class="dropdown-menu__item" type="button" role="menuitem" data-tag="{{%studentFirstName%}}">{{%studentFirstName%}}</button><button class="dropdown-menu__item" type="button" role="menuitem" data-tag="{{%studentLastName%}}">{{%studentLastName%}}</button></div>
 </div>
+<dialog class="dialog" id="arm-test-email" aria-labelledby="arm-test-email-title">
+  <form method="dialog" class="dialog__content" novalidate data-test-form="email">
+    <div class="dialog__header">
+      <div class="dialog__heading"><h2 class="dialog__title" id="arm-test-email-title">Send Test Email</h2></div>
+      <button class="dialog__close" type="button" data-close aria-label="Close"><svg class="dialog__close-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
+    </div>
+    <div class="dialog__body arm-dlg__body">
+      <div class="field" data-field data-required>
+  <div class="text-field"><div class="text-field__stack"><label class="text-field__label" for="arm-te-to">To</label><input class="text-field__control" id="arm-te-to" name="arm-te-to" placeholder="To" required autocomplete="email" aria-describedby="arm-te-to-error" type="email" /></div></div>
+  <p class="field__error" id="arm-te-to-error" hidden><svg class="field__error-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg><span></span></p>
+</div>
+      <div class="arm-ib">
+        <label class="checkbox"><input type="checkbox" class="checkbox__input" id="arm-te-ib" name="arm-te-ib" checked /><span class="checkbox__box"><svg class="checkbox__icon checkbox__icon--check" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg><svg class="checkbox__icon checkbox__icon--remove" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13H5v-2h14v2z"/></svg></span><span class="checkbox__label">Send via Integration Broker</span></label>
+        <span class="tooltip-wrapper"><button class="arm-ib__info" type="button" aria-label="About Integration Broker" aria-describedby="arm-te-ib-tip"><svg class="arm-ib__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></button><span class="tooltip" role="tooltip" id="arm-te-ib-tip">Sends through PeopleSoft Integration Broker instead of directly from ARM.</span></span>
+      </div>
+    </div>
+    <div class="dialog__footer">
+      <button class="btn btn--secondary btn--base" type="button" data-close>Cancel</button>
+      <button class="btn btn--primary btn--base" type="submit">Send</button>
+    </div>
+  </form>
+</dialog>
+<dialog class="dialog" id="arm-test-sms" aria-labelledby="arm-test-sms-title">
+  <form method="dialog" class="dialog__content" novalidate data-test-form="sms">
+    <div class="dialog__header">
+      <div class="dialog__heading"><h2 class="dialog__title" id="arm-test-sms-title">Send Test SMS</h2></div>
+      <button class="dialog__close" type="button" data-close aria-label="Close"><svg class="dialog__close-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
+    </div>
+    <div class="dialog__body arm-dlg__body">
+      <div class="field" data-field data-required>
+  <div class="text-field"><div class="text-field__stack"><label class="text-field__label" for="arm-ts-to">Phone Number</label><input class="text-field__control" id="arm-ts-to" name="arm-ts-to" placeholder="Phone Number" required autocomplete="tel" aria-describedby="arm-ts-to-desc arm-ts-to-error" type="tel" /></div></div>
+  <p class="field__description" id="arm-ts-to-desc">Include the country code, e.g. +15551234567.</p>
+  <p class="field__error" id="arm-ts-to-error" hidden><svg class="field__error-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg><span></span></p>
+</div>
+      <div class="field" data-field>
+  <div class="text-field"><div class="text-field__stack"><label class="text-field__label" for="arm-ts-body">Message Body</label><input class="text-field__control" id="arm-ts-body" name="arm-ts-body" placeholder="Message Body" aria-describedby="arm-ts-body-error" type="text" /></div></div>
+  <p class="field__error" id="arm-ts-body-error" hidden><svg class="field__error-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg><span></span></p>
+</div>
+    </div>
+    <div class="dialog__footer">
+      <button class="btn btn--secondary btn--base" type="button" data-close>Cancel</button>
+      <button class="btn btn--primary btn--base" type="submit">Send</button>
+    </div>
+  </form>
+</dialog>
 <dialog class="dialog" id="arm-dlg" aria-labelledby="arm-dlg-title" aria-describedby="arm-dlg-desc">
   <form method="dialog" class="dialog__content" id="arm-dlg-form" novalidate>
     <div class="dialog__header">
@@ -1982,10 +2034,30 @@ window.cx = (function () {
     dlg.close(); onSend(v, b.value.trim());
   });
   dlg.addEventListener("click", function (e) { if (e.target === dlg || e.target.closest("[data-close]")) dlg.close(); });
+  // Test Email / Test SMS
+  var EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+  function fieldError(input, msg) { var err = $(input.id + "-error"); err.querySelector("span").textContent = msg; err.hidden = !msg; if (msg) { input.setAttribute("aria-invalid", "true"); input.focus(); } else input.removeAttribute("aria-invalid"); return !msg; }
   document.querySelectorAll("[data-test]").forEach(function (btn) {
     btn.addEventListener("click", function () {
-      if (btn.getAttribute("data-test") === "email") openDialog({ title: "Send a test email", description: "Sends a test message with the current email settings.", submit: "Send test", a: { label: "Email address", type: "email" }, onSend: function (v) { cx.toast("Test email sent to " + v); } });
-      else openDialog({ title: "Send a test SMS", description: "Sends a test text through the Twilio connection above.", submit: "Send test", a: { label: "Phone number", type: "tel" }, onSend: function (v) { cx.toast("Test SMS sent to " + v); } });
+      var d = $("arm-test-" + btn.getAttribute("data-test"));
+      d.querySelectorAll(".text-field__control").forEach(function (i) { i.value = ""; fieldError(i, ""); });
+      d.showModal(); d.querySelector(".text-field__control").focus();
+    });
+  });
+  document.querySelectorAll("[data-test-form]").forEach(function (form) {
+    var d = form.closest("dialog");
+    d.addEventListener("click", function (e) { if (e.target === d || e.target.closest("[data-close]")) d.close(); });
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      if (form.getAttribute("data-test-form") === "email") {
+        var to = $("arm-te-to"), v = to.value.trim();
+        if (!fieldError(to, !v ? "Enter an email address." : !EMAIL_RE.test(v) ? "Enter an email like name@school.edu." : "")) return;
+        d.close(); cx.toast("Test email sent to " + v + ($("arm-te-ib").checked ? " via Integration Broker" : ""));
+      } else {
+        var ph = $("arm-ts-to"), n = ph.value.replace(/[\s().-]/g, "");
+        if (!fieldError(ph, !n ? "Enter a phone number." : !/^\+\d{8,15}$/.test(n) ? "Enter the number with its country code, like +15551234567." : "")) return;
+        d.close(); cx.toast("Test SMS sent to " + n);
+      }
     });
   });
   function esc(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;"); }
