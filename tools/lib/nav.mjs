@@ -125,6 +125,7 @@ export const DESIGN_PRODUCTS = {
     label: "Advising",
     items: {
       "student-scheduling": { label: "Student Scheduling", href: "designs/student-scheduling.html" },
+      schedule: { label: "Schedule", href: "designs/schedule.html" },
     },
   },
   "release-emails": {

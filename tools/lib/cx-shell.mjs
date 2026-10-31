@@ -212,8 +212,9 @@ const SHELL_JS = `window.cx = (function () {
  * @param prompts   the Assistant's suggested questions on this page (live text)
  * @param colorPaths extra colour roles the page CSS uses directly
  * @param navTheme  the Sidebar's theme: "brand" (blue, default) or "neutral" (gray)
+ * @param nav       the Sidebar's items (default CX_NAV — a page can drop sections, e.g. an install without ARM)
  */
-export function cxApp({ title, active, views, after = "", pageCss = () => "", pageJs = "", prompts, colorPaths = [], navTheme = "brand" }) {
+export function cxApp({ title, active, views, after = "", pageCss = () => "", pageJs = "", prompts, colorPaths = [], navTheme = "brand", nav = CX_NAV }) {
   const paths = [...new Set([...SS_COLOR_PATHS, ...SIDEBAR_COLOR_PATHS, ...componentColorPaths, ...SHELL_COLOR_PATHS, ...colorPaths])];
   const rootVars = renderRootVars([...paths.map((p) => [p, resolve(p)]), ["family.sans", `'${resolve("family.sans")}', sans-serif`]]);
   const css = hoverGuard(`${rootVars}
@@ -235,7 +236,7 @@ ${css}
 </head>
 <body>
 <div class="cx has-sidebar">
-  ${sidebarHtml({ nav: CX_NAV, active, user: CX_USER, id: "cx", theme: navTheme })}
+  ${sidebarHtml({ nav, active, user: CX_USER, id: "cx", theme: navTheme })}
   <div class="sidebar-scrim"></div>
   <div class="cx__main">
     <header class="cx-topbar">
