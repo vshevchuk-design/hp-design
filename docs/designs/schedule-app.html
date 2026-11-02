@@ -1332,6 +1332,17 @@ html { background: var(--tok-surface-page); }
 .datepicker__value { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .datepicker__value--placeholder { color: var(--tok-text-muted); }
 .datepicker__panel { margin: 0; box-sizing: border-box; padding: 12px; border-radius: 8px; background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); box-shadow: 0px 2px 8px 0px rgba(21, 25, 30, 0.10); font-family: inherit; color: inherit; }
+
+.date-nav { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.date-nav__controls { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.date-nav__period { box-sizing: border-box; display: inline-flex; align-items: center; gap: 4px; min-width: 0; height: 40px; margin: 0; padding: 0 8px; border: none; border-radius: 8px; background: transparent; color: var(--tok-text-default); cursor: pointer; font-family: inherit; font-weight: 600; font-size: 18px; line-height: 1.4; white-space: nowrap; }
+@media (hover: hover) { .date-nav__period:hover { background: var(--tok-fill-neutral-hover); } }
+.date-nav__period:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
+.date-nav__label { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.date-nav__chevron { width: 20px; height: 20px; flex-shrink: 0; color: var(--tok-icon-secondary); }
+/* split: the period first and flexible, the buttons at the far end */
+.date-nav--split .date-nav__period { order: -1; margin-right: auto; margin-left: -8px; }
+@media (max-width: 767px) { .date-nav__period { font-weight: 600; font-size: 16px; line-height: 1.4; } }
 /* ============ Schedule — sch-* composition layer ============ */
 .cx-page { max-width: none; gap: 16px; }
 /* Event types: the Badge colours (badge.color.*) — tint fill, solid bar */
@@ -1346,11 +1357,8 @@ html { background: var(--tok-surface-page); }
 .sch-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; }
 .sch-bar__nav { display: flex; align-items: center; gap: 8px; min-width: 0; }
 .sch-bar__end { margin-left: auto; display: flex; align-items: center; gap: 8px; }
-.sch-range { display: inline-flex; align-items: center; gap: 4px; height: 40px; padding: 0 8px; margin-left: 4px; border: none; border-radius: 8px; background: transparent; color: var(--tok-text-default); cursor: pointer; font-family: inherit; font-weight: 600; font-size: 18px; line-height: 1.4; white-space: nowrap; }
-@media (hover: hover) { .sch-range:hover { background: var(--tok-fill-neutral-hover); } }
-.sch-range:focus-visible { outline: 2px solid var(--tok-border-focus); outline-offset: 2px; }
-.sch-range svg { width: 20px; height: 20px; color: var(--tok-icon-secondary); }
-.sch-pick { padding: 12px; }
+/* ‹ › Today + the period: the DS Date Navigator (tools/lib/date-navigator.mjs) */
+.sch-bar .date-nav { flex: 0 1 auto; }
 
 /* ---- filters: the legend is the filter ---- */
 /* one row at every width (user, 2026-11-03: they wrapped on a tablet) —
@@ -1531,9 +1539,7 @@ dialog.slide-over-panel .sch-panel__body--list .sch-lrow__time { grid-column: 1 
 }
 /* ---- phone ---- */
 @media (max-width: 767px) {
-  .sch-range { font-weight: 600; font-size: 16px; line-height: 1.4; margin-left: 0; padding: 0 4px; }
-  .sch-bar__nav { width: 100%; }
-  .sch-bar__nav .sch-range { margin-right: auto; order: -1; }
+  .sch-bar .date-nav { flex: 1 1 100%; }
   .sch-print { display: none; }
   .sch-bar__end .tabs--segmented { flex: 1; }
   .sch-bar__end .tabs--segmented .tab { flex: 1; }
@@ -1570,7 +1576,7 @@ dialog.slide-over-panel .sch-panel__body--list .sch-lrow__time { grid-column: 1 
 }
 /* print: the calendar alone */
 @media print {
-  .sidebar, .sidebar-scrim, .cx-topbar, .fab, .sch-bar__end, .sch-filters, .sch-bar__nav .btn { display: none !important; }
+  .sidebar, .sidebar-scrim, .cx-topbar, .fab, .sch-bar__end, .sch-filters, .date-nav__controls { display: none !important; }
   .cx-page { padding: 0; }
   .sch-week__head { position: static; }
 }
@@ -1629,12 +1635,15 @@ dialog.slide-over-panel .sch-panel__body--list .sch-lrow__time { grid-column: 1 
     <main class="cx-page">
 
       <div class="sch-bar">
-        <div class="sch-bar__nav">
-          <button class="btn btn--secondary btn--base btn--icon-only" id="sch-prev" type="button" aria-label="Previous week"><svg class="btn__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg></button>
-          <button class="btn btn--secondary btn--base btn--icon-only" id="sch-next" type="button" aria-label="Next week"><svg class="btn__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button>
-          <button class="btn btn--secondary btn--base" id="sch-today" type="button">Today</button>
-          <button class="sch-range" id="sch-range" type="button" popovertarget="sch-pick" aria-haspopup="dialog"><span id="sch-range-label"></span><svg class="" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
-        </div>
+        <div class="date-nav" id="sch-nav" data-unit="week" data-value="2026-10-29" data-today="2026-10-29">
+  <div class="date-nav__controls">
+    <button class="btn btn--secondary btn--base btn--icon-only" type="button" data-step="-1" aria-label="Previous week"><svg class="btn__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg></button>
+    <button class="btn btn--secondary btn--base btn--icon-only" type="button" data-step="1" aria-label="Next week"><svg class="btn__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button>
+    <button class="btn btn--secondary btn--base" type="button" data-today>Today</button>
+  </div>
+  <button class="date-nav__period" type="button" popovertarget="sch-nav-panel" aria-haspopup="dialog"><span class="date-nav__label" id="sch-nav-label">Oct 25 – 31, 2026</span><svg class="date-nav__chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+  <div class="datepicker__panel date-nav__panel" id="sch-nav-panel" popover role="dialog" aria-label="Go to date"><div class="calendar" role="group" aria-label="Go to date" data-mode="single" data-value="2026-10-29" data-today="2026-10-29"><div class="calendar__months"><div class="calendar__month"><div class="calendar__head"><button class="calendar__nav calendar__nav--prev" type="button" aria-label="Previous month"><svg class="calendar__nav-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg></button><span class="calendar__selects"><span class="calendar__sel"><select class="calendar__select calendar__select--month" aria-label="Month"><option value="0">January</option><option value="1">February</option><option value="2">March</option><option value="3">April</option><option value="4">May</option><option value="5">June</option><option value="6">July</option><option value="7">August</option><option value="8">September</option><option value="9" selected>October</option><option value="10">November</option><option value="11">December</option></select><svg class="calendar__sel-chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></span><span class="calendar__sel"><select class="calendar__select calendar__select--year" aria-label="Year"><option value="2026" selected>2026</option></select><svg class="calendar__sel-chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></span></span><button class="calendar__nav calendar__nav--next" type="button" aria-label="Next month"><svg class="calendar__nav-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button></div><div class="calendar__grid" role="group"></div></div></div></div></div>
+</div>
         <div class="sch-bar__end">
           <div class="tabs--segmented" id="sch-views" role="tablist" aria-label="View">
             <button class="tab tab--sm" type="button" role="tab" data-view="week">Week</button>
@@ -1659,7 +1668,7 @@ dialog.slide-over-panel .sch-panel__body--list .sch-lrow__time { grid-column: 1 
         <div class="alert__stack"><p class="alert__message"><span class="alert__title" id="sch-friendbar-text"></span><span class="sch-wide"> Their classes are the hatched blocks.</span></p></div>
         <button class="btn btn--secondary btn--sm" id="sch-friend-stop" type="button">Stop<span class="sch-wide"> comparing</span></button>
       </div>
-      <section class="sch-surface" id="sch-surface" aria-labelledby="sch-range-label"></section>
+      <section class="sch-surface" id="sch-surface" aria-labelledby="sch-nav-label"></section>
     </main>
   </div>
 </div>
@@ -1680,7 +1689,6 @@ dialog.slide-over-panel .sch-panel__body--list .sch-lrow__time { grid-column: 1 
   </form>
 </div>
 </dialog>
-<div class="datepicker__panel sch-pick" id="sch-pick" popover role="dialog" aria-label="Go to date"><div class="calendar" role="group" aria-label="Go to date" data-mode="single" data-value="2026-10-29" data-today="2026-10-29"><div class="calendar__months"><div class="calendar__month"><div class="calendar__head"><button class="calendar__nav calendar__nav--prev" type="button" aria-label="Previous month"><svg class="calendar__nav-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg></button><span class="calendar__selects"><span class="calendar__sel"><select class="calendar__select calendar__select--month" aria-label="Month"><option value="0">January</option><option value="1">February</option><option value="2">March</option><option value="3">April</option><option value="4">May</option><option value="5">June</option><option value="6">July</option><option value="7">August</option><option value="8">September</option><option value="9" selected>October</option><option value="10">November</option><option value="11">December</option></select><svg class="calendar__sel-chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></span><span class="calendar__sel"><select class="calendar__select calendar__select--year" aria-label="Year"><option value="2026" selected>2026</option></select><svg class="calendar__sel-chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></span></span><button class="calendar__nav calendar__nav--next" type="button" aria-label="Next month"><svg class="calendar__nav-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button></div><div class="calendar__grid" role="group"></div></div></div></div></div>
 <div class="listbox" id="sch-lb" popover role="listbox" aria-label="Compare with a friend"><div class="listbox__list"></div></div>
 <div class="dropdown-menu" id="sch-ics-menu" popover role="menu" aria-label="Download .ics"><div class="dropdown-menu__list" role="none">
   <button type="button" class="dropdown-menu__item" role="menuitem" data-ics="view">What's shown</button>
@@ -1886,6 +1894,55 @@ window.hpCalendar = window.hpCalendar || (function () {
   }
   return { mount: mount, parse: parse, iso: iso, key: key, viewAdd: viewAdd, addMonths: addMonths, MONTHS: MONTHS };
 })();
+window.hpDateNav = window.hpDateNav || (function () {
+  var label = function (unit, iso) {
+    var MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"], MONTH = ["January","February","March","April","May","June","July","August","September","October","November","December"], DOW = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+    var p = iso.split("-"), d = new Date(+p[0], p[1] - 1, +p[2], 12);
+    if (unit === "month") return MONTH[d.getMonth()] + " " + d.getFullYear();
+    if (unit === "day") return DOW[d.getDay()] + ", " + MON[d.getMonth()] + " " + d.getDate() + ", " + d.getFullYear();
+    var s = new Date(d); s.setDate(d.getDate() - d.getDay());
+    var e = new Date(s); e.setDate(s.getDate() + 6);
+    if (s.getFullYear() !== e.getFullYear()) return MON[s.getMonth()] + " " + s.getDate() + ", " + s.getFullYear() + " \u2013 " + MON[e.getMonth()] + " " + e.getDate() + ", " + e.getFullYear();
+    if (s.getMonth() !== e.getMonth()) return MON[s.getMonth()] + " " + s.getDate() + " \u2013 " + MON[e.getMonth()] + " " + e.getDate() + ", " + e.getFullYear();
+    return MON[s.getMonth()] + " " + s.getDate() + " \u2013 " + e.getDate() + ", " + e.getFullYear();
+  };
+  function d(iso) { var p = iso.split("-"); return new Date(+p[0], p[1] - 1, +p[2], 12); }
+  function iso(dt) { return dt.getFullYear() + "-" + ("0" + (dt.getMonth() + 1)).slice(-2) + "-" + ("0" + dt.getDate()).slice(-2); }
+  function step(unit, v, n) {
+    var x = d(v);
+    if (unit === "month") return iso(new Date(x.getFullYear(), x.getMonth() + n, 1, 12));
+    x.setDate(x.getDate() + (unit === "day" ? n : 7 * n)); return iso(x);
+  }
+  function mount(el, opts) {
+    opts = opts || {};
+    var st = { unit: el.dataset.unit || "week", value: el.dataset.value, today: el.dataset.today || iso(new Date()) };
+    var trigger = el.querySelector(".date-nav__period"), panel = el.querySelector(".date-nav__panel");
+    var cal = hpCalendar.mount(panel.querySelector(".calendar"), { onChange: function (a) { panel.hidePopover(); trigger.focus(); change(hpCalendar.iso(a), "pick"); } });
+    function paint() {
+      el.querySelector(".date-nav__label").textContent = label(st.unit, st.value);
+      el.querySelectorAll("[data-step]").forEach(function (b) { b.setAttribute("aria-label", (b.dataset.step < 0 ? "Previous " : "Next ") + st.unit); });
+      el.dataset.unit = st.unit; el.dataset.value = st.value;
+    }
+    function change(v, reason) { st.value = v; paint(); if (opts.onChange) opts.onChange(v, reason); }
+    el.addEventListener("click", function (e) {
+      var s = e.target.closest("[data-step]"); if (s) { change(step(st.unit, st.value, +s.dataset.step), +s.dataset.step < 0 ? "prev" : "next"); return; }
+      if (e.target.closest("[data-today]")) change(st.today, "today");
+    });
+    // float the Calendar under the trigger, flip above if it doesn't fit (DatePicker's rule)
+    panel.addEventListener("toggle", function (e) {
+      if (e.newState !== "open") return;
+      var a = hpCalendar.parse(st.value); cal.setValue(a); cal.setView(a);
+      var r = trigger.getBoundingClientRect(), pr = panel.getBoundingClientRect(), vw = window.innerWidth, vh = window.innerHeight, top;
+      if (r.bottom + 4 + pr.height <= vh - 8) top = r.bottom + 4; else if (r.top - 4 - pr.height >= 8) top = r.top - 4 - pr.height; else top = Math.max(8, vh - pr.height - 8);
+      panel.style.position = "fixed"; panel.style.margin = "0"; panel.style.top = top + "px";
+      panel.style.left = Math.max(8, Math.min(r.left, vw - pr.width - 8)) + "px";
+      cal.focus();
+    });
+    paint();
+    return { set: function (o) { if (o.unit) st.unit = o.unit; if (o.value) st.value = o.value; paint(); }, get: function () { return { unit: st.unit, value: st.value }; } };
+  }
+  return { mount: mount, label: label, step: step };
+})();
 (function () {
   var TYPES = [{"key":"class","label":"Classes","one":"Class","color":"green"},{"key":"waitlist","label":"Wait list","one":"Wait list","color":"amber"},{"key":"exam","label":"Exams","one":"Exam","color":"red"},{"key":"appointment","label":"Appointments","one":"Appointment","color":"violet","arm":true},{"key":"workshop","label":"Workshops","one":"Workshop","color":"teal","arm":true}];
   var CLASSES = [{"institution":"PeopleSoft University","career":"Undergraduate","session":"Regular Academic Session","grading":"Graded","mode":"In Person","campus":"Hacienda Campus","location":"Hacienda","topic":"","components":"Lecture Required","textbooks":"","links":["HighPoint - test"],"code":"HISTORY 120","title":"American History","section":"1-LEC","classNumber":1088,"days":[1,3,5],"start":540,"end":590,"units":"1.0","instructor":"Marcus Webb","room":"Angel 105","description":"Survey of American history from colonial settlement to the present: the Revolution, the Constitution, expansion, the Civil War and Reconstruction, industrialization, and the United States as a world power.","seats":[24,35],"wait":[0,10],"status":"Open"},{"institution":"PeopleSoft University","career":"Undergraduate","session":"Regular Academic Session","grading":"Graded","mode":"In Person","campus":"Hacienda Campus","location":"Hacienda","topic":"","components":"Lecture Required","textbooks":"","links":["HighPoint - test"],"code":"ART 112","title":"History of World Art (As/Af)","section":"1-LEC","classNumber":1093,"days":[1,3,5],"start":600,"end":650,"units":"3.0","instructor":"Elena Ruiz","room":"Fine Arts 120","waitlist":3,"description":"Art and architecture of Asia and Africa from prehistory to the present, studied in their religious, political and social contexts.","seats":[0,30],"wait":[2,10],"status":"Wait list"},{"institution":"PeopleSoft University","career":"Undergraduate","session":"Regular Academic Session","grading":"Graded","mode":"In Person","campus":"Hacienda Campus","location":"Hacienda","topic":"","components":"Lecture Required","textbooks":"","links":["HighPoint - test"],"code":"ART 111","title":"Introductory Art Seminar","section":"1-SEM","classNumber":1091,"days":[2,4],"start":600,"end":680,"units":"3.0","instructor":"Elena Ruiz","room":"Fine Arts 204","description":"A seminar introduction to looking at, talking about and writing about art. Weekly gallery visits and short critical responses.","seats":[6,18],"wait":[0,5],"status":"Open"},{"institution":"PeopleSoft University","career":"Undergraduate","session":"Regular Academic Session","grading":"Graded","mode":"In Person","campus":"Hacienda Campus","location":"Hacienda","topic":"","components":"Lecture Required","textbooks":"","links":["HighPoint - test"],"code":"ACCT 202","title":"Financial Accounting II","section":"100-LEC","classNumber":1102,"days":[2,4],"start":600,"end":680,"units":"3.0","instructor":"Syndi B. Forbes","room":"Business 210","waitlist":6,"description":"Continuation of Financial Accounting I: long-term assets, liabilities, equity, the statement of cash flows and financial statement analysis.","seats":[0,40],"wait":[0,10],"status":"Closed"},{"institution":"PeopleSoft University","career":"Undergraduate","session":"Regular Academic Session","grading":"Graded","mode":"In Person","campus":"Hacienda Campus","location":"Hacienda","topic":"","components":"Lecture Required","textbooks":"","links":["HighPoint - test"],"code":"ACCT 201","title":"Financial Accounting I","section":"1001-LEC","classNumber":1001,"days":[1,3,5],"start":720,"end":770,"units":"3.0","instructor":"Syndi B. Forbes","room":"Business 110","waitlist":2,"description":"The accounting cycle and financial statements: recording transactions, adjusting entries, receivables, inventories and internal control.","seats":[0,40],"wait":[5,15],"status":"Wait list"},{"institution":"PeopleSoft University","career":"Undergraduate","session":"Regular Academic Session","grading":"Graded","mode":"In Person","campus":"Hacienda Campus","location":"Hacienda","topic":"","components":"Lecture Required","textbooks":"","links":["HighPoint - test"],"code":"MATH 211","title":"Math for Business Analysis","section":"100-LEC","classNumber":2184,"days":[1,3,5],"start":780,"end":830,"units":"3","instructor":"Staff","room":"","description":"Topics in business analysis, including: Lagrange multipliers, linear programming, linear algebra, intermediate probability, random variables, discrete distributions, and continuous distributions.","seats":[28,30],"wait":[0,0],"status":"Open"},{"institution":"PeopleSoft University","career":"Undergraduate","session":"Regular Academic Session","grading":"Graded","mode":"In Person","campus":"Hacienda Campus","location":"Hacienda","topic":"","components":"Lecture Required","textbooks":"","links":["HighPoint - test"],"code":"DANCE 104","title":"Modern and Postmodern Practice","section":"1-LAB","classNumber":1310,"days":[1,3,5],"start":780,"end":830,"units":"2.0","instructor":"Jonathan Rehm","room":"Studio B","waitlist":4,"description":"Studio practice in modern and postmodern dance techniques, with improvisation and short compositions. Comfortable clothing required.","seats":[0,20],"wait":[0,6],"status":"Closed"},{"institution":"PeopleSoft University","career":"Undergraduate","session":"Regular Academic Session","grading":"Graded","mode":"In Person","campus":"Hacienda Campus","location":"Hacienda","topic":"","components":"Lecture Required","textbooks":"","links":["HighPoint - test"],"code":"COMM 3","title":"Public Communication!","section":"1-LEC","classNumber":1022,"days":[1,3,5],"start":780,"end":830,"units":"3.0","instructor":"Staff","room":"Humanities 214","waitlist":1,"description":"Preparing and delivering informative and persuasive speeches; audience analysis, organization, evidence and delivery.","seats":[0,25],"wait":[3,8],"status":"Wait list"},{"institution":"PeopleSoft University","career":"Undergraduate","session":"Regular Academic Session","grading":"Graded","mode":"In Person","campus":"Hacienda Campus","location":"Hacienda","topic":"","components":"Lecture Required","textbooks":"","links":["HighPoint - test"],"code":"MATH 210","title":"Brief Calculus","section":"1000-LEC","classNumber":1000,"days":[1,3,5],"start":840,"end":890,"units":"4.0","instructor":"Priya Natarajan","room":"Science 204","description":"Differential and integral calculus of one variable with applications to business, economics and the life sciences.","seats":[11,35],"wait":[0,10],"status":"Open"},{"institution":"PeopleSoft University","career":"Undergraduate","session":"Regular Academic Session","grading":"Graded","mode":"In Person","campus":"Hacienda Campus","location":"Hacienda","topic":"","components":"Lecture Required","textbooks":"","links":["HighPoint - test"],"code":"BIOLOGY 115","title":"History and Theory of Biology","section":"1-LEC","classNumber":1565,"days":[],"units":"3.0","instructor":"","room":"","description":"How ideas about life changed from Aristotle to molecular biology: evolution, inheritance, the cell and the debates around them.","seats":[9,30],"wait":[0,10],"status":"Open"},{"institution":"PeopleSoft University","career":"Graduate","session":"Regular Academic Session","grading":"Graded","mode":"In Person","campus":"Hacienda Campus","location":"Hacienda","topic":"","components":"Lecture Required","textbooks":"","links":["HighPoint - test"],"code":"ART 532","title":"The Psychology of Art","section":"001-LEC","classNumber":1532,"days":[],"units":"3.0","instructor":"","room":"","waitlist":5,"description":"Graduate seminar on perception, emotion and meaning in the making and viewing of art.","seats":[0,12],"wait":[1,5],"status":"Wait list"}];
@@ -1912,7 +1969,6 @@ window.hpCalendar = window.hpCalendar || (function () {
 
   var DEADLINES = {"lastWaitlist":"2026-08-29","groups":[{"title":"Drop","items":[{"name":"Drop – delete record","date":"2026-11-25","text":"A class dropped on or before this date will be deleted from your academic record."},{"name":"Drop – retain record","date":"2026-11-26","text":"A class dropped on or before this date will be retained on your academic record with a status of dropped."},{"name":"Drop with penalty","date":"2026-11-27","text":"A class dropped on or before this date will appear on your transcript and a penalty grade will be assigned to the class."},{"name":"Drop with greater penalty","date":"2026-11-28","text":"Last date to drop. A class dropped on or before this date will appear on your transcript and a severe penalty grade will be assigned to the class."}]},{"title":"Cancel & withdraw","items":[{"name":"Cancel","date":"2026-08-29","text":"Classes within a session, canceled on or before this date will not appear on your transcript."},{"name":"Withdraw without penalty","date":"2026-11-13","text":"Classes within a session, withdrawn on or before this date will not appear on your transcript."},{"name":"Withdraw with penalty","date":"2026-11-29","text":"Classes within a session, withdrawn on or before this date will appear on your transcript and a penalty grade will be assigned to the classes."},{"name":"Withdraw with greater penalty","date":"2026-11-29","text":"Last day to withdraw from a session. Classes within a session, withdrawn on or before this date will appear on your transcript and a severe penalty grade will be assigned to the classes."}]}]};
   var MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-  var MONTH = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
   var DOW = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   var DOW_FULL = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
   var DOW2 = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
@@ -2082,50 +2138,25 @@ window.hpCalendar = window.hpCalendar || (function () {
   }
 
   // ---- render ----
-  function rangeLabel() {
-    if (st.view === "month") { var a = d(st.anchor); return MONTH[a.getMonth()] + " " + a.getFullYear(); }
-    var s = d(weekStart(st.anchor)), e = d(add(weekStart(st.anchor), 6));
-    if (s.getFullYear() !== e.getFullYear()) return mdY(iso(s)) + " – " + mdY(iso(e));
-    if (s.getMonth() !== e.getMonth()) return MON[s.getMonth()] + " " + s.getDate() + " – " + MON[e.getMonth()] + " " + e.getDate() + ", " + e.getFullYear();
-    return MON[s.getMonth()] + " " + s.getDate() + " – " + e.getDate() + ", " + e.getFullYear();
-  }
   function render() {
     byId = {};
     $("sch-surface").innerHTML = st.view === "week" ? renderWeek() : st.view === "month" ? renderMonth() : renderList();
-    $("sch-range-label").textContent = rangeLabel();
-    var unit = st.view === "month" ? "month" : "week";
-    $("sch-prev").setAttribute("aria-label", "Previous " + unit);
-    $("sch-next").setAttribute("aria-label", "Next " + unit);
+    nav.set({ unit: st.view === "month" ? "month" : "week", value: st.anchor });
+    $("sch-nav").classList.toggle("date-nav--split", mq.matches);
     document.querySelectorAll("#sch-views .tab").forEach(function (t) { var on = t.dataset.view === st.view; t.classList.toggle("tab--active", on); t.setAttribute("aria-selected", on); });
   }
   mq.addEventListener("change", render);
 
   // ---- toolbar ----
   $("sch-views").addEventListener("click", function (e) { var t = e.target.closest("[data-view]"); if (!t) return; st.view = t.dataset.view; render(); });
-  function step(n) {
-    if (st.view === "month") { var a = d(st.anchor); st.anchor = iso(new Date(a.getFullYear(), a.getMonth() + n, 1, 12)); }
-    else if (st.view === "week" && mq.matches) { st.anchor = add(st.anchor, 7 * n); st.day = add(st.day, 7 * n); }
-    else st.anchor = add(st.anchor, 7 * n);
+  // ‹ › Today + the period → the DS Date Navigator. On a phone Week shows one
+  // day: stepping a week keeps the same weekday, Today / a picked date go there.
+  var nav = hpDateNav.mount($("sch-nav"), { onChange: function (v, why) {
+    if (why === "prev" || why === "next") { if (st.view === "week" && mq.matches) st.day = add(st.day, why === "next" ? 7 : -7); st.anchor = v; }
+    else { st.anchor = v; st.day = v; }
     render();
-  }
-  $("sch-prev").addEventListener("click", function () { step(-1); });
-  $("sch-next").addEventListener("click", function () { step(1); });
-  $("sch-today").addEventListener("click", function () { st.anchor = TODAY; st.day = TODAY; render(); });
+  } });
   $("sch-print").addEventListener("click", function () { window.print(); });
-
-  // range → Calendar popover (the DS Calendar; DatePicker's panel)
-  var pick = $("sch-pick"), calEl = pick.querySelector(".calendar");
-  var cal = hpCalendar.mount(calEl, { onChange: function (a) { st.anchor = hpCalendar.iso(a); st.day = st.anchor; pick.hidePopover(); $("sch-range").focus(); render(); } });
-  pick.addEventListener("toggle", function (e) {
-    if (e.newState !== "open") return;
-    var a = hpCalendar.parse(st.view === "week" && mq.matches ? st.day : st.anchor);
-    cal.setValue(a); cal.setView(a);
-    var r = $("sch-range").getBoundingClientRect(), pr = pick.getBoundingClientRect();
-    pick.style.position = "fixed"; pick.style.margin = "0";
-    pick.style.top = (r.bottom + 4) + "px";
-    pick.style.left = Math.max(8, Math.min(r.left, window.innerWidth - pr.width - 8)) + "px";
-    cal.focus();
-  });
 
   // type filters
   // type filter: a tap shows exactly that type (again, or All → everything);
@@ -2217,7 +2248,7 @@ window.hpCalendar = window.hpCalendar || (function () {
   // Month: day → event → (a class's) deadlines; Week / List start at the
   // event. Each level replaces the last; "‹ <previous>" over the title and
   // Esc go back one. No modal on a modal. ----
-  var P = { stack: [], ret: null };
+  var P = { stack: [], ret: null, skip: new Set() };
   function panel() { return mq.matches ? $("sch-day-sheet") : $("sch-day"); }
   function shortDate(isoS) { var x = d(isoS); return DOW[x.getDay()] + ", " + MON[x.getMonth()] + " " + x.getDate(); }
   function levelLabel(l) { return l.k === "day" ? shortDate(l.dt) : eventContent(l.ev).title; }
@@ -2233,6 +2264,7 @@ window.hpCalendar = window.hpCalendar || (function () {
   }
   function showTop(focusSel) {
     var p = panel(), l = P.stack[P.stack.length - 1], prev = P.stack[P.stack.length - 2];
+    if (!l) return;
     if (!p.open) p.showModal();
     var back = prev ? levelLabel(prev) : "";
     if (l.k === "day") {
@@ -2317,7 +2349,7 @@ window.hpCalendar = window.hpCalendar || (function () {
     // after "Cancel appointment" the event leaves the calendar: re-resolve it
     // from the day when going back to a day list (handled by eventsOn)
     p.addEventListener("close", function () {
-      if (P.skip === p) { P.skip = null; return; } // carried to the other panel, not closed
+      if (P.skip.has(p)) { P.skip.delete(p); return; } // carried to the other panel, not closed
       var r = P.ret; P.stack = []; P.ret = null;
       if (r && document.contains(r)) r.focus();
     });
@@ -2326,7 +2358,7 @@ window.hpCalendar = window.hpCalendar || (function () {
   mq.addEventListener("change", function () {
     var open = $("sch-day").open ? $("sch-day") : $("sch-day-sheet").open ? $("sch-day-sheet") : null;
     if (!open) return;
-    P.skip = open; open.close(); // its close event is queued — the handler skips it
+    P.skip.add(open); open.close(); // its close event is queued — the handler skips it
     showTop();
   });
 

@@ -17,7 +17,8 @@
 //     with its colour — the legend *is* the filter;
 //   · Week / Month / List is one segmented Tabs (CX had a Time Period select
 //     and a separate list / calendar switch);
-//   · the date range is the page heading and opens a Calendar to jump;
+//   · ‹ › Today + the date range (the page heading, opens a Calendar to
+//     jump) are the DS Date Navigator;
 //   · weekends show only when something is on them (ARM: never, CX: always);
 //   · events carry title, time and room — no per-event time zone ("GMT-7" on
 //     every block); one line under the grid says the zone;
@@ -32,8 +33,9 @@ import { fileURLToPath } from "node:url";
 import { renderDesignViewer } from "./lib/design-viewer.mjs";
 import { cxApp, icon } from "./lib/cx-shell.mjs";
 import { CX_NAV, CX_ASSISTANT_PROMPTS } from "./lib/cx-data.mjs";
-import { CALENDAR_CSS, CALENDAR_JS, CALENDAR_COLOR_PATHS, calendarHtml } from "./lib/calendar.mjs";
+import { CALENDAR_CSS, CALENDAR_JS, CALENDAR_COLOR_PATHS } from "./lib/calendar.mjs";
 import { DATE_PICKER_CSS, DATE_PICKER_COLOR_PATHS } from "./lib/date-picker.mjs";
+import { DATE_NAV_CSS, DATE_NAV_JS, DATE_NAV_COLOR_PATHS, dateNavHtml } from "./lib/date-navigator.mjs";
 import * as S from "./lib/sch-data.mjs";
 import { ABOUT as SS_ABOUT, WORKSHOPS as SS_WORKSHOPS } from "./lib/ss-data.mjs";
 
@@ -54,6 +56,7 @@ const pageCss = (X) => {
   return `
 ${CALENDAR_CSS}
 ${DATE_PICKER_CSS}
+${DATE_NAV_CSS}
 /* ============ Schedule — sch-* composition layer ============ */
 .cx-page { max-width: none; gap: ${dim(4)}; }
 /* Event types: the Badge colours (badge.color.*) — tint fill, solid bar */
@@ -64,11 +67,8 @@ ${S.SCH_TYPES.map((t) => `.sch-t--${t.key} { --ev-bg: ${R(badge.color[t.color].t
 .sch-bar { display: flex; flex-wrap: wrap; align-items: center; gap: ${dim(3)} ${dim(4)}; }
 .sch-bar__nav { display: flex; align-items: center; gap: ${dim(2)}; min-width: 0; }
 .sch-bar__end { margin-left: auto; display: flex; align-items: center; gap: ${dim(2)}; }
-.sch-range { display: inline-flex; align-items: center; gap: ${dim(1)}; height: ${D(button.secondary.size.base.height)}; padding: 0 ${dim(2)}; margin-left: ${dim(1)}; border: none; border-radius: ${D(button.ghost.radius || button.secondary.radius)}; background: transparent; color: ${cv("text.default")}; cursor: pointer; font-family: inherit; ${typoCss(style("heading-lg"))} white-space: nowrap; }
-.sch-range:hover { background: ${R(button.ghost.state.hover.fill)}; }
-.sch-range:focus-visible { outline: 2px solid ${cv("border.focus")}; outline-offset: 2px; }
-.sch-range svg { width: ${dim(5)}; height: ${dim(5)}; color: ${cv("icon.secondary")}; }
-.sch-pick { padding: ${dim(3)}; }
+/* ‹ › Today + the period: the DS Date Navigator (tools/lib/date-navigator.mjs) */
+.sch-bar .date-nav { flex: 0 1 auto; }
 
 /* ---- filters: the legend is the filter ---- */
 /* one row at every width (user, 2026-11-03: they wrapped on a tablet) —
@@ -249,9 +249,7 @@ dialog.slide-over-panel .sch-panel__body--list .sch-lrow__time { grid-column: 1 
 }
 /* ---- phone ---- */
 @media (max-width: 767px) {
-  .sch-range { ${typoCss(style("heading-md"))} margin-left: 0; padding: 0 ${dim(1)}; }
-  .sch-bar__nav { width: 100%; }
-  .sch-bar__nav .sch-range { margin-right: auto; order: -1; }
+  .sch-bar .date-nav { flex: 1 1 100%; }
   .sch-print { display: none; }
   .sch-bar__end .tabs--segmented { flex: 1; }
   .sch-bar__end .tabs--segmented .tab { flex: 1; }
@@ -288,7 +286,7 @@ dialog.slide-over-panel .sch-panel__body--list .sch-lrow__time { grid-column: 1 
 }
 /* print: the calendar alone */
 @media print {
-  .sidebar, .sidebar-scrim, .cx-topbar, .fab, .sch-bar__end, .sch-filters, .sch-bar__nav .btn { display: none !important; }
+  .sidebar, .sidebar-scrim, .cx-topbar, .fab, .sch-bar__end, .sch-filters, .date-nav__controls { display: none !important; }
   .cx-page { padding: 0; }
   .sch-week__head { position: static; }
 }
@@ -299,12 +297,7 @@ const viewsFor = (arm) => {
   const types = S.SCH_TYPES.filter((t) => arm || !t.arm);
   return `
       <div class="sch-bar">
-        <div class="sch-bar__nav">
-          <button class="btn btn--secondary btn--base btn--icon-only" id="sch-prev" type="button" aria-label="Previous week">${icon("chevron_left", "btn__icon")}</button>
-          <button class="btn btn--secondary btn--base btn--icon-only" id="sch-next" type="button" aria-label="Next week">${icon("chevron_right", "btn__icon")}</button>
-          <button class="btn btn--secondary btn--base" id="sch-today" type="button">Today</button>
-          <button class="sch-range" id="sch-range" type="button" popovertarget="sch-pick" aria-haspopup="dialog"><span id="sch-range-label"></span>${icon("expand_more", "")}</button>
-        </div>
+        ${dateNavHtml({ id: "sch-nav", unit: "week", value: S.SCH_TODAY, today: S.SCH_TODAY })}
         <div class="sch-bar__end">
           <div class="tabs--segmented" id="sch-views" role="tablist" aria-label="View">
             <button class="tab tab--sm" type="button" role="tab" data-view="week">Week</button>
@@ -325,11 +318,10 @@ const viewsFor = (arm) => {
         <div class="alert__stack"><p class="alert__message"><span class="alert__title" id="sch-friendbar-text"></span><span class="sch-wide"> Their classes are the hatched blocks.</span></p></div>
         <button class="btn btn--secondary btn--sm" id="sch-friend-stop" type="button">Stop<span class="sch-wide"> comparing</span></button>
       </div>
-      <section class="sch-surface" id="sch-surface" aria-labelledby="sch-range-label"></section>`;
+      <section class="sch-surface" id="sch-surface" aria-labelledby="sch-nav-label"></section>`;
 };
 
-const after = `<div class="datepicker__panel sch-pick" id="sch-pick" popover role="dialog" aria-label="Go to date">${calendarHtml({ value: S.SCH_TODAY, today: S.SCH_TODAY, label: "Go to date" })}</div>
-<div class="listbox" id="sch-lb" popover role="listbox" aria-label="Compare with a friend"><div class="listbox__list"></div></div>
+const after = `<div class="listbox" id="sch-lb" popover role="listbox" aria-label="Compare with a friend"><div class="listbox__list"></div></div>
 <div class="dropdown-menu" id="sch-ics-menu" popover role="menu" aria-label="Download .ics"><div class="dropdown-menu__list" role="none">
   <button type="button" class="dropdown-menu__item" role="menuitem" data-ics="view">What's shown</button>
   <button type="button" class="dropdown-menu__item" role="menuitem" data-ics="term">The whole term</button>
@@ -353,6 +345,7 @@ const after = `<div class="datepicker__panel sch-pick" id="sch-pick" popover rol
 </dialog>`;
 
 const pageJsFor = (arm) => `${CALENDAR_JS}
+${DATE_NAV_JS}
 (function () {
   var TYPES = ${JSON.stringify(S.SCH_TYPES.filter((t) => arm || !t.arm))};
   var CLASSES = ${JSON.stringify(S.SCH_CLASSES)};
@@ -379,7 +372,6 @@ const pageJsFor = (arm) => `${CALENDAR_JS}
 
   var DEADLINES = ${JSON.stringify(S.SCH_DEADLINES)};
   var MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-  var MONTH = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
   var DOW = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   var DOW_FULL = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
   var DOW2 = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
@@ -549,50 +541,25 @@ const pageJsFor = (arm) => `${CALENDAR_JS}
   }
 
   // ---- render ----
-  function rangeLabel() {
-    if (st.view === "month") { var a = d(st.anchor); return MONTH[a.getMonth()] + " " + a.getFullYear(); }
-    var s = d(weekStart(st.anchor)), e = d(add(weekStart(st.anchor), 6));
-    if (s.getFullYear() !== e.getFullYear()) return mdY(iso(s)) + " – " + mdY(iso(e));
-    if (s.getMonth() !== e.getMonth()) return MON[s.getMonth()] + " " + s.getDate() + " – " + MON[e.getMonth()] + " " + e.getDate() + ", " + e.getFullYear();
-    return MON[s.getMonth()] + " " + s.getDate() + " – " + e.getDate() + ", " + e.getFullYear();
-  }
   function render() {
     byId = {};
     $("sch-surface").innerHTML = st.view === "week" ? renderWeek() : st.view === "month" ? renderMonth() : renderList();
-    $("sch-range-label").textContent = rangeLabel();
-    var unit = st.view === "month" ? "month" : "week";
-    $("sch-prev").setAttribute("aria-label", "Previous " + unit);
-    $("sch-next").setAttribute("aria-label", "Next " + unit);
+    nav.set({ unit: st.view === "month" ? "month" : "week", value: st.anchor });
+    $("sch-nav").classList.toggle("date-nav--split", mq.matches);
     document.querySelectorAll("#sch-views .tab").forEach(function (t) { var on = t.dataset.view === st.view; t.classList.toggle("tab--active", on); t.setAttribute("aria-selected", on); });
   }
   mq.addEventListener("change", render);
 
   // ---- toolbar ----
   $("sch-views").addEventListener("click", function (e) { var t = e.target.closest("[data-view]"); if (!t) return; st.view = t.dataset.view; render(); });
-  function step(n) {
-    if (st.view === "month") { var a = d(st.anchor); st.anchor = iso(new Date(a.getFullYear(), a.getMonth() + n, 1, 12)); }
-    else if (st.view === "week" && mq.matches) { st.anchor = add(st.anchor, 7 * n); st.day = add(st.day, 7 * n); }
-    else st.anchor = add(st.anchor, 7 * n);
+  // ‹ › Today + the period → the DS Date Navigator. On a phone Week shows one
+  // day: stepping a week keeps the same weekday, Today / a picked date go there.
+  var nav = hpDateNav.mount($("sch-nav"), { onChange: function (v, why) {
+    if (why === "prev" || why === "next") { if (st.view === "week" && mq.matches) st.day = add(st.day, why === "next" ? 7 : -7); st.anchor = v; }
+    else { st.anchor = v; st.day = v; }
     render();
-  }
-  $("sch-prev").addEventListener("click", function () { step(-1); });
-  $("sch-next").addEventListener("click", function () { step(1); });
-  $("sch-today").addEventListener("click", function () { st.anchor = TODAY; st.day = TODAY; render(); });
+  } });
   $("sch-print").addEventListener("click", function () { window.print(); });
-
-  // range → Calendar popover (the DS Calendar; DatePicker's panel)
-  var pick = $("sch-pick"), calEl = pick.querySelector(".calendar");
-  var cal = hpCalendar.mount(calEl, { onChange: function (a) { st.anchor = hpCalendar.iso(a); st.day = st.anchor; pick.hidePopover(); $("sch-range").focus(); render(); } });
-  pick.addEventListener("toggle", function (e) {
-    if (e.newState !== "open") return;
-    var a = hpCalendar.parse(st.view === "week" && mq.matches ? st.day : st.anchor);
-    cal.setValue(a); cal.setView(a);
-    var r = $("sch-range").getBoundingClientRect(), pr = pick.getBoundingClientRect();
-    pick.style.position = "fixed"; pick.style.margin = "0";
-    pick.style.top = (r.bottom + 4) + "px";
-    pick.style.left = Math.max(8, Math.min(r.left, window.innerWidth - pr.width - 8)) + "px";
-    cal.focus();
-  });
 
   // type filters
   // type filter: a tap shows exactly that type (again, or All → everything);
@@ -684,7 +651,7 @@ const pageJsFor = (arm) => `${CALENDAR_JS}
   // Month: day → event → (a class's) deadlines; Week / List start at the
   // event. Each level replaces the last; "‹ <previous>" over the title and
   // Esc go back one. No modal on a modal. ----
-  var P = { stack: [], ret: null };
+  var P = { stack: [], ret: null, skip: new Set() };
   function panel() { return mq.matches ? $("sch-day-sheet") : $("sch-day"); }
   function shortDate(isoS) { var x = d(isoS); return DOW[x.getDay()] + ", " + MON[x.getMonth()] + " " + x.getDate(); }
   function levelLabel(l) { return l.k === "day" ? shortDate(l.dt) : eventContent(l.ev).title; }
@@ -700,6 +667,7 @@ const pageJsFor = (arm) => `${CALENDAR_JS}
   }
   function showTop(focusSel) {
     var p = panel(), l = P.stack[P.stack.length - 1], prev = P.stack[P.stack.length - 2];
+    if (!l) return;
     if (!p.open) p.showModal();
     var back = prev ? levelLabel(prev) : "";
     if (l.k === "day") {
@@ -784,7 +752,7 @@ const pageJsFor = (arm) => `${CALENDAR_JS}
     // after "Cancel appointment" the event leaves the calendar: re-resolve it
     // from the day when going back to a day list (handled by eventsOn)
     p.addEventListener("close", function () {
-      if (P.skip === p) { P.skip = null; return; } // carried to the other panel, not closed
+      if (P.skip.has(p)) { P.skip.delete(p); return; } // carried to the other panel, not closed
       var r = P.ret; P.stack = []; P.ret = null;
       if (r && document.contains(r)) r.focus();
     });
@@ -793,7 +761,7 @@ const pageJsFor = (arm) => `${CALENDAR_JS}
   mq.addEventListener("change", function () {
     var open = $("sch-day").open ? $("sch-day") : $("sch-day-sheet").open ? $("sch-day-sheet") : null;
     if (!open) return;
-    P.skip = open; open.close(); // its close event is queued — the handler skips it
+    P.skip.add(open); open.close(); // its close event is queued — the handler skips it
     showTop();
   });
 
@@ -904,7 +872,7 @@ const appHtmlFor = (arm) => cxApp({
   pageCss,
   pageJs: pageJsFor(arm),
   prompts: arm ? S.SCH_PROMPTS : CX_ASSISTANT_PROMPTS,
-  colorPaths: [...CALENDAR_COLOR_PATHS, ...DATE_PICKER_COLOR_PATHS, "text.danger", "text.onFill", "border.focus", "icon.secondary", "fill.primary"],
+  colorPaths: [...CALENDAR_COLOR_PATHS, ...DATE_PICKER_COLOR_PATHS, ...DATE_NAV_COLOR_PATHS, "text.danger", "text.onFill", "border.focus", "icon.secondary", "fill.primary"],
 });
 
 const viewerHtml = renderDesignViewer({

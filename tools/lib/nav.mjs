@@ -88,6 +88,7 @@ export const NAV_ITEMS = {
   calendar: { label: "Calendar", href: "calendar.html" },
   "date-picker": { label: "DatePicker", href: "date-picker.html" },
   "date-range-picker": { label: "DateRangePicker", href: "date-range-picker.html" },
+  "date-navigator": { label: "Date Navigator", href: "date-navigator.html" },
   "time-picker": { label: "TimePicker", href: "time-picker.html" },
 };
 
@@ -217,6 +218,7 @@ export function renderNav(activeKey, { basePath = "" } = {}) {
     ${link("calendar")}
     ${link("date-picker")}
     ${link("date-range-picker")}
+    ${link("date-navigator")}
     ${link("time-picker")}
     ${link("search")}
     ${link("pagination")}

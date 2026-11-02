@@ -1,0 +1,21 @@
+{
+  "component": {
+    "dateNavigator": {
+      "$description": "Steps a calendar view through time and names the period on screen: ‹ previous · › next · Today, then the period itself (\"Oct 25 – 31, 2026\", \"October 2026\", \"Thu, Oct 29, 2026\") as a ghost trigger that opens the DS Calendar to jump to any date. One unit at a time — day, week (Sunday-first) or month — set by the view it drives. The three buttons ARE Button secondary base (icon-only for the arrows), never re-declared; what it owns is the arrangement and the period trigger. Two layouts: inline (controls, then the period — desktop) and split (the period first, the controls at the far end — a phone row). Added 2026-11-03 for Schedule (user: \"there's no such component for the calendar — worth adding to the DS\"); Student Scheduling's Calendar header is the same job and should move onto it.",
+      "gap": { "$type": "dimension", "$value": "{dim.2}", "$description": "8px between the three buttons — Button group spacing." },
+      "periodGap": { "$type": "dimension", "$value": "{dim.2}", "$description": "8px between the buttons and the period trigger (inline layout; its own 8px padding makes the visual gap 16)." },
+      "period": {
+        "height": { "$type": "dimension", "$value": "{dim.10}", "$description": "40px — level with the buttons (Button base)." },
+        "paddingX": { "$type": "dimension", "$value": "{dim.2}" },
+        "gap": { "$type": "dimension", "$value": "{dim.1}", "$description": "4px between the label and its chevron." },
+        "radius": { "$type": "dimension", "$value": "{radius.default}", "$description": "Button's radius — the trigger reads as a ghost button." },
+        "label": { "$type": "typography", "$value": "{text-style.heading-lg}", "$description": "18/600 — the period is the view's heading." },
+        "labelPhone": { "$type": "typography", "$value": "{text-style.heading-md}", "$description": "16/600 under 768px, so the split row fits beside three buttons." },
+        "labelColor": { "$type": "color", "$value": "{text.default}" },
+        "chevronSize": { "$type": "dimension", "$value": "{dim.5}", "$description": "20px — Button base's icon size." },
+        "chevronColor": { "$type": "color", "$value": "{icon.secondary}" },
+        "hoverBg": { "$type": "color", "$value": "{fill.neutralHover}", "$description": "Button ghost's hover fill (its focus ring is Button ghost's too, resolved from button.tokens.json)." }
+      }
+    }
+  }
+}
