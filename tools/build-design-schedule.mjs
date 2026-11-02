@@ -67,19 +67,16 @@ ${S.SCH_TYPES.map((t) => `.sch-t--${t.key} { --ev-bg: ${R(badge.color[t.color].t
 
 /* ---- filters: the legend is the filter ---- */
 .sch-filters { display: flex; flex-wrap: wrap; align-items: center; gap: ${dim(2)}; }
-.sch-filters__friend { margin-left: auto; }
-/* Chip dropdown may shrink (its label ellipsizes) — not in this row: on a
-   phone the row scrolls sideways, and the chip collapsed to its icon */
-.sch-filters .chip--dropdown { flex-shrink: 0; }
 .sch-dot { width: ${dim(2)}; height: ${dim(2)}; border-radius: 50%; flex-shrink: 0; background: var(--ev-bar); }
 .sch-t--waitlist .sch-dot { background: transparent; box-shadow: inset 0 0 0 2px var(--ev-bar); }
-/* A type that's on is a plain Chip with its colour dot — six pressed chips
-   in a row were a wall of blue; the dot carries "on". Off = muted label,
-   dashed border, gray dot. */
-.chip.sch-chip[aria-pressed="true"] { background: ${R(tg.default.bg)}; border-color: ${R(tg.default.border)}; color: ${R(tg.default.text)}; }
-.chip.sch-chip:hover { background: ${R(tg.hover.bg)}; border-color: ${R(tg.hover.border)}; }
-.chip.sch-chip[aria-pressed="false"] { color: ${cv("text.muted")}; border-style: dashed; }
-.chip.sch-chip[aria-pressed="false"] .sch-dot { background: ${cv("border.default")}; box-shadow: none; }
+/* Pick one (user, 2026-11-02): All, or exactly the type you tap — a tap
+   shows that type, it doesn't hide it. One pressed Chip at a time (Cmd /
+   Shift-click adds a second — a desktop shortcut, not in the UI). The dots
+   keep the row a legend; on a pressed (dark) chip the dot gets a white ring. */
+.chip.sch-chip[aria-pressed="true"] .sch-dot { box-shadow: 0 0 0 2px ${cv("surface.default")}; }
+.chip.sch-chip.sch-t--waitlist[aria-pressed="true"] .sch-dot { box-shadow: inset 0 0 0 2px var(--ev-bar), 0 0 0 2px ${cv("surface.default")}; background: ${cv("surface.default")}; }
+/* Compare + .ics: label and chevron fold away on a phone (icon-only) */
+.sch-friendbar .alert__message { margin: 0; }
 
 /* ---- the calendar surface ---- */
 .sch-surface { background: ${R(card.bg)}; border: 1px solid ${R(card.border)}; border-radius: ${D(card.radius)}; }
@@ -217,7 +214,8 @@ dialog.slide-over-panel .sch-panel__body--list .sch-lrow__time { grid-column: 1 
   .sch-bar__end .tabs--segmented .tab { flex: 1; }
   .sch-filters { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin: 0 -${dim(4)}; padding: 0 ${dim(4)}; }
   .sch-filters::-webkit-scrollbar { display: none; }
-  .sch-filters__friend { margin-left: 0; }
+  .sch-squeeze { width: ${D(button.secondary.size.base.height)}; padding: 0; }
+  .sch-squeeze .sch-squeeze__text, .sch-wide { display: none; }
   .sch-strip { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: ${dim(1)}; padding: ${dim(2)}; border-bottom: 1px solid ${cv("border.default")}; }
   .sch-strip__day { display: flex; flex-direction: column; align-items: center; gap: ${dim("0_5")}; padding: ${dim(1)} 0; border: none; border-radius: ${D(card.radius)}; background: transparent; color: ${cv("text.secondary")}; cursor: pointer; font-family: inherit; ${typoCss(style("body-xs"))} }
   .sch-strip__num { display: inline-flex; align-items: center; justify-content: center; width: ${dim(8)}; height: ${dim(8)}; border-radius: 50%; color: ${cv("text.default")}; ${typoCss(style("heading-base"))} }
@@ -250,7 +248,6 @@ dialog.slide-over-panel .sch-panel__body--list .sch-lrow__time { grid-column: 1 
 `;
 };
 
-const chevronDown = icon("expand_more", "chip__icon");
 const viewsFor = (arm) => {
   const types = S.SCH_TYPES.filter((t) => arm || !t.arm);
   return `
@@ -268,12 +265,18 @@ const viewsFor = (arm) => {
             <button class="tab tab--sm" type="button" role="tab" data-view="list">List</button>
           </div>
           <button class="btn btn--secondary btn--base btn--icon-only sch-print" id="sch-print" type="button" aria-label="Print">${icon("print", "btn__icon")}</button>
-          <button class="btn btn--secondary btn--base" id="sch-ics" type="button" aria-haspopup="menu" aria-expanded="false">${icon("download", "btn__icon")}<span>.ics</span>${icon("expand_more", "btn__icon")}</button>
+          <button class="btn btn--secondary btn--base sch-squeeze" id="sch-friend" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Compare with a friend">${icon("group", "btn__icon")}<span class="sch-squeeze__text">Compare</span>${icon("expand_more", "btn__icon sch-squeeze__text")}</button>
+          <button class="btn btn--secondary btn--base sch-squeeze" id="sch-ics" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="Download .ics">${icon("download", "btn__icon")}<span class="sch-squeeze__text">.ics</span>${icon("expand_more", "btn__icon sch-squeeze__text")}</button>
         </div>
       </div>
       <div class="sch-filters" role="group" aria-label="Show">
-        ${types.map((t) => `<button class="chip chip--lg sch-chip sch-t--${t.key}" type="button" aria-pressed="true" data-type="${t.key}"><span class="sch-dot"></span>${t.label}</button>`).join("\n        ")}
-        <button class="chip chip--lg chip--dropdown sch-filters__friend" id="sch-friend" type="button" aria-haspopup="listbox" aria-expanded="false">${icon("group", "chip__icon")}<span class="chip__label" id="sch-friend-label">Compare with a friend</span>${chevronDown}</button>
+        <button class="chip chip--lg sch-chip" type="button" aria-pressed="true" data-type="all">All</button>
+        ${types.map((t) => `<button class="chip chip--lg sch-chip sch-t--${t.key}" type="button" aria-pressed="false" data-type="${t.key}"><span class="sch-dot"></span>${t.label}</button>`).join("\n        ")}
+      </div>
+      <div class="alert alert--action-end sch-friendbar is-hidden" id="sch-friendbar" role="status">
+        ${icon("group", "alert__icon")}
+        <div class="alert__stack"><p class="alert__message"><span class="alert__title" id="sch-friendbar-text"></span><span class="sch-wide"> Their classes are the hatched blocks.</span></p></div>
+        <button class="btn btn--secondary btn--sm" id="sch-friend-stop" type="button">Stop<span class="sch-wide"> comparing</span></button>
       </div>
       <section class="sch-surface" id="sch-surface" aria-labelledby="sch-range-label"></section>`;
 };
@@ -344,8 +347,9 @@ const pageJsFor = (arm) => `${CALENDAR_JS}
 
   // ---- state ----
   var mq = window.matchMedia("(max-width: 767px)");
-  var st = { view: "week", anchor: TODAY, day: TODAY, on: {}, friend: "" };
-  TYPES.forEach(function (t) { st.on[t.key] = true; });
+  // sel: the picked types — empty = All
+  var st = { view: "week", anchor: TODAY, day: TODAY, sel: [], friend: "" };
+  function isOn(type) { return !st.sel.length || st.sel.indexOf(type) >= 0; }
   var byId = {};
 
   // ---- every event on one date ----
@@ -368,14 +372,14 @@ const pageJsFor = (arm) => `${CALENDAR_JS}
       if (c.days.indexOf(w) < 0) return;
       out.push({ id: "f" + i + "-" + date, type: "friend", date: date, start: c.start, end: c.end, title: c.title, sub: f.name.split(" ")[0] + " · " + c.code, where: c.room, src: c, friend: f });
     });
-    out = out.filter(function (e) { return e.type === "friend" || st.on[e.type]; });
+    out = out.filter(function (e) { return e.type === "friend" || isOn(e.type); });
     out.sort(function (a, b) { return a.start - b.start || b.end - a.end; });
     out.forEach(function (e) { byId[e.id] = e; });
     return out;
   }
   function noTime() {
     return CLASSES.map(function (c, i) { return { id: "u" + i, type: c.waitlist ? "waitlist" : "class", title: c.title, sub: c.code, where: c.room, src: c, notime: true, date: TODAY }; })
-      .filter(function (e) { return !e.src.days.length && st.on[e.type]; })
+      .filter(function (e) { return !e.src.days.length && isOn(e.type); })
       .map(function (e) { byId[e.id] = e; return e; });
   }
   function typeOf(k) { return TYPES.filter(function (t) { return t.key === k; })[0] || { key: "friend", one: "Friend's class", label: "Friend" }; }
@@ -535,8 +539,17 @@ const pageJsFor = (arm) => `${CALENDAR_JS}
   });
 
   // type filters
-  document.querySelectorAll(".sch-chip").forEach(function (c) {
-    c.addEventListener("click", function () { var on = c.getAttribute("aria-pressed") !== "true"; c.setAttribute("aria-pressed", on); st.on[c.dataset.type] = on; render(); });
+  // type filter: a tap shows exactly that type (again, or All → everything);
+  // Cmd / Ctrl / Shift-click adds or removes one — a desktop shortcut
+  document.querySelector(".sch-filters").addEventListener("click", function (e) {
+    var c = e.target.closest(".sch-chip"); if (!c) return;
+    var k = c.dataset.type, i = st.sel.indexOf(k);
+    if (k === "all") st.sel = [];
+    else if (e.metaKey || e.ctrlKey || e.shiftKey) { if (i >= 0) st.sel.splice(i, 1); else st.sel.push(k); }
+    else st.sel = st.sel.length === 1 && i === 0 ? [] : [k];
+    if (st.sel.length === TYPES.length) st.sel = [];
+    document.querySelectorAll(".sch-chip").forEach(function (x) { x.setAttribute("aria-pressed", x.dataset.type === "all" ? !st.sel.length : st.sel.indexOf(x.dataset.type) >= 0); });
+    render();
   });
 
   // friend — Chip trigger + Listbox
@@ -546,23 +559,27 @@ const pageJsFor = (arm) => `${CALENDAR_JS}
   fBtn.addEventListener("pointerdown", function () { lbWasOpen = lb.matches(":popover-open"); });
   fBtn.addEventListener("click", function () {
     if (lbWasOpen) { lbWasOpen = false; return; }
-    var opts = [{ id: "", name: "No one" }].concat(FRIENDS);
-    lbList.innerHTML = opts.map(function (f) { return '<button type="button" class="listbox__option" role="option" aria-selected="' + (f.id === st.friend) + '" data-friend="' + f.id + '"><span>' + esc(f.name) + "</span>" + CHECK + "</button>"; }).join("");
+    lbList.innerHTML = FRIENDS.map(function (f) { return '<button type="button" class="listbox__option" role="option" aria-selected="' + (f.id === st.friend) + '" data-friend="' + f.id + '"><span>' + esc(f.name) + "</span>" + CHECK + "</button>"; }).join("");
     lb.showPopover(); fBtn.setAttribute("aria-expanded", "true");
     var r = fBtn.getBoundingClientRect();
     lb.style.position = "fixed"; lb.style.minWidth = Math.max(220, r.width) + "px";
     lb.style.top = (r.bottom + 4) + "px";
-    lb.style.left = Math.max(8, Math.min(r.left, window.innerWidth - lb.offsetWidth - 8)) + "px";
+    lb.style.left = Math.max(8, Math.min(r.right - lb.offsetWidth, window.innerWidth - lb.offsetWidth - 8)) + "px";
     (lbList.querySelector('[aria-selected="true"]') || lbList.firstChild).focus();
   });
+  // the state lives in a bar over the calendar, not in the button
+  function setFriend(id) {
+    st.friend = id;
+    var f = FRIENDS.filter(function (x) { return x.id === id; })[0];
+    $("sch-friendbar").classList.toggle("is-hidden", !f);
+    if (f) $("sch-friendbar-text").textContent = "Showing " + f.name + "\u2019s classes.";
+    render();
+  }
   lbList.addEventListener("click", function (e) {
     var o = e.target.closest("[data-friend]"); if (!o) return;
-    st.friend = o.dataset.friend; lb.hidePopover(); fBtn.focus();
-    var f = FRIENDS.filter(function (x) { return x.id === st.friend; })[0];
-    $("sch-friend-label").textContent = f ? f.name : "Compare with a friend";
-    fBtn.classList.toggle("chip--checked-outline", !!f);
-    render();
+    lb.hidePopover(); fBtn.focus(); setFriend(o.dataset.friend);
   });
+  $("sch-friend-stop").addEventListener("click", function () { setFriend(""); fBtn.focus(); });
 
   // .ics — what's shown, or the whole term
   var icsMenu = $("sch-ics-menu"), icsBtn = $("sch-ics"), icsWasOpen = false;

@@ -1354,19 +1354,16 @@ html { background: var(--tok-surface-page); }
 
 /* ---- filters: the legend is the filter ---- */
 .sch-filters { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-.sch-filters__friend { margin-left: auto; }
-/* Chip dropdown may shrink (its label ellipsizes) — not in this row: on a
-   phone the row scrolls sideways, and the chip collapsed to its icon */
-.sch-filters .chip--dropdown { flex-shrink: 0; }
 .sch-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; background: var(--ev-bar); }
 .sch-t--waitlist .sch-dot { background: transparent; box-shadow: inset 0 0 0 2px var(--ev-bar); }
-/* A type that's on is a plain Chip with its colour dot — six pressed chips
-   in a row were a wall of blue; the dot carries "on". Off = muted label,
-   dashed border, gray dot. */
-.chip.sch-chip[aria-pressed="true"] { background: var(--tok-surface-default); border-color: var(--tok-border-default); color: var(--tok-text-default); }
-@media (hover: hover) { .chip.sch-chip:hover { background: var(--tok-bg-primary-hover); border-color: var(--tok-fill-primary); } }
-.chip.sch-chip[aria-pressed="false"] { color: var(--tok-text-muted); border-style: dashed; }
-.chip.sch-chip[aria-pressed="false"] .sch-dot { background: var(--tok-border-default); box-shadow: none; }
+/* Pick one (user, 2026-11-02): All, or exactly the type you tap — a tap
+   shows that type, it doesn't hide it. One pressed Chip at a time (Cmd /
+   Shift-click adds a second — a desktop shortcut, not in the UI). The dots
+   keep the row a legend; on a pressed (dark) chip the dot gets a white ring. */
+.chip.sch-chip[aria-pressed="true"] .sch-dot { box-shadow: 0 0 0 2px var(--tok-surface-default); }
+.chip.sch-chip.sch-t--waitlist[aria-pressed="true"] .sch-dot { box-shadow: inset 0 0 0 2px var(--ev-bar), 0 0 0 2px var(--tok-surface-default); background: var(--tok-surface-default); }
+/* Compare + .ics: label and chevron fold away on a phone (icon-only) */
+.sch-friendbar .alert__message { margin: 0; }
 
 /* ---- the calendar surface ---- */
 .sch-surface { background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); border-radius: 8px; }
@@ -1504,7 +1501,8 @@ dialog.slide-over-panel .sch-panel__body--list .sch-lrow__time { grid-column: 1 
   .sch-bar__end .tabs--segmented .tab { flex: 1; }
   .sch-filters { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin: 0 -16px; padding: 0 16px; }
   .sch-filters::-webkit-scrollbar { display: none; }
-  .sch-filters__friend { margin-left: 0; }
+  .sch-squeeze { width: 40px; padding: 0; }
+  .sch-squeeze .sch-squeeze__text, .sch-wide { display: none; }
   .sch-strip { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; padding: 8px; border-bottom: 1px solid var(--tok-border-default); }
   .sch-strip__day { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 4px 0; border: none; border-radius: 8px; background: transparent; color: var(--tok-text-secondary); cursor: pointer; font-family: inherit; font-weight: 400; font-size: 10px; line-height: 1.4; }
   .sch-strip__num { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; color: var(--tok-text-default); font-weight: 600; font-size: 14px; line-height: 1.4; }
@@ -1602,16 +1600,22 @@ dialog.slide-over-panel .sch-panel__body--list .sch-lrow__time { grid-column: 1 
             <button class="tab tab--sm" type="button" role="tab" data-view="list">List</button>
           </div>
           <button class="btn btn--secondary btn--base btn--icon-only sch-print" id="sch-print" type="button" aria-label="Print"><svg class="btn__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg></button>
-          <button class="btn btn--secondary btn--base" id="sch-ics" type="button" aria-haspopup="menu" aria-expanded="false"><svg class="btn__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"><g><rect fill="none" height="24" width="24"/></g><g><path d="M5,20h14v-2H5V20z M19,9h-4V3H9v6H5l7,7L19,9z"/></g></svg><span>.ics</span><svg class="btn__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+          <button class="btn btn--secondary btn--base sch-squeeze" id="sch-friend" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Compare with a friend"><svg class="btn__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg><span class="sch-squeeze__text">Compare</span><svg class="btn__icon sch-squeeze__text" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+          <button class="btn btn--secondary btn--base sch-squeeze" id="sch-ics" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="Download .ics"><svg class="btn__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"><g><rect fill="none" height="24" width="24"/></g><g><path d="M5,20h14v-2H5V20z M19,9h-4V3H9v6H5l7,7L19,9z"/></g></svg><span class="sch-squeeze__text">.ics</span><svg class="btn__icon sch-squeeze__text" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
         </div>
       </div>
       <div class="sch-filters" role="group" aria-label="Show">
-        <button class="chip chip--lg sch-chip sch-t--class" type="button" aria-pressed="true" data-type="class"><span class="sch-dot"></span>Classes</button>
-        <button class="chip chip--lg sch-chip sch-t--waitlist" type="button" aria-pressed="true" data-type="waitlist"><span class="sch-dot"></span>Wait list</button>
-        <button class="chip chip--lg sch-chip sch-t--exam" type="button" aria-pressed="true" data-type="exam"><span class="sch-dot"></span>Exams</button>
-        <button class="chip chip--lg sch-chip sch-t--appointment" type="button" aria-pressed="true" data-type="appointment"><span class="sch-dot"></span>Appointments</button>
-        <button class="chip chip--lg sch-chip sch-t--workshop" type="button" aria-pressed="true" data-type="workshop"><span class="sch-dot"></span>Workshops</button>
-        <button class="chip chip--lg chip--dropdown sch-filters__friend" id="sch-friend" type="button" aria-haspopup="listbox" aria-expanded="false"><svg class="chip__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg><span class="chip__label" id="sch-friend-label">Compare with a friend</span><svg class="chip__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+        <button class="chip chip--lg sch-chip" type="button" aria-pressed="true" data-type="all">All</button>
+        <button class="chip chip--lg sch-chip sch-t--class" type="button" aria-pressed="false" data-type="class"><span class="sch-dot"></span>Classes</button>
+        <button class="chip chip--lg sch-chip sch-t--waitlist" type="button" aria-pressed="false" data-type="waitlist"><span class="sch-dot"></span>Wait list</button>
+        <button class="chip chip--lg sch-chip sch-t--exam" type="button" aria-pressed="false" data-type="exam"><span class="sch-dot"></span>Exams</button>
+        <button class="chip chip--lg sch-chip sch-t--appointment" type="button" aria-pressed="false" data-type="appointment"><span class="sch-dot"></span>Appointments</button>
+        <button class="chip chip--lg sch-chip sch-t--workshop" type="button" aria-pressed="false" data-type="workshop"><span class="sch-dot"></span>Workshops</button>
+      </div>
+      <div class="alert alert--action-end sch-friendbar is-hidden" id="sch-friendbar" role="status">
+        <svg class="alert__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+        <div class="alert__stack"><p class="alert__message"><span class="alert__title" id="sch-friendbar-text"></span><span class="sch-wide"> Their classes are the hatched blocks.</span></p></div>
+        <button class="btn btn--secondary btn--sm" id="sch-friend-stop" type="button">Stop<span class="sch-wide"> comparing</span></button>
       </div>
       <section class="sch-surface" id="sch-surface" aria-labelledby="sch-range-label"></section>
     </main>
@@ -1881,8 +1885,9 @@ window.hpCalendar = window.hpCalendar || (function () {
 
   // ---- state ----
   var mq = window.matchMedia("(max-width: 767px)");
-  var st = { view: "week", anchor: TODAY, day: TODAY, on: {}, friend: "" };
-  TYPES.forEach(function (t) { st.on[t.key] = true; });
+  // sel: the picked types — empty = All
+  var st = { view: "week", anchor: TODAY, day: TODAY, sel: [], friend: "" };
+  function isOn(type) { return !st.sel.length || st.sel.indexOf(type) >= 0; }
   var byId = {};
 
   // ---- every event on one date ----
@@ -1905,14 +1910,14 @@ window.hpCalendar = window.hpCalendar || (function () {
       if (c.days.indexOf(w) < 0) return;
       out.push({ id: "f" + i + "-" + date, type: "friend", date: date, start: c.start, end: c.end, title: c.title, sub: f.name.split(" ")[0] + " · " + c.code, where: c.room, src: c, friend: f });
     });
-    out = out.filter(function (e) { return e.type === "friend" || st.on[e.type]; });
+    out = out.filter(function (e) { return e.type === "friend" || isOn(e.type); });
     out.sort(function (a, b) { return a.start - b.start || b.end - a.end; });
     out.forEach(function (e) { byId[e.id] = e; });
     return out;
   }
   function noTime() {
     return CLASSES.map(function (c, i) { return { id: "u" + i, type: c.waitlist ? "waitlist" : "class", title: c.title, sub: c.code, where: c.room, src: c, notime: true, date: TODAY }; })
-      .filter(function (e) { return !e.src.days.length && st.on[e.type]; })
+      .filter(function (e) { return !e.src.days.length && isOn(e.type); })
       .map(function (e) { byId[e.id] = e; return e; });
   }
   function typeOf(k) { return TYPES.filter(function (t) { return t.key === k; })[0] || { key: "friend", one: "Friend's class", label: "Friend" }; }
@@ -2072,8 +2077,17 @@ window.hpCalendar = window.hpCalendar || (function () {
   });
 
   // type filters
-  document.querySelectorAll(".sch-chip").forEach(function (c) {
-    c.addEventListener("click", function () { var on = c.getAttribute("aria-pressed") !== "true"; c.setAttribute("aria-pressed", on); st.on[c.dataset.type] = on; render(); });
+  // type filter: a tap shows exactly that type (again, or All → everything);
+  // Cmd / Ctrl / Shift-click adds or removes one — a desktop shortcut
+  document.querySelector(".sch-filters").addEventListener("click", function (e) {
+    var c = e.target.closest(".sch-chip"); if (!c) return;
+    var k = c.dataset.type, i = st.sel.indexOf(k);
+    if (k === "all") st.sel = [];
+    else if (e.metaKey || e.ctrlKey || e.shiftKey) { if (i >= 0) st.sel.splice(i, 1); else st.sel.push(k); }
+    else st.sel = st.sel.length === 1 && i === 0 ? [] : [k];
+    if (st.sel.length === TYPES.length) st.sel = [];
+    document.querySelectorAll(".sch-chip").forEach(function (x) { x.setAttribute("aria-pressed", x.dataset.type === "all" ? !st.sel.length : st.sel.indexOf(x.dataset.type) >= 0); });
+    render();
   });
 
   // friend — Chip trigger + Listbox
@@ -2083,23 +2097,27 @@ window.hpCalendar = window.hpCalendar || (function () {
   fBtn.addEventListener("pointerdown", function () { lbWasOpen = lb.matches(":popover-open"); });
   fBtn.addEventListener("click", function () {
     if (lbWasOpen) { lbWasOpen = false; return; }
-    var opts = [{ id: "", name: "No one" }].concat(FRIENDS);
-    lbList.innerHTML = opts.map(function (f) { return '<button type="button" class="listbox__option" role="option" aria-selected="' + (f.id === st.friend) + '" data-friend="' + f.id + '"><span>' + esc(f.name) + "</span>" + CHECK + "</button>"; }).join("");
+    lbList.innerHTML = FRIENDS.map(function (f) { return '<button type="button" class="listbox__option" role="option" aria-selected="' + (f.id === st.friend) + '" data-friend="' + f.id + '"><span>' + esc(f.name) + "</span>" + CHECK + "</button>"; }).join("");
     lb.showPopover(); fBtn.setAttribute("aria-expanded", "true");
     var r = fBtn.getBoundingClientRect();
     lb.style.position = "fixed"; lb.style.minWidth = Math.max(220, r.width) + "px";
     lb.style.top = (r.bottom + 4) + "px";
-    lb.style.left = Math.max(8, Math.min(r.left, window.innerWidth - lb.offsetWidth - 8)) + "px";
+    lb.style.left = Math.max(8, Math.min(r.right - lb.offsetWidth, window.innerWidth - lb.offsetWidth - 8)) + "px";
     (lbList.querySelector('[aria-selected="true"]') || lbList.firstChild).focus();
   });
+  // the state lives in a bar over the calendar, not in the button
+  function setFriend(id) {
+    st.friend = id;
+    var f = FRIENDS.filter(function (x) { return x.id === id; })[0];
+    $("sch-friendbar").classList.toggle("is-hidden", !f);
+    if (f) $("sch-friendbar-text").textContent = "Showing " + f.name + "’s classes.";
+    render();
+  }
   lbList.addEventListener("click", function (e) {
     var o = e.target.closest("[data-friend]"); if (!o) return;
-    st.friend = o.dataset.friend; lb.hidePopover(); fBtn.focus();
-    var f = FRIENDS.filter(function (x) { return x.id === st.friend; })[0];
-    $("sch-friend-label").textContent = f ? f.name : "Compare with a friend";
-    fBtn.classList.toggle("chip--checked-outline", !!f);
-    render();
+    lb.hidePopover(); fBtn.focus(); setFriend(o.dataset.friend);
   });
+  $("sch-friend-stop").addEventListener("click", function () { setFriend(""); fBtn.focus(); });
 
   // .ics — what's shown, or the whole term
   var icsMenu = $("sch-ics-menu"), icsBtn = $("sch-ics"), icsWasOpen = false;
