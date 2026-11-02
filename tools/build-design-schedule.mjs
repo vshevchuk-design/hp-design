@@ -192,9 +192,12 @@ dialog.dialog.sch-panel { width: min(${D(tokens.dialog.size.md)}, calc(100vw - $
 .sch-panel__body--list { padding: ${dim(2)} 0; gap: 0; display: flex; flex-direction: column; }
 .sch-back { align-self: flex-start; margin: 0 0 ${dim(1)} -${D(button.ghost.size ? button.ghost.size.sm.paddingX : button.secondary.size.sm.paddingX)}; }
 .sch-panel .dialog__heading, .sch-panel .slide-over-panel__heading { display: flex; flex-direction: column; min-width: 0; }
-/* 480 wide: the time goes over the title (a 176px time column cut every name) */
-.sch-panel__body--list .sch-lrow { grid-template-columns: minmax(0, 1fr) auto; gap: ${dim(1)} ${dim(4)}; padding-block: ${dim(3)}; }
-.sch-panel__body--list .sch-lrow__time { grid-column: 1 / -1; }
+/* Dialog md (640): the List view's columns — time | title + code · room |
+   type Badge; the time column fits "11:30 AM – 12:00 PM" */
+dialog.dialog .sch-panel__body--list .sch-lrow { grid-template-columns: ${dim(40)} minmax(0, 1fr) auto; }
+/* the phone sheet: the time goes over the title */
+dialog.slide-over-panel .sch-panel__body--list .sch-lrow { grid-template-columns: minmax(0, 1fr) auto; gap: ${dim(1)} ${dim(4)}; padding-block: ${dim(3)}; }
+dialog.slide-over-panel .sch-panel__body--list .sch-lrow__time { grid-column: 1 / -1; }
 .sch-panel .dialog__title .badge, .sch-panel .slide-over-panel__title .badge { vertical-align: middle; margin-left: ${dim(1)}; }
 /* lifted over iOS Safari's floating bottom bar (the Scheduling calendar sheet's fix) */
 .sch-sheet__foot { padding-bottom: calc(${dim(4)} + env(safe-area-inset-bottom) + 100lvh - 100dvh); }
