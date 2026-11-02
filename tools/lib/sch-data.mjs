@@ -8,7 +8,7 @@
 // The class list is George Amalor's from the live screenshots (2026-10-31):
 // green = enrolled (HISTORY 120, ART 111, MATH 211, MATH 210, BIOLOGY 115 —
 // exactly ARM's "Class Schedule" set), blue = wait-listed (the rest). Rooms,
-// instructors, exams, appointments, drop-ins, workshops and friends are
+// instructors, exams, appointments, workshops and friends are
 // sample data. Days are 0–6 (Sun–Sat), times in minutes from midnight.
 
 export const SCH_TODAY = "2026-10-29"; // a Thursday — the week the live screenshots show
@@ -77,12 +77,6 @@ export const SCH_APPOINTMENTS = [
   { service: "Career Counseling", dept: "Career and Talent Development", advisor: "Craig Millett", date: "2026-11-12", start: 900, end: 945, format: "In person", where: "Career Center", ref: "APT-20766" },
 ];
 
-// ARM — drop-in visits the student joined or reserved
-export const SCH_DROPINS = [
-  { service: "Math Tutoring", dept: "Tutoring Center", date: "2026-10-29", start: 690, end: 720, where: "Learning Commons, Room 110", status: "Seat reserved" },
-  { service: "Writing Center", dept: "Tutoring Center", date: "2026-10-20", start: 840, end: 870, where: "Learning Commons, Room 204", status: "Done" },
-];
-
 // ARM — registered workshops; sessions are generated weekly from `start`
 export const SCH_WORKSHOPS = [
   { name: "Study Skills Bootcamp", dept: "Tutoring Center", day: 3, start: 960, end: 1050, first: "2026-10-07", count: 8, where: "Learning Commons, Room 110", format: "In person", organizer: "Denny Petersen" },
@@ -105,14 +99,13 @@ export const SCH_FRIENDS = [
 
 // Event types, in filter order. `arm`: only exists where ARM is licensed.
 // `color`: the Badge colour (badge.color.* tint/solid) the event wears —
-// Scheduling's own (appointment violet, drop-in blue, workshop teal); wait list
-// is amber like ARM's yellow triangle (CX drew it blue, which read as a drop-in).
+// Scheduling's own (appointment violet, workshop teal); wait list is amber like
+// ARM's yellow triangle. No drop-ins — removed on request (user, 2026-11-02).
 export const SCH_TYPES = [
   { key: "class", label: "Classes", one: "Class", color: "green" },
   { key: "waitlist", label: "Wait list", one: "Wait list", color: "amber" },
   { key: "exam", label: "Exams", one: "Exam", color: "red" },
   { key: "appointment", label: "Appointments", one: "Appointment", color: "violet", arm: true },
-  { key: "dropin", label: "Drop-ins", one: "Drop-in", color: "blue", arm: true },
   { key: "workshop", label: "Workshops", one: "Workshop", color: "teal", arm: true },
 ];
 

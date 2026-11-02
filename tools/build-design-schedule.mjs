@@ -10,7 +10,7 @@
 // Schedule, Class Exams, Wait List Classes, Appointments, Workshops as
 // checkboxes with a legend, Mon–Fri week only, an "Unscheduled" row, a
 // Details / Information dialog per class). This page is their union, on DS
-// components in the CX shell; ARM's types (appointments, drop-ins, workshops)
+// components in the CX shell; ARM's types (appointments, workshops)
 // are simply absent where ARM isn't installed — same page, fewer filters.
 // What changed in the UI:
 //   · the legend and the type checkboxes are one row of filter Chips, each
@@ -308,7 +308,6 @@ const pageJsFor = (arm) => `${CALENDAR_JS}
   var CLASSES = ${JSON.stringify(S.SCH_CLASSES)};
   var EXAMS = ${JSON.stringify(S.SCH_EXAMS)};
   var APPTS = ${JSON.stringify(arm ? S.SCH_APPOINTMENTS : [])};
-  var DROPINS = ${JSON.stringify(arm ? S.SCH_DROPINS : [])};
   var WORKSHOPS = ${JSON.stringify(arm ? S.SCH_WORKSHOPS : [])};
   var FRIENDS = ${JSON.stringify(S.SCH_FRIENDS)};
   var TERM = ${JSON.stringify(S.SCH_TERM)};
@@ -358,7 +357,6 @@ const pageJsFor = (arm) => `${CALENDAR_JS}
     });
     EXAMS.forEach(function (x, i) { if (x.date === date) out.push({ id: "x" + i, type: "exam", date: date, start: x.start, end: x.end, title: x.code + " " + x.name, sub: x.title, where: x.room, src: x }); });
     APPTS.forEach(function (a, i) { if (a.date === date) out.push({ id: "a" + i, type: "appointment", date: date, start: a.start, end: a.end, title: a.service, sub: "with " + a.advisor, where: a.format === "In person" ? a.where : a.format, src: a }); });
-    DROPINS.forEach(function (v, i) { if (v.date === date) out.push({ id: "v" + i, type: "dropin", date: date, start: v.start, end: v.end, title: v.service, sub: v.dept, where: v.where, src: v }); });
     WORKSHOPS.forEach(function (ws, i) {
       if (w !== ws.day || date < ws.first) return;
       var k = Math.round((d(date) - d(ws.first)) / 864e5 / 7);
@@ -730,10 +728,6 @@ const pageJsFor = (arm) => `${CALENDAR_JS}
       desc = s.dept; if (s.status) badges += '<span class="badge badge--base badge--regular badge--neutral">' + s.status + "</span>";
       body = section("Details", row("When", when) + row("Advisor", s.advisor) + row("Meeting", s.format) + row("Where", s.where) + row("Reference", s.ref));
       foot = '<a class="btn btn--secondary btn--base" href="student-scheduling-v7-app.html">' + ICON_OPEN + "Open in Scheduling</a>";
-    } else if (ev.type === "dropin") {
-      desc = s.dept; if (s.status) badges += '<span class="badge badge--base badge--regular badge--neutral">' + s.status + "</span>";
-      body = section("Details", row("When", when) + row("Where", s.where));
-      foot = '<a class="btn btn--secondary btn--base" href="student-scheduling-v7-app.html">' + ICON_OPEN + "Open in Scheduling</a>";
     } else if (ev.type === "workshop") {
       desc = s.dept; badges += '<span class="badge badge--base badge--regular badge--neutral">Session ' + ev.n + " of " + s.count + "</span>";
       body = section("Details", row("When", when) + row("Organizer", s.organizer) + row("Meeting", s.format) + row("Where", s.where));
@@ -767,7 +761,7 @@ const viewerHtml = renderDesignViewer({
   activeKey: "schedule",
   title: "Schedule",
   heading: "Schedule",
-  sub: `One Schedule for CX and ARM. The live app has two: CX's (enrolled and wait-listed classes; Week, Month and a list; Download .ics, print, Filter by Friend) and ARM's Advising → Schedule (classes, exams, wait list, appointments and workshops, Mon–Fri only). This page is both of them on hp-design components, in the CX shell. Where ARM isn't licensed the same page simply has fewer types — see the <b>CX only</b> version. What changed: the legend and the type checkboxes are one row of filter Chips (the legend <i>is</i> the filter); Week / Month / List is one segmented Tabs; the date range is the heading and opens a Calendar; weekends appear only when something's on them; wait-listed classes are amber and dashed; overlapping events sit side by side; one time-zone line instead of "GMT-7" on every block; classes with no meeting time sit in a "No set time" row. Click any event for its details (classes keep ARM's Details / Information); appointments, drop-ins and workshops link to Scheduling. <b>Compare with a friend</b> lays a friend's classes over yours (CX's Filter by Friend). On a phone, Week is one day at a time with a day strip. George Amalor's class list is the live one; rooms, exams, advising and friends are sample data. "Today" is Thu, Oct 29 2026, 10:40 AM.`,
+  sub: `One Schedule for CX and ARM. The live app has two: CX's (enrolled and wait-listed classes; Week, Month and a list; Download .ics, print, Filter by Friend) and ARM's Advising → Schedule (classes, exams, wait list, appointments and workshops, Mon–Fri only). This page is both of them on hp-design components, in the CX shell. Where ARM isn't licensed the same page simply has fewer types — see the <b>CX only</b> version. What changed: the legend and the type checkboxes are one row of filter Chips (the legend <i>is</i> the filter); Week / Month / List is one segmented Tabs; the date range is the heading and opens a Calendar; weekends appear only when something's on them; wait-listed classes are amber and dashed; overlapping events sit side by side; one time-zone line instead of "GMT-7" on every block; classes with no meeting time sit in a "No set time" row. Click any event for its details (classes keep ARM's Details / Information); appointments and workshops link to Scheduling. <b>Compare with a friend</b> lays a friend's classes over yours (CX's Filter by Friend). On a phone, Week is one day at a time with a day strip. George Amalor's class list is the live one; rooms, exams, advising and friends are sample data. "Today" is Thu, Oct 29 2026, 10:40 AM.`,
   versions: [
     { label: "CX + ARM", note: "current", file: "schedule-app.html" },
     { label: "CX only", note: "no ARM — classes, wait list, exams", file: "schedule-cx-app.html" },
