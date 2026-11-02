@@ -68,6 +68,9 @@ ${S.SCH_TYPES.map((t) => `.sch-t--${t.key} { --ev-bg: ${R(badge.color[t.color].t
 /* ---- filters: the legend is the filter ---- */
 .sch-filters { display: flex; flex-wrap: wrap; align-items: center; gap: ${dim(2)}; }
 .sch-filters__friend { margin-left: auto; }
+/* Chip dropdown may shrink (its label ellipsizes) — not in this row: on a
+   phone the row scrolls sideways, and the chip collapsed to its icon */
+.sch-filters .chip--dropdown { flex-shrink: 0; }
 .sch-dot { width: ${dim(2)}; height: ${dim(2)}; border-radius: 50%; flex-shrink: 0; background: var(--ev-bar); }
 .sch-t--waitlist .sch-dot { background: transparent; box-shadow: inset 0 0 0 2px var(--ev-bar); }
 /* A type that's on is a plain Chip with its colour dot — six pressed chips
