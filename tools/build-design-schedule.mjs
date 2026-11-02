@@ -87,6 +87,8 @@ ${S.SCH_TYPES.map((t) => `.sch-t--${t.key} { --ev-bg: ${R(badge.color[t.color].t
 .chip.sch-chip.sch-t--waitlist[aria-pressed="true"] .sch-dot { box-shadow: inset 0 0 0 2px var(--ev-bar), 0 0 0 2px ${cv("surface.default")}; background: ${cv("surface.default")}; }
 /* Compare + .ics: label and chevron fold away on a phone (icon-only) */
 .sch-friendbar .alert__message { margin: 0; }
+/* Compare / .ics: the trailing chevron points up while their menu is open */
+#sch-friend[aria-expanded="true"] .btn__icon:last-child, #sch-ics[aria-expanded="true"] .btn__icon:last-child { transform: rotate(180deg); }
 
 /* ---- the calendar surface ---- */
 .sch-surface { background: ${R(card.bg)}; border: 1px solid ${R(card.border)}; border-radius: ${D(card.radius)}; }
@@ -100,13 +102,16 @@ ${S.SCH_TYPES.map((t) => `.sch-t--${t.key} { --ev-bg: ${R(badge.color[t.color].t
 
 /* an event block — tint fill, a 4px bar in the type's solid colour */
 .sch-ev { position: absolute; display: flex; flex-direction: column; gap: 0; min-width: 0; overflow: hidden; padding: ${dim(1)} ${dim(2)} ${dim(1)} ${dim(3)}; border: none; border-radius: ${evRadius}; background: var(--ev-bg); color: ${cv("text.default")}; text-align: left; cursor: pointer; font-family: inherit; box-shadow: inset ${dim(1)} 0 0 var(--ev-bar); }
-.sch-ev:hover { filter: brightness(0.97); }
+/* hover = a 1px ring in the type's solid (Figma: Event Block State Hover) — was a 97% brightness filter, which no token describes */
+.sch-ev:hover { box-shadow: inset ${dim(1)} 0 0 var(--ev-bar), inset 0 0 0 1px var(--ev-bar); }
 .sch-ev:focus-visible { outline: 2px solid ${cv("border.focus")}; outline-offset: 1px; z-index: 3; }
 .sch-ev__title { ${typoCss(style("heading-sm"))} white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .sch-ev__meta { color: ${cv("text.secondary")}; ${typoCss(style("body-xs"))} white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 /* wait list: dashed outline — a backup class, not one you're in */
 .sch-ev.sch-t--waitlist { background: ${cv("surface.default")}; box-shadow: inset ${dim(1)} 0 0 var(--ev-bar); outline: 1px dashed var(--ev-bar); outline-offset: -1px; }
 .sch-ev.sch-t--friend { box-shadow: none; outline: 1px dashed ${cv("border.default")}; outline-offset: -1px; background: repeating-linear-gradient(135deg, ${cv("surface.sunken")} 0 ${dim(1)}, ${cv("surface.default")} ${dim(1)} ${dim(2)}); }
+.sch-ev.sch-t--waitlist:hover, .sch-ev.sch-t--friend:hover { outline-style: solid; }
+.sch-ev.sch-t--friend:hover { box-shadow: none; }
 .sch-ev.is-past { opacity: 0.64; }
 
 /* ---- Week ---- */
@@ -262,6 +267,7 @@ dialog.slide-over-panel .sch-panel__body--list .sch-lrow__time { grid-column: 1 
   .sch-squeeze .sch-squeeze__text, .sch-wide { display: none; }
   .sch-strip { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: ${dim(1)}; padding: ${dim(2)}; border-bottom: 1px solid ${cv("border.default")}; }
   .sch-strip__day { display: flex; flex-direction: column; align-items: center; gap: ${dim("0_5")}; padding: ${dim(1)} 0; border: none; border-radius: ${D(card.radius)}; background: transparent; color: ${cv("text.secondary")}; cursor: pointer; font-family: inherit; ${typoCss(style("body-xs"))} }
+  .sch-strip__day:hover { background: ${R(button.ghost.state.hover.fill)}; }
   .sch-strip__num { display: inline-flex; align-items: center; justify-content: center; width: ${dim(8)}; height: ${dim(8)}; border-radius: 50%; color: ${cv("text.default")}; ${typoCss(style("heading-base"))} }
   .sch-strip__dots { display: flex; gap: 2px; height: ${dim(1)}; }
   .sch-strip__dots .sch-dot { width: ${dim(1)}; height: ${dim(1)}; }

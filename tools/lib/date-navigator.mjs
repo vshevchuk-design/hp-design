@@ -84,6 +84,8 @@ export const DATE_NAV_CSS = `
 .date-nav__period:focus-visible { outline: ${D(ring.ringWidth)} solid ${R(ring.ringColor)}; outline-offset: ${D(ring.ringOffset)}; }
 .date-nav__label { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 .date-nav__chevron { width: ${D(p.chevronSize)}; height: ${D(p.chevronSize)}; flex-shrink: 0; color: ${R(p.chevronColor)}; }
+/* the chevron points up while the Calendar is open (Collapsible / Sidebar's rule) */
+.date-nav__period[aria-expanded="true"] .date-nav__chevron { transform: rotate(180deg); }
 /* split: the period first and flexible, the buttons at the far end */
 .date-nav--split .date-nav__period { order: -1; margin-right: auto; margin-left: -${D(p.paddingX)}; }
 @media (max-width: 767px) { .date-nav__period { ${typoCss(resolveToken(p.labelPhone))} } }`;
@@ -127,7 +129,7 @@ export function dateNavHtml({ id, unit = "week", value, today, layout = "inline"
     <button class="btn btn--secondary btn--base btn--icon-only" type="button" data-step="1" aria-label="Next ${unit}">${icon("chevron_right", "btn__icon")}</button>
     <button class="btn btn--secondary btn--base" type="button" data-today>Today</button>
   </div>
-  <button class="date-nav__period" type="button" popovertarget="${pid}" aria-haspopup="dialog"><span class="date-nav__label" id="${id}-label">${periodLabel(unit, value)}</span>${icon("expand_more", "date-nav__chevron")}</button>
+  <button class="date-nav__period" type="button" popovertarget="${pid}" aria-haspopup="dialog" aria-expanded="false"><span class="date-nav__label" id="${id}-label">${periodLabel(unit, value)}</span>${icon("expand_more", "date-nav__chevron")}</button>
   <div class="datepicker__panel date-nav__panel" id="${pid}" popover role="dialog" aria-label="${label}">${calendarHtml({ value, today, label })}</div>
 </div>`;
 }
@@ -159,6 +161,7 @@ export const DATE_NAV_JS = `window.hpDateNav = window.hpDateNav || (function () 
     });
     // float the Calendar under the trigger, flip above if it doesn't fit (DatePicker's rule)
     panel.addEventListener("toggle", function (e) {
+      trigger.setAttribute("aria-expanded", e.newState === "open");
       if (e.newState !== "open") return;
       var a = hpCalendar.parse(st.value); cal.setValue(a); cal.setView(a);
       var r = trigger.getBoundingClientRect(), pr = panel.getBoundingClientRect(), vw = window.innerWidth, vh = window.innerHeight, top;

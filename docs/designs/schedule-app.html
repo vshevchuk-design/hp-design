@@ -1340,6 +1340,8 @@ html { background: var(--tok-surface-page); }
 .date-nav__period:focus-visible { outline: 4px solid var(--tok-border-focus); outline-offset: 2px; }
 .date-nav__label { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 .date-nav__chevron { width: 20px; height: 20px; flex-shrink: 0; color: var(--tok-icon-secondary); }
+/* the chevron points up while the Calendar is open (Collapsible / Sidebar's rule) */
+.date-nav__period[aria-expanded="true"] .date-nav__chevron { transform: rotate(180deg); }
 /* split: the period first and flexible, the buttons at the far end */
 .date-nav--split .date-nav__period { order: -1; margin-right: auto; margin-left: -8px; }
 @media (max-width: 767px) { .date-nav__period { font-weight: 600; font-size: 16px; line-height: 1.4; } }
@@ -1377,6 +1379,8 @@ html { background: var(--tok-surface-page); }
 .chip.sch-chip.sch-t--waitlist[aria-pressed="true"] .sch-dot { box-shadow: inset 0 0 0 2px var(--ev-bar), 0 0 0 2px var(--tok-surface-default); background: var(--tok-surface-default); }
 /* Compare + .ics: label and chevron fold away on a phone (icon-only) */
 .sch-friendbar .alert__message { margin: 0; }
+/* Compare / .ics: the trailing chevron points up while their menu is open */
+#sch-friend[aria-expanded="true"] .btn__icon:last-child, #sch-ics[aria-expanded="true"] .btn__icon:last-child { transform: rotate(180deg); }
 
 /* ---- the calendar surface ---- */
 .sch-surface { background: var(--tok-surface-default); border: 1px solid var(--tok-border-default); border-radius: 8px; }
@@ -1390,13 +1394,16 @@ html { background: var(--tok-surface-page); }
 
 /* an event block — tint fill, a 4px bar in the type's solid colour */
 .sch-ev { position: absolute; display: flex; flex-direction: column; gap: 0; min-width: 0; overflow: hidden; padding: 4px 8px 4px 12px; border: none; border-radius: 6px; background: var(--ev-bg); color: var(--tok-text-default); text-align: left; cursor: pointer; font-family: inherit; box-shadow: inset 4px 0 0 var(--ev-bar); }
-@media (hover: hover) { .sch-ev:hover { filter: brightness(0.97); } }
+@media (hover: hover) { /* hover = a 1px ring in the type's solid (Figma: Event Block State Hover) — was a 97% brightness filter, which no token describes */
+.sch-ev:hover { box-shadow: inset 4px 0 0 var(--ev-bar), inset 0 0 0 1px var(--ev-bar); } }
 .sch-ev:focus-visible { outline: 2px solid var(--tok-border-focus); outline-offset: 1px; z-index: 3; }
 .sch-ev__title { font-weight: 600; font-size: 12px; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .sch-ev__meta { color: var(--tok-text-secondary); font-weight: 400; font-size: 10px; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 /* wait list: dashed outline — a backup class, not one you're in */
 .sch-ev.sch-t--waitlist { background: var(--tok-surface-default); box-shadow: inset 4px 0 0 var(--ev-bar); outline: 1px dashed var(--ev-bar); outline-offset: -1px; }
 .sch-ev.sch-t--friend { box-shadow: none; outline: 1px dashed var(--tok-border-default); outline-offset: -1px; background: repeating-linear-gradient(135deg, var(--tok-surface-sunken) 0 4px, var(--tok-surface-default) 4px 8px); }
+@media (hover: hover) { .sch-ev.sch-t--waitlist:hover, .sch-ev.sch-t--friend:hover { outline-style: solid; } }
+@media (hover: hover) { .sch-ev.sch-t--friend:hover { box-shadow: none; } }
 .sch-ev.is-past { opacity: 0.64; }
 
 /* ---- Week ---- */
@@ -1552,6 +1559,7 @@ dialog.slide-over-panel .sch-panel__body--list .sch-lrow__time { grid-column: 1 
   .sch-squeeze .sch-squeeze__text, .sch-wide { display: none; }
   .sch-strip { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; padding: 8px; border-bottom: 1px solid var(--tok-border-default); }
   .sch-strip__day { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 4px 0; border: none; border-radius: 8px; background: transparent; color: var(--tok-text-secondary); cursor: pointer; font-family: inherit; font-weight: 400; font-size: 10px; line-height: 1.4; }
+  @media (hover: hover) { .sch-strip__day:hover { background: var(--tok-fill-neutral-hover); } }
   .sch-strip__num { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; color: var(--tok-text-default); font-weight: 600; font-size: 14px; line-height: 1.4; }
   .sch-strip__dots { display: flex; gap: 2px; height: 4px; }
   .sch-strip__dots .sch-dot { width: 4px; height: 4px; }
@@ -1641,7 +1649,7 @@ dialog.slide-over-panel .sch-panel__body--list .sch-lrow__time { grid-column: 1 
     <button class="btn btn--secondary btn--base btn--icon-only" type="button" data-step="1" aria-label="Next week"><svg class="btn__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button>
     <button class="btn btn--secondary btn--base" type="button" data-today>Today</button>
   </div>
-  <button class="date-nav__period" type="button" popovertarget="sch-nav-panel" aria-haspopup="dialog"><span class="date-nav__label" id="sch-nav-label">Oct 25 – 31, 2026</span><svg class="date-nav__chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+  <button class="date-nav__period" type="button" popovertarget="sch-nav-panel" aria-haspopup="dialog" aria-expanded="false"><span class="date-nav__label" id="sch-nav-label">Oct 25 – 31, 2026</span><svg class="date-nav__chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
   <div class="datepicker__panel date-nav__panel" id="sch-nav-panel" popover role="dialog" aria-label="Go to date"><div class="calendar" role="group" aria-label="Go to date" data-mode="single" data-value="2026-10-29" data-today="2026-10-29"><div class="calendar__months"><div class="calendar__month"><div class="calendar__head"><button class="calendar__nav calendar__nav--prev" type="button" aria-label="Previous month"><svg class="calendar__nav-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg></button><span class="calendar__selects"><span class="calendar__sel"><select class="calendar__select calendar__select--month" aria-label="Month"><option value="0">January</option><option value="1">February</option><option value="2">March</option><option value="3">April</option><option value="4">May</option><option value="5">June</option><option value="6">July</option><option value="7">August</option><option value="8">September</option><option value="9" selected>October</option><option value="10">November</option><option value="11">December</option></select><svg class="calendar__sel-chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></span><span class="calendar__sel"><select class="calendar__select calendar__select--year" aria-label="Year"><option value="2026" selected>2026</option></select><svg class="calendar__sel-chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></span></span><button class="calendar__nav calendar__nav--next" type="button" aria-label="Next month"><svg class="calendar__nav-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button></div><div class="calendar__grid" role="group"></div></div></div></div></div>
 </div>
         <div class="sch-bar__end">
@@ -1930,6 +1938,7 @@ window.hpDateNav = window.hpDateNav || (function () {
     });
     // float the Calendar under the trigger, flip above if it doesn't fit (DatePicker's rule)
     panel.addEventListener("toggle", function (e) {
+      trigger.setAttribute("aria-expanded", e.newState === "open");
       if (e.newState !== "open") return;
       var a = hpCalendar.parse(st.value); cal.setValue(a); cal.setView(a);
       var r = trigger.getBoundingClientRect(), pr = panel.getBoundingClientRect(), vw = window.innerWidth, vh = window.innerHeight, top;
