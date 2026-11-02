@@ -1564,8 +1564,9 @@ dialog.slide-over-panel .sch-panel__body--list .sch-lrow__time { grid-column: 1 
   .sch-mdots .sch-dot { width: 6px; height: 6px; }
   .sch-lrow { grid-template-columns: minmax(0, 1fr); gap: 4px; padding: 12px 16px; }
   .sch-lrow .badge { justify-self: start; }
-  .sch-panel .ss-dl { grid-template-columns: minmax(0, 1fr); gap: 4px 0; }
-  .sch-panel .ss-dl dd { margin-bottom: 8px; }
+  /* label | value stays one row on a phone (user, 2026-11-03: stacking
+     doubled the length); a narrower label column, long labels wrap in it */
+  .sch-panel .ss-dl { grid-template-columns: 112px minmax(0, 1fr); gap: 12px; }
 }
 /* print: the calendar alone */
 @media print {

@@ -282,8 +282,9 @@ dialog.slide-over-panel .sch-panel__body--list .sch-lrow__time { grid-column: 1 
   .sch-mdots .sch-dot { width: ${dim("1_5")}; height: ${dim("1_5")}; }
   .sch-lrow { grid-template-columns: minmax(0, 1fr); gap: ${dim(1)}; padding: ${dim(3)} ${dim(4)}; }
   .sch-lrow .badge { justify-self: start; }
-  .sch-panel .ss-dl { grid-template-columns: minmax(0, 1fr); gap: ${dim(1)} 0; }
-  .sch-panel .ss-dl dd { margin-bottom: ${dim(2)}; }
+  /* label | value stays one row on a phone (user, 2026-11-03: stacking
+     doubled the length); a narrower label column, long labels wrap in it */
+  .sch-panel .ss-dl { grid-template-columns: ${dim(28)} minmax(0, 1fr); gap: ${dim(3)}; }
 }
 /* print: the calendar alone */
 @media print {
