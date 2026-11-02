@@ -1518,6 +1518,11 @@ dialog.slide-over-panel .sch-panel__body--list .sch-lrow__time { grid-column: 1 
 .sch-panel .dialog__title .badge, .sch-panel .slide-over-panel__title .badge { vertical-align: middle; margin-left: 4px; }
 /* lifted over iOS Safari's floating bottom bar (the Scheduling calendar sheet's fix) */
 .sch-sheet__foot { padding-bottom: calc(16px + env(safe-area-inset-bottom) + 100lvh - 100dvh); }
+/* the phone sheet's actions share one row in equal parts (user, 2026-11-03:
+   "Copy share link" + "View deadlines" stacked); icons drop to make room */
+.sch-sheet__foot { flex-wrap: nowrap; }
+.sch-sheet__foot > .btn { flex: 1 1 0; min-width: 0; padding-inline: 12px; }
+.sch-sheet__foot > .btn .btn__icon { display: none; }
 
 /* ---- tablet: the bar's end drops under the range ---- */
 @container (max-width: 879px) {
