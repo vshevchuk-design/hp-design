@@ -305,8 +305,8 @@ const viewsFor = (arm) => {
             <button class="tab tab--sm" type="button" role="tab" data-view="month">Month</button>
             <button class="tab tab--sm" type="button" role="tab" data-view="list">List</button>
           </div>
-          <button class="btn btn--secondary btn--base btn--icon-only sch-print" id="sch-print" type="button" aria-label="Print">${icon("print", "btn__icon")}</button>
           <button class="btn btn--secondary btn--base sch-squeeze" id="sch-friend" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Compare with a friend">${icon("group", "btn__icon")}<span class="sch-squeeze__text">Compare</span>${icon("expand_more", "btn__icon sch-squeeze__text")}</button>
+          <button class="btn btn--secondary btn--base btn--icon-only sch-print" id="sch-print" type="button" aria-label="Print">${icon("print", "btn__icon")}</button>
           <button class="btn btn--secondary btn--base sch-squeeze" id="sch-ics" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="Download .ics">${icon("download", "btn__icon")}<span class="sch-squeeze__text">.ics</span>${icon("expand_more", "btn__icon sch-squeeze__text")}</button>
         </div>
       </div>
