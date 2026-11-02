@@ -71,7 +71,12 @@ ${S.SCH_TYPES.map((t) => `.sch-t--${t.key} { --ev-bg: ${R(badge.color[t.color].t
 .sch-pick { padding: ${dim(3)}; }
 
 /* ---- filters: the legend is the filter ---- */
-.sch-filters { display: flex; flex-wrap: wrap; align-items: center; gap: ${dim(2)}; }
+/* one row at every width (user, 2026-11-03: they wrapped on a tablet) —
+   it scrolls sideways when it doesn't fit, bleeding into the page padding
+   so a chip slides out at the screen edge rather than being cut in the page */
+.sch-filters { display: flex; flex-wrap: nowrap; align-items: center; gap: ${dim(2)}; overflow-x: auto; scrollbar-width: none; margin: 0 -${dim(8)}; padding: 0 ${dim(8)}; }
+.sch-filters::-webkit-scrollbar { display: none; }
+@media (max-width: 1023px) { .sch-filters { margin: 0 -${dim(6)}; padding: 0 ${dim(6)}; } }
 .sch-dot { width: ${dim(2)}; height: ${dim(2)}; border-radius: 50%; flex-shrink: 0; background: var(--ev-bar); }
 .sch-t--waitlist .sch-dot { background: transparent; box-shadow: inset 0 0 0 2px var(--ev-bar); }
 /* Pick one (user, 2026-11-02): All, or exactly the type you tap — a tap
@@ -245,8 +250,7 @@ dialog.slide-over-panel .sch-panel__body--list .sch-lrow__time { grid-column: 1 
   .sch-print { display: none; }
   .sch-bar__end .tabs--segmented { flex: 1; }
   .sch-bar__end .tabs--segmented .tab { flex: 1; }
-  .sch-filters { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin: 0 -${dim(4)}; padding: 0 ${dim(4)}; }
-  .sch-filters::-webkit-scrollbar { display: none; }
+  .sch-filters { margin: 0 -${dim(4)}; padding: 0 ${dim(4)}; }
   /* the panel's action-end Alert: the button drops under the text, lined up with it */
   .sch-panel .alert--action-end { flex-wrap: wrap; align-items: flex-start; }
   .sch-panel .alert--action-end .alert__stack { flex: 1 1 calc(100% - ${D(tokens.alert.iconSize)} - ${D(tokens.alert.gap)}); }
