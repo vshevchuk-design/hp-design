@@ -168,12 +168,22 @@ ${S.SCH_TYPES.map((t) => `.sch-t--${t.key} { --ev-bg: ${R(badge.color[t.color].t
 .sch-link { display: inline-flex; align-items: center; gap: ${dim(1)}; color: ${cv("text.primary")}; ${typoCss(style("link-base"))} text-decoration: ${textExt("text-style.link-base").textDecoration || "underline"}; }
 .sch-link__icon { width: ${dim(4)}; height: ${dim(4)}; }
 /* deadlines: name + date on one line, what it means under it */
-.sch-dls { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: ${dim(4)}; }
-.sch-dls__top { display: flex; align-items: baseline; justify-content: space-between; gap: ${dim(3)}; }
+/* each calendar is one flush Card: a date tile | the deadline and what it
+   means; hairlines between. Passed = muted + "Passed"; the nearest one
+   still ahead = "Next" (user, 2026-11-02: the plain list read as a wall of text) */
+.sch-dls { margin: 0; padding: 0; list-style: none; }
+.sch-dls__item { display: grid; grid-template-columns: ${dim(12)} minmax(0, 1fr); align-items: start; gap: ${dim(4)}; padding: ${dim(3)} ${D(card.padding)}; }
+.sch-dls__item + .sch-dls__item { border-top: 1px solid ${R(card.divider)}; }
+.sch-dls__tile { display: flex; flex-direction: column; align-items: center; justify-content: center; height: ${dim(12)}; border-radius: ${evRadius}; background: ${cv("surface.page")}; box-shadow: inset 0 0 0 1px ${cv("border.default")}; }
+.sch-dls__mon { color: ${cv("text.secondary")}; ${typoCss(lbl)} text-transform: ${lblCase}; letter-spacing: ${px(lbl.letterSpacing)}; line-height: 1; }
+.sch-dls__day { color: ${cv("text.default")}; ${typoCss(style("heading-md"))} line-height: 1.2; }
+.sch-dls__top { display: flex; flex-wrap: wrap; align-items: center; gap: ${dim(1)} ${dim(2)}; }
 .sch-dls__name { color: ${cv("text.default")}; ${typoCss(style("heading-base"))} }
-.sch-dls__date { display: inline-flex; align-items: center; gap: ${dim(2)}; flex-shrink: 0; color: ${cv("text.default")}; ${typoCss(style("body-base"))} white-space: nowrap; }
 .sch-dls__text { margin: ${dim(1)} 0 0; color: ${cv("text.secondary")}; ${typoCss(style("body-sm"))} }
-.sch-dls__item.is-past .sch-dls__name, .sch-dls__item.is-past .sch-dls__date { color: ${cv("text.muted")}; }
+.sch-dls__item.is-past .sch-dls__name, .sch-dls__item.is-past .sch-dls__day, .sch-dls__item.is-past .sch-dls__text { color: ${cv("text.muted")}; }
+.sch-dls__item.is-past .sch-dls__tile { background: transparent; }
+.sch-dls__item.is-next .sch-dls__tile { background: ${cv("bg.primary")}; box-shadow: inset 0 0 0 1px ${cv("fill.primary")}; }
+.sch-dls__item.is-next .sch-dls__mon, .sch-dls__item.is-next .sch-dls__day { color: ${cv("text.primary")}; }
 /* the panel is Dialog md (640) on a desktop — a class's six sections and the
    deadline tables read cramped at sm */
 dialog.dialog.sch-panel { width: min(${D(tokens.dialog.size.md)}, calc(100vw - ${D(tokens.dialog.viewportGutter)} * 2)); }
@@ -713,10 +723,14 @@ const pageJsFor = (arm) => `${CALENDAR_JS}
   // a class's Academic Calendar Deadlines (the live View Deadlines page)
   function deadlinesContent(s) {
     var html = section("Class details", row("Session", s.session) + row("Career", s.career) + row("Section", s.section.split("-")[0]) + row("Class starts", mdY(TERM.start)) + row("Class ends", mdY(TERM.end)) + row("Last date to wait list", mdY(DEADLINES.lastWaitlist)));
+    var next = null;
+    DEADLINES.groups.forEach(function (g) { g.items.forEach(function (it) { if (it.date >= TODAY && (!next || it.date < next)) next = it.date; }); });
     DEADLINES.groups.forEach(function (g) {
-      html += block(g.title + " calendar", '<ul class="sch-dls">' + g.items.map(function (it) {
-        var past = it.date < TODAY;
-        return '<li class="sch-dls__item' + (past ? " is-past" : "") + '"><div class="sch-dls__top"><span class="sch-dls__name">' + esc(it.name) + '</span><span class="sch-dls__date">' + (past ? '<span class="badge badge--regular badge--neutral">Passed</span>' : "") + mdY(it.date) + '</span></div><p class="sch-dls__text">' + esc(it.text) + "</p></li>";
+      html += block(g.title + " calendar", '<ul class="card card--flush sch-dls">' + g.items.map(function (it) {
+        var past = it.date < TODAY, isNext = it.date === next, x = d(it.date);
+        var days = Math.round((x - d(TODAY)) / 864e5);
+        var tag = past ? '<span class="badge badge--regular badge--neutral">Passed</span>' : isNext ? '<span class="badge badge--regular badge--primary">Next · in ' + days + (days === 1 ? " day" : " days") + "</span>" : "";
+        return '<li class="sch-dls__item' + (past ? " is-past" : "") + (isNext ? " is-next" : "") + '"><span class="sch-dls__tile" aria-hidden="true"><span class="sch-dls__mon">' + MON[x.getMonth()] + '</span><span class="sch-dls__day">' + x.getDate() + '</span></span><div><div class="sch-dls__top"><span class="sch-dls__name">' + esc(it.name) + '</span><span class="visually-hidden">, ' + mdY(it.date) + "</span>" + tag + '</div><p class="sch-dls__text">' + esc(it.text) + "</p></div></li>";
       }).join("") + "</ul>");
     });
     return html;

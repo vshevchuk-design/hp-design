@@ -1455,12 +1455,22 @@ html { background: var(--tok-surface-page); }
 .sch-link { display: inline-flex; align-items: center; gap: 4px; color: var(--tok-text-primary); font-weight: 400; font-size: 14px; line-height: 1.4; text-decoration: underline; }
 .sch-link__icon { width: 16px; height: 16px; }
 /* deadlines: name + date on one line, what it means under it */
-.sch-dls { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 16px; }
-.sch-dls__top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+/* each calendar is one flush Card: a date tile | the deadline and what it
+   means; hairlines between. Passed = muted + "Passed"; the nearest one
+   still ahead = "Next" (user, 2026-11-02: the plain list read as a wall of text) */
+.sch-dls { margin: 0; padding: 0; list-style: none; }
+.sch-dls__item { display: grid; grid-template-columns: 48px minmax(0, 1fr); align-items: start; gap: 16px; padding: 12px 16px; }
+.sch-dls__item + .sch-dls__item { border-top: 1px solid var(--tok-border-default); }
+.sch-dls__tile { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 48px; border-radius: 6px; background: var(--tok-surface-page); box-shadow: inset 0 0 0 1px var(--tok-border-default); }
+.sch-dls__mon { color: var(--tok-text-secondary); font-weight: 700; font-size: 12px; line-height: 1.4; text-transform: uppercase; letter-spacing: 0.04em; line-height: 1; }
+.sch-dls__day { color: var(--tok-text-default); font-weight: 600; font-size: 16px; line-height: 1.4; line-height: 1.2; }
+.sch-dls__top { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; }
 .sch-dls__name { color: var(--tok-text-default); font-weight: 600; font-size: 14px; line-height: 1.4; }
-.sch-dls__date { display: inline-flex; align-items: center; gap: 8px; flex-shrink: 0; color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; white-space: nowrap; }
 .sch-dls__text { margin: 4px 0 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
-.sch-dls__item.is-past .sch-dls__name, .sch-dls__item.is-past .sch-dls__date { color: var(--tok-text-muted); }
+.sch-dls__item.is-past .sch-dls__name, .sch-dls__item.is-past .sch-dls__day, .sch-dls__item.is-past .sch-dls__text { color: var(--tok-text-muted); }
+.sch-dls__item.is-past .sch-dls__tile { background: transparent; }
+.sch-dls__item.is-next .sch-dls__tile { background: var(--tok-bg-primary); box-shadow: inset 0 0 0 1px var(--tok-fill-primary); }
+.sch-dls__item.is-next .sch-dls__mon, .sch-dls__item.is-next .sch-dls__day { color: var(--tok-text-primary); }
 /* the panel is Dialog md (640) on a desktop — a class's six sections and the
    deadline tables read cramped at sm */
 dialog.dialog.sch-panel { width: min(640px, calc(100vw - 16px * 2)); }
@@ -2251,10 +2261,14 @@ window.hpCalendar = window.hpCalendar || (function () {
   // a class's Academic Calendar Deadlines (the live View Deadlines page)
   function deadlinesContent(s) {
     var html = section("Class details", row("Session", s.session) + row("Career", s.career) + row("Section", s.section.split("-")[0]) + row("Class starts", mdY(TERM.start)) + row("Class ends", mdY(TERM.end)) + row("Last date to wait list", mdY(DEADLINES.lastWaitlist)));
+    var next = null;
+    DEADLINES.groups.forEach(function (g) { g.items.forEach(function (it) { if (it.date >= TODAY && (!next || it.date < next)) next = it.date; }); });
     DEADLINES.groups.forEach(function (g) {
-      html += block(g.title + " calendar", '<ul class="sch-dls">' + g.items.map(function (it) {
-        var past = it.date < TODAY;
-        return '<li class="sch-dls__item' + (past ? " is-past" : "") + '"><div class="sch-dls__top"><span class="sch-dls__name">' + esc(it.name) + '</span><span class="sch-dls__date">' + (past ? '<span class="badge badge--regular badge--neutral">Passed</span>' : "") + mdY(it.date) + '</span></div><p class="sch-dls__text">' + esc(it.text) + "</p></li>";
+      html += block(g.title + " calendar", '<ul class="card card--flush sch-dls">' + g.items.map(function (it) {
+        var past = it.date < TODAY, isNext = it.date === next, x = d(it.date);
+        var days = Math.round((x - d(TODAY)) / 864e5);
+        var tag = past ? '<span class="badge badge--regular badge--neutral">Passed</span>' : isNext ? '<span class="badge badge--regular badge--primary">Next · in ' + days + (days === 1 ? " day" : " days") + "</span>" : "";
+        return '<li class="sch-dls__item' + (past ? " is-past" : "") + (isNext ? " is-next" : "") + '"><span class="sch-dls__tile" aria-hidden="true"><span class="sch-dls__mon">' + MON[x.getMonth()] + '</span><span class="sch-dls__day">' + x.getDate() + '</span></span><div><div class="sch-dls__top"><span class="sch-dls__name">' + esc(it.name) + '</span><span class="visually-hidden">, ' + mdY(it.date) + "</span>" + tag + '</div><p class="sch-dls__text">' + esc(it.text) + "</p></div></li>";
       }).join("") + "</ul>");
     });
     return html;
