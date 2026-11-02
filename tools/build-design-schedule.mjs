@@ -163,6 +163,17 @@ ${S.SCH_TYPES.map((t) => `.sch-t--${t.key} { --ev-bg: ${R(badge.color[t.color].t
 .sch-dlg .ss-dl { grid-template-columns: ${dim(32)} minmax(0, 1fr); }
 .sch-dlg .ss-dl dd.is-empty { color: ${cv("text.muted")}; }
 
+/* the month's day panel: List rows edge to edge (they carry the 16px inset) */
+.sch-mcell { cursor: pointer; }
+.sch-mcell:hover { background: ${cv("surface.page")}; }
+.sch-day__body { padding: ${dim(2)} 0; gap: 0; display: flex; flex-direction: column; }
+/* 480 wide: the time goes over the title (a 176px time column cut every name) */
+.sch-day__body .sch-lrow { grid-template-columns: minmax(0, 1fr) auto; gap: ${dim(1)} ${dim(4)}; padding-block: ${dim(3)}; }
+.sch-day__body .sch-lrow__time { grid-column: 1 / -1; }
+.sch-day .dialog__title .badge, .sch-day-sheet .slide-over-panel__title .badge { vertical-align: middle; margin-left: ${dim(1)}; }
+/* lifted over iOS Safari's floating bottom bar (the Scheduling calendar sheet's fix) */
+.sch-day-sheet__foot { padding-bottom: calc(${dim(4)} + env(safe-area-inset-bottom) + 100lvh - 100dvh); }
+
 /* ---- tablet: the bar's end drops under the range ---- */
 @container (max-width: 879px) {
   .sch-bar__end { margin-left: 0; width: 100%; }
@@ -245,6 +256,26 @@ const after = `<div class="datepicker__panel sch-pick" id="sch-pick" popover rol
   <button type="button" class="dropdown-menu__item" role="menuitem" data-ics="view">What's shown</button>
   <button type="button" class="dropdown-menu__item" role="menuitem" data-ics="term">The whole term</button>
 </div></div>
+<dialog class="dialog sch-day" id="sch-day" aria-labelledby="sch-day-title" aria-describedby="sch-day-desc">
+  <div class="dialog__content">
+    <div class="dialog__header">
+      <div class="dialog__heading"><h2 class="dialog__title" id="sch-day-title" data-day-title></h2><p class="dialog__description" id="sch-day-desc" data-day-desc></p></div>
+      <button class="dialog__close" type="button" data-close aria-label="Close">${icon("close", "dialog__close-icon")}</button>
+    </div>
+    <div class="dialog__body sch-day__body" data-day-list></div>
+    <div class="dialog__footer">
+      <button class="btn btn--secondary btn--base" type="button" data-day-week>${icon("view_week", "btn__icon")}Open in Week</button>
+      <button class="btn btn--primary btn--base" type="button" data-close>Close</button>
+    </div>
+  </div>
+</dialog>
+<dialog class="slide-over-panel slide-over-panel--bottom sch-day-sheet" id="sch-day-sheet" aria-labelledby="sch-day-sheet-title" aria-describedby="sch-day-sheet-desc">
+  <div class="slide-over-panel__content">
+    <div class="slide-over-panel__header"><div class="slide-over-panel__heading"><h2 class="slide-over-panel__title" id="sch-day-sheet-title" data-day-title></h2><p class="slide-over-panel__description" id="sch-day-sheet-desc" data-day-desc></p></div><button class="slide-over-panel__close" type="button" data-close aria-label="Close">${icon("close", "slide-over-panel__close-icon")}</button></div>
+    <div class="slide-over-panel__body sch-day__body" data-day-list></div>
+    <div class="slide-over-panel__footer sch-day-sheet__foot"><button class="btn btn--secondary btn--base btn--block" type="button" data-day-week>${icon("view_week", "btn__icon")}Open in Week</button></div>
+  </div>
+</dialog>
 <dialog class="dialog sch-dlg" id="sch-dlg" aria-labelledby="sch-dlg-title" aria-describedby="sch-dlg-desc">
   <div class="dialog__content">
     <div class="dialog__header">
@@ -412,16 +443,21 @@ const pageJsFor = (arm) => `${CALENDAR_JS}
       var dt = add(start, i), evs = eventsOn(dt), out = d(dt).getMonth() !== m, max = 4;
       var shown = evs.length > max ? evs.slice(0, max - 1) : evs;
       var kinds = []; evs.forEach(function (e) { if (kinds.indexOf(e.type) < 0) kinds.push(e.type); });
-      html += '<div class="sch-mcell' + (out ? " is-outside" : "") + (dt === TODAY ? " is-today" : "") + '">' +
-        '<button type="button" class="sch-mcell__num" data-goday="' + dt + '" aria-label="' + esc(longDate(dt)) + ", " + evs.length + ' events — open the day">' + d(dt).getDate() + "</button>" +
+      html += '<div class="sch-mcell' + (out ? " is-outside" : "") + (dt === TODAY ? " is-today" : "") + '" data-goday="' + dt + '">' +
+        '<button type="button" class="sch-mcell__num" data-goday="' + dt + '" aria-haspopup="dialog" aria-label="' + esc(longDate(dt)) + ", " + evs.length + (evs.length === 1 ? " event" : " events") + '">' + d(dt).getDate() + "</button>" +
         shown.map(function (e) { return '<button type="button" class="sch-mev sch-t--' + e.type + (isPast(e) ? " is-past" : "") + '" data-ev="' + e.id + '"><span class="sch-dot"></span><span class="sch-mev__title">' + esc(e.title) + '</span><span class="sch-mev__time">' + tShort(e.start) + "</span></button>"; }).join("") +
-        (evs.length > shown.length ? '<button type="button" class="sch-more" data-goday="' + dt + '">' + (evs.length - shown.length) + " more</button>" : "") +
+        (evs.length > shown.length ? '<button type="button" class="sch-more" data-goday="' + dt + '">' + (evs.length - shown.length) + ' more</button>' : "") +
         '<span class="sch-mdots" aria-hidden="true">' + kinds.slice(0, 4).map(function (k) { return '<span class="sch-dot sch-t--' + k + '"></span>'; }).join("") + "</span></div>";
     }
     return html + "</div>";
   }
 
   // ---- List ----
+  // one row per event — the List view and the month's day panel share it
+  function listRow(e) {
+    var t = typeOf(e.type);
+    return '<button type="button" class="sch-lrow' + (isPast(e) ? " is-past" : "") + '" data-ev="' + e.id + '"><span class="sch-lrow__time"><span class="sch-dot sch-t--' + e.type + '"></span>' + tRange(e.start, e.end) + '</span><span class="sch-lrow__main"><span class="sch-lrow__title">' + esc(e.title) + '</span><span class="sch-lrow__meta">' + esc([e.sub, e.where].filter(Boolean).join(" · ")) + '</span></span><span class="badge badge--regular sch-badge sch-t--' + e.type + '">' + esc(e.type === "friend" ? e.friend.name.split(" ")[0] + "'s class" : t.one) + "</span></button>";
+  }
   function renderList() {
     var ws = weekStart(st.anchor), html = noTimeRow() + '<div class="sch-list">', any = false;
     for (var i = 0; i < 7; i++) {
@@ -429,10 +465,7 @@ const pageJsFor = (arm) => `${CALENDAR_JS}
       if (!evs.length) continue;
       any = true;
       html += '<div class="sch-lday"><h3 class="sch-lday__head">' + esc(longDate(dt)) + (dt === TODAY ? ' <span class="badge badge--primary">Today</span>' : "") + "</h3>" +
-        evs.map(function (e) {
-          var t = typeOf(e.type);
-          return '<button type="button" class="sch-lrow' + (isPast(e) ? " is-past" : "") + '" data-ev="' + e.id + '"><span class="sch-lrow__time"><span class="sch-dot sch-t--' + e.type + '"></span>' + tRange(e.start, e.end) + '</span><span class="sch-lrow__main"><span class="sch-lrow__title">' + esc(e.title) + '</span><span class="sch-lrow__meta">' + esc([e.sub, e.where].filter(Boolean).join(" · ")) + '</span></span><span class="badge badge--regular sch-badge sch-t--' + e.type + '">' + esc(e.type === "friend" ? e.friend.name.split(" ")[0] + "'s class" : t.one) + "</span></button>";
-        }).join("") + "</div>";
+        evs.map(listRow).join("") + "</div>";
     }
     if (!any) html += '<div class="empty-state"><span class="empty-state__text">Nothing scheduled this week</span></div>';
     return html + '</div><div class="sch-foot"><p class="sch-note">Times are in ' + TZ + ".</p></div>";
@@ -545,14 +578,44 @@ const pageJsFor = (arm) => `${CALENDAR_JS}
     window.cx.toast(n + " events saved to schedule-" + from + ".ics");
   });
 
-  // ---- surface clicks: an event → its dialog; a day → that day ----
+  // ---- surface clicks: an event → its dialog; a month day → the day panel;
+  // a phone day-strip day → that day ----
   $("sch-surface").addEventListener("click", function (e) {
-    var g = e.target.closest("[data-goday]");
-    if (g) { st.anchor = g.dataset.goday; st.day = g.dataset.goday; st.view = "week"; render(); return; }
-    var s = e.target.closest("[data-day]");
-    if (s) { st.day = s.dataset.day; render(); return; }
     var b = e.target.closest("[data-ev]");
-    if (b && byId[b.dataset.ev]) openEvent(byId[b.dataset.ev]);
+    if (b && byId[b.dataset.ev]) { openEvent(byId[b.dataset.ev]); return; }
+    var g = e.target.closest("[data-goday]");
+    if (g) { openDay(g.dataset.goday, g.closest(".sch-mcell").querySelector(".sch-mcell__num")); return; }
+    var s = e.target.closest("[data-day]");
+    if (s) { st.day = s.dataset.day; render(); }
+  });
+
+  // ---- the day panel (Month): a Dialog on a desktop, a bottom
+  // SlideOverPanel on a phone — the day's events as List rows; a row opens
+  // the event's own dialog on top, closing that returns to the day ----
+  var dayIso = null, dayReturn = null;
+  function dayPanel() { return mq.matches ? $("sch-day-sheet") : $("sch-day"); }
+  function openDay(dt, from) {
+    dayIso = dt; dayReturn = from || null;
+    var evs = eventsOn(dt), p = dayPanel();
+    p.querySelector("[data-day-title]").innerHTML = esc(longDate(dt)) + (dt === TODAY ? ' <span class="badge badge--primary">Today</span>' : "");
+    p.querySelector("[data-day-desc]").textContent = evs.length ? evs.length + (evs.length === 1 ? " event" : " events") : "";
+    p.querySelector("[data-day-list]").innerHTML = evs.length ? evs.map(listRow).join("") : '<div class="empty-state"><span class="empty-state__text">Nothing on this day</span></div>';
+    p.showModal();
+  }
+  ["sch-day", "sch-day-sheet"].forEach(function (id) {
+    var p = $(id);
+    p.addEventListener("click", function (e) {
+      if (e.target === p || e.target.closest("[data-close]")) { p.close(); return; }
+      if (e.target.closest("[data-day-week]")) { p.close(); st.anchor = dayIso; st.day = dayIso; st.view = "week"; render(); return; }
+      var b = e.target.closest("[data-ev]");
+      if (b && byId[b.dataset.ev]) openEvent(byId[b.dataset.ev]);
+    });
+    p.addEventListener("close", function () { if (dayReturn && st.view === "month" && document.contains(dayReturn)) dayReturn.focus(); dayReturn = null; });
+  });
+  // crossing the 768 breakpoint with the day open: move it to the other panel
+  mq.addEventListener("change", function () {
+    var open = $("sch-day").open ? $("sch-day") : $("sch-day-sheet").open ? $("sch-day-sheet") : null;
+    if (open) { open.close(); openDay(dayIso); }
   });
 
   // ---- the event dialog ----
