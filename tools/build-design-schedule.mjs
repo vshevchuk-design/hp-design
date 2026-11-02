@@ -35,6 +35,11 @@ import { CX_NAV, CX_ASSISTANT_PROMPTS } from "./lib/cx-data.mjs";
 import { CALENDAR_CSS, CALENDAR_JS, CALENDAR_COLOR_PATHS, calendarHtml } from "./lib/calendar.mjs";
 import { DATE_PICKER_CSS, DATE_PICKER_COLOR_PATHS } from "./lib/date-picker.mjs";
 import * as S from "./lib/sch-data.mjs";
+import { ABOUT as SS_ABOUT, WORKSHOPS as SS_WORKSHOPS } from "./lib/ss-data.mjs";
+
+// Scheduling's own texts, not retyped: a workshop's About, a service's About
+const WS_ABOUT = Object.fromEntries(S.SCH_WORKSHOPS.map((w) => [w.name, (SS_WORKSHOPS.find((x) => x.name === w.name) || {}).about || ""]));
+const APPTS = S.SCH_APPOINTMENTS.map((a) => ({ ...a, about: a.about || SS_ABOUT[a.service] || "" }));
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 
@@ -167,6 +172,24 @@ ${S.SCH_TYPES.map((t) => `.sch-t--${t.key} { --ev-bg: ${R(badge.color[t.color].t
 .sch-links { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: ${dim(2)}; }
 .sch-link { display: inline-flex; align-items: center; gap: ${dim(1)}; color: ${cv("text.primary")}; ${typoCss(style("link-base"))} text-decoration: ${textExt("text-style.link-base").textDecoration || "underline"}; }
 .sch-link__icon { width: ${dim(4)}; height: ${dim(4)}; }
+/* appointment: the check-in note, the reference with its copy button;
+   the advisor's questions */
+.sch-note--icon { display: flex; align-items: center; gap: ${dim(2)}; }
+.sch-note__icon { width: ${dim(4)}; height: ${dim(4)}; flex-shrink: 0; }
+.sch-panel .ss-dl dd.sch-ref { display: flex; align-items: center; gap: ${dim(1)}; margin-block: -${dim(1)}; }
+.sch-q { display: flex; flex-direction: column; gap: ${dim(2)}; }
+.sch-q__label { color: ${cv("text.default")}; ${typoCss(style("heading-base"))} }
+.sch-q__field { min-height: ${dim(20)}; resize: vertical; }
+.sch-panel__body--event:has(.sch-q) { gap: ${dim(5)}; }
+/* workshop sessions: number | date · time | state; this one tinted */
+.sch-sess { margin: 0; padding: 0; list-style: none; }
+.sch-sess__item { display: grid; grid-template-columns: ${dim(6)} minmax(0, 1fr) auto; align-items: center; gap: ${dim(3)}; min-height: ${dim(12)}; padding: 0 ${D(card.padding)}; }
+.sch-sess__item + .sch-sess__item { border-top: 1px solid ${R(card.divider)}; }
+.sch-sess__num { color: ${cv("text.muted")}; ${typoCss(style("heading-sm"))} text-align: center; }
+.sch-sess__when { color: ${cv("text.default")}; ${typoCss(style("body-base"))} }
+.sch-sess__item.is-past .sch-sess__when { color: ${cv("text.secondary")}; }
+.sch-sess__item.is-current { background: ${cv("bg.primary")}; }
+.sch-sess__item.is-current .sch-sess__num, .sch-sess__item.is-current .sch-sess__when { color: ${cv("text.primary")}; font-weight: 600; }
 /* deadlines: name + date on one line, what it means under it */
 /* each calendar is one flush Card: a date tile | the deadline and what it
    means; hairlines between. Passed = muted + "Passed"; the nearest one
@@ -224,6 +247,10 @@ dialog.slide-over-panel .sch-panel__body--list .sch-lrow__time { grid-column: 1 
   .sch-bar__end .tabs--segmented .tab { flex: 1; }
   .sch-filters { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin: 0 -${dim(4)}; padding: 0 ${dim(4)}; }
   .sch-filters::-webkit-scrollbar { display: none; }
+  /* the panel's action-end Alert: the button drops under the text, lined up with it */
+  .sch-panel .alert--action-end { flex-wrap: wrap; align-items: flex-start; }
+  .sch-panel .alert--action-end .alert__stack { flex: 1 1 calc(100% - ${D(tokens.alert.iconSize)} - ${D(tokens.alert.gap)}); }
+  .sch-panel .alert--action-end > .btn { margin-left: calc(${D(tokens.alert.iconSize)} + ${D(tokens.alert.gap)}); }
   .sch-squeeze { width: ${D(button.secondary.size.base.height)}; padding: 0; }
   .sch-squeeze .sch-squeeze__text, .sch-wide { display: none; }
   .sch-strip { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: ${dim(1)}; padding: ${dim(2)}; border-bottom: 1px solid ${cv("border.default")}; }
@@ -320,7 +347,12 @@ const pageJsFor = (arm) => `${CALENDAR_JS}
   var TYPES = ${JSON.stringify(S.SCH_TYPES.filter((t) => arm || !t.arm))};
   var CLASSES = ${JSON.stringify(S.SCH_CLASSES)};
   var EXAMS = ${JSON.stringify(S.SCH_EXAMS)};
-  var APPTS = ${JSON.stringify(arm ? S.SCH_APPOINTMENTS : [])};
+  var APPTS = ${JSON.stringify(arm ? APPTS : [])};
+  var WS_ABOUT = ${JSON.stringify(arm ? WS_ABOUT : {})};
+  var CHECKIN_BEFORE = ${S.SCH_CHECKIN_BEFORE};
+  // what the student did in this session: cancelled appointments, answered
+  // questions, checked in, "can't make it" workshop sessions
+  var done = { cancelled: {}, answered: {}, checkedIn: {}, notGoing: {} };
   var WORKSHOPS = ${JSON.stringify(arm ? S.SCH_WORKSHOPS : [])};
   var FRIENDS = ${JSON.stringify(S.SCH_FRIENDS)};
   var TERM = ${JSON.stringify(S.SCH_TERM)};
@@ -331,6 +363,10 @@ const pageJsFor = (arm) => `${CALENDAR_JS}
   var ICON_COPY = ${JSON.stringify(icon("content_copy", "btn__icon"))};
   var ICON_EVENT = ${JSON.stringify(icon("event_note", "btn__icon"))};
   var ICON_BOOK = ${JSON.stringify(icon("menu_book", "btn__icon"))};
+  var ICON_INFO = ${JSON.stringify(icon("info", "alert__icon"))};
+  var ICON_CLOCK = ${JSON.stringify(icon("schedule", "sch-note__icon"))};
+  var ICON_COPY_SM = ${JSON.stringify(icon("content_copy", "btn__icon"))};
+
   var DEADLINES = ${JSON.stringify(S.SCH_DEADLINES)};
   var MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   var MONTH = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -370,7 +406,7 @@ const pageJsFor = (arm) => `${CALENDAR_JS}
       out.push({ id: "c" + i + "-" + date, type: c.waitlist ? "waitlist" : "class", date: date, start: c.start, end: c.end, title: c.title, sub: c.code, where: c.room, src: c });
     });
     EXAMS.forEach(function (x, i) { if (x.date === date) out.push({ id: "x" + i, type: "exam", date: date, start: x.start, end: x.end, title: x.code + " " + x.name, sub: x.title, where: x.room, src: x }); });
-    APPTS.forEach(function (a, i) { if (a.date === date) out.push({ id: "a" + i, type: "appointment", date: date, start: a.start, end: a.end, title: a.service, sub: "with " + a.advisor, where: a.format === "In person" ? a.where : a.format, src: a }); });
+    APPTS.forEach(function (a, i) { if (a.date === date && !done.cancelled[i]) out.push({ id: "a" + i, idx: i, type: "appointment", date: date, start: a.start, end: a.end, title: a.service, sub: "with " + a.advisor, where: a.format === "In person" ? a.where : a.format, src: a }); });
     WORKSHOPS.forEach(function (ws, i) {
       if (w !== ws.day || date < ws.first) return;
       var k = Math.round((d(date) - d(ws.first)) / 864e5 / 7);
@@ -411,7 +447,7 @@ const pageJsFor = (arm) => `${CALENDAR_JS}
     var top = (e.start - h0 * 60) / 60 * HOUR, hgt = Math.max(24, (e.end - e.start) / 60 * HOUR - 2);
     var w = 100 / e.cols, lines = hgt >= 52 ? 3 : hgt >= 36 ? 2 : 1;
     var meta1 = tRange(e.start, e.end) + (e.cols === 1 && e.sub ? " · " + e.sub : "");
-    return '<button type="button" class="sch-ev sch-t--' + e.type + (isPast(e) ? " is-past" : "") + '" data-ev="' + e.id + '" style="top:' + top + "px;height:" + hgt + "px;left:calc(" + (e.col * w) + "% + 0px);width:calc(" + w + '% - 4px)">' +
+    return '<button type="button" class="sch-ev sch-t--' + e.type + (isPast(e) || done.notGoing[e.id] ? " is-past" : "") + '" data-ev="' + e.id + '" style="top:' + top + "px;height:" + hgt + "px;left:calc(" + (e.col * w) + "% + 0px);width:calc(" + w + '% - 4px)">' +
       '<span class="sch-ev__title">' + esc(e.title) + "</span>" +
       (lines > 1 ? '<span class="sch-ev__meta">' + esc(meta1) + "</span>" : "") +
       (lines > 2 && e.where ? '<span class="sch-ev__meta">' + esc(e.where) + "</span>" : "") +
@@ -667,11 +703,23 @@ const pageJsFor = (arm) => `${CALENDAR_JS}
     } else if (l.k === "ev") {
       var c = eventContent(l.ev);
       fill(p, { kind: "event", back: back, title: esc(c.title), desc: c.desc, body: '<div class="sch-dlg__badges">' + c.badges + "</div>" + c.body, foot: c.foot });
-    } else {
+    } else if (l.k === "dl") {
       var dl = deadlinesContent(l.ev.src);
       fill(p, { kind: "event", back: back, title: "Academic calendar deadlines", desc: l.ev.src.title + " · " + l.ev.src.code, body: dl });
+    } else if (l.k === "cancel") {
+      // Scheduling's cancel AlertDialog, as a level of this panel — no modal on a modal
+      var a = l.ev.src;
+      fill(p, { kind: "event", back: back, title: "Cancel this appointment?", desc: "",
+        body: '<p class="sch-dlg__text">' + esc(a.service) + " with " + esc(a.advisor) + " on " + esc(longDate(a.date)) + " at " + tShort(a.start).replace(" am", " AM").replace(" pm", " PM") + ". The time goes back to other students — you can book again any time.</p>",
+        foot: '<button class="btn btn--secondary btn--base" type="button" data-back-btn>Keep it</button><button class="btn btn--danger btn--base" type="button" data-confirm-cancel>Cancel appointment</button>' });
+    } else {
+      // the advisor's questions (Scheduling's "Answer questions")
+      var q = l.ev.src;
+      fill(p, { kind: "event", back: back, title: "Questions from " + esc(q.advisor), desc: "Answer before your meeting — " + q.advisor.split(" ")[0] + " reads them beforehand.",
+        body: q.questions.map(function (t, i) { return '<label class="sch-q"><span class="sch-q__label">' + esc(t) + '</span><textarea class="ss-q__field sch-q__field" rows="3" data-q="' + i + '"></textarea></label>'; }).join(""),
+        foot: '<button class="btn btn--primary btn--base" type="button" data-send-answers>Send answers</button>' });
     }
-    var f = (focusSel && p.querySelector(focusSel)) || p.querySelector("[data-back]:not(.is-hidden)") || p.querySelector("[data-close]");
+    var f = (focusSel && p.querySelector(focusSel)) || (l.k === "questions" && p.querySelector("textarea")) || p.querySelector("[data-back]:not(.is-hidden)") || p.querySelector("[data-close]");
     f.focus();
   }
   function push(level) { P.stack.push(level); showTop(); }
@@ -688,7 +736,29 @@ const pageJsFor = (arm) => `${CALENDAR_JS}
       if (e.target === p || e.target.closest("[data-close]")) { p.close(); return; }
       if (e.target.closest("[data-back]")) { goBack(); return; }
       if (e.target.closest("[data-nd]")) { window.cx.notDesigned(); return; }
-      if (e.target.closest("[data-deadlines]")) { push({ k: "dl", ev: P.stack[P.stack.length - 1].ev }); return; }
+      var top = P.stack[P.stack.length - 1];
+      if (e.target.closest("[data-deadlines]")) { push({ k: "dl", ev: top.ev }); return; }
+      if (e.target.closest("[data-back-btn]")) { goBack(); return; }
+      if (e.target.closest("[data-cancel-appt]")) { push({ k: "cancel", ev: top.ev }); return; }
+      if (e.target.closest("[data-questions]")) { push({ k: "questions", ev: top.ev }); return; }
+      if (e.target.closest("[data-confirm-cancel]")) {
+        done.cancelled[top.ev.idx] = true; P.stack.pop(); render(); showTop();
+        window.cx.toast("Appointment cancelled — " + top.ev.src.service); return;
+      }
+      if (e.target.closest("[data-send-answers]")) {
+        done.answered[top.ev.idx] = true; P.stack.pop(); showTop();
+        window.cx.toast("Answers sent to " + top.ev.src.advisor); return;
+      }
+      if (e.target.closest("[data-checkin]")) { done.checkedIn[top.ev.idx] = true; showTop(); window.cx.toast("You're checked in"); return; }
+      if (e.target.closest("[data-copy-ref]")) {
+        if (navigator.clipboard) navigator.clipboard.writeText(top.ev.src.ref).catch(function () {});
+        window.cx.toast("Reference copied"); return;
+      }
+      if (e.target.closest("[data-notgoing]")) {
+        var key = top.ev.id; done.notGoing[key] = !done.notGoing[key];
+        window.cx.toast(done.notGoing[key] ? "We let " + top.ev.src.organizer + " know you can't make it" : "You're going again");
+        render(); showTop("[data-notgoing]"); return;
+      }
       var sh = e.target.closest("[data-share]");
       if (sh) {
         var url = location.href.split("#")[0] + "#class-" + sh.dataset.share;
@@ -701,6 +771,8 @@ const pageJsFor = (arm) => `${CALENDAR_JS}
     });
     // Esc goes back a level while there is one, then closes
     p.addEventListener("cancel", function (e) { if (P.stack.length > 1) { e.preventDefault(); goBack(); } });
+    // after "Cancel appointment" the event leaves the calendar: re-resolve it
+    // from the day when going back to a day list (handled by eventsOn)
     p.addEventListener("close", function () {
       if (P.skip === p) { P.skip = null; return; } // carried to the other panel, not closed
       var r = P.ret; P.stack = []; P.ret = null;
@@ -737,7 +809,7 @@ const pageJsFor = (arm) => `${CALENDAR_JS}
   }
   // an event's title, description, body and footer actions
   function eventContent(ev) {
-    var s = ev.src, title = ev.title, desc = ev.sub, badges = badgeFor(ev), body = "", foot = "", close = true;
+    var s = ev.src, title = ev.title, desc = ev.sub, badges = badgeFor(ev), body = "", foot = "";
     var when = ev.notime ? "" : longDate(ev.date) + " · " + tRange(ev.start, ev.end);
     if (ev.type === "class" || ev.type === "waitlist") {
       // the live CX class modal's sections, in its order
@@ -751,23 +823,60 @@ const pageJsFor = (arm) => `${CALENDAR_JS}
         section("Availability", '<dt>Status</dt><dd><span class="badge badge--base badge--regular badge--' + STATUS_BADGE[s.status] + '">' + s.status + "</span></dd>" + row("Seats open", s.seats[0] + " of " + s.seats[1]) + row("Wait list open", s.wait[0] + " of " + s.wait[1])) +
         (s.links && s.links.length ? block("Additional links", '<ul class="sch-links">' + s.links.map(function (l) { return '<li><a class="sch-link" href="#" data-nd>' + esc(l) + ICON_OPEN_SM + "</a></li>"; }).join("") + "</ul>") : "");
       foot = '<button class="btn btn--secondary btn--base" type="button" data-share="' + s.classNumber + '">' + ICON_COPY + 'Copy share link</button><button class="btn btn--primary btn--base" type="button" data-deadlines>' + ICON_EVENT + "View deadlines</button>";
-      close = false;
     } else if (ev.type === "exam") {
       title = s.code + " " + s.name; desc = s.title;
       body = section("Details", row("When", when) + row("Room", s.room) + row("Term", TERM.name));
     } else if (ev.type === "appointment") {
-      desc = s.dept; if (s.status) badges += '<span class="badge badge--base badge--regular badge--neutral">' + s.status + "</span>";
-      body = section("Details", row("When", when) + row("Advisor", s.advisor) + row("Meeting", s.format) + row("Where", s.where) + row("Reference", s.ref));
-      foot = '<a class="btn btn--secondary btn--base" href="student-scheduling-v7-app.html">' + ICON_OPEN + "Open in Scheduling</a>";
+      // what Scheduling's appointment page shows
+      var i = ev.idx, cancelled = !!done.cancelled[i], past = isPast(ev) || s.status === "Done";
+      var status = cancelled ? ["Cancelled", "neutral"] : past ? ["Done", "neutral"] : done.checkedIn[i] ? ["Checked in", "success"] : ["Upcoming", "primary"];
+      desc = s.dept;
+      badges += '<span class="badge badge--base badge--regular badge--' + status[1] + '">' + status[0] + "</span>";
+      var pre = "";
+      if (!past && !cancelled && s.questions && !done.answered[i]) pre += '<div class="alert alert--action-end" role="status">' + ICON_INFO + '<div class="alert__stack"><p class="alert__message"><span class="alert__title">' + esc(s.advisor) + " asked " + s.questions.length + " questions.</span> Answer them before your meeting.</p></div>" + '<button class="btn btn--secondary btn--sm" type="button" data-questions>Answer questions</button></div>';
+      var opensAt = s.start - CHECKIN_BEFORE, canCheckIn = !past && !cancelled && s.date === TODAY && NOW >= opensAt && !done.checkedIn[i];
+      if (!past && !cancelled && s.date === TODAY && NOW < opensAt) pre += '<p class="sch-note sch-note--icon">' + ICON_CLOCK + "Check-in opens at " + hm(opensAt) + " " + ap(opensAt) + "</p>";
+      var mins = s.end - s.start;
+      body = pre + section("Details",
+        row("When", longDate(s.date) + ", " + d(s.date).getFullYear() + " · " + tRange(s.start, s.end) + " (" + TZ + ")") +
+        row("Duration", mins >= 60 ? (mins / 60) + (mins === 60 ? " hour" : " hours") : mins + " min") +
+        row("Advisor", s.advisor) + row("Meeting", s.format) + row("Where", s.where) +
+        (s.questions && done.answered[i] ? row("Questions", "Answered") : "") +
+        '<dt>Reference</dt><dd class="sch-ref">' + esc(s.ref) + '<button class="btn btn--ghost btn--sm btn--icon-only" type="button" data-copy-ref aria-label="Copy reference">' + ICON_COPY_SM + "</button></dd>") +
+        (s.about ? block("About this service", '<p class="sch-dlg__text">' + esc(s.about) + "</p>") : "");
+      var BOOK = '<a class="btn btn--primary btn--base" href="student-scheduling-v7-app.html">Book again</a>';
+      foot = cancelled || past ? BOOK
+        : '<button class="btn btn--secondary btn--base" type="button" data-cancel-appt>Cancel appointment</button>' +
+          (canCheckIn ? '<a class="btn btn--secondary btn--base" href="student-scheduling-v7-app.html">Reschedule</a><button class="btn btn--primary btn--base" type="button" data-checkin>Check in</button>'
+                      : '<a class="btn btn--primary btn--base" href="student-scheduling-v7-app.html">Reschedule</a>');
     } else if (ev.type === "workshop") {
-      desc = s.dept; badges += '<span class="badge badge--base badge--regular badge--neutral">Session ' + ev.n + " of " + s.count + "</span>";
-      body = section("Details", row("When", when) + row("Organizer", s.organizer) + row("Meeting", s.format) + row("Where", s.where));
-      foot = '<a class="btn btn--secondary btn--base" href="student-scheduling-v7-app.html">' + ICON_OPEN + "Open in Scheduling</a>";
+      // the registered workshop: this session, progress, every session, About
+      var dates = []; for (var k = 0; k < s.count; k++) dates.push(add(s.first, 7 * k));
+      var wi = WORKSHOPS.indexOf(s), off = !!done.notGoing[ev.id], sessPast = isPast(ev);
+      var pastN = dates.filter(function (x) { return x < TODAY || (x === TODAY && s.end <= NOW); }).length;
+      var attended = dates.slice(0, pastN).filter(function (x, n) { return s.missed.indexOf(n + 1) < 0; }).length;
+      desc = s.dept;
+      badges += '<span class="badge badge--base badge--regular badge--neutral">Session ' + ev.n + " of " + s.count + "</span>" +
+        (sessPast ? '<span class="badge badge--base badge--regular badge--' + (s.missed.indexOf(ev.n) >= 0 ? 'neutral">Missed' : 'success">Attended') + "</span>" : off ? '<span class="badge badge--base badge--regular badge--warning">Not going</span>' : "");
+      var sessions = '<ol class="card card--flush sch-sess">' + dates.map(function (x, n) {
+        var num = n + 1, id = "w" + wi + "-" + x, isPastS = n < pastN, me = num === ev.n;
+        var tag = me ? '<span class="badge badge--regular badge--primary">This session</span>'
+          : isPastS ? (s.missed.indexOf(num) >= 0 ? '<span class="badge badge--regular badge--neutral">Missed</span>' : '<span class="badge badge--regular badge--success">Attended</span>')
+          : done.notGoing[id] ? '<span class="badge badge--regular badge--warning">Not going</span>' : "";
+        return '<li class="sch-sess__item' + (me ? " is-current" : "") + (isPastS ? " is-past" : "") + '"><span class="sch-sess__num">' + num + '</span><span class="sch-sess__when">' + esc(shortDate(x)) + " · " + tRange(s.start, s.end) + "</span>" + tag + "</li>";
+      }).join("") + "</ol>";
+      body = section("This session", row("When", longDate(ev.date) + " · " + tRange(s.start, s.end)) + row("Meeting", s.format) + row("Where", s.where) + row("Organizer", s.organizer)) +
+        block("Your progress", '<p class="sch-dlg__text">' + pastN + " of " + s.count + " sessions done · you attended " + attended + '</p><div class="progress progress--base" role="progressbar" aria-label="Sessions done" aria-valuemin="0" aria-valuemax="' + s.count + '" aria-valuenow="' + pastN + '"><span class="progress__bar" style="width:' + Math.round(pastN / s.count * 100) + '%"></span></div>') +
+        block("Sessions", sessions) +
+        (WS_ABOUT[s.name] ? block("About", '<p class="sch-dlg__text">' + esc(WS_ABOUT[s.name]) + "</p>") : "");
+      foot = (sessPast ? "" : '<button class="btn btn--secondary btn--base" type="button" data-notgoing>' + (off ? "I can make it" : "Can't make it") + "</button>") +
+        '<a class="btn btn--primary btn--base" href="student-scheduling-v7-app.html">' + ICON_OPEN + "Open in Scheduling</a>";
     } else {
       desc = ev.friend.name + "'s class · " + s.code;
       body = section("Details", row("When", when) + row("Room", s.room));
     }
-    return { title: title, desc: desc, badges: badges, body: body, foot: foot ? foot + (close ? '<button class="btn btn--primary btn--base" type="button" data-close>Close</button>' : "") : "" };
+    // no Close in a footer (user, 2026-11-02) — the header × closes; the footer holds actions only
+    return { title: title, desc: desc, badges: badges, body: body, foot: foot };
   }
 
   render();

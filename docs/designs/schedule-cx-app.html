@@ -1454,6 +1454,24 @@ html { background: var(--tok-surface-page); }
 .sch-links { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
 .sch-link { display: inline-flex; align-items: center; gap: 4px; color: var(--tok-text-primary); font-weight: 400; font-size: 14px; line-height: 1.4; text-decoration: underline; }
 .sch-link__icon { width: 16px; height: 16px; }
+/* appointment: the check-in note, the reference with its copy button;
+   the advisor's questions */
+.sch-note--icon { display: flex; align-items: center; gap: 8px; }
+.sch-note__icon { width: 16px; height: 16px; flex-shrink: 0; }
+.sch-panel .ss-dl dd.sch-ref { display: flex; align-items: center; gap: 4px; margin-block: -4px; }
+.sch-q { display: flex; flex-direction: column; gap: 8px; }
+.sch-q__label { color: var(--tok-text-default); font-weight: 600; font-size: 14px; line-height: 1.4; }
+.sch-q__field { min-height: 80px; resize: vertical; }
+.sch-panel__body--event:has(.sch-q) { gap: 20px; }
+/* workshop sessions: number | date · time | state; this one tinted */
+.sch-sess { margin: 0; padding: 0; list-style: none; }
+.sch-sess__item { display: grid; grid-template-columns: 24px minmax(0, 1fr) auto; align-items: center; gap: 12px; min-height: 48px; padding: 0 16px; }
+.sch-sess__item + .sch-sess__item { border-top: 1px solid var(--tok-border-default); }
+.sch-sess__num { color: var(--tok-text-muted); font-weight: 600; font-size: 12px; line-height: 1.4; text-align: center; }
+.sch-sess__when { color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; }
+.sch-sess__item.is-past .sch-sess__when { color: var(--tok-text-secondary); }
+.sch-sess__item.is-current { background: var(--tok-bg-primary); }
+.sch-sess__item.is-current .sch-sess__num, .sch-sess__item.is-current .sch-sess__when { color: var(--tok-text-primary); font-weight: 600; }
 /* deadlines: name + date on one line, what it means under it */
 /* each calendar is one flush Card: a date tile | the deadline and what it
    means; hairlines between. Passed = muted + "Passed"; the nearest one
@@ -1511,6 +1529,10 @@ dialog.slide-over-panel .sch-panel__body--list .sch-lrow__time { grid-column: 1 
   .sch-bar__end .tabs--segmented .tab { flex: 1; }
   .sch-filters { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin: 0 -16px; padding: 0 16px; }
   .sch-filters::-webkit-scrollbar { display: none; }
+  /* the panel's action-end Alert: the button drops under the text, lined up with it */
+  .sch-panel .alert--action-end { flex-wrap: wrap; align-items: flex-start; }
+  .sch-panel .alert--action-end .alert__stack { flex: 1 1 calc(100% - 20px - 8px); }
+  .sch-panel .alert--action-end > .btn { margin-left: calc(20px + 8px); }
   .sch-squeeze { width: 40px; padding: 0; }
   .sch-squeeze .sch-squeeze__text, .sch-wide { display: none; }
   .sch-strip { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; padding: 8px; border-bottom: 1px solid var(--tok-border-default); }
@@ -1854,6 +1876,11 @@ window.hpCalendar = window.hpCalendar || (function () {
   var CLASSES = [{"institution":"PeopleSoft University","career":"Undergraduate","session":"Regular Academic Session","grading":"Graded","mode":"In Person","campus":"Hacienda Campus","location":"Hacienda","topic":"","components":"Lecture Required","textbooks":"","links":["HighPoint - test"],"code":"HISTORY 120","title":"American History","section":"1-LEC","classNumber":1088,"days":[1,3,5],"start":540,"end":590,"units":"1.0","instructor":"Marcus Webb","room":"Angel 105","description":"Survey of American history from colonial settlement to the present: the Revolution, the Constitution, expansion, the Civil War and Reconstruction, industrialization, and the United States as a world power.","seats":[24,35],"wait":[0,10],"status":"Open"},{"institution":"PeopleSoft University","career":"Undergraduate","session":"Regular Academic Session","grading":"Graded","mode":"In Person","campus":"Hacienda Campus","location":"Hacienda","topic":"","components":"Lecture Required","textbooks":"","links":["HighPoint - test"],"code":"ART 112","title":"History of World Art (As/Af)","section":"1-LEC","classNumber":1093,"days":[1,3,5],"start":600,"end":650,"units":"3.0","instructor":"Elena Ruiz","room":"Fine Arts 120","waitlist":3,"description":"Art and architecture of Asia and Africa from prehistory to the present, studied in their religious, political and social contexts.","seats":[0,30],"wait":[2,10],"status":"Wait list"},{"institution":"PeopleSoft University","career":"Undergraduate","session":"Regular Academic Session","grading":"Graded","mode":"In Person","campus":"Hacienda Campus","location":"Hacienda","topic":"","components":"Lecture Required","textbooks":"","links":["HighPoint - test"],"code":"ART 111","title":"Introductory Art Seminar","section":"1-SEM","classNumber":1091,"days":[2,4],"start":600,"end":680,"units":"3.0","instructor":"Elena Ruiz","room":"Fine Arts 204","description":"A seminar introduction to looking at, talking about and writing about art. Weekly gallery visits and short critical responses.","seats":[6,18],"wait":[0,5],"status":"Open"},{"institution":"PeopleSoft University","career":"Undergraduate","session":"Regular Academic Session","grading":"Graded","mode":"In Person","campus":"Hacienda Campus","location":"Hacienda","topic":"","components":"Lecture Required","textbooks":"","links":["HighPoint - test"],"code":"ACCT 202","title":"Financial Accounting II","section":"100-LEC","classNumber":1102,"days":[2,4],"start":600,"end":680,"units":"3.0","instructor":"Syndi B. Forbes","room":"Business 210","waitlist":6,"description":"Continuation of Financial Accounting I: long-term assets, liabilities, equity, the statement of cash flows and financial statement analysis.","seats":[0,40],"wait":[0,10],"status":"Closed"},{"institution":"PeopleSoft University","career":"Undergraduate","session":"Regular Academic Session","grading":"Graded","mode":"In Person","campus":"Hacienda Campus","location":"Hacienda","topic":"","components":"Lecture Required","textbooks":"","links":["HighPoint - test"],"code":"ACCT 201","title":"Financial Accounting I","section":"1001-LEC","classNumber":1001,"days":[1,3,5],"start":720,"end":770,"units":"3.0","instructor":"Syndi B. Forbes","room":"Business 110","waitlist":2,"description":"The accounting cycle and financial statements: recording transactions, adjusting entries, receivables, inventories and internal control.","seats":[0,40],"wait":[5,15],"status":"Wait list"},{"institution":"PeopleSoft University","career":"Undergraduate","session":"Regular Academic Session","grading":"Graded","mode":"In Person","campus":"Hacienda Campus","location":"Hacienda","topic":"","components":"Lecture Required","textbooks":"","links":["HighPoint - test"],"code":"MATH 211","title":"Math for Business Analysis","section":"100-LEC","classNumber":2184,"days":[1,3,5],"start":780,"end":830,"units":"3","instructor":"Staff","room":"","description":"Topics in business analysis, including: Lagrange multipliers, linear programming, linear algebra, intermediate probability, random variables, discrete distributions, and continuous distributions.","seats":[28,30],"wait":[0,0],"status":"Open"},{"institution":"PeopleSoft University","career":"Undergraduate","session":"Regular Academic Session","grading":"Graded","mode":"In Person","campus":"Hacienda Campus","location":"Hacienda","topic":"","components":"Lecture Required","textbooks":"","links":["HighPoint - test"],"code":"DANCE 104","title":"Modern and Postmodern Practice","section":"1-LAB","classNumber":1310,"days":[1,3,5],"start":780,"end":830,"units":"2.0","instructor":"Jonathan Rehm","room":"Studio B","waitlist":4,"description":"Studio practice in modern and postmodern dance techniques, with improvisation and short compositions. Comfortable clothing required.","seats":[0,20],"wait":[0,6],"status":"Closed"},{"institution":"PeopleSoft University","career":"Undergraduate","session":"Regular Academic Session","grading":"Graded","mode":"In Person","campus":"Hacienda Campus","location":"Hacienda","topic":"","components":"Lecture Required","textbooks":"","links":["HighPoint - test"],"code":"COMM 3","title":"Public Communication!","section":"1-LEC","classNumber":1022,"days":[1,3,5],"start":780,"end":830,"units":"3.0","instructor":"Staff","room":"Humanities 214","waitlist":1,"description":"Preparing and delivering informative and persuasive speeches; audience analysis, organization, evidence and delivery.","seats":[0,25],"wait":[3,8],"status":"Wait list"},{"institution":"PeopleSoft University","career":"Undergraduate","session":"Regular Academic Session","grading":"Graded","mode":"In Person","campus":"Hacienda Campus","location":"Hacienda","topic":"","components":"Lecture Required","textbooks":"","links":["HighPoint - test"],"code":"MATH 210","title":"Brief Calculus","section":"1000-LEC","classNumber":1000,"days":[1,3,5],"start":840,"end":890,"units":"4.0","instructor":"Priya Natarajan","room":"Science 204","description":"Differential and integral calculus of one variable with applications to business, economics and the life sciences.","seats":[11,35],"wait":[0,10],"status":"Open"},{"institution":"PeopleSoft University","career":"Undergraduate","session":"Regular Academic Session","grading":"Graded","mode":"In Person","campus":"Hacienda Campus","location":"Hacienda","topic":"","components":"Lecture Required","textbooks":"","links":["HighPoint - test"],"code":"BIOLOGY 115","title":"History and Theory of Biology","section":"1-LEC","classNumber":1565,"days":[],"units":"3.0","instructor":"","room":"","description":"How ideas about life changed from Aristotle to molecular biology: evolution, inheritance, the cell and the debates around them.","seats":[9,30],"wait":[0,10],"status":"Open"},{"institution":"PeopleSoft University","career":"Graduate","session":"Regular Academic Session","grading":"Graded","mode":"In Person","campus":"Hacienda Campus","location":"Hacienda","topic":"","components":"Lecture Required","textbooks":"","links":["HighPoint - test"],"code":"ART 532","title":"The Psychology of Art","section":"001-LEC","classNumber":1532,"days":[],"units":"3.0","instructor":"","room":"","waitlist":5,"description":"Graduate seminar on perception, emotion and meaning in the making and viewing of art.","seats":[0,12],"wait":[1,5],"status":"Wait list"}];
   var EXAMS = [{"code":"MATH 210","title":"Brief Calculus","name":"Midterm","date":"2026-10-30","start":900,"end":990,"room":"Science 204"},{"code":"HISTORY 120","title":"American History","name":"Midterm","date":"2026-11-02","start":540,"end":590,"room":"Angel 105"},{"code":"MATH 211","title":"Math for Business Analysis","name":"Midterm","date":"2026-11-06","start":780,"end":870,"room":"Science 110"},{"code":"HISTORY 120","title":"American History","name":"Final exam","date":"2026-12-07","start":480,"end":600,"room":"Angel 105"},{"code":"ART 111","title":"Introductory Art Seminar","name":"Final critique","date":"2026-12-08","start":600,"end":720,"room":"Fine Arts 204"},{"code":"MATH 211","title":"Math for Business Analysis","name":"Final exam","date":"2026-12-09","start":780,"end":900,"room":"Science 110"},{"code":"MATH 210","title":"Brief Calculus","name":"Final exam","date":"2026-12-10","start":840,"end":960,"room":"Science 204"}];
   var APPTS = [];
+  var WS_ABOUT = {};
+  var CHECKIN_BEFORE = 15;
+  // what the student did in this session: cancelled appointments, answered
+  // questions, checked in, "can't make it" workshop sessions
+  var done = { cancelled: {}, answered: {}, checkedIn: {}, notGoing: {} };
   var WORKSHOPS = [];
   var FRIENDS = [{"id":"jordan","name":"Jordan Lee","classes":[{"code":"ENGL 101","title":"Composition I","days":[1,3],"start":540,"end":615,"room":"Humanities 214"},{"code":"MATH 211","title":"Math for Business Analysis","days":[1,3,5],"start":780,"end":830,"room":"Science 110"},{"code":"BIOL 101","title":"General Biology","days":[2,4],"start":840,"end":915,"room":"Science 204"}]},{"id":"mia","name":"Mia Chen","classes":[{"code":"CS 110","title":"Intro to Programming","days":[2,4],"start":540,"end":615,"room":"Engineering 101"},{"code":"ART 111","title":"Introductory Art Seminar","days":[2,4],"start":600,"end":680,"room":"Fine Arts 204"},{"code":"PSYC 101","title":"General Psychology","days":[1,3],"start":900,"end":975,"room":"Liberal Arts 305"}]}];
   var TERM = {"name":"2026 Fall","start":"2026-08-30","end":"2026-12-12"};
@@ -1864,6 +1891,10 @@ window.hpCalendar = window.hpCalendar || (function () {
   var ICON_COPY = "<svg class=\"btn__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z\"/></svg>";
   var ICON_EVENT = "<svg class=\"btn__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M17 10H7v2h10v-2zm2-7h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zm-5-5H7v2h7v-2z\"/></svg>";
   var ICON_BOOK = "<svg class=\"btn__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" enable-background=\"new 0 0 24 24\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><g><rect fill=\"none\" height=\"24\" width=\"24\"/></g><g><g/><g><path d=\"M21,5c-1.11-0.35-2.33-0.5-3.5-0.5c-1.95,0-4.05,0.4-5.5,1.5c-1.45-1.1-3.55-1.5-5.5-1.5S2.45,4.9,1,6v14.65 c0,0.25,0.25,0.5,0.5,0.5c0.1,0,0.15-0.05,0.25-0.05C3.1,20.45,5.05,20,6.5,20c1.95,0,4.05,0.4,5.5,1.5c1.35-0.85,3.8-1.5,5.5-1.5 c1.65,0,3.35,0.3,4.75,1.05c0.1,0.05,0.15,0.05,0.25,0.05c0.25,0,0.5-0.25,0.5-0.5V6C22.4,5.55,21.75,5.25,21,5z M21,18.5 c-1.1-0.35-2.3-0.5-3.5-0.5c-1.7,0-4.15,0.65-5.5,1.5V8c1.35-0.85,3.8-1.5,5.5-1.5c1.2,0,2.4,0.15,3.5,0.5V18.5z\"/><g><path d=\"M17.5,10.5c0.88,0,1.73,0.09,2.5,0.26V9.24C19.21,9.09,18.36,9,17.5,9c-1.7,0-3.24,0.29-4.5,0.83v1.66 C14.13,10.85,15.7,10.5,17.5,10.5z\"/><path d=\"M13,12.49v1.66c1.13-0.64,2.7-0.99,4.5-0.99c0.88,0,1.73,0.09,2.5,0.26V11.9c-0.79-0.15-1.64-0.24-2.5-0.24 C15.8,11.66,14.26,11.96,13,12.49z\"/><path d=\"M17.5,14.33c-1.7,0-3.24,0.29-4.5,0.83v1.66c1.13-0.64,2.7-0.99,4.5-0.99c0.88,0,1.73,0.09,2.5,0.26v-1.52 C19.21,14.41,18.36,14.33,17.5,14.33z\"/></g></g></g></svg>";
+  var ICON_INFO = "<svg class=\"alert__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z\"/></svg>";
+  var ICON_CLOCK = "<svg class=\"sch-note__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z\"/><path d=\"M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z\"/></svg>";
+  var ICON_COPY_SM = "<svg class=\"btn__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z\"/></svg>";
+
   var DEADLINES = {"lastWaitlist":"2026-08-29","groups":[{"title":"Drop","items":[{"name":"Drop – delete record","date":"2026-11-25","text":"A class dropped on or before this date will be deleted from your academic record."},{"name":"Drop – retain record","date":"2026-11-26","text":"A class dropped on or before this date will be retained on your academic record with a status of dropped."},{"name":"Drop with penalty","date":"2026-11-27","text":"A class dropped on or before this date will appear on your transcript and a penalty grade will be assigned to the class."},{"name":"Drop with greater penalty","date":"2026-11-28","text":"Last date to drop. A class dropped on or before this date will appear on your transcript and a severe penalty grade will be assigned to the class."}]},{"title":"Cancel & withdraw","items":[{"name":"Cancel","date":"2026-08-29","text":"Classes within a session, canceled on or before this date will not appear on your transcript."},{"name":"Withdraw without penalty","date":"2026-11-13","text":"Classes within a session, withdrawn on or before this date will not appear on your transcript."},{"name":"Withdraw with penalty","date":"2026-11-29","text":"Classes within a session, withdrawn on or before this date will appear on your transcript and a penalty grade will be assigned to the classes."},{"name":"Withdraw with greater penalty","date":"2026-11-29","text":"Last day to withdraw from a session. Classes within a session, withdrawn on or before this date will appear on your transcript and a severe penalty grade will be assigned to the classes."}]}]};
   var MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   var MONTH = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -1903,7 +1934,7 @@ window.hpCalendar = window.hpCalendar || (function () {
       out.push({ id: "c" + i + "-" + date, type: c.waitlist ? "waitlist" : "class", date: date, start: c.start, end: c.end, title: c.title, sub: c.code, where: c.room, src: c });
     });
     EXAMS.forEach(function (x, i) { if (x.date === date) out.push({ id: "x" + i, type: "exam", date: date, start: x.start, end: x.end, title: x.code + " " + x.name, sub: x.title, where: x.room, src: x }); });
-    APPTS.forEach(function (a, i) { if (a.date === date) out.push({ id: "a" + i, type: "appointment", date: date, start: a.start, end: a.end, title: a.service, sub: "with " + a.advisor, where: a.format === "In person" ? a.where : a.format, src: a }); });
+    APPTS.forEach(function (a, i) { if (a.date === date && !done.cancelled[i]) out.push({ id: "a" + i, idx: i, type: "appointment", date: date, start: a.start, end: a.end, title: a.service, sub: "with " + a.advisor, where: a.format === "In person" ? a.where : a.format, src: a }); });
     WORKSHOPS.forEach(function (ws, i) {
       if (w !== ws.day || date < ws.first) return;
       var k = Math.round((d(date) - d(ws.first)) / 864e5 / 7);
@@ -1944,7 +1975,7 @@ window.hpCalendar = window.hpCalendar || (function () {
     var top = (e.start - h0 * 60) / 60 * HOUR, hgt = Math.max(24, (e.end - e.start) / 60 * HOUR - 2);
     var w = 100 / e.cols, lines = hgt >= 52 ? 3 : hgt >= 36 ? 2 : 1;
     var meta1 = tRange(e.start, e.end) + (e.cols === 1 && e.sub ? " · " + e.sub : "");
-    return '<button type="button" class="sch-ev sch-t--' + e.type + (isPast(e) ? " is-past" : "") + '" data-ev="' + e.id + '" style="top:' + top + "px;height:" + hgt + "px;left:calc(" + (e.col * w) + "% + 0px);width:calc(" + w + '% - 4px)">' +
+    return '<button type="button" class="sch-ev sch-t--' + e.type + (isPast(e) || done.notGoing[e.id] ? " is-past" : "") + '" data-ev="' + e.id + '" style="top:' + top + "px;height:" + hgt + "px;left:calc(" + (e.col * w) + "% + 0px);width:calc(" + w + '% - 4px)">' +
       '<span class="sch-ev__title">' + esc(e.title) + "</span>" +
       (lines > 1 ? '<span class="sch-ev__meta">' + esc(meta1) + "</span>" : "") +
       (lines > 2 && e.where ? '<span class="sch-ev__meta">' + esc(e.where) + "</span>" : "") +
@@ -2200,11 +2231,23 @@ window.hpCalendar = window.hpCalendar || (function () {
     } else if (l.k === "ev") {
       var c = eventContent(l.ev);
       fill(p, { kind: "event", back: back, title: esc(c.title), desc: c.desc, body: '<div class="sch-dlg__badges">' + c.badges + "</div>" + c.body, foot: c.foot });
-    } else {
+    } else if (l.k === "dl") {
       var dl = deadlinesContent(l.ev.src);
       fill(p, { kind: "event", back: back, title: "Academic calendar deadlines", desc: l.ev.src.title + " · " + l.ev.src.code, body: dl });
+    } else if (l.k === "cancel") {
+      // Scheduling's cancel AlertDialog, as a level of this panel — no modal on a modal
+      var a = l.ev.src;
+      fill(p, { kind: "event", back: back, title: "Cancel this appointment?", desc: "",
+        body: '<p class="sch-dlg__text">' + esc(a.service) + " with " + esc(a.advisor) + " on " + esc(longDate(a.date)) + " at " + tShort(a.start).replace(" am", " AM").replace(" pm", " PM") + ". The time goes back to other students — you can book again any time.</p>",
+        foot: '<button class="btn btn--secondary btn--base" type="button" data-back-btn>Keep it</button><button class="btn btn--danger btn--base" type="button" data-confirm-cancel>Cancel appointment</button>' });
+    } else {
+      // the advisor's questions (Scheduling's "Answer questions")
+      var q = l.ev.src;
+      fill(p, { kind: "event", back: back, title: "Questions from " + esc(q.advisor), desc: "Answer before your meeting — " + q.advisor.split(" ")[0] + " reads them beforehand.",
+        body: q.questions.map(function (t, i) { return '<label class="sch-q"><span class="sch-q__label">' + esc(t) + '</span><textarea class="ss-q__field sch-q__field" rows="3" data-q="' + i + '"></textarea></label>'; }).join(""),
+        foot: '<button class="btn btn--primary btn--base" type="button" data-send-answers>Send answers</button>' });
     }
-    var f = (focusSel && p.querySelector(focusSel)) || p.querySelector("[data-back]:not(.is-hidden)") || p.querySelector("[data-close]");
+    var f = (focusSel && p.querySelector(focusSel)) || (l.k === "questions" && p.querySelector("textarea")) || p.querySelector("[data-back]:not(.is-hidden)") || p.querySelector("[data-close]");
     f.focus();
   }
   function push(level) { P.stack.push(level); showTop(); }
@@ -2221,7 +2264,29 @@ window.hpCalendar = window.hpCalendar || (function () {
       if (e.target === p || e.target.closest("[data-close]")) { p.close(); return; }
       if (e.target.closest("[data-back]")) { goBack(); return; }
       if (e.target.closest("[data-nd]")) { window.cx.notDesigned(); return; }
-      if (e.target.closest("[data-deadlines]")) { push({ k: "dl", ev: P.stack[P.stack.length - 1].ev }); return; }
+      var top = P.stack[P.stack.length - 1];
+      if (e.target.closest("[data-deadlines]")) { push({ k: "dl", ev: top.ev }); return; }
+      if (e.target.closest("[data-back-btn]")) { goBack(); return; }
+      if (e.target.closest("[data-cancel-appt]")) { push({ k: "cancel", ev: top.ev }); return; }
+      if (e.target.closest("[data-questions]")) { push({ k: "questions", ev: top.ev }); return; }
+      if (e.target.closest("[data-confirm-cancel]")) {
+        done.cancelled[top.ev.idx] = true; P.stack.pop(); render(); showTop();
+        window.cx.toast("Appointment cancelled — " + top.ev.src.service); return;
+      }
+      if (e.target.closest("[data-send-answers]")) {
+        done.answered[top.ev.idx] = true; P.stack.pop(); showTop();
+        window.cx.toast("Answers sent to " + top.ev.src.advisor); return;
+      }
+      if (e.target.closest("[data-checkin]")) { done.checkedIn[top.ev.idx] = true; showTop(); window.cx.toast("You're checked in"); return; }
+      if (e.target.closest("[data-copy-ref]")) {
+        if (navigator.clipboard) navigator.clipboard.writeText(top.ev.src.ref).catch(function () {});
+        window.cx.toast("Reference copied"); return;
+      }
+      if (e.target.closest("[data-notgoing]")) {
+        var key = top.ev.id; done.notGoing[key] = !done.notGoing[key];
+        window.cx.toast(done.notGoing[key] ? "We let " + top.ev.src.organizer + " know you can't make it" : "You're going again");
+        render(); showTop("[data-notgoing]"); return;
+      }
       var sh = e.target.closest("[data-share]");
       if (sh) {
         var url = location.href.split("#")[0] + "#class-" + sh.dataset.share;
@@ -2234,6 +2299,8 @@ window.hpCalendar = window.hpCalendar || (function () {
     });
     // Esc goes back a level while there is one, then closes
     p.addEventListener("cancel", function (e) { if (P.stack.length > 1) { e.preventDefault(); goBack(); } });
+    // after "Cancel appointment" the event leaves the calendar: re-resolve it
+    // from the day when going back to a day list (handled by eventsOn)
     p.addEventListener("close", function () {
       if (P.skip === p) { P.skip = null; return; } // carried to the other panel, not closed
       var r = P.ret; P.stack = []; P.ret = null;
@@ -2270,7 +2337,7 @@ window.hpCalendar = window.hpCalendar || (function () {
   }
   // an event's title, description, body and footer actions
   function eventContent(ev) {
-    var s = ev.src, title = ev.title, desc = ev.sub, badges = badgeFor(ev), body = "", foot = "", close = true;
+    var s = ev.src, title = ev.title, desc = ev.sub, badges = badgeFor(ev), body = "", foot = "";
     var when = ev.notime ? "" : longDate(ev.date) + " · " + tRange(ev.start, ev.end);
     if (ev.type === "class" || ev.type === "waitlist") {
       // the live CX class modal's sections, in its order
@@ -2284,23 +2351,60 @@ window.hpCalendar = window.hpCalendar || (function () {
         section("Availability", '<dt>Status</dt><dd><span class="badge badge--base badge--regular badge--' + STATUS_BADGE[s.status] + '">' + s.status + "</span></dd>" + row("Seats open", s.seats[0] + " of " + s.seats[1]) + row("Wait list open", s.wait[0] + " of " + s.wait[1])) +
         (s.links && s.links.length ? block("Additional links", '<ul class="sch-links">' + s.links.map(function (l) { return '<li><a class="sch-link" href="#" data-nd>' + esc(l) + ICON_OPEN_SM + "</a></li>"; }).join("") + "</ul>") : "");
       foot = '<button class="btn btn--secondary btn--base" type="button" data-share="' + s.classNumber + '">' + ICON_COPY + 'Copy share link</button><button class="btn btn--primary btn--base" type="button" data-deadlines>' + ICON_EVENT + "View deadlines</button>";
-      close = false;
     } else if (ev.type === "exam") {
       title = s.code + " " + s.name; desc = s.title;
       body = section("Details", row("When", when) + row("Room", s.room) + row("Term", TERM.name));
     } else if (ev.type === "appointment") {
-      desc = s.dept; if (s.status) badges += '<span class="badge badge--base badge--regular badge--neutral">' + s.status + "</span>";
-      body = section("Details", row("When", when) + row("Advisor", s.advisor) + row("Meeting", s.format) + row("Where", s.where) + row("Reference", s.ref));
-      foot = '<a class="btn btn--secondary btn--base" href="student-scheduling-v7-app.html">' + ICON_OPEN + "Open in Scheduling</a>";
+      // what Scheduling's appointment page shows
+      var i = ev.idx, cancelled = !!done.cancelled[i], past = isPast(ev) || s.status === "Done";
+      var status = cancelled ? ["Cancelled", "neutral"] : past ? ["Done", "neutral"] : done.checkedIn[i] ? ["Checked in", "success"] : ["Upcoming", "primary"];
+      desc = s.dept;
+      badges += '<span class="badge badge--base badge--regular badge--' + status[1] + '">' + status[0] + "</span>";
+      var pre = "";
+      if (!past && !cancelled && s.questions && !done.answered[i]) pre += '<div class="alert alert--action-end" role="status">' + ICON_INFO + '<div class="alert__stack"><p class="alert__message"><span class="alert__title">' + esc(s.advisor) + " asked " + s.questions.length + " questions.</span> Answer them before your meeting.</p></div>" + '<button class="btn btn--secondary btn--sm" type="button" data-questions>Answer questions</button></div>';
+      var opensAt = s.start - CHECKIN_BEFORE, canCheckIn = !past && !cancelled && s.date === TODAY && NOW >= opensAt && !done.checkedIn[i];
+      if (!past && !cancelled && s.date === TODAY && NOW < opensAt) pre += '<p class="sch-note sch-note--icon">' + ICON_CLOCK + "Check-in opens at " + hm(opensAt) + " " + ap(opensAt) + "</p>";
+      var mins = s.end - s.start;
+      body = pre + section("Details",
+        row("When", longDate(s.date) + ", " + d(s.date).getFullYear() + " · " + tRange(s.start, s.end) + " (" + TZ + ")") +
+        row("Duration", mins >= 60 ? (mins / 60) + (mins === 60 ? " hour" : " hours") : mins + " min") +
+        row("Advisor", s.advisor) + row("Meeting", s.format) + row("Where", s.where) +
+        (s.questions && done.answered[i] ? row("Questions", "Answered") : "") +
+        '<dt>Reference</dt><dd class="sch-ref">' + esc(s.ref) + '<button class="btn btn--ghost btn--sm btn--icon-only" type="button" data-copy-ref aria-label="Copy reference">' + ICON_COPY_SM + "</button></dd>") +
+        (s.about ? block("About this service", '<p class="sch-dlg__text">' + esc(s.about) + "</p>") : "");
+      var BOOK = '<a class="btn btn--primary btn--base" href="student-scheduling-v7-app.html">Book again</a>';
+      foot = cancelled || past ? BOOK
+        : '<button class="btn btn--secondary btn--base" type="button" data-cancel-appt>Cancel appointment</button>' +
+          (canCheckIn ? '<a class="btn btn--secondary btn--base" href="student-scheduling-v7-app.html">Reschedule</a><button class="btn btn--primary btn--base" type="button" data-checkin>Check in</button>'
+                      : '<a class="btn btn--primary btn--base" href="student-scheduling-v7-app.html">Reschedule</a>');
     } else if (ev.type === "workshop") {
-      desc = s.dept; badges += '<span class="badge badge--base badge--regular badge--neutral">Session ' + ev.n + " of " + s.count + "</span>";
-      body = section("Details", row("When", when) + row("Organizer", s.organizer) + row("Meeting", s.format) + row("Where", s.where));
-      foot = '<a class="btn btn--secondary btn--base" href="student-scheduling-v7-app.html">' + ICON_OPEN + "Open in Scheduling</a>";
+      // the registered workshop: this session, progress, every session, About
+      var dates = []; for (var k = 0; k < s.count; k++) dates.push(add(s.first, 7 * k));
+      var wi = WORKSHOPS.indexOf(s), off = !!done.notGoing[ev.id], sessPast = isPast(ev);
+      var pastN = dates.filter(function (x) { return x < TODAY || (x === TODAY && s.end <= NOW); }).length;
+      var attended = dates.slice(0, pastN).filter(function (x, n) { return s.missed.indexOf(n + 1) < 0; }).length;
+      desc = s.dept;
+      badges += '<span class="badge badge--base badge--regular badge--neutral">Session ' + ev.n + " of " + s.count + "</span>" +
+        (sessPast ? '<span class="badge badge--base badge--regular badge--' + (s.missed.indexOf(ev.n) >= 0 ? 'neutral">Missed' : 'success">Attended') + "</span>" : off ? '<span class="badge badge--base badge--regular badge--warning">Not going</span>' : "");
+      var sessions = '<ol class="card card--flush sch-sess">' + dates.map(function (x, n) {
+        var num = n + 1, id = "w" + wi + "-" + x, isPastS = n < pastN, me = num === ev.n;
+        var tag = me ? '<span class="badge badge--regular badge--primary">This session</span>'
+          : isPastS ? (s.missed.indexOf(num) >= 0 ? '<span class="badge badge--regular badge--neutral">Missed</span>' : '<span class="badge badge--regular badge--success">Attended</span>')
+          : done.notGoing[id] ? '<span class="badge badge--regular badge--warning">Not going</span>' : "";
+        return '<li class="sch-sess__item' + (me ? " is-current" : "") + (isPastS ? " is-past" : "") + '"><span class="sch-sess__num">' + num + '</span><span class="sch-sess__when">' + esc(shortDate(x)) + " · " + tRange(s.start, s.end) + "</span>" + tag + "</li>";
+      }).join("") + "</ol>";
+      body = section("This session", row("When", longDate(ev.date) + " · " + tRange(s.start, s.end)) + row("Meeting", s.format) + row("Where", s.where) + row("Organizer", s.organizer)) +
+        block("Your progress", '<p class="sch-dlg__text">' + pastN + " of " + s.count + " sessions done · you attended " + attended + '</p><div class="progress progress--base" role="progressbar" aria-label="Sessions done" aria-valuemin="0" aria-valuemax="' + s.count + '" aria-valuenow="' + pastN + '"><span class="progress__bar" style="width:' + Math.round(pastN / s.count * 100) + '%"></span></div>') +
+        block("Sessions", sessions) +
+        (WS_ABOUT[s.name] ? block("About", '<p class="sch-dlg__text">' + esc(WS_ABOUT[s.name]) + "</p>") : "");
+      foot = (sessPast ? "" : '<button class="btn btn--secondary btn--base" type="button" data-notgoing>' + (off ? "I can make it" : "Can't make it") + "</button>") +
+        '<a class="btn btn--primary btn--base" href="student-scheduling-v7-app.html">' + ICON_OPEN + "Open in Scheduling</a>";
     } else {
       desc = ev.friend.name + "'s class · " + s.code;
       body = section("Details", row("When", when) + row("Room", s.room));
     }
-    return { title: title, desc: desc, badges: badges, body: body, foot: foot ? foot + (close ? '<button class="btn btn--primary btn--base" type="button" data-close>Close</button>' : "") : "" };
+    // no Close in a footer (user, 2026-11-02) — the header × closes; the footer holds actions only
+    return { title: title, desc: desc, badges: badges, body: body, foot: foot };
   }
 
   render();

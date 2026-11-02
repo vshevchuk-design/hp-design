@@ -68,19 +68,32 @@ export const SCH_EXAMS = [
   { code: "MATH 210", title: "Brief Calculus", name: "Final exam", date: "2026-12-10", start: 840, end: 960, room: "Science 204" },
 ];
 
-// ARM — the student's advising appointments (Scheduling's services and advisors)
+// ARM — the student's advising appointments. The panel shows what
+// Scheduling's appointment page shows (When · Duration · Advisor · Meeting ·
+// Where · Reference, the advisor's questions, check-in, About this service,
+// Reschedule / Cancel / Book again). `about` for Career Counseling is
+// Scheduling's own (ss-data ABOUT); the rest are sample text.
 export const SCH_APPOINTMENTS = [
-  { service: "Academic Advising", dept: "Counseling", advisor: "Ava Robinson", date: "2026-10-12", start: 540, end: 600, format: "In person", where: "Student Services, Room 120", ref: "APT-20417", status: "Done" },
-  { service: "Academic Advising", dept: "Counseling", advisor: "Ava Robinson", date: "2026-10-26", start: 930, end: 960, format: "In person", where: "Student Services, Room 120", ref: "APT-20581", status: "Done" },
-  { service: "Financial Aid Advising", dept: "Financial Aid", advisor: "Caitlin Moore", date: "2026-10-29", start: 840, end: 870, format: "Video", where: "Zoom — link in your confirmation email", ref: "APT-20644" },
-  { service: "Transfer Planning", dept: "Transfer Center", advisor: "Andy Hernandez", date: "2026-11-03", start: 690, end: 720, format: "Phone", where: "We call (555) 555-1234", ref: "APT-20702" },
-  { service: "Career Counseling", dept: "Career and Talent Development", advisor: "Craig Millett", date: "2026-11-12", start: 900, end: 945, format: "In person", where: "Career Center", ref: "APT-20766" },
+  { service: "Academic Advising", dept: "Counseling", advisor: "Ava Robinson", date: "2026-10-12", start: 540, end: 600, format: "In person", where: "Student Services, Room 120", ref: "APT-20417", status: "Done",
+    about: "Your term check-in: classes for next term, holds, and anything getting in the way." },
+  { service: "Academic Advising", dept: "Counseling", advisor: "Ava Robinson", date: "2026-10-26", start: 930, end: 960, format: "In person", where: "Student Services, Room 120", ref: "APT-20581", status: "Done",
+    about: "Your term check-in: classes for next term, holds, and anything getting in the way." },
+  { service: "Financial Aid Advising", dept: "Financial Aid", advisor: "Caitlin Moore", date: "2026-10-29", start: 840, end: 870, format: "Video", where: "Zoom — the link is in your confirmation email", ref: "APT-20644",
+    about: "Go over your aid package, what's still missing from your file, and how dropping a class would change your award.",
+    questions: ["Have you submitted this year's FAFSA?", "Are you planning to drop any classes this term?"] },
+  { service: "Transfer Planning", dept: "Transfer Center", advisor: "Andy Hernandez", date: "2026-11-03", start: 690, end: 720, format: "Phone", where: "We call you at (555) 555-1234", ref: "APT-20702",
+    about: "Check which of your classes transfer to the schools you're applying to, and what's left to take." },
+  { service: "Career Counseling", dept: "Career and Talent Development", advisor: "Craig Millett", date: "2026-11-12", start: 900, end: 945, format: "In person", where: "Career Center", ref: "APT-20766", about: null },
 ];
+// check-in opens this long before an appointment (Scheduling's CHECKIN_MINUTES_BEFORE)
+export const SCH_CHECKIN_BEFORE = 15;
 
 // ARM — registered workshops; sessions are generated weekly from `start`
 export const SCH_WORKSHOPS = [
-  { name: "Study Skills Bootcamp", dept: "Tutoring Center", day: 3, start: 960, end: 1050, first: "2026-10-07", count: 8, where: "Learning Commons, Room 110", format: "In person", organizer: "Denny Petersen" },
-  { name: "Resume Writing Workshop", dept: "Career and Talent Development", day: 2, start: 930, end: 990, first: "2026-10-13", count: 6, where: "Zoom — link in your confirmation email", format: "Video", organizer: "Eric Lynch" },
+  // `missed`: past session numbers the student didn't attend; `about` comes
+  // from Scheduling's WORKSHOPS by name (build-design-schedule.mjs)
+  { name: "Study Skills Bootcamp", dept: "Tutoring Center", day: 3, start: 960, end: 1050, first: "2026-10-07", count: 8, where: "Learning Commons, Room 110", format: "In person", organizer: "Denny Petersen", missed: [2] },
+  { name: "Resume Writing Workshop", dept: "Career and Talent Development", day: 2, start: 930, end: 990, first: "2026-10-13", count: 6, where: "Zoom — the link is in your confirmation email", format: "Video", organizer: "Eric Lynch", missed: [] },
 ];
 
 // CX — Filter by Friend: a friend's classes laid over yours
