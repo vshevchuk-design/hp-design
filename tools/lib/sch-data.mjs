@@ -16,22 +16,47 @@ export const SCH_NOW = 10 * 60 + 40;
 export const SCH_TZ = "Pacific Time";
 export const SCH_TERM = { name: "2026 Fall", start: "2026-08-30", end: "2026-12-12" };
 
-const common = { career: "Undergraduate", session: "Regular Academic Session", grading: "Graded", mode: "In Person", campus: "Hacienda Campus", location: "Hacienda" };
+// The class panel's fields are the live CX class modal's (screenshots 2026-11-02:
+// Information · Description · Details · Textbooks · Availability · Additional
+// links, then View Deadlines). MATH 211 is the live one, verbatim; the rest
+// is sample text in the same shape.
+const common = { institution: "PeopleSoft University", career: "Undergraduate", session: "Regular Academic Session", grading: "Graded", mode: "In Person", campus: "Hacienda Campus", location: "Hacienda", topic: "", components: "Lecture Required", textbooks: "", links: ["HighPoint - test"] };
 
 export const SCH_CLASSES = [
-  { ...common, code: "HISTORY 120", title: "American History", section: "1-LEC", classNumber: 1088, days: [1, 3, 5], start: 540, end: 590, units: "1.0", instructor: "Marcus Webb", room: "Angel 105" },
-  { ...common, code: "ART 112", title: "History of World Art (As/Af)", section: "1-LEC", classNumber: 1093, days: [1, 3, 5], start: 600, end: 650, units: "3.0", instructor: "Elena Ruiz", room: "Fine Arts 120", waitlist: 3 },
-  { ...common, code: "ART 111", title: "Introductory Art Seminar", section: "1-SEM", classNumber: 1091, days: [2, 4], start: 600, end: 680, units: "3.0", instructor: "Elena Ruiz", room: "Fine Arts 204" },
-  { ...common, code: "ACCT 202", title: "Financial Accounting II", section: "100-LEC", classNumber: 1102, days: [2, 4], start: 600, end: 680, units: "3.0", instructor: "Syndi B. Forbes", room: "Business 210", waitlist: 6 },
-  { ...common, code: "ACCT 201", title: "Financial Accounting I", section: "1001-LEC", classNumber: 1001, days: [1, 3, 5], start: 720, end: 770, units: "3.0", instructor: "Syndi B. Forbes", room: "Business 110", waitlist: 2 },
-  { ...common, code: "MATH 211", title: "Math for Business Analysis", section: "1-LEC", classNumber: 1214, days: [1, 3, 5], start: 780, end: 830, units: "3.0", instructor: "Priya Natarajan", room: "Science 110" },
-  { ...common, code: "DANCE 104", title: "Modern and Postmodern Practice", section: "1-LAB", classNumber: 1310, days: [1, 3, 5], start: 780, end: 830, units: "2.0", instructor: "Jonathan Rehm", room: "Studio B", waitlist: 4 },
-  { ...common, code: "COMM 3", title: "Public Communication!", section: "1-LEC", classNumber: 1022, days: [1, 3, 5], start: 780, end: 830, units: "3.0", instructor: "Staff", room: "Humanities 214", waitlist: 1 },
-  { ...common, code: "MATH 210", title: "Brief Calculus", section: "1000-LEC", classNumber: 1000, days: [1, 3, 5], start: 840, end: 890, units: "4.0", instructor: "Priya Natarajan", room: "Science 204" },
+  { ...common, code: "HISTORY 120", title: "American History", section: "1-LEC", classNumber: 1088, days: [1, 3, 5], start: 540, end: 590, units: "1.0", instructor: "Marcus Webb", room: "Angel 105", description: "Survey of American history from colonial settlement to the present: the Revolution, the Constitution, expansion, the Civil War and Reconstruction, industrialization, and the United States as a world power.", seats: [24, 35], wait: [0, 10], status: "Open" },
+  { ...common, code: "ART 112", title: "History of World Art (As/Af)", section: "1-LEC", classNumber: 1093, days: [1, 3, 5], start: 600, end: 650, units: "3.0", instructor: "Elena Ruiz", room: "Fine Arts 120", waitlist: 3, description: "Art and architecture of Asia and Africa from prehistory to the present, studied in their religious, political and social contexts.", seats: [0, 30], wait: [2, 10], status: "Wait list" },
+  { ...common, code: "ART 111", title: "Introductory Art Seminar", section: "1-SEM", classNumber: 1091, days: [2, 4], start: 600, end: 680, units: "3.0", instructor: "Elena Ruiz", room: "Fine Arts 204", description: "A seminar introduction to looking at, talking about and writing about art. Weekly gallery visits and short critical responses.", seats: [6, 18], wait: [0, 5], status: "Open" },
+  { ...common, code: "ACCT 202", title: "Financial Accounting II", section: "100-LEC", classNumber: 1102, days: [2, 4], start: 600, end: 680, units: "3.0", instructor: "Syndi B. Forbes", room: "Business 210", waitlist: 6, description: "Continuation of Financial Accounting I: long-term assets, liabilities, equity, the statement of cash flows and financial statement analysis.", seats: [0, 40], wait: [0, 10], status: "Closed" },
+  { ...common, code: "ACCT 201", title: "Financial Accounting I", section: "1001-LEC", classNumber: 1001, days: [1, 3, 5], start: 720, end: 770, units: "3.0", instructor: "Syndi B. Forbes", room: "Business 110", waitlist: 2, description: "The accounting cycle and financial statements: recording transactions, adjusting entries, receivables, inventories and internal control.", seats: [0, 40], wait: [5, 15], status: "Wait list" },
+  { ...common, code: "MATH 211", title: "Math for Business Analysis", section: "100-LEC", classNumber: 2184, days: [1, 3, 5], start: 780, end: 830, units: "3", instructor: "Staff", room: "", description: "Topics in business analysis, including: Lagrange multipliers, linear programming, linear algebra, intermediate probability, random variables, discrete distributions, and continuous distributions.", seats: [28, 30], wait: [0, 0], status: "Open" },
+  { ...common, code: "DANCE 104", title: "Modern and Postmodern Practice", section: "1-LAB", classNumber: 1310, days: [1, 3, 5], start: 780, end: 830, units: "2.0", instructor: "Jonathan Rehm", room: "Studio B", waitlist: 4, description: "Studio practice in modern and postmodern dance techniques, with improvisation and short compositions. Comfortable clothing required.", seats: [0, 20], wait: [0, 6], status: "Closed" },
+  { ...common, code: "COMM 3", title: "Public Communication!", section: "1-LEC", classNumber: 1022, days: [1, 3, 5], start: 780, end: 830, units: "3.0", instructor: "Staff", room: "Humanities 214", waitlist: 1, description: "Preparing and delivering informative and persuasive speeches; audience analysis, organization, evidence and delivery.", seats: [0, 25], wait: [3, 8], status: "Wait list" },
+  { ...common, code: "MATH 210", title: "Brief Calculus", section: "1000-LEC", classNumber: 1000, days: [1, 3, 5], start: 840, end: 890, units: "4.0", instructor: "Priya Natarajan", room: "Science 204", description: "Differential and integral calculus of one variable with applications to business, economics and the life sciences.", seats: [11, 35], wait: [0, 10], status: "Open" },
   // no meeting pattern — the live "Unscheduled" / "Other" row; instructor and room not set yet, as live
-  { ...common, code: "BIOLOGY 115", title: "History and Theory of Biology", section: "1-LEC", classNumber: 1565, days: [], units: "3.0", instructor: "", room: "" },
-  { ...common, code: "ART 532", title: "The Psychology of Art", section: "001-LEC", classNumber: 1532, days: [], units: "3.0", instructor: "", room: "", career: "Graduate", waitlist: 5 },
+  { ...common, code: "BIOLOGY 115", title: "History and Theory of Biology", section: "1-LEC", classNumber: 1565, days: [], units: "3.0", instructor: "", room: "", description: "How ideas about life changed from Aristotle to molecular biology: evolution, inheritance, the cell and the debates around them.", seats: [9, 30], wait: [0, 10], status: "Open" },
+  { ...common, code: "ART 532", title: "The Psychology of Art", section: "001-LEC", classNumber: 1532, days: [], units: "3.0", instructor: "", room: "", career: "Graduate", waitlist: 5, description: "Graduate seminar on perception, emotion and meaning in the making and viewing of art.", seats: [0, 12], wait: [1, 5], status: "Wait list" },
 ];
+
+// Academic Calendar Deadlines — the live modal behind View Deadlines (one set
+// per session; Regular Academic Session's, verbatim). The live labels carry
+// internal ids ("5206: Drop - Delete Record (MCO28)") — dropped here.
+export const SCH_DEADLINES = {
+  lastWaitlist: "2026-08-29",
+  groups: [
+    { title: "Drop", items: [
+      { name: "Drop – delete record", date: "2026-11-25", text: "A class dropped on or before this date will be deleted from your academic record." },
+      { name: "Drop – retain record", date: "2026-11-26", text: "A class dropped on or before this date will be retained on your academic record with a status of dropped." },
+      { name: "Drop with penalty", date: "2026-11-27", text: "A class dropped on or before this date will appear on your transcript and a penalty grade will be assigned to the class." },
+      { name: "Drop with greater penalty", date: "2026-11-28", text: "Last date to drop. A class dropped on or before this date will appear on your transcript and a severe penalty grade will be assigned to the class." },
+    ] },
+    { title: "Cancel & withdraw", items: [
+      { name: "Cancel", date: "2026-08-29", text: "Classes within a session, canceled on or before this date will not appear on your transcript." },
+      { name: "Withdraw without penalty", date: "2026-11-13", text: "Classes within a session, withdrawn on or before this date will not appear on your transcript." },
+      { name: "Withdraw with penalty", date: "2026-11-29", text: "Classes within a session, withdrawn on or before this date will appear on your transcript and a penalty grade will be assigned to the classes." },
+      { name: "Withdraw with greater penalty", date: "2026-11-29", text: "Last day to withdraw from a session. Classes within a session, withdrawn on or before this date will appear on your transcript and a severe penalty grade will be assigned to the classes." },
+    ] },
+  ],
+};
 
 export const SCH_EXAMS = [
   { code: "MATH 210", title: "Brief Calculus", name: "Midterm", date: "2026-10-30", start: 900, end: 990, room: "Science 204" },

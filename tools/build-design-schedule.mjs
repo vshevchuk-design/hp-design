@@ -163,6 +163,23 @@ ${S.SCH_TYPES.map((t) => `.sch-t--${t.key} { --ev-bg: ${R(badge.color[t.color].t
 .sch-panel a.btn { text-decoration: none; }
 .sch-dlg__badges { display: flex; flex-wrap: wrap; gap: ${dim(2)}; }
 .sch-dlg__section { display: flex; flex-direction: column; gap: ${dim(3)}; }
+.sch-dlg__head { display: flex; align-items: center; justify-content: space-between; gap: ${dim(3)}; min-height: ${dim(5)}; }
+.sch-dlg__head .sch-eyebrow { margin: 0; }
+.sch-dlg__text { margin: 0; color: ${cv("text.default")}; ${typoCss(style("body-base"))} }
+.sch-dlg__text--muted { color: ${cv("text.secondary")}; }
+.sch-links { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: ${dim(2)}; }
+.sch-link { display: inline-flex; align-items: center; gap: ${dim(1)}; color: ${cv("text.primary")}; ${typoCss(style("link-base"))} text-decoration: ${textExt("text-style.link-base").textDecoration || "underline"}; }
+.sch-link__icon { width: ${dim(4)}; height: ${dim(4)}; }
+/* deadlines: name + date on one line, what it means under it */
+.sch-dls { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: ${dim(4)}; }
+.sch-dls__top { display: flex; align-items: baseline; justify-content: space-between; gap: ${dim(3)}; }
+.sch-dls__name { color: ${cv("text.default")}; ${typoCss(style("heading-base"))} }
+.sch-dls__date { display: inline-flex; align-items: center; gap: ${dim(2)}; flex-shrink: 0; color: ${cv("text.default")}; ${typoCss(style("body-base"))} white-space: nowrap; }
+.sch-dls__text { margin: ${dim(1)} 0 0; color: ${cv("text.secondary")}; ${typoCss(style("body-sm"))} }
+.sch-dls__item.is-past .sch-dls__name, .sch-dls__item.is-past .sch-dls__date { color: ${cv("text.muted")}; }
+/* the panel is Dialog md (640) on a desktop — a class's six sections and the
+   deadline tables read cramped at sm */
+dialog.dialog.sch-panel { width: min(${D(tokens.dialog.size.md)}, calc(100vw - ${D(tokens.dialog.viewportGutter)} * 2)); }
 .sch-dlg__section + .sch-dlg__section { padding-top: ${dim(5)}; border-top: 1px solid ${R(card.divider)}; }
 .sch-panel .ss-dl { grid-template-columns: ${dim(32)} minmax(0, 1fr); }
 .sch-panel .ss-dl dd.is-empty { color: ${cv("text.muted")}; }
@@ -294,8 +311,12 @@ const pageJsFor = (arm) => `${CALENDAR_JS}
   var TERM = ${JSON.stringify(S.SCH_TERM)};
   var TODAY = "${S.SCH_TODAY}", NOW = ${S.SCH_NOW}, TZ = "${S.SCH_TZ}";
   var HOUR = 64;
-  var ICON_SCHOOL = ${JSON.stringify(icon("school", "btn__icon"))};
   var ICON_OPEN = ${JSON.stringify(icon("launch", "btn__icon"))};
+  var ICON_OPEN_SM = ${JSON.stringify(icon("launch", "sch-link__icon"))};
+  var ICON_COPY = ${JSON.stringify(icon("content_copy", "btn__icon"))};
+  var ICON_EVENT = ${JSON.stringify(icon("event_note", "btn__icon"))};
+  var ICON_BOOK = ${JSON.stringify(icon("menu_book", "btn__icon"))};
+  var DEADLINES = ${JSON.stringify(S.SCH_DEADLINES)};
   var MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   var MONTH = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
   var DOW = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -584,14 +605,15 @@ const pageJsFor = (arm) => `${CALENDAR_JS}
     if (s) { st.day = s.dataset.day; render(); }
   });
 
-  // ---- one panel for a day and its events: a Dialog on a desktop, a bottom
-  // SlideOverPanel on a phone. Month → a day → its events as List rows; a row
-  // swaps the panel to that event, "‹ Thu, Oct 29" above the title goes back
-  // (Esc too). Week / List open an event straight in, with no way back to
-  // go. No modal on a modal. ----
-  var P = { day: null, ev: null, ret: null };
+  // ---- one panel for a day, its events and a class's deadlines: a Dialog
+  // (md) on a desktop, a bottom SlideOverPanel on a phone. It's a stack —
+  // Month: day → event → (a class's) deadlines; Week / List start at the
+  // event. Each level replaces the last; "‹ <previous>" over the title and
+  // Esc go back one. No modal on a modal. ----
+  var P = { stack: [], ret: null };
   function panel() { return mq.matches ? $("sch-day-sheet") : $("sch-day"); }
-  function openPanel() { var p = panel(); if (!p.open) p.showModal(); return p; }
+  function shortDate(isoS) { var x = d(isoS); return DOW[x.getDay()] + ", " + MON[x.getMonth()] + " " + x.getDate(); }
+  function levelLabel(l) { return l.k === "day" ? shortDate(l.dt) : eventContent(l.ev).title; }
   function fill(p, o) {
     p.querySelector("[data-p-title]").innerHTML = o.title;
     p.querySelector("[data-p-desc]").textContent = o.desc || "";
@@ -600,73 +622,104 @@ const pageJsFor = (arm) => `${CALENDAR_JS}
     body.innerHTML = o.body; body.scrollTop = 0;
     foot.innerHTML = o.foot || ""; foot.classList.toggle("is-hidden", !o.foot);
     back.classList.toggle("is-hidden", !o.back);
-    if (o.back) p.querySelector("[data-back-label]").textContent = o.back;
+    if (o.back) { p.querySelector("[data-back-label]").textContent = o.back; back.setAttribute("aria-label", "Back to " + o.back); }
   }
-  function showDay(dt) {
-    P.day = dt; P.ev = null;
-    var evs = eventsOn(dt), p = openPanel();
-    fill(p, {
-      kind: "list",
-      title: esc(longDate(dt)) + (dt === TODAY ? ' <span class="badge badge--primary">Today</span>' : ""),
-      desc: evs.length ? evs.length + (evs.length === 1 ? " event" : " events") : "",
-      body: evs.length ? evs.map(listRow).join("") : '<div class="empty-state"><span class="empty-state__text">Nothing on this day</span></div>',
-    });
-    return p;
+  function showTop(focusSel) {
+    var p = panel(), l = P.stack[P.stack.length - 1], prev = P.stack[P.stack.length - 2];
+    if (!p.open) p.showModal();
+    var back = prev ? levelLabel(prev) : "";
+    if (l.k === "day") {
+      var evs = eventsOn(l.dt);
+      fill(p, {
+        kind: "list", back: back,
+        title: esc(longDate(l.dt)) + (l.dt === TODAY ? ' <span class="badge badge--primary">Today</span>' : ""),
+        desc: evs.length ? evs.length + (evs.length === 1 ? " event" : " events") : "",
+        body: evs.length ? evs.map(listRow).join("") : '<div class="empty-state"><span class="empty-state__text">Nothing on this day</span></div>',
+      });
+    } else if (l.k === "ev") {
+      var c = eventContent(l.ev);
+      fill(p, { kind: "event", back: back, title: esc(c.title), desc: c.desc, body: '<div class="sch-dlg__badges">' + c.badges + "</div>" + c.body, foot: c.foot });
+    } else {
+      var dl = deadlinesContent(l.ev.src);
+      fill(p, { kind: "event", back: back, title: "Academic calendar deadlines", desc: l.ev.src.title + " · " + l.ev.src.code, body: dl });
+    }
+    var f = (focusSel && p.querySelector(focusSel)) || p.querySelector("[data-back]:not(.is-hidden)") || p.querySelector("[data-close]");
+    f.focus();
   }
-  function showEvent(ev) {
-    P.ev = ev;
-    var c = eventContent(ev), p = openPanel(), x = d(P.day || ev.date);
-    fill(p, { kind: "event", title: esc(c.title), desc: c.desc, body: '<div class="sch-dlg__badges">' + c.badges + "</div>" + c.body, foot: c.foot, back: P.day ? DOW[x.getDay()] + ", " + MON[x.getMonth()] + " " + x.getDate() : "" });
-    (p.querySelector("[data-back]:not(.is-hidden)") || p.querySelector("[data-close]")).focus();
-  }
+  function push(level) { P.stack.push(level); showTop(); }
   function goBack() {
-    var id = P.ev && P.ev.id, p = showDay(P.day);
-    var row = id && p.querySelector('[data-ev="' + id + '"]');
-    (row || p.querySelector("[data-close]")).focus();
+    var gone = P.stack.pop(), top = P.stack[P.stack.length - 1];
+    // focus what opened the level we left: the day's row, the deadlines button
+    showTop(gone.k === "ev" ? '[data-ev="' + gone.ev.id + '"]' : gone.k === "dl" ? "[data-deadlines]" : null);
   }
-  function openDay(dt, from) { P.ret = from || null; showDay(dt); }
-  function openEvent(ev, from) { P.ret = from || null; P.day = null; showEvent(ev); }
+  function openDay(dt, from) { P.ret = from || null; P.stack = []; push({ k: "day", dt: dt }); }
+  function openEvent(ev, from) { P.ret = from || null; P.stack = []; push({ k: "ev", ev: ev }); }
   ["sch-day", "sch-day-sheet"].forEach(function (id) {
     var p = $(id);
     p.addEventListener("click", function (e) {
       if (e.target === p || e.target.closest("[data-close]")) { p.close(); return; }
       if (e.target.closest("[data-back]")) { goBack(); return; }
       if (e.target.closest("[data-nd]")) { window.cx.notDesigned(); return; }
+      if (e.target.closest("[data-deadlines]")) { push({ k: "dl", ev: P.stack[P.stack.length - 1].ev }); return; }
+      var sh = e.target.closest("[data-share]");
+      if (sh) {
+        var url = location.href.split("#")[0] + "#class-" + sh.dataset.share;
+        if (navigator.clipboard) navigator.clipboard.writeText(url).catch(function () {});
+        window.cx.toast("Link copied");
+        return;
+      }
       var b = e.target.closest("[data-ev]");
-      if (b && byId[b.dataset.ev]) showEvent(byId[b.dataset.ev]);
+      if (b && byId[b.dataset.ev]) push({ k: "ev", ev: byId[b.dataset.ev] });
     });
-    // Esc on an event opened from a day goes back to the day, not out
-    p.addEventListener("cancel", function (e) { if (P.ev && P.day) { e.preventDefault(); goBack(); } });
+    // Esc goes back a level while there is one, then closes
+    p.addEventListener("cancel", function (e) { if (P.stack.length > 1) { e.preventDefault(); goBack(); } });
     p.addEventListener("close", function () {
-      var r = P.ret; P.day = null; P.ev = null; P.ret = null;
+      if (P.skip === p) { P.skip = null; return; } // carried to the other panel, not closed
+      var r = P.ret; P.stack = []; P.ret = null;
       if (r && document.contains(r)) r.focus();
     });
   });
-  // crossing the 768 breakpoint with the panel open: carry it to the other one
+  // crossing the 768 breakpoint with the panel open: carry the stack across
   mq.addEventListener("change", function () {
     var open = $("sch-day").open ? $("sch-day") : $("sch-day-sheet").open ? $("sch-day-sheet") : null;
     if (!open) return;
-    var keep = { day: P.day, ev: P.ev, ret: P.ret };
-    P.ret = null; open.close();
-    P.ret = keep.ret; P.day = keep.day;
-    if (keep.day) showDay(keep.day);
-    if (keep.ev) showEvent(keep.ev);
+    P.skip = open; open.close(); // its close event is queued — the handler skips it
+    showTop();
   });
 
   function row(k, v) { return "<dt>" + k + '</dt><dd' + (v ? "" : ' class="is-empty"') + ">" + (v ? esc(v) : "To be announced") + "</dd>"; }
-  function section(title, rows) { return '<div class="sch-dlg__section"><h3 class="sch-eyebrow" style="margin:0">' + title + '</h3><dl class="ss-dl">' + rows + "</dl></div>"; }
+  function section(title, rows, aside) { return '<div class="sch-dlg__section"><div class="sch-dlg__head"><h3 class="sch-eyebrow">' + title + "</h3>" + (aside || "") + '</div><dl class="ss-dl">' + rows + "</dl></div>"; }
+  function block(title, html, aside) { return '<div class="sch-dlg__section"><div class="sch-dlg__head"><h3 class="sch-eyebrow">' + title + "</h3>" + (aside || "") + "</div>" + html + "</div>"; }
   function badgeFor(ev) { var t = typeOf(ev.type); return '<span class="badge badge--base badge--regular sch-badge sch-t--' + ev.type + '">' + esc(t.one) + "</span>"; }
+  var STATUS_BADGE = { "Open": "success", "Wait list": "warning", "Closed": "neutral" };
+  // a class's Academic Calendar Deadlines (the live View Deadlines page)
+  function deadlinesContent(s) {
+    var html = section("Class details", row("Session", s.session) + row("Career", s.career) + row("Section", s.section.split("-")[0]) + row("Class starts", mdY(TERM.start)) + row("Class ends", mdY(TERM.end)) + row("Last date to wait list", mdY(DEADLINES.lastWaitlist)));
+    DEADLINES.groups.forEach(function (g) {
+      html += block(g.title + " calendar", '<ul class="sch-dls">' + g.items.map(function (it) {
+        var past = it.date < TODAY;
+        return '<li class="sch-dls__item' + (past ? " is-past" : "") + '"><div class="sch-dls__top"><span class="sch-dls__name">' + esc(it.name) + '</span><span class="sch-dls__date">' + (past ? '<span class="badge badge--regular badge--neutral">Passed</span>' : "") + mdY(it.date) + '</span></div><p class="sch-dls__text">' + esc(it.text) + "</p></li>";
+      }).join("") + "</ul>");
+    });
+    return html;
+  }
   // an event's title, description, body and footer actions
   function eventContent(ev) {
-    var s = ev.src, title = ev.title, desc = ev.sub, badges = badgeFor(ev), body = "", foot = "";
+    var s = ev.src, title = ev.title, desc = ev.sub, badges = badgeFor(ev), body = "", foot = "", close = true;
     var when = ev.notime ? "" : longDate(ev.date) + " · " + tRange(ev.start, ev.end);
     if (ev.type === "class" || ev.type === "waitlist") {
+      // the live CX class modal's sections, in its order
       desc = s.code + " · " + s.section + " (" + s.classNumber + ")";
       if (s.waitlist) badges += '<span class="badge badge--base badge--regular badge--warning">Position ' + s.waitlist + " on the wait list</span>";
       var meets = s.days.length ? s.days.map(function (x) { return DOW2[x]; }).join(" ") + ", " + tRange(s.start, s.end) : "No set time";
-      body = section("Details", (when ? row("This class", when) : "") + row("Meets", meets) + row("Dates", mdY(TERM.start) + " – " + mdY(TERM.end)) + row("Instructor", s.instructor) + row("Room", s.room) + row("Instruction mode", s.mode) + row("Campus", s.campus + " · " + s.location)) +
-        section("Information", row("Class number", String(s.classNumber)) + row("Career", s.career) + row("Session", s.session) + row("Units", s.units) + row("Grading", s.grading));
-      foot = '<button class="btn btn--secondary btn--base" type="button" data-nd>' + ICON_SCHOOL + "View class</button>";
+      body = section("Information", row("Institution", s.institution) + row("Section", s.section + " (" + s.classNumber + ")") + row("Class number", String(s.classNumber)) + row("Career", s.career) + row("Session", s.session) + row("Units", s.units + (s.units === "1" || s.units === "1.0" ? " unit" : " units")) + row("Grading", s.grading)) +
+        block("Description", '<p class="sch-dlg__text">' + esc(s.description) + "</p>") +
+        section("Details", (when ? row("This class", when) : "") + row("Instructor", s.instructor) + row("Dates", mdY(TERM.start) + " – " + mdY(TERM.end)) + row("Meets", meets) + row("Instruction mode", s.mode) + row("Room", s.room) + row("Topic", s.topic) + row("Campus", s.campus) + row("Location", s.location) + row("Components", s.components)) +
+        block("Textbooks / course materials", '<p class="sch-dlg__text sch-dlg__text--muted">' + (s.textbooks ? esc(s.textbooks) : "Textbooks to be determined") + "</p>", '<button class="btn btn--secondary btn--sm" type="button" data-nd>' + ICON_BOOK + "Buy books</button>") +
+        section("Availability", '<dt>Status</dt><dd><span class="badge badge--base badge--regular badge--' + STATUS_BADGE[s.status] + '">' + s.status + "</span></dd>" + row("Seats open", s.seats[0] + " of " + s.seats[1]) + row("Wait list open", s.wait[0] + " of " + s.wait[1])) +
+        (s.links && s.links.length ? block("Additional links", '<ul class="sch-links">' + s.links.map(function (l) { return '<li><a class="sch-link" href="#" data-nd>' + esc(l) + ICON_OPEN_SM + "</a></li>"; }).join("") + "</ul>") : "");
+      foot = '<button class="btn btn--secondary btn--base" type="button" data-share="' + s.classNumber + '">' + ICON_COPY + 'Copy share link</button><button class="btn btn--primary btn--base" type="button" data-deadlines>' + ICON_EVENT + "View deadlines</button>";
+      close = false;
     } else if (ev.type === "exam") {
       title = s.code + " " + s.name; desc = s.title;
       body = section("Details", row("When", when) + row("Room", s.room) + row("Term", TERM.name));
@@ -686,7 +739,7 @@ const pageJsFor = (arm) => `${CALENDAR_JS}
       desc = ev.friend.name + "'s class · " + s.code;
       body = section("Details", row("When", when) + row("Room", s.room));
     }
-    return { title: title, desc: desc, badges: badges, body: body, foot: foot ? foot + '<button class="btn btn--primary btn--base" type="button" data-close>Close</button>' : "" };
+    return { title: title, desc: desc, badges: badges, body: body, foot: foot ? foot + (close ? '<button class="btn btn--primary btn--base" type="button" data-close>Close</button>' : "") : "" };
   }
 
   render();

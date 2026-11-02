@@ -1451,6 +1451,23 @@ html { background: var(--tok-surface-page); }
 .sch-panel a.btn { text-decoration: none; }
 .sch-dlg__badges { display: flex; flex-wrap: wrap; gap: 8px; }
 .sch-dlg__section { display: flex; flex-direction: column; gap: 12px; }
+.sch-dlg__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 20px; }
+.sch-dlg__head .sch-eyebrow { margin: 0; }
+.sch-dlg__text { margin: 0; color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; }
+.sch-dlg__text--muted { color: var(--tok-text-secondary); }
+.sch-links { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.sch-link { display: inline-flex; align-items: center; gap: 4px; color: var(--tok-text-primary); font-weight: 400; font-size: 14px; line-height: 1.4; text-decoration: underline; }
+.sch-link__icon { width: 16px; height: 16px; }
+/* deadlines: name + date on one line, what it means under it */
+.sch-dls { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 16px; }
+.sch-dls__top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.sch-dls__name { color: var(--tok-text-default); font-weight: 600; font-size: 14px; line-height: 1.4; }
+.sch-dls__date { display: inline-flex; align-items: center; gap: 8px; flex-shrink: 0; color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; white-space: nowrap; }
+.sch-dls__text { margin: 4px 0 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.sch-dls__item.is-past .sch-dls__name, .sch-dls__item.is-past .sch-dls__date { color: var(--tok-text-muted); }
+/* the panel is Dialog md (640) on a desktop — a class's six sections and the
+   deadline tables read cramped at sm */
+dialog.dialog.sch-panel { width: min(640px, calc(100vw - 16px * 2)); }
 .sch-dlg__section + .sch-dlg__section { padding-top: 20px; border-top: 1px solid var(--tok-border-default); }
 .sch-panel .ss-dl { grid-template-columns: 128px minmax(0, 1fr); }
 .sch-panel .ss-dl dd.is-empty { color: var(--tok-text-muted); }
@@ -1818,7 +1835,7 @@ window.hpCalendar = window.hpCalendar || (function () {
 })();
 (function () {
   var TYPES = [{"key":"class","label":"Classes","one":"Class","color":"green"},{"key":"waitlist","label":"Wait list","one":"Wait list","color":"amber"},{"key":"exam","label":"Exams","one":"Exam","color":"red"}];
-  var CLASSES = [{"career":"Undergraduate","session":"Regular Academic Session","grading":"Graded","mode":"In Person","campus":"Hacienda Campus","location":"Hacienda","code":"HISTORY 120","title":"American History","section":"1-LEC","classNumber":1088,"days":[1,3,5],"start":540,"end":590,"units":"1.0","instructor":"Marcus Webb","room":"Angel 105"},{"career":"Undergraduate","session":"Regular Academic Session","grading":"Graded","mode":"In Person","campus":"Hacienda Campus","location":"Hacienda","code":"ART 112","title":"History of World Art (As/Af)","section":"1-LEC","classNumber":1093,"days":[1,3,5],"start":600,"end":650,"units":"3.0","instructor":"Elena Ruiz","room":"Fine Arts 120","waitlist":3},{"career":"Undergraduate","session":"Regular Academic Session","grading":"Graded","mode":"In Person","campus":"Hacienda Campus","location":"Hacienda","code":"ART 111","title":"Introductory Art Seminar","section":"1-SEM","classNumber":1091,"days":[2,4],"start":600,"end":680,"units":"3.0","instructor":"Elena Ruiz","room":"Fine Arts 204"},{"career":"Undergraduate","session":"Regular Academic Session","grading":"Graded","mode":"In Person","campus":"Hacienda Campus","location":"Hacienda","code":"ACCT 202","title":"Financial Accounting II","section":"100-LEC","classNumber":1102,"days":[2,4],"start":600,"end":680,"units":"3.0","instructor":"Syndi B. Forbes","room":"Business 210","waitlist":6},{"career":"Undergraduate","session":"Regular Academic Session","grading":"Graded","mode":"In Person","campus":"Hacienda Campus","location":"Hacienda","code":"ACCT 201","title":"Financial Accounting I","section":"1001-LEC","classNumber":1001,"days":[1,3,5],"start":720,"end":770,"units":"3.0","instructor":"Syndi B. Forbes","room":"Business 110","waitlist":2},{"career":"Undergraduate","session":"Regular Academic Session","grading":"Graded","mode":"In Person","campus":"Hacienda Campus","location":"Hacienda","code":"MATH 211","title":"Math for Business Analysis","section":"1-LEC","classNumber":1214,"days":[1,3,5],"start":780,"end":830,"units":"3.0","instructor":"Priya Natarajan","room":"Science 110"},{"career":"Undergraduate","session":"Regular Academic Session","grading":"Graded","mode":"In Person","campus":"Hacienda Campus","location":"Hacienda","code":"DANCE 104","title":"Modern and Postmodern Practice","section":"1-LAB","classNumber":1310,"days":[1,3,5],"start":780,"end":830,"units":"2.0","instructor":"Jonathan Rehm","room":"Studio B","waitlist":4},{"career":"Undergraduate","session":"Regular Academic Session","grading":"Graded","mode":"In Person","campus":"Hacienda Campus","location":"Hacienda","code":"COMM 3","title":"Public Communication!","section":"1-LEC","classNumber":1022,"days":[1,3,5],"start":780,"end":830,"units":"3.0","instructor":"Staff","room":"Humanities 214","waitlist":1},{"career":"Undergraduate","session":"Regular Academic Session","grading":"Graded","mode":"In Person","campus":"Hacienda Campus","location":"Hacienda","code":"MATH 210","title":"Brief Calculus","section":"1000-LEC","classNumber":1000,"days":[1,3,5],"start":840,"end":890,"units":"4.0","instructor":"Priya Natarajan","room":"Science 204"},{"career":"Undergraduate","session":"Regular Academic Session","grading":"Graded","mode":"In Person","campus":"Hacienda Campus","location":"Hacienda","code":"BIOLOGY 115","title":"History and Theory of Biology","section":"1-LEC","classNumber":1565,"days":[],"units":"3.0","instructor":"","room":""},{"career":"Graduate","session":"Regular Academic Session","grading":"Graded","mode":"In Person","campus":"Hacienda Campus","location":"Hacienda","code":"ART 532","title":"The Psychology of Art","section":"001-LEC","classNumber":1532,"days":[],"units":"3.0","instructor":"","room":"","waitlist":5}];
+  var CLASSES = [{"institution":"PeopleSoft University","career":"Undergraduate","session":"Regular Academic Session","grading":"Graded","mode":"In Person","campus":"Hacienda Campus","location":"Hacienda","topic":"","components":"Lecture Required","textbooks":"","links":["HighPoint - test"],"code":"HISTORY 120","title":"American History","section":"1-LEC","classNumber":1088,"days":[1,3,5],"start":540,"end":590,"units":"1.0","instructor":"Marcus Webb","room":"Angel 105","description":"Survey of American history from colonial settlement to the present: the Revolution, the Constitution, expansion, the Civil War and Reconstruction, industrialization, and the United States as a world power.","seats":[24,35],"wait":[0,10],"status":"Open"},{"institution":"PeopleSoft University","career":"Undergraduate","session":"Regular Academic Session","grading":"Graded","mode":"In Person","campus":"Hacienda Campus","location":"Hacienda","topic":"","components":"Lecture Required","textbooks":"","links":["HighPoint - test"],"code":"ART 112","title":"History of World Art (As/Af)","section":"1-LEC","classNumber":1093,"days":[1,3,5],"start":600,"end":650,"units":"3.0","instructor":"Elena Ruiz","room":"Fine Arts 120","waitlist":3,"description":"Art and architecture of Asia and Africa from prehistory to the present, studied in their religious, political and social contexts.","seats":[0,30],"wait":[2,10],"status":"Wait list"},{"institution":"PeopleSoft University","career":"Undergraduate","session":"Regular Academic Session","grading":"Graded","mode":"In Person","campus":"Hacienda Campus","location":"Hacienda","topic":"","components":"Lecture Required","textbooks":"","links":["HighPoint - test"],"code":"ART 111","title":"Introductory Art Seminar","section":"1-SEM","classNumber":1091,"days":[2,4],"start":600,"end":680,"units":"3.0","instructor":"Elena Ruiz","room":"Fine Arts 204","description":"A seminar introduction to looking at, talking about and writing about art. Weekly gallery visits and short critical responses.","seats":[6,18],"wait":[0,5],"status":"Open"},{"institution":"PeopleSoft University","career":"Undergraduate","session":"Regular Academic Session","grading":"Graded","mode":"In Person","campus":"Hacienda Campus","location":"Hacienda","topic":"","components":"Lecture Required","textbooks":"","links":["HighPoint - test"],"code":"ACCT 202","title":"Financial Accounting II","section":"100-LEC","classNumber":1102,"days":[2,4],"start":600,"end":680,"units":"3.0","instructor":"Syndi B. Forbes","room":"Business 210","waitlist":6,"description":"Continuation of Financial Accounting I: long-term assets, liabilities, equity, the statement of cash flows and financial statement analysis.","seats":[0,40],"wait":[0,10],"status":"Closed"},{"institution":"PeopleSoft University","career":"Undergraduate","session":"Regular Academic Session","grading":"Graded","mode":"In Person","campus":"Hacienda Campus","location":"Hacienda","topic":"","components":"Lecture Required","textbooks":"","links":["HighPoint - test"],"code":"ACCT 201","title":"Financial Accounting I","section":"1001-LEC","classNumber":1001,"days":[1,3,5],"start":720,"end":770,"units":"3.0","instructor":"Syndi B. Forbes","room":"Business 110","waitlist":2,"description":"The accounting cycle and financial statements: recording transactions, adjusting entries, receivables, inventories and internal control.","seats":[0,40],"wait":[5,15],"status":"Wait list"},{"institution":"PeopleSoft University","career":"Undergraduate","session":"Regular Academic Session","grading":"Graded","mode":"In Person","campus":"Hacienda Campus","location":"Hacienda","topic":"","components":"Lecture Required","textbooks":"","links":["HighPoint - test"],"code":"MATH 211","title":"Math for Business Analysis","section":"100-LEC","classNumber":2184,"days":[1,3,5],"start":780,"end":830,"units":"3","instructor":"Staff","room":"","description":"Topics in business analysis, including: Lagrange multipliers, linear programming, linear algebra, intermediate probability, random variables, discrete distributions, and continuous distributions.","seats":[28,30],"wait":[0,0],"status":"Open"},{"institution":"PeopleSoft University","career":"Undergraduate","session":"Regular Academic Session","grading":"Graded","mode":"In Person","campus":"Hacienda Campus","location":"Hacienda","topic":"","components":"Lecture Required","textbooks":"","links":["HighPoint - test"],"code":"DANCE 104","title":"Modern and Postmodern Practice","section":"1-LAB","classNumber":1310,"days":[1,3,5],"start":780,"end":830,"units":"2.0","instructor":"Jonathan Rehm","room":"Studio B","waitlist":4,"description":"Studio practice in modern and postmodern dance techniques, with improvisation and short compositions. Comfortable clothing required.","seats":[0,20],"wait":[0,6],"status":"Closed"},{"institution":"PeopleSoft University","career":"Undergraduate","session":"Regular Academic Session","grading":"Graded","mode":"In Person","campus":"Hacienda Campus","location":"Hacienda","topic":"","components":"Lecture Required","textbooks":"","links":["HighPoint - test"],"code":"COMM 3","title":"Public Communication!","section":"1-LEC","classNumber":1022,"days":[1,3,5],"start":780,"end":830,"units":"3.0","instructor":"Staff","room":"Humanities 214","waitlist":1,"description":"Preparing and delivering informative and persuasive speeches; audience analysis, organization, evidence and delivery.","seats":[0,25],"wait":[3,8],"status":"Wait list"},{"institution":"PeopleSoft University","career":"Undergraduate","session":"Regular Academic Session","grading":"Graded","mode":"In Person","campus":"Hacienda Campus","location":"Hacienda","topic":"","components":"Lecture Required","textbooks":"","links":["HighPoint - test"],"code":"MATH 210","title":"Brief Calculus","section":"1000-LEC","classNumber":1000,"days":[1,3,5],"start":840,"end":890,"units":"4.0","instructor":"Priya Natarajan","room":"Science 204","description":"Differential and integral calculus of one variable with applications to business, economics and the life sciences.","seats":[11,35],"wait":[0,10],"status":"Open"},{"institution":"PeopleSoft University","career":"Undergraduate","session":"Regular Academic Session","grading":"Graded","mode":"In Person","campus":"Hacienda Campus","location":"Hacienda","topic":"","components":"Lecture Required","textbooks":"","links":["HighPoint - test"],"code":"BIOLOGY 115","title":"History and Theory of Biology","section":"1-LEC","classNumber":1565,"days":[],"units":"3.0","instructor":"","room":"","description":"How ideas about life changed from Aristotle to molecular biology: evolution, inheritance, the cell and the debates around them.","seats":[9,30],"wait":[0,10],"status":"Open"},{"institution":"PeopleSoft University","career":"Graduate","session":"Regular Academic Session","grading":"Graded","mode":"In Person","campus":"Hacienda Campus","location":"Hacienda","topic":"","components":"Lecture Required","textbooks":"","links":["HighPoint - test"],"code":"ART 532","title":"The Psychology of Art","section":"001-LEC","classNumber":1532,"days":[],"units":"3.0","instructor":"","room":"","waitlist":5,"description":"Graduate seminar on perception, emotion and meaning in the making and viewing of art.","seats":[0,12],"wait":[1,5],"status":"Wait list"}];
   var EXAMS = [{"code":"MATH 210","title":"Brief Calculus","name":"Midterm","date":"2026-10-30","start":900,"end":990,"room":"Science 204"},{"code":"HISTORY 120","title":"American History","name":"Midterm","date":"2026-11-02","start":540,"end":590,"room":"Angel 105"},{"code":"MATH 211","title":"Math for Business Analysis","name":"Midterm","date":"2026-11-06","start":780,"end":870,"room":"Science 110"},{"code":"HISTORY 120","title":"American History","name":"Final exam","date":"2026-12-07","start":480,"end":600,"room":"Angel 105"},{"code":"ART 111","title":"Introductory Art Seminar","name":"Final critique","date":"2026-12-08","start":600,"end":720,"room":"Fine Arts 204"},{"code":"MATH 211","title":"Math for Business Analysis","name":"Final exam","date":"2026-12-09","start":780,"end":900,"room":"Science 110"},{"code":"MATH 210","title":"Brief Calculus","name":"Final exam","date":"2026-12-10","start":840,"end":960,"room":"Science 204"}];
   var APPTS = [];
   var DROPINS = [];
@@ -1827,8 +1844,12 @@ window.hpCalendar = window.hpCalendar || (function () {
   var TERM = {"name":"2026 Fall","start":"2026-08-30","end":"2026-12-12"};
   var TODAY = "2026-10-29", NOW = 640, TZ = "Pacific Time";
   var HOUR = 64;
-  var ICON_SCHOOL = "<svg class=\"btn__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3 1 9l11 6 9-4.91V17h2V9L12 3z\"/></svg>";
   var ICON_OPEN = "<svg class=\"btn__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z\"/></svg>";
+  var ICON_OPEN_SM = "<svg class=\"sch-link__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z\"/></svg>";
+  var ICON_COPY = "<svg class=\"btn__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z\"/></svg>";
+  var ICON_EVENT = "<svg class=\"btn__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M17 10H7v2h10v-2zm2-7h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zm-5-5H7v2h7v-2z\"/></svg>";
+  var ICON_BOOK = "<svg class=\"btn__icon\" aria-hidden=\"true\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" enable-background=\"new 0 0 24 24\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\"><g><rect fill=\"none\" height=\"24\" width=\"24\"/></g><g><g/><g><path d=\"M21,5c-1.11-0.35-2.33-0.5-3.5-0.5c-1.95,0-4.05,0.4-5.5,1.5c-1.45-1.1-3.55-1.5-5.5-1.5S2.45,4.9,1,6v14.65 c0,0.25,0.25,0.5,0.5,0.5c0.1,0,0.15-0.05,0.25-0.05C3.1,20.45,5.05,20,6.5,20c1.95,0,4.05,0.4,5.5,1.5c1.35-0.85,3.8-1.5,5.5-1.5 c1.65,0,3.35,0.3,4.75,1.05c0.1,0.05,0.15,0.05,0.25,0.05c0.25,0,0.5-0.25,0.5-0.5V6C22.4,5.55,21.75,5.25,21,5z M21,18.5 c-1.1-0.35-2.3-0.5-3.5-0.5c-1.7,0-4.15,0.65-5.5,1.5V8c1.35-0.85,3.8-1.5,5.5-1.5c1.2,0,2.4,0.15,3.5,0.5V18.5z\"/><g><path d=\"M17.5,10.5c0.88,0,1.73,0.09,2.5,0.26V9.24C19.21,9.09,18.36,9,17.5,9c-1.7,0-3.24,0.29-4.5,0.83v1.66 C14.13,10.85,15.7,10.5,17.5,10.5z\"/><path d=\"M13,12.49v1.66c1.13-0.64,2.7-0.99,4.5-0.99c0.88,0,1.73,0.09,2.5,0.26V11.9c-0.79-0.15-1.64-0.24-2.5-0.24 C15.8,11.66,14.26,11.96,13,12.49z\"/><path d=\"M17.5,14.33c-1.7,0-3.24,0.29-4.5,0.83v1.66c1.13-0.64,2.7-0.99,4.5-0.99c0.88,0,1.73,0.09,2.5,0.26v-1.52 C19.21,14.41,18.36,14.33,17.5,14.33z\"/></g></g></g></svg>";
+  var DEADLINES = {"lastWaitlist":"2026-08-29","groups":[{"title":"Drop","items":[{"name":"Drop – delete record","date":"2026-11-25","text":"A class dropped on or before this date will be deleted from your academic record."},{"name":"Drop – retain record","date":"2026-11-26","text":"A class dropped on or before this date will be retained on your academic record with a status of dropped."},{"name":"Drop with penalty","date":"2026-11-27","text":"A class dropped on or before this date will appear on your transcript and a penalty grade will be assigned to the class."},{"name":"Drop with greater penalty","date":"2026-11-28","text":"Last date to drop. A class dropped on or before this date will appear on your transcript and a severe penalty grade will be assigned to the class."}]},{"title":"Cancel & withdraw","items":[{"name":"Cancel","date":"2026-08-29","text":"Classes within a session, canceled on or before this date will not appear on your transcript."},{"name":"Withdraw without penalty","date":"2026-11-13","text":"Classes within a session, withdrawn on or before this date will not appear on your transcript."},{"name":"Withdraw with penalty","date":"2026-11-29","text":"Classes within a session, withdrawn on or before this date will appear on your transcript and a penalty grade will be assigned to the classes."},{"name":"Withdraw with greater penalty","date":"2026-11-29","text":"Last day to withdraw from a session. Classes within a session, withdrawn on or before this date will appear on your transcript and a severe penalty grade will be assigned to the classes."}]}]};
   var MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   var MONTH = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
   var DOW = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -2117,14 +2138,15 @@ window.hpCalendar = window.hpCalendar || (function () {
     if (s) { st.day = s.dataset.day; render(); }
   });
 
-  // ---- one panel for a day and its events: a Dialog on a desktop, a bottom
-  // SlideOverPanel on a phone. Month → a day → its events as List rows; a row
-  // swaps the panel to that event, "‹ Thu, Oct 29" above the title goes back
-  // (Esc too). Week / List open an event straight in, with no way back to
-  // go. No modal on a modal. ----
-  var P = { day: null, ev: null, ret: null };
+  // ---- one panel for a day, its events and a class's deadlines: a Dialog
+  // (md) on a desktop, a bottom SlideOverPanel on a phone. It's a stack —
+  // Month: day → event → (a class's) deadlines; Week / List start at the
+  // event. Each level replaces the last; "‹ <previous>" over the title and
+  // Esc go back one. No modal on a modal. ----
+  var P = { stack: [], ret: null };
   function panel() { return mq.matches ? $("sch-day-sheet") : $("sch-day"); }
-  function openPanel() { var p = panel(); if (!p.open) p.showModal(); return p; }
+  function shortDate(isoS) { var x = d(isoS); return DOW[x.getDay()] + ", " + MON[x.getMonth()] + " " + x.getDate(); }
+  function levelLabel(l) { return l.k === "day" ? shortDate(l.dt) : eventContent(l.ev).title; }
   function fill(p, o) {
     p.querySelector("[data-p-title]").innerHTML = o.title;
     p.querySelector("[data-p-desc]").textContent = o.desc || "";
@@ -2133,73 +2155,104 @@ window.hpCalendar = window.hpCalendar || (function () {
     body.innerHTML = o.body; body.scrollTop = 0;
     foot.innerHTML = o.foot || ""; foot.classList.toggle("is-hidden", !o.foot);
     back.classList.toggle("is-hidden", !o.back);
-    if (o.back) p.querySelector("[data-back-label]").textContent = o.back;
+    if (o.back) { p.querySelector("[data-back-label]").textContent = o.back; back.setAttribute("aria-label", "Back to " + o.back); }
   }
-  function showDay(dt) {
-    P.day = dt; P.ev = null;
-    var evs = eventsOn(dt), p = openPanel();
-    fill(p, {
-      kind: "list",
-      title: esc(longDate(dt)) + (dt === TODAY ? ' <span class="badge badge--primary">Today</span>' : ""),
-      desc: evs.length ? evs.length + (evs.length === 1 ? " event" : " events") : "",
-      body: evs.length ? evs.map(listRow).join("") : '<div class="empty-state"><span class="empty-state__text">Nothing on this day</span></div>',
-    });
-    return p;
+  function showTop(focusSel) {
+    var p = panel(), l = P.stack[P.stack.length - 1], prev = P.stack[P.stack.length - 2];
+    if (!p.open) p.showModal();
+    var back = prev ? levelLabel(prev) : "";
+    if (l.k === "day") {
+      var evs = eventsOn(l.dt);
+      fill(p, {
+        kind: "list", back: back,
+        title: esc(longDate(l.dt)) + (l.dt === TODAY ? ' <span class="badge badge--primary">Today</span>' : ""),
+        desc: evs.length ? evs.length + (evs.length === 1 ? " event" : " events") : "",
+        body: evs.length ? evs.map(listRow).join("") : '<div class="empty-state"><span class="empty-state__text">Nothing on this day</span></div>',
+      });
+    } else if (l.k === "ev") {
+      var c = eventContent(l.ev);
+      fill(p, { kind: "event", back: back, title: esc(c.title), desc: c.desc, body: '<div class="sch-dlg__badges">' + c.badges + "</div>" + c.body, foot: c.foot });
+    } else {
+      var dl = deadlinesContent(l.ev.src);
+      fill(p, { kind: "event", back: back, title: "Academic calendar deadlines", desc: l.ev.src.title + " · " + l.ev.src.code, body: dl });
+    }
+    var f = (focusSel && p.querySelector(focusSel)) || p.querySelector("[data-back]:not(.is-hidden)") || p.querySelector("[data-close]");
+    f.focus();
   }
-  function showEvent(ev) {
-    P.ev = ev;
-    var c = eventContent(ev), p = openPanel(), x = d(P.day || ev.date);
-    fill(p, { kind: "event", title: esc(c.title), desc: c.desc, body: '<div class="sch-dlg__badges">' + c.badges + "</div>" + c.body, foot: c.foot, back: P.day ? DOW[x.getDay()] + ", " + MON[x.getMonth()] + " " + x.getDate() : "" });
-    (p.querySelector("[data-back]:not(.is-hidden)") || p.querySelector("[data-close]")).focus();
-  }
+  function push(level) { P.stack.push(level); showTop(); }
   function goBack() {
-    var id = P.ev && P.ev.id, p = showDay(P.day);
-    var row = id && p.querySelector('[data-ev="' + id + '"]');
-    (row || p.querySelector("[data-close]")).focus();
+    var gone = P.stack.pop(), top = P.stack[P.stack.length - 1];
+    // focus what opened the level we left: the day's row, the deadlines button
+    showTop(gone.k === "ev" ? '[data-ev="' + gone.ev.id + '"]' : gone.k === "dl" ? "[data-deadlines]" : null);
   }
-  function openDay(dt, from) { P.ret = from || null; showDay(dt); }
-  function openEvent(ev, from) { P.ret = from || null; P.day = null; showEvent(ev); }
+  function openDay(dt, from) { P.ret = from || null; P.stack = []; push({ k: "day", dt: dt }); }
+  function openEvent(ev, from) { P.ret = from || null; P.stack = []; push({ k: "ev", ev: ev }); }
   ["sch-day", "sch-day-sheet"].forEach(function (id) {
     var p = $(id);
     p.addEventListener("click", function (e) {
       if (e.target === p || e.target.closest("[data-close]")) { p.close(); return; }
       if (e.target.closest("[data-back]")) { goBack(); return; }
       if (e.target.closest("[data-nd]")) { window.cx.notDesigned(); return; }
+      if (e.target.closest("[data-deadlines]")) { push({ k: "dl", ev: P.stack[P.stack.length - 1].ev }); return; }
+      var sh = e.target.closest("[data-share]");
+      if (sh) {
+        var url = location.href.split("#")[0] + "#class-" + sh.dataset.share;
+        if (navigator.clipboard) navigator.clipboard.writeText(url).catch(function () {});
+        window.cx.toast("Link copied");
+        return;
+      }
       var b = e.target.closest("[data-ev]");
-      if (b && byId[b.dataset.ev]) showEvent(byId[b.dataset.ev]);
+      if (b && byId[b.dataset.ev]) push({ k: "ev", ev: byId[b.dataset.ev] });
     });
-    // Esc on an event opened from a day goes back to the day, not out
-    p.addEventListener("cancel", function (e) { if (P.ev && P.day) { e.preventDefault(); goBack(); } });
+    // Esc goes back a level while there is one, then closes
+    p.addEventListener("cancel", function (e) { if (P.stack.length > 1) { e.preventDefault(); goBack(); } });
     p.addEventListener("close", function () {
-      var r = P.ret; P.day = null; P.ev = null; P.ret = null;
+      if (P.skip === p) { P.skip = null; return; } // carried to the other panel, not closed
+      var r = P.ret; P.stack = []; P.ret = null;
       if (r && document.contains(r)) r.focus();
     });
   });
-  // crossing the 768 breakpoint with the panel open: carry it to the other one
+  // crossing the 768 breakpoint with the panel open: carry the stack across
   mq.addEventListener("change", function () {
     var open = $("sch-day").open ? $("sch-day") : $("sch-day-sheet").open ? $("sch-day-sheet") : null;
     if (!open) return;
-    var keep = { day: P.day, ev: P.ev, ret: P.ret };
-    P.ret = null; open.close();
-    P.ret = keep.ret; P.day = keep.day;
-    if (keep.day) showDay(keep.day);
-    if (keep.ev) showEvent(keep.ev);
+    P.skip = open; open.close(); // its close event is queued — the handler skips it
+    showTop();
   });
 
   function row(k, v) { return "<dt>" + k + '</dt><dd' + (v ? "" : ' class="is-empty"') + ">" + (v ? esc(v) : "To be announced") + "</dd>"; }
-  function section(title, rows) { return '<div class="sch-dlg__section"><h3 class="sch-eyebrow" style="margin:0">' + title + '</h3><dl class="ss-dl">' + rows + "</dl></div>"; }
+  function section(title, rows, aside) { return '<div class="sch-dlg__section"><div class="sch-dlg__head"><h3 class="sch-eyebrow">' + title + "</h3>" + (aside || "") + '</div><dl class="ss-dl">' + rows + "</dl></div>"; }
+  function block(title, html, aside) { return '<div class="sch-dlg__section"><div class="sch-dlg__head"><h3 class="sch-eyebrow">' + title + "</h3>" + (aside || "") + "</div>" + html + "</div>"; }
   function badgeFor(ev) { var t = typeOf(ev.type); return '<span class="badge badge--base badge--regular sch-badge sch-t--' + ev.type + '">' + esc(t.one) + "</span>"; }
+  var STATUS_BADGE = { "Open": "success", "Wait list": "warning", "Closed": "neutral" };
+  // a class's Academic Calendar Deadlines (the live View Deadlines page)
+  function deadlinesContent(s) {
+    var html = section("Class details", row("Session", s.session) + row("Career", s.career) + row("Section", s.section.split("-")[0]) + row("Class starts", mdY(TERM.start)) + row("Class ends", mdY(TERM.end)) + row("Last date to wait list", mdY(DEADLINES.lastWaitlist)));
+    DEADLINES.groups.forEach(function (g) {
+      html += block(g.title + " calendar", '<ul class="sch-dls">' + g.items.map(function (it) {
+        var past = it.date < TODAY;
+        return '<li class="sch-dls__item' + (past ? " is-past" : "") + '"><div class="sch-dls__top"><span class="sch-dls__name">' + esc(it.name) + '</span><span class="sch-dls__date">' + (past ? '<span class="badge badge--regular badge--neutral">Passed</span>' : "") + mdY(it.date) + '</span></div><p class="sch-dls__text">' + esc(it.text) + "</p></li>";
+      }).join("") + "</ul>");
+    });
+    return html;
+  }
   // an event's title, description, body and footer actions
   function eventContent(ev) {
-    var s = ev.src, title = ev.title, desc = ev.sub, badges = badgeFor(ev), body = "", foot = "";
+    var s = ev.src, title = ev.title, desc = ev.sub, badges = badgeFor(ev), body = "", foot = "", close = true;
     var when = ev.notime ? "" : longDate(ev.date) + " · " + tRange(ev.start, ev.end);
     if (ev.type === "class" || ev.type === "waitlist") {
+      // the live CX class modal's sections, in its order
       desc = s.code + " · " + s.section + " (" + s.classNumber + ")";
       if (s.waitlist) badges += '<span class="badge badge--base badge--regular badge--warning">Position ' + s.waitlist + " on the wait list</span>";
       var meets = s.days.length ? s.days.map(function (x) { return DOW2[x]; }).join(" ") + ", " + tRange(s.start, s.end) : "No set time";
-      body = section("Details", (when ? row("This class", when) : "") + row("Meets", meets) + row("Dates", mdY(TERM.start) + " – " + mdY(TERM.end)) + row("Instructor", s.instructor) + row("Room", s.room) + row("Instruction mode", s.mode) + row("Campus", s.campus + " · " + s.location)) +
-        section("Information", row("Class number", String(s.classNumber)) + row("Career", s.career) + row("Session", s.session) + row("Units", s.units) + row("Grading", s.grading));
-      foot = '<button class="btn btn--secondary btn--base" type="button" data-nd>' + ICON_SCHOOL + "View class</button>";
+      body = section("Information", row("Institution", s.institution) + row("Section", s.section + " (" + s.classNumber + ")") + row("Class number", String(s.classNumber)) + row("Career", s.career) + row("Session", s.session) + row("Units", s.units + (s.units === "1" || s.units === "1.0" ? " unit" : " units")) + row("Grading", s.grading)) +
+        block("Description", '<p class="sch-dlg__text">' + esc(s.description) + "</p>") +
+        section("Details", (when ? row("This class", when) : "") + row("Instructor", s.instructor) + row("Dates", mdY(TERM.start) + " – " + mdY(TERM.end)) + row("Meets", meets) + row("Instruction mode", s.mode) + row("Room", s.room) + row("Topic", s.topic) + row("Campus", s.campus) + row("Location", s.location) + row("Components", s.components)) +
+        block("Textbooks / course materials", '<p class="sch-dlg__text sch-dlg__text--muted">' + (s.textbooks ? esc(s.textbooks) : "Textbooks to be determined") + "</p>", '<button class="btn btn--secondary btn--sm" type="button" data-nd>' + ICON_BOOK + "Buy books</button>") +
+        section("Availability", '<dt>Status</dt><dd><span class="badge badge--base badge--regular badge--' + STATUS_BADGE[s.status] + '">' + s.status + "</span></dd>" + row("Seats open", s.seats[0] + " of " + s.seats[1]) + row("Wait list open", s.wait[0] + " of " + s.wait[1])) +
+        (s.links && s.links.length ? block("Additional links", '<ul class="sch-links">' + s.links.map(function (l) { return '<li><a class="sch-link" href="#" data-nd>' + esc(l) + ICON_OPEN_SM + "</a></li>"; }).join("") + "</ul>") : "");
+      foot = '<button class="btn btn--secondary btn--base" type="button" data-share="' + s.classNumber + '">' + ICON_COPY + 'Copy share link</button><button class="btn btn--primary btn--base" type="button" data-deadlines>' + ICON_EVENT + "View deadlines</button>";
+      close = false;
     } else if (ev.type === "exam") {
       title = s.code + " " + s.name; desc = s.title;
       body = section("Details", row("When", when) + row("Room", s.room) + row("Term", TERM.name));
@@ -2219,7 +2272,7 @@ window.hpCalendar = window.hpCalendar || (function () {
       desc = ev.friend.name + "'s class · " + s.code;
       body = section("Details", row("When", when) + row("Room", s.room));
     }
-    return { title: title, desc: desc, badges: badges, body: body, foot: foot ? foot + '<button class="btn btn--primary btn--base" type="button" data-close>Close</button>' : "" };
+    return { title: title, desc: desc, badges: badges, body: body, foot: foot ? foot + (close ? '<button class="btn btn--primary btn--base" type="button" data-close>Close</button>' : "") : "" };
   }
 
   render();
