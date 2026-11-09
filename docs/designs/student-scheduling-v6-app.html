@@ -2090,8 +2090,11 @@ dialog.slide-over-panel--bottom[open] { transform: translateY(0); animation: sli
     else if (DEPT_ON_PICK) pk.dept = s.depts.length === 1 ? s.depts[0] : s.depts.indexOf(st.dept) !== -1 ? st.dept : null;
     else pk.dept = deptOf(si);
     $("ss-pick-title").textContent = s.name;
-    $("ss-pick-meta").textContent = s.minutes + " minutes" + (DEPT_ON_PICK ? "" : " · " + pk.dept);
-    $("ss-dept-step").classList.toggle("is-hidden", !DEPT_ON_PICK);
+    // one department = nothing to choose: it goes in the meta line beside the
+    // duration, and the Department step only appears when there is a choice
+    // (user, 2026-11-09 — the step with a lone name below the title wasted a block)
+    $("ss-pick-meta").textContent = s.minutes + " minutes" + (choose ? "" : " · " + pk.dept);
+    $("ss-dept-step").classList.toggle("is-hidden", !choose);
     $("ss-pick-dept").classList.toggle("is-hidden", !choose);
     $("ss-pick-dept-text").classList.toggle("is-hidden", choose);
     $("ss-pick-dept-text").textContent = choose ? "" : pk.dept;
