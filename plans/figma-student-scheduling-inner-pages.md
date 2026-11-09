@@ -14,8 +14,8 @@
 - Workshop «Your registration» і «Your workshop» — блок «LOCATION» капслоком замінено на секцію **Where** + Box (як «How you'll meet» в appointment). Тепер усі картки однакові.
 
 Що знайшов і **НЕ** чіпав — треба твоє рішення:
-1. **Денна смужка на pick-a-time (телефон)** — горизонтальний скрол (видно ~4 з 7 днів, останній обрізаний). Це навмисно в коді, але суперечить твоєму правилу «не різати контент скролом». Варіант: сітка 4+3 або 7 вузьких колонок. → вирішити до експорту.
-2. **Повний воркшоп** — картка «Your registration» показує «Choose a schedule» у всіх рядках, хоча розклад один і він повний. Краще показати сам розклад (сірим) і прибрати Register. → вирішити.
+1. ~~Денна смужка на телефоні скролилась~~ → **вирішено 2026-11-09:** увесь тиждень в один ряд рівними вузькими колонками (gap 4), підпис «8 times / Full» на телефоні лише для скрінрідера. Зроблено в коді.
+2. ~~Повний воркшоп~~ → **вирішено 2026-11-09:** якщо розклад один — картка показує його дані і список сесій; якщо розкладів кілька і всі повні — порожні рядки «No seats left». Замість неактивної Register — Secondary «View other workshops» (веде в Book). Зроблено в коді.
 3. **Тултіпи іконок формату** біля правого краю (шторка, 768) виходять за екран при наведенні. На тачі їх не видно; на десктопі — так. → у Figma малюю тултіп Placement=Left для крайніх.
 
 ### DS-компоненти: що з бібліотеки, що локальне
@@ -148,7 +148,7 @@
 | A8 | Ціль не заповнена → помилка | ✓ | — | ✓ | Text Area Error + «Tell your advisor what you'd like to accomplish.» |
 | A9 | Фільтр Evening | ✓ | ✓ | ✓ | Day Tiles з «2 times», «1 time», Sat Full; 2 слоти |
 | A10 | Наступний тиждень | ✓ | — | ✓ | «Oct 9 – 15», chevron_left активний |
-| A11 | Немає вільних (Academic Difficulty) | ✓ | ✓ | ✓ | Alert Info «No open times right now. Every slot for this service is taken for the next 3 weeks.» + detail «We can email you as soon as an advisor opens a new time.» + дві дії: Button Primary sm notifications «Notify me when a spot opens» (→ «We'll let you know», disabled) і Button Secondary sm «Go to Drop-Ins» |
+| A11 | Немає вільних (Academic Difficulty; «Go to Drop-Ins» лише коли в департаменту є дропін) | ✓ | ✓ | ✓ | Alert Info «No open times right now. Every slot for this service is taken for the next 3 weeks.» + detail «We can email you as soon as an advisor opens a new time.» + дві дії: Button Primary sm notifications «Notify me when a spot opens» (→ «We'll let you know», disabled) і Button Secondary sm «Go to Drop-Ins» |
 | A12 | Перенесення | ✓ | — | ✓ | Alert Info «Rescheduling. Change of Major is booked for Wed, Oct 7 at 2:00 PM. That time stays yours until you confirm a new one.»; назад «Back to appointment»; ціль заповнена; кнопка «Confirm new time» |
 
 ### B. Done screen — 3 стани (P/T/D)
@@ -216,7 +216,7 @@
 | E4 | Одна дата (Interview Prep) | «Choose a date · Every date is the same session»; Date Tiles (Wed, Oct 7 Full …); Your registration: Date / Time Empty |
 | E5 | Дату вибрано | Date / Time заповнено |
 | E6 | З курсом | College Writing Lab — Badge Outline «ENGL 101» у заголовку |
-| E7 | Повний | Badge Neutral «Full»; Alert Info «This workshop is full. Every seat is taken. We can email you if one opens up.» + Notify me when a seat opens → «We'll let you know»; розклад Full (і рішення з п.0.2) |
+| E7 | Повний (Time Management Essentials) | Badge Neutral «Full»; Alert Info «This workshop is full. Every seat is taken. We can email you if one opens up.» + Secondary sm «Notify me when a seat opens»; «Schedule» — фіксований розклад з «Full»; Sessions; картка з даними розкладу; Secondary «View other workshops» (D — у картці, P/T — Register Bar) |
 | E8 | Notify — вже підписано | кнопка disabled «We'll let you know» |
 
 ### F. My workshop page — 9 станів
@@ -252,7 +252,7 @@
 | G10 | Nothing here | Alert Warning «Nothing to check in to here. …» + Book an appointment (Primary) + See drop-ins open now (Alert з двома діями — п.1.4) |
 | G11 | Error | Alert Danger error «We couldn't check you in. The code may have expired, or the connection dropped.» + Try again |
 
-Розмістити в тому ж файлі окремою секцією **Screens — Check-in (QR)** або окремою сторінкою файлу — **вирішити** (я за окрему секцію в тому ж файлі: ті самі компоненти).
+Окрема секція **Screens — Check-in (QR)** у тому ж файлі (погоджено 2026-11-09).
 
 ---
 

@@ -1535,7 +1535,8 @@ export function ssAppJs(d) {
     }
 
     // sessions of the chosen (or registered) schedule — series only
-    var listSc = reg ? w.schedules[reg.sched] : sc;
+    // one schedule (e.g. a full workshop with nothing to pick): it is the schedule
+    var listSc = reg ? w.schedules[reg.sched] : sc || (!single && fixedOnly ? w.schedules[0] : null);
     var showSessions = !single && !!listSc;
     $("ss-ws-sessions-step").classList.toggle("is-hidden", !showSessions);
     if (showSessions) {
@@ -1565,17 +1566,23 @@ export function ssAppJs(d) {
     facts.push(["Format", useSc ? WS_FORMAT[useSc.format].label : null]);
     facts.push(["Organizer", useSc ? useSc.organizer : null]);
     $("ss-ws-facts").innerHTML = facts.map(function (f) {
-      return "<dt>" + f[0] + "</dt><dd" + (f[1] === null ? ' class="is-empty">' + (single ? "Choose a date" : "Choose a schedule") : ">" + esc(f[1])) + "</dd>";
+      // full: nothing to choose, so the empty rows say so instead of asking (user, 2026-11-09)
+      return "<dt>" + f[0] + "</dt><dd" + (f[1] === null ? ' class="is-empty">' + (full && !reg ? "No seats left" : single ? "Choose a date" : "Choose a schedule") : ">" + esc(f[1])) + "</dd>";
     }).join("");
     var mixed = !useSc && w.schedules.some(function (x) { return x.format === "video"; }) && w.schedules.some(function (x) { return x.format === "inPerson"; });
     var locSc = useSc || w.schedules[0];
     $("ss-ws-location").innerHTML = mixed ? whereLine(ICONS.group, "In person or online — depends on the schedule") : whereLine(WS_FORMAT[locSc.format].icon, scheduleLocation(locSc));
 
+    // full: no dead Register — a way on to the other workshops instead (user, 2026-11-09)
+    var fullOnly = full && !reg;
     var canRegister = !reg && !full && (single ? ws.sess !== null : !!sc);
-    var label = single ? "Register" : sc ? "Register for all " + sc.count + " sessions" : "Register";
-    ["ss-ws-register", "ss-ws-register-bar"].forEach(function (id) { $(id).disabled = !canRegister; $(id).textContent = label; });
-    document.querySelector(".ss-ws-foot").classList.toggle("is-hidden", !!reg || full);
-    $("ss-ws-bar").classList.toggle("is-hidden", !!reg || full);
+    var label = fullOnly ? "View other workshops" : single ? "Register" : sc ? "Register for all " + sc.count + " sessions" : "Register";
+    ["ss-ws-register", "ss-ws-register-bar"].forEach(function (id) {
+      $(id).disabled = !canRegister && !fullOnly; $(id).textContent = label;
+      $(id).classList.toggle("btn--primary", !fullOnly); $(id).classList.toggle("btn--secondary", fullOnly);
+    });
+    document.querySelector(".ss-ws-foot").classList.toggle("is-hidden", !!reg);
+    $("ss-ws-bar").classList.toggle("is-hidden", !!reg);
   }
   var wsNotified = {};
   on("ss-ws-options", "change", function (e) {
@@ -1593,6 +1600,7 @@ export function ssAppJs(d) {
   });
   function registerWorkshop() {
     var w = WORKSHOPS[ws.wi], single = w.mode === "single", sc = w.schedules[single ? 0 : ws.sched];
+    if (wsFull(w) && !WS_REG[w.id]) { goSection(0); return; }
     if (single) sc.takenBy[ws.sess]++; else sc.taken++;
     WS_REG[w.id] = { sched: single ? 0 : ws.sched, sess: single ? ws.sess : null, skipped: {}, checkedIn: {} };
     updateUpcomingCount();

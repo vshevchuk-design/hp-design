@@ -483,6 +483,14 @@ ${FIELD_WRAPPER_CSS}
 .ss-day__dow { color: ${cv("text.secondary")}; ${typoCss(labelSm)} text-transform: ${labelSmCase}; letter-spacing: ${labelSm.letterSpacing}; }
 .ss-day__num { color: ${cv("text.default")}; ${typoCss(style("heading-lg"))} }
 .ss-day .choice-tile__description { ${typoCss(style("body-xs"))} }
+/* phone: the whole week (6–7 days) in one row, equal columns, no sideways scroll (user, 2026-11-09). The
+   "8 times" / "Full" line doesn't fit in ~44px — it stays for screen readers,
+   a full day still reads as one from its disabled tile. */
+@media (max-width: 767px) {
+  .ss-days { grid-auto-columns: minmax(0, 1fr); gap: ${dim(1)}; overflow: visible; }
+  .ss-day .choice-tile__box { padding: ${dim(2)} 0; }
+  .ss-day .choice-tile__description { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+}
 .ss-slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(${dim(56)}, 100%), 1fr)); gap: ${dim(2)}; }
 .ss-slot .choice-tile__text { flex: 1; }
 .ss-slot__formats { flex-shrink: 0; align-self: flex-start; display: flex; gap: ${dim(1)}; color: ${cv("icon.secondary")}; }
