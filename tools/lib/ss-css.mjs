@@ -492,6 +492,16 @@ ${FIELD_WRAPPER_CSS}
 .ss-facts dd.is-empty { color: ${cv("text.muted")}; font-weight: ${style("body-sm").fontWeight}; }
 .ss-rule { height: 1px; background: ${R(card.divider)}; }
 .ss-loc { display: flex; flex-direction: column; gap: ${dim(1)}; }
+/* advisor rows: name (+ Recommended) and, at the end, the ways that advisor meets */
+.ss-adv { display: flex; width: 100%; }
+.ss-adv .radio__text { flex: 1; min-width: 0; }
+.ss-adv__formats { align-self: center; }
+/* how you'll meet — segmented Tabs sm with icons, only when the advisor offers several ways */
+.ss-meet { display: flex; flex-direction: column; gap: ${D(radio.group.labelGap)}; }
+.ss-meet .tabs--segmented { align-self: flex-start; }
+.ss-meet .tab > svg { flex-shrink: 0; width: ${D(tabs.size.sm.iconSize)}; height: ${D(tabs.size.sm.iconSize)}; }
+.ss-loc__text .ss-fact { align-items: flex-start; }
+.ss-loc__text .ss-fact__text { white-space: normal; color: ${cv("text.default")}; }
 .ss-loc__text { margin: 0; color: ${cv("text.default")}; ${typoCss(style("body-sm"))} }
 /* ============ Counter (onNeutral sm — on the Upcoming tab) ============ */
 .counter { display: inline-flex; align-items: center; justify-content: center; height: ${D(counter.size.sm.height)}; min-width: ${D(counter.size.sm.minWidth)}; padding: 0 ${D(counter.size.sm.paddingX)}; border-radius: ${D(counter.radius)}; background: ${R(counter.onNeutral.state.inactive.bg)}; color: ${R(counter.onNeutral.state.inactive.label)}; ${typoCss(T(counter.size.sm.label))} }

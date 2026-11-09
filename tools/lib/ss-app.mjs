@@ -477,8 +477,15 @@ export function ssAppJs(d) {
           if (hash(hk) % 100 >= density) continue;
           var pool = ADVISORS.slice().sort(function (a, b) { return hash(hk + a) - hash(hk + b); });
           var n = 1 + hash(hk + "n") % 6;
-          var fm = FORMATS.filter(function (f, fi) { return fi === 0 || hash(hk + f.key) % 2; });
-          out.push({ id: hk, min: m, advisors: pool.slice(0, n), formats: fm.map(function (f) { return f.key; }) });
+          // each advisor meets their own ways (in person, phone, video — any
+          // mix, at least one); the time offers what its advisors offer
+          var advs = pool.slice(0, n), byAdv = {};
+          advs.forEach(function (a) {
+            var mine = FORMATS.filter(function (f) { return hash(hk + a + f.key) % 3 > 0; }).map(function (f) { return f.key; });
+            byAdv[a] = mine.length ? mine : [FORMATS[hash(hk + a) % 3].key];
+          });
+          var fm = FORMATS.filter(function (f) { return advs.some(function (a) { return byAdv[a].indexOf(f.key) !== -1; }); });
+          out.push({ id: hk, min: m, advisors: advs, byAdv: byAdv, formats: fm.map(function (f) { return f.key; }) });
         }
       }
       slotCache[k] = out;
@@ -614,7 +621,7 @@ export function ssAppJs(d) {
   $("ss-days").addEventListener("change", function (e) { pk.day = +e.target.value; pk.slot = null; renderPick(); });
   $("ss-slots").addEventListener("change", function (e) {
     pk.slot = pk.daySlots.filter(function (x) { return x.id === e.target.value; })[0];
-    pk.advisor = pk.slot.advisors[0];
+    pk.advisor = pk.slot.advisors[0]; pk.format = pk.slot.byAdv[pk.advisor][0];
     renderSummary();
     // Below 1024 the summary opens in a bottom drawer (it used to sit under
     // the times and the page scrolled down to it)
@@ -673,20 +680,47 @@ export function ssAppJs(d) {
     }
     if (pk.slot) {
       adv.innerHTML = pk.slot.advisors.map(function (a, i) {
-        return '<label class="radio"><input class="radio__input" type="radio" name="ss-advisor" value="' + esc(a) + '"' + (a === pk.advisor ? " checked" : "") + '><span class="radio__circle"></span><span class="radio__text">' + esc(a) + (i === 0 ? ' <span class="badge badge--primary">Recommended</span>' : "") + "</span></label>";
+        var fm = pk.slot.byAdv[a].map(function (k) { var f = fmtOf(k); return '<span class="tooltip-wrapper" aria-label="' + f.label + '">' + f.icon + '<span class="tooltip" role="tooltip">' + f.label + "</span></span>"; }).join("");
+        return '<label class="radio ss-adv"><input class="radio__input" type="radio" name="ss-advisor" value="' + esc(a) + '"' + (a === pk.advisor ? " checked" : "") + '><span class="radio__circle"></span><span class="radio__text">' + esc(a) + (i === 0 ? ' <span class="badge badge--primary">Recommended</span>' : "") + '</span><span class="ss-slot__formats ss-adv__formats">' + fm + "</span></label>";
       }).join("");
     }
+    // how you'll meet: a choice only when this advisor offers more than one way
+    var ways = pk.slot ? pk.slot.byAdv[pk.advisor] : [];
+    $("ss-meet").classList.toggle("is-hidden", ways.length < 2);
+    $("ss-meet-tabs").innerHTML = ways.map(function (k) { var f = fmtOf(k), on = k === pk.format; return '<button class="tab tab--sm' + (on ? " tab--active" : "") + '" type="button" role="radio" aria-checked="' + on + '" data-format="' + k + '">' + f.icon + "<span>" + f.label + "</span></button>"; }).join("");
     var dept = pk.dept;
     $("ss-sum-dept").textContent = dept || "Choose a department";
     $("ss-sum-dept").classList.toggle("is-empty", !dept);
     document.querySelectorAll("#ss-summary .ss-sum-loc").forEach(function (el) { el.classList.toggle("is-hidden", !dept); });
-    $("ss-sum-location").textContent = dept ? LOCATIONS[dept] : "";
-    $("ss-sum-formats").textContent = pk.slot
-      ? pk.slot.formats.map(function (k) { return FORMATS.filter(function (y) { return y.key === k; })[0].label; }).join(" · ")
-      : minimal ? "In person, phone or video" : "In person, phone or video — depends on the time";
+    // the meeting line follows the chosen advisor and way: their office in
+    // person, the student's number by phone, the emailed link for video
+    if (pk.slot && dept) {
+      var mt = meetingOf(pk.format, dept, pk.advisor);
+      $("ss-sum-location").innerHTML = '<span class="ss-fact">' + fmtOf(pk.format).icon + '<span class="ss-fact__text">' + esc(mt) + "</span></span>";
+      $("ss-sum-formats").textContent = "";
+      $("ss-sum-formats").classList.add("is-hidden");
+    } else {
+      $("ss-sum-location").textContent = dept ? LOCATIONS[dept] : "";
+      $("ss-sum-formats").classList.remove("is-hidden");
+      $("ss-sum-formats").textContent = minimal ? "In person, phone or video" : "In person, phone or video — depends on the time and the advisor";
+    }
     $("ss-confirm").disabled = !pk.slot;
   }
-  $("ss-advisors").addEventListener("change", function (e) { pk.advisor = e.target.value; });
+  function fmtOf(k) { return FORMATS.filter(function (y) { return y.key === k; })[0]; }
+  // an advisor's own office: the department's building + their room
+  function roomOf(advisor) { return "Room " + (100 + hash(advisor) % 60); }
+  function meetingOf(format, dept, advisor) {
+    if (format === "phone") return "Your advisor calls you at " + STUDENT_PHONE;
+    if (format === "video") return "Video — the link is in your email";
+    return LOCATIONS[dept] + ", " + roomOf(advisor);
+  }
+  $("ss-advisors").addEventListener("change", function (e) {
+    pk.advisor = e.target.value;
+    var ways = pk.slot.byAdv[pk.advisor];
+    if (ways.indexOf(pk.format) === -1) pk.format = ways[0];
+    renderSummary();
+  });
+  on("ss-meet-tabs", "click", function (e) { var b = e.target.closest("[data-format]"); if (!b) return; pk.format = b.dataset.format; renderSummary(); });
   $("ss-confirm").addEventListener("click", function () {
     if (!pk.slot) return;
     closeSumDrawer(true);
@@ -696,14 +730,14 @@ export function ssAppJs(d) {
     if (pk.reschedule) {
       // Reschedule moves the existing appointment — same reference, new slot.
       var a = apptById(pk.reschedule);
-      a.date = iso(dt); a.min = pk.slot.min; a.advisor = pk.advisor; a.format = pk.slot.formats[0]; a.dept = pk.dept;
+      a.date = iso(dt); a.min = pk.slot.min; a.advisor = pk.advisor; a.format = pk.format; a.dept = pk.dept; a.room = roomOf(pk.advisor);
       a.checkedIn = false;
       pk.reschedule = null; pk.slot = null; pk.advisor = null;
       showToast("Rescheduled to " + when);
       openAppt(a.id);
       return;
     }
-    APPTS.push({ id: "n" + Date.now(), ref: String(5200 + APPTS.length), service: SERVICES[pk.si].name, dept: pk.dept, date: iso(dt), min: pk.slot.min, advisor: pk.advisor, format: pk.slot.formats[0], status: "upcoming" });
+    APPTS.push({ id: "n" + Date.now(), ref: String(5200 + APPTS.length), service: SERVICES[pk.si].name, dept: pk.dept, date: iso(dt), min: pk.slot.min, advisor: pk.advisor, format: pk.format, room: roomOf(pk.advisor), status: "upcoming" });
     updateUpcomingCount();
     if (V6) {
       var na = APPTS[APPTS.length - 1];
@@ -755,7 +789,7 @@ export function ssAppJs(d) {
   function where(a) {
     if (a.format === "phone") return "Phone — your advisor calls you at " + STUDENT_PHONE;
     if (a.format === "video") return "Video — the link is in your email";
-    return "In person — " + LOCATIONS[a.dept];
+    return "In person — " + LOCATIONS[a.dept] + (a.room ? ", " + a.room : "");
   }
   function badge(role, text) { return '<span class="badge badge--base badge--regular badge--' + role + '">' + esc(text) + "</span>"; }
   function statusBadges(a) {

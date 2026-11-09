@@ -240,6 +240,10 @@ ${shellTopbar({ title: "Scheduling", actions: settingsBtn })}
               <legend class="radio-group__label">Advisor</legend>
               <div class="radio-group__items" id="ss-advisors"></div>
             </fieldset>
+            <div class="ss-meet ss-sum-booking is-hidden" id="ss-meet">
+              <span class="radio-group__label" id="ss-meet-label">How you’ll meet</span>
+              <div class="tabs--segmented" id="ss-meet-tabs" role="radiogroup" aria-labelledby="ss-meet-label"></div>
+            </div>
             <div class="ss-rule ss-sum-loc"></div>
             <div class="ss-loc ss-sum-loc">
               <span class="ss-eyebrow">Location</span>

@@ -785,6 +785,16 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .ss-facts dd.is-empty { color: var(--tok-text-muted); font-weight: 400; }
 .ss-rule { height: 1px; background: var(--tok-border-default); }
 .ss-loc { display: flex; flex-direction: column; gap: 4px; }
+/* advisor rows: name (+ Recommended) and, at the end, the ways that advisor meets */
+.ss-adv { display: flex; width: 100%; }
+.ss-adv .radio__text { flex: 1; min-width: 0; }
+.ss-adv__formats { align-self: center; }
+/* how you'll meet — segmented Tabs sm with icons, only when the advisor offers several ways */
+.ss-meet { display: flex; flex-direction: column; gap: 8px; }
+.ss-meet .tabs--segmented { align-self: flex-start; }
+.ss-meet .tab > svg { flex-shrink: 0; width: 16px; height: 16px; }
+.ss-loc__text .ss-fact { align-items: flex-start; }
+.ss-loc__text .ss-fact__text { white-space: normal; color: var(--tok-text-default); }
 .ss-loc__text { margin: 0; color: var(--tok-text-default); font-weight: 400; font-size: 12px; line-height: 1.4; }
 /* ============ Counter (onNeutral sm — on the Upcoming tab) ============ */
 .counter { display: inline-flex; align-items: center; justify-content: center; height: 16px; min-width: 16px; padding: 0 4px; border-radius: 999px; background: var(--tok-fill-neutral-active); color: var(--tok-text-secondary-strong); font-weight: 700; font-size: 10px; line-height: 1; }
@@ -1496,6 +1506,10 @@ html { background: var(--tok-surface-page); }
               <legend class="radio-group__label">Advisor</legend>
               <div class="radio-group__items" id="ss-advisors"></div>
             </fieldset>
+            <div class="ss-meet ss-sum-booking is-hidden" id="ss-meet">
+              <span class="radio-group__label" id="ss-meet-label">How you’ll meet</span>
+              <div class="tabs--segmented" id="ss-meet-tabs" role="radiogroup" aria-labelledby="ss-meet-label"></div>
+            </div>
             <div class="ss-rule ss-sum-loc"></div>
             <div class="ss-loc ss-sum-loc">
               <span class="ss-eyebrow">Location</span>
@@ -2305,8 +2319,15 @@ html { background: var(--tok-surface-page); }
           if (hash(hk) % 100 >= density) continue;
           var pool = ADVISORS.slice().sort(function (a, b) { return hash(hk + a) - hash(hk + b); });
           var n = 1 + hash(hk + "n") % 6;
-          var fm = FORMATS.filter(function (f, fi) { return fi === 0 || hash(hk + f.key) % 2; });
-          out.push({ id: hk, min: m, advisors: pool.slice(0, n), formats: fm.map(function (f) { return f.key; }) });
+          // each advisor meets their own ways (in person, phone, video — any
+          // mix, at least one); the time offers what its advisors offer
+          var advs = pool.slice(0, n), byAdv = {};
+          advs.forEach(function (a) {
+            var mine = FORMATS.filter(function (f) { return hash(hk + a + f.key) % 3 > 0; }).map(function (f) { return f.key; });
+            byAdv[a] = mine.length ? mine : [FORMATS[hash(hk + a) % 3].key];
+          });
+          var fm = FORMATS.filter(function (f) { return advs.some(function (a) { return byAdv[a].indexOf(f.key) !== -1; }); });
+          out.push({ id: hk, min: m, advisors: advs, byAdv: byAdv, formats: fm.map(function (f) { return f.key; }) });
         }
       }
       slotCache[k] = out;
@@ -2442,7 +2463,7 @@ html { background: var(--tok-surface-page); }
   $("ss-days").addEventListener("change", function (e) { pk.day = +e.target.value; pk.slot = null; renderPick(); });
   $("ss-slots").addEventListener("change", function (e) {
     pk.slot = pk.daySlots.filter(function (x) { return x.id === e.target.value; })[0];
-    pk.advisor = pk.slot.advisors[0];
+    pk.advisor = pk.slot.advisors[0]; pk.format = pk.slot.byAdv[pk.advisor][0];
     renderSummary();
     // Below 1024 the summary opens in a bottom drawer (it used to sit under
     // the times and the page scrolled down to it)
@@ -2501,20 +2522,47 @@ html { background: var(--tok-surface-page); }
     }
     if (pk.slot) {
       adv.innerHTML = pk.slot.advisors.map(function (a, i) {
-        return '<label class="radio"><input class="radio__input" type="radio" name="ss-advisor" value="' + esc(a) + '"' + (a === pk.advisor ? " checked" : "") + '><span class="radio__circle"></span><span class="radio__text">' + esc(a) + (i === 0 ? ' <span class="badge badge--primary">Recommended</span>' : "") + "</span></label>";
+        var fm = pk.slot.byAdv[a].map(function (k) { var f = fmtOf(k); return '<span class="tooltip-wrapper" aria-label="' + f.label + '">' + f.icon + '<span class="tooltip" role="tooltip">' + f.label + "</span></span>"; }).join("");
+        return '<label class="radio ss-adv"><input class="radio__input" type="radio" name="ss-advisor" value="' + esc(a) + '"' + (a === pk.advisor ? " checked" : "") + '><span class="radio__circle"></span><span class="radio__text">' + esc(a) + (i === 0 ? ' <span class="badge badge--primary">Recommended</span>' : "") + '</span><span class="ss-slot__formats ss-adv__formats">' + fm + "</span></label>";
       }).join("");
     }
+    // how you'll meet: a choice only when this advisor offers more than one way
+    var ways = pk.slot ? pk.slot.byAdv[pk.advisor] : [];
+    $("ss-meet").classList.toggle("is-hidden", ways.length < 2);
+    $("ss-meet-tabs").innerHTML = ways.map(function (k) { var f = fmtOf(k), on = k === pk.format; return '<button class="tab tab--sm' + (on ? " tab--active" : "") + '" type="button" role="radio" aria-checked="' + on + '" data-format="' + k + '">' + f.icon + "<span>" + f.label + "</span></button>"; }).join("");
     var dept = pk.dept;
     $("ss-sum-dept").textContent = dept || "Choose a department";
     $("ss-sum-dept").classList.toggle("is-empty", !dept);
     document.querySelectorAll("#ss-summary .ss-sum-loc").forEach(function (el) { el.classList.toggle("is-hidden", !dept); });
-    $("ss-sum-location").textContent = dept ? LOCATIONS[dept] : "";
-    $("ss-sum-formats").textContent = pk.slot
-      ? pk.slot.formats.map(function (k) { return FORMATS.filter(function (y) { return y.key === k; })[0].label; }).join(" · ")
-      : minimal ? "In person, phone or video" : "In person, phone or video — depends on the time";
+    // the meeting line follows the chosen advisor and way: their office in
+    // person, the student's number by phone, the emailed link for video
+    if (pk.slot && dept) {
+      var mt = meetingOf(pk.format, dept, pk.advisor);
+      $("ss-sum-location").innerHTML = '<span class="ss-fact">' + fmtOf(pk.format).icon + '<span class="ss-fact__text">' + esc(mt) + "</span></span>";
+      $("ss-sum-formats").textContent = "";
+      $("ss-sum-formats").classList.add("is-hidden");
+    } else {
+      $("ss-sum-location").textContent = dept ? LOCATIONS[dept] : "";
+      $("ss-sum-formats").classList.remove("is-hidden");
+      $("ss-sum-formats").textContent = minimal ? "In person, phone or video" : "In person, phone or video — depends on the time and the advisor";
+    }
     $("ss-confirm").disabled = !pk.slot;
   }
-  $("ss-advisors").addEventListener("change", function (e) { pk.advisor = e.target.value; });
+  function fmtOf(k) { return FORMATS.filter(function (y) { return y.key === k; })[0]; }
+  // an advisor's own office: the department's building + their room
+  function roomOf(advisor) { return "Room " + (100 + hash(advisor) % 60); }
+  function meetingOf(format, dept, advisor) {
+    if (format === "phone") return "Your advisor calls you at " + STUDENT_PHONE;
+    if (format === "video") return "Video — the link is in your email";
+    return LOCATIONS[dept] + ", " + roomOf(advisor);
+  }
+  $("ss-advisors").addEventListener("change", function (e) {
+    pk.advisor = e.target.value;
+    var ways = pk.slot.byAdv[pk.advisor];
+    if (ways.indexOf(pk.format) === -1) pk.format = ways[0];
+    renderSummary();
+  });
+  on("ss-meet-tabs", "click", function (e) { var b = e.target.closest("[data-format]"); if (!b) return; pk.format = b.dataset.format; renderSummary(); });
   $("ss-confirm").addEventListener("click", function () {
     if (!pk.slot) return;
     closeSumDrawer(true);
@@ -2524,14 +2572,14 @@ html { background: var(--tok-surface-page); }
     if (pk.reschedule) {
       // Reschedule moves the existing appointment — same reference, new slot.
       var a = apptById(pk.reschedule);
-      a.date = iso(dt); a.min = pk.slot.min; a.advisor = pk.advisor; a.format = pk.slot.formats[0]; a.dept = pk.dept;
+      a.date = iso(dt); a.min = pk.slot.min; a.advisor = pk.advisor; a.format = pk.format; a.dept = pk.dept; a.room = roomOf(pk.advisor);
       a.checkedIn = false;
       pk.reschedule = null; pk.slot = null; pk.advisor = null;
       showToast("Rescheduled to " + when);
       openAppt(a.id);
       return;
     }
-    APPTS.push({ id: "n" + Date.now(), ref: String(5200 + APPTS.length), service: SERVICES[pk.si].name, dept: pk.dept, date: iso(dt), min: pk.slot.min, advisor: pk.advisor, format: pk.slot.formats[0], status: "upcoming" });
+    APPTS.push({ id: "n" + Date.now(), ref: String(5200 + APPTS.length), service: SERVICES[pk.si].name, dept: pk.dept, date: iso(dt), min: pk.slot.min, advisor: pk.advisor, format: pk.format, room: roomOf(pk.advisor), status: "upcoming" });
     updateUpcomingCount();
     if (V6) {
       var na = APPTS[APPTS.length - 1];
@@ -2583,7 +2631,7 @@ html { background: var(--tok-surface-page); }
   function where(a) {
     if (a.format === "phone") return "Phone — your advisor calls you at " + STUDENT_PHONE;
     if (a.format === "video") return "Video — the link is in your email";
-    return "In person — " + LOCATIONS[a.dept];
+    return "In person — " + LOCATIONS[a.dept] + (a.room ? ", " + a.room : "");
   }
   function badge(role, text) { return '<span class="badge badge--base badge--regular badge--' + role + '">' + esc(text) + "</span>"; }
   function statusBadges(a) {
