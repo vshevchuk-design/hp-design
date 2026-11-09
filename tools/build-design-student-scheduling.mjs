@@ -240,22 +240,24 @@ ${shellTopbar({ title: "Scheduling", actions: settingsBtn })}
               <legend class="radio-group__label">Advisor</legend>
               <div class="radio-group__items" id="ss-advisors"></div>
             </fieldset>
-            <div class="ss-meet ss-sum-booking is-hidden" id="ss-meet">
-              <span class="radio-group__label" id="ss-meet-label">How you’ll meet</span>
-              <div class="tabs--segmented" id="ss-meet-tabs" role="radiogroup" aria-labelledby="ss-meet-label"></div>
-            </div>
+            <!-- one section: the way (a switch only when the advisor offers
+                 several) and where / how, on a sunken Box — was a separate
+                 "LOCATION" eyebrow block (user, 2026-11-09) -->
             <div class="ss-rule ss-sum-loc"></div>
-            <div class="ss-loc ss-sum-loc">
-              <span class="ss-eyebrow">Location</span>
-              <p class="ss-loc__text" id="ss-sum-location"></p>
-              <p class="ss-note" id="ss-sum-formats"></p>
+            <div class="ss-meet ss-sum-loc" id="ss-meet">
+              <span class="radio-group__label" id="ss-meet-label">How you’ll meet</span>
+              <div class="tabs--segmented is-hidden" id="ss-meet-tabs" role="radiogroup" aria-labelledby="ss-meet-label"></div>
+              <div class="ss-meet__box">
+                <p class="ss-loc__text" id="ss-sum-location"></p>
+                <p class="ss-note" id="ss-sum-formats"></p>
+              </div>
             </div>
             <!-- what the student wants out of it — required, as in the live app
-                 ("What would you like to accomplish?"); DS marks optional
-                 fields, not required ones, so no asterisk -->
+                 ("What would you like to accomplish?"), with the Field's
+                 required mark (user, 2026-11-09) -->
             <div class="ss-rule ss-sum-booking ss-goal-row"></div>
             <div class="field ss-sum-booking ss-goal-row" id="ss-goal-field">
-              <label class="field__label" for="ss-goal">What would you like to accomplish?</label>
+              <label class="field__label" for="ss-goal">What would you like to accomplish? <span class="field__required" aria-hidden="true">*</span></label>
               <div class="text-field text-field--area"><div class="text-field__stack"><textarea class="text-field__control" id="ss-goal" name="ss-goal" rows="3" required placeholder="For example: plan my classes for next semester" aria-describedby="ss-goal-error"></textarea></div></div>
               <p class="field__error" id="ss-goal-error" hidden>${icon("error", "field__error-icon")}<span>Tell your advisor what you’d like to accomplish.</span></p>
             </div>

@@ -651,6 +651,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 .field__label { margin-bottom: 4px; color: var(--tok-text-default); font-weight: 600; font-size: 12px; line-height: 1.4; }
 .field__optional { color: var(--tok-text-muted); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.field__required { color: var(--tok-text-danger); }
 .field__description { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
 .field__error { margin: 0; display: flex; align-items: flex-start; gap: 4px; color: var(--tok-text-danger); font-weight: 400; font-size: 12px; line-height: 1.4; }
 .field__error[hidden] { display: none; }
@@ -794,6 +795,8 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 /* how you'll meet — segmented Tabs sm with icons, only when the advisor offers several ways */
 .ss-meet { display: flex; flex-direction: column; gap: 8px; }
 .ss-meet .tabs--segmented { align-self: flex-start; }
+/* where / how — a Box on surface.sunken (padding sm), radius as the card's */
+.ss-meet__box { display: flex; flex-direction: column; gap: 4px; padding: 12px; border-radius: 8px; background: var(--tok-surface-sunken); }
 .ss-meet .tab > svg { flex-shrink: 0; width: 16px; height: 16px; }
 .ss-loc__text .ss-fact { align-items: flex-start; }
 .ss-loc__text .ss-fact__text { white-space: normal; color: var(--tok-text-default); }
@@ -1508,22 +1511,24 @@ html { background: var(--tok-surface-page); }
               <legend class="radio-group__label">Advisor</legend>
               <div class="radio-group__items" id="ss-advisors"></div>
             </fieldset>
-            <div class="ss-meet ss-sum-booking is-hidden" id="ss-meet">
-              <span class="radio-group__label" id="ss-meet-label">How you’ll meet</span>
-              <div class="tabs--segmented" id="ss-meet-tabs" role="radiogroup" aria-labelledby="ss-meet-label"></div>
-            </div>
+            <!-- one section: the way (a switch only when the advisor offers
+                 several) and where / how, on a sunken Box — was a separate
+                 "LOCATION" eyebrow block (user, 2026-11-09) -->
             <div class="ss-rule ss-sum-loc"></div>
-            <div class="ss-loc ss-sum-loc">
-              <span class="ss-eyebrow">Location</span>
-              <p class="ss-loc__text" id="ss-sum-location"></p>
-              <p class="ss-note" id="ss-sum-formats"></p>
+            <div class="ss-meet ss-sum-loc" id="ss-meet">
+              <span class="radio-group__label" id="ss-meet-label">How you’ll meet</span>
+              <div class="tabs--segmented is-hidden" id="ss-meet-tabs" role="radiogroup" aria-labelledby="ss-meet-label"></div>
+              <div class="ss-meet__box">
+                <p class="ss-loc__text" id="ss-sum-location"></p>
+                <p class="ss-note" id="ss-sum-formats"></p>
+              </div>
             </div>
             <!-- what the student wants out of it — required, as in the live app
-                 ("What would you like to accomplish?"); DS marks optional
-                 fields, not required ones, so no asterisk -->
+                 ("What would you like to accomplish?"), with the Field's
+                 required mark (user, 2026-11-09) -->
             <div class="ss-rule ss-sum-booking ss-goal-row"></div>
             <div class="field ss-sum-booking ss-goal-row" id="ss-goal-field">
-              <label class="field__label" for="ss-goal">What would you like to accomplish?</label>
+              <label class="field__label" for="ss-goal">What would you like to accomplish? <span class="field__required" aria-hidden="true">*</span></label>
               <div class="text-field text-field--area"><div class="text-field__stack"><textarea class="text-field__control" id="ss-goal" name="ss-goal" rows="3" required placeholder="For example: plan my classes for next semester" aria-describedby="ss-goal-error"></textarea></div></div>
               <p class="field__error" id="ss-goal-error" hidden><svg class="field__error-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg><span>Tell your advisor what you’d like to accomplish.</span></p>
             </div>
@@ -2542,7 +2547,7 @@ html { background: var(--tok-surface-page); }
     }
     // how you'll meet: a choice only when this advisor offers more than one way
     var ways = pk.slot ? pk.slot.byAdv[pk.advisor] : [];
-    $("ss-meet").classList.toggle("is-hidden", ways.length < 2);
+    $("ss-meet-tabs").classList.toggle("is-hidden", ways.length < 2);
     $("ss-meet-tabs").innerHTML = ways.map(function (k) { var f = fmtOf(k), on = k === pk.format; return '<button class="tab tab--sm' + (on ? " tab--active" : "") + '" type="button" role="radio" aria-checked="' + on + '" data-format="' + k + '">' + f.icon + "<span>" + f.label + "</span></button>"; }).join("");
     var dept = pk.dept;
     $("ss-sum-dept").textContent = dept || "Choose a department";

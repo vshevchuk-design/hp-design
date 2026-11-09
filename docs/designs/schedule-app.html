@@ -624,6 +624,7 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 .field__label { margin-bottom: 4px; color: var(--tok-text-default); font-weight: 600; font-size: 12px; line-height: 1.4; }
 .field__optional { color: var(--tok-text-muted); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.field__required { color: var(--tok-text-danger); }
 .field__description { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
 .field__error { margin: 0; display: flex; align-items: flex-start; gap: 4px; color: var(--tok-text-danger); font-weight: 400; font-size: 12px; line-height: 1.4; }
 .field__error[hidden] { display: none; }
@@ -767,6 +768,8 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 /* how you'll meet — segmented Tabs sm with icons, only when the advisor offers several ways */
 .ss-meet { display: flex; flex-direction: column; gap: 8px; }
 .ss-meet .tabs--segmented { align-self: flex-start; }
+/* where / how — a Box on surface.sunken (padding sm), radius as the card's */
+.ss-meet__box { display: flex; flex-direction: column; gap: 4px; padding: 12px; border-radius: 8px; background: var(--tok-surface-sunken); }
 .ss-meet .tab > svg { flex-shrink: 0; width: 16px; height: 16px; }
 .ss-loc__text .ss-fact { align-items: flex-start; }
 .ss-loc__text .ss-fact__text { white-space: normal; color: var(--tok-text-default); }

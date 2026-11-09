@@ -501,6 +501,8 @@ ${FIELD_WRAPPER_CSS}
 /* how you'll meet — segmented Tabs sm with icons, only when the advisor offers several ways */
 .ss-meet { display: flex; flex-direction: column; gap: ${D(radio.group.labelGap)}; }
 .ss-meet .tabs--segmented { align-self: flex-start; }
+/* where / how — a Box on surface.sunken (padding sm), radius as the card's */
+.ss-meet__box { display: flex; flex-direction: column; gap: ${dim(1)}; padding: ${D(box.padding.sm)}; border-radius: ${D(card.radius)}; background: ${R(box.surface.sunken)}; }
 .ss-meet .tab > svg { flex-shrink: 0; width: ${D(tabs.size.sm.iconSize)}; height: ${D(tabs.size.sm.iconSize)}; }
 .ss-loc__text .ss-fact { align-items: flex-start; }
 .ss-loc__text .ss-fact__text { white-space: normal; color: ${cv("text.default")}; }

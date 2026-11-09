@@ -689,7 +689,7 @@ export function ssAppJs(d) {
     }
     // how you'll meet: a choice only when this advisor offers more than one way
     var ways = pk.slot ? pk.slot.byAdv[pk.advisor] : [];
-    $("ss-meet").classList.toggle("is-hidden", ways.length < 2);
+    $("ss-meet-tabs").classList.toggle("is-hidden", ways.length < 2);
     $("ss-meet-tabs").innerHTML = ways.map(function (k) { var f = fmtOf(k), on = k === pk.format; return '<button class="tab tab--sm' + (on ? " tab--active" : "") + '" type="button" role="radio" aria-checked="' + on + '" data-format="' + k + '">' + f.icon + "<span>" + f.label + "</span></button>"; }).join("");
     var dept = pk.dept;
     $("ss-sum-dept").textContent = dept || "Choose a department";

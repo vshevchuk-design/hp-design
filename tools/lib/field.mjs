@@ -150,6 +150,7 @@ export const FIELD_WRAPPER_CSS = `
 .field { display: flex; flex-direction: column; gap: ${D(field.messageGap)}; min-width: 0; }
 .field__label { margin-bottom: ${labelExtra}px; color: ${R(field.labelColor)}; ${T(field.label)} }
 .field__optional { color: ${R(field.optionalColor)}; ${T(field.optional)} }
+.field__required { color: ${R(field.requiredColor)}; }
 .field__description { margin: 0; color: ${R(field.descriptionColor)}; ${T(field.description)} }
 .field__error { margin: 0; display: flex; align-items: flex-start; gap: ${D(field.error.iconGap)}; color: ${R(field.error.color)}; ${T(field.error.text)} }
 .field__error[hidden] { display: none; }
@@ -260,10 +261,10 @@ export const TEXT_FIELD_JS = `(function () {
 
 /** A Field around `control`. `label` renders above it (only for controls without a floating label).
  *  `errors` are the messages FORM_JS shows: { required, format }. `error` renders the field already invalid. */
-export function fieldHtml({ id, control, label = "", optional = false, description = "", required = false, errors = {}, error = "" }) {
+export function fieldHtml({ id, control, label = "", optional = false, description = "", required = false, requiredMark = false, errors = {}, error = "" }) {
   const data = `${required ? " data-required" : ""}${errors.required ? ` data-error-required="${errors.required}"` : ""}${errors.format ? ` data-error-format="${errors.format}"` : ""}`;
   return `<div class="field" data-field${data}${error ? " data-invalid" : ""}>
-  ${label ? `<label class="field__label" id="${id}-label" for="${id}">${label}${optional ? ` <span class="field__optional">(optional)</span>` : ""}</label>\n  ` : ""}${control}
+  ${label ? `<label class="field__label" id="${id}-label" for="${id}">${label}${optional ? ` <span class="field__optional">(optional)</span>` : ""}${requiredMark ? ` <span class="field__required" aria-hidden="true">*</span>` : ""}</label>\n  ` : ""}${control}
   ${description ? `<p class="field__description" id="${id}-desc">${description}</p>\n  ` : ""}<p class="field__error" id="${id}-error"${error ? "" : " hidden"}>${errorIcon()}<span>${error}</span></p>
 </div>`;
 }
