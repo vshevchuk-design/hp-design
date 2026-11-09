@@ -708,7 +708,20 @@ export function ssAppJs(d) {
       $("ss-sum-formats").textContent = minimal ? "In person, phone or video" : "In person, phone or video — depends on the time and the advisor";
     }
     $("ss-confirm").disabled = !pk.slot;
+    fitSummary();
   }
+  // desktop: the sticky card is never taller than what's left of the window
+  // below where it sits right now (its CSS cap assumes it's already stuck)
+  var sumWide = window.matchMedia("(min-width: 1024px)");
+  function fitSummary() {
+    var c = $("ss-summary");
+    if (!c) return;
+    if (!sumWide.matches || !c.offsetParent) { c.style.maxHeight = ""; return; }
+    var top = Math.max(c.getBoundingClientRect().top, parseFloat(getComputedStyle(c).top) || 0);
+    c.style.maxHeight = Math.max(240, window.innerHeight - top - 24) + "px";
+  }
+  window.addEventListener("scroll", fitSummary, { passive: true });
+  window.addEventListener("resize", fitSummary);
   function fmtOf(k) { return FORMATS.filter(function (y) { return y.key === k; })[0]; }
   // an advisor's own office: the department's building + their room
   function roomOf(advisor) { return "Room " + (100 + hash(advisor) % 60); }

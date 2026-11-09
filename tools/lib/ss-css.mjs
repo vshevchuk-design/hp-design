@@ -466,6 +466,10 @@ ${FIELD_WRAPPER_CSS}
   /* sticky, and never taller than the window: with the goal field the card
      outgrew a laptop screen and Confirm sat below the fold — it scrolls inside */
   .ss-summary { position: sticky; top: calc(${dim(16)} + ${D(tabs.size.base.height)} + ${dim(6)}); max-height: calc(100dvh - ${dim(16)} - ${D(tabs.size.base.height)} - ${dim(12)}); overflow-y: auto; }
+  /* Confirm stays at the card's visible bottom while its content scrolls; the
+     script also fits the card to the window from where it actually sits, so
+     Confirm is on screen before any scrolling (user, 2026-11-09) */
+  #ss-summary > .card__footer { position: sticky; bottom: calc(-1 * ${D(card.padding)}); margin-bottom: calc(-1 * ${D(card.padding)}); padding-bottom: ${D(card.padding)}; background: ${R(card.bg)}; }
 }
 #ss-tod { align-self: flex-start; }
 .ss-choose { display: flex; flex-direction: column; gap: ${dim(4)}; min-width: 0; }

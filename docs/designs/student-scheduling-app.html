@@ -759,6 +759,10 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   /* sticky, and never taller than the window: with the goal field the card
      outgrew a laptop screen and Confirm sat below the fold — it scrolls inside */
   .ss-summary { position: sticky; top: calc(64px + 40px + 24px); max-height: calc(100dvh - 64px - 40px - 48px); overflow-y: auto; }
+  /* Confirm stays at the card's visible bottom while its content scrolls; the
+     script also fits the card to the window from where it actually sits, so
+     Confirm is on screen before any scrolling (user, 2026-11-09) */
+  #ss-summary > .card__footer { position: sticky; bottom: calc(-1 * 16px); margin-bottom: calc(-1 * 16px); padding-bottom: 16px; background: var(--tok-surface-default); }
 }
 #ss-tod { align-self: flex-start; }
 .ss-choose { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
@@ -2128,7 +2132,20 @@ dialog.slide-over-panel--bottom[open] { transform: translateY(0); animation: sli
       $("ss-sum-formats").textContent = minimal ? "In person, phone or video" : "In person, phone or video — depends on the time and the advisor";
     }
     $("ss-confirm").disabled = !pk.slot;
+    fitSummary();
   }
+  // desktop: the sticky card is never taller than what's left of the window
+  // below where it sits right now (its CSS cap assumes it's already stuck)
+  var sumWide = window.matchMedia("(min-width: 1024px)");
+  function fitSummary() {
+    var c = $("ss-summary");
+    if (!c) return;
+    if (!sumWide.matches || !c.offsetParent) { c.style.maxHeight = ""; return; }
+    var top = Math.max(c.getBoundingClientRect().top, parseFloat(getComputedStyle(c).top) || 0);
+    c.style.maxHeight = Math.max(240, window.innerHeight - top - 24) + "px";
+  }
+  window.addEventListener("scroll", fitSummary, { passive: true });
+  window.addEventListener("resize", fitSummary);
   function fmtOf(k) { return FORMATS.filter(function (y) { return y.key === k; })[0]; }
   // an advisor's own office: the department's building + their room
   function roomOf(advisor) { return "Room " + (100 + hash(advisor) % 60); }

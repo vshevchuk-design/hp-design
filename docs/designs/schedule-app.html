@@ -733,6 +733,10 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
   /* sticky, and never taller than the window: with the goal field the card
      outgrew a laptop screen and Confirm sat below the fold — it scrolls inside */
   .ss-summary { position: sticky; top: calc(64px + 40px + 24px); max-height: calc(100dvh - 64px - 40px - 48px); overflow-y: auto; }
+  /* Confirm stays at the card's visible bottom while its content scrolls; the
+     script also fits the card to the window from where it actually sits, so
+     Confirm is on screen before any scrolling (user, 2026-11-09) */
+  #ss-summary > .card__footer { position: sticky; bottom: calc(-1 * 16px); margin-bottom: calc(-1 * 16px); padding-bottom: 16px; background: var(--tok-surface-default); }
 }
 #ss-tod { align-self: flex-start; }
 .ss-choose { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
