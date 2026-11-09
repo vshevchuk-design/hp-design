@@ -190,7 +190,7 @@ ${shellTopbar({ title: "Scheduling", actions: settingsBtn })}
             <button class="select select--sm ss-pick-dept" id="ss-pick-dept" type="button" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="ss-dept-step-title ss-pick-dept-value"><span class="select__value" id="ss-pick-dept-value"></span>${icon("expand_more", "select__chevron")}</button>
             <p class="ss-step__value" id="ss-pick-dept-text"></p>
           </div>
-          <div class="empty-state is-hidden" id="ss-need-dept"><span class="empty-state__text">Choose a department to see open times</span></div>
+          <div class="card is-hidden" id="ss-need-dept"><div class="card__body"><div class="empty-state"><span class="empty-state__text">Choose a department to see open times</span></div></div></div>
           <div class="ss-week" id="ss-week">
             <h3 class="ss-week__label" id="ss-week-label"></h3>
             <div class="ss-week__nav">
