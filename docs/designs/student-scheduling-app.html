@@ -2019,11 +2019,26 @@ dialog.slide-over-panel--bottom[open] { transform: translateY(0); animation: sli
     $("ss-sum-drawer-foot").appendChild($("ss-confirm"));
     sumDrawer.showModal();
   }
-  // back into the card — the desktop column, and the next time it opens
-  sumDrawer.addEventListener("close", function () { sumCard.insertBefore(sumBody, sumFoot); sumFoot.appendChild($("ss-confirm")); });
-  on("ss-sum-drawer-close", "click", function () { sumDrawer.close(); });
-  sumDrawer.addEventListener("click", function (e) { if (e.target === sumDrawer) sumDrawer.close(); });
-  pickNarrow.addEventListener("change", function () { if (!pickNarrow.matches && sumDrawer.open) sumDrawer.close(); });
+  // Closing puts the summary back into the card (the desktop column, and the
+  // next time it opens). Closed without confirming = that time isn't chosen
+  // (user, 2026-11-09) — which also lets the same time be tapped again to
+  // reopen. Called directly (the dialog's close event can arrive late);
+  // the close event stays as a fallback and the function is idempotent.
+  function sumDrawerClosed(confirmed) {
+    if (sumDrawer.open) return;
+    if (sumBody.parentNode !== sumCard) { sumCard.insertBefore(sumBody, sumFoot); sumFoot.appendChild($("ss-confirm")); }
+    if (!confirmed && pickNarrow.matches && pk.slot) {
+      pk.slot = null; pk.advisor = null;
+      document.querySelectorAll("#ss-slots input").forEach(function (x) { x.checked = false; });
+      renderSummary();
+    }
+  }
+  function closeSumDrawer(confirmed) { if (sumDrawer.open) sumDrawer.close(); sumDrawerClosed(confirmed); }
+  sumDrawer.addEventListener("close", function () { sumDrawerClosed(false); });
+  sumDrawer.addEventListener("cancel", function (e) { e.preventDefault(); closeSumDrawer(false); });
+  on("ss-sum-drawer-close", "click", function () { closeSumDrawer(false); });
+  sumDrawer.addEventListener("click", function (e) { if (e.target === sumDrawer) closeSumDrawer(false); });
+  pickNarrow.addEventListener("change", function () { if (!pickNarrow.matches && sumDrawer.open) closeSumDrawer(true); });
 
   // minimal: nothing bookable yet (no open times, or no department chosen) —
   // the card keeps what's known (service, department, duration, location)
@@ -2064,7 +2079,7 @@ dialog.slide-over-panel--bottom[open] { transform: translateY(0); animation: sli
   $("ss-advisors").addEventListener("change", function (e) { pk.advisor = e.target.value; });
   $("ss-confirm").addEventListener("click", function () {
     if (!pk.slot) return;
-    if (sumDrawer.open) sumDrawer.close();
+    closeSumDrawer(true);
     var dt = weekDays(pk.week)[pk.day];
     booked[pk.slot.id] = true;
     var when = DOW[dt.getDay()] + ", " + MON[dt.getMonth()] + " " + dt.getDate() + " at " + fmtTime(pk.slot.min);
