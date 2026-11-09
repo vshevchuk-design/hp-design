@@ -366,15 +366,32 @@ ${shellTopbar({ title: "Scheduling", actions: settingsBtn })}
     </div>
   </form>
 </dialog>
-<!-- Cancel confirmation — AlertDialog: no backdrop or Escape dismiss -->
-<dialog class="alert-dialog" id="ss-cancel-modal" role="alertdialog" aria-labelledby="ss-cancel-title" aria-describedby="ss-cancel-text">
-  <div class="alert-dialog__content">
-    <div class="alert-dialog__text"><h2 class="alert-dialog__title" id="ss-cancel-title">Cancel this appointment?</h2><p class="alert-dialog__description" id="ss-cancel-text"></p></div>
-    <div class="alert-dialog__actions">
+<!-- Cancel — a Dialog, not an AlertDialog: it asks why (user, 2026-11-09),
+     and the DS keeps fields out of AlertDialogs. Reason required; a note when
+     it's "Something else". The reason shows on the cancelled appointment. -->
+<dialog class="dialog" id="ss-cancel-modal" aria-labelledby="ss-cancel-title" aria-describedby="ss-cancel-text">
+  <form method="dialog" id="ss-cancel-form" class="dialog__content" novalidate>
+    <div class="dialog__header">
+      <div class="dialog__heading"><h2 class="dialog__title" id="ss-cancel-title">Cancel this appointment?</h2><p class="dialog__description" id="ss-cancel-text"></p></div>
+      <button class="dialog__close" type="button" id="ss-cancel-x" aria-label="Close">${icon("close", "dialog__close-icon")}</button>
+    </div>
+    <div class="dialog__body"><div class="ss-detail">
+      <div class="field" id="ss-cancel-reason-field">
+        <span class="field__label" id="ss-cancel-reason-label">Why are you cancelling? <span class="field__required" aria-hidden="true">*</span></span>
+        <button type="button" class="select is-placeholder ss-field__select" id="ss-cancel-reason" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="ss-cancel-reason-label ss-cancel-reason-value" aria-describedby="ss-cancel-reason-error"><span class="select__value" id="ss-cancel-reason-value">Choose a reason</span>${icon("expand_more", "select__chevron")}</button>
+        <p class="field__error" id="ss-cancel-reason-error" hidden>${icon("error", "field__error-icon")}<span>Choose a reason.</span></p>
+      </div>
+      <div class="field">
+        <label class="field__label" for="ss-cancel-note" id="ss-cancel-note-label">Anything to add? <span class="field__optional" id="ss-cancel-note-opt">(optional)</span><span class="field__required is-hidden" id="ss-cancel-note-req" aria-hidden="true"> *</span></label>
+        <div class="text-field text-field--area"><div class="text-field__stack"><textarea class="text-field__control" id="ss-cancel-note" rows="3" placeholder="It helps the department plan" aria-describedby="ss-cancel-note-error"></textarea></div></div>
+        <p class="field__error" id="ss-cancel-note-error" hidden>${icon("error", "field__error-icon")}<span>Tell us a little more.</span></p>
+      </div>
+    </div></div>
+    <div class="dialog__footer">
       <button class="btn btn--secondary btn--base" type="button" id="ss-cancel-keep" autofocus>Keep it</button>
       <button class="btn btn--danger btn--base" type="button" id="ss-cancel-confirm">Cancel appointment</button>
     </div>
-  </div>
+  </form>
 </dialog>`;
 
 const ICONS = {

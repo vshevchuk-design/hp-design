@@ -723,7 +723,7 @@ ${COLLAPSIBLE_CSS}
 .accordion__meta { flex-shrink: 0; color: ${R(acc.metaColor)}; ${typoCss(T(acc.meta))} }
 .accordion__chevron { flex-shrink: 0; width: ${D(acc.chevron.size)}; height: ${D(acc.chevron.size)}; color: ${R(acc.chevron.color)}; transition: transform 0.12s ease; }
 .accordion__item[open] > .accordion__summary .accordion__chevron { transform: rotate(180deg); }
-.accordion__body { display: flex; flex-direction: column; gap: ${D(acc.body.gap)}; padding: 0 ${D(acc.item.paddingX)} ${D(acc.body.paddingBottom)}; }
+.accordion__body { display: flex; flex-direction: column; gap: ${D(acc.body.gap)}; padding: ${D(acc.body.paddingTop)} ${D(acc.item.paddingX)} ${D(acc.body.paddingBottom)}; }
 /* a row with nothing to open keeps the chevron's column, so badges line up */
 .ss-acc-spacer { flex-shrink: 0; width: ${D(acc.chevron.size)}; }
 

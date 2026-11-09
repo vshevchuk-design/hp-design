@@ -303,7 +303,7 @@ ${STATUS_ICON_CSS}
 .accordion__meta { flex-shrink: 0; color: ${cv(refPath(acc.metaColor.$value))}; ${typoCss(h.resolveToken(acc.meta))} }
 .accordion__chevron { flex-shrink: 0; width: ${px(resolve(acc.chevron.size.$value))}; height: ${px(resolve(acc.chevron.size.$value))}; color: ${cv(refPath(acc.chevron.color.$value))}; transition: transform 0.12s ease; }
 .accordion__item[open] > .accordion__summary .accordion__chevron { transform: rotate(180deg); }
-.accordion__body { display: flex; flex-direction: column; gap: ${px(resolve(acc.body.gap.$value))}; padding: 0 ${px(resolve(acc.item.paddingX.$value))} ${px(resolve(acc.body.paddingBottom.$value))}; }
+.accordion__body { display: flex; flex-direction: column; gap: ${px(resolve(acc.body.gap.$value))}; padding: ${px(resolve(acc.body.paddingTop.$value))} ${px(resolve(acc.item.paddingX.$value))} ${px(resolve(acc.body.paddingBottom.$value))}; }
 
 /* ============ Badge ============ */
 .badge { display: inline-flex; align-items: center; flex-shrink: 0; height: ${badgeSm.height}; padding: 0 ${badgeSm.paddingX}; border-radius: ${badgeSm.radius}; ${typoCss(badgeSm.label)} }

@@ -866,7 +866,8 @@ export function ssAppJs(d) {
       actions = '<div class="ss-appt__btns">' + btns + "</div>" + (!a.checkedIn && !checkinOpen(a) ? checkinNote(a) : "");
     } else {
       actions = '<div class="ss-appt__btns"><button type="button" class="btn btn--secondary btn--sm" data-appt="' + a.id + '">Details</button></div>' +
-        (a.status === "completed" && a.summary ? '<span class="ss-note">Summary from ' + esc(a.advisor.split(" ")[0]) + "</span>" : "");
+        (a.status === "completed" && a.summary ? '<span class="ss-note">Summary from ' + esc(a.advisor.split(" ")[0]) + "</span>" : "") +
+        (a.status === "cancelled" && a.cancelReason ? '<span class="ss-note">' + esc(a.cancelReason === "Something else" && a.cancelNote ? a.cancelNote : a.cancelReason) + "</span>" : "");
     }
     return '<article class="ss-appt">' +
       '<div class="ss-appt__time"><span class="ss-appt__clock">' + fmtTime(a.min) + '</span><span class="ss-appt__dur">' + minutesOf(a) + " min</span></div>" +
@@ -990,7 +991,10 @@ export function ssAppJs(d) {
       $("ss-d-q-title").textContent = a.advisor + " asked " + a.questions.length + " questions.";
       $("ss-d-q-text").textContent = "Answer them before the meeting so you can spend the time on what matters.";
     }
-    $("ss-d-facts").innerHTML = factsHtml(apptLines(a, false), a.goal ? [["What you\u2019d like to accomplish", esc(a.goal)]] : [],
+    var secs = [];
+    if (a.status === "cancelled" && a.cancelReason) secs.push(["Why it was cancelled", a.cancelReason === "Something else" && a.cancelNote ? esc(a.cancelNote) : esc(a.cancelReason) + (a.cancelNote ? " \u2014 " + esc(a.cancelNote) : "")]);
+    if (a.goal) secs.push(["What you\u2019d like to accomplish", esc(a.goal)]);
+    $("ss-d-facts").innerHTML = factsHtml(apptLines(a, false), secs,
       a.questions && a.answered ? "Questions answered — " + esc(a.advisor.split(" ")[0]) + " has them." : "");
     $("ss-d-ref").innerHTML = "Reference #" + esc(a.ref) + ' <button type="button" class="btn btn--ghost btn--sm btn--icon-only" id="ss-d-copy" aria-label="Copy reference number">' + ICONS.copy + "</button>";
     var act = "";
@@ -1028,17 +1032,38 @@ export function ssAppJs(d) {
     else if (e.target.closest("#ss-d-again")) openPick(svcIndex(a.service), { dept: a.dept });
     else if (e.target.closest("#ss-d-cancel")) {
       $("ss-cancel-text").textContent = a.service + " with " + a.advisor + ", " + whenShort(a) + ". The time goes back to other students.";
+      cancelReason = ""; $("ss-cancel-note").value = ""; renderCancelForm(false);
       $("ss-cancel-modal").showModal();
     }
   });
 
-  // ---- cancel: AlertDialog — no backdrop dismiss, Escape blocked ----
-  var cancelDlg = $("ss-cancel-modal");
-  cancelDlg.addEventListener("cancel", function (e) { e.preventDefault(); });
+  // ---- cancel: a Dialog with a required reason ----
+  var cancelDlg = $("ss-cancel-modal"), cancelReason = "";
+  var CANCEL_REASONS = ["I can\u2019t make it at this time", "I don\u2019t need it anymore", "I booked the wrong service", "I\u2019d rather see a different advisor", "Something else"];
+  function renderCancelForm(check) {
+    var other = cancelReason === "Something else", note = $("ss-cancel-note").value.trim();
+    $("ss-cancel-reason-value").textContent = cancelReason || "Choose a reason";
+    $("ss-cancel-reason").classList.toggle("is-placeholder", !cancelReason);
+    $("ss-cancel-note-opt").classList.toggle("is-hidden", other);
+    $("ss-cancel-note-req").classList.toggle("is-hidden", !other);
+    var badReason = check && !cancelReason, badNote = check && other && !note;
+    $("ss-cancel-reason-error").hidden = !badReason;
+    $("ss-cancel-reason").setAttribute("aria-invalid", badReason ? "true" : "false");
+    $("ss-cancel-note-error").hidden = !badNote;
+    $("ss-cancel-note").setAttribute("aria-invalid", badNote ? "true" : "false");
+    return !badReason && !badNote;
+  }
+  $("ss-cancel-reason").addEventListener("click", function () {
+    openListbox(this, CANCEL_REASONS.map(function (x) { return { value: x, label: x }; }), cancelReason, function (v) { cancelReason = v; renderCancelForm(false); });
+  });
+  $("ss-cancel-note").addEventListener("input", function () { if (!$("ss-cancel-note-error").hidden) renderCancelForm(true); });
   $("ss-cancel-keep").addEventListener("click", function () { cancelDlg.close(); });
+  $("ss-cancel-x").addEventListener("click", function () { cancelDlg.close(); });
   $("ss-cancel-confirm").addEventListener("click", function () {
+    if (!renderCancelForm(true)) { (cancelReason ? $("ss-cancel-note") : $("ss-cancel-reason")).focus(); return; }
     var a = apptById(openId);
     a.status = "cancelled";
+    a.cancelReason = cancelReason; a.cancelNote = $("ss-cancel-note").value.trim();
     cancelDlg.close();
     showToast(a.service + " on " + whenShort(a) + " cancelled");
     apptTab = "upcoming";

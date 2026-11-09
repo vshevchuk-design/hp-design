@@ -42,6 +42,7 @@ const metaType = resolveToken(acc.meta);
 const titleQuietType = resolveToken(acc.titleQuiet);
 const chevronSize = px(resolve(acc.chevron.size.$value));
 const bodyPad = px(resolve(acc.body.paddingBottom.$value));
+const bodyPadTop = px(resolve(acc.body.paddingTop.$value));
 const bodyGap = px(resolve(acc.body.gap.$value));
 const hoverRole = refPath(acc.state.hover.bg.$value);
 const ringRole = refPath(acc.state.focused.ringColor.$value);
@@ -100,7 +101,7 @@ const css = `${rootVars}
 /* chevron before everything else in the row (it is the summary's last child) */
 .accordion--chevron-start .accordion__chevron { order: -1; }
 .accordion--chevron-primary .accordion__chevron { color: ${cv(refPath(acc.chevron.colorPrimary.$value))}; }
-.accordion__body { display: flex; flex-direction: column; gap: ${bodyGap}; padding: 0 ${paddingX} ${bodyPad}; }`;
+.accordion__body { display: flex; flex-direction: column; gap: ${bodyGap}; padding: ${bodyPadTop} ${paddingX} ${bodyPad}; }`;
 
 const demoCss = `
 .acc-card { background: ${cv(cardBg)}; border: 1px solid ${cv(cardBorder)}; border-radius: ${cardRadius}; overflow: hidden; }
