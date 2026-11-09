@@ -195,6 +195,11 @@
 | C16 | Тости | Toast Success: «Reference #5098 copied» · «Career Counseling on Fri, Oct 9 at 4:00 PM cancelled» · «Rescheduled to …» |
 
 ### D. Drop-in visit page — 14 станів (P/T/D; колонка 720)
+
+**Готово 2026-11-10 — секція «Screens — Drop-in visit», 16 станів / 38 фреймів.** 01 Before joining, open now (D/T/P) · 02 topic list open (D/P) · 03 already in another line (D/P) · 04 Before reserving, not open yet (D/T/P) · 05 Seat reserved + toast (D/T/P) · 06 In line #3 (D/T/P) · 07 You're next (D/P) · 08 Stepped away (D/P) · 09 Ready for you + toast (D/T/P) · 10 On your way (D/P) · 11 In meeting (D/P) · 12 Visit done, not rated + toast (D/T/P) · 13 Done with a file, rated (D/P) · 14 Leave the queue? (D/P) · 15 Cancel your reserved seat? (D/P) · 16 Joined the queue + toast (D/P).
+Уточнення з коду: Ready for you / On your way — Alert Success з іконкою campaign замість картки; рядок адвайзера (person) з'являється у фактах лише від Ready for you; Done — «Summary» (heading/base) + Advisor Summary + Rating Chips + факти; на телефоні кнопки картки статусу — на всю ширину стовпчиком (як у прототипі <560px).
+Виправлено в продуктових компонентах: Visit Status Card — кнопки футера праворуч (було space-between); Rating Chips — чипи переносяться (WRAP), на телефоні «Not helpful» обрізався.
+Борг бібліотеки (наступний Publish): Listbox/Single має лише 5 опцій — для 7 тем дропіну в 02 список від'єднано (detach) і доповнено опціями з бібліотеки; варто додати 6–8 опції, приховані за замовчуванням.
 Анатомія: назад · заголовок + Badges (Drop-in primary + стан) · департамент · Visit Status Card / Alert · (Summary, Rating) · Card з Detail Lines (+ Sections Help with / Your note).
 
 | # | Стан | Зміст |
