@@ -132,6 +132,8 @@
 - Назад: Button Ghost sm + arrow_back: «All services» / «Book» / «My schedule» / «Calendar» / «Back to appointment».
 
 ### A. Pick a time (appointment) — 12 станів
+
+**Готово 2026-11-09 — секція «Screens — Pick a time» (y 49041), 14 станів / 34 фрейми.** Фактична нумерація у файлі: 01 Default (D/T/P) · 02 Several departments, none chosen (D/T/P) · 03 Department list open (D/P) · 04 Department chosen (D/T/P) · 05 Time picked (D; T/P — шторка) · 06 Advisor meets two ways (D/P) · 07 Video chosen (D/P) · 08 Phone advisor (D/P) · 09 Goal missing (D/P) · 10 Evening (D/T/P) · 11 Next week (D/P) · 12 No open times (D/T/P) · 13 No open times, notified + toast (D/P) · 14 Rescheduling (D/P). Банер черги «You’re #3 in line» не малюється (як у Book — лише в окремому стані). Уточнення з коду: при кількох департаментах картка «Your appointment» — лише Service / Department / Duration, без How you’ll meet і Confirm; при «немає вільних» — Service / Department / Duration + коротке «In person, phone or video», без Confirm; Confirm активна одразу після вибору часу (ціль перевіряється по натисканню).
 Розкладка: **D** — дві колонки (контент + sticky картка «Your appointment» 340, Confirm прилиплий до низу картки). **P/T** — одна колонка; картки немає; після вибору часу — **Slide Over Panel Bottom «Your appointment»** з Confirm у футері.
 
 Анатомія: заголовок `title/xl` · мета `body/base` `text/secondary` («30 minutes · Counseling») · Week («Oct 2 – 8» + Icon Button sm chevron_left / chevron_right) · Tabs Segmented sm (Any time / Morning / Afternoon / Evening) · Day Tiles ×7 · «Friday, October 2» + «8 open times» · Time Slot Tiles (2 колонки D/T, 1 P) · Quiet Note «Times shown in your time zone (EEST).»
