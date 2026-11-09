@@ -768,7 +768,7 @@ export function ssAppJs(d) {
       showDone({
         title: "You\u2019re booked",
         text: na.service + " with " + na.advisor + ", " + whenShort(na) + ". Check-in opens " + CHECKIN_BEFORE + " minutes before.",
-        facts: [["When", esc(whenLong(na))], ["Advisor", esc(na.advisor)], ["Department", esc(na.dept)], ["Meeting", esc(where(na))], ["To accomplish", esc(na.goal)], ["Reference", "#" + esc(na.ref)]],
+        lines: apptLines(na, true), sections: [["What you\u2019d like to accomplish", esc(na.goal)]], note: "Reference #" + esc(na.ref),
         actions: [
           { label: "Go to My schedule", primary: true, fn: function () { goSection(1); } },
           { label: "Book something else", fn: function () { goSection(0); } }
@@ -809,10 +809,19 @@ export function ssAppJs(d) {
   function whenLong(a) { var d = apptDate(a); return DOW_LONG[d.getDay()] + ", " + MON_LONG[d.getMonth()] + " " + d.getDate() + ", " + d.getFullYear() + " at " + fmtTime(a.min) + " (" + ${JSON.stringify(d.TIME_ZONE)} + ")"; }
   function groupLabel(a) { var d = apptDate(a); return (isToday(a) ? "Today · " : "") + DOW[d.getDay()] + ", " + MON[d.getMonth()] + " " + d.getDate() + (d.getFullYear() !== today.getFullYear() ? ", " + d.getFullYear() : ""); }
   var FORMAT_ICON = { inPerson: ICONS.group, phone: ICONS.call, video: ICONS.videocam };
+  // when / who / where for an appointment (withDept: the done screen, which has no dept subtitle)
+  function apptLines(a, withDept) {
+    var d0 = apptDate(a), mins = minutesOf(a);
+    return [
+      [ICONS.today, esc(DOW_LONG[d0.getDay()] + ", " + MON_LONG[d0.getMonth()] + " " + d0.getDate() + " · " + fmtRange(a.min, mins)), esc(mins + " minutes · times in " + ${JSON.stringify(d.TIME_ZONE)})],
+      [ICONS.person, esc(a.advisor), withDept ? esc(a.dept) : ""],
+      [FORMAT_ICON[a.format], esc(where(a))]
+    ];
+  }
   function where(a) {
     if (a.format === "phone") return "Phone — your advisor calls you at " + STUDENT_PHONE;
     if (a.format === "video") return "Video — the link is in your email";
-    return "In person — " + LOCATIONS[a.dept] + (a.room ? ", " + a.room : "");
+    return "In person — " + LOCATIONS[a.dept] + ", " + (a.room || roomOf(a.advisor));
   }
   function badge(role, text) { return '<span class="badge badge--base badge--regular badge--' + role + '">' + esc(text) + "</span>"; }
   function statusBadges(a) {
@@ -969,16 +978,8 @@ export function ssAppJs(d) {
       $("ss-d-q-title").textContent = a.advisor + " asked " + a.questions.length + " questions.";
       $("ss-d-q-text").textContent = "Answer them before the meeting so you can spend the time on what matters.";
     }
-    var d0 = apptDate(a), mins = minutesOf(a);
-    var line = function (ic, text, sub) { return '<li class="ss-dfact">' + ic + '<div class="ss-dfact__text"><span>' + text + "</span>" + (sub ? '<span class="ss-dfact__sub">' + sub + "</span>" : "") + "</div></li>"; };
-    var html = '<ul class="ss-dfacts">' +
-      line(ICONS.today, esc(DOW_LONG[d0.getDay()] + ", " + MON_LONG[d0.getMonth()] + " " + d0.getDate() + " · " + fmtRange(a.min, mins)), esc(mins + " minutes · times in " + ${JSON.stringify(d.TIME_ZONE)})) +
-      line(ICONS.person, esc(a.advisor)) +
-      line(FORMAT_ICON[a.format], esc(where(a))) +
-      "</ul>";
-    if (a.goal) html += '<div class="ss-detail__section"><h3>What you’d like to accomplish</h3><p class="ss-d-goal">' + esc(a.goal) + "</p></div>";
-    if (a.questions && a.answered) html += '<p class="ss-note">Questions answered — ' + esc(a.advisor.split(" ")[0]) + " has them.</p>";
-    $("ss-d-facts").innerHTML = html;
+    $("ss-d-facts").innerHTML = factsHtml(apptLines(a, false), a.goal ? [["What you\u2019d like to accomplish", esc(a.goal)]] : [],
+      a.questions && a.answered ? "Questions answered — " + esc(a.advisor.split(" ")[0]) + " has them." : "");
     $("ss-d-ref").innerHTML = "Reference #" + esc(a.ref) + ' <button type="button" class="btn btn--ghost btn--sm btn--icon-only" id="ss-d-copy" aria-label="Copy reference number">' + ICONS.copy + "</button>";
     var act = "";
     if (up) {
@@ -1181,8 +1182,10 @@ export function ssAppJs(d) {
       '<div class="card__footer ss-detail__actions"><button type="button" class="btn btn--primary btn--base ss-pre-go" data-pre-go' + (cur ? " disabled" : "") + ">" + (open ? "Join queue" : "Reserve a seat") + "</button></div></div>";
     $("ss-v-summary-step").classList.add("is-hidden");
     $("ss-v-rate-step").classList.add("is-hidden");
-    var facts = [["Department", esc(dept)], ["Where", esc(LOCATIONS[dept])], ["Hours", open ? "Today until " + fmtTime(h.until) : "Today " + fmtTime(h.opens) + " – " + fmtTime(h.until)]];
-    $("ss-v-facts").innerHTML = facts.map(function (f) { return "<dt>" + f[0] + "</dt><dd>" + f[1] + "</dd>"; }).join("");
+    $("ss-v-facts").innerHTML = factsHtml([
+      [ICONS.schedule, open ? "Open today until " + fmtTime(h.until) : "Today " + fmtTime(h.opens) + " – " + fmtTime(h.until)],
+      [ICONS.group, esc("In person — " + LOCATIONS[dept])]
+    ]);
   }
 
   function renderVisit() {
@@ -1233,14 +1236,16 @@ export function ssAppJs(d) {
     $("ss-v-rate-thanks").classList.toggle("is-hidden", !v.rating);
     $("ss-v-rate-thanks").textContent = "Thanks — your answer goes to " + v.dept + ", not to " + first + " directly.";
 
-    var facts = [["Department", esc(v.dept)], ["Where", esc(visitWhere(v))]];
-    if (v.state === "reserved") facts.push(["Hours", "Today " + fmtTime(v.opens) + " – " + fmtTime(v.until)]);
-    else if (done) facts.push(["Date", esc(fmtDate(new Date(v.date + "T00:00:00")))]);
-    else facts.push(["Joined", fmtTime(v.min)], ["Open until", fmtTime(v.until)]);
-    if (v.advisor && (done || v.state === "meeting" || v.state === "called" || v.state === "onway")) facts.push(["Advisor", esc(v.advisor)]);
-    if (v.topic) facts.push(["Help with", esc(v.topic)]);
-    if (v.note) facts.push(["Your note", esc(v.note)]);
-    $("ss-v-facts").innerHTML = facts.map(function (f) { return "<dt>" + f[0] + "</dt><dd>" + f[1] + "</dd>"; }).join("");
+    var lines = [];
+    if (v.state === "reserved") lines.push([ICONS.schedule, "Opens today at " + fmtTime(v.opens), "Open until " + fmtTime(v.until)]);
+    else if (done) lines.push([ICONS.today, esc(fmtDate(new Date(v.date + "T00:00:00")) + " · " + fmtRange(v.startAt || v.min, (v.end || v.min) - (v.startAt || v.min)))]);
+    else lines.push([ICONS.schedule, "Joined at " + fmtTime(v.min), "Open until " + fmtTime(v.until)]);
+    if (v.advisor && (done || v.state === "meeting" || v.state === "called" || v.state === "onway")) lines.push([ICONS.person, esc(v.advisor), esc(v.dept)]);
+    lines.push([ICONS.group, esc("In person — " + visitWhere(v))]);
+    var secs = [];
+    if (v.topic) secs.push(["Help with", esc(v.topic)]);
+    if (v.note) secs.push(["Your note", esc(v.note)]);
+    $("ss-v-facts").innerHTML = factsHtml(lines, secs);
   }
   if (V6) document.querySelector('[data-view="visit"]').addEventListener("input", function (e) {
     if (vw.pre && e.target.closest("[data-pre-note]")) vw.pre.note = e.target.value;
@@ -1546,16 +1551,17 @@ export function ssAppJs(d) {
     WS_REG[w.id] = { sched: single ? 0 : ws.sched, sess: single ? ws.sess : null, skipped: {}, checkedIn: {} };
     updateUpcomingCount();
     var first = single ? sessionsOf(sc)[ws.sess] : sessionsOf(sc)[0];
-    var facts = single
-      ? [["Date", esc(fmtDate(first.date))], ["Time", esc(fmtRange(first.min, w.minutes))]]
-      : [["Schedule", esc(daysLabel(sc))], ["Sessions", sc.count + ", starting " + esc(fmtDate(first.date))]];
-    facts.push(["Organizer", esc(sc.organizer)], ["Location", esc(scheduleLocation(sc))]);
+    var lines = [
+      single ? [ICONS.today, esc(fmtDate(first.date) + " · " + fmtRange(first.min, w.minutes))] : [ICONS.dateRange, esc(daysLabel(sc)), esc(sc.count + " sessions, starting " + fmtDate(first.date))],
+      [ICONS.person, esc(sc.organizer), esc(w.dept)],
+      [WS_FORMAT[sc.format].icon, esc(scheduleLocation(sc))]
+    ];
     showDone({
       title: "You\u2019re registered",
       text: single
         ? w.name + " on " + fmtDate(first.date) + " at " + fmtTime(first.min) + ". We\u2019ll remind you the day before."
         : w.name + " — all " + sc.count + " sessions. The first is " + fmtDate(first.date) + " at " + fmtTime(first.min) + "; we\u2019ll remind you the day before each one.",
-      facts: facts,
+      lines: lines,
       actions: [
         { label: "Done", primary: true, fn: function () { goSection(0); } },
         { label: "View workshop", fn: function () { openMyWorkshop(ws.wi, "book"); } }
@@ -1991,10 +1997,18 @@ export function ssAppJs(d) {
 
   // ---------------- v6: done — the one screen every booking ends on ----------------
   var doneActions = [];
+  // The detail pages' facts: icon lines (when / who / where — [icon, html,
+  // sub html]) then titled text sections, then an optional quiet line — one
+  // recipe for appointment, drop-in visit and the done screen.
+  function factsHtml(lines, sections, note) {
+    return '<ul class="ss-dfacts">' + lines.map(function (l) { return '<li class="ss-dfact">' + l[0] + '<div class="ss-dfact__text"><span>' + l[1] + "</span>" + (l[2] ? '<span class="ss-dfact__sub">' + l[2] + "</span>" : "") + "</div></li>"; }).join("") + "</ul>" +
+      (sections || []).map(function (x) { return '<div class="ss-detail__section"><h3>' + x[0] + '</h3><p class="ss-d-goal">' + x[1] + "</p></div>"; }).join("") +
+      (note ? '<p class="ss-note">' + note + "</p>" : "");
+  }
   function showDone(o) {
     $("ss-done-title").textContent = o.title;
     $("ss-done-text").textContent = o.text;
-    $("ss-done-facts").innerHTML = o.facts.map(function (f) { return "<dt>" + f[0] + "</dt><dd>" + f[1] + "</dd>"; }).join("");
+    $("ss-done-facts").innerHTML = factsHtml(o.lines, o.sections, o.note);
     doneActions = o.actions;
     $("ss-done-actions").innerHTML = o.actions.map(function (a, i) {
       return '<button type="button" class="btn ' + (a.primary ? "btn--primary" : "btn--secondary") + ' btn--base" data-done="' + i + '">' + esc(a.label) + "</button>";

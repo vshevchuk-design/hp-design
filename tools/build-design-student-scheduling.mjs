@@ -548,7 +548,7 @@ const V6_VIEWS = `<!-- ============ Workshop ============ -->
           </div>
           <p class="ss-note is-hidden" id="ss-v-rate-thanks"></p>
         </div>
-        <div class="card"><div class="card__body"><dl class="ss-dl" id="ss-v-facts"></dl></div></div>
+        <div class="card"><div class="card__body"><div class="ss-d-facts" id="ss-v-facts"></div></div></div>
       </div>
     </section>
 
@@ -613,7 +613,7 @@ const V6_VIEWS = `<!-- ============ Workshop ============ -->
           <h2 class="ss-title" id="ss-done-title"></h2>
           <p class="ss-sub" id="ss-done-text"></p>
         </div>
-        <div class="card__body ss-done__facts"><dl class="ss-dl" id="ss-done-facts"></dl></div>
+        <div class="card__body ss-done__facts"><div class="ss-d-facts" id="ss-done-facts"></div></div>
         <div class="card__footer ss-done__actions" id="ss-done-actions"></div>
       </div>
     </section>

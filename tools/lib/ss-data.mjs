@@ -133,16 +133,16 @@ export const APPOINTMENTS = [
   { id: "a2", ref: "5121", service: "Change of Major", dept: "Academic Advising", date: "2026-10-07", min: 14 * 60, advisor: "Ava Robinson", format: "phone", status: "upcoming", goal: "Talk through switching from Biology to Nursing.",
     questions: ["Which major are you thinking of switching to, and why?", "Have you already taken any classes toward it?"] },
   { id: "a3", ref: "5140", service: "Career Counseling", dept: "Career and Talent Development", date: "2026-10-12", min: 11 * 60 + 30, advisor: "Eric Lynch", format: "video", status: "upcoming", goal: "Find internships that fit a marketing major." },
-  { id: "a4", ref: "4301", service: "Comprehensive Ed Plan", dept: "Counseling", date: "2026-09-28", min: 9 * 60, advisor: "George Amalor", format: "inPerson", status: "completed" },
-  { id: "a5", ref: "4122", service: "Degree Planning", dept: "English Dept", date: "2026-09-15", min: 15 * 60 + 15, advisor: "Ava Robinson", format: "inPerson", status: "noshow" },
-  { id: "a6", ref: "3987", service: "Financial Aid Petition", dept: "Office of the Registrar", date: "2026-08-20", min: 13 * 60, advisor: "Jonathan Rehm", format: "phone", status: "completed" },
-  { id: "a7", ref: "4410", service: "Transcript Evaluation", dept: "Office of the Registrar", date: "2026-09-30", min: 10 * 60, advisor: "Priya Natarajan", format: "video", status: "cancelled" },
+  { id: "a4", ref: "4301", service: "Comprehensive Ed Plan", dept: "Counseling", date: "2026-09-28", min: 9 * 60, advisor: "George Amalor", format: "inPerson", status: "completed", goal: "Map out every class I need to transfer to UC Davis." },
+  { id: "a5", ref: "4122", service: "Degree Planning", dept: "English Dept", date: "2026-09-15", min: 15 * 60 + 15, advisor: "Ava Robinson", format: "inPerson", status: "noshow", goal: "Figure out if I can still finish the English minor." },
+  { id: "a6", ref: "3987", service: "Financial Aid Petition", dept: "Office of the Registrar", date: "2026-08-20", min: 13 * 60, advisor: "Jonathan Rehm", format: "phone", status: "completed", goal: "Appeal the reduction of my fall aid." },
+  { id: "a7", ref: "4410", service: "Transcript Evaluation", dept: "Office of the Registrar", date: "2026-09-30", min: 10 * 60, advisor: "Priya Natarajan", format: "video", status: "cancelled", goal: "Get my community-college credits counted." },
   // a busy day (user, 2026-10-29: "how does a day with a lot on it look") — Fri Oct 9: these five + the 11 AM workshop session
-  { id: "a8", ref: "5150", service: "Academic Difficulty", dept: "Counseling", date: "2026-10-09", min: 8 * 60 + 30, advisor: "Ava Robinson", format: "video", status: "upcoming" },
-  { id: "a9", ref: "5151", service: "Financial Aid Petition", dept: "Office of the Registrar", date: "2026-10-09", min: 9 * 60 + 30, advisor: "Jonathan Rehm", format: "phone", status: "upcoming" },
-  { id: "a10", ref: "5152", service: "Transcript Evaluation", dept: "Office of the Registrar", date: "2026-10-09", min: 13 * 60, advisor: "Priya Natarajan", format: "inPerson", status: "upcoming" },
-  { id: "a11", ref: "5153", service: "Degree Planning", dept: "English Dept", date: "2026-10-09", min: 14 * 60 + 30, advisor: "George Amalor", format: "inPerson", status: "upcoming" },
-  { id: "a12", ref: "5154", service: "Career Counseling", dept: "Career and Talent Development", date: "2026-10-09", min: 16 * 60, advisor: "Eric Lynch", format: "video", status: "upcoming" },
+  { id: "a8", ref: "5150", service: "Academic Difficulty", dept: "Counseling", date: "2026-10-09", min: 8 * 60 + 30, advisor: "Ava Robinson", format: "phone", status: "upcoming", goal: "Make a plan to get off academic probation." },
+  { id: "a9", ref: "5151", service: "Financial Aid Petition", dept: "Office of the Registrar", date: "2026-10-09", min: 9 * 60 + 30, advisor: "Jonathan Rehm", format: "phone", status: "upcoming", goal: "Ask about the deadline for the aid petition." },
+  { id: "a10", ref: "5152", service: "Transcript Evaluation", dept: "Office of the Registrar", date: "2026-10-09", min: 13 * 60, advisor: "Priya Natarajan", format: "inPerson", status: "upcoming", goal: "Check which of my AP credits transfer." },
+  { id: "a11", ref: "5153", service: "Degree Planning", dept: "English Dept", date: "2026-10-09", min: 14 * 60 + 30, advisor: "George Amalor", format: "inPerson", status: "upcoming", goal: "Pick the right writing courses for my degree." },
+  { id: "a12", ref: "5154", service: "Career Counseling", dept: "Career and Talent Development", date: "2026-10-09", min: 16 * 60, advisor: "Eric Lynch", format: "video", status: "upcoming", goal: "Prepare for the spring career fair." },
 ];
 
 // ---------------- v6: Book (one catalogue) ----------------
