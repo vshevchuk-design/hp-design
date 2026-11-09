@@ -733,7 +733,9 @@ body { margin: 0; background: var(--tok-surface-page); font-family: var(--tok-fa
 .ss-pick { display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px; align-items: start; }
 @media (min-width: 1024px) {
   .ss-pick { grid-template-columns: minmax(0, 1fr) 340px; }
-  .ss-summary { position: sticky; top: calc(64px + 40px + 24px); }
+  /* sticky, and never taller than the window: with the goal field the card
+     outgrew a laptop screen and Confirm sat below the fold — it scrolls inside */
+  .ss-summary { position: sticky; top: calc(64px + 40px + 24px); max-height: calc(100dvh - 64px - 40px - 48px); overflow-y: auto; }
 }
 #ss-tod { align-self: flex-start; }
 .ss-choose { display: flex; flex-direction: column; gap: 16px; min-width: 0; }

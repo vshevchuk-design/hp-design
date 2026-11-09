@@ -129,10 +129,10 @@ export const ABOUT = {
 // questions: what the advisor asked to be answered before the meeting — the
 // live app's unexplained "Answer Questions" button.
 export const APPOINTMENTS = [
-  { id: "a1", ref: "5098", service: "Ed Plan Review", dept: "Counseling", date: "2026-10-02", min: 10 * 60 + 30, advisor: "Caitlin Moore", format: "inPerson", status: "upcoming" },
-  { id: "a2", ref: "5121", service: "Change of Major", dept: "Academic Advising", date: "2026-10-07", min: 14 * 60, advisor: "Ava Robinson", format: "phone", status: "upcoming",
+  { id: "a1", ref: "5098", service: "Ed Plan Review", dept: "Counseling", date: "2026-10-02", min: 10 * 60 + 30, advisor: "Caitlin Moore", format: "inPerson", status: "upcoming", goal: "Check my ed plan still works after dropping Chem 101." },
+  { id: "a2", ref: "5121", service: "Change of Major", dept: "Academic Advising", date: "2026-10-07", min: 14 * 60, advisor: "Ava Robinson", format: "phone", status: "upcoming", goal: "Talk through switching from Biology to Nursing.",
     questions: ["Which major are you thinking of switching to, and why?", "Have you already taken any classes toward it?"] },
-  { id: "a3", ref: "5140", service: "Career Counseling", dept: "Career and Talent Development", date: "2026-10-12", min: 11 * 60 + 30, advisor: "Eric Lynch", format: "video", status: "upcoming" },
+  { id: "a3", ref: "5140", service: "Career Counseling", dept: "Career and Talent Development", date: "2026-10-12", min: 11 * 60 + 30, advisor: "Eric Lynch", format: "video", status: "upcoming", goal: "Find internships that fit a marketing major." },
   { id: "a4", ref: "4301", service: "Comprehensive Ed Plan", dept: "Counseling", date: "2026-09-28", min: 9 * 60, advisor: "George Amalor", format: "inPerson", status: "completed" },
   { id: "a5", ref: "4122", service: "Degree Planning", dept: "English Dept", date: "2026-09-15", min: 15 * 60 + 15, advisor: "Ava Robinson", format: "inPerson", status: "noshow" },
   { id: "a6", ref: "3987", service: "Financial Aid Petition", dept: "Office of the Registrar", date: "2026-08-20", min: 13 * 60, advisor: "Jonathan Rehm", format: "phone", status: "completed" },

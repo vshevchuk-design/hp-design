@@ -250,6 +250,15 @@ ${shellTopbar({ title: "Scheduling", actions: settingsBtn })}
               <p class="ss-loc__text" id="ss-sum-location"></p>
               <p class="ss-note" id="ss-sum-formats"></p>
             </div>
+            <!-- what the student wants out of it — required, as in the live app
+                 ("What would you like to accomplish?"); DS marks optional
+                 fields, not required ones, so no asterisk -->
+            <div class="ss-rule ss-sum-booking ss-goal-row"></div>
+            <div class="field ss-sum-booking ss-goal-row" id="ss-goal-field">
+              <label class="field__label" for="ss-goal">What would you like to accomplish?</label>
+              <div class="text-field text-field--area"><div class="text-field__stack"><textarea class="text-field__control" id="ss-goal" name="ss-goal" rows="3" required placeholder="For example: plan my classes for next semester" aria-describedby="ss-goal-error"></textarea></div></div>
+              <p class="field__error" id="ss-goal-error" hidden>${icon("error", "field__error-icon")}<span>Tell your advisor what you’d like to accomplish.</span></p>
+            </div>
           </div>
           <div class="card__footer ss-sum-booking">
             <button class="btn btn--primary btn--base btn--block" id="ss-confirm" type="button" disabled>Confirm appointment</button>
@@ -760,7 +769,7 @@ html { background: ${cv("surface.page")}; }
 .cx [data-view="appointments"] { gap: ${dm(3)}; }
 /* sticky columns sit under the 64px topbar alone now (no band under it) */
 @media (min-width: 1024px) {
-  .cx .ss-summary { top: calc(${dm(16)} + ${dm(6)}); }
+  .cx .ss-summary { top: calc(${dm(16)} + ${dm(6)}); max-height: calc(100dvh - ${dm(16)} - ${dm(12)}); }
   .cx .ss-cal__side { top: calc(${dm(16)} + ${dm(6)}); max-height: calc(100dvh - ${dm(16)} - ${dm(12)}); }
 }
 @media (max-width: 767px) {

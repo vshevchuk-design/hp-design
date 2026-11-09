@@ -523,6 +523,8 @@ export function ssAppJs(d) {
     if (moving) $("ss-resched-text").textContent = moving.service + " is booked for " + whenShort(moving) + ". That time stays yours until you confirm a new one.";
     $("ss-back").querySelector("span").textContent = moving ? "Back to appointment" : "All services";
     $("ss-confirm").textContent = moving ? "Confirm new time" : "Confirm appointment";
+    $("ss-goal").value = moving && moving.goal ? moving.goal : "";
+    goalError(false);
     showView("pick");
     renderPick();
   }
@@ -677,6 +679,7 @@ export function ssAppJs(d) {
     if (!minimal) {
       $("ss-advisor-group").classList.toggle("is-hidden", !pk.slot);
       $("ss-advisor-hint").classList.toggle("is-hidden", !!pk.slot);
+      document.querySelectorAll("#ss-summary .ss-goal-row, .ss-sum-drawer .ss-goal-row").forEach(function (el) { el.classList.toggle("is-hidden", !pk.slot); });
     }
     if (pk.slot) {
       adv.innerHTML = pk.slot.advisors.map(function (a, i) {
@@ -721,8 +724,15 @@ export function ssAppJs(d) {
     renderSummary();
   });
   on("ss-meet-tabs", "click", function (e) { var b = e.target.closest("[data-format]"); if (!b) return; pk.format = b.dataset.format; renderSummary(); });
+  function goalError(on) {
+    $("ss-goal").setAttribute("aria-invalid", on ? "true" : "false");
+    $("ss-goal-error").hidden = !on;
+  }
+  $("ss-goal").addEventListener("input", function () { if (this.value.trim()) goalError(false); });
   $("ss-confirm").addEventListener("click", function () {
     if (!pk.slot) return;
+    var goal = $("ss-goal").value.trim();
+    if (!goal) { goalError(true); $("ss-goal").focus(); return; }
     closeSumDrawer(true);
     var dt = weekDays(pk.week)[pk.day];
     booked[pk.slot.id] = true;
@@ -730,14 +740,14 @@ export function ssAppJs(d) {
     if (pk.reschedule) {
       // Reschedule moves the existing appointment — same reference, new slot.
       var a = apptById(pk.reschedule);
-      a.date = iso(dt); a.min = pk.slot.min; a.advisor = pk.advisor; a.format = pk.format; a.dept = pk.dept; a.room = roomOf(pk.advisor);
+      a.date = iso(dt); a.min = pk.slot.min; a.advisor = pk.advisor; a.format = pk.format; a.dept = pk.dept; a.room = roomOf(pk.advisor); a.goal = goal;
       a.checkedIn = false;
       pk.reschedule = null; pk.slot = null; pk.advisor = null;
       showToast("Rescheduled to " + when);
       openAppt(a.id);
       return;
     }
-    APPTS.push({ id: "n" + Date.now(), ref: String(5200 + APPTS.length), service: SERVICES[pk.si].name, dept: pk.dept, date: iso(dt), min: pk.slot.min, advisor: pk.advisor, format: pk.format, room: roomOf(pk.advisor), status: "upcoming" });
+    APPTS.push({ id: "n" + Date.now(), ref: String(5200 + APPTS.length), service: SERVICES[pk.si].name, dept: pk.dept, date: iso(dt), min: pk.slot.min, advisor: pk.advisor, format: pk.format, room: roomOf(pk.advisor), goal: goal, status: "upcoming" });
     updateUpcomingCount();
     if (V6) {
       var na = APPTS[APPTS.length - 1];
@@ -745,7 +755,7 @@ export function ssAppJs(d) {
       showDone({
         title: "You\u2019re booked",
         text: na.service + " with " + na.advisor + ", " + whenShort(na) + ". Check-in opens " + CHECKIN_BEFORE + " minutes before.",
-        facts: [["When", esc(whenLong(na))], ["Advisor", esc(na.advisor)], ["Department", esc(na.dept)], ["Meeting", esc(where(na))], ["Reference", "#" + esc(na.ref)]],
+        facts: [["When", esc(whenLong(na))], ["Advisor", esc(na.advisor)], ["Department", esc(na.dept)], ["Meeting", esc(where(na))], ["To accomplish", esc(na.goal)], ["Reference", "#" + esc(na.ref)]],
         actions: [
           { label: "Go to My schedule", primary: true, fn: function () { goSection(1); } },
           { label: "Book something else", fn: function () { goSection(0); } }
@@ -950,9 +960,12 @@ export function ssAppJs(d) {
       ["When", esc(whenLong(a))],
       ["Duration", minutesOf(a) + " minutes"],
       ["Advisor", esc(a.advisor)],
-      ["Meeting", '<span class="ss-fact">' + FORMAT_ICON[a.format] + "<span>" + esc(where(a)) + "</span></span>"],
-      ["Reference", '<span class="ss-ref">#' + esc(a.ref) + ' <button type="button" class="btn btn--ghost btn--sm btn--icon-only" id="ss-d-copy" aria-label="Copy reference number">' + ICONS.copy + "</button></span>"]
+      ["Meeting", '<span class="ss-fact">' + FORMAT_ICON[a.format] + "<span>" + esc(where(a)) + "</span></span>"]
     ];
+    if (a.goal) rows.push(["To accomplish", esc(a.goal)]);
+    rows.push(
+      ["Reference", '<span class="ss-ref">#' + esc(a.ref) + ' <button type="button" class="btn btn--ghost btn--sm btn--icon-only" id="ss-d-copy" aria-label="Copy reference number">' + ICONS.copy + "</button></span>"]
+    );
     if (a.questions && a.answered) rows.push(["Questions", "Answered — " + esc(a.advisor.split(" ")[0]) + " has them"]);
     $("ss-d-facts").innerHTML = rows.map(function (r) { return "<dt>" + r[0] + "</dt><dd>" + r[1] + "</dd>"; }).join("");
     var act = "";

@@ -463,7 +463,9 @@ ${FIELD_WRAPPER_CSS}
 .ss-pick { display: grid; grid-template-columns: minmax(0, 1fr); gap: ${dim(6)}; align-items: start; }
 @media (min-width: 1024px) {
   .ss-pick { grid-template-columns: minmax(0, 1fr) 340px; }
-  .ss-summary { position: sticky; top: calc(${dim(16)} + ${D(tabs.size.base.height)} + ${dim(6)}); }
+  /* sticky, and never taller than the window: with the goal field the card
+     outgrew a laptop screen and Confirm sat below the fold — it scrolls inside */
+  .ss-summary { position: sticky; top: calc(${dim(16)} + ${D(tabs.size.base.height)} + ${dim(6)}); max-height: calc(100dvh - ${dim(16)} - ${D(tabs.size.base.height)} - ${dim(12)}); overflow-y: auto; }
 }
 #ss-tod { align-self: flex-start; }
 .ss-choose { display: flex; flex-direction: column; gap: ${dim(4)}; min-width: 0; }
