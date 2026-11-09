@@ -1685,9 +1685,11 @@ html { background: var(--tok-surface-page); }
             <dl class="ss-facts" id="ss-ws-facts"></dl>
             <div class="ss-detail__section ss-about"><h3>About this workshop</h3><p id="ss-ws-about"></p></div>
             <div class="ss-rule"></div>
-            <div class="ss-loc">
-              <span class="ss-eyebrow">Location</span>
-              <p class="ss-loc__text" id="ss-ws-location"></p>
+            <!-- where: the same section as the appointment card's "How you'll meet"
+                 — heading + the line on a sunken Box (was a LOCATION eyebrow) -->
+            <div class="ss-meet">
+              <span class="radio-group__label">Where</span>
+              <div class="ss-meet__box"><p class="ss-loc__text" id="ss-ws-location"></p></div>
             </div>
           </div>
           <div class="card__footer ss-ws-foot">
@@ -1772,9 +1774,11 @@ html { background: var(--tok-surface-page); }
             <dl class="ss-facts" id="ss-mw-facts"></dl>
             <div class="ss-detail__section ss-about"><h3>About this workshop</h3><p id="ss-mw-about"></p></div>
             <div class="ss-rule"></div>
-            <div class="ss-loc">
-              <span class="ss-eyebrow">Location</span>
-              <p class="ss-loc__text" id="ss-mw-location"></p>
+            <!-- where: the same section as the appointment card's "How you'll meet"
+                 — heading + the line on a sunken Box (was a LOCATION eyebrow) -->
+            <div class="ss-meet">
+              <span class="radio-group__label">Where</span>
+              <div class="ss-meet__box"><p class="ss-loc__text" id="ss-mw-location"></p></div>
             </div>
           </div>
         </aside>
@@ -3363,6 +3367,8 @@ html { background: var(--tok-surface-page); }
     }
     return daysLabel(sc) + " · " + sc.count + " sessions from " + MON[first.date.getMonth()] + " " + first.date.getDate();
   }
+  // the Where box: the way's icon + where / how
+  function whereLine(icon, text) { return '<span class="ss-fact">' + icon + '<span class="ss-fact__text">' + esc(text) + "</span></span>"; }
   function scheduleLocation(sc) { return sc.format === "video" ? "Online — the link arrives by email once you’re registered" : sc.room; }
 
   var ws = { wi: 0, sched: null, sess: null, showAll: false };
@@ -3481,7 +3487,9 @@ html { background: var(--tok-surface-page); }
     $("ss-ws-facts").innerHTML = facts.map(function (f) {
       return "<dt>" + f[0] + "</dt><dd" + (f[1] === null ? ' class="is-empty">' + (single ? "Choose a date" : "Choose a schedule") : ">" + esc(f[1])) + "</dd>";
     }).join("");
-    $("ss-ws-location").textContent = useSc ? scheduleLocation(useSc) : w.schedules.some(function (x) { return x.format === "video"; }) && w.schedules.some(function (x) { return x.format === "inPerson"; }) ? "In person or online — depends on the schedule" : scheduleLocation(w.schedules[0]);
+    var mixed = !useSc && w.schedules.some(function (x) { return x.format === "video"; }) && w.schedules.some(function (x) { return x.format === "inPerson"; });
+    var locSc = useSc || w.schedules[0];
+    $("ss-ws-location").innerHTML = mixed ? whereLine(ICONS.group, "In person or online — depends on the schedule") : whereLine(WS_FORMAT[locSc.format].icon, scheduleLocation(locSc));
 
     var canRegister = !reg && !full && (single ? ws.sess !== null : !!sc);
     var label = single ? "Register" : sc ? "Register for all " + sc.count + " sessions" : "Register";
@@ -3689,7 +3697,7 @@ html { background: var(--tok-surface-page); }
       : [["Schedule", daysLabel(sc)], ["Sessions", all.length + " · " + MON[all[0].date.getMonth()] + " " + all[0].date.getDate() + " – " + MON[all[all.length - 1].date.getMonth()] + " " + all[all.length - 1].date.getDate()]];
     facts.push(["Format", WS_FORMAT[sc.format].label], ["Organizer", sc.organizer]);
     $("ss-mw-facts").innerHTML = facts.map(function (f) { return "<dt>" + f[0] + "</dt><dd>" + esc(f[1]) + "</dd>"; }).join("");
-    $("ss-mw-location").textContent = scheduleLocation(sc);
+    $("ss-mw-location").innerHTML = whereLine(WS_FORMAT[sc.format].icon, scheduleLocation(sc));
     // nothing to leave once it's over: no ⋯ menu
     $("ss-mw-more-btn").classList.toggle("is-hidden", finished);
     $("ss-mw-leave-label").textContent = single ? "Cancel registration" : "Leave workshop";

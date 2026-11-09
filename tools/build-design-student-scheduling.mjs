@@ -532,9 +532,11 @@ const V6_VIEWS = `<!-- ============ Workshop ============ -->
             <dl class="ss-facts" id="ss-ws-facts"></dl>
             <div class="ss-detail__section ss-about"><h3>About this workshop</h3><p id="ss-ws-about"></p></div>
             <div class="ss-rule"></div>
-            <div class="ss-loc">
-              <span class="ss-eyebrow">Location</span>
-              <p class="ss-loc__text" id="ss-ws-location"></p>
+            <!-- where: the same section as the appointment card's "How you'll meet"
+                 — heading + the line on a sunken Box (was a LOCATION eyebrow) -->
+            <div class="ss-meet">
+              <span class="radio-group__label">Where</span>
+              <div class="ss-meet__box"><p class="ss-loc__text" id="ss-ws-location"></p></div>
             </div>
           </div>
           <div class="card__footer ss-ws-foot">
@@ -619,9 +621,11 @@ const V6_VIEWS = `<!-- ============ Workshop ============ -->
             <dl class="ss-facts" id="ss-mw-facts"></dl>
             <div class="ss-detail__section ss-about"><h3>About this workshop</h3><p id="ss-mw-about"></p></div>
             <div class="ss-rule"></div>
-            <div class="ss-loc">
-              <span class="ss-eyebrow">Location</span>
-              <p class="ss-loc__text" id="ss-mw-location"></p>
+            <!-- where: the same section as the appointment card's "How you'll meet"
+                 — heading + the line on a sunken Box (was a LOCATION eyebrow) -->
+            <div class="ss-meet">
+              <span class="radio-group__label">Where</span>
+              <div class="ss-meet__box"><p class="ss-loc__text" id="ss-mw-location"></p></div>
             </div>
           </div>
         </aside>
