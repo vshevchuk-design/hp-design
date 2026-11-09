@@ -1355,6 +1355,11 @@ html { background: var(--tok-surface-page); }
 @media (prefers-reduced-motion: reduce) { .sidebar, .sidebar__chevron, .sidebar__collapse .sidebar__icon { transition: none; } }
 
 /* ============ Check-in (QR) ============ */
+.ck-tech { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 8px 16px; background: var(--tok-surface-sunken); border-bottom: 1px dashed var(--tok-border-strong); font-family: var(--tok-family-sans); }
+.ck-tech__label { color: var(--tok-text-secondary); font-size: 12px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
+.ck-tech__sel { position: relative; display: inline-flex; flex: 1 1 auto; max-width: 360px; min-width: 0; }
+.ck-tech__select { appearance: none; -webkit-appearance: none; width: 100%; height: 32px; padding: 0 32px 0 12px; border: 1px solid var(--tok-border-default); border-radius: 8px; background: var(--tok-surface-default); color: var(--tok-text-default); font: inherit; font-size: 14px; cursor: pointer; }
+.ck-tech__chevron { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); width: 20px; height: 20px; color: var(--tok-icon-secondary); pointer-events: none; }
 .ck-page { width: 100%; max-width: 560px; margin-inline: auto; display: flex; flex-direction: column; gap: 16px; }
 .ck-state { display: none; flex-direction: column; gap: 12px; }
 .ck-state.is-active { display: flex; }
@@ -1377,6 +1382,8 @@ html { background: var(--tok-surface-page); }
 </style>
 </head>
 <body>
+<!-- prototype chrome, not part of the design: jump to any state -->
+<div class="ck-tech"><label class="ck-tech__label" for="ck-tech-view">Technical · Select view</label><span class="ck-tech__sel"><select class="ck-tech__select" id="ck-tech-view"><option value="loading">Looking up — the code was scanned</option><option value="signin">Sign in — not signed in on this phone</option><option value="appointment">Checked in · appointment</option><option value="workshop">Checked in · workshop</option><option value="choose">Choose — more than one thing here today</option><option value="dropin">Drop-in · join — the desk is open</option><option value="inline">Drop-in · already in line — scanned again</option><option value="early">Too early — check-in not open yet</option><option value="late">Too late — check-in closed</option><option value="none">Nothing here — the live app's dead end, with a way out</option><option value="error">Error — expired code / offline</option></select><svg class="ck-tech__chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></span></div>
 <div class="cx has-sidebar">
   <nav class="sidebar sidebar--neutral" aria-label="Main">
     <div class="sidebar__head">
@@ -1473,7 +1480,9 @@ html { background: var(--tok-surface-page); }
 })();
 (function () {
   var states = document.querySelectorAll(".ck-state");
-  function show() { var k = (location.hash || "#loading").slice(1); var found = false; states.forEach(function (s) { var on = s.dataset.state === k; s.classList.toggle("is-active", on); found = found || on; }); if (!found) states[0].classList.add("is-active"); }
+  var tech = document.getElementById("ck-tech-view");
+  tech.addEventListener("change", function () { location.hash = tech.value; window.scrollTo(0, 0); });
+  function show() { var k = (location.hash || "#loading").slice(1); if (tech.querySelector('option[value="' + k + '"]')) tech.value = k; var found = false; states.forEach(function (s) { var on = s.dataset.state === k; s.classList.toggle("is-active", on); found = found || on; }); if (!found) states[0].classList.add("is-active"); }
   window.addEventListener("hashchange", show); show();
   document.querySelector(".ck-page").addEventListener("click", function (e) {
     var b = e.target.closest("button"); if (!b) return;

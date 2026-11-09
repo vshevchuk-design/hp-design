@@ -982,6 +982,11 @@ const ckCss = () => {
   const R = (n) => cv(refPath(n.$value));
   return `
 /* ============ Check-in (QR) ============ */
+.ck-tech { display: flex; align-items: center; gap: ${dm(2)}; flex-wrap: wrap; padding: ${dm(2)} ${dm(4)}; background: ${cv("surface.sunken")}; border-bottom: 1px dashed ${cv("border.strong")}; font-family: ${cv("family.sans")}; }
+.ck-tech__label { color: ${cv("text.secondary")}; font-size: 12px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
+.ck-tech__sel { position: relative; display: inline-flex; flex: 1 1 auto; max-width: 360px; min-width: 0; }
+.ck-tech__select { appearance: none; -webkit-appearance: none; width: 100%; height: ${dm(8)}; padding: 0 ${dm(8)} 0 ${dm(3)}; border: 1px solid ${cv("border.default")}; border-radius: ${px(resolve("radius.default"))}; background: ${cv("surface.default")}; color: ${cv("text.default")}; font: inherit; font-size: 14px; cursor: pointer; }
+.ck-tech__chevron { position: absolute; right: ${dm(2)}; top: 50%; transform: translateY(-50%); width: ${dm(5)}; height: ${dm(5)}; color: ${cv("icon.secondary")}; pointer-events: none; }
 .ck-page { width: 100%; max-width: 560px; margin-inline: auto; display: flex; flex-direction: column; gap: ${dm(4)}; }
 .ck-state { display: none; flex-direction: column; gap: ${dm(3)}; }
 .ck-state.is-active { display: flex; }
@@ -1002,7 +1007,9 @@ const ckCss = () => {
 .alert--danger { background: ${R(al.role.danger.bg)}; border-color: ${R(al.role.danger.border)}; }
 .alert--danger .alert__icon { color: ${R(si.error.color)}; }`;
 };
-const checkinMarkup = () => `<div class="cx has-sidebar">
+const checkinMarkup = () => `<!-- prototype chrome, not part of the design: jump to any state -->
+<div class="ck-tech"><label class="ck-tech__label" for="ck-tech-view">Technical · Select view</label><span class="ck-tech__sel"><select class="ck-tech__select" id="ck-tech-view">${CK_STATES.map(([k, label, note]) => `<option value="${k}">${label}${note ? " — " + note : ""}</option>`).join("")}</select>${icon("expand_more", "ck-tech__chevron")}</span></div>
+<div class="cx has-sidebar">
   ${sidebarHtml({ nav: CX_NAV, active: "advising-scheduling", user: CX_USER, id: "cx", theme: "neutral" })}
   <div class="sidebar-scrim"></div>
 <div class="app cx__main">
@@ -1022,7 +1029,9 @@ ${CK_STATES.map(([k]) => `      <section class="ck-state" data-state="${k}">${CK
 </div>`;
 const CK_JS = `(function () {
   var states = document.querySelectorAll(".ck-state");
-  function show() { var k = (location.hash || "#loading").slice(1); var found = false; states.forEach(function (s) { var on = s.dataset.state === k; s.classList.toggle("is-active", on); found = found || on; }); if (!found) states[0].classList.add("is-active"); }
+  var tech = document.getElementById("ck-tech-view");
+  tech.addEventListener("change", function () { location.hash = tech.value; window.scrollTo(0, 0); });
+  function show() { var k = (location.hash || "#loading").slice(1); if (tech.querySelector('option[value="' + k + '"]')) tech.value = k; var found = false; states.forEach(function (s) { var on = s.dataset.state === k; s.classList.toggle("is-active", on); found = found || on; }); if (!found) states[0].classList.add("is-active"); }
   window.addEventListener("hashchange", show); show();
   document.querySelector(".ck-page").addEventListener("click", function (e) {
     var b = e.target.closest("button"); if (!b) return;
