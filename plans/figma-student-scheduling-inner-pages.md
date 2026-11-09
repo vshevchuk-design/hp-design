@@ -27,6 +27,8 @@
 
 ## 1. Крок 1 — доповнення бібліотеки (HighPoint Design System by Claude)
 
+**Статус 2026-11-09: зроблено в бібліотеці, чекає Publish.** 1.1 іконки ✓ · 1.2 Field Marker ✓ (6 варіантів) · 1.3 Text Area ✓ (сторінка Input, 6 станів) · 1.4 Alert `Show second action` ✓ (Action=Below) · 1.5 Accordion body paddingTop 8 ✓ · 1.6 Alert Dialog Tone=Default уже з Primary — змін не треба. Dialog має слот Body + футер — діалог скасування збирається з нього.
+
 Без цього продуктовий файл не зможе зібрати екрани з бібліотеки. Після кроку — **Publish**.
 
 | # | Що | Деталі | Чому |
@@ -143,7 +145,7 @@
 | A8 | Ціль не заповнена → помилка | ✓ | — | ✓ | Text Area Error + «Tell your advisor what you'd like to accomplish.» |
 | A9 | Фільтр Evening | ✓ | ✓ | ✓ | Day Tiles з «2 times», «1 time», Sat Full; 2 слоти |
 | A10 | Наступний тиждень | ✓ | — | ✓ | «Oct 9 – 15», chevron_left активний |
-| A11 | Немає вільних (Academic Difficulty) | ✓ | ✓ | ✓ | Alert Info «No open times right now. Every slot for this service is taken for the next 3 weeks.» + detail «We can email you as soon as an advisor opens a new time.» + Button Secondary sm notifications «Notify me when a spot opens» → стан «We'll let you know» (disabled) |
+| A11 | Немає вільних (Academic Difficulty) | ✓ | ✓ | ✓ | Alert Info «No open times right now. Every slot for this service is taken for the next 3 weeks.» + detail «We can email you as soon as an advisor opens a new time.» + дві дії: Button Primary sm notifications «Notify me when a spot opens» (→ «We'll let you know», disabled) і Button Secondary sm «Go to Drop-Ins» |
 | A12 | Перенесення | ✓ | — | ✓ | Alert Info «Rescheduling. Change of Major is booked for Wed, Oct 7 at 2:00 PM. That time stays yours until you confirm a new one.»; назад «Back to appointment»; ціль заповнена; кнопка «Confirm new time» |
 
 ### B. Done screen — 3 стани (P/T/D)
