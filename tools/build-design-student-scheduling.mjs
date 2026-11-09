@@ -315,6 +315,12 @@ ${shellTopbar({ title: "Scheduling", actions: settingsBtn })}
           ${icon("check_circle", "alert__icon")}
           <div class="alert__stack"><p class="alert__message"><span class="alert__title">You're checked in.</span> <span id="ss-d-here-text"></span></p></div>
         </div>
+        <!-- after a finished appointment: what the advisor wrote (not every
+             appointment has one) — the reason to come back to it -->
+        <div class="ss-step is-hidden" id="ss-d-summary-step">
+          <h3 class="ss-step__title">Summary</h3>
+          <div class="card"><div class="card__body" id="ss-d-summary"></div></div>
+        </div>
         <div class="alert is-hidden" id="ss-d-questions" role="status">
           ${icon("info", "alert__icon")}
           <div class="alert__stack">

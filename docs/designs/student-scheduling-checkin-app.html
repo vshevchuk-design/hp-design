@@ -907,6 +907,10 @@ html:has(dialog.dialog[open], dialog.alert-dialog[open]) { overflow: hidden; }
 .ss-dfact > svg { flex-shrink: 0; width: 20px; height: 20px; color: var(--tok-icon-secondary); }
 .ss-dfact__text { display: flex; flex-direction: column; gap: 2px; min-width: 0; color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; }
 .ss-dfact__sub { color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
+/* inline links (an advisor's email / phone): primary text, underline on hover */
+.ss-link { color: var(--tok-text-primary); text-decoration: none; overflow-wrap: anywhere; }
+@media (hover: hover) { .ss-link:hover { text-decoration: underline; } }
+.ss-link:focus-visible { outline: 2px solid var(--tok-border-focus); outline-offset: 2px; border-radius: 2px; }
 .ss-d-facts { display: flex; flex-direction: column; gap: 16px; }
 .ss-detail__section .ss-d-goal { color: var(--tok-text-default); }
 #ss-d-ref { margin-top: -4px; }

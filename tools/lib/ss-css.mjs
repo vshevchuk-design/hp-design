@@ -613,6 +613,10 @@ html:has(dialog.dialog[open], dialog.alert-dialog[open]) { overflow: hidden; }
 .ss-dfact > svg { flex-shrink: 0; width: ${dim(5)}; height: ${dim(5)}; color: ${cv("icon.secondary")}; }
 .ss-dfact__text { display: flex; flex-direction: column; gap: ${dim("0_5")}; min-width: 0; color: ${cv("text.default")}; ${typoCss(style("body-base"))} }
 .ss-dfact__sub { color: ${cv("text.secondary")}; ${typoCss(style("body-sm"))} }
+/* inline links (an advisor's email / phone): primary text, underline on hover */
+.ss-link { color: ${cv("text.primary")}; text-decoration: none; overflow-wrap: anywhere; }
+.ss-link:hover { text-decoration: underline; }
+.ss-link:focus-visible { outline: 2px solid ${cv("border.focus")}; outline-offset: 2px; border-radius: 2px; }
 .ss-d-facts { display: flex; flex-direction: column; gap: ${dim(4)}; }
 .ss-detail__section .ss-d-goal { color: ${cv("text.default")}; }
 #ss-d-ref { margin-top: -${dim(1)}; }

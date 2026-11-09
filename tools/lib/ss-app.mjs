@@ -814,9 +814,16 @@ export function ssAppJs(d) {
     var d0 = apptDate(a), mins = minutesOf(a);
     return [
       [ICONS.today, esc(DOW_LONG[d0.getDay()] + ", " + MON_LONG[d0.getMonth()] + " " + d0.getDate() + " · " + fmtRange(a.min, mins)), esc(mins + " minutes · times in " + ${JSON.stringify(d.TIME_ZONE)})],
-      [ICONS.person, esc(a.advisor), withDept ? esc(a.dept) : ""],
+      [ICONS.person, esc(a.advisor), contactOf(a.advisor) + (withDept ? " · " + esc(a.dept) : "")],
       [FORMAT_ICON[a.format], esc(where(a))]
     ];
+  }
+  // every advisor's contact, whatever the meeting format — for questions,
+  // running late, a document to send (user, 2026-11-09)
+  function contactOf(name) {
+    var email = name.toLowerCase().replace(/[^a-z ]/g, "").split(" ").join(".") + "@college.edu";
+    var phone = "(805) 555-" + String(1000 + hash(name) % 9000);
+    return '<a class="ss-link" href="mailto:' + email + '">' + email + '</a> · <a class="ss-link" href="tel:' + phone.replace(/[^0-9]/g, "") + '">' + phone + "</a>";
   }
   function where(a) {
     if (a.format === "phone") return "Phone — your advisor calls you at " + STUDENT_PHONE;
@@ -858,7 +865,8 @@ export function ssAppJs(d) {
         '<button type="button" class="btn btn--secondary btn--sm" data-appt="' + a.id + '">Details</button>';
       actions = '<div class="ss-appt__btns">' + btns + "</div>" + (!a.checkedIn && !checkinOpen(a) ? checkinNote(a) : "");
     } else {
-      actions = '<div class="ss-appt__btns"><button type="button" class="btn btn--secondary btn--sm" data-appt="' + a.id + '">Details</button></div>';
+      actions = '<div class="ss-appt__btns"><button type="button" class="btn btn--secondary btn--sm" data-appt="' + a.id + '">Details</button></div>' +
+        (a.status === "completed" && a.summary ? '<span class="ss-note">Summary from ' + esc(a.advisor.split(" ")[0]) + "</span>" : "");
     }
     return '<article class="ss-appt">' +
       '<div class="ss-appt__time"><span class="ss-appt__clock">' + fmtTime(a.min) + '</span><span class="ss-appt__dur">' + minutesOf(a) + " min</span></div>" +
@@ -972,6 +980,10 @@ export function ssAppJs(d) {
       : a.format === "video"
         ? "Open the link in your email — " + first + " will let you in at " + fmtTime(a.min) + "."
         : "Wait in the " + LOCATIONS[a.dept].split(",")[0] + " — " + first + " will come and get you at " + fmtTime(a.min) + ".";
+    var sum = a.status === "completed" && a.summary;
+    $("ss-d-summary-step").classList.toggle("is-hidden", !sum);
+    if (sum) $("ss-d-summary").innerHTML = '<span class="ss-eyebrow">From ' + esc(a.advisor) + '</span><p class="ss-mw-note">' + esc(sum.text) + "</p>" +
+      (sum.files ? '<div class="ss-files">' + sum.files.map(fileHtml).join("") + "</div>" : "");
     var askQ = up && a.questions && !a.answered;
     $("ss-d-questions").classList.toggle("is-hidden", !askQ);
     if (askQ) {
@@ -994,6 +1006,11 @@ export function ssAppJs(d) {
     $("ss-d-about").classList.toggle("is-hidden", !ABOUT[a.service]);
     $("ss-d-about-text").textContent = ABOUT[a.service] || "";
   }
+  // the advisor's summary attachments (prototype: a toast, no real file)
+  $("ss-d-summary").addEventListener("click", function (e) {
+    var file = e.target.closest("[data-file]");
+    if (file) { e.preventDefault(); showToast("Downloading " + file.dataset.file); }
+  });
   $("ss-appt-back").addEventListener("click", function () {
     if (V6) { goSection(FROM_SECTION[apptFrom]); return; }
     renderAppts(); showView("appointments");
@@ -1745,7 +1762,20 @@ export function ssAppJs(d) {
     if (!r) return;
     var all = sessionsOf(w.schedules[r.sched]), who = w.schedules[r.sched].organizer.split(" ")[0];
     var b = e.target.closest("[data-mw-skip]");
-    if (b) { var k = +b.dataset.mwSkip; r.skipped[k] = true; showToast("Got it — " + who + " knows you can\u2019t make it on " + fmtDate(all[k].date)); renderMyWorkshop(); return; }
+    // Can't make it asks first, like Check in and Leave (user, 2026-11-09): it
+    // tells the organizer. Primary, not danger — Undo reverses it.
+    if (b) {
+      var k = +b.dataset.mwSkip, scS = w.schedules[r.sched];
+      openLeave({
+        tone: "primary",
+        title: "Skip " + fmtDate(all[k].date) + "?",
+        text: "We\u2019ll let " + who + " know you can\u2019t make it to " + (w.mode === "single" ? w.name : "session " + (k + 1) + " of " + scS.count) + " at " + fmtTime(all[k].min) + ". You can undo this until the session starts.",
+        keep: "Keep it",
+        confirm: "I can\u2019t make it",
+        fn: function () { r.skipped[k] = true; showToast("Got it — " + who + " knows you can\u2019t make it on " + fmtDate(all[k].date)); renderMyWorkshop(); }
+      });
+      return;
+    }
     b = e.target.closest("[data-mw-undo]");
     if (b) { var u = +b.dataset.mwUndo; delete r.skipped[u]; showToast("You\u2019re back on for " + fmtDate(all[u].date)); renderMyWorkshop(); return; }
     b = e.target.closest("[data-mw-checkin]");
