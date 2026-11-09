@@ -44,7 +44,7 @@
 
 ## 2. Крок 2 — продуктові компоненти (секція Components)
 
-**Статус 2026-11-09:** секція **Components — Inner pages** (x 4800, y 1947) у файлі. Готово 17 з 18: Detail Line, Detail Section, Quiet Note, Advisor Summary, Summary Fact Row, Day Tile, Time Slot Tile, Advisor Option, Meeting Box, Workshop Schedule Tile, Session Row, Next Session Card (5 станів, додано Later), Past Session Item, Rating Chips, Done Card, Register Bar, Check-in Place Header. Лишилась **Visit Status Card** — чекає Publish бібліотеки (слот Control у Field Optional/Required перепривʼязаний).
+**Статус 2026-11-09:** секція **Components — Inner pages** (x 4800, y 1947) у файлі. Готово 18 з 18 (Visit Status Card добудовано після Publish; у бібліотеці відновлено прив'язки Label/Description/Error у клонованих варіантах Field): Detail Line, Detail Section, Quiet Note, Advisor Summary, Summary Fact Row, Day Tile, Time Slot Tile, Advisor Option, Meeting Box, Workshop Schedule Tile, Session Row, Next Session Card (5 станів, додано Later), Past Session Item, Rating Chips, Done Card, Register Bar, Check-in Place Header. 
 Уточнення з коду: Next session «Not going» має кнопку **«I can make it»** (не Undo; Undo — лише в рядках Coming up); Checked in = Badge + «Caitlin knows you’re here — take a seat in Room 120.». Тексти в слотах Card не прив’язуються до властивостей — правляться прямо в інстансі.
 
 Кожен — з усіма варіантами на аркуші, опис англійською (Figma-only, без репо).
