@@ -1109,6 +1109,13 @@ dialog.slide-over-panel--bottom[open] { transform: translateY(0); animation: sli
 /* lifted over iOS Safari's floating bottom bar (100lvh − 100dvh) + the home indicator */
 .ss-cal-drawer .slide-over-panel__body { padding: 0 0 calc(env(safe-area-inset-bottom) + 100lvh - 100dvh); }
 .ss-cal-drawer .ss-appt { padding-inline: 24px; }
+/* pick a time below 1024: the summary opens in a bottom drawer instead of
+   sitting under the times; Confirm fills the footer, lifted over iOS Safari's
+   floating bar */
+@media (max-width: 1023px) { .ss-pick > #ss-summary { display: none; } }
+.ss-sum-drawer .slide-over-panel__body { display: flex; flex-direction: column; gap: 12px; }
+.ss-sum-drawer .slide-over-panel__footer { padding-bottom: calc(16px + env(safe-area-inset-bottom) + 100lvh - 100dvh); }
+.ss-sum-drawer .slide-over-panel__footer > .btn { flex: 1; }
 /* from 768 a day shows its first two events as chips (time + title) */
 @media (min-width: 768px) {
   .ss-cal__cell { align-items: stretch; min-height: 96px; padding: 4px; }
@@ -1268,6 +1275,17 @@ dialog.slide-over-panel--bottom[open] { transform: translateY(0); animation: sli
           </div>
         </aside>
       </div>
+      <!-- Below 1024 the summary isn't a block under the times (picking one
+           scrolled the page down to it): picking a time opens it here, a
+           bottom SlideOverPanel, with Confirm in its footer. The script moves
+           the card's body and button in and back out — one summary. -->
+      <dialog class="slide-over-panel slide-over-panel--bottom ss-sum-drawer" id="ss-sum-drawer" aria-labelledby="ss-sum-drawer-title">
+        <div class="slide-over-panel__content">
+          <div class="slide-over-panel__header"><div class="slide-over-panel__heading"><h2 class="slide-over-panel__title" id="ss-sum-drawer-title">Your appointment</h2></div><button class="slide-over-panel__close" type="button" id="ss-sum-drawer-close" aria-label="Close"><svg class="slide-over-panel__close-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button></div>
+          <div class="slide-over-panel__body" id="ss-sum-drawer-body"></div>
+          <div class="slide-over-panel__footer" id="ss-sum-drawer-foot"></div>
+        </div>
+      </dialog>
     </section>
 
     <!-- ============ My appointments ============ -->
@@ -1988,9 +2006,24 @@ dialog.slide-over-panel--bottom[open] { transform: translateY(0); animation: sli
     pk.slot = pk.daySlots.filter(function (x) { return x.id === e.target.value; })[0];
     pk.advisor = pk.slot.advisors[0];
     renderSummary();
-    // Below 1024 the summary sits under the times — bring it into view.
-    if (window.innerWidth < 1024) $("ss-summary").scrollIntoView({ behavior: "smooth", block: "start" });
+    // Below 1024 the summary opens in a bottom drawer (it used to sit under
+    // the times and the page scrolled down to it)
+    if (pickNarrow.matches) openSumDrawer();
   });
+  var pickNarrow = window.matchMedia("(max-width: 1023px)");
+  var sumDrawer = $("ss-sum-drawer"), sumCard = $("ss-summary");
+  var sumBody = sumCard.querySelector(".card__body"), sumFoot = sumCard.querySelector(".card__footer");
+  function openSumDrawer() {
+    if (sumDrawer.open) return;
+    $("ss-sum-drawer-body").appendChild(sumBody);
+    $("ss-sum-drawer-foot").appendChild($("ss-confirm"));
+    sumDrawer.showModal();
+  }
+  // back into the card — the desktop column, and the next time it opens
+  sumDrawer.addEventListener("close", function () { sumCard.insertBefore(sumBody, sumFoot); sumFoot.appendChild($("ss-confirm")); });
+  on("ss-sum-drawer-close", "click", function () { sumDrawer.close(); });
+  sumDrawer.addEventListener("click", function (e) { if (e.target === sumDrawer) sumDrawer.close(); });
+  pickNarrow.addEventListener("change", function () { if (!pickNarrow.matches && sumDrawer.open) sumDrawer.close(); });
 
   // minimal: nothing bookable yet (no open times, or no department chosen) —
   // the card keeps what's known (service, department, duration, location)
@@ -2031,6 +2064,7 @@ dialog.slide-over-panel--bottom[open] { transform: translateY(0); animation: sli
   $("ss-advisors").addEventListener("change", function (e) { pk.advisor = e.target.value; });
   $("ss-confirm").addEventListener("click", function () {
     if (!pk.slot) return;
+    if (sumDrawer.open) sumDrawer.close();
     var dt = weekDays(pk.week)[pk.day];
     booked[pk.slot.id] = true;
     var when = DOW[dt.getDay()] + ", " + MON[dt.getMonth()] + " " + dt.getDate() + " at " + fmtTime(pk.slot.min);

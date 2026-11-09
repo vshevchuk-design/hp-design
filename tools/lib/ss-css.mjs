@@ -782,6 +782,13 @@ ${slideOverPanelCss}
 /* lifted over iOS Safari's floating bottom bar (100lvh − 100dvh) + the home indicator */
 .ss-cal-drawer .slide-over-panel__body { padding: 0 0 calc(env(safe-area-inset-bottom) + 100lvh - 100dvh); }
 .ss-cal-drawer .ss-appt { padding-inline: ${D(drawer.padding)}; }
+/* pick a time below 1024: the summary opens in a bottom drawer instead of
+   sitting under the times; Confirm fills the footer, lifted over iOS Safari's
+   floating bar */
+@media (max-width: 1023px) { .ss-pick > #ss-summary { display: none; } }
+.ss-sum-drawer .slide-over-panel__body { display: flex; flex-direction: column; gap: ${dim(3)}; }
+.ss-sum-drawer .slide-over-panel__footer { padding-bottom: calc(${D(drawer.barPaddingY)} + env(safe-area-inset-bottom) + 100lvh - 100dvh); }
+.ss-sum-drawer .slide-over-panel__footer > .btn { flex: 1; }
 /* from 768 a day shows its first two events as chips (time + title) */
 @media (min-width: 768px) {
   .ss-cal__cell { align-items: stretch; min-height: ${dim(24)}; padding: ${dim(1)}; }

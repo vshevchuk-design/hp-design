@@ -252,6 +252,17 @@ ${shellTopbar({ title: "Scheduling", actions: settingsBtn })}
           </div>
         </aside>
       </div>
+      <!-- Below 1024 the summary isn't a block under the times (picking one
+           scrolled the page down to it): picking a time opens it here, a
+           bottom SlideOverPanel, with Confirm in its footer. The script moves
+           the card's body and button in and back out — one summary. -->
+      <dialog class="slide-over-panel slide-over-panel--bottom ss-sum-drawer" id="ss-sum-drawer" aria-labelledby="ss-sum-drawer-title">
+        <div class="slide-over-panel__content">
+          <div class="slide-over-panel__header"><div class="slide-over-panel__heading"><h2 class="slide-over-panel__title" id="ss-sum-drawer-title">Your appointment</h2></div><button class="slide-over-panel__close" type="button" id="ss-sum-drawer-close" aria-label="Close">${icon("close", "slide-over-panel__close-icon")}</button></div>
+          <div class="slide-over-panel__body" id="ss-sum-drawer-body"></div>
+          <div class="slide-over-panel__footer" id="ss-sum-drawer-foot"></div>
+        </div>
+      </dialog>
     </section>
 
     <!-- ============ My appointments ============ -->

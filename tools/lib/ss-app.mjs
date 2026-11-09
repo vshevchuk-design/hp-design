@@ -616,9 +616,24 @@ export function ssAppJs(d) {
     pk.slot = pk.daySlots.filter(function (x) { return x.id === e.target.value; })[0];
     pk.advisor = pk.slot.advisors[0];
     renderSummary();
-    // Below 1024 the summary sits under the times — bring it into view.
-    if (window.innerWidth < 1024) $("ss-summary").scrollIntoView({ behavior: "smooth", block: "start" });
+    // Below 1024 the summary opens in a bottom drawer (it used to sit under
+    // the times and the page scrolled down to it)
+    if (pickNarrow.matches) openSumDrawer();
   });
+  var pickNarrow = window.matchMedia("(max-width: 1023px)");
+  var sumDrawer = $("ss-sum-drawer"), sumCard = $("ss-summary");
+  var sumBody = sumCard.querySelector(".card__body"), sumFoot = sumCard.querySelector(".card__footer");
+  function openSumDrawer() {
+    if (sumDrawer.open) return;
+    $("ss-sum-drawer-body").appendChild(sumBody);
+    $("ss-sum-drawer-foot").appendChild($("ss-confirm"));
+    sumDrawer.showModal();
+  }
+  // back into the card — the desktop column, and the next time it opens
+  sumDrawer.addEventListener("close", function () { sumCard.insertBefore(sumBody, sumFoot); sumFoot.appendChild($("ss-confirm")); });
+  on("ss-sum-drawer-close", "click", function () { sumDrawer.close(); });
+  sumDrawer.addEventListener("click", function (e) { if (e.target === sumDrawer) sumDrawer.close(); });
+  pickNarrow.addEventListener("change", function () { if (!pickNarrow.matches && sumDrawer.open) sumDrawer.close(); });
 
   // minimal: nothing bookable yet (no open times, or no department chosen) —
   // the card keeps what's known (service, department, duration, location)
@@ -659,6 +674,7 @@ export function ssAppJs(d) {
   $("ss-advisors").addEventListener("change", function (e) { pk.advisor = e.target.value; });
   $("ss-confirm").addEventListener("click", function () {
     if (!pk.slot) return;
+    if (sumDrawer.open) sumDrawer.close();
     var dt = weekDays(pk.week)[pk.day];
     booked[pk.slot.id] = true;
     var when = DOW[dt.getDay()] + ", " + MON[dt.getMonth()] + " " + dt.getDate() + " at " + fmtTime(pk.slot.min);
