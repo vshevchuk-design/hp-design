@@ -755,6 +755,11 @@ html { background: ${cv("surface.page")}; }
   .cx .app__topbar { grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "menu title actions"; }
   .cx .sidebar-open { display: inline-flex; grid-area: menu; }
   .cx .ss__main > .ss-sections--top .tabs--segmented { display: flex; width: 100%; height: ${trackSm}; }
+  /* the section tabs are for the three sections only — a booking, a visit, a
+     workshop, a details page or the done screen has its own back link, and
+     on a phone the tabs above it are noise (user, 2026-11-09). From 768
+     they live in the topbar and stay. */
+  .cx .ss__main:has(> .ss-view.is-active:not(:is([data-view="browse"], [data-view="appointments"], [data-view="calendar"]))) > .ss-sections--top { display: none; }
   /* the section's own title + subtitle go (screen readers keep the h2): the
      selected tab already says where you are (user, 2026-10-29). One 16px
      rhythm — topbar → tabs → the section's controls; 12 inside a section. */

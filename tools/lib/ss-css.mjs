@@ -279,7 +279,7 @@ ${SELECT_CSS}
 .card__header { display: flex; flex-direction: column; gap: ${D(card.headerGap)}; padding-bottom: ${D(card.gap)}; border-bottom: 1px solid ${R(card.divider)}; }
 .card__title { margin: 0; color: ${R(card.titleColor)}; ${typoCss(T(card.title))} }
 .card__description { margin: 0; color: ${R(card.descriptionColor)}; ${typoCss(T(card.description))} }
-.card__footer { padding-top: ${D(card.gap)}; border-top: 1px solid ${R(card.divider)}; display: flex; justify-content: flex-end; gap: ${dim(2)}; }
+.card__footer { padding-top: ${D(card.gap)}; border-top: 1px solid ${R(card.divider)}; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: ${dim(2)}; }
 /* composition: a group of the card's content (no padding of its own) */
 .card__body { display: flex; flex-direction: column; gap: ${D(card.gap)}; min-width: 0; }
 /* composition: content that runs edge to edge (a list, an Accordion) — the
