@@ -53,7 +53,7 @@ const registry = {
   ...load("tokens/semantic/color.tokens.json"),
 };
 
-const COMPONENTS = ["tabs", "button", "select", "search", "chip", "listbox", "card", "badge", "pagination", "choice-tile", "radio", "alert", "toast", "tooltip", "empty-state", "dialog", "alert-dialog", "input", "counter", "progress", "attachment", "accordion", "calendar", "date-picker", "slide-over-panel", "box", "dropdown-menu", "status-icon"];
+const COMPONENTS = ["tabs", "button", "select", "search", "chip", "listbox", "card", "badge", "pagination", "choice-tile", "radio", "alert", "toast", "tooltip", "empty-state", "dialog", "alert-dialog", "input", "counter", "progress", "attachment", "accordion", "calendar", "date-picker", "slide-over-panel", "box", "dropdown-menu", "status-icon", "spinner"];
 const comp = (name) => load(`tokens/components/${name}.tokens.json`).component;
 const tokens = Object.assign({}, ...COMPONENTS.map(comp));
 
@@ -925,6 +925,148 @@ ${layout === "v7" ? V7_JS : ""}
 </html>
 `;
 
+// ============ Student Check-in (QR) ============
+// /student/check-in is reached only from a QR code at a desk (user, 2026-11-09:
+// "App only · Reached from a kiosk QR code"). The student scans it with their
+// own phone, signed in (or sent through SSO and back); the code names the
+// place, so the page knows where they are and finds what they can check in to
+// there right now. The live app only had "Looking up your status…" and "No
+// service available"; every other state is new. One page, one state per hash
+// (the viewer lists them like versions); no section Tabs — it isn't a section.
+const CK_STATES = [
+  ["loading", "Looking up", "the code was scanned"],
+  ["signin", "Sign in", "not signed in on this phone"],
+  ["appointment", "Checked in · appointment", ""],
+  ["workshop", "Checked in · workshop", ""],
+  ["choose", "Choose", "more than one thing here today"],
+  ["dropin", "Drop-in · join", "the desk is open"],
+  ["inline", "Drop-in · already in line", "scanned again"],
+  ["early", "Too early", "check-in not open yet"],
+  ["late", "Too late", "check-in closed"],
+  ["none", "Nothing here", "the live app's dead end, with a way out"],
+  ["error", "Error", "expired code / offline"],
+];
+const ckLine = (ic, text, subText) => `<li class="ss-dfact">${icon(ic, "")}<div class="ss-dfact__text"><span>${text}</span>${subText ? `<span class="ss-dfact__sub">${subText}</span>` : ""}</div></li>`;
+const ckAlert = (role, ic, title, body, actions = "") => `<div class="alert alert--${role}" role="${role === "danger" ? "alert" : "status"}">${icon(ic, "alert__icon")}<div class="alert__stack"><p class="alert__message"><span class="alert__title">${title}</span> ${body}</p>${actions ? `<div class="alert__actions">${actions}</div>` : ""}</div></div>`;
+const ckBtn = (label, kind = "secondary", go = "") => `<button type="button" class="btn btn--${kind} btn--base"${go ? ` data-go="${go}"` : ""}>${label}</button>`;
+const ckCard = (body, footer = "") => `<div class="card"><div class="card__body ck-card">${body}</div>${footer ? `<div class="card__footer ck-actions">${footer}</div>` : ""}</div>`;
+const ckFacts = (lines, sections = "") => `<div class="ss-d-facts"><ul class="ss-dfacts">${lines.join("")}</ul>${sections}</div>`;
+const ckSection = (h, p) => `<div class="ss-detail__section"><h3>${h}</h3><p>${p}</p></div>`;
+const ckTile = (name, title, desc, checked) => `<label class="choice-tile"><input class="choice-tile__input" type="radio" name="ck-pick"${checked ? " checked" : ""}><span class="choice-tile__box"><span class="choice-tile__text"><span class="choice-tile__label">${title}</span><span class="choice-tile__description">${desc}</span></span></span></label>`;
+const CK_BODY = {
+  loading: `<div class="card"><div class="card__body ck-loading"><span class="spinner spinner--lg" aria-hidden="true"></span><p class="ss-visit__title" role="status">Looking up your status…</p><p class="ss-visit__text">Checking what you have at the Counseling Center today.</p></div></div>`,
+  signin: ckCard(`<h3 class="ss-visit__title">Sign in to check in</h3><p class="ss-visit__text">Use your college account. You’ll come straight back here and we’ll check you in.</p>`, ckBtn("Sign in", "primary", "loading")),
+  appointment: ckAlert("success", "check_circle", "You’re checked in.", "Caitlin Moore will come and get you at 10:30 AM.") +
+    ckCard(ckFacts([ckLine("today", "Today · 10:30 – 11:00 AM", "Ed Plan Review · 30 minutes"), ckLine("person", "Caitlin Moore"), ckLine("group", "In person — Counseling Center, Student Services Building, Room 147")],
+      ckSection("While you wait", "Have a seat in the Counseling Center lobby. If you need to step out, tell the front desk.")), ckBtn("View appointment") + ckBtn("Done", "primary")),
+  workshop: ckAlert("success", "check_circle", "You’re checked in to session 6 of 10.", "First-Year Success Seminar starts at 11:00 AM.") +
+    ckCard(ckFacts([ckLine("today", "Today · 11:00 AM – 12:00 PM", "Session 6 of 10"), ckLine("person", "Caitlin Moore", "Academic Advising"), ckLine("group", "In person — Student Services Building, Room 120")]), ckBtn("View workshop") + ckBtn("Done", "primary")),
+  choose: ckCard(`<h3 class="ss-visit__title">What are you here for?</h3><p class="ss-visit__text">You have more than one thing at the Counseling Center today.</p><div class="ck-tiles" role="radiogroup" aria-label="Check in to">` +
+      ckTile("a", "Ed Plan Review", "Appointment · 10:30 AM with Caitlin Moore", true) + ckTile("w", "First-Year Success Seminar", "Workshop · session 6 of 10 at 11:00 AM") + ckTile("d", "Comprehensive Ed Plan drop-in", "4 waiting · about 32 min") + `</div>`,
+    ckBtn("Check in", "primary", "appointment")),
+  dropin: `<div class="card"><div class="card__body ss-visit"><span class="ss-eyebrow">Drop-in · open until 10:00 PM</span><h3 class="ss-visit__title">4 students waiting</h3><p class="ss-visit__text">Comprehensive Ed Plan. If you join now you’d be #5 — about 32 minutes. Stay nearby: this page tells you when an advisor is ready.</p></div>` +
+    `<div class="card__body ss-pre-fields"><div class="field"><span class="field__label" id="ck-topic-label">What would you like help with? <span class="field__optional">(optional)</span></span><button type="button" class="select is-placeholder ss-field__select" aria-haspopup="listbox" aria-labelledby="ck-topic-label"><span class="select__value">Choose a topic</span>${icon("expand_more", "select__chevron")}</button></div>` +
+    `<div class="field"><label class="field__label" for="ck-note">Anything the advisor should know? <span class="field__optional">(optional)</span></label><div class="text-field text-field--area"><div class="text-field__stack"><textarea class="text-field__control" id="ck-note" rows="3" placeholder="A question, a document you’ll bring…"></textarea></div></div></div></div>` +
+    `<div class="card__footer ck-actions">${ckBtn("Join queue", "primary", "inline")}</div></div>`,
+  inline: `<div class="card"><div class="card__body ss-visit"><span class="ss-eyebrow">Your place in line</span><h3 class="ss-visit__title">You’re #3 — about 16 minutes</h3><div class="progress" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"><span class="progress__bar" style="width: 50%"></span></div><p class="ss-visit__text">You joined Comprehensive Ed Plan at 10:05 AM. Stay nearby: this page tells you when an advisor is ready.</p></div><div class="card__footer ck-actions">${ckBtn("Step away")}${ckBtn("Leave queue")}</div></div>`,
+  early: ckAlert("info", "info", "Too early to check in.", "Your appointment is at 2:00 PM — check-in opens at 1:45 PM. Scan the code again then.") +
+    ckCard(ckFacts([ckLine("today", "Today · 2:00 – 3:00 PM", "Change of Major · 60 minutes"), ckLine("person", "Ava Robinson"), ckLine("group", "In person — Counseling Center, Student Services Building, Room 112")]), ckBtn("View appointment") + ckBtn("Done", "primary")),
+  late: ckAlert("warning", "warning", "Your appointment started at 9:00 AM.", "Check-in closed 15 minutes after the start. Talk to the front desk — they can still fit you in or help you pick a new time.") +
+    ckCard(ckFacts([ckLine("today", "Today · 9:00 – 10:00 AM", "Comprehensive Ed Plan · 60 minutes"), ckLine("person", "George Amalor"), ckLine("group", "In person — Counseling Center, Student Services Building, Room 128")]), ckBtn("Reschedule") + ckBtn("Done", "primary")),
+  none: ckAlert("warning", "warning", "Nothing to check in to here.", "You have nothing booked at the Counseling Center today, and its drop-in hours are over for the day.", ckBtn("Book an appointment", "primary") + ckBtn("See drop-ins open now")),
+  error: ckAlert("danger", "error", "We couldn’t check you in.", "The code may have expired, or the connection dropped.", ckBtn("Try again", "primary", "loading")),
+};
+const ckCss = () => {
+  const dm = (k) => px(resolve(`dim.${k}`));
+  const sp = tokens.spinner, al = tokens.alert, si = tokens.statusIcon;
+  const R = (n) => cv(refPath(n.$value));
+  return `
+/* ============ Check-in (QR) ============ */
+.ck-page { width: 100%; max-width: 560px; margin-inline: auto; display: flex; flex-direction: column; gap: ${dm(4)}; }
+.ck-state { display: none; flex-direction: column; gap: ${dm(3)}; }
+.ck-state.is-active { display: flex; }
+.ck-card { display: flex; flex-direction: column; gap: ${dm(3)}; }
+.ck-actions { justify-content: flex-end; }
+.ck-tiles { display: flex; flex-direction: column; gap: ${dm(2)}; }
+.ck-loading { align-items: center; text-align: center; gap: ${dm(2)}; padding-block: ${dm(8)}; }
+.ck-loading .spinner { margin-bottom: ${dm(2)}; }
+@media (max-width: 559px) { .ck-actions { flex-direction: column-reverse; align-items: stretch; } .ck-actions > .btn { width: 100%; } }
+/* Spinner — as docs/spinner.html */
+.spinner { display: inline-block; flex-shrink: 0; border-style: solid; border-color: ${R(sp.track)}; border-top-color: ${R(sp.indicator)}; border-radius: 50%; animation: spinner-rotate ${sp.duration.$value} linear infinite; }
+.spinner--lg { width: ${px(resolve(refPath(sp.sizes.lg.size.$value)))}; height: ${px(resolve(refPath(sp.sizes.lg.size.$value)))}; border-width: ${px(resolve(refPath(sp.sizes.lg.thickness.$value)))}; }
+@keyframes spinner-rotate { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .spinner { animation-duration: 2.8s; } }
+/* Alert warning / danger — the roles Scheduling hadn't needed yet */
+.alert--warning { background: ${R(al.role.warning.bg)}; border-color: ${R(al.role.warning.border)}; }
+.alert--warning .alert__icon { color: ${R(si.warning.color)}; }
+.alert--danger { background: ${R(al.role.danger.bg)}; border-color: ${R(al.role.danger.border)}; }
+.alert--danger .alert__icon { color: ${R(si.error.color)}; }`;
+};
+const checkinMarkup = () => `<div class="cx has-sidebar">
+  ${sidebarHtml({ nav: CX_NAV, active: "advising-scheduling", user: CX_USER, id: "cx", theme: "neutral" })}
+  <div class="sidebar-scrim"></div>
+<div class="app cx__main">
+  <header class="app__topbar">
+    ${SIDEBAR_MENU_BUTTON("btn btn--secondary btn--base btn--icon-only")}
+    <div class="app__brand"><h1 class="app__title">Check in</h1></div>
+    <button class="btn btn--secondary btn--base btn--icon-only" type="button" aria-label="Settings">${icon("settings", "btn__icon")}</button>
+  </header>
+  <main class="ss__main">
+    <div class="ck-page">
+      <!-- the place comes from the QR code -->
+      <div class="ss-head"><span class="ss-eyebrow">Check in at</span><h2 class="ss-title">Counseling Center</h2><p class="ss-sub ss-sub--sm">Student Services Building, 1st floor</p></div>
+${CK_STATES.map(([k]) => `      <section class="ck-state" data-state="${k}">${CK_BODY[k]}</section>`).join("\n")}
+    </div>
+  </main>
+</div>
+</div>`;
+const CK_JS = `(function () {
+  var states = document.querySelectorAll(".ck-state");
+  function show() { var k = (location.hash || "#loading").slice(1); var found = false; states.forEach(function (s) { var on = s.dataset.state === k; s.classList.toggle("is-active", on); found = found || on; }); if (!found) states[0].classList.add("is-active"); }
+  window.addEventListener("hashchange", show); show();
+  document.querySelector(".ck-page").addEventListener("click", function (e) {
+    var b = e.target.closest("button"); if (!b) return;
+    if (b.dataset.go) { location.hash = b.dataset.go; window.scrollTo(0, 0); return; }
+    window.showToast({ role: "info", text: "Prototype \\u2014 this leads out of the check-in page" });
+  });
+})();
+document.querySelector(".sidebar").addEventListener("click", function (e) {
+  var a = e.target.closest("[data-nav], .sidebar__logo, .sidebar__account");
+  if (!a) return;
+  e.preventDefault();
+  if (a.getAttribute("aria-current") === "page") return;
+  window.showToast({ role: "info", text: "Prototype \\u2014 this page isn\\u2019t designed yet" });
+});
+${SIDEBAR_JS}`;
+const checkinHtml = () => `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="${(() => { const v = resolve("surface.page"); return typeof v === "string" ? v : v.hex; })()}" />
+<title>Check in</title>
+<link rel="stylesheet" href="../../assets/fonts/sora/sora.css" />
+<style>
+${appCss}${hoverGuard(v7Css())}${ckCss()}
+</style>
+</head>
+<body>
+${checkinMarkup()}
+<script>
+${TOAST_JS}
+${CK_JS}
+</script>
+</body>
+</html>
+`;
+const checkinViewer = renderDesignViewer({
+  activeKey: "student-scheduling-checkin",
+  title: "Student Check-in (QR)",
+  heading: "Student Check-in (QR)",
+  sub: `The page a QR code at a desk opens — <code>/student/check-in</code>, app only. The student scans the code at the Counseling Center (or any desk) with their own phone; the code names the place, so the page finds what they can check in to there right now: an appointment, a workshop session, the desk's drop-in line. Signed out → SSO and straight back. The live app only showed "Looking up your status…" and a dead-end "No service available"; the rest is new. Every state is one choice in the selector above. Same CX shell as Student Scheduling, without the Book / My schedule / Calendar tabs — it isn't a section. Built from the same components: Card, Alert (success / info / warning / danger), ChoiceTile, Progress, Spinner, the detail pages' icon lines.`,
+  versions: CK_STATES.map(([k, label, note]) => ({ label, note, file: "student-scheduling-checkin-app.html#" + k })),
+});
+
 const viewerHtml = renderDesignViewer({
   activeKey: "student-scheduling",
   title: "Student Scheduling",
@@ -944,6 +1086,8 @@ fs.writeFileSync(path.join(root, "docs/designs/student-scheduling-v1-app.html"),
 fs.writeFileSync(path.join(root, "docs/designs/student-scheduling-v6-app.html"), appHtmlFor("v6"));
 fs.writeFileSync(path.join(root, "docs/designs/student-scheduling-v7-app.html"), appHtmlFor("v7"));
 fs.writeFileSync(path.join(root, "docs/designs/student-scheduling.html"), viewerHtml);
+fs.writeFileSync(path.join(root, "docs/designs/student-scheduling-checkin-app.html"), checkinHtml());
+fs.writeFileSync(path.join(root, "docs/designs/student-scheduling-checkin.html"), checkinViewer);
 console.log("wrote docs/designs/student-scheduling-app.html (v5, departments as text)");
 console.log("wrote docs/designs/student-scheduling-v1-app.html (v1, list)");
 console.log("wrote docs/designs/student-scheduling-v6-app.html (v6, Book + My schedule)");
