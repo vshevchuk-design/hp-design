@@ -13,6 +13,7 @@ export function ssAppJs(d) {
   return `(function () {
   var SERVICES = ${JSON.stringify(d.SERVICES)};
   var ADVISORS = ${JSON.stringify(d.ADVISORS)};
+  var ADVISOR_FORMATS = ${JSON.stringify(d.ADVISOR_FORMATS || {})};
   var LOCATIONS = ${JSON.stringify(d.LOCATIONS)};
   var DEPARTMENTS = ${JSON.stringify(d.DEPARTMENTS)};
   var TODAY = ${JSON.stringify(d.TODAY)};
@@ -477,13 +478,10 @@ export function ssAppJs(d) {
           if (hash(hk) % 100 >= density) continue;
           var pool = ADVISORS.slice().sort(function (a, b) { return hash(hk + a) - hash(hk + b); });
           var n = 1 + hash(hk + "n") % 6;
-          // each advisor meets their own ways (in person, phone, video — any
-          // mix, at least one); the time offers what its advisors offer
+          // each advisor meets their own ways (ADVISOR_FORMATS); the time
+          // offers what its advisors offer
           var advs = pool.slice(0, n), byAdv = {};
-          advs.forEach(function (a) {
-            var mine = FORMATS.filter(function (f) { return hash(hk + a + f.key) % 3 > 0; }).map(function (f) { return f.key; });
-            byAdv[a] = mine.length ? mine : [FORMATS[hash(hk + a) % 3].key];
-          });
+          advs.forEach(function (a) { byAdv[a] = ADVISOR_FORMATS[a] || ["inPerson"]; });
           var fm = FORMATS.filter(function (f) { return advs.some(function (a) { return byAdv[a].indexOf(f.key) !== -1; }); });
           out.push({ id: hk, min: m, advisors: advs, byAdv: byAdv, formats: fm.map(function (f) { return f.key; }) });
         }
@@ -608,7 +606,9 @@ export function ssAppJs(d) {
     $("ss-day-count").textContent = slots.length + (slots.length === 1 ? " open time" : " open times");
     $("ss-slots").innerHTML = slots.map(function (x) {
       var who = x.advisors[0] + (x.advisors.length > 1 ? " +" + (x.advisors.length - 1) + " more" : "");
-      var fm = x.formats.map(function (k) {
+      // the tile's icons are the listed advisor's ways (all the time's ways
+      // made nearly every tile three icons — user, 2026-11-09)
+      var fm = x.byAdv[x.advisors[0]].map(function (k) {
         var f = FORMATS.filter(function (y) { return y.key === k; })[0];
         return '<span class="tooltip-wrapper" aria-label="' + f.label + '">' + f.icon + '<span class="tooltip" role="tooltip">' + f.label + "</span></span>";
       }).join("");

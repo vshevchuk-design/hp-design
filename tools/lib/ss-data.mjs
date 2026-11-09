@@ -68,6 +68,22 @@ export const SERVICES = [
   { name: "Writing Center", minutes: 30, drop: "open", depts: ["Tutoring Center", "English Dept"] },
 ];
 
+// How each advisor meets — their own, every time (most in person; some also
+// by video; a couple by phone; one video-only). The time tile shows the
+// listed advisor's ways, the summary shows each advisor's.
+export const ADVISOR_FORMATS = {
+  "Alexander Robinson": ["inPerson"],
+  "Andy Hernandez": ["inPerson", "video"],
+  "Ava Robinson": ["inPerson", "phone"],
+  "Caitlin Moore": ["inPerson"],
+  "Craig Millett": ["video"],
+  "Denny Petersen": ["inPerson"],
+  "Eric Lynch": ["inPerson", "video"],
+  "George Amalor": ["inPerson"],
+  "Jonathan Rehm": ["phone", "video"],
+  "Priya Natarajan": ["inPerson", "video"],
+};
+
 export const ADVISORS = [
   "Alexander Robinson",
   "Andy Hernandez",

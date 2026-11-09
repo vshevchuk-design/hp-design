@@ -1417,6 +1417,7 @@ dialog.slide-over-panel--bottom[open] { transform: translateY(0); animation: sli
 (function () {
   var SERVICES = [{"name":"Academic Difficulty","minutes":45,"drop":"none","depts":["Counseling"],"noSlots":true},{"name":"Academic Probation","minutes":30,"drop":"open","depts":["Counseling"]},{"name":"Assessment / Placement","minutes":30,"drop":"open","depts":["Admissions & Records"]},{"name":"Career Counseling","minutes":60,"drop":"none","depts":["Career and Talent Development","Counseling"]},{"name":"Change of Major","minutes":60,"drop":"none","depts":["Academic Advising"]},{"name":"Comprehensive Ed Plan","minutes":60,"drop":"open","depts":["Counseling"]},{"name":"Degree Planning","minutes":30,"drop":"available","depts":["English Dept","Liberal Arts","Office of the Registrar"]},{"name":"Ed Plan Review","minutes":30,"drop":"open","depts":["Counseling"]},{"name":"Education Plan","minutes":30,"drop":"none","depts":["Academic Advising"]},{"name":"EOPS Appointment","minutes":45,"drop":"open","depts":["Counseling"]},{"name":"Financial Aid Petition","minutes":30,"drop":"available","depts":["Office of the Registrar"]},{"name":"Graduation","minutes":15,"drop":"available","depts":["Liberal Arts","Office of the Registrar"]},{"name":"Graduate Admissions Review","minutes":45,"drop":"none","depts":["Grad - Admissions"]},{"name":"Internship Planning","minutes":30,"drop":"none","depts":["Career and Talent Development"]},{"name":"Major Exploration","minutes":45,"drop":"none","depts":["Academic Advising","Liberal Arts"]},{"name":"Math Tutoring","minutes":30,"drop":"open","depts":["Tutoring Center"]},{"name":"Mentor Check-In","minutes":30,"drop":"none","depts":["Student Mentoring"]},{"name":"New Student Orientation","minutes":60,"drop":"none","depts":["Admissions & Records"]},{"name":"Peer Mentoring","minutes":30,"drop":"available","depts":["Student Mentoring"]},{"name":"Personal Counseling","minutes":45,"drop":"none","depts":["Counseling"]},{"name":"Readmission","minutes":30,"drop":"none","depts":["Admissions & Records"]},{"name":"Records Request","minutes":15,"drop":"available","depts":["Office of the Registrar"]},{"name":"Resume Review","minutes":30,"drop":"open","depts":["Career and Talent Development"]},{"name":"Scholarship Advising","minutes":30,"drop":"none","depts":["Academic Advising"]},{"name":"Study Skills","minutes":45,"drop":"none","depts":["Tutoring Center"]},{"name":"Transcript Evaluation","minutes":30,"drop":"none","depts":["Office of the Registrar","Admissions & Records"]},{"name":"Transfer Planning","minutes":60,"drop":"none","depts":["Academic Advising","Counseling"]},{"name":"Veterans Services","minutes":45,"drop":"none","depts":["Counseling"]},{"name":"Writing Center","minutes":30,"drop":"open","depts":["Tutoring Center","English Dept"]}];
   var ADVISORS = ["Alexander Robinson","Andy Hernandez","Ava Robinson","Caitlin Moore","Craig Millett","Denny Petersen","Eric Lynch","George Amalor","Jonathan Rehm","Priya Natarajan"];
+  var ADVISOR_FORMATS = {"Alexander Robinson":["inPerson"],"Andy Hernandez":["inPerson","video"],"Ava Robinson":["inPerson","phone"],"Caitlin Moore":["inPerson"],"Craig Millett":["video"],"Denny Petersen":["inPerson"],"Eric Lynch":["inPerson","video"],"George Amalor":["inPerson"],"Jonathan Rehm":["phone","video"],"Priya Natarajan":["inPerson","video"]};
   var LOCATIONS = {"Academic Advising":"Advising Center, Student Services Building","Admissions & Records":"Admissions Office, Student Services Building","Career and Talent Development":"Career Center, Library 2nd floor","Counseling":"Counseling Center, Student Services Building","English Dept":"Humanities Hall, Room 214","Grad - Admissions":"Graduate Office, Admin Building","Liberal Arts":"Humanities Hall, Room 102","Office of the Registrar":"Registrar, Admin Building","Student Mentoring":"Student Union, Room 3","Tutoring Center":"Learning Commons, Library 1st floor"};
   var DEPARTMENTS = ["Academic Advising","Admissions & Records","Career and Talent Development","Counseling","English Dept","Grad - Admissions","Liberal Arts","Office of the Registrar","Student Mentoring","Tutoring Center"];
   var TODAY = "2026-10-02";
@@ -1881,13 +1882,10 @@ dialog.slide-over-panel--bottom[open] { transform: translateY(0); animation: sli
           if (hash(hk) % 100 >= density) continue;
           var pool = ADVISORS.slice().sort(function (a, b) { return hash(hk + a) - hash(hk + b); });
           var n = 1 + hash(hk + "n") % 6;
-          // each advisor meets their own ways (in person, phone, video — any
-          // mix, at least one); the time offers what its advisors offer
+          // each advisor meets their own ways (ADVISOR_FORMATS); the time
+          // offers what its advisors offer
           var advs = pool.slice(0, n), byAdv = {};
-          advs.forEach(function (a) {
-            var mine = FORMATS.filter(function (f) { return hash(hk + a + f.key) % 3 > 0; }).map(function (f) { return f.key; });
-            byAdv[a] = mine.length ? mine : [FORMATS[hash(hk + a) % 3].key];
-          });
+          advs.forEach(function (a) { byAdv[a] = ADVISOR_FORMATS[a] || ["inPerson"]; });
           var fm = FORMATS.filter(function (f) { return advs.some(function (a) { return byAdv[a].indexOf(f.key) !== -1; }); });
           out.push({ id: hk, min: m, advisors: advs, byAdv: byAdv, formats: fm.map(function (f) { return f.key; }) });
         }
@@ -2012,7 +2010,9 @@ dialog.slide-over-panel--bottom[open] { transform: translateY(0); animation: sli
     $("ss-day-count").textContent = slots.length + (slots.length === 1 ? " open time" : " open times");
     $("ss-slots").innerHTML = slots.map(function (x) {
       var who = x.advisors[0] + (x.advisors.length > 1 ? " +" + (x.advisors.length - 1) + " more" : "");
-      var fm = x.formats.map(function (k) {
+      // the tile's icons are the listed advisor's ways (all the time's ways
+      // made nearly every tile three icons — user, 2026-11-09)
+      var fm = x.byAdv[x.advisors[0]].map(function (k) {
         var f = FORMATS.filter(function (y) { return y.key === k; })[0];
         return '<span class="tooltip-wrapper" aria-label="' + f.label + '">' + f.icon + '<span class="tooltip" role="tooltip">' + f.label + "</span></span>";
       }).join("");
