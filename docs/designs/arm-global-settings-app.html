@@ -877,6 +877,24 @@ html:has(dialog.dialog[open], dialog.alert-dialog[open]) { overflow: hidden; }
 .ss-dl dd .ss-note { margin-top: 2px; }
 @media (max-width: 559px) { .ss-dl { grid-template-columns: minmax(0, 1fr); gap: 2px; } .ss-dl dd { margin-bottom: 8px; } }
 .ss-ref { display: inline-flex; align-items: center; gap: 4px; }
+/* appointment details: when / who / how as icon lines (20px icon, body-base
+   text, body-sm text.secondary second line) */
+.ss-dfacts { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.ss-dfact { display: flex; align-items: flex-start; gap: 12px; }
+.ss-dfact > svg { flex-shrink: 0; width: 20px; height: 20px; color: var(--tok-icon-secondary); }
+.ss-dfact__text { display: flex; flex-direction: column; gap: 2px; min-width: 0; color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; }
+.ss-dfact__sub { color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.ss-d-facts { display: flex; flex-direction: column; gap: 16px; }
+.ss-detail__section .ss-d-goal { color: var(--tok-text-default); }
+#ss-d-ref { margin-top: -4px; }
+/* actions: Check in first; Reschedule + Cancel together. Phone: Check in full
+   width, the pair in equal halves under it. */
+.ss-d-more { display: flex; gap: 8px; }
+@media (max-width: 559px) {
+  .ss-detail__actions { flex-direction: column; align-items: stretch; }
+  .ss-detail__actions > .btn, .ss-detail__actions > .ss-note { width: 100%; justify-content: center; }
+  .ss-d-more > .btn { flex: 1; }
+}
 .ss-detail__section { display: flex; flex-direction: column; gap: 4px; }
 .ss-detail__section h3 { margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 12px; line-height: 1.4; }
 .ss-detail__section p { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 14px; line-height: 1.4; }

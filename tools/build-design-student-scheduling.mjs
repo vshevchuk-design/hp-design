@@ -324,10 +324,15 @@ ${shellTopbar({ title: "Scheduling", actions: settingsBtn })}
         </div>
         <div class="card">
           <div class="card__body">
-            <dl class="ss-dl" id="ss-d-facts"></dl>
+            <!-- the meeting itself as icon lines (when / who / how), then the
+                 student's goal and the service blurb as titled sections, the
+                 reference as a quiet line (user, 2026-11-09: a column of six
+                 label-over-value pairs read as a form on a phone) -->
+            <div class="ss-d-facts" id="ss-d-facts"></div>
             <!-- what the service is: a sunken Box under the facts, part of the
                  appointment rather than a caption under the card -->
             <div class="ss-detail__section ss-about" id="ss-d-about"><h3>About this service</h3><p id="ss-d-about-text"></p></div>
+            <p class="ss-note ss-ref" id="ss-d-ref"></p>
           </div>
           <div class="card__footer ss-detail__actions" id="ss-d-actions"></div>
         </div>

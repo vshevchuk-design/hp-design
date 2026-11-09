@@ -969,24 +969,23 @@ export function ssAppJs(d) {
       $("ss-d-q-title").textContent = a.advisor + " asked " + a.questions.length + " questions.";
       $("ss-d-q-text").textContent = "Answer them before the meeting so you can spend the time on what matters.";
     }
-    var rows = [
-      ["When", esc(whenLong(a))],
-      ["Duration", minutesOf(a) + " minutes"],
-      ["Advisor", esc(a.advisor)],
-      ["Meeting", '<span class="ss-fact">' + FORMAT_ICON[a.format] + "<span>" + esc(where(a)) + "</span></span>"]
-    ];
-    if (a.goal) rows.push(["To accomplish", esc(a.goal)]);
-    rows.push(
-      ["Reference", '<span class="ss-ref">#' + esc(a.ref) + ' <button type="button" class="btn btn--ghost btn--sm btn--icon-only" id="ss-d-copy" aria-label="Copy reference number">' + ICONS.copy + "</button></span>"]
-    );
-    if (a.questions && a.answered) rows.push(["Questions", "Answered — " + esc(a.advisor.split(" ")[0]) + " has them"]);
-    $("ss-d-facts").innerHTML = rows.map(function (r) { return "<dt>" + r[0] + "</dt><dd>" + r[1] + "</dd>"; }).join("");
+    var d0 = apptDate(a), mins = minutesOf(a);
+    var line = function (ic, text, sub) { return '<li class="ss-dfact">' + ic + '<div class="ss-dfact__text"><span>' + text + "</span>" + (sub ? '<span class="ss-dfact__sub">' + sub + "</span>" : "") + "</div></li>"; };
+    var html = '<ul class="ss-dfacts">' +
+      line(ICONS.today, esc(DOW_LONG[d0.getDay()] + ", " + MON_LONG[d0.getMonth()] + " " + d0.getDate() + " · " + fmtRange(a.min, mins)), esc(mins + " minutes · times in " + ${JSON.stringify(d.TIME_ZONE)})) +
+      line(ICONS.person, esc(a.advisor)) +
+      line(FORMAT_ICON[a.format], esc(where(a))) +
+      "</ul>";
+    if (a.goal) html += '<div class="ss-detail__section"><h3>What you’d like to accomplish</h3><p class="ss-d-goal">' + esc(a.goal) + "</p></div>";
+    if (a.questions && a.answered) html += '<p class="ss-note">Questions answered — ' + esc(a.advisor.split(" ")[0]) + " has them.</p>";
+    $("ss-d-facts").innerHTML = html;
+    $("ss-d-ref").innerHTML = "Reference #" + esc(a.ref) + ' <button type="button" class="btn btn--ghost btn--sm btn--icon-only" id="ss-d-copy" aria-label="Copy reference number">' + ICONS.copy + "</button>";
     var act = "";
     if (up) {
       if (checkinOpen(a)) act += '<button type="button" class="btn btn--primary btn--base" id="ss-d-checkin">Check in</button>';
       else if (!a.checkedIn) act += checkinNote(a);
-      act += '<button type="button" class="btn btn--secondary btn--base ss-push" id="ss-d-resched">Reschedule</button>' +
-        '<button type="button" class="btn btn--secondary btn--base" id="ss-d-cancel">Cancel appointment</button>';
+      act += '<div class="ss-d-more"><button type="button" class="btn btn--secondary btn--base" id="ss-d-resched">Reschedule</button>' +
+        '<button type="button" class="btn btn--secondary btn--base" id="ss-d-cancel">Cancel</button></div>';
     } else {
       act += '<button type="button" class="btn btn--secondary btn--base" id="ss-d-again">Book again</button>';
     }
@@ -998,7 +997,7 @@ export function ssAppJs(d) {
     if (V6) { goSection(FROM_SECTION[apptFrom]); return; }
     renderAppts(); showView("appointments");
   });
-  $("ss-d-facts").addEventListener("click", function (e) {
+  $("ss-d-ref").addEventListener("click", function (e) {
     if (!e.target.closest("#ss-d-copy")) return;
     var ref = "#" + apptById(openId).ref;
     if (navigator.clipboard) navigator.clipboard.writeText(ref).catch(function () {});

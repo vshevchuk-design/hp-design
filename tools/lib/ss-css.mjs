@@ -606,6 +606,24 @@ html:has(dialog.dialog[open], dialog.alert-dialog[open]) { overflow: hidden; }
 .ss-dl dd .ss-note { margin-top: ${dim("0_5")}; }
 @media (max-width: 559px) { .ss-dl { grid-template-columns: minmax(0, 1fr); gap: ${dim("0_5")}; } .ss-dl dd { margin-bottom: ${dim(2)}; } }
 .ss-ref { display: inline-flex; align-items: center; gap: ${dim(1)}; }
+/* appointment details: when / who / how as icon lines (20px icon, body-base
+   text, body-sm text.secondary second line) */
+.ss-dfacts { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: ${dim(3)}; }
+.ss-dfact { display: flex; align-items: flex-start; gap: ${dim(3)}; }
+.ss-dfact > svg { flex-shrink: 0; width: ${dim(5)}; height: ${dim(5)}; color: ${cv("icon.secondary")}; }
+.ss-dfact__text { display: flex; flex-direction: column; gap: ${dim("0_5")}; min-width: 0; color: ${cv("text.default")}; ${typoCss(style("body-base"))} }
+.ss-dfact__sub { color: ${cv("text.secondary")}; ${typoCss(style("body-sm"))} }
+.ss-d-facts { display: flex; flex-direction: column; gap: ${dim(4)}; }
+.ss-detail__section .ss-d-goal { color: ${cv("text.default")}; }
+#ss-d-ref { margin-top: -${dim(1)}; }
+/* actions: Check in first; Reschedule + Cancel together. Phone: Check in full
+   width, the pair in equal halves under it. */
+.ss-d-more { display: flex; gap: ${dim(2)}; }
+@media (max-width: 559px) {
+  .ss-detail__actions { flex-direction: column; align-items: stretch; }
+  .ss-detail__actions > .btn, .ss-detail__actions > .ss-note { width: 100%; justify-content: center; }
+  .ss-d-more > .btn { flex: 1; }
+}
 .ss-detail__section { display: flex; flex-direction: column; gap: ${dim(1)}; }
 .ss-detail__section h3 { margin: 0; color: ${cv("text.default")}; ${typoCss(style("heading-sm"))} }
 .ss-detail__section p { margin: 0; color: ${cv("text.secondary")}; ${typoCss(style("body-base"))} }

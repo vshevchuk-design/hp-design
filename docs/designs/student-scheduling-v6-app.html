@@ -899,6 +899,24 @@ html:has(dialog.dialog[open], dialog.alert-dialog[open]) { overflow: hidden; }
 .ss-dl dd .ss-note { margin-top: 2px; }
 @media (max-width: 559px) { .ss-dl { grid-template-columns: minmax(0, 1fr); gap: 2px; } .ss-dl dd { margin-bottom: 8px; } }
 .ss-ref { display: inline-flex; align-items: center; gap: 4px; }
+/* appointment details: when / who / how as icon lines (20px icon, body-base
+   text, body-sm text.secondary second line) */
+.ss-dfacts { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.ss-dfact { display: flex; align-items: flex-start; gap: 12px; }
+.ss-dfact > svg { flex-shrink: 0; width: 20px; height: 20px; color: var(--tok-icon-secondary); }
+.ss-dfact__text { display: flex; flex-direction: column; gap: 2px; min-width: 0; color: var(--tok-text-default); font-weight: 400; font-size: 14px; line-height: 1.4; }
+.ss-dfact__sub { color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; }
+.ss-d-facts { display: flex; flex-direction: column; gap: 16px; }
+.ss-detail__section .ss-d-goal { color: var(--tok-text-default); }
+#ss-d-ref { margin-top: -4px; }
+/* actions: Check in first; Reschedule + Cancel together. Phone: Check in full
+   width, the pair in equal halves under it. */
+.ss-d-more { display: flex; gap: 8px; }
+@media (max-width: 559px) {
+  .ss-detail__actions { flex-direction: column; align-items: stretch; }
+  .ss-detail__actions > .btn, .ss-detail__actions > .ss-note { width: 100%; justify-content: center; }
+  .ss-d-more > .btn { flex: 1; }
+}
 .ss-detail__section { display: flex; flex-direction: column; gap: 4px; }
 .ss-detail__section h3 { margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 12px; line-height: 1.4; }
 .ss-detail__section p { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 14px; line-height: 1.4; }
@@ -1381,10 +1399,15 @@ dialog.slide-over-panel--bottom[open] { transform: translateY(0); animation: sli
         </div>
         <div class="card">
           <div class="card__body">
-            <dl class="ss-dl" id="ss-d-facts"></dl>
+            <!-- the meeting itself as icon lines (when / who / how), then the
+                 student's goal and the service blurb as titled sections, the
+                 reference as a quiet line (user, 2026-11-09: a column of six
+                 label-over-value pairs read as a form on a phone) -->
+            <div class="ss-d-facts" id="ss-d-facts"></div>
             <!-- what the service is: a sunken Box under the facts, part of the
                  appointment rather than a caption under the card -->
             <div class="ss-detail__section ss-about" id="ss-d-about"><h3>About this service</h3><p id="ss-d-about-text"></p></div>
+            <p class="ss-note ss-ref" id="ss-d-ref"></p>
           </div>
           <div class="card__footer ss-detail__actions" id="ss-d-actions"></div>
         </div>
@@ -2610,24 +2633,23 @@ dialog.slide-over-panel--bottom[open] { transform: translateY(0); animation: sli
       $("ss-d-q-title").textContent = a.advisor + " asked " + a.questions.length + " questions.";
       $("ss-d-q-text").textContent = "Answer them before the meeting so you can spend the time on what matters.";
     }
-    var rows = [
-      ["When", esc(whenLong(a))],
-      ["Duration", minutesOf(a) + " minutes"],
-      ["Advisor", esc(a.advisor)],
-      ["Meeting", '<span class="ss-fact">' + FORMAT_ICON[a.format] + "<span>" + esc(where(a)) + "</span></span>"]
-    ];
-    if (a.goal) rows.push(["To accomplish", esc(a.goal)]);
-    rows.push(
-      ["Reference", '<span class="ss-ref">#' + esc(a.ref) + ' <button type="button" class="btn btn--ghost btn--sm btn--icon-only" id="ss-d-copy" aria-label="Copy reference number">' + ICONS.copy + "</button></span>"]
-    );
-    if (a.questions && a.answered) rows.push(["Questions", "Answered — " + esc(a.advisor.split(" ")[0]) + " has them"]);
-    $("ss-d-facts").innerHTML = rows.map(function (r) { return "<dt>" + r[0] + "</dt><dd>" + r[1] + "</dd>"; }).join("");
+    var d0 = apptDate(a), mins = minutesOf(a);
+    var line = function (ic, text, sub) { return '<li class="ss-dfact">' + ic + '<div class="ss-dfact__text"><span>' + text + "</span>" + (sub ? '<span class="ss-dfact__sub">' + sub + "</span>" : "") + "</div></li>"; };
+    var html = '<ul class="ss-dfacts">' +
+      line(ICONS.today, esc(DOW_LONG[d0.getDay()] + ", " + MON_LONG[d0.getMonth()] + " " + d0.getDate() + " · " + fmtRange(a.min, mins)), esc(mins + " minutes · times in " + "EEST")) +
+      line(ICONS.person, esc(a.advisor)) +
+      line(FORMAT_ICON[a.format], esc(where(a))) +
+      "</ul>";
+    if (a.goal) html += '<div class="ss-detail__section"><h3>What you’d like to accomplish</h3><p class="ss-d-goal">' + esc(a.goal) + "</p></div>";
+    if (a.questions && a.answered) html += '<p class="ss-note">Questions answered — ' + esc(a.advisor.split(" ")[0]) + " has them.</p>";
+    $("ss-d-facts").innerHTML = html;
+    $("ss-d-ref").innerHTML = "Reference #" + esc(a.ref) + ' <button type="button" class="btn btn--ghost btn--sm btn--icon-only" id="ss-d-copy" aria-label="Copy reference number">' + ICONS.copy + "</button>";
     var act = "";
     if (up) {
       if (checkinOpen(a)) act += '<button type="button" class="btn btn--primary btn--base" id="ss-d-checkin">Check in</button>';
       else if (!a.checkedIn) act += checkinNote(a);
-      act += '<button type="button" class="btn btn--secondary btn--base ss-push" id="ss-d-resched">Reschedule</button>' +
-        '<button type="button" class="btn btn--secondary btn--base" id="ss-d-cancel">Cancel appointment</button>';
+      act += '<div class="ss-d-more"><button type="button" class="btn btn--secondary btn--base" id="ss-d-resched">Reschedule</button>' +
+        '<button type="button" class="btn btn--secondary btn--base" id="ss-d-cancel">Cancel</button></div>';
     } else {
       act += '<button type="button" class="btn btn--secondary btn--base" id="ss-d-again">Book again</button>';
     }
@@ -2639,7 +2661,7 @@ dialog.slide-over-panel--bottom[open] { transform: translateY(0); animation: sli
     if (V6) { goSection(FROM_SECTION[apptFrom]); return; }
     renderAppts(); showView("appointments");
   });
-  $("ss-d-facts").addEventListener("click", function (e) {
+  $("ss-d-ref").addEventListener("click", function (e) {
     if (!e.target.closest("#ss-d-copy")) return;
     var ref = "#" + apptById(openId).ref;
     if (navigator.clipboard) navigator.clipboard.writeText(ref).catch(function () {});
