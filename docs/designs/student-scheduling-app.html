@@ -1031,6 +1031,10 @@ html:has(dialog.dialog[open], dialog.alert-dialog[open]) { overflow: hidden; }
 .alert--action-end { align-items: center; }
 .alert--action-end .alert__stack { flex: 1; }
 .alert--action-end > .btn, .alert--action-end > .alert__action { margin-top: 0; flex-shrink: 0; }
+/* the visit's status area can hold an Alert (already in another line) above
+   its card — they stack 12 apart, not glued (user, 2026-11-09) */
+#ss-v-status { display: flex; flex-direction: column; gap: 12px; }
+#ss-v-status:empty { display: none; }
 .ss-visit { gap: 8px; }
 .ss-visit__title { margin: 0; color: var(--tok-text-default); font-weight: 600; font-size: 18px; line-height: 1.4; }
 .ss-visit__text { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 14px; line-height: 1.4; }

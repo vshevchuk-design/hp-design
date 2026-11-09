@@ -729,6 +729,10 @@ ${COLLAPSIBLE_CSS}
 .alert--action-end { align-items: center; }
 .alert--action-end .alert__stack { flex: 1; }
 .alert--action-end > .btn, .alert--action-end > .alert__action { margin-top: 0; flex-shrink: 0; }
+/* the visit's status area can hold an Alert (already in another line) above
+   its card — they stack 12 apart, not glued (user, 2026-11-09) */
+#ss-v-status { display: flex; flex-direction: column; gap: ${dim(3)}; }
+#ss-v-status:empty { display: none; }
 .ss-visit { gap: ${dim(2)}; }
 .ss-visit__title { margin: 0; color: ${cv("text.default")}; ${typoCss(style("heading-lg"))} }
 .ss-visit__text { margin: 0; color: ${cv("text.secondary")}; ${typoCss(style("body-base"))} }
