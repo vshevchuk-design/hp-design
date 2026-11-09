@@ -163,6 +163,11 @@
 | B3 | Workshop registered (one date) | Interview Prep: today «Wed, Oct 14 · 1:00 – 2:30 PM»; person Eric Lynch / Career and Talent Development; group «Career Center, Library 2nd floor» |
 
 ### C. Appointment details — 9 станів (P/T/D; колонка 720)
+
+**Готово 2026-11-09 — секція «Screens — Appointment details», 19 станів / 42 фрейми.** 01 Upcoming, check-in not open yet (D/T/P) · 02 Questions to answer (D/T/P) · 03 Questions answered + toast (D/P) · 04 Check-in open (D/T/P) · 05 Checked in, in person + toast (D/T/P) · 06 Checked in, phone (D/P) · 07 Checked in, video (D/P) · 08 Done, summary with a file (D/T/P) · 09 Done, summary without a file (D/P) · 10 Missed (D/P) · 11 Cancelled, with the reason (D/T/P) · 12 Check in? dialog (D/P) · 13 Questions dialog (D/P) · 14 Cancel dialog (D/P) · 15 reasons open (D/P) · 16 nothing chosen (D/P) · 17 Something else (D/P) · 18 Rescheduling (D/P, з Pick a time) · 19 Reference copied (D/P).
+Уточнення з коду: «Check-in opens at …» (з іконкою годинника) стоїть у футері картки зліва від Reschedule / Cancel, а не під карткою; Reschedule/Cancel — Secondary base; на телефоні Check in на всю ширину, Reschedule + Cancel навпіл; секція «About this service» є на всіх станах; тост «… cancelled» показується на My schedule (не тут).
+Баг прототипу знайдено й виправлено: Degree Planning — «Humanities Hall, Room 214, Room 147» (кабінет двічі).
+Борг бібліотеки (наступний Publish): Field — рамка підпису має обіймати текст по висоті, щоб довгий підпис переносився (у Figma зараз виправлено оверрайдом в інстансах).
 Анатомія: назад · заголовок + Badges статусу · департамент `body/base` `text/secondary` · (Alerts) · (Summary) · Card: Detail Lines (when / person+Contacts / meeting) → Sections → About this service → Quiet Note Reference + copy → footer дії.
 Дії на **P**: Check in на всю ширину, під ним Reschedule + Cancel навпіл; **T/D**: ряд праворуч.
 
