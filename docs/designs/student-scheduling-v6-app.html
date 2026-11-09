@@ -2431,7 +2431,7 @@ dialog.slide-over-panel--bottom[open] { transform: translateY(0); animation: sli
   function meetingOf(format, dept, advisor) {
     if (format === "phone") return "Your advisor calls you at " + STUDENT_PHONE;
     if (format === "video") return "Video — the link is in your email";
-    return LOCATIONS[dept] + ", " + roomOf(advisor);
+    return withRoom(LOCATIONS[dept], roomOf(advisor));
   }
   $("ss-advisors").addEventListener("change", function (e) {
     pk.advisor = e.target.value;
@@ -2528,10 +2528,13 @@ dialog.slide-over-panel--bottom[open] { transform: translateY(0); animation: sli
     var phone = "(805) 555-" + String(1000 + hash(name) % 9000);
     return '<a class="ss-link" href="mailto:' + email + '">' + email + '</a> · <a class="ss-link" href="tel:' + phone.replace(/[^0-9]/g, "") + '">' + phone + "</a>";
   }
+  // a department whose address already names the room (e.g. "Humanities Hall,
+  // Room 214") gets no advisor room on top — it read "Room 214, Room 147"
+  function withRoom(loc, room) { return /(^|, )Room /.test(loc) ? loc : loc + ", " + room; }
   function where(a) {
     if (a.format === "phone") return "Phone — your advisor calls you at " + STUDENT_PHONE;
     if (a.format === "video") return "Video — the link is in your email";
-    return "In person — " + LOCATIONS[a.dept] + ", " + (a.room || roomOf(a.advisor));
+    return "In person — " + withRoom(LOCATIONS[a.dept], a.room || roomOf(a.advisor));
   }
   function badge(role, text) { return '<span class="badge badge--base badge--regular badge--' + role + '">' + esc(text) + "</span>"; }
   function statusBadges(a) {
