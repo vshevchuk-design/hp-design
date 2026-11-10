@@ -727,7 +727,7 @@ export function ssAppJs(d) {
   function roomOf(advisor) { return "Room " + (100 + hash(advisor) % 60); }
   function meetingOf(format, dept, advisor) {
     if (format === "phone") return "Your advisor calls you at " + STUDENT_PHONE;
-    if (format === "video") return "Video — the link is in your email";
+    if (format === "video") return "Video — you get the link when you book";
     return withRoom(LOCATIONS[dept], roomOf(advisor));
   }
   $("ss-advisors").addEventListener("change", function (e) {
@@ -815,7 +815,7 @@ export function ssAppJs(d) {
     return [
       [ICONS.today, esc(DOW_LONG[d0.getDay()] + ", " + MON_LONG[d0.getMonth()] + " " + d0.getDate() + " · " + fmtRange(a.min, mins)), esc(mins + " minutes · times in " + ${JSON.stringify(d.TIME_ZONE)})],
       [ICONS.person, esc(a.advisor), contactOf(a.advisor) + (withDept ? " · " + esc(a.dept) : "")],
-      [FORMAT_ICON[a.format], esc(where(a))]
+      a.format === "video" ? [FORMAT_ICON.video, "Video", linkHtml(videoLink(a.ref))] : [FORMAT_ICON[a.format], esc(where(a))]
     ];
   }
   // every advisor's contact, whatever the meeting format — for questions,
@@ -828,9 +828,13 @@ export function ssAppJs(d) {
   // a department whose address already names the room (e.g. "Humanities Hall,
   // Room 214") gets no advisor room on top — it read "Room 214, Room 147"
   function withRoom(loc, room) { return /(^|, )Room /.test(loc) ? loc : loc + ", " + room; }
+  // video: the meeting link sits on the page like an address or a phone
+  // number does — not only in an email (user, 2026-11-10)
+  function videoLink(key) { return "zoom.us/j/" + String(80000000000 + (hash(String(key)) * 7919) % 9999999999); }
+  function linkHtml(url) { return '<a class="ss-link" href="https://' + url + '" target="_blank" rel="noopener">' + url + "</a>"; }
   function where(a) {
     if (a.format === "phone") return "Phone — your advisor calls you at " + STUDENT_PHONE;
-    if (a.format === "video") return "Video — the link is in your email";
+    if (a.format === "video") return "Video";
     return "In person — " + withRoom(LOCATIONS[a.dept], a.room || roomOf(a.advisor));
   }
   function badge(role, text) { return '<span class="badge badge--base badge--regular badge--' + role + '">' + esc(text) + "</span>"; }
@@ -979,10 +983,12 @@ export function ssAppJs(d) {
     $("ss-d-dept").textContent = a.dept;
     var here = V6 && up && a.checkedIn, first = a.advisor.split(" ")[0];
     $("ss-d-here").classList.toggle("is-hidden", !here);
+    $("ss-d-here-actions").classList.toggle("is-hidden", !(here && a.format === "video"));
+    if (here && a.format === "video") $("ss-d-join").href = "https://" + videoLink(a.ref);
     if (here) $("ss-d-here-text").textContent = a.format === "phone"
       ? "Keep your phone close — " + first + " will call " + STUDENT_PHONE + " at " + fmtTime(a.min) + "."
       : a.format === "video"
-        ? "Open the link in your email — " + first + " will let you in at " + fmtTime(a.min) + "."
+        ? first + " will let you in at " + fmtTime(a.min) + "."
         : "Wait in the " + LOCATIONS[a.dept].split(",")[0] + " — " + first + " will come and get you at " + fmtTime(a.min) + ".";
     var sum = a.status === "completed" && a.summary;
     $("ss-d-summary-step").classList.toggle("is-hidden", !sum);
@@ -1611,7 +1617,7 @@ export function ssAppJs(d) {
     var lines = [
       single ? [ICONS.today, esc(fmtDate(first.date) + " · " + fmtRange(first.min, w.minutes))] : [ICONS.dateRange, esc(daysLabel(sc)), esc(sc.count + " sessions, starting " + fmtDate(first.date))],
       [ICONS.person, esc(sc.organizer), esc(w.dept)],
-      [WS_FORMAT[sc.format].icon, esc(scheduleLocation(sc))]
+      sc.format === "video" ? [WS_FORMAT.video.icon, "Online", linkHtml(videoLink(sc.id))] : [WS_FORMAT[sc.format].icon, esc(scheduleLocation(sc))]
     ];
     showDone({
       title: "You\u2019re registered",
@@ -1640,7 +1646,9 @@ export function ssAppJs(d) {
     return sessionsOf(w.schedules[r.sched]).map(function (x, k) { return k; });
   }
   function attendanceOf(w, k) { return (w.reg && w.reg.attendance && w.reg.attendance[k]) || "attended"; }
-  function wsWhere(sc) { return sc.format === "video" ? "Online — the link is in your email" : "In person — " + sc.room; }
+  function wsWhere(sc) { return sc.format === "video" ? "Online" : "In person — " + sc.room; }
+  // registered: the session link on the page, like the room
+  function wsWhereHtml(sc) { return sc.format === "video" ? "Online · " + linkHtml(videoLink(sc.id)) : esc(wsWhere(sc)); }
   function dayLabel(dt) { return (isoDate(dt) === TODAY ? "Today · " : "") + fmtDate(dt); }
 
   // My schedule rows for workshops: the next session you're going to (Upcoming),
@@ -1742,7 +1750,7 @@ export function ssAppJs(d) {
       }
       $("ss-mw-next").innerHTML =
         '<div class="ss-mw-next__when"><span class="ss-mw-next__date">' + esc(dayLabel(x.date)) + '</span><span class="ss-note">' + esc(fmtRange(x.min, w.minutes) + (single ? "" : " · Session " + (k + 1) + " of " + all.length)) + "</span></div>" +
-        '<span class="ss-fact">' + WS_FORMAT[sc.format].icon + '<span class="ss-fact__text">' + esc(wsWhere(sc)) + "</span></span>" +
+        '<span class="ss-fact">' + WS_FORMAT[sc.format].icon + '<span class="ss-fact__text">' + wsWhereHtml(sc) + "</span></span>" +
         '<div class="ss-mw-next__actions">' + act + "</div>";
     }
 
@@ -1788,7 +1796,7 @@ export function ssAppJs(d) {
       : [["Schedule", daysLabel(sc)], ["Sessions", all.length + " · " + MON[all[0].date.getMonth()] + " " + all[0].date.getDate() + " – " + MON[all[all.length - 1].date.getMonth()] + " " + all[all.length - 1].date.getDate()]];
     facts.push(["Format", WS_FORMAT[sc.format].label], ["Organizer", sc.organizer]);
     $("ss-mw-facts").innerHTML = facts.map(function (f) { return "<dt>" + f[0] + "</dt><dd>" + esc(f[1]) + "</dd>"; }).join("");
-    $("ss-mw-location").innerHTML = whereLine(WS_FORMAT[sc.format].icon, scheduleLocation(sc));
+    $("ss-mw-location").innerHTML = sc.format === "video" ? '<span class="ss-fact">' + WS_FORMAT.video.icon + '<span class="ss-fact__text">' + wsWhereHtml(sc) + "</span></span>" : whereLine(WS_FORMAT[sc.format].icon, scheduleLocation(sc));
     // nothing to leave once it's over: no ⋯ menu
     $("ss-mw-more-btn").classList.toggle("is-hidden", finished);
     $("ss-mw-leave-label").textContent = single ? "Cancel registration" : "Leave workshop";

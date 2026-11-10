@@ -313,7 +313,7 @@ ${shellTopbar({ title: "Scheduling", actions: settingsBtn })}
         <!-- v6: after Check in — what happens next, by meeting format -->
         <div class="alert alert--success is-hidden" id="ss-d-here" role="status">
           ${icon("check_circle", "alert__icon")}
-          <div class="alert__stack"><p class="alert__message"><span class="alert__title">You're checked in.</span> <span id="ss-d-here-text"></span></p></div>
+          <div class="alert__stack"><p class="alert__message"><span class="alert__title">You're checked in.</span> <span id="ss-d-here-text"></span></p><div class="alert__actions is-hidden" id="ss-d-here-actions"><a class="btn btn--secondary btn--sm" id="ss-d-join" href="#" target="_blank" rel="noopener">Join video call</a></div></div>
         </div>
         <!-- after a finished appointment: what the advisor wrote (not every
              appointment has one) — the reason to come back to it -->
