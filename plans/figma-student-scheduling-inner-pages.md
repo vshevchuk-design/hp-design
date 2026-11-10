@@ -259,6 +259,10 @@
 | F9 | Тости | «Got it — Caitlin knows you can't make it on Tue, Oct 6» · «You're back on for …» · «Downloading Campus resources.pdf» |
 
 ### G. Check-in (QR) — 11 станів (P обов'язково, T/D — для повноти)
+**Готово 2026-11-10 — секція «Screens — Check-in (QR)», 11 станів / 24 фрейми:** 01 Looking up · 02 Sign in · 03 Checked in, appointment (D/T/P) · 04 Checked in, workshop · 05 Choose what to check in to · 06 Drop-in, join (D/T/P) · 07 Drop-in, already in line · 08 Too early · 09 Too late · 10 Nothing to check in to · 11 Error — решта D/P.
+Шел: Topbar «Check in» без Section Tabs (сховані в інстансі) · Check-in Place Header · колонка 560 по центру (P — на всю ширину). Технічну смужку прототипу не переносили.
+Уточнення з коду: на телефоні дії картки стовпчиком на всю ширину, Primary зверху (`column-reverse`) — у Figma це фрейм «Actions» з верхньою лінією (лінія футера Card) замість футера: футер Card не можна перевести у вертикаль на інстансі. Картки дропіну (06/07) — Visit Status Card з тексту чекіну. У 07 порядок кнопок — як у Visit Status Card (Step away · Leave queue); у прототипі чекіну він обернений (Leave queue · Step away) — розбіжність самого прототипу, лишив як у компоненті.
+
 Шел: Sidebar + Topbar «Check in» (без Section Tabs) · Check-in Place Header · колонка 560. Технічна смужка «Technical · Select view» — **не переносимо** (це інструмент прототипу).
 
 | # | Стан | Компоненти / тексти |
