@@ -220,6 +220,10 @@
 | D14 | Діалоги | Alert Dialog Destructive «Leave the queue?» (Stay in line / Leave queue); «Cancel your reserved seat?» (Keep my seat / Cancel reservation) |
 
 ### E. Workshop page (Book) — 8 станів
+**Готово 2026-11-10 — секція «Screens — Workshop page», 8 станів / 20 фреймів:** 01 Several schedules, none chosen (D/T/P) · 02 Schedule chosen (D/T/P) · 03 All sessions shown (D/P) · 04 One date to pick, none chosen (D/T/P) · 05 Date chosen (D/P) · 06 Workshop for a course (D/P) · 07 Full (D/T/P) · 08 Full, notify requested + toast (D/P).
+Уточнення з коду: alert «This workshop is full.» — над обома колонками, дія Secondary sm; повний воркшоп показує розклад як нерухому картку (Box Default, Border On) з рядком «Full» і список сесій без Collapsible; «Show all 6 sessions» — DS **Collapsible** (Trigger=Bottom), усі рядки в слоті Shown; список сесій — Box Default з нульовим відступом + Session Row Plain; на телефоні заголовок і бейджі стовпчиком, підказка «Same workshop…» під заголовком кроку, «Sessions · 6 sessions» — в один ряд; на P/T картка «Your registration» без футера, кнопка — Register Bar (на T бокові відступи 24); тост notify — зверху, як в інших секціях.
+Борг продуктового компонента: **Meeting Box Way=Video** не переносить довгий текст у рендері (другий рядок «you’re registered» зникає) — для «Online — the link arrives by email…» взято Way=In person + іконку videocam. Перевірити/виправити варіант Video.
+
 Розкладка: **D** дві колонки (контент + sticky «Your registration» з Register у футері); **P/T** — одна колонка, «Your registration» під контентом, Register — **Register Bar** знизу екрана.
 
 | # | Стан | Зміст |
