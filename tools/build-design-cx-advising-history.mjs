@@ -174,6 +174,8 @@ ${["blue", "green", "magenta", "amber", "teal", "orange", "violet", "red"].map((
 .hs-item__text { margin: 0; color: ${cv("text.secondary")}; ${typoCss(style("body-base"))} }
 .hs-item__text--clamp { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .hs-item .ss-appt__name { ${typoCss(style("heading-base"))} }
+/* note categories: amber tint Badge (user, 2026-11-11) */
+.badge--amber { background: ${R(tokens.badge.color.amber.tint.bg)}; color: ${R(tokens.badge.color.amber.tint.text)}; }
 @media (max-width: 767px) {
   /* a phone: View stays a small button under the text, not a full-width bar per record */
   .hs-item .ss-appt__actions { align-items: flex-start; }
@@ -232,9 +234,9 @@ const pageJs = (cards) => `${SELECT_JS}
   function fact(ic, text) { return '<span class="ss-fact">' + IC[ic] + '<span class="ss-fact__text">' + text + "</span></span>"; }
   function when(d) { var p = d.split(", "); return '<div class="ss-appt__time"><span class="ss-appt__clock">' + p[0] + '</span><span class="ss-appt__dur">' + p[1] + " \u00b7 " + p[2] + "</span></div>"; }
   function item(o) {
-    return '<article class="ss-appt hs-item">' + when(o.date) + '<div class="ss-appt__main"><div class="ss-appt__title"><h3 class="ss-appt__name">' + esc(o.title) + "</h3>" + (o.badge ? '<span class="badge badge--base badge--regular badge--neutral">' + esc(o.badge) + "</span>" : "") + "</div>" +
+    return '<article class="ss-appt hs-item">' + when(o.date) + '<div class="ss-appt__main"><div class="ss-appt__title"><h3 class="ss-appt__name">' + esc(o.title) + "</h3>" + (o.badge ? '<span class="badge badge--base badge--regular badge--' + (o.tone || "amber") + '">' + esc(o.badge) + "</span>" : "") + "</div>" +
       '<div class="ss-appt__meta">' + o.facts.join("") + "</div>" + (o.text ? '<p class="hs-item__text' + (o.clamp ? " hs-item__text--clamp" : "") + '">' + esc(o.text) + "</p>" : "") + "</div>" +
-      (o.view ? '<div class="ss-appt__actions"><div class="ss-appt__btns"><button class="btn btn--secondary btn--sm" type="button" data-view-rec="' + o.view + '">View</button></div></div>' : "") + "</article>";
+      (o.view ? '<div class="ss-appt__actions"><div class="ss-appt__btns"><button class="btn btn--tint btn--sm" type="button" data-view-rec="' + o.view + '">View</button></div></div>' : "") + "</article>";
   }
   function viewBtn(kind, i) { return '<div class="hs-cell--end"><button class="btn btn--tint btn--sm" type="button" data-view-rec="' + kind + ":" + i + '">View</button></div>'; }
 
@@ -303,7 +305,7 @@ const pageJs = (cards) => `${SELECT_JS}
     },
     cards: function () {
       var list = tab === "summaries" ? D.SUMMARIES : tab === "cancellations" ? D.CANCELLATIONS : [];
-      return list.map(function (r, i) { return item({ date: r[4], title: r[1], badge: tab === "cancellations" ? "Cancelled" : "", facts: [fact("person", "With " + esc(r[2]) + " \u00b7 " + esc(r[0])), fact("edit", "Created by " + esc(r[3]))], text: r[5], clamp: true, view: tab + ":" + i }); });
+      return list.map(function (r, i) { return item({ date: r[4], title: r[1], badge: tab === "cancellations" ? "Cancelled" : "", tone: "neutral", facts: [fact("person", "With " + esc(r[2]) + " \u00b7 " + esc(r[0])), fact("edit", "Created by " + esc(r[3]))], text: r[5], clamp: true, view: tab + ":" + i }); });
     },
   });
   document.querySelector(".hs-tabs").addEventListener("click", function (e) {
