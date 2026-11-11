@@ -127,7 +127,7 @@ const after = `<dialog class="slide-over-panel slide-over-panel--right slide-ove
 </dialog>`;
 
 // ---- CSS ----
-const pageCss = (cell, cards = false) => (X) => {
+const pageCss = (cell, mode = "table") => (X) => {
   const { cv, dim, typoCss, style, tokens, D, R, T } = X;
   const tb = tokens.table;
   const cellType = style(cell);
@@ -223,13 +223,35 @@ ${["blue", "green", "magenta", "amber", "teal", "orange", "violet", "red"].map((
   .hs-table .table__row > .hs-cell--end { grid-column: 1 / -1; justify-self: start; }
   .hs-search { width: 100%; }
   .hs-foot { justify-content: center; }
-}`;
+}${mode === "both" ? `
+/* v4: a table on a wide column, the v3 cards on a narrow one — one record, the same pieces in both:
+   date over time (body-sm, secondary) in a 96px first column, the title heading-base, the category the
+   amber Badge, the person a person-icon fact (body-sm, secondary), the comment on the amber.50 box,
+   View the tint sm Button. Row padding = the card row's (card.padding), cells top-aligned like the card. */
+.hs-v4-cards.hs-list { display: none; }
+.hs-v4-table .table__row { gap: ${dim(4)}; padding-inline: ${D(tokens.card.padding)}; }
+.hs-v4-table .table__row:not(.table__row--head) { min-height: 0; padding-block: ${D(tokens.card.padding)}; align-items: start; }
+.hs-v4-table .hs-cell { white-space: normal; overflow: visible; }
+.hs-v4-notes { grid-template-columns: ${dim(24)} minmax(200px, 2fr) minmax(140px, 1fr) minmax(200px, 1.6fr) auto; }
+.hs-v4-actions { grid-template-columns: ${dim(24)} minmax(140px, 1fr) minmax(200px, 1.4fr) minmax(260px, 2.6fr); }
+.hs-v4-appts { grid-template-columns: ${dim(24)} minmax(160px, 1fr) minmax(240px, 2fr) auto; }
+.hs-when { display: flex; flex-direction: column; gap: ${dim("0_5")}; color: ${cv("text.secondary")}; ${typoCss(style("body-sm"))} white-space: nowrap; }
+.hs-t { display: flex; flex-direction: column; gap: ${dim(2)}; }
+.hs-t__name { margin: 0; color: ${cv("text.default")}; ${typoCss(style("heading-base"))} }
+.hs-v4-table .ss-fact { align-items: flex-start; }
+.hs-v4-table .ss-fact > svg { margin-top: 1px; }
+.hs-v4-table .ss-fact__text { white-space: normal; display: flex; flex-direction: column; }
+.hs-v4-table .badge { align-self: flex-start; }
+@container (max-width: 759px) {
+  .hs-v4-table { display: none; }
+  .hs-v4-cards.hs-list { display: flex; }
+}` : ""}`;
 };
 
 // ---- script ----
-const pageJs = (cards) => `${SELECT_JS}
+const pageJs = (mode) => `${SELECT_JS}
 (function () {
-  var CARDS = ${cards ? "true" : "false"};
+  var MODE = ${JSON.stringify(mode)}, CARDS = MODE === "cards", BOTH = MODE === "both";
   var IC = ${JSON.stringify({ person: icon("person", ""), edit: icon("edit", "") })};
   var D = ${JSON.stringify({ NOTES, ACTIONS, SUMMARIES, CANCELLATIONS })};
   var HUES = ${JSON.stringify(HUES)};
@@ -249,16 +271,26 @@ const pageJs = (cards) => `${SELECT_JS}
       '<div class="ss-appt__meta">' + o.facts.join("") + "</div>" + (o.note ? '<p class="ss-note">' + esc(o.note) + "</p>" : "") + (o.text ? '<p class="hs-item__text' + (o.tint ? " hs-item__text--tint" : "") + '"><span' + (o.clamp ? ' class="hs-item__clamp"' : "") + ">" + esc(o.text) + "</span></p>" : "") + "</div>" +
       (o.view ? '<div class="ss-appt__actions"><div class="ss-appt__btns"><button class="btn btn--tint btn--sm" type="button" data-view-rec="' + o.view + '">View</button></div></div>' : "") + "</article>";
   }
+  // v4 table cells: the card's pieces, column by column
+  function when4(d) { var p = d.split(", "); return '<span class="hs-when"><span>' + p[0] + ", " + p[1] + "</span><span>" + p[2] + "</span></span>"; }
+  function title4(t, note) { return '<div class="hs-t"><span class="hs-t__name">' + esc(t) + "</span>" + (note ? '<span class="ss-note">' + esc(note) + "</span>" : "") + "</div>"; }
+  function who4(name, sub) { return fact("person", "<span>" + esc(name) + "</span>" + (sub ? "<span>" + esc(sub) + "</span>" : "")); }
+  function badge4(t) { return '<span class="badge badge--base badge--regular badge--amber">' + esc(t) + "</span>"; }
+  function tint4(t) { return '<p class="hs-item__text hs-item__text--tint"><span>' + esc(t) + "</span></p>"; }
   function viewBtn(kind, i) { return '<div class="hs-cell--end"><button class="btn btn--tint btn--sm" type="button" data-view-rec="' + kind + ":" + i + '">View</button></div>'; }
 
   // one paged table: rows() → array of row html, head html, cols class
   function pager(id, opts) {
     var st = { page: 1, per: 5 };
     function render() {
-      var rows = CARDS ? opts.cards() : opts.rows(), n = rows.length, pages = Math.max(1, Math.ceil(n / st.per));
+      var rows = CARDS ? opts.cards() : BOTH ? opts.rows4() : opts.rows(), n = rows.length, pages = Math.max(1, Math.ceil(n / st.per));
       if (st.page > pages) st.page = pages;
       var from = (st.page - 1) * st.per, shown = rows.slice(from, from + st.per);
-      $(id + "-table").innerHTML = n && CARDS ? '<div class="hs-list" role="list" aria-label="' + opts.label + '">' + shown.join("") + "</div>" : n
+      if (BOTH && n) {
+        var cards = opts.cards().slice(from, from + st.per);
+        $(id + "-table").innerHTML = '<div class="table hs-v4-table" role="table" aria-label="' + opts.label + '"><div class="table__row table__row--head ' + opts.cols4 + '" role="row">' + opts.head4 + "</div>" + shown.map(function (r) { return '<div class="table__row ' + opts.cols4 + '" role="row">' + r + "</div>"; }).join("") + "</div>" +
+          '<div class="hs-list hs-v4-cards" role="list" aria-label="' + opts.label + '">' + cards.join("") + "</div>";
+      } else $(id + "-table").innerHTML = n && CARDS ? '<div class="hs-list" role="list" aria-label="' + opts.label + '">' + shown.join("") + "</div>" : n
         ? '<div class="table" role="table" aria-label="' + opts.label + '"><div class="table__row table__row--head ' + opts.cols + '" role="row">' + opts.head + "</div>" + shown.map(function (r) { return '<div class="table__row ' + opts.cols + '" role="row">' + r + "</div>"; }).join("") + "</div>"
         : '<div class="hs-empty"><div class="empty-state"><span class="empty-state__text">' + opts.empty() + "</span></div></div>";
       $(id + "-foot").hidden = !n;
@@ -285,6 +317,12 @@ const pageJs = (cards) => `${SELECT_JS}
         var r = x[0]; return cell("Category", esc(r[0])) + cell("Subject", esc(r[1])) + cell("Created by", person(r[2], r[3])) + cell("Created on", esc(r[4])) + viewBtn("note", x[1]);
       });
     },
+    cols4: "hs-v4-notes", head4: H(["Date", "Subject", "Category", "Created by", '<span class="visually-hidden">Actions</span>']),
+    rows4: function () {
+      return D.NOTES.map(function (r, i) { return [r, i]; }).filter(function (x) { var r = x[0]; return !q || (r[0] + " " + r[1] + " " + r[2]).toLowerCase().indexOf(q.toLowerCase()) > -1; }).map(function (x) {
+        var r = x[0]; return cell("Date", when4(r[4])) + cell("Subject", title4(r[1])) + cell("Category", badge4(r[0])) + cell("Created by", who4(r[2], r[3])) + viewBtn("note", x[1]);
+      });
+    },
     cards: function () {
       return D.NOTES.map(function (r, i) { return [r, i]; }).filter(function (x) { var r = x[0]; return !q || (r[0] + " " + r[1] + " " + r[2]).toLowerCase().indexOf(q.toLowerCase()) > -1; }).map(function (x) {
         var r = x[0]; return item({ date: r[4], title: r[1], badge: r[0], facts: [fact("person", esc(r[2]) + " \u00b7 " + esc(r[3]))], view: "note:" + x[1] });
@@ -301,6 +339,8 @@ const pageJs = (cards) => `${SELECT_JS}
     head: H(["Type", "Department", "Created by", "Created on", "Comment"]),
     empty: function () { return "No action items"; },
     rows: function () { return D.ACTIONS.map(function (r) { return cell("Type", esc(r[0])) + cell("Department", esc(r[1])) + cell("Created by", person(r[2])) + cell("Created on", esc(r[3])) + cell("Comment", esc(r[4]), "hs-cell--wrap"); }); },
+    cols4: "hs-v4-actions", head4: H(["Date", "Type", "Created by", "Comment"]),
+    rows4: function () { return D.ACTIONS.map(function (r) { return cell("Date", when4(r[3])) + cell("Type", title4(r[0])) + cell("Created by", who4(r[2], r[1])) + cell("Comment", tint4(r[4])); }); },
     cards: function () { return D.ACTIONS.map(function (r) { return item({ date: r[3], title: r[0], facts: [fact("person", esc(r[2]) + " \u00b7 " + esc(r[1]))], text: r[4], tint: true }); }); },
   });
 
@@ -313,6 +353,11 @@ const pageJs = (cards) => `${SELECT_JS}
     rows: function () {
       var list = tab === "summaries" ? D.SUMMARIES : tab === "cancellations" ? D.CANCELLATIONS : [];
       return list.map(function (r, i) { return cell("Department", esc(r[0])) + cell("Type", esc(r[1])) + cell("Member", person(r[2])) + cell("Created by", person(r[3])) + cell("Created on", esc(r[4])) + viewBtn(tab, i); });
+    },
+    cols4: "hs-v4-appts", head4: H(["Date", "Type", "With", '<span class="visually-hidden">Actions</span>']),
+    rows4: function () {
+      var list = tab === "summaries" ? D.SUMMARIES : tab === "cancellations" ? D.CANCELLATIONS : [];
+      return list.map(function (r, i) { return cell("Date", when4(r[4])) + cell("Type", title4(r[1], tab === "summaries" ? "" : r[5])) + cell("With", who4(r[2], r[0])) + viewBtn(tab, i); });
     },
     cards: function () {
       // each tab's records as My schedule → Past rows: type + outcome Badge, with whom, a quiet line, View
@@ -357,13 +402,13 @@ const pageJs = (cards) => `${SELECT_JS}
 })();`;
 
 const PROMPTS = ["Show my advising notes", "What action items do I have?", "When was my last appointment?", "Book an appointment"];
-const appFor = (cell, cards = false) => cxApp({
+const appFor = (cell, mode = "table") => cxApp({
   title: "History",
   active: "advising-history",
   views,
   after,
-  pageCss: pageCss(cell, cards),
-  pageJs: pageJs(cards),
+  pageCss: pageCss(cell, mode),
+  pageJs: pageJs(mode),
   prompts: PROMPTS,
   navTheme: "neutral",
   colorPaths: [...HUES.flatMap((h) => [`avatar.${h}.bg`, `avatar.${h}.text`]), "text.secondary", "icon.default", "icon.secondary", "border.focus", "color.amber.50"],
@@ -378,12 +423,14 @@ const viewerHtml = renderDesignViewer({
     { label: "v1", note: "table text 12px — DS Table token (body-sm)", file: "cx-advising-history-app.html" },
     { label: "v2", note: "table text 14px — body-base, as CX tables", file: "cx-advising-history-v2-app.html" },
     { label: "v3", note: "cards instead of tables (Student Scheduling's My schedule rows)", file: "cx-advising-history-v3-app.html" },
+    { label: "v4", note: "table on desktop, v3 cards on a phone — the same pieces in both", file: "cx-advising-history-v4-app.html" },
   ],
 });
 
 fs.mkdirSync(path.join(root, "docs/designs"), { recursive: true });
 fs.writeFileSync(path.join(root, "docs/designs/cx-advising-history-app.html"), appFor("body-sm"));
 fs.writeFileSync(path.join(root, "docs/designs/cx-advising-history-v2-app.html"), appFor("body-base"));
-fs.writeFileSync(path.join(root, "docs/designs/cx-advising-history-v3-app.html"), appFor("body-base", true));
+fs.writeFileSync(path.join(root, "docs/designs/cx-advising-history-v3-app.html"), appFor("body-base", "cards"));
+fs.writeFileSync(path.join(root, "docs/designs/cx-advising-history-v4-app.html"), appFor("body-base", "both"));
 fs.writeFileSync(path.join(root, "docs/designs/cx-advising-history.html"), viewerHtml);
 console.log("wrote docs/designs/cx-advising-history-app.html, -v2-app.html, cx-advising-history.html");
