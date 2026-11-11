@@ -176,7 +176,7 @@ ${["blue", "green", "magenta", "amber", "teal", "orange", "violet", "red"].map((
 .is-hidden-section { display: none !important; }
 /* v3 card rows (the .ss-appt recipe from Student Scheduling) */
 .hs-list { display: flex; flex-direction: column; }
-.hs-item .ss-appt__clock { white-space: nowrap; }
+.hs-item .ss-appt__clock { white-space: nowrap; color: ${cv("text.secondary")}; } /* the date is context, not the headline (user, 2026-11-11) */
 .hs-item__text { margin: 0; color: ${cv("text.secondary")}; ${typoCss(style("body-base"))} }
 .hs-item__text--clamp { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .hs-item .ss-appt__name { ${typoCss(style("heading-base"))} }
