@@ -46,7 +46,8 @@ const initials = (name) => name.split(" ").map((w) => w[0]).slice(0, 2).join("")
 const DEPT = { ar: "Academic Advising", reg: "Office of the Registrar", psy: "Psychology Dept", la: "Liberal Arts", en: "English Dept", ca: "Career Center", fa: "Financial Aid" };
 // notes: the screenshot's five verbatim, then sample rows in the same voice
 const NOTES = [
-  ["Advisor Outreach", "Spring registration and MATH 140 plan", "Alexander Robinson", DEPT.ar, "Oct 22, 2026, 12:12 PM", "We went over your spring schedule. MATH 140 fits Tuesday/Thursday mornings; register the day your window opens — sections fill in the first hour."],
+  // a long department on purpose (user, 2026-11-11): to see the person line wrap on a phone
+  ["Advisor Outreach", "Spring registration and MATH 140 plan", "Alexander Robinson", "Office of Undergraduate Academic Advising and Student Success", "Oct 22, 2026, 12:12 PM", "We went over your spring schedule. MATH 140 fits Tuesday/Thursday mornings; register the day your window opens — sections fill in the first hour."],
   ["Academics", "Fall Course Registration Review", "Alexander Robinson", DEPT.reg, "Jun 12, 2026, 11:44 AM", "Your fall schedule is complete and meets full-time status. The prerequisite hold on CHEM 201 has been cleared."],
   ["Advisor Outreach", "Cait Adelson Semester Review", "Alexander Robinson", DEPT.ar, "Apr 30, 2026, 12:16 PM", "Semester review: on track for your degree. Next step is the degree audit before the October deadline."],
   ["General", "Skills Assessment", "Alexander Robinson", DEPT.ar, "Mar 25, 2026, 10:52 AM", "Completed the skills assessment together. Strengths in writing and quantitative reasoning; we talked about the tutoring center for statistics."],
