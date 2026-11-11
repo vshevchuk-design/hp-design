@@ -318,9 +318,10 @@ const pageJs = (cards) => `${SELECT_JS}
       var st = tab === "summaries" ? "done" : tab === "cancellations" ? "cancelled" : "missed";
       var list = tab === "summaries" ? D.SUMMARIES : tab === "cancellations" ? D.CANCELLATIONS : [];
       return list.map(function (r, i) {
-        return item({ date: r[4], title: r[1], badge: { done: "Done", missed: "Missed", cancelled: "Cancelled" }[st], tone: "neutral",
+        // the tab already says what it is: no outcome Badge, no "Summary from …"; a cancellation keeps its reason
+        return item({ date: r[4], title: r[1],
           facts: [fact("person", "With " + esc(r[2]) + " \\u00b7 " + esc(r[0]))],
-          note: st === "done" ? "Summary from " + r[2].split(" ")[0] : r[5], view: tab + ":" + i });
+          note: st === "done" ? "" : r[5], view: tab + ":" + i });
       });
     },
   });
