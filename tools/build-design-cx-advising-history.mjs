@@ -109,7 +109,6 @@ ${section({
 ${section({ id: "hs-actions", title: "Action Items", count: ACTIONS.length, table: "" })}
 ${section({
   id: "hs-appts", title: "Appointments", count: SUMMARIES.length + CANCELLATIONS.length,
-  headRight: `<div class="hs-filter">${selectHtml({ id: "hs-appts-status", label: "Status", options: [{ label: "All statuses", value: "" }, { label: "Done", value: "done" }, { label: "Missed", value: "missed" }, { label: "Cancelled", value: "cancelled" }], value: "", size: "sm" })}</div>`,
   tabs: `<div class="tabs tabs--underline hs-tabs" role="tablist" aria-label="Appointments">
     <button class="tab tab--base tab--active" role="tab" type="button" aria-selected="true" data-tab="summaries">Summaries <span class="counter">${SUMMARIES.length}</span></button>
     <button class="tab tab--base" role="tab" type="button" aria-selected="false" data-tab="noshows">No Shows <span class="counter">0</span></button>
@@ -175,9 +174,6 @@ const pageCss = (cell, cards = false) => (X) => {
 .avatar { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; width: ${dim(8)}; height: ${dim(8)}; border-radius: ${X.px(X.resolve("radius.full"))}; ${typoCss(avInit)} user-select: none; }
 ${["blue", "green", "magenta", "amber", "teal", "orange", "violet", "red"].map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; color: ${cv(`avatar.${h}.text`)}; }`).join("\n")}
 .is-hidden-section { display: none !important; }
-/* Appointments: v3 = one list of past appointments with a status filter (My schedule → Past); v1/v2 keep the tabs */
-${cards ? ".hs-tabs { display: none; }\n.hs-card--tabs > .card__header { padding-bottom: " + D(tokens.card.padding) + "; border-bottom: 1px solid " + R(tokens.card.divider) + "; }" : ".hs-filter { display: none; }"}
-.hs-filter .select-field { width: 160px; }
 /* v3 card rows (the .ss-appt recipe from Student Scheduling) */
 .hs-list { display: flex; flex-direction: column; }
 .hs-item .ss-appt__clock { white-space: nowrap; color: ${cv("text.secondary")}; ${typoCss(style("body-sm"))} } /* the date is context, not the headline: body-sm, regular, date over time (user, 2026-11-11) */
@@ -312,27 +308,22 @@ const pageJs = (cards) => `${SELECT_JS}
   var appts = pager("hs-appts", {
     label: "Appointments", cols: "hs-cols-appts",
     head: H(["Department", "Type", "Department member", "Created by", "Created on", '<span class="visually-hidden">Actions</span>']),
-    empty: function () { var k = CARDS ? ({ missed: "noshows", cancelled: "cancellations", done: "summaries" })[status] || "" : tab; return k === "noshows" ? "No missed appointments" : k === "cancellations" ? "No cancelled appointments" : k === "summaries" ? "No appointment summaries" : "No past appointments"; },
+    empty: function () { var k = tab; return k === "noshows" ? "No missed appointments" : k === "cancellations" ? "No cancelled appointments" : k === "summaries" ? "No appointment summaries" : "No past appointments"; },
     rows: function () {
       var list = tab === "summaries" ? D.SUMMARIES : tab === "cancellations" ? D.CANCELLATIONS : [];
       return list.map(function (r, i) { return cell("Department", esc(r[0])) + cell("Type", esc(r[1])) + cell("Member", person(r[2])) + cell("Created by", person(r[3])) + cell("Created on", esc(r[4])) + viewBtn(tab, i); });
     },
     cards: function () {
-      // My schedule → Past: every past appointment in one list, newest first, its outcome as a quiet Badge
-      var all = D.SUMMARIES.map(function (r, i) { return { r: r, st: "done", k: "summaries:" + i }; })
-        .concat(D.CANCELLATIONS.map(function (r, i) { return { r: r, st: "cancelled", k: "cancellations:" + i }; }))
-        .sort(function (a, b) { return new Date(b.r[4].replace(/, (\\d+:\\d+ [AP]M)$/, " $1")) - new Date(a.r[4].replace(/, (\\d+:\\d+ [AP]M)$/, " $1")); })
-        .filter(function (x) { return !status || x.st === status; });
-      return all.map(function (x) {
-        var r = x.r, first = r[2].split(" ")[0];
-        return item({ date: r[4], title: r[1], badge: { done: "Done", missed: "Missed", cancelled: "Cancelled" }[x.st], tone: "neutral",
+      // each tab's records as My schedule → Past rows: type + outcome Badge, with whom, a quiet line, View
+      var st = tab === "summaries" ? "done" : tab === "cancellations" ? "cancelled" : "missed";
+      var list = tab === "summaries" ? D.SUMMARIES : tab === "cancellations" ? D.CANCELLATIONS : [];
+      return list.map(function (r, i) {
+        return item({ date: r[4], title: r[1], badge: { done: "Done", missed: "Missed", cancelled: "Cancelled" }[st], tone: "neutral",
           facts: [fact("person", "With " + esc(r[2]) + " \\u00b7 " + esc(r[0]))],
-          note: x.st === "done" ? "Summary from " + first : r[5], view: x.k });
+          note: st === "done" ? "Summary from " + r[2].split(" ")[0] : r[5], view: tab + ":" + i });
       });
     },
   });
-  var status = "";
-  document.querySelector("#hs-appts-status").closest(".select-field").addEventListener("selectchange", function (e) { status = e.detail.value; appts.page = 1; appts.render(); });
   document.querySelector(".hs-tabs").addEventListener("click", function (e) {
     var b = e.target.closest("[data-tab]"); if (!b) return;
     tab = b.dataset.tab;
