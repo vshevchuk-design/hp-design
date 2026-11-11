@@ -136,6 +136,9 @@ const pageCss = (cell) => (X) => {
 .hs { gap: ${dim(6)}; }
 .hs-card__header { flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: ${dim(3)}; }
 .hs-card__title { display: flex; align-items: center; gap: ${dim(2)}; min-width: 0; }
+/* section heading: heading-md (16) — one step under the page title in the topbar (heading-lg, 18); user 2026-11-11.
+   The h2 is a flex box so the button inside adds no line-box descender (it pushed the Counter down) */
+.hs-card__title > .card__title { display: flex; align-items: center; ${typoCss(style("heading-md"))} }
 /* the section collapses: a chevron before the title, the title is the button */
 .hs-toggle { display: inline-flex; align-items: center; gap: ${dim(2)}; margin: 0; padding: 0; border: none; background: none; color: inherit; font: inherit; cursor: pointer; border-radius: ${X.px(X.resolve("radius.xs"))}; }
 .hs-toggle:focus-visible { outline: 2px solid ${cv("border.focus")}; outline-offset: 2px; }

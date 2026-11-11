@@ -1362,6 +1362,9 @@ html { background: var(--tok-surface-page); }
 .hs { gap: 24px; }
 .hs-card__header { flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
 .hs-card__title { display: flex; align-items: center; gap: 8px; min-width: 0; }
+/* section heading: heading-md (16) — one step under the page title in the topbar (heading-lg, 18); user 2026-11-11.
+   The h2 is a flex box so the button inside adds no line-box descender (it pushed the Counter down) */
+.hs-card__title > .card__title { display: flex; align-items: center; font-weight: 600; font-size: 16px; line-height: 1.4; }
 /* the section collapses: a chevron before the title, the title is the button */
 .hs-toggle { display: inline-flex; align-items: center; gap: 8px; margin: 0; padding: 0; border: none; background: none; color: inherit; font: inherit; cursor: pointer; border-radius: 4px; }
 .hs-toggle:focus-visible { outline: 2px solid var(--tok-border-focus); outline-offset: 2px; }
