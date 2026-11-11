@@ -284,7 +284,7 @@ const pageJs = (cards) => `${SELECT_JS}
     },
     cards: function () {
       return D.NOTES.map(function (r, i) { return [r, i]; }).filter(function (x) { var r = x[0]; return !q || (r[0] + " " + r[1] + " " + r[2]).toLowerCase().indexOf(q.toLowerCase()) > -1; }).map(function (x) {
-        var r = x[0]; return item({ date: r[4], title: r[1], badge: r[0], facts: [fact("person", esc(r[2]) + " \u00b7 " + esc(r[3]))], text: r[5], clamp: true, view: "note:" + x[1] });
+        var r = x[0]; return item({ date: r[4], title: r[1], badge: r[0], facts: [fact("person", esc(r[2]) + " \u00b7 " + esc(r[3]))], view: "note:" + x[1] });
       });
     },
   });
