@@ -168,6 +168,21 @@ const pageCss = (cell) => (X) => {
 .avatar { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; width: ${dim(8)}; height: ${dim(8)}; border-radius: ${X.px(X.resolve("radius.full"))}; ${typoCss(avInit)} user-select: none; }
 ${["blue", "green", "magenta", "amber", "teal", "orange", "violet", "red"].map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; color: ${cv(`avatar.${h}.text`)}; }`).join("\n")}
 .is-hidden-section { display: none !important; }
+/* v3 card rows (the .ss-appt recipe from Student Scheduling) */
+.hs-list { display: flex; flex-direction: column; }
+.hs-item .ss-appt__clock { white-space: nowrap; }
+.hs-item__text { margin: 0; color: ${cv("text.secondary")}; ${typoCss(style("body-base"))} }
+.hs-item__text--clamp { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.hs-item .ss-appt__name { ${typoCss(style("heading-base"))} }
+@media (max-width: 767px) {
+  /* a phone: View stays a small button under the text, not a full-width bar per record */
+  .hs-item .ss-appt__actions { align-items: flex-start; }
+  .hs-item .ss-appt__btns > .btn { flex: none; }
+  .hs-item { gap: ${dim(2)}; }
+  /* three tabs share the width (Scheduling's Upcoming / Past rule) */
+  .hs-tabs { padding: 0; gap: 0; }
+  .hs-tabs .tab { flex: 1 1 auto; padding-inline: ${dim(1)}; gap: ${dim(1)}; }
+}
 .hs-empty { padding: ${dim(8)} ${dim(4)}; display: flex; justify-content: center; }
 /* footer: Rows per page left; range + pages right */
 .hs-foot { justify-content: space-between; align-items: center; flex-wrap: wrap; gap: ${dim(3)} ${dim(6)}; }
@@ -199,8 +214,10 @@ ${["blue", "green", "magenta", "amber", "teal", "orange", "violet", "red"].map((
 };
 
 // ---- script ----
-const pageJs = `${SELECT_JS}
+const pageJs = (cards) => `${SELECT_JS}
 (function () {
+  var CARDS = ${cards ? "true" : "false"};
+  var IC = ${JSON.stringify({ person: icon("person", ""), edit: icon("edit", "") })};
   var D = ${JSON.stringify({ NOTES, ACTIONS, SUMMARIES, CANCELLATIONS })};
   var HUES = ${JSON.stringify(HUES)};
   var VIEW_ICON = "";
@@ -210,16 +227,25 @@ const pageJs = `${SELECT_JS}
   function avatar(name) { var ini = name.split(" ").map(function (w) { return w[0]; }).slice(0, 2).join(""); return '<span class="avatar avatar--' + HUES[hash(name) % HUES.length] + '" aria-hidden="true">' + ini + "</span>"; }
   function person(name, sub) { return '<span class="hs-person">' + avatar(name) + '<span class="hs-person__text"><span class="hs-person__name">' + esc(name) + "</span>" + (sub ? '<span class="hs-person__sub">' + esc(sub) + "</span>" : "") + "</span></span>"; }
   function cell(label, html, cls) { return '<div class="hs-cell' + (cls ? " " + cls : "") + '" data-label="' + label + '"><span>' + html + "</span></div>"; }
+  // v3: a record as a card row — the Scheduling My schedule recipe (.ss-appt):
+  // the date on the left, title + badge, icon facts, a 2-line preview, View right
+  function fact(ic, text) { return '<span class="ss-fact">' + IC[ic] + '<span class="ss-fact__text">' + text + "</span></span>"; }
+  function when(d) { var p = d.split(", "); return '<div class="ss-appt__time"><span class="ss-appt__clock">' + p[0] + '</span><span class="ss-appt__dur">' + p[1] + " \u00b7 " + p[2] + "</span></div>"; }
+  function item(o) {
+    return '<article class="ss-appt hs-item">' + when(o.date) + '<div class="ss-appt__main"><div class="ss-appt__title"><h3 class="ss-appt__name">' + esc(o.title) + "</h3>" + (o.badge ? '<span class="badge badge--base badge--regular badge--neutral">' + esc(o.badge) + "</span>" : "") + "</div>" +
+      '<div class="ss-appt__meta">' + o.facts.join("") + "</div>" + (o.text ? '<p class="hs-item__text' + (o.clamp ? " hs-item__text--clamp" : "") + '">' + esc(o.text) + "</p>" : "") + "</div>" +
+      (o.view ? '<div class="ss-appt__actions"><div class="ss-appt__btns"><button class="btn btn--secondary btn--sm" type="button" data-view-rec="' + o.view + '">View</button></div></div>' : "") + "</article>";
+  }
   function viewBtn(kind, i) { return '<div class="hs-cell--end"><button class="btn btn--tint btn--sm" type="button" data-view-rec="' + kind + ":" + i + '">View</button></div>'; }
 
   // one paged table: rows() → array of row html, head html, cols class
   function pager(id, opts) {
     var st = { page: 1, per: 5 };
     function render() {
-      var rows = opts.rows(), n = rows.length, pages = Math.max(1, Math.ceil(n / st.per));
+      var rows = CARDS ? opts.cards() : opts.rows(), n = rows.length, pages = Math.max(1, Math.ceil(n / st.per));
       if (st.page > pages) st.page = pages;
       var from = (st.page - 1) * st.per, shown = rows.slice(from, from + st.per);
-      $(id + "-table").innerHTML = n
+      $(id + "-table").innerHTML = n && CARDS ? '<div class="hs-list" role="list" aria-label="' + opts.label + '">' + shown.join("") + "</div>" : n
         ? '<div class="table" role="table" aria-label="' + opts.label + '"><div class="table__row table__row--head ' + opts.cols + '" role="row">' + opts.head + "</div>" + shown.map(function (r) { return '<div class="table__row ' + opts.cols + '" role="row">' + r + "</div>"; }).join("") + "</div>"
         : '<div class="hs-empty"><div class="empty-state"><span class="empty-state__text">' + opts.empty() + "</span></div></div>";
       $(id + "-foot").hidden = !n;
@@ -246,6 +272,11 @@ const pageJs = `${SELECT_JS}
         var r = x[0]; return cell("Category", esc(r[0])) + cell("Subject", esc(r[1])) + cell("Created by", person(r[2], r[3])) + cell("Created on", esc(r[4])) + viewBtn("note", x[1]);
       });
     },
+    cards: function () {
+      return D.NOTES.map(function (r, i) { return [r, i]; }).filter(function (x) { var r = x[0]; return !q || (r[0] + " " + r[1] + " " + r[2]).toLowerCase().indexOf(q.toLowerCase()) > -1; }).map(function (x) {
+        var r = x[0]; return item({ date: r[4], title: r[1], badge: r[0], facts: [fact("person", esc(r[2]) + " \u00b7 " + esc(r[3]))], text: r[5], clamp: true, view: "note:" + x[1] });
+      });
+    },
   });
   var qi = $("hs-notes-q"), sb = qi.closest(".search");
   qi.addEventListener("input", function () { q = qi.value.trim(); sb.classList.toggle("is-populated", !!qi.value); notes.render(); });
@@ -257,6 +288,7 @@ const pageJs = `${SELECT_JS}
     head: H(["Type", "Department", "Created by", "Created on", "Comment"]),
     empty: function () { return "No action items"; },
     rows: function () { return D.ACTIONS.map(function (r) { return cell("Type", esc(r[0])) + cell("Department", esc(r[1])) + cell("Created by", person(r[2])) + cell("Created on", esc(r[3])) + cell("Comment", esc(r[4]), "hs-cell--wrap"); }); },
+    cards: function () { return D.ACTIONS.map(function (r) { return item({ date: r[3], title: r[0], facts: [fact("person", esc(r[2]) + " \u00b7 " + esc(r[1]))], text: r[4] }); }); },
   });
 
   // Appointments (tabs)
@@ -268,6 +300,10 @@ const pageJs = `${SELECT_JS}
     rows: function () {
       var list = tab === "summaries" ? D.SUMMARIES : tab === "cancellations" ? D.CANCELLATIONS : [];
       return list.map(function (r, i) { return cell("Department", esc(r[0])) + cell("Type", esc(r[1])) + cell("Member", person(r[2])) + cell("Created by", person(r[3])) + cell("Created on", esc(r[4])) + viewBtn(tab, i); });
+    },
+    cards: function () {
+      var list = tab === "summaries" ? D.SUMMARIES : tab === "cancellations" ? D.CANCELLATIONS : [];
+      return list.map(function (r, i) { return item({ date: r[4], title: r[1], badge: tab === "cancellations" ? "Cancelled" : "", facts: [fact("person", "With " + esc(r[2]) + " \u00b7 " + esc(r[0])), fact("edit", "Created by " + esc(r[3]))], text: r[5], clamp: true, view: tab + ":" + i }); });
     },
   });
   document.querySelector(".hs-tabs").addEventListener("click", function (e) {
@@ -301,13 +337,13 @@ const pageJs = `${SELECT_JS}
 })();`;
 
 const PROMPTS = ["Show my advising notes", "What action items do I have?", "When was my last appointment?", "Book an appointment"];
-const appFor = (cell) => cxApp({
+const appFor = (cell, cards = false) => cxApp({
   title: "History",
   active: "advising-history",
   views,
   after,
   pageCss: pageCss(cell),
-  pageJs,
+  pageJs: pageJs(cards),
   prompts: PROMPTS,
   navTheme: "neutral",
   colorPaths: [...HUES.flatMap((h) => [`avatar.${h}.bg`, `avatar.${h}.text`]), "text.secondary", "icon.default", "icon.secondary", "border.focus"],
@@ -321,11 +357,13 @@ const viewerHtml = renderDesignViewer({
   versions: [
     { label: "v1", note: "table text 12px — DS Table token (body-sm)", file: "cx-advising-history-app.html" },
     { label: "v2", note: "table text 14px — body-base, as CX tables", file: "cx-advising-history-v2-app.html" },
+    { label: "v3", note: "cards instead of tables (Student Scheduling's My schedule rows)", file: "cx-advising-history-v3-app.html" },
   ],
 });
 
 fs.mkdirSync(path.join(root, "docs/designs"), { recursive: true });
 fs.writeFileSync(path.join(root, "docs/designs/cx-advising-history-app.html"), appFor("body-sm"));
 fs.writeFileSync(path.join(root, "docs/designs/cx-advising-history-v2-app.html"), appFor("body-base"));
+fs.writeFileSync(path.join(root, "docs/designs/cx-advising-history-v3-app.html"), appFor("body-base", true));
 fs.writeFileSync(path.join(root, "docs/designs/cx-advising-history.html"), viewerHtml);
 console.log("wrote docs/designs/cx-advising-history-app.html, -v2-app.html, cx-advising-history.html");
