@@ -128,6 +128,7 @@ export const DESIGN_PRODUCTS = {
       "student-scheduling": { label: "Student Scheduling", href: "designs/student-scheduling.html" },
       "student-scheduling-checkin": { label: "Student Check-in (QR)", href: "designs/student-scheduling-checkin.html" },
       schedule: { label: "Schedule", href: "designs/schedule.html" },
+      "cx-advising-history": { label: "History", href: "designs/cx-advising-history.html" },
     },
   },
   "release-emails": {
