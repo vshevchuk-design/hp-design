@@ -1362,8 +1362,20 @@ html { background: var(--tok-surface-page); }
 .hs { gap: 24px; }
 .hs-card__header { flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
 .hs-card__title { display: flex; align-items: center; gap: 8px; min-width: 0; }
+/* the section collapses: a chevron before the title, the title is the button */
+.hs-toggle { display: inline-flex; align-items: center; gap: 8px; margin: 0; padding: 0; border: none; background: none; color: inherit; font: inherit; cursor: pointer; border-radius: 4px; }
+.hs-toggle:focus-visible { outline: 2px solid var(--tok-border-focus); outline-offset: 2px; }
+.hs-toggle__icon { width: 20px; height: 20px; flex-shrink: 0; color: var(--tok-icon-secondary); transition: transform 0.15s ease; }
+.hs-toggle[aria-expanded="false"] .hs-toggle__icon { transform: rotate(-90deg); }
+@media (hover: hover) { .hs-toggle:hover .hs-toggle__icon { color: var(--tok-icon-default); } }
+.hs-card.is-collapsed > .card__header { border-bottom: none; }
+.hs-card.is-collapsed .hs-search { display: none; }
+@media (prefers-reduced-motion: reduce) { .hs-toggle__icon { transition: none; } }
 .hs-search { width: 280px; max-width: 100%; height: 32px; }
-.hs-tabs { padding: 4px 16px 0; }
+/* the first tab's label lines up with the card title: card padding minus the tab's own paddingX */
+.hs-tabs { padding: 0 calc(16px - 12px); }
+/* tabs under the title: their baseline is the header's divider (one line, not two) */
+.hs-card--tabs > .card__header { border-bottom: none; padding-bottom: 4px; }
 /* the table sits flush in the card: no border / radius of its own */
 .hs-table .table { border: none; border-radius: 0; }
 /* the size under test: every cell's text — v1 14px (body-base) */
@@ -1388,6 +1400,7 @@ html { background: var(--tok-surface-page); }
 .avatar--orange { background: var(--tok-avatar-orange-bg); color: var(--tok-avatar-orange-text); }
 .avatar--violet { background: var(--tok-avatar-violet-bg); color: var(--tok-avatar-violet-text); }
 .avatar--red { background: var(--tok-avatar-red-bg); color: var(--tok-avatar-red-text); }
+.is-hidden-section { display: none !important; }
 .hs-empty { padding: 32px 16px; display: flex; justify-content: center; }
 /* footer: Rows per page left; range + pages right */
 .hs-foot { justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px 24px; }
@@ -1471,7 +1484,7 @@ html { background: var(--tok-surface-page); }
 <section class="cx-view is-active hs" data-view="history">
 <section class="card card--flush hs-card" aria-labelledby="hs-notes-title">
   <div class="card__header hs-card__header">
-    <div class="hs-card__title"><h2 class="card__title" id="hs-notes-title">Notes</h2><span class="counter" aria-label="15 total">15</span></div>
+    <div class="hs-card__title"><h2 class="card__title" id="hs-notes-title"><button class="hs-toggle" type="button" aria-expanded="true"><svg class="hs-toggle__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg><span>Notes</span></button></h2><span class="counter" aria-label="15 total">15</span></div>
     <label class="search hs-search"><span class="visually-hidden">Search notes</span><svg class="search__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg><input class="search__input" id="hs-notes-q" type="search" placeholder="Search notes" autocomplete="off" /><button class="search__clear" type="button" aria-label="Clear search"><svg class="search__clear-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button></label>
   </div>
   
@@ -1486,7 +1499,7 @@ html { background: var(--tok-surface-page); }
 </section>
 <section class="card card--flush hs-card" aria-labelledby="hs-actions-title">
   <div class="card__header hs-card__header">
-    <div class="hs-card__title"><h2 class="card__title" id="hs-actions-title">Action Items</h2><span class="counter" aria-label="8 total">8</span></div>
+    <div class="hs-card__title"><h2 class="card__title" id="hs-actions-title"><button class="hs-toggle" type="button" aria-expanded="true"><svg class="hs-toggle__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg><span>Action Items</span></button></h2><span class="counter" aria-label="8 total">8</span></div>
     
   </div>
   
@@ -1499,15 +1512,15 @@ html { background: var(--tok-surface-page); }
     <div class="hs-pager"><span class="hs-range" id="hs-actions-range"></span><nav class="pagination" id="hs-actions-pages" aria-label="Action Items pages"></nav></div>
   </div>
 </section>
-<section class="card card--flush hs-card" aria-labelledby="hs-appts-title">
+<section class="card card--flush hs-card hs-card--tabs" aria-labelledby="hs-appts-title">
   <div class="card__header hs-card__header">
-    <div class="hs-card__title"><h2 class="card__title" id="hs-appts-title">Appointments</h2><span class="counter" aria-label="8 total">8</span></div>
+    <div class="hs-card__title"><h2 class="card__title" id="hs-appts-title"><button class="hs-toggle" type="button" aria-expanded="true"><svg class="hs-toggle__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg><span>Appointments</span></button></h2><span class="counter" aria-label="8 total">8</span></div>
     
   </div>
   <div class="tabs tabs--underline hs-tabs" role="tablist" aria-label="Appointments">
-    <button class="tab tab--active" role="tab" type="button" aria-selected="true" data-tab="summaries">Summaries <span class="counter">7</span></button>
-    <button class="tab" role="tab" type="button" aria-selected="false" data-tab="noshows">No Shows <span class="counter">0</span></button>
-    <button class="tab" role="tab" type="button" aria-selected="false" data-tab="cancellations">Cancellations <span class="counter">1</span></button>
+    <button class="tab tab--base tab--active" role="tab" type="button" aria-selected="true" data-tab="summaries">Summaries <span class="counter">7</span></button>
+    <button class="tab tab--base" role="tab" type="button" aria-selected="false" data-tab="noshows">No Shows <span class="counter">0</span></button>
+    <button class="tab tab--base" role="tab" type="button" aria-selected="false" data-tab="cancellations">Cancellations <span class="counter">1</span></button>
   </div>
   <div class="hs-table" id="hs-appts-table"></div>
   <div class="card__footer hs-foot" id="hs-appts-foot">
@@ -1857,6 +1870,15 @@ window.cx = (function () {
     if (k[0] === "note") { r = D.NOTES[i]; $("hs-sheet-title").textContent = r[1]; $("hs-sheet-sub").textContent = r[0] + " note"; $("hs-sheet-body").innerHTML = facts([["Created by", r[2] + " \u00b7 " + r[3]], ["Created on", r[4]]]) + '<h3 class="hs-sheet__h">Note</h3><p class="hs-sheet__text">' + esc(r[5]) + "</p>"; }
     else { r = (k[0] === "cancellations" ? D.CANCELLATIONS : D.SUMMARIES)[i]; $("hs-sheet-title").textContent = r[1] + " appointment"; $("hs-sheet-sub").textContent = r[0]; $("hs-sheet-body").innerHTML = facts([["With", r[2]], ["Created by", r[3]], ["Created on", r[4]]]) + '<h3 class="hs-sheet__h">' + (k[0] === "cancellations" ? "Cancellation" : "Summary") + '</h3><p class="hs-sheet__text">' + esc(r[5]) + "</p>"; }
     sheet.showModal();
+  });
+  // collapse / expand a section
+  document.querySelectorAll(".hs-toggle").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var card = b.closest(".hs-card"), open = b.getAttribute("aria-expanded") !== "true";
+      b.setAttribute("aria-expanded", open);
+      card.classList.toggle("is-collapsed", !open);
+      Array.prototype.forEach.call(card.children, function (c) { if (!c.classList.contains("card__header")) c.classList.toggle("is-hidden-section", !open); });
+    });
   });
   $("hs-sheet-close").addEventListener("click", function () { sheet.close(); });
   sheet.addEventListener("click", function (e) { if (e.target === sheet) sheet.close(); });

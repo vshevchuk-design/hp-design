@@ -85,11 +85,11 @@ const SUMMARIES = [
 const CANCELLATIONS = [[DEPT.ar, "Advising", "Alexander Robinson", "Alexander Robinson", "Oct 9, 2024, 2:00 PM", "Cancelled by the student — schedule conflict."]];
 
 // ---- markup ----
-const ICON = { search: icon("search", "search__icon"), close: icon("close", "search__clear-icon"), prev: icon("chevron_left", ""), next: icon("chevron_right", "") };
+const ICON = { chevron: icon("expand_more", "hs-toggle__icon"), search: icon("search", "search__icon"), close: icon("close", "search__clear-icon"), prev: icon("chevron_left", ""), next: icon("chevron_right", "") };
 const rowsSelect = (id) => selectHtml({ id, label: "Rows per page", options: ["5", "10", "20"].map((v) => ({ label: v, value: v })), value: "5", size: "sm" });
-const section = ({ id, title, count, headRight = "", tabs = "", table }) => `<section class="card card--flush hs-card" aria-labelledby="${id}-title">
+const section = ({ id, title, count, headRight = "", tabs = "", table }) => `<section class="card card--flush hs-card${tabs ? " hs-card--tabs" : ""}" aria-labelledby="${id}-title">
   <div class="card__header hs-card__header">
-    <div class="hs-card__title"><h2 class="card__title" id="${id}-title">${title}</h2><span class="counter" aria-label="${count} total">${count}</span></div>
+    <div class="hs-card__title"><h2 class="card__title" id="${id}-title"><button class="hs-toggle" type="button" aria-expanded="true">${ICON.chevron}<span>${title}</span></button></h2><span class="counter" aria-label="${count} total">${count}</span></div>
     ${headRight}
   </div>
   ${tabs}
@@ -110,9 +110,9 @@ ${section({ id: "hs-actions", title: "Action Items", count: ACTIONS.length, tabl
 ${section({
   id: "hs-appts", title: "Appointments", count: SUMMARIES.length + CANCELLATIONS.length,
   tabs: `<div class="tabs tabs--underline hs-tabs" role="tablist" aria-label="Appointments">
-    <button class="tab tab--active" role="tab" type="button" aria-selected="true" data-tab="summaries">Summaries <span class="counter">${SUMMARIES.length}</span></button>
-    <button class="tab" role="tab" type="button" aria-selected="false" data-tab="noshows">No Shows <span class="counter">0</span></button>
-    <button class="tab" role="tab" type="button" aria-selected="false" data-tab="cancellations">Cancellations <span class="counter">${CANCELLATIONS.length}</span></button>
+    <button class="tab tab--base tab--active" role="tab" type="button" aria-selected="true" data-tab="summaries">Summaries <span class="counter">${SUMMARIES.length}</span></button>
+    <button class="tab tab--base" role="tab" type="button" aria-selected="false" data-tab="noshows">No Shows <span class="counter">0</span></button>
+    <button class="tab tab--base" role="tab" type="button" aria-selected="false" data-tab="cancellations">Cancellations <span class="counter">${CANCELLATIONS.length}</span></button>
   </div>`,
   table: "",
 })}
@@ -136,8 +136,20 @@ const pageCss = (cell) => (X) => {
 .hs { gap: ${dim(6)}; }
 .hs-card__header { flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: ${dim(3)}; }
 .hs-card__title { display: flex; align-items: center; gap: ${dim(2)}; min-width: 0; }
+/* the section collapses: a chevron before the title, the title is the button */
+.hs-toggle { display: inline-flex; align-items: center; gap: ${dim(2)}; margin: 0; padding: 0; border: none; background: none; color: inherit; font: inherit; cursor: pointer; border-radius: ${X.px(X.resolve("radius.xs"))}; }
+.hs-toggle:focus-visible { outline: 2px solid ${cv("border.focus")}; outline-offset: 2px; }
+.hs-toggle__icon { width: ${dim(5)}; height: ${dim(5)}; flex-shrink: 0; color: ${cv("icon.secondary")}; transition: transform 0.15s ease; }
+.hs-toggle[aria-expanded="false"] .hs-toggle__icon { transform: rotate(-90deg); }
+.hs-toggle:hover .hs-toggle__icon { color: ${cv("icon.default")}; }
+.hs-card.is-collapsed > .card__header { border-bottom: none; }
+.hs-card.is-collapsed .hs-search { display: none; }
+@media (prefers-reduced-motion: reduce) { .hs-toggle__icon { transition: none; } }
 .hs-search { width: 280px; max-width: 100%; height: ${dim(8)}; }
-.hs-tabs { padding: ${dim(1)} ${dim(4)} 0; }
+/* the first tab's label lines up with the card title: card padding minus the tab's own paddingX */
+.hs-tabs { padding: 0 calc(${dim(4)} - ${D(tokens.tabs.size.base.paddingX)}); }
+/* tabs under the title: their baseline is the header's divider (one line, not two) */
+.hs-card--tabs > .card__header { border-bottom: none; padding-bottom: ${dim(1)}; }
 /* the table sits flush in the card: no border / radius of its own */
 .hs-table .table { border: none; border-radius: 0; }
 /* the size under test: every cell's text — v1 ${cell === "body-sm" ? "12px (DS token)" : "14px (body-base)"} */
@@ -155,6 +167,7 @@ const pageCss = (cell) => (X) => {
 .hs-person__sub { color: ${R(tb.cell.mutedColor)}; }
 .avatar { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; width: ${dim(8)}; height: ${dim(8)}; border-radius: ${X.px(X.resolve("radius.full"))}; ${typoCss(avInit)} user-select: none; }
 ${["blue", "green", "magenta", "amber", "teal", "orange", "violet", "red"].map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; color: ${cv(`avatar.${h}.text`)}; }`).join("\n")}
+.is-hidden-section { display: none !important; }
 .hs-empty { padding: ${dim(8)} ${dim(4)}; display: flex; justify-content: center; }
 /* footer: Rows per page left; range + pages right */
 .hs-foot { justify-content: space-between; align-items: center; flex-wrap: wrap; gap: ${dim(3)} ${dim(6)}; }
@@ -274,6 +287,15 @@ const pageJs = `${SELECT_JS}
     else { r = (k[0] === "cancellations" ? D.CANCELLATIONS : D.SUMMARIES)[i]; $("hs-sheet-title").textContent = r[1] + " appointment"; $("hs-sheet-sub").textContent = r[0]; $("hs-sheet-body").innerHTML = facts([["With", r[2]], ["Created by", r[3]], ["Created on", r[4]]]) + '<h3 class="hs-sheet__h">' + (k[0] === "cancellations" ? "Cancellation" : "Summary") + '</h3><p class="hs-sheet__text">' + esc(r[5]) + "</p>"; }
     sheet.showModal();
   });
+  // collapse / expand a section
+  document.querySelectorAll(".hs-toggle").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var card = b.closest(".hs-card"), open = b.getAttribute("aria-expanded") !== "true";
+      b.setAttribute("aria-expanded", open);
+      card.classList.toggle("is-collapsed", !open);
+      Array.prototype.forEach.call(card.children, function (c) { if (!c.classList.contains("card__header")) c.classList.toggle("is-hidden-section", !open); });
+    });
+  });
   $("hs-sheet-close").addEventListener("click", function () { sheet.close(); });
   sheet.addEventListener("click", function (e) { if (e.target === sheet) sheet.close(); });
 })();`;
@@ -288,7 +310,7 @@ const appFor = (cell) => cxApp({
   pageJs,
   prompts: PROMPTS,
   navTheme: "neutral",
-  colorPaths: [...HUES.flatMap((h) => [`avatar.${h}.bg`, `avatar.${h}.text`]), "text.secondary"],
+  colorPaths: [...HUES.flatMap((h) => [`avatar.${h}.bg`, `avatar.${h}.text`]), "text.secondary", "icon.default", "icon.secondary", "border.focus"],
 });
 
 const viewerHtml = renderDesignViewer({
