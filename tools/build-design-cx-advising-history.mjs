@@ -177,7 +177,9 @@ ${["blue", "green", "magenta", "amber", "teal", "orange", "violet", "red"].map((
 /* v3 card rows (the .ss-appt recipe from Student Scheduling) */
 .hs-list { display: flex; flex-direction: column; }
 .hs-item .ss-appt__clock { white-space: nowrap; color: ${cv("text.secondary")}; ${typoCss(style("body-sm"))} } /* the date is context, not the headline: body-sm, regular, date over time (user, 2026-11-11) */
-.hs-item__text { margin: 0; color: ${cv("text.secondary")}; ${typoCss(style("body-base"))} } /* a sunken box behind it was tried and dropped (user, 2026-11-11) */
+.hs-item__text { margin: 0; color: ${cv("text.secondary")}; ${typoCss(style("body-base"))} }
+/* an action item's comment is what to do: on a light amber box (palette amber.50 — no semantic role for it yet; user, 2026-11-11) */
+.hs-item__text--tint { padding: ${dim(2)} ${dim(3)}; border-radius: ${D(tokens.card.radius)}; background: ${cv("color.amber.50")}; color: ${cv("text.default")}; } /* a sunken box behind it was tried and dropped (user, 2026-11-11) */
 /* the clamp sits on the inner span: on the padded box itself the 3rd line leaked into the padding */
 .hs-item__clamp { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .hs-item .ss-appt__main { gap: ${dim(2)}; }
@@ -243,7 +245,7 @@ const pageJs = (cards) => `${SELECT_JS}
   function when(d) { var p = d.split(", "); return '<div class="ss-appt__time"><span class="ss-appt__clock">' + p[0] + ", " + p[1] + '</span><span class="ss-appt__dur">' + p[2] + "</span></div>"; }
   function item(o) {
     return '<article class="ss-appt hs-item">' + when(o.date) + '<div class="ss-appt__main"><div class="ss-appt__title"><h3 class="ss-appt__name">' + esc(o.title) + "</h3>" + (o.badge ? '<span class="badge badge--base badge--regular badge--' + (o.tone || "amber") + '">' + esc(o.badge) + "</span>" : "") + "</div>" +
-      '<div class="ss-appt__meta">' + o.facts.join("") + "</div>" + (o.text ? '<p class="hs-item__text"><span' + (o.clamp ? ' class="hs-item__clamp"' : "") + ">" + esc(o.text) + "</span></p>" : "") + "</div>" +
+      '<div class="ss-appt__meta">' + o.facts.join("") + "</div>" + (o.text ? '<p class="hs-item__text' + (o.tint ? " hs-item__text--tint" : "") + '"><span' + (o.clamp ? ' class="hs-item__clamp"' : "") + ">" + esc(o.text) + "</span></p>" : "") + "</div>" +
       (o.view ? '<div class="ss-appt__actions"><div class="ss-appt__btns"><button class="btn btn--tint btn--sm" type="button" data-view-rec="' + o.view + '">View</button></div></div>' : "") + "</article>";
   }
   function viewBtn(kind, i) { return '<div class="hs-cell--end"><button class="btn btn--tint btn--sm" type="button" data-view-rec="' + kind + ":" + i + '">View</button></div>'; }
@@ -298,7 +300,7 @@ const pageJs = (cards) => `${SELECT_JS}
     head: H(["Type", "Department", "Created by", "Created on", "Comment"]),
     empty: function () { return "No action items"; },
     rows: function () { return D.ACTIONS.map(function (r) { return cell("Type", esc(r[0])) + cell("Department", esc(r[1])) + cell("Created by", person(r[2])) + cell("Created on", esc(r[3])) + cell("Comment", esc(r[4]), "hs-cell--wrap"); }); },
-    cards: function () { return D.ACTIONS.map(function (r) { return item({ date: r[3], title: r[0], facts: [fact("person", esc(r[2]) + " \u00b7 " + esc(r[1]))], text: r[4] }); }); },
+    cards: function () { return D.ACTIONS.map(function (r) { return item({ date: r[3], title: r[0], facts: [fact("person", esc(r[2]) + " \u00b7 " + esc(r[1]))], text: r[4], tint: true }); }); },
   });
 
   // Appointments (tabs)
@@ -356,7 +358,7 @@ const appFor = (cell, cards = false) => cxApp({
   pageJs: pageJs(cards),
   prompts: PROMPTS,
   navTheme: "neutral",
-  colorPaths: [...HUES.flatMap((h) => [`avatar.${h}.bg`, `avatar.${h}.text`]), "text.secondary", "icon.default", "icon.secondary", "border.focus"],
+  colorPaths: [...HUES.flatMap((h) => [`avatar.${h}.bg`, `avatar.${h}.text`]), "text.secondary", "icon.default", "icon.secondary", "border.focus", "color.amber.50"],
 });
 
 const viewerHtml = renderDesignViewer({

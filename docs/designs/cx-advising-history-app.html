@@ -129,6 +129,7 @@
   --tok-avatar-violet-text: #743ed8;
   --tok-avatar-red-bg: #ffdfde;
   --tok-avatar-red-text: #c11435;
+  --tok-color-amber-50: #fff3e7;
   --tok-family-sans: 'Sora', sans-serif;
 }
 
@@ -1410,7 +1411,9 @@ html { background: var(--tok-surface-page); }
 /* v3 card rows (the .ss-appt recipe from Student Scheduling) */
 .hs-list { display: flex; flex-direction: column; }
 .hs-item .ss-appt__clock { white-space: nowrap; color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; } /* the date is context, not the headline: body-sm, regular, date over time (user, 2026-11-11) */
-.hs-item__text { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 14px; line-height: 1.4; } /* a sunken box behind it was tried and dropped (user, 2026-11-11) */
+.hs-item__text { margin: 0; color: var(--tok-text-secondary); font-weight: 400; font-size: 14px; line-height: 1.4; }
+/* an action item's comment is what to do: on a light amber box (palette amber.50 — no semantic role for it yet; user, 2026-11-11) */
+.hs-item__text--tint { padding: 8px 12px; border-radius: 8px; background: var(--tok-color-amber-50); color: var(--tok-text-default); } /* a sunken box behind it was tried and dropped (user, 2026-11-11) */
 /* the clamp sits on the inner span: on the padded box itself the 3rd line leaked into the padding */
 .hs-item__clamp { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .hs-item .ss-appt__main { gap: 8px; }
@@ -1827,7 +1830,7 @@ window.cx = (function () {
   function when(d) { var p = d.split(", "); return '<div class="ss-appt__time"><span class="ss-appt__clock">' + p[0] + ", " + p[1] + '</span><span class="ss-appt__dur">' + p[2] + "</span></div>"; }
   function item(o) {
     return '<article class="ss-appt hs-item">' + when(o.date) + '<div class="ss-appt__main"><div class="ss-appt__title"><h3 class="ss-appt__name">' + esc(o.title) + "</h3>" + (o.badge ? '<span class="badge badge--base badge--regular badge--' + (o.tone || "amber") + '">' + esc(o.badge) + "</span>" : "") + "</div>" +
-      '<div class="ss-appt__meta">' + o.facts.join("") + "</div>" + (o.text ? '<p class="hs-item__text"><span' + (o.clamp ? ' class="hs-item__clamp"' : "") + ">" + esc(o.text) + "</span></p>" : "") + "</div>" +
+      '<div class="ss-appt__meta">' + o.facts.join("") + "</div>" + (o.text ? '<p class="hs-item__text' + (o.tint ? " hs-item__text--tint" : "") + '"><span' + (o.clamp ? ' class="hs-item__clamp"' : "") + ">" + esc(o.text) + "</span></p>" : "") + "</div>" +
       (o.view ? '<div class="ss-appt__actions"><div class="ss-appt__btns"><button class="btn btn--tint btn--sm" type="button" data-view-rec="' + o.view + '">View</button></div></div>' : "") + "</article>";
   }
   function viewBtn(kind, i) { return '<div class="hs-cell--end"><button class="btn btn--tint btn--sm" type="button" data-view-rec="' + kind + ":" + i + '">View</button></div>'; }
@@ -1882,7 +1885,7 @@ window.cx = (function () {
     head: H(["Type", "Department", "Created by", "Created on", "Comment"]),
     empty: function () { return "No action items"; },
     rows: function () { return D.ACTIONS.map(function (r) { return cell("Type", esc(r[0])) + cell("Department", esc(r[1])) + cell("Created by", person(r[2])) + cell("Created on", esc(r[3])) + cell("Comment", esc(r[4]), "hs-cell--wrap"); }); },
-    cards: function () { return D.ACTIONS.map(function (r) { return item({ date: r[3], title: r[0], facts: [fact("person", esc(r[2]) + " · " + esc(r[1]))], text: r[4] }); }); },
+    cards: function () { return D.ACTIONS.map(function (r) { return item({ date: r[3], title: r[0], facts: [fact("person", esc(r[2]) + " · " + esc(r[1]))], text: r[4], tint: true }); }); },
   });
 
   // Appointments (tabs)
