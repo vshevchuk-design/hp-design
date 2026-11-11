@@ -146,11 +146,14 @@ const pageCss = (cell) => (X) => {
 .hs-toggle[aria-expanded="false"] .hs-toggle__icon { transform: rotate(-90deg); }
 .hs-toggle:hover .hs-toggle__icon { color: ${cv("icon.default")}; }
 .hs-card.is-collapsed > .card__header { border-bottom: none; }
+/* collapsed, the tabs are gone: the header gets its full bottom padding back (16, as the top) */
+.hs-card--tabs.is-collapsed > .card__header { padding-bottom: ${D(tokens.card.padding)}; }
 .hs-card.is-collapsed .hs-search { display: none; }
 @media (prefers-reduced-motion: reduce) { .hs-toggle__icon { transition: none; } }
 .hs-search { width: 280px; max-width: 100%; height: ${dim(8)}; }
-/* the first tab's label lines up with the card title: card padding minus the tab's own paddingX */
-.hs-tabs { padding: 0 calc(${dim(4)} - ${D(tokens.tabs.size.base.paddingX)}); }
+/* the first tab's label lines up with the heading's text (after the chevron):
+   card padding + chevron 20 + gap 8 − the tab's own paddingX */
+.hs-tabs { padding: 0 calc(${dim(4)} + ${dim(5)} + ${dim(2)} - ${D(tokens.tabs.size.base.paddingX)}); }
 /* tabs under the title: their baseline is the header's divider (one line, not two) */
 .hs-card--tabs > .card__header { border-bottom: none; padding-bottom: ${dim(1)}; }
 /* the table sits flush in the card: no border / radius of its own */
