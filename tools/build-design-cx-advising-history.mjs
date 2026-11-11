@@ -176,6 +176,8 @@ ${["blue", "green", "magenta", "amber", "teal", "orange", "violet", "red"].map((
 .is-hidden-section { display: none !important; }
 /* v3 card rows (the .ss-appt recipe from Student Scheduling) */
 .hs-list { display: flex; flex-direction: column; }
+/* the date column: "2026 · 12:12 PM" needs more than Scheduling's 96 (a time only) */
+@media (min-width: 768px) { .hs-item { grid-template-columns: ${dim(28)} minmax(0, 1fr) auto; } }
 .hs-item .ss-appt__clock { white-space: nowrap; color: ${cv("text.secondary")}; } /* the date is context, not the headline (user, 2026-11-11) */
 .hs-item__text { margin: 0; color: ${cv("text.secondary")}; ${typoCss(style("body-base"))} }
 .hs-item__text--clamp { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
