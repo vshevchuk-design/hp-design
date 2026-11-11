@@ -1408,6 +1408,9 @@ html { background: var(--tok-surface-page); }
 .avatar--violet { background: var(--tok-avatar-violet-bg); color: var(--tok-avatar-violet-text); }
 .avatar--red { background: var(--tok-avatar-red-bg); color: var(--tok-avatar-red-text); }
 .is-hidden-section { display: none !important; }
+/* Appointments: v3 = one list of past appointments with a status filter (My schedule → Past); v1/v2 keep the tabs */
+.hs-filter { display: none; }
+.hs-filter .select-field { width: 160px; }
 /* v3 card rows (the .ss-appt recipe from Student Scheduling) */
 .hs-list { display: flex; flex-direction: column; }
 .hs-item .ss-appt__clock { white-space: nowrap; color: var(--tok-text-secondary); font-weight: 400; font-size: 12px; line-height: 1.4; } /* the date is context, not the headline: body-sm, regular, date over time (user, 2026-11-11) */
@@ -1543,7 +1546,10 @@ html { background: var(--tok-surface-page); }
 <section class="card card--flush hs-card hs-card--tabs" aria-labelledby="hs-appts-title">
   <div class="card__header hs-card__header">
     <div class="hs-card__title"><h2 class="card__title" id="hs-appts-title"><button class="hs-toggle" type="button" aria-expanded="true"><svg class="hs-toggle__icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg><span>Appointments</span></button></h2><span class="counter" aria-label="8 total">8</span></div>
-    
+    <div class="hs-filter"><div class="select-field" data-select data-value="" data-label="Status">
+  <button type="button" class="select select--sm is-placeholder" id="hs-appts-status" aria-haspopup="listbox" aria-expanded="false" aria-controls="hs-appts-status-list" aria-labelledby="hs-appts-status-label hs-appts-status-text"><span class="select__stack"><span class="select__label" id="hs-appts-status-label">Status</span><span class="select__value"><span class="select__text" id="hs-appts-status-text">Status</span><span class="select__more" hidden>+0</span></span></span><svg class="select__chevron" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+  <div class="listbox select__panel" id="hs-appts-status-list" popover role="listbox" aria-labelledby="hs-appts-status-label"><ul class="listbox__list" role="none"><li role="none"><button type="button" class="listbox__option" role="option" id="hs-appts-status-opt-0" aria-selected="false" data-value="" tabindex="-1"><span>All statuses</span><svg class="listbox__checkmark" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li><li role="none"><button type="button" class="listbox__option" role="option" id="hs-appts-status-opt-1" aria-selected="false" data-value="done" tabindex="-1"><span>Done</span><svg class="listbox__checkmark" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li><li role="none"><button type="button" class="listbox__option" role="option" id="hs-appts-status-opt-2" aria-selected="false" data-value="missed" tabindex="-1"><span>Missed</span><svg class="listbox__checkmark" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li><li role="none"><button type="button" class="listbox__option" role="option" id="hs-appts-status-opt-3" aria-selected="false" data-value="cancelled" tabindex="-1"><span>Cancelled</span><svg class="listbox__checkmark" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button></li></ul></div>
+</div></div>
   </div>
   <div class="tabs tabs--underline hs-tabs" role="tablist" aria-label="Appointments">
     <button class="tab tab--base tab--active" role="tab" type="button" aria-selected="true" data-tab="summaries">Summaries <span class="counter">7</span></button>
@@ -1830,7 +1836,7 @@ window.cx = (function () {
   function when(d) { var p = d.split(", "); return '<div class="ss-appt__time"><span class="ss-appt__clock">' + p[0] + ", " + p[1] + '</span><span class="ss-appt__dur">' + p[2] + "</span></div>"; }
   function item(o) {
     return '<article class="ss-appt hs-item">' + when(o.date) + '<div class="ss-appt__main"><div class="ss-appt__title"><h3 class="ss-appt__name">' + esc(o.title) + "</h3>" + (o.badge ? '<span class="badge badge--base badge--regular badge--' + (o.tone || "amber") + '">' + esc(o.badge) + "</span>" : "") + "</div>" +
-      '<div class="ss-appt__meta">' + o.facts.join("") + "</div>" + (o.text ? '<p class="hs-item__text' + (o.tint ? " hs-item__text--tint" : "") + '"><span' + (o.clamp ? ' class="hs-item__clamp"' : "") + ">" + esc(o.text) + "</span></p>" : "") + "</div>" +
+      '<div class="ss-appt__meta">' + o.facts.join("") + "</div>" + (o.note ? '<p class="ss-note">' + esc(o.note) + "</p>" : "") + (o.text ? '<p class="hs-item__text' + (o.tint ? " hs-item__text--tint" : "") + '"><span' + (o.clamp ? ' class="hs-item__clamp"' : "") + ">" + esc(o.text) + "</span></p>" : "") + "</div>" +
       (o.view ? '<div class="ss-appt__actions"><div class="ss-appt__btns"><button class="btn btn--tint btn--sm" type="button" data-view-rec="' + o.view + '">View</button></div></div>' : "") + "</article>";
   }
   function viewBtn(kind, i) { return '<div class="hs-cell--end"><button class="btn btn--tint btn--sm" type="button" data-view-rec="' + kind + ":" + i + '">View</button></div>'; }
@@ -1893,16 +1899,27 @@ window.cx = (function () {
   var appts = pager("hs-appts", {
     label: "Appointments", cols: "hs-cols-appts",
     head: H(["Department", "Type", "Department member", "Created by", "Created on", '<span class="visually-hidden">Actions</span>']),
-    empty: function () { return tab === "noshows" ? "No missed appointments" : tab === "cancellations" ? "No cancelled appointments" : "No appointment summaries"; },
+    empty: function () { var k = CARDS ? ({ missed: "noshows", cancelled: "cancellations", done: "summaries" })[status] || "" : tab; return k === "noshows" ? "No missed appointments" : k === "cancellations" ? "No cancelled appointments" : k === "summaries" ? "No appointment summaries" : "No past appointments"; },
     rows: function () {
       var list = tab === "summaries" ? D.SUMMARIES : tab === "cancellations" ? D.CANCELLATIONS : [];
       return list.map(function (r, i) { return cell("Department", esc(r[0])) + cell("Type", esc(r[1])) + cell("Member", person(r[2])) + cell("Created by", person(r[3])) + cell("Created on", esc(r[4])) + viewBtn(tab, i); });
     },
     cards: function () {
-      var list = tab === "summaries" ? D.SUMMARIES : tab === "cancellations" ? D.CANCELLATIONS : [];
-      return list.map(function (r, i) { return item({ date: r[4], title: r[1], badge: tab === "cancellations" ? "Cancelled" : "", tone: "neutral", facts: [fact("person", "With " + esc(r[2]) + " · " + esc(r[0])), fact("edit", "Created by " + esc(r[3]))], text: r[5], clamp: true, view: tab + ":" + i }); });
+      // My schedule → Past: every past appointment in one list, newest first, its outcome as a quiet Badge
+      var all = D.SUMMARIES.map(function (r, i) { return { r: r, st: "done", k: "summaries:" + i }; })
+        .concat(D.CANCELLATIONS.map(function (r, i) { return { r: r, st: "cancelled", k: "cancellations:" + i }; }))
+        .sort(function (a, b) { return new Date(b.r[4].replace(/, (\d+:\d+ [AP]M)$/, " $1")) - new Date(a.r[4].replace(/, (\d+:\d+ [AP]M)$/, " $1")); })
+        .filter(function (x) { return !status || x.st === status; });
+      return all.map(function (x) {
+        var r = x.r, first = r[2].split(" ")[0];
+        return item({ date: r[4], title: r[1], badge: { done: "Done", missed: "Missed", cancelled: "Cancelled" }[x.st], tone: "neutral",
+          facts: [fact("person", "With " + esc(r[2]) + " \u00b7 " + esc(r[0]))],
+          note: x.st === "done" ? "Summary from " + first : r[5], view: x.k });
+      });
     },
   });
+  var status = "";
+  document.querySelector("#hs-appts-status").closest(".select-field").addEventListener("selectchange", function (e) { status = e.detail.value; appts.page = 1; appts.render(); });
   document.querySelector(".hs-tabs").addEventListener("click", function (e) {
     var b = e.target.closest("[data-tab]"); if (!b) return;
     tab = b.dataset.tab;

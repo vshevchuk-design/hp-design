@@ -109,6 +109,7 @@ ${section({
 ${section({ id: "hs-actions", title: "Action Items", count: ACTIONS.length, table: "" })}
 ${section({
   id: "hs-appts", title: "Appointments", count: SUMMARIES.length + CANCELLATIONS.length,
+  headRight: `<div class="hs-filter">${selectHtml({ id: "hs-appts-status", label: "Status", options: [{ label: "All statuses", value: "" }, { label: "Done", value: "done" }, { label: "Missed", value: "missed" }, { label: "Cancelled", value: "cancelled" }], value: "", size: "sm" })}</div>`,
   tabs: `<div class="tabs tabs--underline hs-tabs" role="tablist" aria-label="Appointments">
     <button class="tab tab--base tab--active" role="tab" type="button" aria-selected="true" data-tab="summaries">Summaries <span class="counter">${SUMMARIES.length}</span></button>
     <button class="tab tab--base" role="tab" type="button" aria-selected="false" data-tab="noshows">No Shows <span class="counter">0</span></button>
@@ -126,7 +127,7 @@ const after = `<dialog class="slide-over-panel slide-over-panel--right slide-ove
 </dialog>`;
 
 // ---- CSS ----
-const pageCss = (cell) => (X) => {
+const pageCss = (cell, cards = false) => (X) => {
   const { cv, dim, typoCss, style, tokens, D, R, T } = X;
   const tb = tokens.table;
   const cellType = style(cell);
@@ -174,6 +175,9 @@ const pageCss = (cell) => (X) => {
 .avatar { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; width: ${dim(8)}; height: ${dim(8)}; border-radius: ${X.px(X.resolve("radius.full"))}; ${typoCss(avInit)} user-select: none; }
 ${["blue", "green", "magenta", "amber", "teal", "orange", "violet", "red"].map((h) => `.avatar--${h} { background: ${cv(`avatar.${h}.bg`)}; color: ${cv(`avatar.${h}.text`)}; }`).join("\n")}
 .is-hidden-section { display: none !important; }
+/* Appointments: v3 = one list of past appointments with a status filter (My schedule → Past); v1/v2 keep the tabs */
+${cards ? ".hs-tabs { display: none; }\n.hs-card--tabs > .card__header { padding-bottom: " + D(tokens.card.padding) + "; border-bottom: 1px solid " + R(tokens.card.divider) + "; }" : ".hs-filter { display: none; }"}
+.hs-filter .select-field { width: 160px; }
 /* v3 card rows (the .ss-appt recipe from Student Scheduling) */
 .hs-list { display: flex; flex-direction: column; }
 .hs-item .ss-appt__clock { white-space: nowrap; color: ${cv("text.secondary")}; ${typoCss(style("body-sm"))} } /* the date is context, not the headline: body-sm, regular, date over time (user, 2026-11-11) */
@@ -245,7 +249,7 @@ const pageJs = (cards) => `${SELECT_JS}
   function when(d) { var p = d.split(", "); return '<div class="ss-appt__time"><span class="ss-appt__clock">' + p[0] + ", " + p[1] + '</span><span class="ss-appt__dur">' + p[2] + "</span></div>"; }
   function item(o) {
     return '<article class="ss-appt hs-item">' + when(o.date) + '<div class="ss-appt__main"><div class="ss-appt__title"><h3 class="ss-appt__name">' + esc(o.title) + "</h3>" + (o.badge ? '<span class="badge badge--base badge--regular badge--' + (o.tone || "amber") + '">' + esc(o.badge) + "</span>" : "") + "</div>" +
-      '<div class="ss-appt__meta">' + o.facts.join("") + "</div>" + (o.text ? '<p class="hs-item__text' + (o.tint ? " hs-item__text--tint" : "") + '"><span' + (o.clamp ? ' class="hs-item__clamp"' : "") + ">" + esc(o.text) + "</span></p>" : "") + "</div>" +
+      '<div class="ss-appt__meta">' + o.facts.join("") + "</div>" + (o.note ? '<p class="ss-note">' + esc(o.note) + "</p>" : "") + (o.text ? '<p class="hs-item__text' + (o.tint ? " hs-item__text--tint" : "") + '"><span' + (o.clamp ? ' class="hs-item__clamp"' : "") + ">" + esc(o.text) + "</span></p>" : "") + "</div>" +
       (o.view ? '<div class="ss-appt__actions"><div class="ss-appt__btns"><button class="btn btn--tint btn--sm" type="button" data-view-rec="' + o.view + '">View</button></div></div>' : "") + "</article>";
   }
   function viewBtn(kind, i) { return '<div class="hs-cell--end"><button class="btn btn--tint btn--sm" type="button" data-view-rec="' + kind + ":" + i + '">View</button></div>'; }
@@ -308,16 +312,27 @@ const pageJs = (cards) => `${SELECT_JS}
   var appts = pager("hs-appts", {
     label: "Appointments", cols: "hs-cols-appts",
     head: H(["Department", "Type", "Department member", "Created by", "Created on", '<span class="visually-hidden">Actions</span>']),
-    empty: function () { return tab === "noshows" ? "No missed appointments" : tab === "cancellations" ? "No cancelled appointments" : "No appointment summaries"; },
+    empty: function () { var k = CARDS ? ({ missed: "noshows", cancelled: "cancellations", done: "summaries" })[status] || "" : tab; return k === "noshows" ? "No missed appointments" : k === "cancellations" ? "No cancelled appointments" : k === "summaries" ? "No appointment summaries" : "No past appointments"; },
     rows: function () {
       var list = tab === "summaries" ? D.SUMMARIES : tab === "cancellations" ? D.CANCELLATIONS : [];
       return list.map(function (r, i) { return cell("Department", esc(r[0])) + cell("Type", esc(r[1])) + cell("Member", person(r[2])) + cell("Created by", person(r[3])) + cell("Created on", esc(r[4])) + viewBtn(tab, i); });
     },
     cards: function () {
-      var list = tab === "summaries" ? D.SUMMARIES : tab === "cancellations" ? D.CANCELLATIONS : [];
-      return list.map(function (r, i) { return item({ date: r[4], title: r[1], badge: tab === "cancellations" ? "Cancelled" : "", tone: "neutral", facts: [fact("person", "With " + esc(r[2]) + " \u00b7 " + esc(r[0])), fact("edit", "Created by " + esc(r[3]))], text: r[5], clamp: true, view: tab + ":" + i }); });
+      // My schedule → Past: every past appointment in one list, newest first, its outcome as a quiet Badge
+      var all = D.SUMMARIES.map(function (r, i) { return { r: r, st: "done", k: "summaries:" + i }; })
+        .concat(D.CANCELLATIONS.map(function (r, i) { return { r: r, st: "cancelled", k: "cancellations:" + i }; }))
+        .sort(function (a, b) { return new Date(b.r[4].replace(/, (\\d+:\\d+ [AP]M)$/, " $1")) - new Date(a.r[4].replace(/, (\\d+:\\d+ [AP]M)$/, " $1")); })
+        .filter(function (x) { return !status || x.st === status; });
+      return all.map(function (x) {
+        var r = x.r, first = r[2].split(" ")[0];
+        return item({ date: r[4], title: r[1], badge: { done: "Done", missed: "Missed", cancelled: "Cancelled" }[x.st], tone: "neutral",
+          facts: [fact("person", "With " + esc(r[2]) + " \\u00b7 " + esc(r[0]))],
+          note: x.st === "done" ? "Summary from " + first : r[5], view: x.k });
+      });
     },
   });
+  var status = "";
+  document.querySelector("#hs-appts-status").closest(".select-field").addEventListener("selectchange", function (e) { status = e.detail.value; appts.page = 1; appts.render(); });
   document.querySelector(".hs-tabs").addEventListener("click", function (e) {
     var b = e.target.closest("[data-tab]"); if (!b) return;
     tab = b.dataset.tab;
@@ -354,7 +369,7 @@ const appFor = (cell, cards = false) => cxApp({
   active: "advising-history",
   views,
   after,
-  pageCss: pageCss(cell),
+  pageCss: pageCss(cell, cards),
   pageJs: pageJs(cards),
   prompts: PROMPTS,
   navTheme: "neutral",
