@@ -4995,10 +4995,26 @@ const viewerHtml = renderDesignViewer({
   title: "Staff Message Center",
   heading: "Staff Message Center",
   sub: "Interactive prototype, built strictly from hp-design components (every recipe resolved from its own token file) — the OTHER side of the Student Message Center: the department inbox where staff answer incoming student threads. Rows lead with the student and carry Handled by / Unassigned / Awaiting reply / due-date states; Resolve really moves a thread to the Resolved tab; the reply composer is Composer's rich variant (B/I/U, Merge Tags, AI Assist, Allow Replies, Expiration) and Send appends a real staff Bubble. New message is a floating action button on mobile / a topbar button on split views: a compose dialog (Department, Subject, rich message, Allow Replies + Expire Thread checkboxes) beside an AI Writing Assist panel — suggestion chips, a real chat, tone/length — that also opens standalone from the in-thread AI Assist.",
-  versions: [{ label: "v1", note: "current", file: "staff-message-center-app.html" }],
+  versions: [
+    { label: "v1", note: "current — table text 12px (DS Table token, body-sm)", file: "staff-message-center-app.html" },
+    { label: "v2", note: "test — table text 14px (body-base, as CX tables)", file: "staff-message-center-v2-app.html" },
+  ],
 });
 
+// v2 (user, 2026-11-11): the same page with every table's text at 14px
+// (body-base — what CX tables use) instead of the DS Table token's 12px
+// (body-sm), to see what 14 does to the wide staff tables before deciding.
+// Only cell text changes: headers (label-sm caps), badges, paddings and column
+// widths stay as v1, so the comparison is the font size alone.
+const V2_TABLE_CSS = `<style>/* v2: table text 14px — size + leading only, so read/unread weights stay */
+.mc-td, .mc-td .mc-td--muted, .mc-td .mc-lead, .mc-td [style*="font-size:12px"], .mc-date__t, .mc-resp__pill, .mc-resp__more,
+.mc-group__reply-name, .mc-group__reply-id, .mc-group__reply-time, .mc-group__reply-text, .mc-recip__name,
+.mc-gwiz__sid, .mc-gwiz__sname, .mc-gwiz__smeta { font-size: ${px(bodyBaseType.fontSize)}; line-height: ${bodyBaseType.lineHeight}; }
+.mc-td [style*="font-size:12px"] { font-size: ${px(bodyBaseType.fontSize)} !important; }
+</style>`;
+const appHtmlV2 = appHtml.replace("</head>", V2_TABLE_CSS + "</head>");
 fs.mkdirSync(path.join(root, "docs/designs"), { recursive: true });
+fs.writeFileSync(path.join(root, "docs/designs/staff-message-center-v2-app.html"), appHtmlV2);
 fs.writeFileSync(path.join(root, "docs/designs/staff-message-center-app.html"), appHtml);
 fs.writeFileSync(path.join(root, "docs/designs/staff-message-center.html"), viewerHtml);
 console.log("wrote docs/designs/staff-message-center-app.html");
