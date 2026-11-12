@@ -281,7 +281,8 @@ const pageJs = (mode) => `${SELECT_JS}
       (o.view ? '<div class="ss-appt__actions"><div class="ss-appt__btns"><button class="btn btn--tint btn--sm" type="button" data-view-rec="' + o.view + '">View</button></div></div>' : "") + "</article>";
   }
   // v4 table cells: the card's pieces, column by column
-  function when4(d) { var p = d.split(", "); return '<span class="hs-when"><span>' + p[0] + ", " + p[1] + "</span><span>" + p[2] + "</span></span>"; }
+  // the live page's date with the weekday: "Tuesday, December 3, 2024" over the time (user, 2026-11-12)
+  function when4(d) { var p = d.split(", "), day = new Date(p[0] + ", " + p[1]).toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" }); return '<span class="hs-when"><span>' + day + "</span><span>" + p[2] + "</span></span>"; }
   function title4(t, note) { return '<div class="hs-t"><span class="hs-t__name">' + esc(t) + "</span>" + (note ? '<span class="ss-note">' + esc(note) + "</span>" : "") + "</div>"; }
   function who4(name, sub) { return fact("person", "<span>" + esc(name) + "</span>" + (sub ? "<span>" + esc(sub) + "</span>" : "")); }
   function badge4(t) { return '<span class="badge badge--base badge--regular badge--amber">' + esc(t) + "</span>"; }
