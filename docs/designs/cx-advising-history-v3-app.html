@@ -1447,7 +1447,7 @@ html { background: var(--tok-surface-page); }
      user 2026-11-12): they keep the DS size and the row scrolls sideways — the first label lines up
      with the card's content, the cut-off tab on the right says there's more (a soft fade there) */
   .hs-tabs { padding: 0 calc(16px - 12px); gap: 0; scroll-padding-inline: 16px;
-    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 32px), transparent); mask-image: linear-gradient(to right, #000 calc(100% - 32px), transparent); }
+    -webkit-mask-image: linear-gradient(to right, var(--tok-text-default) calc(100% - 32px), transparent); mask-image: linear-gradient(to right, var(--tok-text-default) calc(100% - 32px), transparent); /* a mask reads alpha only — any opaque token, no literal colour */ }
   .hs-tabs.is-end { -webkit-mask-image: none; mask-image: none; }
   .hs-tabs .tab { flex: none; }
 }
@@ -1878,7 +1878,7 @@ window.cx = (function () {
     var cs = getComputedStyle(rows[0]), avail = rows[0].clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
     var sum = w.reduce(function (a, b, i) { return a + (i === flex ? 0 : b); }, 0), tpl, gap;
     if (flex > -1) { gap = MIN; if (avail - sum - gap * (n - 1) < 320) tpl = null; else tpl = w.map(function (x, i) { return i === flex ? "minmax(0, 1fr)" : x + "px"; }).join(" "); }
-    else { gap = (avail - sum) / (n - 1); tpl = gap < MIN ? null : w.map(function (x) { return x + "px"; }).join(" "); }
+    else { gap = Math.floor((avail - sum) / (n - 1) / 4) * 4; tpl = gap < MIN ? null : w.map(function (x, i) { return i === n - 1 ? "minmax(" + x + "px, 1fr)" : x + "px"; }).join(" "); } /* gaps on the 4px grid; the few px left go to the last column (its content sits at the end) */
     rows.forEach(function (r) { r.style.gridTemplateColumns = tpl || ""; r.style.columnGap = tpl ? gap + "px" : ""; });
   }
   function evenAll() { if (BOTH) document.querySelectorAll(".hs-v4-table").forEach(even); }

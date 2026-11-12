@@ -218,7 +218,7 @@ ${["blue", "green", "magenta", "amber", "teal", "orange", "violet", "red"].map((
      user 2026-11-12): they keep the DS size and the row scrolls sideways — the first label lines up
      with the card's content, the cut-off tab on the right says there's more (a soft fade there) */
   .hs-tabs { padding: 0 calc(${D(tokens.card.padding)} - ${D(tokens.tabs.size.base.paddingX)}); gap: 0; scroll-padding-inline: ${D(tokens.card.padding)};
-    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - ${dim(8)}), transparent); mask-image: linear-gradient(to right, #000 calc(100% - ${dim(8)}), transparent); }
+    -webkit-mask-image: linear-gradient(to right, ${cv("text.default")} calc(100% - ${dim(8)}), transparent); mask-image: linear-gradient(to right, ${cv("text.default")} calc(100% - ${dim(8)}), transparent); /* a mask reads alpha only — any opaque token, no literal colour */ }
   .hs-tabs.is-end { -webkit-mask-image: none; mask-image: none; }
   .hs-tabs .tab { flex: none; }
 }
@@ -255,8 +255,8 @@ ${["blue", "green", "magenta", "amber", "teal", "orange", "violet", "red"].map((
    amber Badge, the person a person-icon fact (body-sm, secondary), the comment on the amber.50 box,
    View the tint sm Button. Row padding = the card row's (card.padding), cells top-aligned like the card. */
 .hs-v4-cards.hs-list { display: none; }
-.hs-v4-table .table__row { gap: ${dim(4)}; padding-inline: ${D(tokens.card.padding)}; }
-.hs-v4-table .table__row:not(.table__row--head) { min-height: 0; padding-block: ${D(tokens.card.padding)}; align-items: start; }
+.hs-v4-table .table__row { gap: ${dim(4)}; }
+.hs-v4-table .table__row:not(.table__row--head) { min-height: 0; align-items: start; } /* row padding = the DS Table token (12 / 16) */
 .hs-v4-table .hs-cell { white-space: normal; overflow: visible; }
 /* fallback columns (before the script measures, or when the content doesn't fit) */
 .hs-v4-notes { grid-template-columns: ${dim(24)} minmax(200px, 2fr) minmax(140px, 1fr) minmax(200px, 1.6fr) auto; }
@@ -326,7 +326,7 @@ const pageJs = (mode) => `${SELECT_JS}
     var cs = getComputedStyle(rows[0]), avail = rows[0].clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
     var sum = w.reduce(function (a, b, i) { return a + (i === flex ? 0 : b); }, 0), tpl, gap;
     if (flex > -1) { gap = MIN; if (avail - sum - gap * (n - 1) < 320) tpl = null; else tpl = w.map(function (x, i) { return i === flex ? "minmax(0, 1fr)" : x + "px"; }).join(" "); }
-    else { gap = (avail - sum) / (n - 1); tpl = gap < MIN ? null : w.map(function (x) { return x + "px"; }).join(" "); }
+    else { gap = Math.floor((avail - sum) / (n - 1) / 4) * 4; tpl = gap < MIN ? null : w.map(function (x, i) { return i === n - 1 ? "minmax(" + x + "px, 1fr)" : x + "px"; }).join(" "); } /* gaps on the 4px grid; the few px left go to the last column (its content sits at the end) */
     rows.forEach(function (r) { r.style.gridTemplateColumns = tpl || ""; r.style.columnGap = tpl ? gap + "px" : ""; });
   }
   function evenAll() { if (BOTH) document.querySelectorAll(".hs-v4-table").forEach(even); }
