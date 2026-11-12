@@ -160,7 +160,7 @@ const pageCss = (cell, mode = "table") => (X) => {
    card padding + chevron 20 + gap 8 − the tab's own paddingX */
 .hs-tabs { padding: 0 calc(${dim(4)} + ${dim(5)} + ${dim(2)} - ${D(tokens.tabs.size.base.paddingX)}); }
 /* tabs under the title: their baseline is the header's divider (one line, not two) */
-.hs-card--tabs > .card__header { border-bottom: none; padding-bottom: ${dim(1)}; }
+.hs-card--tabs > .card__header { border-bottom: none; padding-bottom: ${dim(2)}; } /* 4 → 8 (user, 2026-11-12: a bit more air between the heading and the tabs) */
 /* the table sits flush in the card: no border / radius of its own */
 .hs-table .table { border: none; border-radius: 0; }
 /* the size under test: every cell's text — v1 ${cell === "body-sm" ? "12px (DS token)" : "14px (body-base)"} */

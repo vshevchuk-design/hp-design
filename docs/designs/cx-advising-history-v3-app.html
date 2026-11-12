@@ -1382,7 +1382,7 @@ html { background: var(--tok-surface-page); }
    card padding + chevron 20 + gap 8 − the tab's own paddingX */
 .hs-tabs { padding: 0 calc(16px + 20px + 8px - 12px); }
 /* tabs under the title: their baseline is the header's divider (one line, not two) */
-.hs-card--tabs > .card__header { border-bottom: none; padding-bottom: 4px; }
+.hs-card--tabs > .card__header { border-bottom: none; padding-bottom: 8px; } /* 4 → 8 (user, 2026-11-12: a bit more air between the heading and the tabs) */
 /* the table sits flush in the card: no border / radius of its own */
 .hs-table .table { border: none; border-radius: 0; }
 /* the size under test: every cell's text — v1 14px (body-base) */
