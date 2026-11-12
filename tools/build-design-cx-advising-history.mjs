@@ -209,9 +209,13 @@ ${["blue", "green", "magenta", "amber", "teal", "orange", "violet", "red"].map((
   .hs-item--link:hover, .hs-item--link:active { background: ${R(tokens.table.row.hoverBg)}; }
   .hs-item__chev { display: flex !important; grid-column: 2; grid-row: 1 / span 2; align-self: center; color: ${cv("icon.secondary")}; }
   .hs-item__chev svg { width: ${dim(5)}; height: ${dim(5)}; }
-  /* three tabs share the width (Scheduling's Upcoming / Past rule) */
-  .hs-tabs { padding: 0; gap: 0; }
-  .hs-tabs .tab { flex: 1 1 auto; padding-inline: ${dim(1)}; gap: ${dim(1)}; }
+  /* three tabs with Counters don't fit a phone at their own padding (squeezed to 4px they "barely fit",
+     user 2026-11-12): they keep the DS size and the row scrolls sideways — the first label lines up
+     with the card's content, the cut-off tab on the right says there's more (a soft fade there) */
+  .hs-tabs { padding: 0 calc(${D(tokens.card.padding)} - ${D(tokens.tabs.size.base.paddingX)}); gap: 0; scroll-padding-inline: ${D(tokens.card.padding)};
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - ${dim(8)}), transparent); mask-image: linear-gradient(to right, #000 calc(100% - ${dim(8)}), transparent); }
+  .hs-tabs.is-end { -webkit-mask-image: none; mask-image: none; }
+  .hs-tabs .tab { flex: none; }
 }
 .hs-empty { padding: ${dim(8)} ${dim(4)}; display: flex; justify-content: center; }
 /* footer: Rows per page left; range + pages right */
@@ -422,7 +426,13 @@ const pageJs = (mode) => `${SELECT_JS}
     tab = b.dataset.tab;
     document.querySelectorAll(".hs-tabs .tab").forEach(function (t) { var on = t === b; t.classList.toggle("tab--active", on); t.setAttribute("aria-selected", on); });
     appts.page = 1; appts.render();
+    b.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "smooth" });
   });
+
+  // the phone's scrolling tabs: drop the right-edge fade once scrolled to the end (or when they fit)
+  var tl = document.querySelector(".hs-tabs");
+  function tabsEnd() { tl.classList.toggle("is-end", tl.scrollLeft + tl.clientWidth >= tl.scrollWidth - 1); }
+  tl.addEventListener("scroll", tabsEnd, { passive: true }); window.addEventListener("resize", tabsEnd); tabsEnd();
 
   // View → the record in a right-hand SlideOverPanel
   var sheet = $("hs-sheet");
