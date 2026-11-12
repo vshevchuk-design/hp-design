@@ -83,6 +83,10 @@ const SUMMARIES = [
   [DEPT.ar, "Registration", "Alexander Robinson", "Alexander Robinson", "Aug 14, 2023, 1:20 PM", "Registered for first-term classes together."],
   [DEPT.ar, "Orientation", "Alexander Robinson", "Alexander Robinson", "Jul 28, 2023, 9:00 AM", "New-student orientation advising session."],
 ];
+const NOSHOWS = [
+  [DEPT.ar, "Advising", "Alexander Robinson", "Alexander Robinson", "Mar 4, 2025, 9:30 AM", "The student didn't check in; marked a no-show 15 minutes after the start."],
+  [DEPT.fa, "Financial Aid Review", "George Amalor", "George Amalor", "Nov 18, 2024, 1:00 PM", "The student didn't check in; marked a no-show 15 minutes after the start."],
+];
 const CANCELLATIONS = [[DEPT.ar, "Advising", "Alexander Robinson", "Alexander Robinson", "Oct 9, 2024, 2:00 PM", "Cancelled by the student — schedule conflict."]];
 
 // ---- markup ----
@@ -109,10 +113,10 @@ ${section({
 })}
 ${section({ id: "hs-actions", title: "Action Items", count: ACTIONS.length, table: "" })}
 ${section({
-  id: "hs-appts", title: "Appointments", count: SUMMARIES.length + CANCELLATIONS.length,
+  id: "hs-appts", title: "Appointments", count: SUMMARIES.length + NOSHOWS.length + CANCELLATIONS.length,
   tabs: `<div class="tabs tabs--underline hs-tabs" role="tablist" aria-label="Appointments">
     <button class="tab tab--base tab--active" role="tab" type="button" aria-selected="true" data-tab="summaries">Summaries <span class="counter">${SUMMARIES.length}</span></button>
-    <button class="tab tab--base" role="tab" type="button" aria-selected="false" data-tab="noshows">No Shows <span class="counter">0</span></button>
+    <button class="tab tab--base" role="tab" type="button" aria-selected="false" data-tab="noshows">No Shows <span class="counter">${NOSHOWS.length}</span></button>
     <button class="tab tab--base" role="tab" type="button" aria-selected="false" data-tab="cancellations">Cancellations <span class="counter">${CANCELLATIONS.length}</span></button>
   </div>`,
   table: "",
@@ -232,15 +236,18 @@ ${["blue", "green", "magenta", "amber", "teal", "orange", "violet", "red"].map((
 .hs-v4-table .table__row { gap: ${dim(4)}; padding-inline: ${D(tokens.card.padding)}; }
 .hs-v4-table .table__row:not(.table__row--head) { min-height: 0; padding-block: ${D(tokens.card.padding)}; align-items: start; }
 .hs-v4-table .hs-cell { white-space: normal; overflow: visible; }
+/* fallback columns (before the script measures, or when the content doesn't fit) */
 .hs-v4-notes { grid-template-columns: ${dim(24)} minmax(200px, 2fr) minmax(140px, 1fr) minmax(200px, 1.6fr) auto; }
 .hs-v4-actions { grid-template-columns: ${dim(24)} minmax(140px, 1fr) minmax(200px, 1.4fr) minmax(260px, 2.6fr); }
-.hs-v4-appts { grid-template-columns: ${dim(24)} minmax(160px, 1fr) minmax(240px, 2fr) auto; }
+.hs-v4-appts { grid-template-columns: minmax(120px, 1fr) minmax(140px, 1fr) minmax(180px, 1.4fr) minmax(180px, 1.4fr) ${dim(24)} auto; }
+.hs-v4-appts > [data-label="Department"] { color: ${cv("text.default")}; }
 .hs-when { display: flex; flex-direction: column; gap: ${dim("0_5")}; color: ${cv("text.secondary")}; ${typoCss(style("body-sm"))} white-space: nowrap; }
 .hs-t { display: flex; flex-direction: column; gap: ${dim(2)}; }
 .hs-t__name { margin: 0; color: ${cv("text.default")}; ${typoCss(style("heading-base"))} }
 .hs-v4-table .ss-fact { align-items: flex-start; }
 .hs-v4-table .ss-fact > svg { margin-top: 1px; }
-.hs-v4-table .ss-fact__text { white-space: normal; display: flex; flex-direction: column; }
+.hs-v4-table .ss-fact__text { white-space: normal; display: flex; flex-direction: column; max-width: 240px; }
+.hs-v4-table .hs-cell--end { justify-self: end; } /* a long department wraps instead of widening its column */
 .hs-v4-table .badge { align-self: flex-start; }
 @container (max-width: 759px) {
   .hs-v4-table { display: none; }
@@ -253,7 +260,7 @@ const pageJs = (mode) => `${SELECT_JS}
 (function () {
   var MODE = ${JSON.stringify(mode)}, CARDS = MODE === "cards", BOTH = MODE === "both";
   var IC = ${JSON.stringify({ person: icon("person", ""), edit: icon("edit", "") })};
-  var D = ${JSON.stringify({ NOTES, ACTIONS, SUMMARIES, CANCELLATIONS })};
+  var D = ${JSON.stringify({ NOTES, ACTIONS, SUMMARIES, NOSHOWS, CANCELLATIONS })};
   var HUES = ${JSON.stringify(HUES)};
   var VIEW_ICON = "";
   function $(id) { return document.getElementById(id); }
@@ -279,6 +286,25 @@ const pageJs = (mode) => `${SELECT_JS}
   function tint4(t) { return '<p class="hs-item__text hs-item__text--tint"><span>' + esc(t) + "</span></p>"; }
   function viewBtn(kind, i) { return '<div class="hs-cell--end"><button class="btn btn--tint btn--sm" type="button" data-view-rec="' + kind + ":" + i + '">View</button></div>'; }
 
+  // v4: the same space between every column (user, 2026-11-12). Each column = its widest content
+  // (header included, measured from the text itself so a wrapped line counts at its real width);
+  // the width left over is split equally between the gaps. A table with a flex column (Action Items'
+  // comment) gives the rest to that column and keeps the 16px gap. Doesn't fit → the CSS fr columns.
+  function contentW(cell) { var rg = document.createRange(); rg.selectNodeContents(cell); var L = cell.getBoundingClientRect().left, m = 0; Array.prototype.forEach.call(rg.getClientRects(), function (q) { if (q.width) m = Math.max(m, q.right - L); }); return Math.ceil(m); }
+  function even(tbl) {
+    if (!tbl || !tbl.offsetWidth) return;
+    var rows = Array.prototype.slice.call(tbl.children), n = rows[0].children.length, flex = tbl.dataset.flex === "" ? -1 : +tbl.dataset.flex, MIN = 16;
+    rows.forEach(function (r) { r.style.gridTemplateColumns = "repeat(" + n + ", max-content)"; r.style.columnGap = MIN + "px"; });
+    var w = []; for (var c = 0; c < n; c++) w.push(Math.max.apply(null, rows.map(function (r) { return contentW(r.children[c]); })));
+    var cs = getComputedStyle(rows[0]), avail = rows[0].clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+    var sum = w.reduce(function (a, b, i) { return a + (i === flex ? 0 : b); }, 0), tpl, gap;
+    if (flex > -1) { gap = MIN; if (avail - sum - gap * (n - 1) < 320) tpl = null; else tpl = w.map(function (x, i) { return i === flex ? "minmax(0, 1fr)" : x + "px"; }).join(" "); }
+    else { gap = (avail - sum) / (n - 1); tpl = gap < MIN ? null : w.map(function (x) { return x + "px"; }).join(" "); }
+    rows.forEach(function (r) { r.style.gridTemplateColumns = tpl || ""; r.style.columnGap = tpl ? gap + "px" : ""; });
+  }
+  function evenAll() { if (BOTH) document.querySelectorAll(".hs-v4-table").forEach(even); }
+  if (BOTH) { window.addEventListener("resize", evenAll); if (document.fonts) document.fonts.ready.then(evenAll); }
+
   // one paged table: rows() → array of row html, head html, cols class
   function pager(id, opts) {
     var st = { page: 1, per: 5 };
@@ -288,8 +314,9 @@ const pageJs = (mode) => `${SELECT_JS}
       var from = (st.page - 1) * st.per, shown = rows.slice(from, from + st.per);
       if (BOTH && n) {
         var cards = opts.cards().slice(from, from + st.per);
-        $(id + "-table").innerHTML = '<div class="table hs-v4-table" role="table" aria-label="' + opts.label + '"><div class="table__row table__row--head ' + opts.cols4 + '" role="row">' + opts.head4 + "</div>" + shown.map(function (r) { return '<div class="table__row ' + opts.cols4 + '" role="row">' + r + "</div>"; }).join("") + "</div>" +
+        $(id + "-table").innerHTML = '<div class="table hs-v4-table" data-flex="' + (opts.flex4 == null ? "" : opts.flex4) + '" role="table" aria-label="' + opts.label + '"><div class="table__row table__row--head ' + opts.cols4 + '" role="row">' + opts.head4 + "</div>" + shown.map(function (r) { return '<div class="table__row ' + opts.cols4 + '" role="row">' + r + "</div>"; }).join("") + "</div>" +
           '<div class="hs-list hs-v4-cards" role="list" aria-label="' + opts.label + '">' + cards.join("") + "</div>";
+        even($(id + "-table").querySelector(".hs-v4-table"));
       } else $(id + "-table").innerHTML = n && CARDS ? '<div class="hs-list" role="list" aria-label="' + opts.label + '">' + shown.join("") + "</div>" : n
         ? '<div class="table" role="table" aria-label="' + opts.label + '"><div class="table__row table__row--head ' + opts.cols + '" role="row">' + opts.head + "</div>" + shown.map(function (r) { return '<div class="table__row ' + opts.cols + '" role="row">' + r + "</div>"; }).join("") + "</div>"
         : '<div class="hs-empty"><div class="empty-state"><span class="empty-state__text">' + opts.empty() + "</span></div></div>";
@@ -339,7 +366,7 @@ const pageJs = (mode) => `${SELECT_JS}
     head: H(["Type", "Department", "Created by", "Created on", "Comment"]),
     empty: function () { return "No action items"; },
     rows: function () { return D.ACTIONS.map(function (r) { return cell("Type", esc(r[0])) + cell("Department", esc(r[1])) + cell("Created by", person(r[2])) + cell("Created on", esc(r[3])) + cell("Comment", esc(r[4]), "hs-cell--wrap"); }); },
-    cols4: "hs-v4-actions", head4: H(["Date", "Type", "Created by", "Comment"]),
+    cols4: "hs-v4-actions", flex4: 3, head4: H(["Date", "Type", "Created by", "Comment"]),
     rows4: function () { return D.ACTIONS.map(function (r) { return cell("Date", when4(r[3])) + cell("Type", title4(r[0])) + cell("Created by", who4(r[2], r[1])) + cell("Comment", tint4(r[4])); }); },
     cards: function () { return D.ACTIONS.map(function (r) { return item({ date: r[3], title: r[0], facts: [fact("person", esc(r[2]) + " \u00b7 " + esc(r[1]))], text: r[4], tint: true }); }); },
   });
@@ -351,23 +378,24 @@ const pageJs = (mode) => `${SELECT_JS}
     head: H(["Department", "Type", "Department member", "Created by", "Created on", '<span class="visually-hidden">Actions</span>']),
     empty: function () { var k = tab; return k === "noshows" ? "No missed appointments" : k === "cancellations" ? "No cancelled appointments" : k === "summaries" ? "No appointment summaries" : "No past appointments"; },
     rows: function () {
-      var list = tab === "summaries" ? D.SUMMARIES : tab === "cancellations" ? D.CANCELLATIONS : [];
+      var list = tab === "summaries" ? D.SUMMARIES : tab === "cancellations" ? D.CANCELLATIONS : D.NOSHOWS;
       return list.map(function (r, i) { return cell("Department", esc(r[0])) + cell("Type", esc(r[1])) + cell("Member", person(r[2])) + cell("Created by", person(r[3])) + cell("Created on", esc(r[4])) + viewBtn(tab, i); });
     },
-    cols4: "hs-v4-appts", head4: H(["Date", "Type", "With", '<span class="visually-hidden">Actions</span>']),
+    // v4: the live page's columns and order (user, 2026-11-12), in the card's pieces
+    cols4: "hs-v4-appts", head4: H(["Department", "Type", "Department member", "Created by", "Created on", '<span class="visually-hidden">Actions</span>']),
     rows4: function () {
-      var list = tab === "summaries" ? D.SUMMARIES : tab === "cancellations" ? D.CANCELLATIONS : [];
-      return list.map(function (r, i) { return cell("Date", when4(r[4])) + cell("Type", title4(r[1], tab === "summaries" ? "" : r[5])) + cell("With", who4(r[2], r[0])) + viewBtn(tab, i); });
+      var list = tab === "summaries" ? D.SUMMARIES : tab === "cancellations" ? D.CANCELLATIONS : D.NOSHOWS;
+      return list.map(function (r, i) { return cell("Department", esc(r[0])) + cell("Type", title4(r[1], tab === "cancellations" ? r[5] : "")) + cell("Department member", who4(r[2], r[0])) + cell("Created by", who4(r[3], r[0])) + cell("Created on", when4(r[4])) + viewBtn(tab, i); });
     },
     cards: function () {
       // each tab's records as My schedule → Past rows: type + outcome Badge, with whom, a quiet line, View
       var st = tab === "summaries" ? "done" : tab === "cancellations" ? "cancelled" : "missed";
-      var list = tab === "summaries" ? D.SUMMARIES : tab === "cancellations" ? D.CANCELLATIONS : [];
+      var list = tab === "summaries" ? D.SUMMARIES : tab === "cancellations" ? D.CANCELLATIONS : D.NOSHOWS;
       return list.map(function (r, i) {
         // the tab already says what it is: no outcome Badge, no "Summary from …"; a cancellation keeps its reason
         return item({ date: r[4], title: r[1],
           facts: [fact("person", "With " + esc(r[2]) + " \\u00b7 " + esc(r[0]))],
-          note: st === "done" ? "" : r[5], view: tab + ":" + i });
+          note: st === "cancelled" ? r[5] : "", view: tab + ":" + i });
       });
     },
   });
@@ -385,7 +413,7 @@ const pageJs = (mode) => `${SELECT_JS}
     var b = e.target.closest("[data-view-rec]"); if (!b) return;
     var k = b.dataset.viewRec.split(":"), i = +k[1], r;
     if (k[0] === "note") { r = D.NOTES[i]; $("hs-sheet-title").textContent = r[1]; $("hs-sheet-sub").textContent = r[0] + " note"; $("hs-sheet-body").innerHTML = facts([["Created by", r[2] + " \\u00b7 " + r[3]], ["Created on", r[4]]]) + '<h3 class="hs-sheet__h">Note</h3><p class="hs-sheet__text">' + esc(r[5]) + "</p>"; }
-    else { r = (k[0] === "cancellations" ? D.CANCELLATIONS : D.SUMMARIES)[i]; $("hs-sheet-title").textContent = r[1] + " appointment"; $("hs-sheet-sub").textContent = r[0]; $("hs-sheet-body").innerHTML = facts([["With", r[2]], ["Created by", r[3]], ["Created on", r[4]]]) + '<h3 class="hs-sheet__h">' + (k[0] === "cancellations" ? "Cancellation" : "Summary") + '</h3><p class="hs-sheet__text">' + esc(r[5]) + "</p>"; }
+    else { r = (k[0] === "cancellations" ? D.CANCELLATIONS : k[0] === "noshows" ? D.NOSHOWS : D.SUMMARIES)[i]; $("hs-sheet-title").textContent = r[1] + " appointment"; $("hs-sheet-sub").textContent = r[0]; $("hs-sheet-body").innerHTML = facts([["With", r[2]], ["Created by", r[3]], ["Created on", r[4]]]) + '<h3 class="hs-sheet__h">' + (k[0] === "cancellations" ? "Cancellation" : k[0] === "noshows" ? "No show" : "Summary") + '</h3><p class="hs-sheet__text">' + esc(r[5]) + "</p>"; }
     sheet.showModal();
   });
   // collapse / expand a section
@@ -395,6 +423,7 @@ const pageJs = (mode) => `${SELECT_JS}
       b.setAttribute("aria-expanded", open);
       card.classList.toggle("is-collapsed", !open);
       Array.prototype.forEach.call(card.children, function (c) { if (!c.classList.contains("card__header")) c.classList.toggle("is-hidden-section", !open); });
+      if (open) evenAll();
     });
   });
   $("hs-sheet-close").addEventListener("click", function () { sheet.close(); });
