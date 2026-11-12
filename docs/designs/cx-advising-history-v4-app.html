@@ -1478,7 +1478,8 @@ html { background: var(--tok-surface-page); }
 /* every text in the v4 table is 14px — body-base (user, 2026-11-12); the cards keep their 12px secondary lines */
 .hs-v4-table .hs-when, .hs-v4-table .ss-fact__text, .hs-v4-table .ss-note { font-weight: 400; font-size: 14px; line-height: 1.4; }
 .hs-v4-table .ss-fact__text { white-space: normal; display: flex; flex-direction: column; max-width: 240px; }
-.hs-v4-table .hs-cell--end { justify-self: end; } /* a long department wraps instead of widening its column */
+.hs-v4-table .hs-cell--end { justify-self: end; }
+.hs-v4-comment { color: var(--tok-text-default); } /* a long department wraps instead of widening its column */
 .hs-v4-table .badge { align-self: flex-start; }
 @container (max-width: 759px) {
   .hs-v4-table { display: none; }
@@ -1866,7 +1867,8 @@ window.cx = (function () {
   function title4(t, note) { return '<div class="hs-t"><span class="hs-t__name">' + esc(t) + "</span>" + (note ? '<span class="ss-note">' + esc(note) + "</span>" : "") + "</div>"; }
   function who4(name, sub) { return fact("person", "<span>" + esc(name) + "</span>" + (sub ? "<span>" + esc(sub) + "</span>" : "")); }
   function badge4(t) { return '<span class="badge badge--base badge--regular badge--amber">' + esc(t) + "</span>"; }
-  function tint4(t) { return '<p class="hs-item__text hs-item__text--tint"><span>' + esc(t) + "</span></p>"; }
+  // in the table the comment is plain text — the column says what it is; the amber box stays on the cards (user, 2026-11-12)
+  function tint4(t) { return '<p class="hs-item__text hs-v4-comment"><span>' + esc(t) + "</span></p>"; }
   function viewBtn(kind, i) { return '<div class="hs-cell--end"><button class="btn btn--tint btn--sm" type="button" data-view-rec="' + kind + ":" + i + '">View</button></div>'; }
 
   // v4: the same space between every column (user, 2026-11-12). Each column = its widest content

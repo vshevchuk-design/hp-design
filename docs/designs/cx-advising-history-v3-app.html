@@ -1839,7 +1839,8 @@ window.cx = (function () {
   function title4(t, note) { return '<div class="hs-t"><span class="hs-t__name">' + esc(t) + "</span>" + (note ? '<span class="ss-note">' + esc(note) + "</span>" : "") + "</div>"; }
   function who4(name, sub) { return fact("person", "<span>" + esc(name) + "</span>" + (sub ? "<span>" + esc(sub) + "</span>" : "")); }
   function badge4(t) { return '<span class="badge badge--base badge--regular badge--amber">' + esc(t) + "</span>"; }
-  function tint4(t) { return '<p class="hs-item__text hs-item__text--tint"><span>' + esc(t) + "</span></p>"; }
+  // in the table the comment is plain text — the column says what it is; the amber box stays on the cards (user, 2026-11-12)
+  function tint4(t) { return '<p class="hs-item__text hs-v4-comment"><span>' + esc(t) + "</span></p>"; }
   function viewBtn(kind, i) { return '<div class="hs-cell--end"><button class="btn btn--tint btn--sm" type="button" data-view-rec="' + kind + ":" + i + '">View</button></div>'; }
 
   // v4: the same space between every column (user, 2026-11-12). Each column = its widest content
