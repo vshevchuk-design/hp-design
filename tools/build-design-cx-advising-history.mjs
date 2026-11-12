@@ -197,6 +197,11 @@ ${["blue", "green", "magenta", "amber", "teal", "orange", "violet", "red"].map((
   .hs-item .ss-appt__actions { align-items: flex-start; }
   .hs-item .ss-appt__btns > .btn { flex: none; }
   .hs-item { gap: ${dim(2)}; }
+  /* sections edge to edge (user, 2026-11-12): pulled out of the page's 16px phone gutter, no side
+     borders or radius — 32px more for the content; top/bottom hairlines + the gray gap keep them apart
+     (Scheduling v5's phone list did the same) */
+  .hs-card { margin-inline: -${dim(4)}; border-left: none; border-right: none; border-radius: 0; }
+  .hs { gap: ${dim(4)}; }
   /* a record you open: the whole card is the tap target, a chevron on the right, no View button
      (user, 2026-11-12 — a small View under the text looked odd, a full-width one too heavy).
      The View button stays in the DOM, stretched over the card and made invisible: one focusable,
