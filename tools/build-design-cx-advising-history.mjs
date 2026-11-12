@@ -181,6 +181,7 @@ ${["blue", "green", "magenta", "amber", "teal", "orange", "violet", "red"].map((
 .is-hidden-section { display: none !important; }
 /* v3 card rows (the .ss-appt recipe from Student Scheduling) */
 .hs-list { display: flex; flex-direction: column; }
+.hs-item__chev { display: none; }
 .hs-item .ss-appt__clock { white-space: nowrap; color: ${cv("text.secondary")}; ${typoCss(style("body-sm"))} } /* the date is context, not the headline: body-sm, regular, date over time (user, 2026-11-11) */
 .hs-item__text { margin: 0; color: ${cv("text.secondary")}; ${typoCss(style("body-base"))} }
 /* an action item's comment is what to do: on a light amber box (palette amber.50 — no semantic role for it yet; user, 2026-11-11) */
@@ -196,6 +197,18 @@ ${["blue", "green", "magenta", "amber", "teal", "orange", "violet", "red"].map((
   .hs-item .ss-appt__actions { align-items: flex-start; }
   .hs-item .ss-appt__btns > .btn { flex: none; }
   .hs-item { gap: ${dim(2)}; }
+  /* a record you open: the whole card is the tap target, a chevron on the right, no View button
+     (user, 2026-11-12 — a small View under the text looked odd, a full-width one too heavy).
+     The View button stays in the DOM, stretched over the card and made invisible: one focusable,
+     labelled control; its focus ring is drawn inset on the card. */
+  .hs-item--link { position: relative; grid-template-columns: minmax(0, 1fr) auto; column-gap: ${dim(3)}; cursor: pointer; }
+  .hs-item--link > .ss-appt__time, .hs-item--link > .ss-appt__main { grid-column: 1; }
+  .hs-item--link > .ss-appt__actions, .hs-item--link .ss-appt__btns { display: contents; }
+  .hs-item--link .ss-appt__btns > .btn { position: absolute; inset: 0; width: auto; height: auto; padding: 0; border: none; border-radius: 0; background: transparent; color: transparent; font-size: 0; }
+  .hs-item--link .ss-appt__btns > .btn:focus-visible { outline: 2px solid ${cv("border.focus")}; outline-offset: -2px; }
+  .hs-item--link:hover, .hs-item--link:active { background: ${R(tokens.table.row.hoverBg)}; }
+  .hs-item__chev { display: flex !important; grid-column: 2; grid-row: 1 / span 2; align-self: center; color: ${cv("icon.secondary")}; }
+  .hs-item__chev svg { width: ${dim(5)}; height: ${dim(5)}; }
   /* three tabs share the width (Scheduling's Upcoming / Past rule) */
   .hs-tabs { padding: 0; gap: 0; }
   .hs-tabs .tab { flex: 1 1 auto; padding-inline: ${dim(1)}; gap: ${dim(1)}; }
@@ -265,7 +278,7 @@ const pageJs = (mode) => `${SELECT_JS}
   var IC = ${JSON.stringify({ person: icon("person", ""), edit: icon("edit", "") })};
   var D = ${JSON.stringify({ NOTES, ACTIONS, SUMMARIES, NOSHOWS, CANCELLATIONS })};
   var HUES = ${JSON.stringify(HUES)};
-  var VIEW_ICON = "";
+  var CHEV = ${JSON.stringify('<span class="hs-item__chev" aria-hidden="true">' + icon("chevron_right", "") + "</span>")};
   function $(id) { return document.getElementById(id); }
   function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
   function hash(s) { var h = 2166136261; for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
@@ -277,9 +290,9 @@ const pageJs = (mode) => `${SELECT_JS}
   function fact(ic, text) { return '<span class="ss-fact">' + IC[ic] + '<span class="ss-fact__text">' + text + "</span></span>"; }
   function when(d) { var p = d.split(", "); return '<div class="ss-appt__time"><span class="ss-appt__clock">' + p[0] + ", " + p[1] + '</span><span class="ss-appt__dur">' + p[2] + "</span></div>"; }
   function item(o) {
-    return '<article class="ss-appt hs-item">' + when(o.date) + '<div class="ss-appt__main"><div class="ss-appt__title"><h3 class="ss-appt__name">' + esc(o.title) + "</h3>" + (o.badge ? '<span class="badge badge--base badge--regular badge--' + (o.tone || "amber") + '">' + esc(o.badge) + "</span>" : "") + "</div>" +
+    return '<article class="ss-appt hs-item' + (o.view ? " hs-item--link" : "") + '">' + when(o.date) + '<div class="ss-appt__main"><div class="ss-appt__title"><h3 class="ss-appt__name">' + esc(o.title) + "</h3>" + (o.badge ? '<span class="badge badge--base badge--regular badge--' + (o.tone || "amber") + '">' + esc(o.badge) + "</span>" : "") + "</div>" +
       '<div class="ss-appt__meta">' + o.facts.join("") + "</div>" + (o.note ? '<p class="ss-note">' + esc(o.note) + "</p>" : "") + (o.text ? '<p class="hs-item__text' + (o.tint ? " hs-item__text--tint" : "") + '"><span' + (o.clamp ? ' class="hs-item__clamp"' : "") + ">" + esc(o.text) + "</span></p>" : "") + "</div>" +
-      (o.view ? '<div class="ss-appt__actions"><div class="ss-appt__btns"><button class="btn btn--tint btn--sm" type="button" data-view-rec="' + o.view + '">View</button></div></div>' : "") + "</article>";
+      (o.view ? '<div class="ss-appt__actions"><div class="ss-appt__btns"><button class="btn btn--tint btn--sm" type="button" data-view-rec="' + o.view + '">View</button></div></div>' + CHEV : "") + "</article>";
   }
   // v4 table cells: the card's pieces, column by column
   // the live page's date with the weekday: "Tuesday, December 3, 2024" over the time (user, 2026-11-12)
