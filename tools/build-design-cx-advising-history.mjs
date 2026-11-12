@@ -245,7 +245,9 @@ ${["blue", "green", "magenta", "amber", "teal", "orange", "violet", "red"].map((
 .hs-t { display: flex; flex-direction: column; gap: ${dim(2)}; }
 .hs-t__name { margin: 0; color: ${cv("text.default")}; ${typoCss(style("heading-base"))} }
 .hs-v4-table .ss-fact { align-items: flex-start; }
-.hs-v4-table .ss-fact > svg { margin-top: 1px; }
+.hs-v4-table .ss-fact > svg { margin-top: 2px; }
+/* every text in the v4 table is 14px — body-base (user, 2026-11-12); the cards keep their 12px secondary lines */
+.hs-v4-table .hs-when, .hs-v4-table .ss-fact__text, .hs-v4-table .ss-note { ${typoCss(style("body-base"))} }
 .hs-v4-table .ss-fact__text { white-space: normal; display: flex; flex-direction: column; max-width: 240px; }
 .hs-v4-table .hs-cell--end { justify-self: end; } /* a long department wraps instead of widening its column */
 .hs-v4-table .badge { align-self: flex-start; }
