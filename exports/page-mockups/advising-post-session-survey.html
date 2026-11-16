@@ -7,7 +7,7 @@ PAGE: Post-session survey
 FOR: student, signed in. Only the student the appointment belongs to can answer or see it.
 PURPOSE: Lets a student give feedback on one past advising appointment, or see that they already did, or that the survey is no longer open.
 URL: not designed here — whatever the survey email links to. The page needs to know which appointment the survey belongs to. Answers are not kept in the URL.
-ACCESS: signed out → SSO sign-in, then straight back to this page. A guest (Manage Guests) gets the sign-in screen too — guests can't open surveys. Signed in as a different student → the "Another account" view. The page never shows another student's appointment or answers.
+ACCESS: signed out → SSO sign-in, then straight back to this page (OPEN QUESTIONS 9). A guest (Manage Guests) gets the sign-in screen too — guests can't open surveys. Signed in as a different student → the "Another account" view. The page never shows another student's appointment or answers.
 DATA:
   - Appointment (for the survey header): advisor name, department, appointment type, date and time, shown in the student's time zone. Source: not known yet (the Scheduling appointment record).
   - Survey definition: title, description, questions in order. Each question: text, type (single choice, multiple choice, short text, long text), options, required or optional, whether an option is "Other" with its own text field. Source: not known yet (set up per appointment type).
@@ -28,6 +28,7 @@ OPEN QUESTIONS:
   6. Answer length limits: the most characters a student can type. The mockup assumes 100 for "Other topic", 200 for a short answer, 2000 for a long answer. Are there limits, and are they set per question in the survey editor?
   7. Can the survey editor save a survey with no questions? If not, drop the "Empty" view.
   8. Is there a limit on the number of questions? "Many questions" shows 53.
+  9. What does a signed-out user see when they open the survey link? The mockup assumes the SSO sign-in screen, then straight back to the survey. Alternatives: a page with the survey title and a "Sign in to answer" button, or the survey itself through a one-time link in the email (no sign-in).
 DECIDED (2026-11-16):
   - No drafts: unsent answers are lost on leaving, with no warning.
   - If the survey closes while the student is filling it in, Submit gets the Closed view (answers lost).
@@ -37,7 +38,7 @@ DECIDED (2026-11-16):
   - Guests get the sign-in screen.
 STATES NOT SHOWN:
   - No search results: the page has no search.
-  - Other user types: only students use this page (advisors and staff read answers elsewhere). Signed out is not a view: it goes to SSO and back. A different signed-in student = "Another account" (in the switcher). Guests get the SSO sign-in screen (not a view of this page).
+  - Other user types: only students use this page (advisors and staff read answers elsewhere). Signed out is not a view in this mockup: it goes to SSO and back (OPEN QUESTIONS 9). A different signed-in student = "Another account" (in the switcher). Guests get the SSO sign-in screen (not a view of this page).
 -->
 <!--
 STATES (switcher order). Every state also has a "state:" note on the part it changes.
