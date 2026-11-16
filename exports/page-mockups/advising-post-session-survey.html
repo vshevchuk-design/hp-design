@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<!--
+PAGE: Post-session survey
+FOR: student (signed in; opens it from the survey link in an email sent after an advising appointment)
+PURPOSE: Lets a student give feedback on one past advising appointment, or see that they already did, or that the survey is no longer open.
+URL: /scheduling/appointments/<appointmentId>/survey — the appointment the survey belongs to. Nothing else is kept in the URL (answers are not).
+DATA:
+  - Appointment: advisor name, department, appointment type, date and time. Source: the appointment record.
+  - Survey: title, description, questions in order. Each question: text, type (single choice, multiple choice, short text, long text), options, required or optional. Source: the survey set up for this appointment type.
+  - Survey status for this student and appointment: open (with the date it closes), completed (with the submitted date and the answers), closed (deadline passed, with the date it closed) or unavailable (with a reason).
+ACTIONS:
+  - Answer questions: pick one option (single choice), pick any options (multiple choice), type a short or long answer.
+  - Submit the survey: answers are saved once; the page then shows the Completed view with a toast. A survey can't be edited after it's submitted.
+  - Go back to My schedule (link).
+OPEN QUESTIONS:
+  1. How long is a survey open after the session? The mockup uses 3 days (closes Nov 13, 2026 at 2:00 PM for a Nov 10 session). Is it the same for every appointment type?
+  2. Can the student leave and come back with their answers kept (a draft)? The mockup assumes no: unsent answers are lost on leaving.
+  3. What reasons can "Unavailable" have? The mockup shows "The appointment was cancelled". Others possible: the office turned the survey off, the link belongs to another student.
+  4. Does the advisor see the student's name with the answers, or are surveys anonymous? If anonymous, the page should say so under the description.
+  5. Are "Other" topics typed in a text field (as in this mockup) or is "Other" just a checkbox?
+STATES NOT SHOWN: none known.
+-->
+<!--
+STATES (switcher order):
+  Default: open survey, nothing answered; "3 required left".
+  Partly answered: two required questions answered, "Other" ticked with its text field; "1 required left".
+  Validation errors: Submit pressed with required questions unanswered; each shows its error, focus goes to the first one.
+  Submitting: Submit pressed with everything valid; button shows a spinner, the form is locked.
+  Submit error: saving failed; InlineAlert above the button, answers stay as they were.
+  Just submitted: after a successful submit; Completed view + toast "Survey submitted".
+  Completed: opened again later; success Alert with the submitted date + the student's answers, read only.
+  Closed: the deadline passed before the student answered; info Alert, no form.
+  Unavailable: the survey can't be taken for another reason (e.g. the appointment was cancelled); info Alert, no form.
+  Loading: first load; skeleton lines in the card.
+  Error: the survey couldn't load; ErrorState with Try again.
+-->
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Post-session survey — mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+/* Mockup styling only — developers use ui-next components, not this CSS.
+   Values are copied from the HighPoint design system (hp-design tokens: Radio, Checkbox, Input, Form, Alert, Badge, Button, Toast, Skeleton pages; Student Scheduling v7 design page), not new ones. */
+:root {
+  --page: #f9fafb; --surface: #ffffff; --surface-dim: #f4f5f7; --surface-dim-hover: #e6e8eb; --sunken: #e6e8eb; --surface-disabled: #e6e8eb;
+  --border: #dadde0; --border-strong: #adb5be; --focus: #0468c4;
+  --text: #121921; --text-2: #5d6a7a; --text-muted: #758191; --text-disabled: #adb5be; --text-primary: #0468c4;
+  --icon: #485462; --icon-2: #758191;
+  --primary: #077fec; --primary-hover: #0468c4; --primary-active: #01519c; --primary-hover-bg: #eff6ff;
+  --neutral: #e6e8eb; --neutral-hover: #e6e8eb; --neutral-hover-strong: #cdd1d6; --neutral-active: #cdd1d6;
+  --amber-bg: #ffe2c5; --amber-text: #935a03;
+  --info-bg: #d9eaff; --info-border: #b2d4fe; --info-icon: #077fec;
+  --success-bg: #d4f1da; --success-border: #a5e2b4; --success-icon: #0a994e;
+  --danger-bg: #ffdfde; --danger-border: #febebd; --danger-text: #c11435; --danger-strong: #c11435; --danger-icon: #de394b;
+  --radius: 8px;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { margin: 0; }
+body { font-family: "Sora", system-ui, sans-serif; font-size: 14px; line-height: 1.4; color: var(--text); background: var(--page); }
+button, input, textarea { font: inherit; color: inherit; }
+.vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+svg { width: 20px; height: 20px; flex-shrink: 0; fill: currentColor; }
+
+/* mockup-only state switcher */
+.mk { position: sticky; top: 0; z-index: 30; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 8px 16px; background: #242c36; color: #fff; font-size: 12px; line-height: 16px; }
+.mk b { margin-right: 4px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: #d9eaff; }
+.mk button { padding: 4px 12px; border: 1px solid #485462; border-radius: 999px; background: transparent; color: #fff; font-size: 12px; cursor: pointer; }
+.mk button[aria-pressed="true"] { background: #fff; color: #121921; border-color: #fff; }
+
+/* TopBar (Student Scheduling app__topbar) */
+.topbar { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 12px; height: 64px; padding: 0 24px; background: var(--surface); border-bottom: 1px solid var(--border); }
+.topbar h1 { margin: 0; font-size: 18px; line-height: 1.4; font-weight: 600; }
+.seg { display: inline-flex; align-items: center; gap: 4px; padding: 4px; background: var(--sunken); border-radius: 12px; }
+.seg a { display: inline-flex; align-items: center; height: 40px; padding: 0 12px; border-radius: 8px; color: var(--text-2); text-decoration: none; white-space: nowrap; }
+.seg a:hover { background: var(--neutral-hover-strong); color: var(--text); }
+.seg a[aria-current="page"] { background: var(--surface); color: var(--text); font-weight: 600; }
+
+.wrap { max-width: 800px; margin: 0 auto; padding: 24px 32px 48px; display: flex; flex-direction: column; gap: 12px; }
+
+/* Buttons */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: none; border-radius: 8px; font-weight: 600; white-space: nowrap; cursor: pointer; text-decoration: none; }
+.btn--sm { height: 32px; padding: 0 8px; font-size: 12px; }
+.btn--sm svg { width: 16px; height: 16px; }
+.btn--base { height: 40px; padding: 0 12px; font-size: 14px; }
+.btn--primary { background: var(--primary); color: #fff; }
+.btn--primary:not(:disabled):hover { background: var(--primary-hover); }
+.btn--primary:not(:disabled):active { background: var(--primary-active); }
+.btn--primary:disabled { cursor: default; }
+.btn--secondary { background: var(--neutral); color: var(--text); }
+.btn--secondary:hover { background: var(--neutral-hover-strong); }
+.btn--ghost { background: transparent; color: var(--text-2); }
+.btn--ghost svg { color: var(--icon-2); }
+.btn--ghost:hover { background: var(--neutral-hover); }
+.btn:focus-visible { outline: 4px solid var(--focus); outline-offset: 2px; }
+.back { align-self: flex-start; margin-inline-start: -8px; }
+.spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,.4); border-top-color: #fff; border-radius: 999px; animation: spin .7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Card */
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; }
+.head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.head h2 { margin: 0; font-size: 18px; line-height: 1.4; font-weight: 600; }
+.desc { margin: 4px 0 0; color: var(--text-2); }
+.facts { display: flex; flex-wrap: wrap; gap: 4px 16px; margin-top: 12px; color: var(--text-2); font-size: 12px; }
+.fact { display: inline-flex; align-items: center; gap: 4px; }
+.fact svg { width: 16px; height: 16px; color: var(--icon-2); }
+.sep { height: 1px; margin: 24px 0; background: var(--border); border: 0; }
+
+/* Badge base, amber tint */
+.badge { display: inline-flex; align-items: center; height: 20px; padding: 0 8px; border-radius: 999px; font-size: 12px; line-height: 1; font-weight: 600; white-space: nowrap; background: var(--amber-bg); color: var(--amber-text); }
+
+/* Form */
+form { display: flex; flex-direction: column; gap: 24px; }
+fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
+.q { display: flex; flex-direction: column; min-width: 0; }
+.q__label { display: block; padding: 0; margin: 0 0 12px; font-size: 14px; line-height: 1.4; font-weight: 600; color: var(--text); }
+.q__hint { font-weight: 400; color: var(--text-muted); }
+.req { color: var(--danger-text); margin-left: 2px; }
+.items { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; }
+.err { display: flex; align-items: flex-start; gap: 4px; margin: 8px 0 0; color: var(--danger-text); font-size: 12px; }
+.err svg { width: 16px; height: 16px; color: var(--danger-icon); }
+
+/* Radio + Checkbox */
+.choice { position: relative; display: inline-flex; align-items: flex-start; gap: 8px; cursor: pointer; }
+.choice input { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
+.mark { width: 20px; height: 20px; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; border: 2px solid var(--border); background: var(--surface); }
+.choice--radio .mark { border-radius: 999px; }
+.choice--radio .mark::after { content: ""; width: 8px; height: 8px; border-radius: 999px; }
+.choice--check .mark { border-radius: 4px; }
+.choice--check .mark svg { width: 16px; height: 16px; display: none; color: #fff; }
+.choice:hover input:not(:checked):not(:disabled) ~ .mark { background: var(--primary-hover-bg); border-color: var(--primary); }
+.choice input:focus-visible ~ .mark { outline: 4px solid var(--focus); outline-offset: 2px; }
+.choice--radio input:checked ~ .mark { border-color: var(--primary); }
+.choice--radio input:checked ~ .mark::after { background: var(--primary); }
+.choice--check input:checked ~ .mark { background: var(--primary); border-color: var(--primary); }
+.choice--check input:checked ~ .mark svg { display: block; }
+.choice:hover input:checked:not(:disabled) ~ .mark { border-color: var(--primary-hover); }
+.choice--check:hover input:checked:not(:disabled) ~ .mark { background: var(--primary-hover); }
+.choice input:disabled ~ .mark { background: var(--surface-disabled); border-color: var(--border); }
+.choice input:disabled ~ span:last-child { color: var(--text-disabled); }
+.choice input:checked:disabled ~ .mark { background: var(--surface-disabled); }
+.choice--radio input:checked:disabled ~ .mark::after { background: var(--text-disabled); }
+.choice--check input:checked:disabled ~ .mark svg { color: var(--text-disabled); }
+.q.is-invalid .mark { border-color: var(--danger-strong); }
+.other { width: 100%; max-width: 360px; margin: 8px 0 0 28px; }
+
+/* TextInput / TextArea (DS text field, label outside = Field label) */
+.tf { display: flex; width: 100%; background: var(--surface-dim); border: 1px solid var(--border); border-radius: var(--radius); }
+.tf:hover { background: var(--surface-dim-hover); border-color: var(--border-strong); }
+.tf:focus-within { border-color: var(--focus); }
+.tf input, .tf textarea { flex: 1; min-width: 0; border: 0; outline: none; background: transparent; font-size: 14px; color: var(--text); }
+.tf input { height: 38px; padding: 0 12px; }
+.tf textarea { min-height: 96px; padding: 8px 12px; resize: vertical; line-height: 1.4; }
+.tf:has(:disabled) { background: var(--surface-disabled); border-color: var(--border); }
+.tf :disabled { color: var(--text-disabled); }
+.count { margin: 4px 0 0; color: var(--text-2); font-size: 12px; text-align: right; }
+
+/* Alert */
+.alert { display: flex; align-items: flex-start; gap: 8px; padding: 12px 16px; border: 1px solid transparent; border-radius: 8px; }
+.alert p { margin: 0; }
+.alert__stack { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.alert__title { font-weight: 600; }
+.alert__detail { color: var(--text-2); font-size: 12px; }
+.alert--info { background: var(--info-bg); border-color: var(--info-border); } .alert--info svg { color: var(--info-icon); }
+.alert--success { background: var(--success-bg); border-color: var(--success-border); } .alert--success svg { color: var(--success-icon); }
+.alert--danger { background: var(--danger-bg); border-color: var(--danger-border); } .alert--danger svg { color: var(--danger-icon); }
+
+.actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.actions__note { color: var(--text-2); font-size: 12px; }
+
+/* DefinitionList (read-only answers) */
+dl { display: flex; flex-direction: column; gap: 16px; margin: 0; }
+dt { font-weight: 600; }
+dd { margin: 4px 0 0; color: var(--text-2); white-space: pre-line; }
+dd.none { color: var(--text-muted); }
+
+/* LoadingState / ErrorState */
+.skel { display: block; height: 16px; border-radius: 4px; background: var(--sunken) linear-gradient(90deg, var(--sunken) 0, var(--surface) 40px, var(--sunken) 80px) no-repeat; background-size: 600px 100%; animation: shimmer 1.4s linear infinite; }
+@keyframes shimmer { from { background-position: -200px 0; } to { background-position: 600px 0; } }
+.loading { display: flex; flex-direction: column; gap: 12px; }
+.errstate { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 32px 16px; text-align: center; }
+.errstate svg { width: 32px; height: 32px; color: var(--danger-icon); }
+.errstate p { margin: 0; }
+.errstate .alert__detail { font-size: 14px; }
+
+/* toast */
+.toast { position: fixed; top: 64px; left: 50%; transform: translateX(-50%); z-index: 40; display: flex; align-items: center; gap: 8px; max-width: min(480px, calc(100vw - 32px)); padding: 12px 16px; border-radius: 8px; background: var(--surface); box-shadow: inset 0 0 0 1px var(--border), 0 2px 8px rgba(21,25,30,.10); }
+.toast svg { color: var(--success-icon); }
+
+/* Phone */
+@media (max-width: 759px) {
+  .topbar { display: flex; justify-content: space-between; padding: 0 16px; }
+  .seg a { height: 32px; padding: 0 8px; font-size: 12px; }
+  .wrap { padding: 16px 16px 32px; }
+  .card { padding: 16px; }
+  .head { flex-direction: column; gap: 8px; }
+  .sep { margin: 16px 0; }
+  .other { max-width: none; width: calc(100% - 28px); }
+  .actions .btn--primary { width: 100%; }
+}
+</style>
+</head>
+<body>
+
+<!-- mockup-only: state switcher, do not build -->
+<div class="mk" role="toolbar" aria-label="Mockup states">
+  <b>State</b>
+  <button type="button" data-state="default" aria-pressed="true">Default</button>
+  <button type="button" data-state="partial">Partly answered</button>
+  <button type="button" data-state="invalid">Validation errors</button>
+  <button type="button" data-state="submitting">Submitting</button>
+  <button type="button" data-state="submit-error">Submit error</button>
+  <button type="button" data-state="just-submitted">Just submitted</button>
+  <button type="button" data-state="completed">Completed</button>
+  <button type="button" data-state="closed">Closed</button>
+  <button type="button" data-state="unavailable">Unavailable</button>
+  <button type="button" data-state="loading">Loading</button>
+  <button type="button" data-state="error">Error</button>
+</div>
+
+<!-- ui-next: TopBar | title "Scheduling" as="h1"; the section switcher sits in the middle on desktop, on the right on a phone -->
+<header class="topbar">
+  <h1>Scheduling</h1>
+  <!-- ui-next: SegmentedTabs | navigation between Scheduling pages, rendered as links; "My schedule" is current because the survey belongs to a past appointment -->
+  <!-- action: each item goes to its page (Book, My schedule, Calendar) -->
+  <nav aria-label="Scheduling sections">
+    <div class="seg">
+      <a href="#book">Book</a>
+      <a href="#my-schedule" aria-current="page">My schedule</a>
+      <a href="#calendar">Calendar</a>
+    </div>
+  </nav>
+  <span></span>
+</header>
+
+<main class="wrap">
+  <!-- ui-next: AnchorButton | variant="ghost" size="sm", leading arrow_back icon -->
+  <!-- action: goes to My schedule. Unsent answers are not kept (see OPEN QUESTIONS 2); no "leave page?" dialog. -->
+  <a class="btn btn--ghost btn--sm back" href="#my-schedule">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+    <span>Back to My schedule</span>
+  </a>
+
+  <!-- ui-next: Card | the whole survey; one card in every state -->
+  <section class="card" aria-labelledby="sv-title" id="card">
+
+    <!-- state: Loading -->
+    <!-- ui-next: LoadingState | aria-busy, wraps the skeleton lines -->
+    <!-- ui-next: SkeletonLine | title, description, meta line, then three questions -->
+    <div class="loading" id="v-loading" aria-busy="true" aria-label="Loading survey" hidden>
+      <span class="skel" style="width:220px;height:24px"></span>
+      <span class="skel" style="width:60%"></span>
+      <span class="skel" style="width:40%;height:12px"></span>
+      <hr class="sep" />
+      <span class="skel" style="width:50%"></span><span class="skel" style="width:30%"></span><span class="skel" style="width:30%"></span>
+      <span class="skel" style="width:55%;margin-top:12px"></span><span class="skel" style="width:30%"></span><span class="skel" style="width:30%"></span>
+    </div>
+
+    <!-- state: Error -->
+    <!-- ui-next: ErrorState | title + sentence + Button variant="secondary" "Try again" -->
+    <!-- action: Try again reloads the survey; the card shows Loading meanwhile -->
+    <div class="errstate" id="v-error" hidden>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+      <p class="alert__title">We couldn't load this survey</p>
+      <p class="alert__detail">Check your connection and try again.</p>
+      <button class="btn btn--secondary btn--base" type="button" id="retry">Try again</button>
+    </div>
+
+    <div id="v-main">
+      <!-- part: survey header -->
+      <div class="head">
+        <div>
+          <!-- ui-next: Text | as="h2" -->
+          <!-- data: survey title -->
+          <h2 id="sv-title">Post-session survey</h2>
+          <!-- ui-next: Text | secondary colour -->
+          <!-- data: survey description -->
+          <p class="desc">Share a moment of feedback about your recent session.</p>
+        </div>
+        <!-- ui-next: Badge | color="amber" variant="tint" size="base" -->
+        <!-- data: number of required questions still unanswered -->
+        <!-- rule: shown only in the open survey while at least one required question is unanswered; the number updates as the student answers; hidden at 0 and in Completed / Closed / Unavailable. Text: "1 required left", "3 required left". -->
+        <span class="badge" id="req-badge"><span id="req-n">3</span>&nbsp;required left</span>
+      </div>
+      <!-- ui-next: none | needs a new component: a row of small icon + text facts (icon.secondary 16px, text-secondary 12px), the same "fact" row the History and My schedule cards use -->
+      <!-- data: the appointment: advisor name, department · appointment type, date and time in the student's time zone -->
+      <div class="facts">
+        <span class="fact"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>With Dr. Maya Patel · Academic Advising</span>
+        <span class="fact"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>Degree planning · Tue, Nov 10, 2026, 2:00 PM</span>
+      </div>
+
+      <!-- ui-next: Separator -->
+      <hr class="sep" />
+
+      <!-- state: Completed, Just submitted -->
+      <div id="v-done" hidden>
+        <!-- ui-next: Alert | variant="success" -->
+        <!-- data: the date and time the survey was submitted -->
+        <div class="alert alert--success" role="status">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+          <div class="alert__stack">
+            <p><span class="alert__title">Thanks for your feedback.</span> <span id="done-when">You submitted this survey on Nov 11, 2026, 9:18 AM.</span></p>
+            <p class="alert__detail">Dr. Maya Patel can see your answers. Answers can't be changed after they're sent.</p>
+          </div>
+        </div>
+        <!-- ui-next: Text | as="h3" -->
+        <h3 style="margin:24px 0 16px;font-size:16px;line-height:1.4;font-weight:600">Your answers</h3>
+        <!-- ui-next: DefinitionList | question = term, answer = description; multiple-choice answers joined with ", " -->
+        <!-- data: every question in order with the student's submitted answer -->
+        <!-- rule: an unanswered optional question shows "No answer" in muted text -->
+        <dl id="answers"></dl>
+      </div>
+
+      <!-- state: Closed, Unavailable -->
+      <!-- ui-next: Alert | variant="info" -->
+      <!-- data: Closed → the close date; Unavailable → the reason from the server -->
+      <!-- rule: no questions are shown in these states; the only way on is the back link -->
+      <div class="alert alert--info" id="v-closed" role="status" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+        <div class="alert__stack">
+          <p><span class="alert__title" id="closed-title">This survey is closed.</span> <span id="closed-text">It stopped taking answers on Nov 13, 2026, 2:00 PM.</span></p>
+          <p class="alert__detail" id="closed-detail">Surveys stay open for 3 days after the session. If there's something your advisor should know, send them a message.</p>
+        </div>
+      </div>
+
+      <!-- state: Default, Partly answered, Validation errors, Submitting, Submit error -->
+      <!-- ui-next: none | a plain <form>; each question is one Field. Questions come from the survey in order; the type decides the component. -->
+      <!-- action: Submit Survey → validate (rule below) → save all answers once → the page switches to the Completed view and shows a toast "Survey submitted". -->
+      <!-- rule: required questions are marked with a red *; optional ones get nothing. On submit, every unanswered required question shows "Choose an answer." under it, the Badge keeps the count, and focus moves to the first invalid question. An error clears as soon as that question is answered. -->
+      <form id="v-form" novalidate>
+
+        <!-- ui-next: RadioGroupField | single choice, required; label = question text -->
+        <!-- data: options from the survey -->
+        <fieldset class="q" data-req data-q="q1">
+          <legend class="q__label">How helpful was this session?<span class="req" aria-hidden="true">*</span><span class="vh"> (required)</span></legend>
+          <div class="items">
+            <label class="choice choice--radio"><input type="radio" name="q1" value="Very helpful" /><span class="mark"></span><span>Very helpful</span></label>
+            <label class="choice choice--radio"><input type="radio" name="q1" value="Somewhat helpful" /><span class="mark"></span><span>Somewhat helpful</span></label>
+            <label class="choice choice--radio"><input type="radio" name="q1" value="Not helpful" /><span class="mark"></span><span>Not helpful</span></label>
+          </div>
+        </fieldset>
+
+        <!-- ui-next: RadioGroupField | single choice, required -->
+        <fieldset class="q" data-req data-q="q2">
+          <legend class="q__label">How well did your advisor understand your goals?<span class="req" aria-hidden="true">*</span><span class="vh"> (required)</span></legend>
+          <div class="items">
+            <label class="choice choice--radio"><input type="radio" name="q2" value="Extremely well" /><span class="mark"></span><span>Extremely well</span></label>
+            <label class="choice choice--radio"><input type="radio" name="q2" value="Very well" /><span class="mark"></span><span>Very well</span></label>
+            <label class="choice choice--radio"><input type="radio" name="q2" value="Moderately well" /><span class="mark"></span><span>Moderately well</span></label>
+            <label class="choice choice--radio"><input type="radio" name="q2" value="Slightly" /><span class="mark"></span><span>Slightly</span></label>
+            <label class="choice choice--radio"><input type="radio" name="q2" value="Not at all" /><span class="mark"></span><span>Not at all</span></label>
+          </div>
+        </fieldset>
+
+        <!-- ui-next: Field + Checkbox | multiple choice, optional; Field label = question text, one Checkbox per option -->
+        <!-- rule: ticking "Other" shows a TextInput under it (label "Other topic", visible, max 100 characters); unticking hides it and drops its text -->
+        <fieldset class="q" data-q="q3">
+          <legend class="q__label">Which topics did you cover in this session?</legend>
+          <div class="items">
+            <label class="choice choice--check"><input type="checkbox" name="q3" value="Course selection" /><span class="mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span>Course selection</span></label>
+            <label class="choice choice--check"><input type="checkbox" name="q3" value="Degree progress" /><span class="mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span>Degree progress</span></label>
+            <label class="choice choice--check"><input type="checkbox" name="q3" value="Registration holds" /><span class="mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span>Registration holds</span></label>
+            <label class="choice choice--check"><input type="checkbox" name="q3" value="Career planning" /><span class="mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span>Career planning</span></label>
+            <label class="choice choice--check"><input type="checkbox" name="q3" value="Transfer credit" /><span class="mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span>Transfer credit</span></label>
+            <label class="choice choice--check"><input type="checkbox" name="q3" value="Other" id="q3-other" /><span class="mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span>Other</span></label>
+          </div>
+          <!-- ui-next: Field + TextInput | label "Other topic" -->
+          <div class="other" id="q3-other-field" hidden>
+            <label class="q__label" for="q3-other-text" style="margin-bottom:4px;font-weight:400;color:var(--text-2);font-size:12px">Other topic</label>
+            <div class="tf"><input id="q3-other-text" type="text" maxlength="100" /></div>
+          </div>
+        </fieldset>
+
+        <!-- ui-next: RadioGroupField | single choice, required -->
+        <fieldset class="q" data-req data-q="q4">
+          <legend class="q__label">Do you have a clear next step after this session?<span class="req" aria-hidden="true">*</span><span class="vh"> (required)</span></legend>
+          <div class="items">
+            <label class="choice choice--radio"><input type="radio" name="q4" value="Yes" /><span class="mark"></span><span>Yes</span></label>
+            <label class="choice choice--radio"><input type="radio" name="q4" value="Somewhat" /><span class="mark"></span><span>Somewhat</span></label>
+            <label class="choice choice--radio"><input type="radio" name="q4" value="No" /><span class="mark"></span><span>No</span></label>
+          </div>
+        </fieldset>
+
+        <!-- ui-next: Field + TextInput | short text, optional; Field label = question text -->
+        <!-- rule: max 200 characters -->
+        <div class="q" data-q="q5">
+          <label class="q__label" for="q5" style="margin-bottom:8px">What is your next step, and when do you plan to do it?</label>
+          <div class="tf"><input id="q5" name="q5" type="text" maxlength="200" /></div>
+        </div>
+
+        <!-- ui-next: Field + Checkbox | multiple choice, optional; "(Check all that apply)" is part of the question text from the survey -->
+        <fieldset class="q" data-q="q6">
+          <legend class="q__label">What would help you most before your next appointment? <span class="q__hint">(Check all that apply)</span></legend>
+          <div class="items">
+            <label class="choice choice--check"><input type="checkbox" name="q6" value="A follow-up email summarizing my action items" /><span class="mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span>A follow-up email summarizing my action items</span></label>
+            <label class="choice choice--check"><input type="checkbox" name="q6" value="Links to registration and degree planning resources" /><span class="mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span>Links to registration and degree planning resources</span></label>
+            <label class="choice choice--check"><input type="checkbox" name="q6" value="Another appointment with this advisor in 2–4 weeks" /><span class="mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span>Another appointment with this advisor in 2–4 weeks</span></label>
+          </div>
+        </fieldset>
+
+        <!-- ui-next: Field + TextArea | long text, optional; resizable vertically -->
+        <!-- rule: max 2000 characters; the counter under it appears once the student starts typing -->
+        <div class="q" data-q="q7">
+          <label class="q__label" for="q7" style="margin-bottom:8px">Anything you'd like your advisor to know?</label>
+          <div class="tf"><textarea id="q7" name="q7" maxlength="2000"></textarea></div>
+          <p class="count" id="q7-count" hidden><span id="q7-n">0</span> / 2000</p>
+        </div>
+
+        <!-- state: Submit error -->
+        <!-- ui-next: InlineAlert | variant="danger" -->
+        <!-- rule: shown when saving fails; answers stay; pressing Submit again hides it -->
+        <div class="alert alert--danger" id="submit-error" role="alert" hidden>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+          <div class="alert__stack">
+            <p><span class="alert__title">Your survey wasn't sent.</span> Your answers are still here — try again.</p>
+          </div>
+        </div>
+
+        <div class="actions">
+          <!-- ui-next: Button | variant="primary" size="base" type="submit" -->
+          <!-- state: Submitting → loading (spinner, label "Submitting…"), every question disabled -->
+          <button class="btn btn--primary btn--base" type="submit" id="submit"><span id="submit-label">Submit survey</span></button>
+          <!-- ui-next: Text | secondary, 12px -->
+          <span class="actions__note">Open until Nov 13, 2026, 2:00 PM</span>
+        </div>
+      </form>
+    </div>
+  </section>
+</main>
+
+<!-- ui-next: toast | variant="success", text "Survey submitted" -->
+<!-- state: Just submitted; disappears after 5 seconds -->
+<div class="toast" id="toast" role="status" hidden>
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+  <span>Survey submitted</span>
+</div>
+
+<script>
+/* mockup-only: switches states and fakes the form behaviour; developers don't copy this */
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var form = $("v-form");
+  var QUESTIONS = [
+    ["q1", "How helpful was this session?"],
+    ["q2", "How well did your advisor understand your goals?"],
+    ["q3", "Which topics did you cover in this session?"],
+    ["q4", "Do you have a clear next step after this session?"],
+    ["q5", "What is your next step, and when do you plan to do it?"],
+    ["q6", "What would help you most before your next appointment?"],
+    ["q7", "Anything you'd like your advisor to know?"]
+  ];
+  var SAMPLE = {
+    q1: "Very helpful", q2: "Very well", q3: ["Course selection", "Degree progress", "Other"], q3other: "Study abroad in spring 2027",
+    q4: "Yes", q5: "Register for STAT 2010 and ENGL 2300 when my window opens on Nov 18.",
+    q6: ["A follow-up email summarizing my action items"],
+    q7: "Thanks for walking me through the minor requirements. I'd like to check next time whether my AP Psychology credit counts toward it."
+  };
+  var errSvg = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>';
+  var toastTimer;
+
+  function reqLeft() {
+    var n = 0;
+    form.querySelectorAll("[data-req]").forEach(function (q) { if (!q.querySelector("input:checked")) n++; });
+    $("req-n").textContent = n; $("req-badge").hidden = n === 0;
+    return n;
+  }
+  function setError(q, on) {
+    var e = q.querySelector(".err");
+    q.classList.toggle("is-invalid", on);
+    if (on && !e) {
+      e = document.createElement("p"); e.className = "err"; e.id = q.dataset.q + "-err";
+      e.innerHTML = errSvg + "<span>Choose an answer.</span>"; q.appendChild(e);
+      q.setAttribute("aria-describedby", e.id);
+    }
+    if (!on && e) { e.remove(); q.removeAttribute("aria-describedby"); }
+  }
+  function clearForm() {
+    form.reset();
+    form.querySelectorAll("[data-req]").forEach(function (q) { setError(q, false); });
+    $("q3-other-field").hidden = true; $("q7-count").hidden = true;
+    lock(false); $("submit-error").hidden = true;
+    reqLeft();
+  }
+  function fill(full) {
+    var pick = function (name, val) { form.querySelectorAll('[name="' + name + '"]').forEach(function (i) { i.checked = [].concat(val).indexOf(i.value) > -1; }); };
+    pick("q1", SAMPLE.q1); pick("q3", SAMPLE.q3); $("q3-other-field").hidden = false; $("q3-other-text").value = SAMPLE.q3other;
+    if (full) { pick("q2", SAMPLE.q2); pick("q4", SAMPLE.q4); $("q5").value = SAMPLE.q5; pick("q6", SAMPLE.q6); $("q7").value = SAMPLE.q7; countQ7(); }
+    else { pick("q4", SAMPLE.q4); }
+    reqLeft();
+  }
+  function lock(on) {
+    form.querySelectorAll("input, textarea").forEach(function (i) { i.disabled = on; });
+    $("submit").disabled = on;
+    $("submit").innerHTML = on ? '<span class="spinner" aria-hidden="true"></span><span>Submitting…</span>' : '<span>Submit survey</span>';
+    form.setAttribute("aria-busy", on ? "true" : "false");
+  }
+  function countQ7() { var n = $("q7").value.length; $("q7-n").textContent = n; $("q7-count").hidden = n === 0; }
+  function renderAnswers(src) {
+    var html = "";
+    QUESTIONS.forEach(function (q) {
+      var v = src[q[0]];
+      if (q[0] === "q3") v = v.map(function (x) { return x === "Other" ? "Other: " + src.q3other : x; });
+      var text = Array.isArray(v) ? v.join(", ") : v;
+      html += "<div><dt>" + q[1] + "</dt><dd" + (text ? "" : ' class="none"') + ">" + (text || "No answer") + "</dd></div>";
+    });
+    $("answers").innerHTML = html;
+  }
+  function show(view) {
+    $("v-loading").hidden = view !== "loading";
+    $("v-error").hidden = view !== "error";
+    $("v-main").hidden = view === "loading" || view === "error";
+    $("v-form").hidden = view !== "form";
+    $("v-done").hidden = view !== "done";
+    $("v-closed").hidden = view !== "closed";
+    if (view !== "form") $("req-badge").hidden = true;
+  }
+  function toast(on) {
+    clearTimeout(toastTimer); $("toast").hidden = !on;
+    if (on) toastTimer = setTimeout(function () { $("toast").hidden = true; }, 5000);
+  }
+  function validate() {
+    var first = null;
+    form.querySelectorAll("[data-req]").forEach(function (q) {
+      var bad = !q.querySelector("input:checked"); setError(q, bad);
+      if (bad && !first) first = q;
+    });
+    return first;
+  }
+
+  function setState(s) {
+    document.querySelectorAll(".mk button").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.state === s)); });
+    toast(false); clearForm();
+    if (s === "loading") return show("loading");
+    if (s === "error") return show("error");
+    if (s === "completed" || s === "just-submitted") {
+      renderAnswers(SAMPLE);
+      $("done-when").textContent = "You submitted this survey on Nov 11, 2026, 9:18 AM.";
+      show("done"); if (s === "just-submitted") toast(true); return;
+    }
+    if (s === "closed") {
+      $("closed-title").textContent = "This survey is closed.";
+      $("closed-text").textContent = "It stopped taking answers on Nov 13, 2026, 2:00 PM.";
+      $("closed-detail").textContent = "Surveys stay open for 3 days after the session. If there's something your advisor should know, send them a message.";
+      return show("closed");
+    }
+    if (s === "unavailable") {
+      $("closed-title").textContent = "This survey isn't available.";
+      $("closed-text").textContent = "The appointment it belongs to was cancelled.";
+      $("closed-detail").textContent = "Only appointments that took place get a survey.";
+      return show("closed");
+    }
+    show("form");
+    if (s === "partial") fill(false);
+    if (s === "invalid") { var f = validate(); if (f) f.querySelector("input").focus({ preventScroll: true }); }
+    if (s === "submitting") { fill(true); lock(true); }
+    if (s === "submit-error") { fill(true); $("submit-error").hidden = false; }
+  }
+
+  document.querySelector(".mk").addEventListener("click", function (e) { var b = e.target.closest("button"); if (b) setState(b.dataset.state); });
+  $("retry").addEventListener("click", function () { setState("loading"); setTimeout(function () { setState("default"); }, 900); });
+  form.addEventListener("change", function (e) {
+    var q = e.target.closest(".q");
+    if (q && q.hasAttribute("data-req") && q.querySelector("input:checked")) setError(q, false);
+    if (e.target.id === "q3-other") { $("q3-other-field").hidden = !e.target.checked; if (!e.target.checked) $("q3-other-text").value = ""; }
+    reqLeft();
+  });
+  $("q7").addEventListener("input", countQ7);
+  form.addEventListener("submit", function (e) {
+    e.preventDefault(); $("submit-error").hidden = true;
+    var first = validate();
+    if (first) { first.querySelector("input").focus(); first.scrollIntoView({ block: "center", behavior: "smooth" }); return; }
+    lock(true);
+    setTimeout(function () {
+      // use what the student actually typed for the read-only view
+      var val = function (n) { return [].map.call(form.querySelectorAll('[name="' + n + '"]:checked'), function (i) { return i.value; }); };
+      var typed = { q1: val("q1")[0], q2: val("q2")[0], q3: val("q3"), q3other: $("q3-other-text").value || "—", q4: val("q4")[0], q5: $("q5").value, q6: val("q6"), q7: $("q7").value };
+      lock(false); renderAnswers(typed);
+      $("done-when").textContent = "You submitted this survey on Nov 16, 2026, 10:42 AM.";
+      show("done"); toast(true); window.scrollTo({ top: 0, behavior: "smooth" });
+    }, 900);
+  });
+  setState("default");
+})();
+</script>
+</body>
+</html>
