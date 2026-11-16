@@ -31,7 +31,8 @@ OPEN QUESTIONS:
 DECIDED (2026-11-16):
   - No drafts: unsent answers are lost on leaving, with no warning.
   - If the survey closes while the student is filling it in, Submit gets the Closed view (answers lost).
-  - Every question's required flag comes from the survey editor, the "Other" text field included. Required questions are marked only with a red *; no extra "* Required" explanation.
+  - Every question's required flag comes from the survey editor. Required questions are marked only with a red *; no extra "* Required" explanation.
+  - Once "Other" is ticked, its text field is required: no *, but Submit with it empty shows "Enter the other topic." under it.
   - "Other" opens a text field.
   - Guests get the sign-in screen.
 STATES NOT SHOWN:
@@ -42,7 +43,7 @@ STATES NOT SHOWN:
 STATES (switcher order). Every state also has a "state:" note on the part it changes.
   Default: the survey is open and nothing is answered yet; "3 required left".
   Partly answered: the student answered two of three required questions and ticked "Other"; "1 required left".
-  Validation errors: the student pressed Submit with required questions unanswered; each shows "Choose an answer.", focus goes to the first one, nothing is sent.
+  Validation errors: the student pressed Submit with required questions unanswered and "Other" ticked but left empty; each required question shows "Choose an answer.", the "Other topic" field shows "Enter the other topic.", focus goes to the first one, nothing is sent.
   Submitting: the student pressed Submit with everything valid; spinner on the button, the form is locked until the server answers.
   Error saving: sending the answers failed (network / server); InlineAlert "Your survey wasn't sent. Your answers are still here — try again." above the button; answers stay.
   Just submitted: the server saved the answers; Completed view + toast "Survey submitted".
@@ -179,6 +180,7 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
 .tf { display: flex; width: 100%; background: var(--surface-dim); border: 1px solid var(--border); border-radius: var(--radius); }
 .tf:hover { background: var(--surface-dim-hover); border-color: var(--border-strong); }
 .tf:focus-within { border-color: var(--focus); }
+.tf.is-invalid, .tf.is-invalid:hover { border-color: var(--danger-strong); }
 .tf input, .tf textarea { flex: 1; min-width: 0; border: 0; outline: none; background: transparent; font-size: 14px; color: var(--text); }
 .tf input { height: 38px; padding: 0 12px; }
 .tf textarea { min-height: 96px; padding: 8px 12px; resize: vertical; line-height: 1.4; }
@@ -427,7 +429,7 @@ dd.none { color: var(--text-muted); }
 
         <!-- ui-next: Field + Checkbox | multiple choice, optional; Field label = question text, one Checkbox per option -->
         <!-- data: question text and options from the survey definition; "Other" is an option flagged as having its own text field -->
-        <!-- rule: optional, any number of options. Ticking "Other" shows a TextInput under it (label "Other topic", max 100 characters — OPEN QUESTIONS 6; required only if the survey editor says so); unticking hides it and drops its text -->
+        <!-- rule: optional, any number of options. Ticking "Other" shows a TextInput under it (label "Other topic", max 100 characters — OPEN QUESTIONS 6); unticking hides it and drops its text -->
         <fieldset class="q" data-q="q3">
           <legend class="q__label">Which topics did you cover in this session?</legend>
           <div class="items">
@@ -438,7 +440,8 @@ dd.none { color: var(--text-muted); }
             <label class="choice choice--check"><input type="checkbox" name="q3" value="Transfer credit" /><span class="mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span>Transfer credit</span></label>
             <label class="choice choice--check"><input type="checkbox" name="q3" value="Other" id="q3-other" /><span class="mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span>Other</span></label>
           </div>
-          <!-- ui-next: Field + TextInput | label "Other topic" -->
+          <!-- ui-next: Field + TextInput | label "Other topic", no required * -->
+          <!-- rule: required whenever "Other" is ticked, but not marked with *. Submit with it empty (or spaces only) → the field gets the error border and "Enter the other topic." under it, and counts in the Badge's "required left"; the error clears as soon as the student types. -->
           <div class="other" id="q3-other-field" hidden>
             <label class="q__label" for="q3-other-text" style="margin-bottom:4px;font-weight:400;color:var(--text-2);font-size:12px">Other topic</label>
             <div class="tf"><input id="q3-other-text" type="text" maxlength="100" /></div>
@@ -591,8 +594,18 @@ dd.none { color: var(--text-muted); }
   function reqLeft() {
     var n = 0;
     form.querySelectorAll("[data-req]").forEach(function (q) { if (!q.querySelector("input:checked")) n++; });
+    if (otherMissing()) n++;
     $("req-n").textContent = n; $("req-badge").hidden = n === 0;
     return n;
+  }
+  function otherMissing() { return $("q3-other").checked && !$("q3-other-text").value.trim(); }
+  function setOtherError(on) {
+    var f = $("q3-other-field"), box = f.querySelector(".tf"), inp = $("q3-other-text"), e = $("q3-other-err");
+    box.classList.toggle("is-invalid", on);
+    if (on) { inp.setAttribute("aria-invalid", "true"); inp.setAttribute("aria-describedby", "q3-other-err"); }
+    else { inp.removeAttribute("aria-invalid"); inp.removeAttribute("aria-describedby"); }
+    if (on && !e) { e = document.createElement("p"); e.className = "err"; e.id = "q3-other-err"; e.innerHTML = errSvg + "<span>Enter the other topic.</span>"; f.appendChild(e); }
+    if (!on && e) e.remove();
   }
   function setError(q, on) {
     var e = q.querySelector(".err");
@@ -607,6 +620,7 @@ dd.none { color: var(--text-muted); }
   function clearForm() {
     form.reset();
     form.querySelectorAll("[data-req]").forEach(function (q) { setError(q, false); });
+    setOtherError(false);
     $("q3-other-field").hidden = true; $("q7-count").hidden = true;
     lock(false); $("submit-error").hidden = true;
     reqLeft();
@@ -670,6 +684,8 @@ dd.none { color: var(--text-muted); }
       var bad = !q.querySelector("input:checked"); setError(q, bad);
       if (bad && !first) first = q;
     });
+    var other = otherMissing(); setOtherError(other);
+    if (other && (!first || first.compareDocumentPosition($("q3-other-field")) & Node.DOCUMENT_POSITION_PRECEDING)) first = $("q3-other-field");
     return first;
   }
 
@@ -718,7 +734,7 @@ dd.none { color: var(--text-muted); }
     }
     show("form");
     if (s === "partial") fill(false);
-    if (s === "invalid") { var f = validate(); if (f) f.querySelector("input").focus({ preventScroll: true }); }
+    if (s === "invalid") { $("q3-other").checked = true; $("q3-other-field").hidden = false; reqLeft(); var f = validate(); if (f) f.querySelector("input").focus({ preventScroll: true }); }
     if (s === "submitting") { fill(true); lock(true); }
     if (s === "submit-error") { fill(true); $("submit-error").hidden = false; }
   }
@@ -728,10 +744,11 @@ dd.none { color: var(--text-muted); }
   form.addEventListener("change", function (e) {
     var q = e.target.closest(".q");
     if (q && q.hasAttribute("data-req") && q.querySelector("input:checked")) setError(q, false);
-    if (e.target.id === "q3-other") { $("q3-other-field").hidden = !e.target.checked; if (!e.target.checked) $("q3-other-text").value = ""; }
+    if (e.target.id === "q3-other") { $("q3-other-field").hidden = !e.target.checked; if (!e.target.checked) { $("q3-other-text").value = ""; setOtherError(false); } }
     reqLeft();
   });
   $("q7").addEventListener("input", countQ7);
+  $("q3-other-text").addEventListener("input", function () { if (!otherMissing()) setOtherError(false); reqLeft(); });
   form.addEventListener("submit", function (e) {
     e.preventDefault(); $("submit-error").hidden = true;
     var first = validate();
