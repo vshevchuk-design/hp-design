@@ -17,7 +17,8 @@ ACTIONS:
   - Answer questions: pick one option (single choice), pick any options (multiple choice, "Other" opens a text field), type a short or long answer. Nothing is saved while answering.
   - Submit the survey: validates required questions on this page; if valid, sends all answers once. Success → this page switches to the Completed view, toast "Survey submitted", the advisor is notified, and the survey reminder disappears from To Dos and My schedule. Failure → InlineAlert above the button, answers stay, Submit can be pressed again. A submitted survey can't be edited.
   - Try again (Error state): reloads the survey.
-  - Go back to My schedule (link at the top) or to another Scheduling page (Book, My schedule, Calendar in the TopBar). Unsent answers are lost; no warning.
+  - Go back to My schedule (link at the top) or to another Scheduling page (Book, My schedule, Calendar in the TopBar, from 768px). Unsent answers are lost; no warning.
+  - TopBar: open the app navigation (menu, phone only) or Scheduling settings — both as on every Scheduling page.
 OPEN QUESTIONS:
   1. Where do surveys and answers live: HighPoint Scheduling or PeopleSoft? Which record holds the appointment, the survey set-up and the answers? (Every "Source" above is "not known yet".)
   2. Who sees the student's answers: the advisor with the student's name, or only anonymous summaries? The Completed view says nothing about it until this is decided; if anonymous, add a sentence under the description.
@@ -81,13 +82,19 @@ svg { width: 20px; height: 20px; flex-shrink: 0; fill: currentColor; }
 .mk button { padding: 4px 12px; border: 1px solid #485462; border-radius: 999px; background: transparent; color: #fff; font-size: 12px; cursor: pointer; }
 .mk button[aria-pressed="true"] { background: #fff; color: #121921; border-color: #fff; }
 
-/* TopBar (Student Scheduling app__topbar) */
-.topbar { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 12px; height: 64px; padding: 0 24px; background: var(--surface); border-bottom: 1px solid var(--border); }
-.topbar h1 { margin: 0; font-size: 18px; line-height: 1.4; font-weight: 600; }
-.seg { display: inline-flex; align-items: center; gap: 4px; padding: 4px; background: var(--sunken); border-radius: 12px; }
-.seg a { display: inline-flex; align-items: center; height: 40px; padding: 0 12px; border-radius: 8px; color: var(--text-2); text-decoration: none; white-space: nowrap; }
+/* TopBar (Student Scheduling v7 app__topbar: title | section Tabs | Settings; phone: menu | title | Settings) */
+.topbar { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); grid-template-areas: "title tabs actions"; align-items: center; gap: 12px; height: 64px; padding: 0 24px; background: var(--surface); border-bottom: 1px solid var(--border); }
+.topbar h1 { grid-area: title; margin: 0; font-size: 18px; line-height: 1.4; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.topbar .topbar__menu { display: none; grid-area: menu; }
+.topbar__settings { grid-area: actions; justify-self: end; }
+.topbar nav { grid-area: tabs; }
+.icon-btn { width: 40px; padding: 0; }
+.icon-btn svg { width: 20px; height: 20px; color: var(--icon); }
+.seg { display: inline-flex; align-items: center; gap: 4px; height: 48px; padding: 4px; background: var(--sunken); border-radius: 12px; }
+.seg a { display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 12px; border-radius: 8px; color: var(--text-2); text-decoration: none; white-space: nowrap; }
 .seg a:hover { background: var(--neutral-hover-strong); color: var(--text); }
 .seg a[aria-current="page"] { background: var(--surface); color: var(--text); font-weight: 600; }
+.counter { display: inline-flex; align-items: center; justify-content: center; height: 16px; min-width: 16px; padding: 0 4px; border-radius: 999px; background: var(--primary); color: #fff; font-size: 10px; line-height: 1; font-weight: 700; }
 
 .wrap { max-width: 800px; margin: 0 auto; padding: 24px 32px 48px; display: flex; flex-direction: column; gap: 12px; }
 
@@ -202,10 +209,10 @@ dd.none { color: var(--text-muted); }
 .toast svg { color: var(--success-icon); }
 
 /* Phone */
-@media (max-width: 759px) {
-  .topbar { display: flex; justify-content: space-between; padding: 0 16px; }
-  .seg a { height: 32px; padding: 0 8px; font-size: 12px; }
-  .seg__cal { display: none !important; }
+@media (max-width: 767px) {
+  .topbar { grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "menu title actions"; padding: 0 16px; }
+  .topbar .topbar__menu { display: inline-flex; }
+  .topbar nav { display: none; }
   .wrap { padding: 16px 16px 32px; }
   .card { padding: 16px; }
   .head { flex-direction: column; gap: 8px; }
@@ -234,22 +241,32 @@ dd.none { color: var(--text-muted); }
   <button type="button" data-state="error">Error</button>
 </div>
 
-<!-- ui-next: TopBar | title "Scheduling" as="h1"; the section switcher sits in the middle on desktop, on the right on a phone -->
+<!-- ui-next: TopBar | the Scheduling app's top bar, same as on every Scheduling page: title "Scheduling" as="h1" | section SegmentedTabs (middle) | Settings IconButton (right). Phone (below 768px): menu IconButton | title | Settings, no section tabs. -->
 <!-- data: none (fixed text) -->
-<!-- rule: shown in every state, same as on every Scheduling page -->
+<!-- rule: shown in every state -->
 <header class="topbar">
+  <!-- ui-next: IconButton | variant="secondary" size="base", icon menu, aria-label "Open navigation" -->
+  <!-- action: opens the app navigation (Sidebar) full screen, as on every page of the app; nothing is saved -->
+  <!-- rule: phone only (below 768px); from 768 the Sidebar is always on screen -->
+  <button class="btn btn--secondary btn--base icon-btn topbar__menu" type="button" aria-label="Open navigation" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg></button>
   <h1>Scheduling</h1>
-  <!-- ui-next: SegmentedTabs | navigation between Scheduling pages, rendered as links; "My schedule" is current because the survey belongs to a past appointment -->
+  <!-- ui-next: SegmentedTabs | size="base", rendered as links (navigation between Scheduling pages); "My schedule" is current because the survey belongs to a past appointment -->
   <!-- action: each item goes to its page (Book, My schedule, Calendar). Nothing is saved; unsent answers are lost, no warning. -->
-<!-- rule: Calendar is hidden below 768px, as on every Scheduling page -->
+  <!-- rule: from 768px only. On a phone the section tabs are hidden on every Scheduling sub-page that has its own back link (this one included), as in Student Scheduling. -->
   <nav aria-label="Scheduling sections">
     <div class="seg">
       <a href="#book">Book</a>
-      <a href="#my-schedule" aria-current="page">My schedule</a>
-      <a href="#calendar" class="seg__cal">Calendar</a>
+      <!-- ui-next: CountBadge | primary (blue fill), inside the "My schedule" tab -->
+      <!-- data: how many things in My schedule need the student right now (an open check-in, a drop-in calling them) — the same count every Scheduling page shows. Source: same as on My schedule. -->
+      <!-- rule: hidden at 0 -->
+      <a href="#my-schedule" aria-current="page">My schedule<span class="counter" hidden>0</span></a>
+      <a href="#calendar">Calendar</a>
     </div>
   </nav>
-  <span></span>
+  <!-- ui-next: IconButton | variant="secondary" size="base", icon settings, aria-label "Settings" -->
+  <!-- action: opens Scheduling settings, the same as on every Scheduling page; nothing on this page changes -->
+  <!-- rule: shown at every width, in every state -->
+  <button class="btn btn--secondary btn--base icon-btn topbar__settings" type="button" aria-label="Settings"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg></button>
 </header>
 
 <main class="wrap">
