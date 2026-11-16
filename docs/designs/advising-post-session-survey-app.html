@@ -6,8 +6,8 @@
 PAGE: Post-session survey
 FOR: student, signed in. Only the student the appointment belongs to can answer or see it.
 PURPOSE: Lets a student give feedback on one past advising appointment, come back to finish it, see what they sent and change it later.
-URL: not designed here — whatever the survey email links to (the email is the only way in: OPEN QUESTIONS 5). The page needs to know which appointment the survey belongs to. Answers are not kept in the URL.
-ACCESS: signed out → the sign-in screen (the survey page requires sign-in; there is no one-time link), then back to this page (not confirmed: OPEN QUESTIONS 3). A guest (Manage Guests) gets the sign-in screen too — guests can't open surveys. Signed in as a different student → the "Another account" view. The page never shows another student's appointment or answers.
+URL: not designed here — whatever the survey email links to (the email is the only way in; to come back, the student opens the email again). The page needs to know which appointment the survey belongs to. Answers are not kept in the URL.
+ACCESS: signed out → the sign-in screen (the survey page requires sign-in; there is no one-time link), then back to this page. A guest (Manage Guests) gets the sign-in screen too — guests can't open surveys. Signed in as a different student → the "Another account" view. The page never shows another student's appointment or answers.
 DATA (all from the ARM scheduling engine, #42243):
   - Appointment (session): advisor name, department, meeting type, date and time (shown in the student's time zone), whether it is marked Completed, and its attendance status (cancelled, no-show). Reading the attendance status is new for this page: the live page doesn't, so it can't tell cancelled and no-show apart from "not completed yet".
   - Survey definition: an intake form (built in the intake-form editor) marked as a post-session survey. It is attached to the Service; a Meeting Type can use a different one. Title, description, questions in order. Each question: text, type (single choice, multiple choice, short text, long text), options, required or optional, whether an option is "Other" with its own text field. No length limit on answers, no limit on the number of questions.
@@ -21,20 +21,14 @@ ACTIONS:
   - Try again (Error loading): reloads the survey.
   - Go back to My schedule (link at the top) or to another Scheduling page (Book, My schedule, Calendar in the TopBar, from 768px). The draft is already saved; nothing is lost and there is no warning. Changes to a submitted survey that weren't saved with "Save changes" are dropped.
   - The TopBar's menu and Settings buttons are the app's global header, the same on every page; nothing about them is specific to this page.
-OPEN QUESTIONS:
-  1. How exactly does ARM save a draft: after every change, or only on some event? The mockup saves after every change and shows "Draft saved at <time>". If saving a draft fails, the mockup shows "Couldn't save your draft. We'll try again when you change an answer." in the same place — is a retry like that possible?
-  2. Changing a submitted survey: does the response stay "submitted" while the student edits, with the new answers replacing the old ones only on "Save changes" (what the mockup assumes)? Or does editing turn it back into a draft? Should department admins see that the answers were changed, and when?
-  3. Does SSO bring the student back to the survey after sign-in? Not confirmed — test on TST.
-  4. Intake forms can also have file-upload questions (up to 5 files) and repeatable groups (up to 20 entries). Can a post-session survey use them? Not designed here.
-  5. There's no way back to the survey without the email. Should My schedule or History link to an open or completed survey? Not designed here.
-  6. Different messages for cancelled and no-show sessions need the page to read the attendance status, which the live page doesn't. Confirm that's fine.
-  7. The hp-design design system has a Form component (layout, sections, field spacing, the actions row, validation on submit); ui-next has no custom Form and uses a standard <form>, as this mockup does. More broadly: when the design system is updated, or a page needs a component the design system has and ui-next doesn't, how does that reach ui-next, who decides, and what should a mockup say meanwhile?
+OPEN QUESTIONS: none.
+PARKED (no answer yet, not for this page): the hp-design design system has a Form component; ui-next has no custom Form and uses a standard <form>, as this mockup does. How design-system updates and missing components reach ui-next is still open.
 CONFIRMED BY THE TEAM (Ian, 2026-11-16) — requirements to validate:
   - The survey never closes: it opens once the session is marked Completed and stays open with no end date, so the student can change their answers. Partial answers are saved. (No Closed view.)
   - Advisors can't see answers; only department admins can, by student ID. Nothing notifies the advisor on submit.
-  - The live page shows "The survey opens once your meeting is marked completed." for cancelled and no-show sessions too, which is misleading; this mockup gives them their own messages (OPEN QUESTIONS 6).
+  - The live page shows "The survey opens once your meeting is marked completed." for cancelled and no-show sessions too, which is misleading; the team agreed this mockup gives them their own messages (the page reads the attendance status).
   - A survey with no questions can be published: the intake-form editor's publish check should block it. This page has no Empty view.
-  - There's no way back to the survey without the email (OPEN QUESTIONS 5).
+  - There's no way back to the survey without the email: the student opens the email again.
 DECIDED (2026-11-16):
   - Drafts save automatically; there's no "Save draft" button.
   - The Completed view shows the answers read-only with an "Edit answers" button.
@@ -42,6 +36,7 @@ DECIDED (2026-11-16):
   - Every question's required flag comes from the survey editor. Required questions are marked only with a red *; no extra "* Required" explanation.
   - Once "Other" is ticked, its text field is required: no *, but Submit with it empty shows "Enter the other topic." under it.
   - "Other" opens a text field.
+  - Only single choice, multiple choice, short text and long text questions; no file-upload or repeatable-group questions.
   - Signed out and guests get the sign-in screen.
 STATES NOT SHOWN:
   - No search results: the page has no search.
@@ -400,7 +395,7 @@ dd.none { color: var(--text-muted); }
            No-show → "This survey isn't available. This appointment was marked as missed." + "If you did attend, contact the advising office."
            No survey (the Service has no survey, e.g. removed after the email went out) → "This session doesn't have a feedback survey." (no second line)
            Another account → "This survey isn't available. It was sent to a different student account." + "Sign in with the account the email was sent to."
-           Cancelled and No-show need the attendance status (OPEN QUESTIONS 6); the live page shows the Not open yet text for both. -->
+           Cancelled and No-show need the attendance status; the live page shows the Not open yet text for both. -->
       <!-- rule: no questions, no Badge, no Submit in these views; the only way on is the back link or the TopBar -->
       <div class="alert alert--info" id="v-info" role="status" hidden>
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
@@ -411,7 +406,7 @@ dd.none { color: var(--text-muted); }
       </div>
 
       <!-- state: Default, Draft, Validation errors, Submitting, Error saving, Editing answers, Many questions -->
-      <!-- ui-next: none | not a component: a standard <form> around the Fields — ui-next has no custom Form (the design system has one: OPEN QUESTIONS 7). Questions come from the survey definition in order; the question type decides the component. -->
+      <!-- ui-next: none | not a component: a standard <form> around the Fields — ui-next has no custom Form (the design system has one: see PARKED). Questions come from the survey definition in order; the question type decides the component. -->
       <!-- data: questions, options and required flags from the survey definition; answers come from the saved draft (Draft) or the submitted response (Editing answers), otherwise empty -->
       <!-- action: while the survey isn't submitted, every change saves the draft (see the draft note next to Submit); while editing a submitted survey nothing is saved until "Save changes" -->
       <!-- rule: shown when the survey is open, and while editing a submitted one. Which questions are required comes from the survey editor. Required ones are marked with a red * (and "(required)" for screen readers); optional ones get nothing. On submit, every unanswered required question shows "Choose an answer." under it, the Badge keeps the count, and focus moves to the first invalid question. An error clears as soon as that question is answered. Text answers are trimmed; whitespace only counts as empty. -->
@@ -533,7 +528,7 @@ dd.none { color: var(--text-muted); }
           <button class="btn btn--secondary btn--base" type="button" id="cancel-edit" hidden>Cancel</button>
           <!-- ui-next: Text | secondary, 12px, aria-live="polite" -->
           <!-- data: when the draft was last saved, in the student's time zone -->
-          <!-- rule: while the survey isn't submitted. Texts: nothing saved yet → "Your answers save automatically."; saving → "Saving draft…"; saved today → "Draft saved at 10:41 AM"; saved earlier → "Draft saved on Nov 11, 2026, 9:18 AM"; saving failed → "Couldn't save your draft. We'll try again when you change an answer." (OPEN QUESTIONS 1). Hidden while editing a submitted survey. -->
+          <!-- rule: while the survey isn't submitted. Texts: nothing saved yet → "Your answers save automatically."; saving → "Saving draft…"; saved today → "Draft saved at 10:41 AM"; saved earlier → "Draft saved on Nov 11, 2026, 9:18 AM"; saving failed → "Couldn't save your draft. We'll try again when you change an answer." Hidden while editing a submitted survey. -->
           <span class="actions__note" id="save-note" aria-live="polite">Your answers save automatically.</span>
         </div>
       </form>
