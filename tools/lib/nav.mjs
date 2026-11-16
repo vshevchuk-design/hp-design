@@ -129,6 +129,7 @@ export const DESIGN_PRODUCTS = {
       "student-scheduling-checkin": { label: "Student Check-in (QR)", href: "designs/student-scheduling-checkin.html" },
       schedule: { label: "Schedule", href: "designs/schedule.html" },
       "cx-advising-history": { label: "History", href: "designs/cx-advising-history.html" },
+      "advising-post-session-survey": { label: "Post-session Survey", href: "designs/advising-post-session-survey.html" },
     },
   },
   "release-emails": {
