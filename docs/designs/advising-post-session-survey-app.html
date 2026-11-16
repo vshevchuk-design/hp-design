@@ -29,6 +29,7 @@ OPEN QUESTIONS:
   7. Can the survey editor save a survey with no questions? If not, drop the "Empty" view.
   8. Is there a limit on the number of questions? "Many questions" shows 53.
   9. What does a signed-out user see when they open the survey link? The mockup assumes the SSO sign-in screen, then straight back to the survey. Alternatives: a page with the survey title and a "Sign in to answer" button, or the survey itself through a one-time link in the email (no sign-in).
+  10. The hp-design design system has a Form component (layout, sections, field spacing, the actions row, validation on submit), but ui-next has no Form, so this mockup uses a native <form> around ui-next Fields. Should ui-next get a Form? More broadly: when the design system is updated, or a page needs a component the design system has and ui-next doesn't, how does that reach ui-next, who decides, and what should a mockup say meanwhile?
 DECIDED (2026-11-16):
   - No drafts: unsent answers are lost on leaving, with no warning.
   - If the survey closes while the student is filling it in, Submit gets the Closed view (answers lost).
@@ -391,7 +392,7 @@ dd.none { color: var(--text-muted); }
       </div>
 
       <!-- state: Default, Partly answered, Validation errors, Submitting, Error saving, Many questions -->
-      <!-- ui-next: none | not a component: a native <form> around the Fields — the ui-next list has Field (one per question) but no Form. Questions come from the survey definition in order; the question type decides the component. -->
+      <!-- ui-next: none | not a component: a native <form> around the Fields — the ui-next list has Field (one per question) but no Form (the design system has one: OPEN QUESTIONS 10). Questions come from the survey definition in order; the question type decides the component. -->
       <!-- data: questions, options and required flags from the survey definition; every answer starts empty (no drafts) -->
       <!-- action: answering saves nothing; only "Submit survey" sends (see its note) -->
       <!-- rule: shown only when the status is open. Which questions are required comes from the survey editor. Required ones are marked with a red * (and "(required)" for screen readers); optional ones get nothing. On submit, every unanswered required question shows "Choose an answer." under it, the Badge keeps the count, and focus moves to the first invalid question. An error clears as soon as that question is answered. Text answers are trimmed; whitespace only counts as empty. -->
