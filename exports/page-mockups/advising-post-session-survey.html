@@ -30,22 +30,29 @@ OPEN QUESTIONS:
   8. When "Other" is ticked, is its text field required? The mockup assumes optional.
   9. How is the advisor notified (email, in-app notification, both), and is it the advisor only or the whole department?
   10. Are "Other" topics typed in a text field (as in this mockup) or is "Other" just a checkbox?
-STATES NOT SHOWN: none known.
+  11. Can a guest / proxy the student added in Manage Guests open or answer the survey? The mockup assumes no: a guest gets the "Another account" view.
+  12. Can a survey have no questions (set up empty)? The mockup shows an "Empty" view for it instead of an empty form with a Submit button.
+  13. Is there a limit on the number of questions? "Many questions" shows 53.
+STATES NOT SHOWN:
+  - No search results: the page has no search.
+  - Other user types: only students use this page (advisors and staff read answers elsewhere). Signed out is not a view: it goes to SSO and back. A different signed-in student = "Another account" (in the switcher). Guests / proxies (the app has Manage Guests): see OPEN QUESTIONS 11.
 -->
 <!--
-STATES (switcher order):
-  Default: open survey, nothing answered; "3 required left".
-  Partly answered: two required questions answered, "Other" ticked with its text field; "1 required left".
-  Validation errors: Submit pressed with required questions unanswered; each shows its error, focus goes to the first one.
-  Submitting: Submit pressed with everything valid; button shows a spinner, the form is locked.
-  Submit error: saving failed; InlineAlert above the button, answers stay as they were.
-  Just submitted: after a successful submit; Completed view + toast "Survey submitted".
-  Completed: opened again later; success Alert with the submitted date + the student's answers, read only.
-  Closed: the deadline passed before the student answered; info Alert, no form.
-  Unavailable: the appointment was cancelled; info Alert, no form.
-  Another account: the link was opened by a signed-in student it wasn't sent to; info Alert, no form, no appointment details.
-  Loading: first load; skeleton lines in the card.
-  Error: the survey couldn't load; ErrorState with Try again.
+STATES (switcher order). Every state also has a "state:" note on the part it changes.
+  Default: the survey is open and nothing is answered yet; "3 required left".
+  Partly answered: the student answered two of three required questions and ticked "Other"; "1 required left".
+  Validation errors: the student pressed Submit with required questions unanswered; each shows "Choose an answer.", focus goes to the first one, nothing is sent.
+  Submitting: the student pressed Submit with everything valid; spinner on the button, the form is locked until the server answers.
+  Error saving: sending the answers failed (network / server); InlineAlert "Your survey wasn't sent. Your answers are still here — try again." above the button; answers stay.
+  Just submitted: the server saved the answers; Completed view + toast "Survey submitted".
+  Completed: the student opens the link again after submitting; success Alert with the submitted date + their answers, read only.
+  Closed: the student opens the link after the survey's close date without having answered; info Alert "This survey is closed. It stopped taking answers on <date, time>.", no form.
+  Unavailable: the appointment the survey belongs to was cancelled; info Alert "This survey isn't available. The appointment it belongs to was cancelled.", no form.
+  Loading: the page is waiting for the appointment, the survey and its status; LoadingState with skeleton lines in the card.
+  Empty: the survey is open but has no questions (OPEN QUESTIONS 12); EmptyState "This survey has no questions yet", no Badge, no Submit.
+  Error loading: the page-load request failed; ErrorState "We couldn't load this survey" + "Check your connection and try again." + Try again.
+  Many questions: a long survey (53 questions, 18 required) with long question and option texts, a long survey title, advisor name and department; everything wraps, nothing is cut off.
+  Another account (user type): a signed-in student who isn't the one the survey was sent to (or a guest, OPEN QUESTIONS 11) opens the link; info Alert "This survey isn't available. It was sent to a different student account.", no appointment details, no form.
 -->
 
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -120,6 +127,7 @@ svg { width: 20px; height: 20px; flex-shrink: 0; fill: currentColor; }
 /* Card */
 .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; }
 .head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.head > div { min-width: 0; overflow-wrap: anywhere; }
 .head h2 { margin: 0; font-size: 18px; line-height: 1.4; font-weight: 600; }
 .desc { margin: 4px 0 0; color: var(--text-2); }
 .facts { display: flex; flex-wrap: wrap; gap: 4px 16px; margin-top: 12px; color: var(--text-2); font-size: 12px; }
@@ -142,7 +150,7 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
 .err svg { width: 16px; height: 16px; color: var(--danger-icon); }
 
 /* Radio + Checkbox */
-.choice { position: relative; display: inline-flex; align-items: flex-start; gap: 8px; cursor: pointer; }
+.choice { overflow-wrap: anywhere; min-width: 0; position: relative; display: inline-flex; align-items: flex-start; gap: 8px; cursor: pointer; }
 .choice input { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
 .mark { width: 20px; height: 20px; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; border: 2px solid var(--border); background: var(--surface); }
 .choice--radio .mark { border-radius: 999px; }
@@ -195,6 +203,10 @@ dt { font-weight: 600; }
 dd { margin: 4px 0 0; color: var(--text-2); white-space: pre-line; }
 dd.none { color: var(--text-muted); }
 
+/* EmptyState (DS compact pill) */
+.empty-wrap { display: flex; justify-content: center; padding: 24px 0; }
+.empty { margin: 0; padding: 8px 16px; border-radius: 999px; background: var(--sunken); color: var(--text-2); text-align: center; }
+
 /* LoadingState / ErrorState */
 .skel { display: block; height: 16px; border-radius: 4px; background: var(--sunken) linear-gradient(90deg, var(--sunken) 0, var(--surface) 40px, var(--sunken) 80px) no-repeat; background-size: 600px 100%; animation: shimmer 1.4s linear infinite; }
 @keyframes shimmer { from { background-position: -200px 0; } to { background-position: 600px 0; } }
@@ -231,14 +243,16 @@ dd.none { color: var(--text-muted); }
   <button type="button" data-state="partial">Partly answered</button>
   <button type="button" data-state="invalid">Validation errors</button>
   <button type="button" data-state="submitting">Submitting</button>
-  <button type="button" data-state="submit-error">Submit error</button>
+  <button type="button" data-state="submit-error">Error saving</button>
   <button type="button" data-state="just-submitted">Just submitted</button>
   <button type="button" data-state="completed">Completed</button>
   <button type="button" data-state="closed">Closed</button>
   <button type="button" data-state="unavailable">Unavailable</button>
-  <button type="button" data-state="other-account">Another account</button>
   <button type="button" data-state="loading">Loading</button>
-  <button type="button" data-state="error">Error</button>
+  <button type="button" data-state="empty">Empty</button>
+  <button type="button" data-state="error">Error loading</button>
+  <button type="button" data-state="many">Many questions</button>
+  <button type="button" data-state="other-account">Another account</button>
 </div>
 
 <!-- ui-next: TopBar | the Scheduling app's top bar, same as on every Scheduling page: title "Scheduling" as="h1" | section SegmentedTabs (middle) | Settings IconButton (right). Phone (below 768px): menu IconButton | title | Settings, no section tabs. -->
@@ -295,7 +309,7 @@ dd.none { color: var(--text-muted); }
       <span class="skel" style="width:55%;margin-top:12px"></span><span class="skel" style="width:30%"></span><span class="skel" style="width:30%"></span>
     </div>
 
-    <!-- state: Error -->
+    <!-- state: Error loading -->
     <!-- ui-next: ErrorState | title + sentence + Button variant="secondary" "Try again" -->
     <!-- action: Try again repeats the page-load request; the card shows Loading meanwhile, then the view the status asks for, or this ErrorState again if it fails again -->
 <!-- rule: shown when the page-load request fails (network or server error). Closed, Unavailable and Another account are not errors: they come back as a survey status and have their own views. -->
@@ -354,7 +368,7 @@ dd.none { color: var(--text-muted); }
         <dl id="answers"></dl>
       </div>
 
-      <!-- state: Closed, Unavailable, Another account -->
+      <!-- state: Closed, Unavailable, Another account (user type) -->
       <!-- ui-next: Alert | variant="info" -->
       <!-- data: the status and its date or reason. Texts:
            Closed → "This survey is closed. It stopped taking answers on <close date, time>." + "Surveys stay open for 3 days after the session."
@@ -369,7 +383,7 @@ dd.none { color: var(--text-muted); }
         </div>
       </div>
 
-      <!-- state: Default, Partly answered, Validation errors, Submitting, Submit error -->
+      <!-- state: Default, Partly answered, Validation errors, Submitting, Error saving, Many questions -->
       <!-- ui-next: none | a plain <form>; each question is one Field. Questions come from the survey definition in order; the type decides the component. -->
       <!-- data: questions, options and required flags from the survey definition; every answer starts empty (no drafts) -->
       <!-- action: Submit survey →
@@ -380,6 +394,11 @@ dd.none { color: var(--text-muted); }
            5. Server says the survey is already completed (e.g. sent from another tab) → the Completed view with the stored answers, no toast.
            6. Server says the survey is closed → the Closed view (OPEN QUESTIONS 6). -->
       <!-- rule: shown only when the status is open. Required questions are marked with a red * (and "(required)" for screen readers); optional ones get nothing. On submit, every unanswered required question shows "Choose an answer." under it, the Badge keeps the count, and focus moves to the first invalid question. An error clears as soon as that question is answered. Text answers are trimmed; whitespace only counts as empty. -->
+      <!-- state: Empty -->
+      <!-- ui-next: EmptyState | the compact pill: one line, centred; text "This survey has no questions yet" -->
+      <!-- rule: the survey status is open but the survey has no questions; no Badge, no Submit, no "Open until" (OPEN QUESTIONS 12) -->
+      <div class="empty-wrap" id="v-empty" hidden><p class="empty">This survey has no questions yet</p></div>
+
       <form id="v-form" novalidate>
 
         <!-- ui-next: RadioGroupField | single choice, required; label = question text -->
@@ -469,7 +488,7 @@ dd.none { color: var(--text-muted); }
           <p class="count" id="q7-count" hidden><span id="q7-n">0</span> / 2000</p>
         </div>
 
-        <!-- state: Submit error -->
+        <!-- state: Error saving -->
         <!-- ui-next: InlineAlert | variant="danger" -->
         <!-- rule: shown when sending fails (network / server error); answers stay; pressing Submit again hides it until the next result -->
         <div class="alert alert--danger" id="submit-error" role="alert" hidden>
@@ -479,7 +498,7 @@ dd.none { color: var(--text-muted); }
           </div>
         </div>
 
-        <div class="actions">
+        <div class="actions" id="actions">
           <!-- ui-next: Button | variant="primary" size="base" type="submit" -->
           <!-- state: Submitting → loading (spinner, label "Submitting…"), every question disabled -->
           <!-- rule: always enabled while the survey is open (validation runs on press, the button is never greyed out for missing answers); disabled only while sending -->
@@ -487,7 +506,7 @@ dd.none { color: var(--text-muted); }
           <!-- ui-next: Text | secondary, 12px -->
           <!-- data: the close date and time from the survey status, in the student's time zone -->
           <!-- rule: shown only while the survey is open -->
-          <span class="actions__note">Open until Nov 13, 2026, 2:00 PM</span>
+          <span class="actions__note" id="open-until">Open until Nov 13, 2026, 2:00 PM</span>
         </div>
       </form>
     </div>
@@ -524,6 +543,45 @@ dd.none { color: var(--text-muted); }
   };
   var errSvg = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>';
   var toastTimer;
+  var ORIG = { title: $("sv-title").textContent, desc: document.querySelector(".desc").textContent, facts: $("facts").innerHTML };
+  var check = '<span class="mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>';
+  var LONG_Q = [
+    "How clearly did your advisor explain the difference between your major's core requirements, the general education requirements and the free electives you still need to graduate on time?",
+    "Which of the following resources did your advisor mention during the session, even briefly, as something you should look at before you register for the Spring 2027 term?",
+    "In your own words, what is the single most important thing you will do differently this term because of what you discussed today?"
+  ];
+  var LONG_OPTS = [
+    "Strongly agree — everything was explained clearly and I know exactly what to do next",
+    "Somewhat agree — most things were clear, but I still have a few questions about prerequisites",
+    "Neither agree nor disagree",
+    "Somewhat disagree — I left with more questions than I came with",
+    "Strongly disagree"
+  ];
+  var LONG_CHECKS = ["Interdisciplinary Studies minor requirements worksheet (Office of the Registrar)", "Undergraduate Academic Catalog 2026–2027, Section 4: Degree Requirements and Policies", "Center for Career Development and Experiential Learning drop-in hours", "Financial Aid Satisfactory Academic Progress appeal form", "Peer Tutoring and Supplemental Instruction schedule for gateway courses"];
+  function addMany() {
+    var html = "", at = $("submit-error");
+    for (var i = 8; i <= 53; i++) {
+      var kind = i % 3, req = i % 3 === 2 && i <= 52;
+      var text = LONG_Q[kind] + " (" + i + " of 53)";
+      if (kind === 2 && !req) {
+        html += '<div class="q q--extra" data-q="x' + i + '"><label class="q__label" for="x' + i + '" style="margin-bottom:8px">' + text + '</label><div class="tf"><input id="x' + i + '" type="text" maxlength="200" /></div></div>';
+      } else if (kind === 1) {
+        html += '<fieldset class="q q--extra" data-q="x' + i + '"><legend class="q__label">' + text + '</legend><div class="items">' +
+          LONG_CHECKS.map(function (o) { return '<label class="choice choice--check"><input type="checkbox" name="x' + i + '" value="' + o + '" />' + check + '<span>' + o + '</span></label>'; }).join("") + '</div></fieldset>';
+      } else {
+        html += '<fieldset class="q q--extra"' + (req ? " data-req" : "") + ' data-q="x' + i + '"><legend class="q__label">' + text + (req ? '<span class="req" aria-hidden="true">*</span><span class="vh"> (required)</span>' : "") + '</legend><div class="items">' +
+          LONG_OPTS.map(function (o) { return '<label class="choice choice--radio"><input type="radio" name="x' + i + '" value="' + o + '" /><span class="mark"></span><span>' + o + '</span></label>'; }).join("") + '</div></fieldset>';
+      }
+    }
+    at.insertAdjacentHTML("beforebegin", html);
+    $("sv-title").textContent = "Post-session survey — Office of Undergraduate Academic Advising and Student Success, Spring 2027 registration";
+    document.querySelector(".desc").textContent = "This longer survey helps the Office of Undergraduate Academic Advising and Student Success plan next term's advising. It takes about 15 minutes; required questions are marked with *.";
+    $("facts").innerHTML = ORIG.facts.replace("With Dr. Maya Patel · Academic Advising", "With Dr. Alexandria Montgomery-Vasquez · Office of Undergraduate Academic Advising and Student Success").replace("Degree planning", "Degree planning and Spring 2027 registration review");
+  }
+  function resetMany() {
+    form.querySelectorAll(".q--extra").forEach(function (q) { q.remove(); });
+    $("sv-title").textContent = ORIG.title; document.querySelector(".desc").textContent = ORIG.desc; $("facts").innerHTML = ORIG.facts;
+  }
 
   function reqLeft() {
     var n = 0;
@@ -577,6 +635,7 @@ dd.none { color: var(--text-muted); }
     $("v-error").hidden = view !== "error";
     $("v-main").hidden = view === "loading" || view === "error";
     $("v-form").hidden = view !== "form";
+    $("v-empty").hidden = view !== "empty";
     $("v-done").hidden = view !== "done";
     $("v-closed").hidden = view !== "closed";
     if (view !== "form") $("req-badge").hidden = true;
@@ -596,7 +655,9 @@ dd.none { color: var(--text-muted); }
 
   function setState(s) {
     document.querySelectorAll(".mk button").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.state === s)); });
-    toast(false); clearForm(); $("facts").hidden = false;
+    toast(false); resetMany(); clearForm(); $("facts").hidden = false;
+    if (s === "empty") return show("empty");
+    if (s === "many") { addMany(); show("form"); return reqLeft(); }
     if (s === "loading") return show("loading");
     if (s === "error") return show("error");
     if (s === "completed" || s === "just-submitted") {
