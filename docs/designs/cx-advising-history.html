@@ -262,9 +262,9 @@
 </script>
   </nav>
   <main>
-    <h1>Advising History</h1>
+    <h1>History</h1>
     <div class="sub-wrap">
-      <p class="sub" id="viewer-sub">The student's Advising → History, restyled on hp-design components from a saved copy of the live page and ARM 26.3.1's refresh: <b>Notes</b> (search), <b>Action Items</b>, <b>Appointments</b> (Summaries / No Shows / Cancellations as underline Tabs with Counters). Each section is one Card — title + Counter, the table flush inside, the Pagination Bar (Rows per page + range + pages) in the footer. A person cell is Avatar sm + name + a muted second line <b>at the same size</b> (the ticket: the second line was bigger than the name); one line each, truncated; no department under a name when the table already has a Department column. Dates on one line. View (the row's only action, a tint Button) opens the record in a right-hand SlideOverPanel. Below a 760px column every row stacks into a labelled list. <b>v1 and v2 differ only in the table text size</b> — 12px (the DS Table token, body-sm) vs 14px (body-base, what other CX tables use) — to decide which one ships. Notes and Action Items are sample data (the live copy had none); the screenshot's five notes and two action items are verbatim.</p>
+      <p class="sub" id="viewer-sub">The student's advising history: what their advisors recorded about them. Three collapsible sections — <b>Notes</b> (search, category Badge, author with Avatar), <b>Action Items</b> (read only, the comment in full) and <b>Appointments</b> (Summaries / No Shows / Cancellations tabs with counts) — each with rows per page and pagination. A table on a wide screen, cards on a phone or tablet. <b>View</b> (or tapping a card) opens the note or appointment in a side Sheet: the full text, then the advisor, department and date under it. Empty lists show a short grey pill. Every state is a button in the dark bar on top (mockup-only). This is a <b>page mockup for developers</b>: the file carries a page note and <code>ui-next</code> notes before each part — use Download to hand it over.</p>
       <button class="sub-more" type="button" aria-expanded="false" aria-controls="viewer-sub" hidden>Read more</button>
     </div>
 
@@ -277,22 +277,13 @@
         </div>
         <span class="device-bar__label">Version</span>
         <button class="select select--base" id="viewer-version-trigger" type="button" popovertarget="viewer-version-lb" aria-haspopup="listbox" aria-expanded="false" aria-label="Prototype version">
-          <span class="select__value" id="viewer-version-value">v1 · table text 12px — DS Table token (body-sm)</span>
+          <span class="select__value" id="viewer-version-value">v1 · page mockup with ui-next notes</span>
           <svg class="select__chevron" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>
         </button>
         <div class="listbox" id="viewer-version-lb" popover>
           <ul class="listbox__list" role="listbox" aria-label="Prototype version">
-        <li role="none"><button type="button" class="listbox__option listbox__option--selected" role="option" aria-selected="true" data-version-file="cx-advising-history-app.html" data-version-label="v1 · table text 12px — DS Table token (body-sm)">
-          <span>v1 <span class="listbox__note">· table text 12px — DS Table token (body-sm)</span></span><svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
-        </button></li>
-        <li role="none"><button type="button" class="listbox__option" role="option" aria-selected="false" data-version-file="cx-advising-history-v2-app.html" data-version-label="v2 · table text 14px — body-base, as CX tables">
-          <span>v2 <span class="listbox__note">· table text 14px — body-base, as CX tables</span></span><svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
-        </button></li>
-        <li role="none"><button type="button" class="listbox__option" role="option" aria-selected="false" data-version-file="cx-advising-history-v3-app.html" data-version-label="v3 · cards instead of tables (Student Scheduling's My schedule rows)">
-          <span>v3 <span class="listbox__note">· cards instead of tables (Student Scheduling's My schedule rows)</span></span><svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
-        </button></li>
-        <li role="none"><button type="button" class="listbox__option" role="option" aria-selected="false" data-version-file="cx-advising-history-v4-app.html" data-version-label="v4 · table on desktop, v3 cards on a phone — the same pieces in both">
-          <span>v4 <span class="listbox__note">· table on desktop, v3 cards on a phone — the same pieces in both</span></span><svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+        <li role="none"><button type="button" class="listbox__option listbox__option--selected" role="option" aria-selected="true" data-version-file="cx-advising-history-app.html" data-version-label="v1 · page mockup with ui-next notes">
+          <span>v1 <span class="listbox__note">· page mockup with ui-next notes</span></span><svg class="listbox__checkmark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
         </button></li>
           </ul>
         </div>
@@ -304,7 +295,7 @@
     </div>
     <div class="frame-wrap">
       <div class="device device--mobile" id="device">
-        <iframe id="device-frame" src="cx-advising-history-app.html" title="Advising History prototype"></iframe>
+        <iframe id="device-frame" src="cx-advising-history-app.html" title="History prototype"></iframe>
       </div>
     </div>
   </main>

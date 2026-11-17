@@ -22,6 +22,10 @@ Hard rules established over many rounds of fixing violations — see `logs/statu
 
 Chat with the user happens in Ukrainian. Every docs-site artifact (`docs/*.html` — legends, section prose, story titles/notes, sample data) is English, `<html lang="en">` on every page. This was broken once (Avatar's first draft shipped fully in Ukrainian) because the rule only ever lived in prior-session conversation — it's written down here now so it doesn't get re-broken from a fresh session.
 
+## Page mockups for developers (testing, 2026-11-13)
+
+A new handoff path is being tested: HTML mockups with `ui-next` notes, built per the "Page Mockup Guide". **Step 1 (the standing project instructions) lives in `exports/page-mockups/PROJECT-INSTRUCTIONS.md` — read it before any mockup work and follow it without the user re-pasting it**, including its local addendum (primary colour, copying looks from real design pages). The user drives steps 2–6 by pasting each step's prompt; do one step at a time.
+
 ## Verifying visually
 
 The Browser preview tool is unreliable with `file://` URLs in this repo (treated as outside the sandbox's project root — stale snapshots, "no site open" errors). Workaround: `cd docs && python3 -m http.server 8743 &`, then preview `http://localhost:8743/X.html` instead. Kill the server when done.
