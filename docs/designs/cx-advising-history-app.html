@@ -185,7 +185,7 @@ th[aria-sort="ascending"] .sorth svg { transform: rotate(180deg); }
 .card__person .person { max-width: 100%; }
 .card__person .person__name { color: var(--text); }
 .card__fact { font-size: 12px; line-height: 1.4; color: var(--text-2); }
-.card__comment { padding: 8px 12px; border-radius: var(--radius); background: var(--amber-50); }
+.card__comment { margin-top: 4px; padding: 8px 12px; border-radius: var(--radius); background: var(--amber-50); }
 .card > svg { color: var(--icon-2); }
 .card__open { position: absolute; inset: 0; border: 0; background: none; cursor: pointer; border-radius: 0; }
 .card__open:focus-visible { outline-offset: -2px; }
@@ -435,7 +435,7 @@ a.btn { text-decoration: none; }
       <!-- state: "Loading": 3 SkeletonLine rows. "Many rows": long comments wrap in full (they are never cut) -->
       <!-- state: no action items → EmptyState "No action items" -->
       <!-- rule: list only: no View button, rows can't be opened, nothing to do with an action item here; the comment is shown in full and wraps -->
-      <!-- phone (Action Items card): type, Avatar + author · department, then the comment in a light amber box; the card is not tappable and has no chevron -->
+      <!-- phone (Action Items card): type, Avatar + author · department, then the comment in a light amber box (4px more space above it than between the other lines, so it sits apart from the author); the card is not tappable and has no chevron -->
       <div class="list" data-list="actions"></div>
       <!-- ui-next: TablePaginationControl | same as Notes -->
       <div class="foot" data-foot="actions"></div>
