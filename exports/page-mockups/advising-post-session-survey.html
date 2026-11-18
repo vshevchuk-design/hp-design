@@ -6,63 +6,69 @@
 PAGE: Post-session survey
 FOR: student, signed in. Only the student the appointment belongs to can answer or see it.
 PURPOSE: Lets a student give feedback on one past advising appointment, come back to finish it, see what they sent and change it later.
-URL: not designed here — whatever the survey email links to (the email is the only way in; to come back, the student opens the email again). The page needs to know which appointment the survey belongs to. Answers are not kept in the URL.
-ACCESS: signed out → the sign-in screen (the survey page requires sign-in; there is no one-time link), then back to this page. A guest (Manage Guests) gets the sign-in screen too — guests can't open surveys. Signed in as a different student → the "Another account" view. The page never shows another student's appointment or answers.
+URL: the survey email links to this page for one appointment (the live page is /scheduling/student/<registrationId>/survey). Answers are not kept in the URL. The email is the only way in; to come back, the student opens the email again.
+ACCESS: signed out → the sign-in screen (the page requires sign-in; there is no one-time link), then back to this page. A guest (Manage Guests) gets the sign-in screen too. Any registration the student can't access (someone else's, or one that doesn't exist) → the "Another account" view. The page never shows another student's appointment or answers.
 DATA (all from the ARM scheduling engine, #42243):
-  - Appointment (session): advisor name, department, meeting type, date and time (shown in the student's time zone), whether it is marked Completed, and its attendance status (cancelled, no-show). Reading the attendance status is new for this page: the live page doesn't, so it can't tell cancelled and no-show apart from "not completed yet".
-  - Survey definition: an intake form (built in the intake-form editor) marked as a post-session survey. It is attached to the Service; a Meeting Type can use a different one. Title, description, questions in order. Each question: text, type (single choice, multiple choice, short text, long text), options, required or optional, whether an option is "Other" with its own text field. No length limit on answers, no limit on the number of questions.
-  - Survey response: one per student per session; stores the student ID, the advisor ID and the session ID, the answers, and whether it's a draft (unfinished) or submitted, with the date and time it was submitted or last updated.
-  - Survey status for this student and session, worked out from the above: not open yet (session not marked Completed), unavailable (cancelled, no-show, or the Service has no survey), open (no response or a draft), completed (submitted), another account.
-  - Not on this page, for context: the invite email goes out a set number of minutes after the session (the same Service setting). Advisors see no answers anywhere. Department admins see the answers in a list per Service, filtered to the departments they administer, with the student's ID (not their name); drafts show there with a "draft" badge and are left out of the headline count and the CSV export.
+  - Appointment (session): advisor name, department, meeting type, date and time (shown in the student's time zone). Source: the survey request.
+  - Survey status: not open yet / cancelled / no-show / no survey / open / completed; "Another account" when the registration isn't accessible. Decides which view the card shows.
+  - Survey definition: an intake form marked as a post-session survey, attached to the Service (a Meeting Type can use a different one): title, description, questions in order. See ITEMS for the question kinds.
+  - Survey response: one per student per session: the answers, draft or submitted, and the date and time it was submitted or last updated.
 ACTIONS:
-  - Answer questions: pick one option (single choice), pick any options (multiple choice, "Other" opens a text field), type a short or long answer. Every change is saved as a draft automatically ("Draft saved at <time>" next to Submit); the student can leave and come back to the same answers.
-  - Submit the survey: validates required questions on this page; if valid, sends the answers. Success → the Completed view, toast "Survey submitted", and the survey reminder disappears from To Dos and My schedule. Nobody is notified. Failure → InlineAlert above the button, answers stay (the draft too), Submit can be pressed again.
-  - Edit answers (Completed view): opens the form with the submitted answers. "Save changes" validates and sends them the same way as Submit (toast "Your answers were updated"); "Cancel" goes back to the Completed view and drops the changes. While editing, nothing is saved automatically.
-  - Try again (Error loading): reloads the survey.
-  - Go back to My schedule (link at the top) or to another Scheduling page (Book, My schedule, Calendar in the TopBar, from 768px). The draft is already saved; nothing is lost and there is no warning. Changes to a submitted survey that weren't saved with "Save changes" are dropped.
-  - The TopBar's menu and Settings buttons are the app's global header, the same on every page; nothing about them is specific to this page.
-OPEN QUESTIONS: none.
-PARKED (no answer yet, not for this page): the hp-design design system has a Form component; ui-next has no custom Form and uses a standard <form>, as this mockup does. How design-system updates and missing components reach ui-next is still open.
-CONFIRMED BY THE TEAM (Ian, 2026-11-16) — requirements to validate:
-  - The survey never closes: it opens once the session is marked Completed and stays open with no end date, so the student can change their answers. Partial answers are saved. (No Closed view.)
-  - Advisors can't see answers; only department admins can, by student ID. Nothing notifies the advisor on submit.
-  - The live page shows "The survey opens once your meeting is marked completed." for cancelled and no-show sessions too, which is misleading; the team agreed this mockup gives them their own messages (the page reads the attendance status).
-  - A survey with no questions can be published: the intake-form editor's publish check should block it. This page has no Empty view.
-  - There's no way back to the survey without the email: the student opens the email again.
+  - Answer questions; the answers save as a draft automatically (when: see the draft note next to Submit).
+  - Submit the survey (see the Submit button note).
+  - Edit answers in the Completed view, then Save changes or Cancel (see their notes).
+  - Try again after Error loading (see the ErrorState note).
+  - Go back to My schedule (link at the top) or to another Scheduling page (TopBar, from 768px). Nothing is lost; no warning.
+  - The TopBar's menu and Settings buttons are the app's global header; nothing about them is specific to this page.
+ITEMS (the survey's questions, any survey; the sample shows one of each kind):
+  - Single-choice question — RadioGroupField: question text as label, one option per radio, nothing pre-selected. Required → red * (required); empty on Submit → "Choose an answer."
+  - Multiple-choice question — CheckboxGroup: question text as label, one Checkbox per option, any number. Required → no built-in mark (OPEN QUESTIONS 3); none ticked on Submit → "Choose at least one answer."
+  - Short-text question — Field + TextInput: question text as label, no placeholder, no length limit. Required → red *; empty or spaces only on Submit → "Enter your answer."
+  - Long-text question — Field + TextArea: same as short text, several lines, resizable vertically.
+  - "Other" option (a single- or multiple-choice option flagged as having its own text): choosing it shows a Field + TextInput labelled "Please specify" under the options; required while "Other" is chosen, with no *; empty on Submit → "Enter your answer." Un-choosing it hides the field and drops its text.
+  - Every error shows under its question, clears as soon as the question is answered, and counts in the "required left" Badge; on Submit focus goes to the first one.
+  - Answer row (Completed view) — one DefinitionList row per question in order: question text, then the answer; choices joined with ", "; "Other" as "Other: <text>"; an unanswered optional question shows "No answer" in grey.
+OPEN QUESTIONS:
+  1. Does no-show mean the student missed the appointment, or the advisor? The No-show text in the info Alert note assumes the student; if the advisor can be the no-show, that case needs its own text.
+  2. The URL is not designed here: the email's link decides it.
+  3. CheckboxGroup has no required mark. A multiple-choice question can be required in the survey editor; how should it be marked? The mockup's sample has only optional ones.
+  4. Parked, no answer yet: the hp-design design system has a Form component; ui-next uses a standard <form>, as this mockup does. How design-system updates and missing components reach ui-next is still open.
+CONFIRMED BY THE TEAM (Ian, 2026-11-16):
+  - The survey never closes: it opens once the session is marked Completed and stays open, so the student can change their answers. Partial answers are saved. (No Closed view.)
+  - Advisors can't see answers; nobody is notified on Submit.
+  - Cancelled and no-show sessions get their own messages, not the "not open yet" one the live page shows.
+  - A survey with no questions should be blocked by the form editor's publish check (separate ticket). This page has no Empty view.
 DECIDED (2026-11-16):
-  - Drafts save automatically; there's no "Save draft" button.
+  - Drafts save automatically; no "Save draft" button.
   - The Completed view shows the answers read-only with an "Edit answers" button.
-  - No length limits on answers and no character counters (the server doesn't check length).
-  - Every question's required flag comes from the survey editor. Required questions are marked only with a red *; no extra "* Required" explanation.
-  - Once "Other" is ticked, its text field is required: no *, but Submit with it empty shows "Enter the other topic." under it.
-  - "Other" opens a text field.
+  - No length limits on answers and no character counters.
+  - Required flags come from the survey editor; required questions are marked only with a red *.
   - Only single choice, multiple choice, short text and long text questions; no file-upload or repeatable-group questions.
-  - Signed out and guests get the sign-in screen.
 STATES NOT SHOWN:
   - No search results: the page has no search.
-  - Empty (a survey with no questions): blocked in the editor instead (see CONFIRMED BY THE TEAM).
+  - Empty: blocked in the editor (see CONFIRMED BY THE TEAM).
   - Closed: surveys never close.
-  - Other user types: only students use this page (advisors don't see answers; department admins read them in their own list). Signed out and guests get the sign-in screen (not a view of this page). A different signed-in student = "Another account" (in the switcher).
+  - Other user types: only students use this page. Signed out and guests get the sign-in screen (not a view of this page). Anyone else = "Another account" (in the switcher).
 -->
 <!--
-STATES (switcher order). Every state also has a "state:" note on the part it changes.
-  Default: the survey is open and nothing is answered yet; "3 required left", "Your answers save automatically." next to Submit.
-  Draft: the student answered some questions earlier and came back through the email link; the saved answers are filled in, "1 required left", "Draft saved on Nov 11, 2026, 9:18 AM".
-  Validation errors: the student pressed Submit with required questions unanswered and "Other" ticked but left empty; each required question shows "Choose an answer.", the "Other topic" field shows "Enter the other topic.", focus goes to the first one, nothing is sent.
-  Submitting: the student pressed Submit with everything valid; spinner on the button, the form is locked until the server answers.
-  Error saving: sending the answers failed (network / server); InlineAlert "Your survey wasn't sent. Your answers are still here — try again." above the button; answers stay.
-  Just submitted: the server saved the answers; Completed view + toast "Survey submitted".
-  Completed: the student opens the link again after submitting; success Alert with the submitted date, their answers read-only, and "Edit answers".
-  Editing answers: the student pressed "Edit answers"; the form with their submitted answers, "Save changes" and "Cancel", no draft note.
-  Not open yet: the session isn't marked Completed yet (e.g. the invite email arrived before the advisor marked it); info Alert "This survey isn't open yet. It opens once your meeting is marked completed.", no form.
-  Cancelled: the session was cancelled; info Alert "This survey isn't available. The appointment it belongs to was cancelled.", no form.
-  No-show: the session was marked as a no-show; info Alert "This survey isn't available. This appointment was marked as missed.", no form.
-  No survey: the Service has no survey any more (e.g. the office removed it after the email went out); info Alert "This session doesn't have a feedback survey.", no description, no form.
-  Loading: the page is waiting for the appointment, the survey and the response; LoadingState with skeleton lines in the card.
-  Error loading: the page-load request failed; ErrorState "We couldn't load this survey" + "Check your connection and try again." + Try again.
-  Many questions: a long survey (53 questions, 18 required) with long question and option texts, a long survey title, advisor name and department; everything wraps, nothing is cut off.
-  Many answers: the same long survey, submitted — the Completed view with 53 read-only answers, long ones included.
-  Another account (user type): a signed-in student who isn't the one the survey was sent to opens the link; info Alert "This survey isn't available. It was sent to a different student account.", no appointment details, no form.
+STATES (switcher order). Message texts are in the note on the part that shows them.
+  Default: the survey is open and nothing is answered yet.
+  Draft: the student answered some questions earlier and came back through the email; the saved answers are filled in.
+  Validation errors: the student pressed Submit with required questions unanswered and "Other" chosen but empty; nothing is sent.
+  Submitting: Submit pressed with everything valid; the form is locked until the server answers.
+  Error saving: sending failed (network / server); the InlineAlert above the button; answers stay.
+  Just submitted: the server saved the answers; Completed view + toast.
+  Completed: the student opens the link again after submitting; answers read-only with "Edit answers".
+  Editing answers: after "Edit answers"; the form with the submitted answers, "Save changes" and "Cancel".
+  Not open yet: the session isn't marked Completed yet (e.g. the email arrived before the advisor marked it).
+  Cancelled: the session was cancelled.
+  No-show: the session was marked as a no-show (OPEN QUESTIONS 1).
+  No survey: the Service has no survey any more (e.g. removed after the email went out).
+  Loading: waiting for the survey request.
+  Error loading: the survey request failed.
+  Many questions: 53 questions, 18 required, with long texts, a long title, advisor name and department; everything wraps.
+  Many answers: the same long survey, submitted — 53 read-only answers.
+  Another account (user type): the registration isn't this student's (or doesn't exist).
 -->
 
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -204,6 +210,8 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
 .alert--success { background: var(--success-bg); border-color: var(--success-border); } .alert--success svg { color: var(--success-icon); }
 .alert--danger { background: var(--danger-bg); border-color: var(--danger-border); } .alert--danger svg { color: var(--danger-icon); }
 
+.inline-err { display: flex; align-items: flex-start; gap: 4px; margin: 0; color: var(--danger-text); }
+.inline-err svg { width: 16px; height: 16px; margin-top: 2px; color: var(--danger-icon); }
 .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
 .actions__note { color: var(--text-2); font-size: 12px; }
 
@@ -268,18 +276,19 @@ dd.none { color: var(--text-muted); }
   <button type="button" data-state="other-account">Another account</button>
 </div>
 
-<!-- ui-next: TopBar | the Scheduling app's top bar, same as on every Scheduling page: title "Scheduling" as="h1" | section SegmentedTabs (middle) | Settings IconButton (right). Phone (below 768px): menu IconButton | title | Settings, no section tabs. -->
+<!-- ui-next: TopBar | the Scheduling app's top bar, as on every Scheduling page: title "Scheduling" (Text as="h1") | section links (middle) | Settings IconButton (right) -->
+<!-- phone: below 768px: menu IconButton | title | Settings; the section links are hidden; side padding 16px instead of 24px -->
 <!-- data: none (fixed text) -->
 <!-- rule: shown in every state -->
 <header class="topbar">
   <!-- ui-next: IconButton | variant="secondary" size="base", icon menu, aria-label "Open navigation" -->
   <!-- action: part of the app's global header (opens the app navigation), the same on every page; nothing specific to this page -->
-  <!-- rule: phone only (below 768px), as everywhere in the app -->
+  <!-- phone: shown only below 768px, as everywhere in the app -->
   <button class="btn btn--secondary btn--base icon-btn topbar__menu" type="button" aria-label="Open navigation" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg></button>
   <h1>Scheduling</h1>
-  <!-- ui-next: SegmentedTabs | size="base", rendered as links (navigation between Scheduling pages); "My schedule" is current because the survey belongs to a past appointment -->
+  <!-- ui-next: none | needs a new component: links to other pages that look like SegmentedTabs (grey track, the current page on a white segment). SegmentedTabs only switches panels on one page. "My schedule" is current because the survey belongs to a past appointment -->
   <!-- action: each item goes to its page (Book, My schedule, Calendar). The draft is already saved, so nothing is lost and there is no warning; unsaved changes to a submitted survey (Editing answers) are dropped. -->
-  <!-- rule: from 768px only. On a phone the section tabs are hidden on every Scheduling sub-page that has its own back link (this one included), as in Student Scheduling. -->
+  <!-- phone: hidden below 768px, on every Scheduling sub-page that has its own back link (this one included), as in Student Scheduling -->
   <nav aria-label="Scheduling sections">
     <div class="seg">
       <a href="#book">Book</a>
@@ -306,25 +315,24 @@ dd.none { color: var(--text-muted); }
   </a>
 
   <!-- ui-next: Card | the whole survey; one card in every state; aria-label "Post-session survey" so it has a name in Loading and Error loading too, where the title isn't shown -->
+  <!-- phone: below 768px the card's padding is 16px instead of 24px; the page's side padding is 16px -->
 <!-- data: one request on page load returns the appointment (with its Completed and attendance status), the survey definition and this student's response (none, draft or submitted); together they decide which view shows inside the card -->
   <section class="card" aria-label="Post-session survey" id="card">
 
     <!-- state: Loading -->
-    <!-- ui-next: LoadingState | aria-busy, wraps the skeleton lines -->
-    <!-- ui-next: SkeletonLine | title, description, meta line, then three questions -->
-<!-- rule: shown until the page-load request answers; the Badge, the form and Submit are not shown meanwhile -->
-    <div class="loading" id="v-loading" aria-busy="true" aria-label="Loading survey" hidden>
+    <!-- ui-next: SkeletonLine | used on their own (no LoadingState): title, description, meta line, then one question; the card has aria-busy="true" meanwhile -->
+    <!-- rule: shown until the survey request answers; the Badge, the form and Submit are not shown meanwhile -->
+    <div class="loading" id="v-loading" hidden>
       <span class="skel" style="width:220px;height:24px"></span>
       <span class="skel" style="width:60%"></span>
       <span class="skel" style="width:40%;height:12px"></span>
       <hr class="sep" />
       <span class="skel" style="width:50%"></span><span class="skel" style="width:30%"></span><span class="skel" style="width:30%"></span>
-      <span class="skel" style="width:55%;margin-top:12px"></span><span class="skel" style="width:30%"></span><span class="skel" style="width:30%"></span>
     </div>
 
     <!-- state: Error loading -->
-    <!-- ui-next: ErrorState | title + sentence + Button variant="secondary" "Try again" -->
-    <!-- action: Try again repeats the page-load request; the card shows Loading meanwhile, then the view the status asks for, or this ErrorState again if it fails again -->
+    <!-- ui-next: ErrorState | title "We couldn't load this survey", message "Check your connection and try again.", onRetry -->
+    <!-- action: onRetry ("Try again") repeats the survey request; the card shows Loading meanwhile, then the view the status asks for, or this ErrorState again if it fails again -->
 <!-- rule: shown when the page-load request fails (network or server error). Not open yet, Cancelled, No-show, No survey and Another account are not errors: they come back as a survey status and have their own views. -->
     <div class="errstate" id="v-error" hidden>
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
@@ -345,8 +353,9 @@ dd.none { color: var(--text-muted); }
           <!-- rule: hidden if the survey has no description, and in No survey (there's no survey definition; the title falls back to "Post-session survey") -->
           <p class="desc" id="sv-desc">Share a moment of feedback about your recent session.</p>
         </div>
-        <!-- ui-next: Badge | color="amber" variant="tint" size="base" -->
-        <!-- data: number of required questions still unanswered -->
+        <!-- ui-next: Badge | amber, appearance="tint", size="base"; text "<n> required left" -->
+        <!-- data: number of required questions still unanswered, plus a chosen "Other" with no text -->
+        <!-- phone: below 768px the Badge moves under the title and description (left-aligned) instead of sitting on the right -->
         <!-- rule: shown only in the open survey while at least one required question is unanswered; the number updates as the student answers; hidden at 0 and in Completed and the info views (Not open yet, Cancelled, No-show, No survey, Another account). Text: "1 required left", "3 required left". -->
         <span class="badge" id="req-badge"><span id="req-n">3</span>&nbsp;required left</span>
       </div>
@@ -359,12 +368,13 @@ dd.none { color: var(--text-muted); }
       </div>
 
       <!-- ui-next: Separator -->
+      <!-- phone: 16px space above and below instead of 24px -->
       <hr class="sep" />
 
       <!-- state: Completed, Just submitted -->
       <div id="v-done" hidden>
-        <!-- ui-next: Alert | variant="success" -->
-        <!-- data: the date and time the survey was submitted (stored with the answers) -->
+        <!-- ui-next: Alert | tone="success", title "Thanks for your feedback.", detail "You can change your answers at any time." -->
+        <!-- data: the date and time the survey was submitted or last updated (stored with the answers) -->
         <!-- rule: shown when the response is submitted: right after Submit or Save changes, and every time the student opens the link again. Text: "You submitted this survey on <date, time>." or, after a change, "You updated your answers on <date, time>." -->
         <div class="alert alert--success" role="status">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
@@ -379,6 +389,7 @@ dd.none { color: var(--text-muted); }
           <!-- ui-next: Button | variant="secondary" size="sm", leading edit icon, label "Edit answers" -->
           <!-- action: opens the form with the submitted answers filled in (the "Editing answers" state); nothing is sent until "Save changes" -->
           <!-- rule: always shown in Completed: surveys never close -->
+          <!-- phone: stays to the right of "Your answers"; if they don't fit on one line it wraps under the heading -->
           <button class="btn btn--secondary btn--sm" type="button" id="edit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg><span>Edit answers</span></button>
         </div>
         <!-- ui-next: DefinitionList | question = term, answer = description; multiple-choice answers joined with ", " -->
@@ -388,13 +399,13 @@ dd.none { color: var(--text-muted); }
       </div>
 
       <!-- state: Not open yet, Cancelled, No-show, No survey, Another account (user type) -->
-      <!-- ui-next: Alert | variant="info" -->
+      <!-- ui-next: Alert | tone="info", title + text in one line, detail (smaller second line) -->
       <!-- data: the reason, from the session's Completed and attendance status, the Service's survey setting, and the signed-in student. Texts:
            Not open yet (session not marked Completed, nothing else known) → "This survey isn't open yet. It opens once your meeting is marked completed." + "Come back to this link after your advisor marks the meeting completed."
            Cancelled → "This survey isn't available. The appointment it belongs to was cancelled." + "Only appointments that took place get a survey."
-           No-show → "This survey isn't available. This appointment was marked as missed." + "If you did attend, contact the advising office."
+           No-show → "This survey isn't available. This appointment was marked as missed." + "If you did attend, contact the advising office." (assumes the student was the no-show: OPEN QUESTIONS 1)
            No survey (the Service has no survey, e.g. removed after the email went out) → "This session doesn't have a feedback survey." (no second line)
-           Another account → "This survey isn't available. It was sent to a different student account." + "Sign in with the account the email was sent to."
+           Another account (any registration the student can't access: someone else's, or one that doesn't exist) → "This survey isn't available to you." + "Check that you're signed in with the account the email was sent to."
            Cancelled and No-show need the attendance status; the live page shows the Not open yet text for both. -->
       <!-- rule: no questions, no Badge, no Submit in these views; the only way on is the back link or the TopBar -->
       <div class="alert alert--info" id="v-info" role="status" hidden>
@@ -406,10 +417,10 @@ dd.none { color: var(--text-muted); }
       </div>
 
       <!-- state: Default, Draft, Validation errors, Submitting, Error saving, Editing answers, Many questions -->
-      <!-- ui-next: none | not a component: a standard <form> around the Fields — ui-next has no custom Form (the design system has one: see PARKED). Questions come from the survey definition in order; the question type decides the component. -->
+      <!-- ui-next: none | not a component: a standard <form> around the questions — ui-next has no custom Form (OPEN QUESTIONS 4). Questions come from the survey definition in order; the question kind decides the component (see ITEMS in the PAGE note). -->
       <!-- data: questions, options and required flags from the survey definition; answers come from the saved draft (Draft) or the submitted response (Editing answers), otherwise empty -->
-      <!-- action: while the survey isn't submitted, every change saves the draft (see the draft note next to Submit); while editing a submitted survey nothing is saved until "Save changes" -->
-      <!-- rule: shown when the survey is open, and while editing a submitted one. Which questions are required comes from the survey editor. Required ones are marked with a red * (and "(required)" for screen readers); optional ones get nothing. On submit, every unanswered required question shows "Choose an answer." under it, the Badge keeps the count, and focus moves to the first invalid question. An error clears as soon as that question is answered. Text answers are trimmed; whitespace only counts as empty. -->
+      <!-- action: while the survey isn't submitted, answers save as a draft automatically: a choice saves as soon as it's picked; text saves 1 second after typing stops and when leaving the field. Submit while a draft save is still running → Submit waits for it, then sends. Leaving the page while it's running → the save finishes in the background, no warning (closing the tab in that second can lose the last change). Editing a submitted survey saves nothing until "Save changes". -->
+      <!-- rule: shown when the survey is open, and while editing a submitted one. Required flags come from the survey editor; required questions get the red * (and "(required)" for screen readers), optional ones nothing. Error texts per question kind are in ITEMS. On Submit every unanswered required question shows its error, the Badge keeps the count, focus moves to the first one; an error clears as soon as its question is answered. Text answers are trimmed; spaces only count as empty. -->
 
       <form id="v-form" novalidate>
 
@@ -439,9 +450,9 @@ dd.none { color: var(--text-muted); }
           </div>
         </fieldset>
 
-        <!-- ui-next: Field + Checkbox | multiple choice, optional; Field label = question text, one Checkbox per option -->
+        <!-- ui-next: CheckboxGroup | label = question text, one Checkbox per option; optional -->
         <!-- data: question text and options from the survey definition; "Other" is an option flagged as having its own text field -->
-        <!-- rule: optional, any number of options. Ticking "Other" shows a TextInput under it (label "Other topic"); unticking hides it and drops its text -->
+        <!-- rule: optional, any number of options. If a multiple-choice question is required: no built-in mark (OPEN QUESTIONS 3), error "Choose at least one answer." Ticking "Other" shows its text field under the options; unticking hides it and drops its text -->
         <fieldset class="q" data-q="q3">
           <legend class="q__label">Which topics did you cover in this session?</legend>
           <div class="items">
@@ -452,10 +463,11 @@ dd.none { color: var(--text-muted); }
             <label class="choice choice--check"><input type="checkbox" name="q3" value="Transfer credit" /><span class="mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span>Transfer credit</span></label>
             <label class="choice choice--check"><input type="checkbox" name="q3" value="Other" id="q3-other" /><span class="mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span><span>Other</span></label>
           </div>
-          <!-- ui-next: Field + TextInput | label "Other topic", no required * -->
-          <!-- rule: required whenever "Other" is ticked, but not marked with *. Submit with it empty (or spaces only) → the field gets the error border and "Enter the other topic." under it, and counts in the Badge's "required left"; the error clears as soon as the student types. -->
+          <!-- ui-next: Field + TextInput | label "Please specify", no required * -->
+          <!-- phone: below 768px full width (indented 28px under the options); from 768px at most 360px wide -->
+          <!-- rule: required whenever "Other" is chosen, but not marked with *. Submit with it empty (or spaces only) → error border and "Enter your answer." under it; it counts in the Badge's "required left"; the error clears as soon as the student types. -->
           <div class="other" id="q3-other-field" hidden>
-            <label class="q__label" for="q3-other-text" style="margin-bottom:4px;font-weight:400;color:var(--text-2);font-size:12px">Other topic</label>
+            <label class="q__label" for="q3-other-text" style="margin-bottom:4px;font-weight:400;color:var(--text-2);font-size:12px">Please specify</label>
             <div class="tf"><input id="q3-other-text" type="text" /></div>
           </div>
         </fieldset>
@@ -472,7 +484,7 @@ dd.none { color: var(--text-muted); }
           </div>
         </fieldset>
 
-        <!-- ui-next: Field + TextInput | short text, optional; Field label = question text -->
+        <!-- ui-next: Field + TextInput | label = question text; optional (if required: required, error "Enter your answer.") -->
         <!-- data: question text from the survey definition -->
         <!-- rule: optional; no length limit; no placeholder -->
         <div class="q" data-q="q5">
@@ -480,7 +492,7 @@ dd.none { color: var(--text-muted); }
           <div class="tf"><input id="q5" name="q5" type="text" /></div>
         </div>
 
-        <!-- ui-next: Field + Checkbox | multiple choice, optional; "(Check all that apply)" is part of the question text from the survey -->
+        <!-- ui-next: CheckboxGroup | label = question text ("(Check all that apply)" is part of it, from the survey); optional -->
         <!-- data: question text and options from the survey definition -->
         <!-- rule: optional, any number of options -->
         <fieldset class="q" data-q="q6">
@@ -492,7 +504,7 @@ dd.none { color: var(--text-muted); }
           </div>
         </fieldset>
 
-        <!-- ui-next: Field + TextArea | long text, optional; resizable vertically -->
+        <!-- ui-next: Field + TextArea | label = question text; optional (if required: required, error "Enter your answer."); resizable vertically -->
         <!-- data: question text from the survey definition -->
         <!-- rule: optional; no length limit and no counter -->
         <div class="q" data-q="q7">
@@ -501,24 +513,21 @@ dd.none { color: var(--text-muted); }
         </div>
 
         <!-- state: Error saving -->
-        <!-- ui-next: InlineAlert | variant="danger" -->
+        <!-- ui-next: InlineAlert | tone="error"; text "Your survey wasn't sent. Your answers are still here — try again." -->
         <!-- rule: shown when sending fails (network / server error); answers stay; pressing Submit (or Save changes) again hides it until the next result. Editing answers: "Your changes weren't saved. They're still here — try again." -->
-        <div class="alert alert--danger" id="submit-error" role="alert" hidden>
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
-          <div class="alert__stack">
-            <p><span class="alert__title">Your survey wasn't sent.</span> Your answers are still here — try again.</p>
-          </div>
-        </div>
+        <!-- phone: wraps to as many lines as it needs -->
+        <p class="inline-err" id="submit-error" role="alert" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg><span id="submit-error-text">Your survey wasn't sent. Your answers are still here — try again.</span></p>
 
         <div class="actions" id="actions">
           <!-- ui-next: Button | variant="primary" size="base" type="submit", label "Submit survey"; "Save changes" in Editing answers -->
+          <!-- phone: below 768px Submit (and Cancel, while editing) take the full width, one under the other; the draft note goes under them -->
           <!-- action: Submit survey →
                1. Check the required questions on this page (the form's rule). Any unanswered → each shows its error, focus goes to the first one, nothing is sent.
                2. Send all answers for this student and this session; the response turns from draft into submitted. While sending: spinner + "Submitting…" on the button, every question disabled; pressing again does nothing.
-               3. Saved → the card switches to the Completed view with the stored answers, toast "Survey submitted", the page scrolls to the top. The survey reminder disappears from To Dos and from My schedule. Nobody is notified.
-               4. Failed (network / server) → InlineAlert "Your survey wasn't sent. Your answers are still here — try again." above the button; answers stay (and stay in the draft), the form unlocks, the student can press Submit again.
+               3. Saved → the card switches to the Completed view with the stored answers, the toast (see its note), the page scrolls to the top. The survey reminder disappears from To Dos and from My schedule. Nobody is notified.
+               4. Failed (network / server) → the InlineAlert above the button (see its note); answers stay (and stay in the draft), the form unlocks, the student can press Submit again.
                5. Server says it was already submitted (e.g. from another tab) → the Completed view with the stored answers, no toast.
-             Save changes (Editing answers) → the same steps 1–4: "Saving…" on the button, then the Completed view with the new answers, "You updated your answers on <date, time>." and toast "Your answers were updated". -->
+             Save changes (Editing answers) → the same steps 1–4: "Saving…" on the button, then the Completed view with the new answers, the success Alert's "updated" text and the "updated" toast. -->
           <!-- state: Submitting → loading (spinner, label "Submitting…" / "Saving…"), every question disabled -->
           <!-- rule: always enabled while the form shows (validation runs on press, the button is never greyed out for missing answers); disabled only while sending -->
           <button class="btn btn--primary btn--base" type="submit" id="submit"><span id="submit-label">Submit survey</span></button>
@@ -526,9 +535,9 @@ dd.none { color: var(--text-muted); }
           <!-- action: drops the changes and goes back to the Completed view with the submitted answers; no confirm dialog -->
           <!-- rule: Editing answers only -->
           <button class="btn btn--secondary btn--base" type="button" id="cancel-edit" hidden>Cancel</button>
-          <!-- ui-next: Text | secondary, 12px, aria-live="polite" -->
+          <!-- ui-next: Text | grey, small (12px), aria-live="polite" -->
           <!-- data: when the draft was last saved, in the student's time zone -->
-          <!-- rule: while the survey isn't submitted. Texts: nothing saved yet → "Your answers save automatically."; saving → "Saving draft…"; saved today → "Draft saved at 10:41 AM"; saved earlier → "Draft saved on Nov 11, 2026, 9:18 AM"; saving failed → "Couldn't save your draft. We'll try again when you change an answer." Hidden while editing a submitted survey. -->
+          <!-- rule: while the survey isn't submitted. Texts: nothing saved yet → "Your answers save automatically."; saving → "Saving draft…"; saved today → "Draft saved at 10:41 AM"; saved earlier → "Draft saved on Nov 11, 2026, 9:18 AM"; saving failed → "Couldn't save your draft. We'll try again when you change an answer." (Submit still sends everything). When it saves: see the form's action note. Hidden while editing a submitted survey. -->
           <span class="actions__note" id="save-note" aria-live="polite">Your answers save automatically.</span>
         </div>
       </form>
@@ -536,7 +545,7 @@ dd.none { color: var(--text-muted); }
   </section>
 </main>
 
-<!-- ui-next: toast | variant="success", text "Survey submitted" (after Submit) or "Your answers were updated" (after Save changes); the DS position: top centre, 24px from the top of the window, over the header -->
+<!-- ui-next: toast | variant="success", title "Survey submitted" (after Submit) or "Your answers were updated" (after Save changes) -->
 <!-- state: Just submitted; disappears after 5 seconds -->
 <!-- rule: only after a successful Submit or Save changes on this page; not when the page opens on an already completed survey -->
 <div class="toast" id="toast" role="status" hidden>
@@ -620,7 +629,7 @@ dd.none { color: var(--text-muted); }
     box.classList.toggle("is-invalid", on);
     if (on) { inp.setAttribute("aria-invalid", "true"); inp.setAttribute("aria-describedby", "q3-other-err"); }
     else { inp.removeAttribute("aria-invalid"); inp.removeAttribute("aria-describedby"); }
-    if (on && !e) { e = document.createElement("p"); e.className = "err"; e.id = "q3-other-err"; e.innerHTML = errSvg + "<span>Enter the other topic.</span>"; f.appendChild(e); }
+    if (on && !e) { e = document.createElement("p"); e.className = "err"; e.id = "q3-other-err"; e.innerHTML = errSvg + "<span>Enter your answer.</span>"; f.appendChild(e); }
     if (!on && e) e.remove();
   }
   function setError(q, on) {
@@ -658,7 +667,7 @@ dd.none { color: var(--text-muted); }
   }
   function setEditing(on) {
     editing = on; $("cancel-edit").hidden = !on; $("save-note").hidden = on;
-    $("submit-error").querySelector("p").innerHTML = on ? '<span class="alert__title">Your changes weren\'t saved.</span> They\'re still here — try again.' : '<span class="alert__title">Your survey wasn\'t sent.</span> Your answers are still here — try again.';
+    $("submit-error-text").textContent = on ? "Your changes weren't saved. They're still here — try again." : "Your survey wasn't sent. Your answers are still here — try again.";
     lock(false);
   }
   function now() { return new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }); }
@@ -696,7 +705,7 @@ dd.none { color: var(--text-muted); }
     $("answers").innerHTML = list.map(function (r) { return "<div><dt>" + r[0] + "</dt><dd" + (r[1] ? "" : ' class="none"') + ">" + (r[1] || "No answer") + "</dd></div>"; }).join("");
   }
   function show(view) {
-    $("v-loading").hidden = view !== "loading";
+    $("v-loading").hidden = view !== "loading"; $("card").setAttribute("aria-busy", String(view === "loading"));
     $("v-error").hidden = view !== "error";
     $("v-main").hidden = view === "loading" || view === "error";
     $("v-form").hidden = view !== "form";
@@ -748,7 +757,7 @@ dd.none { color: var(--text-muted); }
       "cancelled": ["This survey isn't available.", "The appointment it belongs to was cancelled.", "Only appointments that took place get a survey."],
       "no-show": ["This survey isn't available.", "This appointment was marked as missed.", "If you did attend, contact the advising office."],
       "no-survey": ["This session doesn't have a feedback survey.", "", ""],
-      "other-account": ["This survey isn't available.", "It was sent to a different student account.", "Sign in with the account the email was sent to."]
+      "other-account": ["This survey isn't available to you.", "", "Check that you're signed in with the account the email was sent to."]
     };
     if (INFO[s]) {
       $("info-title").textContent = INFO[s][0]; $("info-text").textContent = INFO[s][1];
