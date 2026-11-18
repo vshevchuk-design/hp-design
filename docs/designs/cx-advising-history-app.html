@@ -21,6 +21,7 @@ ACTIONS:
   - Search notes by text.
   - Collapse / expand each section.
   - Switch the Appointments tab (Summaries, No Shows, Cancellations).
+  - Sort each table by a column (click the header; again to flip the order).
   - Change rows per page (5, 10, 20) and page through each list on its own.
   - Open a note or an appointment: a Sheet (side panel) on this page shows the full record. Action items are not opened; the list shows the whole comment.
   - In the Sheet: download an attachment; Copy note link (notes only); Message advisor (opens Message Center, another page); Book again (appointments only, opens Scheduling, another page — designer's proposal).
@@ -28,7 +29,7 @@ ACTIONS:
 ITEMS:
   - Note row — Table row (768px+) or a card (below 768px): created date + time, subject (cut after 2 lines with …), category Badge (amber tint, the same for any category), Avatar + author name over department (one line each, cut with …). View / tapping the card opens the note. No messages of its own.
   - Action item row — Table row or card: created date + time, type, Avatar + author over department, the comment in full. Not openable. No messages of its own.
-  - Appointment row — Table row or card: department, type (+ the cancellation reason on Cancellations), Avatar + department member, Avatar + booked by ("You" when the student booked it), created date + time. View / tapping the card opens the appointment.
+  - Appointment row — Table row or card: type (+ the cancellation reason on Cancellations), Avatar + department member over the appointment's department (one line each, cut with …), Avatar + booked by ("You" when the student booked it), created date + time. View / tapping the card opens the appointment.
   - Attachment (in the Sheet) — one per file: file icon, file name (one line, cut with …), type · size, download. Failure message: see the Attachment note.
   - Topic (in the Sheet) — a neutral pill with the topic name; the Topics row is hidden when there are none.
   - Details row (in the Sheet) — label + value; a row with no value is hidden, never shown as "—".
@@ -136,6 +137,13 @@ td { padding: 12px 16px; vertical-align: top; border-bottom: 1px solid var(--bor
 tbody tr:last-child td { border-bottom: none; }
 tbody tr:hover td { background: var(--surface-dim); }
 th + th, td + td { padding-left: 16px; }
+.sorth { display: inline-flex; align-items: center; gap: 4px; padding: 0; border: 0; background: none; font: inherit; color: inherit; text-transform: inherit; cursor: pointer; border-radius: 4px; }
+.sorth svg { width: 14px; height: 14px; opacity: .4; transition: transform .12s ease, opacity .12s ease; }
+.sorth:hover svg { opacity: .7; }
+.sorth:focus-visible { outline: 2px solid #0468c4; outline-offset: 2px; }
+th[aria-sort] .sorth { color: var(--text); }
+th[aria-sort] .sorth svg { opacity: 1; color: #0468c4; }
+th[aria-sort="ascending"] .sorth svg { transform: rotate(180deg); }
 .t-title { font-size: 14px; line-height: 1.4; font-weight: 600; }
 .sub { display: block; color: var(--text-2); }
 .date { white-space: nowrap; color: var(--text-2); }
@@ -371,7 +379,10 @@ a.btn { text-decoration: none; }
       </div>
     </div>
     <div class="panel__body" id="notes-body">
-      <!-- ui-next: Table | columns: Date · Subject · Category · Created by · (View) -->
+      <!-- ui-next: Table | columns: Date · Subject · Category · Created by · (View); each of the four named columns has a SortHeader -->
+      <!-- ui-next: SortHeader | on Date, Subject, Category, Created by (sorts by the author's name) -->
+      <!-- action (sorting, all three tables): clicking a header sorts the whole list by that column (not just the visible page) and goes back to page 1; clicking it again flips the order. A date column starts newest first, a text column starts A→Z. One column at a time; the active one shows its arrow in blue, the others a faint arrow. Default: Date (Created on in Appointments), newest first. Not kept in the URL and not remembered; the search and the Appointments tab keep the chosen sort. -->
+      <!-- phone (sorting): cards have no headers, so below 768px the list can't be re-sorted and shows the default order (newest first) — or the order picked on a wider screen -->
       <!-- data: per row — created date ("Tuesday, December 3, 2024" over "8:54 AM"), subject, category, author name over author department -->
       <!-- state: no notes → EmptyState "No notes yet"; a search with no match → EmptyState "No notes match “<search text>”" -->
       <!-- rule: the note text is NOT shown in the list; View opens it -->
@@ -404,6 +415,7 @@ a.btn { text-decoration: none; }
     </div>
     <div class="panel__body" id="actions-body">
       <!-- ui-next: Table | columns: Date · Type · Created by · Comment -->
+      <!-- ui-next: SortHeader | on Date, Type, Created by; Comment is not sortable (sorting works as in Notes) -->
       <!-- data: per row — created date/time, action item type, author name over department, comment (full text) -->
       <!-- ui-next: none | Avatar from ui-next (not in the guide's list), same as in Notes -->
       <!-- state: no action items → EmptyState "No action items" -->
@@ -434,10 +446,12 @@ a.btn { text-decoration: none; }
         <button class="tab" role="tab" type="button" aria-selected="false" data-tab="noshows">No Shows <span class="count" data-count="noshows"></span></button>
         <button class="tab" role="tab" type="button" aria-selected="false" data-tab="cancellations">Cancellations <span class="count" data-count="cancellations"></span></button>
       </div>
-      <!-- ui-next: Table | columns: Department · Type · Department member · Booked by · Created on · (View) -->
-      <!-- data: per row — department, appointment type, department member (the advisor the meeting was with), who booked it ("You" when the student booked it), created date/time -->
+      <!-- ui-next: Table | columns: Type · Department member · Booked by · Created on · (View) — no Department column: the department is the grey line under the department member -->
+      <!-- ui-next: SortHeader | on all four named columns; default Created on, newest first (sorting works as in Notes); switching tabs keeps the sort -->
+      <!-- data: per row — appointment type, department member (the advisor the meeting was with) over the appointment's department, who booked it ("You" when the student booked it), created date/time -->
+      <!-- rule: the grey line under the department member is the APPOINTMENT's department (where the meeting was), not the advisor's home department; it reads as "with Alexander Robinson, Academic Advising". One line, cut with "…", full text in a tooltip -->
       <!-- state: per tab, no rows → EmptyState "No appointment summaries" / "No missed appointments" / "No cancelled appointments" -->
-      <!-- ui-next: none | Avatar from ui-next (not in the guide's list), same as in Notes; before the Department member and Booked by names (name only, no department line); "You" gets the student's own Avatar -->
+      <!-- ui-next: none | Avatar from ui-next (not in the guide's list), same as in Notes; before the Department member (name over department) and Booked by (name only, no department line) names; "You" gets the student's own Avatar -->
       <!-- rule: Cancellations tab shows the cancellation reason as a quiet line under the type -->
       <!-- ui-next: Button | variant="secondary" size="sm", label "View", accessible name "View <type> appointment, <date>" -->
       <!-- action: opens the Sheet for that appointment and adds ?appointment=<id> to the address; closing the Sheet removes it -->
@@ -590,7 +604,7 @@ a.btn { text-decoration: none; }
     return out;
   }
 
-  var S = { state: "default", q: "", tab: "summaries", page: { notes: 1, actions: 1, appts: 1 }, rpp: { notes: 5, actions: 5, appts: 5 } };
+  var S = { sort: { notes: ["date", "desc"], actions: ["date", "desc"], appts: ["created", "desc"] }, state: "default", q: "", tab: "summaries", page: { notes: 1, actions: 1, appts: 1 }, rpp: { notes: 5, actions: 5, appts: 5 } };
   var $ = function (s, r) { return (r || document).querySelector(s); };
   var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
@@ -616,6 +630,16 @@ a.btn { text-decoration: none; }
     if (!q) return notes;
     return notes.filter(function (n) { return [n[0], n[1], n[2], n[5]].join(" ").toLowerCase().indexOf(q) > -1; });
   }
+  var SORTCOL = { notes: { date: 4, subject: 1, category: 0, author: 2 }, actions: { date: 3, type: 0, author: 2 }, appts: { type: 1, member: 2, booked: 3, created: 4 } };
+  var ARROW = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M20 12l-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8 8-8z"/></svg>';
+  function sorted(key, list) {
+    var c = SORTCOL[key][S.sort[key][0]], dir = S.sort[key][1] === "asc" ? 1 : -1;
+    return list.slice().sort(function (a, b) { return String(a[c]).localeCompare(String(b[c])) * dir; });
+  }
+  function th(key, col, label) {
+    var on = S.sort[key][0] === col, dir = S.sort[key][1];
+    return "<th" + (on ? ' aria-sort="' + (dir === "asc" ? "ascending" : "descending") + '"' : "") + '><button class="sorth" type="button" data-sort="' + key + ":" + col + '">' + label + ARROW + "</button></th>";
+  }
   function slice(key, list) {
     var rpp = S.rpp[key], pages = Math.max(1, Math.ceil(list.length / rpp));
     if (S.page[key] > pages) S.page[key] = pages;
@@ -634,12 +658,12 @@ a.btn { text-decoration: none; }
   function skeleton() { var r = ""; for (var i = 0; i < 3; i++) r += '<div class="sk-row"><span class="sk"></span><span class="sk"></span><span class="sk"></span><span class="sk"></span></div>'; return '<div aria-busy="true" aria-label="Loading">' + r + "</div>"; }
 
   function renderNotes(D) {
-    var list = filtered(D.notes), p = slice("notes", list), html;
+    var list = sorted("notes", filtered(D.notes)), p = slice("notes", list), html;
     if (S.state === "loading") html = skeleton();
     else if (!D.notes.length) html = emptyState("No notes yet");
     else if (!list.length) html = emptyState("No notes match “" + S.q.trim() + "”");
     else {
-      html = '<div class="tablewrap"><table><thead><tr><th>Date</th><th>Subject</th><th>Category</th><th>Created by</th><th class="col-act"><span class="vh">Actions</span></th></tr></thead><tbody>' +
+      html = '<div class="tablewrap"><table><thead><tr>' + th("notes", "date", "Date") + th("notes", "subject", "Subject") + th("notes", "category", "Category") + th("notes", "author", "Created by") + '<th class="col-act"><span class="vh">Actions</span></th></tr></thead><tbody>' +
         p.rows.map(function (n, i) { var k = "notes:" + (p.start + i); return "<tr>" + dateCell(n[4]) + '<td class="t-title"><span class="clamp2">' + esc(n[1]) + '</span></td><td><span class="badge">' + esc(n[0]) + "</span></td><td>" + person(n[2], n[3]) + '</td><td class="col-act"><button class="btn" type="button" data-open="' + k + '" aria-label="View note: ' + esc(n[1]) + '">View</button></td></tr>'; }).join("") +
         '</tbody></table></div><ul class="cards">' +
         p.rows.map(function (n, i) { var k = "notes:" + (p.start + i); return '<li><div class="card"><div class="card__main"><span class="card__date">' + dt(n[4]) + '</span><span class="card__title"><span class="clamp2">' + esc(n[1]) + '</span> <span class="badge">' + esc(n[0]) + '</span></span><span class="card__person">' + person(n[2], n[3]) + '</span></div>' + CHEV + '<button class="card__open" type="button" data-open="' + k + '" aria-label="View note: ' + esc(n[1]) + '"></button></div></li>'; }).join("") + "</ul>";
@@ -649,11 +673,11 @@ a.btn { text-decoration: none; }
     foot("notes", p, S.state === "loading" || !list.length);
   }
   function renderActions(D) {
-    var p = slice("actions", D.actions), html;
+    var p = slice("actions", sorted("actions", D.actions)), html;
     if (S.state === "loading") html = skeleton();
     else if (!D.actions.length) html = emptyState("No action items");
     else {
-      html = '<div class="tablewrap"><table><colgroup><col style="width:232px"><col style="width:200px"><col style="width:240px"><col></colgroup><thead><tr><th>Date</th><th>Type</th><th>Created by</th><th>Comment</th></tr></thead><tbody>' +
+      html = '<div class="tablewrap"><table><colgroup><col style="width:232px"><col style="width:200px"><col style="width:240px"><col></colgroup><thead><tr>' + th("actions", "date", "Date") + th("actions", "type", "Type") + th("actions", "author", "Created by") + '<th>Comment</th></tr></thead><tbody>' +
         p.rows.map(function (a) { return "<tr>" + dateCell(a[3]) + '<td class="t-title">' + esc(a[0]) + "</td><td>" + person(a[2], a[1]) + "</td><td>" + esc(a[4]) + "</td></tr>"; }).join("") +
         '</tbody></table></div><ul class="cards">' +
         p.rows.map(function (a) { return '<li><div class="card"><div class="card__main"><span class="card__date">' + dt(a[3]) + '</span><span class="card__title">' + esc(a[0]) + '</span><span class="card__person">' + person(a[2], a[1]) + '</span><span class="card__comment">' + esc(a[4]) + "</span></div></div></li>"; }).join("") + "</ul>";
@@ -663,15 +687,15 @@ a.btn { text-decoration: none; }
     foot("actions", p, S.state === "loading" || !D.actions.length);
   }
   function renderAppts(D) {
-    var list = D.appts[S.tab], p = slice("appts", list), html, total = 0;
+    var list = sorted("appts", D.appts[S.tab]), p = slice("appts", list), html, total = 0;
     ["summaries", "noshows", "cancellations"].forEach(function (t) { total += D.appts[t].length; $('[data-count="' + t + '"]').textContent = S.state === "loading" ? "–" : D.appts[t].length; });
     $('[data-count="appts"]').textContent = S.state === "loading" ? "–" : total;
     var EMPTY = { summaries: ["No appointment summaries", "After you meet with an advisor, the summary of the meeting shows up here."], noshows: ["No missed appointments", "You haven't missed any appointments."], cancellations: ["No cancelled appointments", "You have no cancelled appointments."] }[S.tab];
     if (S.state === "loading") html = skeleton();
     else if (!list.length) html = emptyState(EMPTY[0]);
     else {
-      html = '<div class="tablewrap"><table><thead><tr><th>Department</th><th>Type</th><th>Department member</th><th>Booked by</th><th>Created on</th><th class="col-act"><span class="vh">Actions</span></th></tr></thead><tbody>' +
-        p.rows.map(function (a, i) { var k = S.tab + ":" + (p.start + i); return "<tr><td>" + esc(a[0]) + '</td><td><span class="t-title">' + esc(a[1]) + "</span>" + (S.tab === "cancellations" ? '<span class="reason">' + esc(a[5]) + "</span>" : "") + "</td><td>" + person(a[2]) + "</td><td>" + person(a[3]) + "</td>" + dateCell(a[4]) + '<td class="col-act"><button class="btn" type="button" data-open="' + k + '" aria-label="View ' + esc(a[1]) + " appointment, " + esc(shortDate(a[4])) + '">View</button></td></tr>'; }).join("") +
+      html = '<div class="tablewrap"><table><thead><tr>' + th("appts", "type", "Type") + th("appts", "member", "Department member") + th("appts", "booked", "Booked by") + th("appts", "created", "Created on") + '<th class="col-act"><span class="vh">Actions</span></th></tr></thead><tbody>' +
+        p.rows.map(function (a, i) { var k = S.tab + ":" + (p.start + i); return '<tr><td><span class="t-title">' + esc(a[1]) + "</span>" + (S.tab === "cancellations" ? '<span class="reason">' + esc(a[5]) + "</span>" : "") + "</td><td>" + person(a[2], a[0]) + "</td><td>" + person(a[3]) + "</td>" + dateCell(a[4]) + '<td class="col-act"><button class="btn" type="button" data-open="' + k + '" aria-label="View ' + esc(a[1]) + " appointment, " + esc(shortDate(a[4])) + '">View</button></td></tr>'; }).join("") +
         '</tbody></table></div><ul class="cards">' +
         p.rows.map(function (a, i) { var k = S.tab + ":" + (p.start + i); return '<li><div class="card"><div class="card__main"><span class="card__date">' + dt(a[4]) + '</span><span class="card__title">' + esc(a[1]) + '</span><span class="card__person">' + person(a[2], a[0]) + "</span>" + (S.tab === "cancellations" ? '<span class="card__fact">' + esc(a[5]) + "</span>" : "") + "</div>" + CHEV + '<button class="card__open" type="button" data-open="' + k + '" aria-label="View ' + esc(a[1]) + " appointment, " + esc(shortDate(a[4])) + '"></button></div></li>'; }).join("") + "</ul>";
     }
@@ -716,12 +740,12 @@ a.btn { text-decoration: none; }
   function openSheet(key, mode) {
     var k = key.split(":"), i = +k[1], D = data(), title, sub, body, who, det = "";
     if (k[0] === "notes") {
-      var n = filtered(D.notes)[i];
+      var n = sorted("notes", filtered(D.notes))[i];
       title = n[1]; sub = '<span class="badge">' + esc(n[0]) + "</span>"; who = n[2];
       body = sec("Note", '<p class="sheet__text">' + esc(n[5]) + "</p>") + files(n[7]);
         det = details([["Created by", person(n[2], n[3])], ["Created on", when(n[4])], n[6] && n[6].length ? ["Topics", pills(n[6])] : null]);
     } else {
-      var a = D.appts[k[0]][i];
+      var a = sorted("appts", D.appts[k[0]])[i];
       title = a[1]; who = a[2];
       sub = '<span class="badge ' + { summaries: "badge--success", noshows: "badge--neutral", cancellations: "badge--neutral" }[k[0]] + '">' + { summaries: "Completed", noshows: "No show", cancellations: "Cancelled" }[k[0]] + '</span><span class="sheet__dept">' + esc(a[0]) + "</span>";
       body = (a[5] ? sec({ summaries: "Summary", noshows: "Note", cancellations: "Cancellation reason" }[k[0]], '<p class="sheet__text">' + esc(a[5]) + "</p>") : '<p class="sheet__none">' + esc(a[2].split(" ")[0]) + " didn't add a note.</p>") + files(a[8]) +
@@ -745,7 +769,7 @@ a.btn { text-decoration: none; }
   }
 
   document.addEventListener("click", function (e) {
-    var t = e.target.closest("[data-open],[data-page],[data-close],[data-tab],.toggle,.clear,[data-state],#retry,[data-retry],#copy-link");
+    var t = e.target.closest("[data-sort],[data-open],[data-page],[data-close],[data-tab],.toggle,.clear,[data-state],#retry,[data-retry],#copy-link");
     if (e.target.closest('a[href="#message-center"], a[href="#download"]')) e.preventDefault();
     if (!t) return;
     if (t.dataset.state) { setState(t.dataset.state); return; }
@@ -754,6 +778,7 @@ a.btn { text-decoration: none; }
     if (t.dataset.open) { openSheet(t.dataset.open); return; }
     if (t.hasAttribute("data-close")) { closeSheet(); return; }
     if (t.id === "copy-link") { toast("Link copied"); return; }
+    if (t.dataset.sort) { var sk = t.dataset.sort.split(":"), cur = S.sort[sk[0]]; S.sort[sk[0]] = cur[0] === sk[1] ? [sk[1], cur[1] === "asc" ? "desc" : "asc"] : [sk[1], /date|created/.test(sk[1]) ? "desc" : "asc"]; S.page[sk[0]] = 1; render(); var nb = $('[data-sort="' + t.dataset.sort + '"]'); if (nb) nb.focus(); return; }
     if (t.dataset.tab) { S.tab = t.dataset.tab; S.page.appts = 1; $$(".tab").forEach(function (b) { b.setAttribute("aria-selected", b === t); }); t.scrollIntoView({ block: "nearest", inline: "nearest" }); renderAppts(data()); return; }
     if (t.dataset.page) { var p = t.dataset.page.split(":"); S.page[p[0]] = p[1] === "prev" ? S.page[p[0]] - 1 : p[1] === "next" ? S.page[p[0]] + 1 : +p[1]; render(); return; }
     if (t.classList.contains("toggle")) { var open = t.getAttribute("aria-expanded") === "true"; t.setAttribute("aria-expanded", !open); t.closest(".panel").classList.toggle("is-collapsed", open); return; }
@@ -773,6 +798,7 @@ a.btn { text-decoration: none; }
     S.state = /^(nosearch|sheet)/.test(s) ? "default" : s;
     S.q = s === "nosearch" ? "scholarship" : "";
     S.page = { notes: 1, actions: 1, appts: 1 };
+    S.sort = { notes: ["date", "desc"], actions: ["date", "desc"], appts: ["created", "desc"] };
     $$(".mk button").forEach(function (b) { b.setAttribute("aria-pressed", b.dataset.state === s); });
     closeSheet(); $("#toast").classList.remove("is-on");
     render();
