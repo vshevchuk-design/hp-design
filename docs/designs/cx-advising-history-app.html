@@ -6,24 +6,38 @@
 PAGE: History
 FOR: student (signed in; sees only their own records)
 PURPOSE: Lets a student look back at what their advisors recorded about them (notes, action items, past appointments) and open any note or appointment in full.
-URL: ?q=<text> (Notes search), ?tab=summaries|noshows|cancellations (selected Appointments tab), ?note=<id> / ?appointment=<id> (the open record — what Copy link copies). Page numbers and rows per page are not kept in the URL.
+URL: ?q=<text> (Notes search), ?tab=summaries|noshows|cancellations (selected Appointments tab), ?note=<id> / ?appointment=<id> (the open record; Copy note link copies the ?note= one). Page numbers, rows per page and collapsed sections are not kept in the URL.
+KNOWN BEFORE LOAD: whose history it is comes from the signed-in user (the student) — never from the address. From the address: the search text, the Appointments tab, and which record to open on arrival (?note= / ?appointment=; if that id isn't one of this student's records, the page loads normally and the Sheet shows "Record not found").
 DATA:
-  - Notes: category, subject, author name + department, created date/time; the full note text is read when a note is opened. Source: not known yet.
+  - Signed-in student: whose records to show; name + initials for the student's own Avatar ("You" in Booked by). Source: the sign-in session.
+  - Notes (list): category, subject, author name + department, created date/time. Source: not known yet.
+  - Note (opened): full text, attachments (file name, type, size, download link), topics. Source: not known yet.
   - Action items: type, author name + department, created date/time, comment (full text, shown in the list). Source: not known yet.
-  - Appointments: past appointments in three groups (Summaries, No Shows, Cancellations): department, appointment type, department member, created by, created on; the summary / no-show / cancellation text is read when an appointment is opened. Source: not known yet.
+  - Appointments (list): past appointments in three groups (Summaries, No Shows, Cancellations): department, appointment type, department member, booked by, created on; for Cancellations also the cancellation reason. Source: not known yet.
+  - Appointment (opened): summary / no-show note / cancellation reason (may be empty), summary attachments, the student's reason for visit, topics. Source: not known yet.
   - Each list comes with its total count (shown next to the section title and on each tab).
+  - Whether each advisor can receive a message (hides Message advisor — see OPEN QUESTIONS 3) and whether an appointment type can still be booked (hides Book again). Source: not known yet.
 ACTIONS:
   - Search notes by text.
   - Collapse / expand each section.
   - Switch the Appointments tab (Summaries, No Shows, Cancellations).
   - Change rows per page (5, 10, 20) and page through each list on its own.
   - Open a note or an appointment: a Sheet (side panel) on this page shows the full record. Action items are not opened; the list shows the whole comment.
-  - Nothing on this page saves or sends anything.
+  - In the Sheet: download an attachment; Copy note link (notes only); Message advisor (opens Message Center, another page); Book again (appointments only, opens Scheduling, another page — designer's proposal).
+  - Nothing on this page saves or sends anything, and nothing saves automatically.
+ITEMS:
+  - Note row — Table row (768px+) or a card (below 768px): created date + time, subject (cut after 2 lines with …), category Badge (amber tint, the same for any category), Avatar + author name over department (one line each, cut with …). View / tapping the card opens the note. No messages of its own.
+  - Action item row — Table row or card: created date + time, type, Avatar + author over department, the comment in full. Not openable. No messages of its own.
+  - Appointment row — Table row or card: department, type (+ the cancellation reason on Cancellations), Avatar + department member, Avatar + booked by ("You" when the student booked it), created date + time. View / tapping the card opens the appointment.
+  - Attachment (in the Sheet) — one per file: file icon, file name (one line, cut with …), type · size, download. Failure message: see the Attachment note.
+  - Topic (in the Sheet) — a neutral pill with the topic name; the Topics row is hidden when there are none.
+  - Details row (in the Sheet) — label + value; a row with no value is hidden, never shown as "—".
+  - Record text (in the Sheet) — any length, line breaks kept; when an appointment has no text, one grey line "<advisor's first name> didn't add a note." replaces the section.
 OPEN QUESTIONS:
-  1. Does ui-next Table have a stacked layout for phone width? Below 760px this mockup shows each row as a card; if Table can't, which component should the cards be?
-  2. Is the collapsed / expanded state of a section remembered between visits?
-  3. What does Notes search match: subject, category, author, the note text?
-STATES NOT SHOWN: "Error saving" (nothing on this page saves). "One section failed" (not needed for now; if one list fails the whole page shows Error).
+  1. Does ui-next Table have a stacked layout for phone width? Below 768px this mockup shows each row as a card; if Table can't, which component should the cards be?
+  2. What does Notes search match: subject, category, author, the note text?
+  3. When is "Message advisor" hidden? In the current build some appointments have no Send Message button (e.g. an advisor who may have left). Which advisors can't be messaged, and should the button be hidden or disabled with a reason?
+STATES NOT SHOWN: "Error saving" — nothing on this page saves; the only things that can fail after load are a download and copying a link, shown as "Download failed". "One section failed" (not needed for now; if one list fails the whole page shows Error loading). Other user types — only students use this page, so there is one view.
 -->
 <!--
 STATES (switcher order):
@@ -31,16 +45,17 @@ STATES (switcher order):
   Loading: first load; every list shows skeleton rows, counts show "–", pagination hidden.
   Empty: a new student with no records; each section stays and shows its own EmptyState.
   No search results: Notes search matched nothing; the other sections are unaffected.
-  Error: the history couldn't load; one ErrorState replaces the three sections.
-  Many rows: long lists in every section (56 notes, 32 action items, 41 summaries) with long titles, names and departments; pagination shortens with "…".
-  Record open: the Sheet for the first note.
+  Error loading: the history couldn't load (first load, or a later page / tab / search request failed); one ErrorState replaces the three sections.
+  Many rows: 50+ items in every list (56 notes, 52 action items, 54 summaries) with long titles, names and departments; pagination shortens with "…".
+  Record open: the Sheet for a note with attachments and topics.
+  Long note / Long summary: a note and an appointment summary much taller than the panel; the text scrolls under the pinned Details.
   Record loading: the Sheet while the full record is being read.
-  Record error: the Sheet when the full record couldn't be read.
+  Record error: the Sheet when the full record couldn't be read; it offers to try again.
+  Record not found: the address has ?note= / ?appointment= with an id that isn't this student's (an old or someone else's link); the page loads, the Sheet says so, with no retry.
+  Record without actions: an appointment with no footer — its advisor can't be messaged and its type can't be booked any more.
+  Download failed: an attachment couldn't download; a toast says so (text in the Attachment note).
 -->
-<!-- rule (all three lists): while loading → LoadingState with SkeletonLine rows; no records → EmptyState with a sentence specific to that list -->
-<!-- ui-next: LoadingState | wraps the skeleton rows, aria-busy -->
-<!-- ui-next: SkeletonLine | 3 rows per list while loading -->
-<!-- ui-next: EmptyState | per section: one short line of text on a grey pill, centred; no icon, no heading. Texts: "No notes yet", "No notes match “<search text>”", "No action items", "No appointment summaries", "No missed appointments", "No cancelled appointments" -->
+<!-- rule (all three lists): while a list loads it shows 3 SkeletonLine rows on their own (no LoadingState around them); with no records it shows an EmptyState: one short line on a grey pill, centred, no icon, no heading — each list's text is in its own note -->
 
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>History — mockup</title>
@@ -146,7 +161,7 @@ th + th, td + td { padding-left: 16px; }
 .clamp2 { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; overflow-wrap: anywhere; }
 .reason { display: block; margin-top: 4px; color: var(--text-2); }
 
-/* Phone cards (below 760px) */
+/* Phone cards (below 768px) */
 .cards { display: none; list-style: none; margin: 0; padding: 0; }
 .card { position: relative; display: flex; gap: 12px; align-items: center; padding: 16px; border-bottom: 1px solid var(--border); }
 .cards li:last-child .card { border-bottom: none; }
@@ -255,24 +270,24 @@ th + th, td + td { padding-left: 16px; }
 .pills li { display: inline-flex; align-items: center; height: 24px; padding: 0 8px; border-radius: 999px; background: #e6e8eb; color: var(--text-2); font-size: 12px; }
 .btn svg { width: 16px; height: 16px; }
 a.btn { text-decoration: none; }
-.toast { position: fixed; left: 50%; bottom: 24px; z-index: 60; transform: translateX(-50%); padding: 12px 16px; border-radius: var(--radius); background: #242c36; color: #fff; font-size: 14px; opacity: 0; pointer-events: none; transition: opacity .15s; }
+.toast { position: fixed; left: 50%; top: 24px; width: max-content; max-width: calc(100% - 32px); text-align: center; z-index: 60; transform: translateX(-50%); padding: 12px 16px; border-radius: var(--radius); background: #242c36; color: #fff; font-size: 14px; opacity: 0; pointer-events: none; transition: opacity .15s; }
 .toast.is-on { opacity: 1; }
 
 .sheet__body p { margin: 0; }
 
 /* Phone / narrow */
-@container (min-width: 560px) and (max-width: 759px) {
+@container (min-width: 560px) and (max-width: 767px) {
   .card__main { display: grid; grid-template-columns: 112px minmax(0, 1fr); column-gap: 16px; row-gap: 4px; align-items: start; }
   .card__main > * { grid-column: 2; }
   .card__main > .card__date { grid-column: 1; grid-row: 1 / span 4; display: flex; flex-direction: column; font-size: 14px; }
   .card__sep { display: none; }
 }
-@container (max-width: 759px) {
+@container (max-width: 767px) {
   .tablewrap { display: none; }
   .cards { display: block; }
   .sk-row { grid-template-columns: 1fr; gap: 8px; }
 }
-@media (max-width: 759px) {
+@media (max-width: 767px) {
   .topbar { padding: 0 16px; }
   .wrap { padding: 16px 0; gap: 16px; }
   .panel { border-left: 0; border-right: 0; border-radius: 0; }
@@ -292,17 +307,20 @@ a.btn { text-decoration: none; }
   <button type="button" data-state="loading" aria-pressed="false">Loading</button>
   <button type="button" data-state="empty" aria-pressed="false">Empty</button>
   <button type="button" data-state="nosearch" aria-pressed="false">No search results</button>
-  <button type="button" data-state="error" aria-pressed="false">Error</button>
+  <button type="button" data-state="error" aria-pressed="false">Error loading</button>
   <button type="button" data-state="many" aria-pressed="false">Many rows</button>
   <button type="button" data-state="sheet" aria-pressed="false">Record open</button>
   <button type="button" data-state="sheetlong" aria-pressed="false">Long note</button>
   <button type="button" data-state="sheetlongappt" aria-pressed="false">Long summary</button>
   <button type="button" data-state="sheetload" aria-pressed="false">Record loading</button>
   <button type="button" data-state="sheeterr" aria-pressed="false">Record error</button>
+  <button type="button" data-state="sheetnf" aria-pressed="false">Record not found</button>
+  <button type="button" data-state="sheetnoact" aria-pressed="false">Record without actions</button>
+  <button type="button" data-state="dlfail" aria-pressed="false">Download failed</button>
 </div>
 
 <!-- ui-next: TopBar -->
-<!-- data: page title only -->
+<!-- data: page title "History" only; no actions in the bar on this page -->
 <header class="topbar">
   <!-- ui-next: Text | as="h1" -->
   <h1>History</h1>
@@ -310,23 +328,24 @@ a.btn { text-decoration: none; }
 
 <main class="wrap" id="main">
 
-  <!-- ui-next: ErrorState -->
-  <!-- state: "Error": the history couldn't load. Replaces all three sections. -->
-  <!-- action: "Try again" re-requests all three lists and shows the Loading state while it waits -->
+  <!-- ui-next: ErrorState | title "We couldn't load your history", message "Something went wrong on our side. Your records are safe — try again in a moment.", onRetry = request all three lists again (the Loading state shows while it waits; if it fails again, this ErrorState comes back) -->
+  <!-- state: "Error loading": the history couldn't load. Replaces all three sections. -->
+  <!-- rule: also shown when a later request fails (a new page, rows per page, a tab, a search): one failure anywhere replaces the whole page, see STATES NOT SHOWN -->
+  <!-- phone: below 768px it runs edge to edge like the sections (no side borders, no rounded corners) -->
   <div id="page-error" hidden>
     <div class="panel"><div class="state state--error">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm1 15h-2v-2h2v2Zm0-4h-2V7h2v6Z"/></svg>
-      <!-- ui-next: Text | as="h2" -->
       <h2>We couldn't load your history</h2>
       <p>Something went wrong on our side. Your records are safe — try again in a moment.</p>
-      <!-- ui-next: Button | variant="primary" -->
       <button class="btn btn--primary" type="button" id="retry">Try again</button>
     </div></div>
   </div>
 
-  <!-- ui-next: CollapsiblePanel | open by default; header = title + CountBadge + SearchField -->
+  <!-- ui-next: CollapsiblePanel | header = title + CountBadge + SearchField -->
   <!-- data: notes for the signed-in student, newest first; CountBadge = total notes (not the filtered count) -->
-  <!-- action: clicking the title collapses / expands the section (see OPEN QUESTIONS 2) -->
+  <!-- action: clicking the title collapses / expands the section; nothing is saved -->
+  <!-- rule: all three sections are open on every visit — collapsing is not remembered. All three are always shown, also when empty; only the student whose history it is can see it -->
+  <!-- phone (all three sections): below 768px a section loses its side borders and rounded corners and runs edge to edge, with 16px between sections -->
   <section class="panel" id="notes" aria-labelledby="notes-title">
     <div class="panel__head">
       <h2 class="panel__title" id="notes-title">
@@ -334,11 +353,14 @@ a.btn { text-decoration: none; }
         <!-- ui-next: CountBadge -->
         <span class="count" data-count="notes"></span>
       </h2>
-      <!-- ui-next: SearchField | size="sm", placeholder "Search notes", accessible label "Search notes" (not shown) -->
+      <!-- ui-next: SearchField | small (same height as the section's buttons), placeholder "Search notes", accessible label "Search notes" (not shown) -->
       <!-- rule: no visible label on purpose: a search field with the search icon in a section header is the agreed exception to "every input has a visible label" -->
       <!-- data: search text, kept in the URL as ?q= -->
-      <!-- action: filters the Notes list as the user types; the X clears it and shows all notes; any change goes back to page 1 -->
+      <!-- action: filters the Notes list as the user types; the X clears it and shows all notes; any change goes back to page 1 and updates ?q= -->
+      <!-- action: the request failing → page ErrorState (Error loading) -->
+      <!-- rule: optional, any text; no minimum length (see OPEN QUESTIONS 2 for what it matches) -->
       <!-- rule: hidden while the section is collapsed -->
+      <!-- phone: below 768px the field moves under the section title and goes full width -->
       <div class="field-inline" id="notes-field">
       <label for="notes-q" class="vh">Search notes</label>
       <div class="search" id="notes-search">
@@ -350,19 +372,22 @@ a.btn { text-decoration: none; }
     </div>
     <div class="panel__body" id="notes-body">
       <!-- ui-next: Table | columns: Date · Subject · Category · Created by · (View) -->
-      <!-- data: per row — created date ("Tuesday, December 3, 2024" over "8:54 AM"), title, category, author name over author department -->
+      <!-- data: per row — created date ("Tuesday, December 3, 2024" over "8:54 AM"), subject, category, author name over author department -->
+      <!-- state: no notes → EmptyState "No notes yet"; a search with no match → EmptyState "No notes match “<search text>”" -->
       <!-- rule: the note text is NOT shown in the list; View opens it -->
       <!-- rule: Created by: name and department each stay on one line; a long one is cut with "…" (full department in a tooltip on hover) -->
-      <!-- rule: a long subject is cut after 2 lines with "…" (table and phone card); the full subject is the Sheet title -->
-      <!-- rule: below 760px each row shows as a card (date, subject + category Badge, author); tapping the card opens the note (see OPEN QUESTIONS 1) -->
-      <!-- rule (all three lists): 760px and wider = table; 560–759px (tablet) = cards with the date over the time in a 112px column on the left; below 560px (phone) = cards with "Oct 22, 2026 · 12:12 PM" on top. Widths are of the content area, not the window. -->
-            <!-- ui-next: none | needs a new component: Avatar (32px circle with the person's initials; background colour picked from the name, so the same person always gets the same colour; on this page only blue, green, magenta, teal, violet — never amber/orange (clashes with the amber category Badge) or red (reads as an error); decorative, aria-hidden). Shown before the author name in the Created by column on desktop; phone and tablet cards show it too (name over department, one line each, cut with …) -->
-      <!-- ui-next: Badge | category, amber tint (Advisor Outreach, Academics, General, Career, Financial Aid) -->
+      <!-- rule: a long subject is cut after 2 lines with "…" (table and cards); the full subject is the Sheet title -->
+      <!-- phone (all three lists; widths are of the content area, not the window): 768px and wider = table. Tablet, 560–767px: each row becomes a card — a 112px column on the left with the date over the time, and the rest of the row stacked on the right. Phone, below 560px: the same card with the date and time on one line on top ("Oct 22, 2026 · 12:12 PM"). See OPEN QUESTIONS 1. -->
+      <!-- phone (Notes card): subject + category Badge, then Avatar + author over department; a chevron on the right; tapping anywhere on the card opens the note (there is no View button) -->
+            <!-- ui-next: none | not in the guide's list, but ui-next has it — use the Avatar already on the live History page: Avatar (32px circle; the person's photo when they have one, otherwise their initials; background colour picked from the name, so the same person always gets the same colour; on this page only blue, green, magenta, teal, violet — never amber/orange (clashes with the amber category Badge) or red (reads as an error); decorative, aria-hidden). Shown before the author name in the Created by column on desktop; phone and tablet cards show it too (name over department, one line each, cut with …) -->
+      <!-- ui-next: Badge | tone="amber", appearance="tint", size="sm" -->
+      <!-- data: the note's category, whatever it is; every category gets the same amber Badge -->
       <!-- ui-next: Button | variant="secondary" size="sm", label "View", accessible name "View note: <subject>" -->
-      <!-- action: opens the Sheet for that note -->
+      <!-- action: opens the Sheet for that note and adds ?note=<id> to the address; closing the Sheet removes it -->
       <div class="list" data-list="notes"></div>
       <!-- ui-next: TablePaginationControl | rows per page 5 / 10 / 20 (default 5), range "1–5 of 15", page buttons -->
-      <!-- action: changing rows per page goes back to page 1 -->
+      <!-- phone (all three lists): below 768px rows per page and the page buttons are centred and wrap onto two lines when they don't fit -->
+      <!-- action: changing rows per page goes back to page 1; a page button loads that page. Each list pages on its own. Not saved; a fresh visit starts at 5 rows, page 1. While a page loads the list shows SkeletonLine rows; failing → page ErrorState -->
       <!-- rule: page buttons are hidden when everything fits on one page; the control is hidden when the list is empty -->
       <div class="foot" data-foot="notes"></div>
     </div>
@@ -380,9 +405,10 @@ a.btn { text-decoration: none; }
     <div class="panel__body" id="actions-body">
       <!-- ui-next: Table | columns: Date · Type · Created by · Comment -->
       <!-- data: per row — created date/time, action item type, author name over department, comment (full text) -->
-      <!-- ui-next: none | needs a new component: Avatar, same as in Notes -->
-      <!-- rule: list only: no View button, rows can't be opened; the comment is shown in full and wraps -->
-      <!-- rule: below 760px each row shows as a card; the comment sits in a light amber box; the card is not tappable -->
+      <!-- ui-next: none | Avatar from ui-next (not in the guide's list), same as in Notes -->
+      <!-- state: no action items → EmptyState "No action items" -->
+      <!-- rule: list only: no View button, rows can't be opened, nothing to do with an action item here; the comment is shown in full and wraps -->
+      <!-- phone (Action Items card): type, Avatar + author · department, then the comment in a light amber box; the card is not tappable and has no chevron -->
       <div class="list" data-list="actions"></div>
       <!-- ui-next: TablePaginationControl | same as Notes -->
       <div class="foot" data-foot="actions"></div>
@@ -399,22 +425,23 @@ a.btn { text-decoration: none; }
       </h2>
     </div>
     <div class="panel__body" id="appts-body">
-      <!-- ui-next: Tabs | underline; each tab has a CountBadge -->
+      <!-- ui-next: Tabs | underline style; each tab has a CountBadge -->
       <!-- data: selected tab, kept in the URL as ?tab= -->
-      <!-- action: switches the list below; resets Appointments to page 1 -->
-      <!-- rule: on a phone the tabs keep their size and scroll sideways; a fade on the right edge shows there is more, and goes away once scrolled to the end -->
+      <!-- action: switches the list below; resets Appointments to page 1 and updates ?tab=; the list shows SkeletonLine rows while it loads; failing → page ErrorState -->
+      <!-- phone: when the tabs don't fit they keep their size and scroll sideways; a fade on the right edge shows there is more, and goes away once scrolled to the end -->
       <div class="tabs" role="tablist" aria-label="Appointments">
         <button class="tab" role="tab" type="button" aria-selected="true" data-tab="summaries">Summaries <span class="count" data-count="summaries"></span></button>
         <button class="tab" role="tab" type="button" aria-selected="false" data-tab="noshows">No Shows <span class="count" data-count="noshows"></span></button>
         <button class="tab" role="tab" type="button" aria-selected="false" data-tab="cancellations">Cancellations <span class="count" data-count="cancellations"></span></button>
       </div>
-      <!-- ui-next: Table | columns: Department · Type · Department member · Created by · Created on · (View) -->
-      <!-- data: per row — department, appointment type, department member (advisor) name, created by name, created date/time -->
-      <!-- ui-next: none | needs a new component: Avatar, same as in Notes; before the Department member and Created by names (name only, no department line) -->
+      <!-- ui-next: Table | columns: Department · Type · Department member · Booked by · Created on · (View) -->
+      <!-- data: per row — department, appointment type, department member (the advisor the meeting was with), who booked it ("You" when the student booked it), created date/time -->
+      <!-- state: per tab, no rows → EmptyState "No appointment summaries" / "No missed appointments" / "No cancelled appointments" -->
+      <!-- ui-next: none | Avatar from ui-next (not in the guide's list), same as in Notes; before the Department member and Booked by names (name only, no department line); "You" gets the student's own Avatar -->
       <!-- rule: Cancellations tab shows the cancellation reason as a quiet line under the type -->
       <!-- ui-next: Button | variant="secondary" size="sm", label "View", accessible name "View <type> appointment, <date>" -->
-      <!-- action: opens the Sheet for that appointment -->
-      <!-- rule: below 760px each row shows as a card: date, type, Avatar + department member over department; tapping the card opens the appointment -->
+      <!-- action: opens the Sheet for that appointment and adds ?appointment=<id> to the address; closing the Sheet removes it -->
+      <!-- phone (Appointments card): type (+ the cancellation reason on Cancellations), then Avatar + department member over department; a chevron on the right; tapping the card opens the appointment -->
       <div class="list" data-list="appts"></div>
       <!-- ui-next: TablePaginationControl | same as Notes; switching tabs goes back to page 1 -->
       <div class="foot" data-foot="appts"></div>
@@ -422,53 +449,62 @@ a.btn { text-decoration: none; }
   </section>
 </main>
 
-<!-- ui-next: Sheet | side="right"; header = title + Badge, close IconButton; body = sections; footer = actions -->
-<!-- data: note: subject (title), category (amber Badge, the same as in the list), full text, attachments (0..n: file name, type, size), topics (0..n), author name + department, created date + time with time zone. Appointment: type (title), status Badge (Completed / No show / Cancelled — from the tab it was opened from), department, the summary / no-show note / cancellation reason, summary attachments (0..n), the student's reason for visit (optional), department member, booked by, created on, topics (0..n). -->
+<!-- ui-next: Sheet | opens from the right, 480px wide; header = title + Badge + close IconButton; body = sections; footer = the actions below (the Sheet's own footer, not a separate component) -->
+<!-- data: note: subject (title), category (amber Badge, the same as in the list), full text, attachments (0..n: file name, type, size), topics (0..n), author name + department, created date + time with time zone. Appointment: type (title), status (Completed / No show / Cancelled — read from the record itself, so it also works when the appointment is opened from a link), department, the summary / no-show note / cancellation reason, summary attachments (0..n), the student's reason for visit (optional), department member, booked by, created on, topics (0..n). -->
 <!-- rule: an appointment can have no text at all (no-shows often don't): then the body shows one muted line "<first name> didn't add a note." instead of an empty section. Empty rows (Topics) are hidden, never shown as "—". -->
-<!-- rule: body order: text section ("Note" for a note; "Summary" / "Note" / "Cancellation reason" for an appointment) → "Attachments" (only when there are files) → appointment only: "Reason for visit" (only when the student wrote one) → "Details". Details follow right after the content — not pinned to the bottom of the panel. The date is only in Details, not in the header. -->
-<!-- action: opened by View (or tapping a card); closed by the X, Esc or clicking outside; focus goes back to what opened it -->
-<!-- state: "Record loading": SkeletonLine rows in the body, footer hidden; title and Badge are already known from the list -->
-<!-- state: "Record error": ErrorState in the body, "We couldn't open this note" + Button variant="secondary" "Try again" (reads the record again); footer hidden -->
+<!-- rule: body order: text section ("Note" for a note; "Summary" / "Note" / "Cancellation reason" for an appointment) → "Attachments" (only when there are files) → appointment only: "Reason for visit" (only when the student wrote one); then "Details", pinned above the footer. The date is only in Details, not in the header. -->
+<!-- action: opened by View, tapping a card, or arriving with ?note= / ?appointment= in the address; closed by the X, Esc or clicking outside; focus goes back to what opened it. Read only: nothing in the Sheet saves. -->
+<!-- state: "Record loading": SkeletonLine rows on their own in the body, footer hidden; title and Badge are already known from the list -->
+<!-- state: "Record not found": the id in the address isn't one of this student's records. ErrorState in the body | title "This note isn't available" (or "This appointment isn't available"), message "The link may be out of date, or it may belong to another student. Your own notes and appointments are listed on this page.", no onRetry (trying again can't help). Footer hidden; the Sheet title is just "Note" (or "Appointment") and there is no Badge — nothing is known about the record -->
+<!-- state: "Record error": the record couldn't be read. ErrorState in the body | title "We couldn't open this note" (or "We couldn't open this appointment"), message "Something went wrong on our side. Try again in a moment.", onRetry = read the record again. Footer hidden -->
+<!-- state: "Record without actions": an appointment whose advisor can't receive messages (OPEN QUESTIONS 3) and whose type can't be booked any more — both footer buttons are hidden, so the footer is hidden too and Details sit at the bottom of the panel -->
+<!-- phone: below 480px the Sheet takes the whole screen width; header and body padding drop from 24px to 16px -->
 <div class="sheet" id="sheet" aria-hidden="true">
   <div class="sheet__scrim" data-close></div>
   <div class="sheet__panel" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
     <div class="sheet__head">
       <div class="sheet__heading">
-        <!-- ui-next: Text | as="h2" (Sheet title), 18px semibold -->
+        <!-- ui-next: Text | as="h2" (Sheet title; looks 18px semibold) -->
         <h2 id="sheet-title"></h2>
-        <!-- ui-next: Badge | note: category, amber tint (same as the list); appointment: "Completed" success tint, "No show" / "Cancelled" neutral tint — as on the Scheduling past-appointment page -->
+        <!-- ui-next: Badge | note: same as the list (tone="amber", appearance="tint", size="sm"); appointment: "Completed" tone="success", "No show" / "Cancelled" tone="neutral", appearance="tint", size="sm" — as on the Scheduling past-appointment page -->
         <!-- data: appointment only: the department, 14px text secondary, after the Badge -->
         <p class="sheet__meta" id="sheet-sub"></p>
       </div>
       <!-- ui-next: IconButton | icon close, aria-label "Close" -->
       <button class="sheet__close" type="button" aria-label="Close" data-close><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
     </div>
-    <!-- ui-next: Text | section labels as="h3", 12px semibold, text secondary: "Note", "Attachments", "Details" -->
+    <!-- ui-next: Text | section labels as="h3" (look: 12px semibold, grey): "Note", "Summary", "Cancellation reason", "Attachments", "Reason for visit", "Details" -->
     <!-- ui-next: Text | the record text, 14px, line breaks kept -->
-    <!-- ui-next: none | needs a new component: Attachment (the hp-design DS one: 40px file tile, name 12/600, "PDF · 182 KB" 10px muted, download IconButton; max 320px wide, never stretched to the panel width). One per file, stacked 8px apart. -->
-    <!-- action: the download button (or the whole attachment) downloads the file -->
-    <!-- rule: Booked by shows "You" (with the student's own Avatar) when the student booked the appointment themselves -->
-    <!-- ui-next: DefinitionList | label column 144px (96px under 480px), muted; note: Created by (Avatar + name + department), Created on ("Oct 22, 2026 · 12:12 PM PDT"), Topics (PillList, row hidden when there are none) — no Category row, it is already the Badge in the header. Appointment: With (Avatar + department member name), Booked by (Avatar + name), Created on, Topics (PillList, hidden when none) — no Department or Type rows: the type is the title, the department sits next to the Badge -->
-    <!-- ui-next: none | needs a new component: Avatar, same as in the tables -->
+    <!-- ui-next: none | not in the guide's list, but ui-next has an Attachment — use it. Look (as the hp-design DS Attachment): 40px file tile, file name (one line, cut with …), "PDF · 182 KB" small and grey, download IconButton; max 320px wide, never stretched to the panel width. One per file, stacked 8px apart. -->
+    <!-- action: the download button (or the whole attachment) downloads the file in a new browser download; nothing else changes on the page -->
+    <!-- state: "Download failed": the Sheet stays as it was; toast | variant="destructive", title "Couldn't download <file name>", description "Try again." -->
+    <!-- rule: appointments always show both With and Booked by, also when they're the same person. Booked by shows "You" (with the student's own Avatar) when the student booked it themselves -->
+    <!-- ui-next: DefinitionList | label column 144px (96px under 480px), muted; note: Created by (Avatar + name + department), Created on ("Oct 22, 2026 · 12:12 PM PDT"), Topics (PillList, row hidden when there are none) — no Category row, it is already the Badge in the header. Appointment: Type, With (Avatar + department member name), Booked by (Avatar + name), Created on, Topics (PillList, hidden when none) — no Department row, the department sits next to the Badge -->
+    <!-- ui-next: none | Avatar from ui-next (not in the guide's list), same as in the tables -->
+    <!-- phone: below 480px the label column narrows from 144px to 96px -->
     <!-- rule: the body (text, attachments, reason for visit) is the only part that scrolls; Details stay pinned between it and the footer (a hairline on top), so a long text scrolls under them. If Details are taller than 45% of the panel, they scroll on their own. -->
     <div class="sheet__body" id="sheet-body"></div>
     <div class="sheet__details" id="sheet-details"></div>
-    <!-- ui-next: Toolbar | Sheet footer, buttons on the right; under 480px the buttons share one row and fill it (no link icon on Copy); when they don't fit, they wrap to full width, Message on top -->
+    <!-- rule: footer = the Sheet's own footer: buttons on the right; hidden while loading, on errors, and when it has no buttons -->
+    <!-- phone: below 480px the buttons share one row and fill it (Copy note link loses its icon); when they don't fit, each takes the full width, Message advisor on top -->
     <div class="sheet__foot" id="sheet-foot">
-      <!-- ui-next: AnchorButton | variant="outline", "Book again" — appointment only, instead of Copy link -->
-      <!-- action: opens Scheduling with this appointment type and department picked (another page) -->
+      <!-- ui-next: AnchorButton | variant="outline", size="base", "Book again" — appointments only -->
+      <!-- action: opens Scheduling with this appointment type and department picked (another page); the student books there as usual -->
+      <!-- rule: DESIGNER'S PROPOSAL — not in the current build; taken from the Scheduling past-appointment page. Hidden when this appointment type can no longer be booked. -->
       <a class="btn btn--outline" href="#scheduling" id="book-again" hidden>Book again</a>
-      <!-- ui-next: Button | variant="outline", icon link, "Copy note link" — note only -->
-      <!-- action: copies a link that opens this record (the page URL with ?note=<id> or ?appointment=<id>) and shows a toast "Link copied" -->
+      <!-- ui-next: Button | variant="outline", size="base", icon link, "Copy note link" — notes only -->
+      <!-- action: copies a link that opens this note (the page URL with ?note=<id>), then toast | variant="success", title "Link copied". If the browser blocks copying: toast | variant="destructive", title "Couldn't copy the link" -->
+      <!-- rule: the link only works for this student when signed in; anyone else lands on their own History and sees "Record not found" -->
       <button class="btn btn--outline" type="button" id="copy-link"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg><span id="copy-label">Copy note link</span></button>
-      <!-- ui-next: AnchorButton | variant="primary", icon chat, label "Message advisor", aria-label "Message <full name>" (note: the author; appointment: the department member) -->
-      <!-- action: opens a new message to that person in the Message Center (another page) -->
+      <!-- ui-next: AnchorButton | variant="primary", size="base", icon chat, label "Message advisor", aria-label "Message <full name>" (note: the author; appointment: the department member) -->
+      <!-- action: opens a new message to that person in the Message Center (another page), recipient filled in; sending and its errors happen there -->
+      <!-- rule: hidden when that advisor can't receive messages (see OPEN QUESTIONS 3) -->
       <a class="btn btn--primary" href="#message-center" id="sheet-msg"></a>
     </div>
   </div>
 </div>
 
-<!-- ui-next: toast | "Link copied", after Copy link -->
+<!-- ui-next: toast | the texts are in the notes of the parts that show them (Copy note link, Attachment); disappears after a few seconds -->
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <!-- mockup-only: everything below fakes the data and the states, do not build -->
@@ -531,7 +567,7 @@ a.btn { text-decoration: none; }
   var LONGNAMES = ["Maria-Fernanda Castellanos-Villarreal", "Christopher Montgomery-Abernathy", "Oluwaseun Adebayo-Okonkwo"];
   function manyActions() {
     var out = [], types = ["Advising Referral", "Follow-up", "Document Request", "Hold Review"];
-    for (var i = 0; i < 32; i++) {
+    for (var i = 0; i < 52; i++) {
       var d = new Date(2026, 9, 20 - i * 9, 9 + (i % 7), (i * 11) % 60);
       out.push([types[i % 4], LONG[i % 3], LONGNAMES[i % 3], d.toISOString().slice(0, 16), i % 3 === 0 ? "Before your next registration window, meet with the interdisciplinary studies coordinator to confirm which two prerequisite substitutions were approved, then upload the signed petition and the course descriptions from your previous college so the registrar can finish the transfer credit review." : "Confirm your spring course plan with your advisor (" + (i + 1) + ")."]);
     }
@@ -539,7 +575,7 @@ a.btn { text-decoration: none; }
   }
   function manySummaries() {
     var out = [], types = ["Advising", "Degree Planning", "Registration", "Academic Difficulty"];
-    for (var i = 0; i < 41; i++) {
+    for (var i = 0; i < 54; i++) {
       var d = new Date(2026, 9, 14 - i * 11, 9 + (i % 7), (i * 13) % 60);
       out.push([LONG[i % 3], types[i % 4], LONGNAMES[(i + 1) % 3], LONGNAMES[i % 3], d.toISOString().slice(0, 16), "Sample summary " + (i + 1) + ": reviewed progress toward the degree and agreed the next steps."]);
     }
@@ -634,7 +670,7 @@ a.btn { text-decoration: none; }
     if (S.state === "loading") html = skeleton();
     else if (!list.length) html = emptyState(EMPTY[0]);
     else {
-      html = '<div class="tablewrap"><table><thead><tr><th>Department</th><th>Type</th><th>Department member</th><th>Created by</th><th>Created on</th><th class="col-act"><span class="vh">Actions</span></th></tr></thead><tbody>' +
+      html = '<div class="tablewrap"><table><thead><tr><th>Department</th><th>Type</th><th>Department member</th><th>Booked by</th><th>Created on</th><th class="col-act"><span class="vh">Actions</span></th></tr></thead><tbody>' +
         p.rows.map(function (a, i) { var k = S.tab + ":" + (p.start + i); return "<tr><td>" + esc(a[0]) + '</td><td><span class="t-title">' + esc(a[1]) + "</span>" + (S.tab === "cancellations" ? '<span class="reason">' + esc(a[5]) + "</span>" : "") + "</td><td>" + person(a[2]) + "</td><td>" + person(a[3]) + "</td>" + dateCell(a[4]) + '<td class="col-act"><button class="btn" type="button" data-open="' + k + '" aria-label="View ' + esc(a[1]) + " appointment, " + esc(shortDate(a[4])) + '">View</button></td></tr>'; }).join("") +
         '</tbody></table></div><ul class="cards">' +
         p.rows.map(function (a, i) { var k = S.tab + ":" + (p.start + i); return '<li><div class="card"><div class="card__main"><span class="card__date">' + dt(a[4]) + '</span><span class="card__title">' + esc(a[1]) + '</span><span class="card__person">' + person(a[2], a[0]) + "</span>" + (S.tab === "cancellations" ? '<span class="card__fact">' + esc(a[5]) + "</span>" : "") + "</div>" + CHEV + '<button class="card__open" type="button" data-open="' + k + '" aria-label="View ' + esc(a[1]) + " appointment, " + esc(shortDate(a[4])) + '"></button></div></li>'; }).join("") + "</ul>";
@@ -690,13 +726,14 @@ a.btn { text-decoration: none; }
       sub = '<span class="badge ' + { summaries: "badge--success", noshows: "badge--neutral", cancellations: "badge--neutral" }[k[0]] + '">' + { summaries: "Completed", noshows: "No show", cancellations: "Cancelled" }[k[0]] + '</span><span class="sheet__dept">' + esc(a[0]) + "</span>";
       body = (a[5] ? sec({ summaries: "Summary", noshows: "Note", cancellations: "Cancellation reason" }[k[0]], '<p class="sheet__text">' + esc(a[5]) + "</p>") : '<p class="sheet__none">' + esc(a[2].split(" ")[0]) + " didn't add a note.</p>") + files(a[8]) +
         (a[6] ? sec("Reason for visit", '<p class="sheet__text">' + esc(a[6]) + "</p>") : "");
-        det = details([["With", person(a[2])], ["Booked by", person(a[3])], ["Created on", when(a[4])], a[7] && a[7].length ? ["Topics", pills(a[7])] : null]);
+        det = details([["Type", esc(a[1])], ["With", person(a[2])], ["Booked by", person(a[3])], ["Created on", when(a[4])], a[7] && a[7].length ? ["Topics", pills(a[7])] : null]);
     }
     if (mode === "loading") body = '<div class="sheet-sk" aria-busy="true" aria-label="Loading">' + new Array(7).join('<span class="sk"></span>') + "</div>";
+    if (mode === "notfound") body = '<div class="state state--error"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm1 15h-2v-2h2v2Zm0-4h-2V7h2v6Z"/></svg><h3>This ' + (k[0] === "notes" ? "note" : "appointment") + ' isn\'t available</h3><p>The link may be out of date, or it may belong to another student. Your own notes and appointments are listed on this page.</p></div>';
     if (mode === "error") body = '<div class="state state--error"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm1 15h-2v-2h2v2Zm0-4h-2V7h2v6Z"/></svg><h3>We couldn\'t open this ' + (k[0] === "notes" ? "note" : "appointment") + '</h3><p>Something went wrong on our side. Try again in a moment.</p><button class="btn btn--secondary" type="button" id="sheet-retry" data-retry="' + key + '">Try again</button></div>';
     $("#sheet-title").textContent = title; $("#sheet-sub").innerHTML = sub; $("#sheet-body").innerHTML = body; $("#sheet-details").innerHTML = mode ? "" : det; $("#sheet-body").scrollTop = 0;
     $("#sheet-msg").innerHTML = CHAT + "Message advisor"; $("#sheet-msg").setAttribute("aria-label", "Message " + who);
-    $("#copy-link").hidden = k[0] !== "notes"; $("#book-again").hidden = k[0] === "notes";
+    $("#sheet-msg").hidden = false; $("#copy-link").hidden = k[0] !== "notes"; $("#book-again").hidden = k[0] === "notes";
     $("#sheet-foot").hidden = !!mode;
     if (!$("#sheet").classList.contains("is-open")) lastFocus = document.activeElement;
     $("#sheet").classList.add("is-open"); $("#sheet").setAttribute("aria-hidden", "false");
@@ -716,7 +753,7 @@ a.btn { text-decoration: none; }
     if (t.dataset.retry) { var rk = t.dataset.retry; openSheet(rk, "loading"); setTimeout(function () { openSheet(rk); }, 900); return; }
     if (t.dataset.open) { openSheet(t.dataset.open); return; }
     if (t.hasAttribute("data-close")) { closeSheet(); return; }
-    if (t.id === "copy-link") { var to = $("#toast"); to.textContent = "Link copied"; to.classList.add("is-on"); clearTimeout(to._t); to._t = setTimeout(function () { to.classList.remove("is-on"); }, 2000); return; }
+    if (t.id === "copy-link") { toast("Link copied"); return; }
     if (t.dataset.tab) { S.tab = t.dataset.tab; S.page.appts = 1; $$(".tab").forEach(function (b) { b.setAttribute("aria-selected", b === t); }); t.scrollIntoView({ block: "nearest", inline: "nearest" }); renderAppts(data()); return; }
     if (t.dataset.page) { var p = t.dataset.page.split(":"); S.page[p[0]] = p[1] === "prev" ? S.page[p[0]] - 1 : p[1] === "next" ? S.page[p[0]] + 1 : +p[1]; render(); return; }
     if (t.classList.contains("toggle")) { var open = t.getAttribute("aria-expanded") === "true"; t.setAttribute("aria-expanded", !open); t.closest(".panel").classList.toggle("is-collapsed", open); return; }
@@ -731,18 +768,22 @@ a.btn { text-decoration: none; }
   $("#notes-q").addEventListener("input", function (e) { S.q = e.target.value; S.page.notes = 1; $("#notes-search").classList.toggle("has-value", !!S.q); renderNotes(data()); });
   document.addEventListener("keydown", function (e) { if (e.key !== "Escape") return; var lb = $(".listbox:not([hidden])"); if (lb) { lb.hidden = true; lb.previousElementSibling.setAttribute("aria-expanded", "false"); lb.previousElementSibling.focus(); return; } if ($("#sheet").classList.contains("is-open")) closeSheet(); });
 
+  function toast(msg, stay) { var to = $("#toast"); to.textContent = msg; to.classList.add("is-on"); clearTimeout(to._t); if (!stay) to._t = setTimeout(function () { to.classList.remove("is-on"); }, 2000); }
   function setState(s) {
     S.state = /^(nosearch|sheet)/.test(s) ? "default" : s;
     S.q = s === "nosearch" ? "scholarship" : "";
     S.page = { notes: 1, actions: 1, appts: 1 };
     $$(".mk button").forEach(function (b) { b.setAttribute("aria-pressed", b.dataset.state === s); });
-    closeSheet();
+    closeSheet(); $("#toast").classList.remove("is-on");
     render();
     if (s === "sheet") openSheet("notes:0");
     if (s === "sheetlong") openSheet("notes:2");
     if (s === "sheetlongappt") openSheet("summaries:2");
     if (s === "sheetload") openSheet("notes:0", "loading");
     if (s === "sheeterr") openSheet("notes:0", "error");
+    if (s === "sheetnf") { openSheet("notes:0", "notfound"); $("#sheet-title").textContent = "Note"; $("#sheet-sub").innerHTML = ""; }
+    if (s === "sheetnoact") { openSheet("cancellations:2"); $("#book-again").hidden = true; $("#sheet-msg").hidden = true; $("#sheet-foot").hidden = true; }
+    if (s === "dlfail") { openSheet("notes:1"); toast("Couldn\u2019t download Fall 2026 Schedule.pdf. Try again.", true); }
   }
   var tabs = $(".tabs");
   function tabsEnd() { tabs.classList.toggle("is-end", tabs.scrollLeft + tabs.clientWidth >= tabs.scrollWidth - 1); }

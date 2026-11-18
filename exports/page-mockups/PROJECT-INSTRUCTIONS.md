@@ -1,7 +1,7 @@
 # Page mockups — standing instructions (Step 1 of the Page Mockup Guide)
 
 Source: the "Page Mockup Guide" artifact (https://claude.ai/artifact/MbQK7cPYuBJ78MycM4zCcL), step 01 "Set up once".
-Status: **testing** (2026-11-13). Every page mockup made in this repo follows these rules without the user pasting them again.
+Status: **testing** (2026-11-13; guide text replaced with the updated version 2026-11-18 — adds ITEMS, phone notes, KEY SETTINGS). Every page mockup made in this repo follows these rules without the user pasting them again.
 The user drives steps 2–6 by pasting each step's prompt; don't run ahead of them.
 
 The guide's text is kept verbatim below. The local addendum after it records what hp-design decided where the guide is wrong or vague — the addendum wins.
@@ -26,34 +26,54 @@ PURPOSE: one sentence
 URL: what the page address keeps, such as the selected term or search text
 DATA: each set of data the page shows, and where it comes from if known
 ACTIONS: everything the user can do on the page
-OPEN QUESTIONS: anything not decided yet
+ITEMS: for parts filled from data (form questions, list rows, cards), one line per kind of item: its component, what it shows, its rules and its messages, written for any item, not just the sample ones
+OPEN QUESTIONS: anything not decided yet, including anything you wrote "not designed here" or "unknown" for. Never write "none" while something is undecided.
 -->
 
 THE ELEMENT NOTES
 Put notes directly before each meaningful part of the page. Use only the lines that apply:
-<!-- ui-next: ComponentName | settings, such as variant="secondary" or as="h2" -->
+<!-- ui-next: ComponentName | settings, such as tone="success" or as="h2" -->
 <!-- data: what fills it -->
 <!-- action: what happens when it is used: what is saved or sent, and what the user sees after -->
 <!-- state: when this part appears -->
 <!-- rule: when it is shown, hidden or disabled, and any validation -->
+<!-- phone: what changes below 768px wide (stacks, goes full width, is hidden) -->
 Use only component names from the list below. If nothing fits, write <!-- ui-next: none | needs a new component: description -->.
+Use only the settings listed under KEY SETTINGS. For anything else, describe the look in words (for example "amber, light fill") and the developer picks the setting. Don't make up setting names.
 
 UI-NEXT COMPONENTS
-- Page layout: TopBar, Breadcrumbs, DetailHeader, Card, DashboardWidget, CollapsiblePanel, Accordion, Tabs, SegmentedTabs, Toolbar, Separator
+- Page layout: TopBar, Breadcrumbs, DetailHeader, Card, DashboardWidget, CollapsiblePanel, Accordion, Tabs, SegmentedTabs (switches between panels on this page; not for links to other pages), Toolbar, Separator
 - Text: Text (all text; give the heading level, such as as="h1"), DefinitionList, LabelValue, Stat, HtmlContent
-- Actions: Button (variant primary, secondary, outline, ghost or danger), AnchorButton (a link that looks like a button), IconButton, SplitButton, DropdownMenu, InfoButton, Tooltip
-- Forms: Field (the label, hint and error around one input), TextInput, TextArea, NumberField, SearchField, SelectField, MultiSelectCombobox, Checkbox, CheckboxRow, RadioGroupField, Switch, SwitchRow, DateField, DateTimeField, TimePicker, FilterChip, ChipSelect
+- Actions: Button, AnchorButton (a link that looks like a button), IconButton, SplitButton, DropdownMenu, InfoButton, Tooltip
+- Forms: Field (the label, hint and error around one input), TextInput, TextArea, NumberField, SearchField, SelectField, MultiSelectCombobox, Checkbox, CheckboxRow, CheckboxGroup (one question answered with several checkboxes), RadioGroupField (one question answered with one choice), RadioRow, Switch, SwitchRow, DateField, DateTimeField, TimePicker, FilterChip, ChipSelect
 - Lists and tables: Table, TreeTable, SortHeader, TablePaginationControl, PillList
-- Status: StatusBadge, Badge, CountBadge, Pill, InlineAlert, Banner, Alert, Progress, Stepper
-- Windows: DialogWindow, ConfirmDialog, Sheet (side panel), Popover, toast (short message after an action)
-- Page states: LoadingState, EmptyState, ErrorState, SkeletonLine
+- Status: StatusBadge, Badge, CountBadge (a number on a tab or button), Pill, Alert (a coloured box with an icon), InlineAlert (one line of text, red for an error, no box), Banner, Progress, Stepper
+- Windows: DialogWindow, ConfirmDialog, Sheet (side panel), Popover, toast (short message after an action; the app places it at the top centre, so don't describe its position)
+- Page states: LoadingState (a spinner and a label; nothing goes inside it), SkeletonLine (grey placeholder lines; use them on their own for a skeleton), EmptyState, ErrorState (title, message and its own "Try again" button)
 - Calendars: WeekSchedule, DayCalendar, Calendar
 All components with examples: https://shared-ui-ee9e2e.pages.highpoint.io/storybook/?path=/story/ui-next-gallery--gallery
+
+KEY SETTINGS
+- Button, AnchorButton, IconButton: variant="primary | secondary | tint | outline | ghost | danger | link", size="sm | base | lg". An IconButton needs aria-label.
+- Text: as="h1"…"h6" or "p".
+- Alert: tone="info | success | warning | danger", title, detail (a smaller second line).
+- InlineAlert: tone="error | status".
+- Badge: tone="neutral | primary | success | warning | danger" or a colour (blue, amber, green, red, violet, teal…), appearance="tint | solid | outline", size="sm | base | lg".
+- RadioGroupField: label, hint, error, required (draws the red *), optional (adds "(optional)").
+- CheckboxGroup: label, hint, error, optional. It has no required mark: if a checkbox question can be required, say so in a rule note and add it to OPEN QUESTIONS.
+- Field: label, hint, error, required, optional.
+- ErrorState: title, message, onRetry (what "Try again" does).
+- LoadingState: label.
+- toast: variant="default | success | destructive", title, description.
 
 RULES
 - Anything that goes to another page is a link or an AnchorButton. Buttons only do things on this page.
 - Every input has a visible label.
 - One main heading per page; headings go in order.
+- When parts are filled from data, the notes and messages must work for every item, not just the sample. For example, write "Enter your answer." rather than "Enter the other topic.", and give the error text for each kind of question (a choice question and a text question need different text).
+- Developers don't copy your CSS. Anything that changes at phone width needs a phone note.
+- For anything that saves automatically, say when it saves (on each change, after typing stops, when leaving the field) and what happens if the user submits or leaves the page while it is still saving.
+- Write each message text once, in the note on the part that shows it. In the PAGE note, refer to the part instead of copying the text.
 - Ask me when something is unclear instead of guessing, and add it to OPEN QUESTIONS.
 
 ---
@@ -68,3 +88,5 @@ RULES
 - Files live in `exports/page-mockups/<page>.html`.
 - **Search fields get no visible label** (exception to "Every input has a visible label", user decision 2026-11-13): SearchField shows only the search icon + placeholder, as on the design pages; keep a screen-reader-only label and write a `rule:` note saying the missing label is on purpose. Every other input still gets a visible label.
 - **EmptyState = the DS compact pill** (user decision 2026-11-13): one short line of text, `text.secondary` on `bg.neutral` #e6e8eb, radius full, padding 8px 16px, centred with 24px around it — as on the Message Center design pages ("No threads found"). No icon, no heading, no explanatory sentence.
+- **Phone notes use the guide's 768px** (2026-11-18): table at 768px and wider; tablet cards 560–767px; phone cards below 560px (widths of the content area). Describe both tablet and phone in `phone:` notes.
+- **Toast:** the app places it (top centre); don't describe its position. The mockup shows it top centre too.
