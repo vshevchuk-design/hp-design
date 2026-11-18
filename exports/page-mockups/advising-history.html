@@ -216,14 +216,30 @@ th + th, td + td { padding-left: 16px; }
 .sheet__head h2 { margin: 0; font-size: 18px; line-height: 1.4; font-weight: 600; }
 .sheet__meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0; font-size: 12px; line-height: 1.4; color: var(--text-muted); }
 .badge--neutral { background: #e6e8eb; color: var(--text-2); }
+.badge--success { background: #d4f1da; color: #057e3f; }
+.sheet__dept { color: var(--text-2); font-size: 14px; }
 .sheet__close { padding: 6px; border: 0; background: none; border-radius: var(--radius); color: var(--icon); cursor: pointer; display: inline-flex; }
 .sheet__close:hover { background: var(--neutral-hover); }
-.sheet__body { padding: 24px; overflow-y: auto; }
+.sheet__body { flex: 1; padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 24px; }
 .sheet__text { white-space: pre-line; }
-.byline { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 16px; margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border); }
-.byline .person { max-width: 100%; }
-.byline__booked { flex-basis: 100%; margin-top: -4px; font-size: 12px; line-height: 1.4; color: var(--text-muted); }
-.files { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; }
+.sheet__none { margin: 0; color: var(--text-muted); }
+.sec__label { margin: 0 0 8px; font-size: 12px; line-height: 16px; font-weight: 600; color: var(--text-2); }
+.sheet__details { flex-shrink: 0; max-height: 45%; overflow-y: auto; padding: 16px 24px 24px; border-top: 1px solid var(--border); }
+.sheet__details:empty { display: none; }
+.sheet__body { min-height: 0; }
+.dl { display: grid; grid-template-columns: 144px minmax(0, 1fr); gap: 12px 16px; align-items: center; margin: 0; }
+.dl dt { color: var(--text-muted); }
+.dl dd { margin: 0; min-width: 0; }
+.dl dd .person { max-width: 100%; }
+.sheet__foot { display: flex; justify-content: flex-end; gap: 8px; padding: 16px 24px; border-top: 1px solid var(--border); }
+.sheet__foot[hidden] { display: none; }
+.sheet__foot .btn { white-space: nowrap; }
+@media (max-width: 479px) { .sheet__foot { padding: 16px; } .sheet__foot { flex-wrap: wrap-reverse; } .sheet__foot .btn { flex: 1 1 auto; padding: 0 12px; } #copy-link svg { display: none; } .sheet__foot .btn[hidden] { display: none; } .sheet__head, .sheet__body { padding-left: 16px; padding-right: 16px; } .dl { grid-template-columns: 96px minmax(0, 1fr); } }
+.btn--outline { height: 40px; padding: 0 16px; font-size: 14px; background: var(--surface); border: 1px solid var(--border-strong); color: var(--text); }
+.btn--outline:hover { background: var(--neutral-hover); }
+.btn--outline svg { color: var(--icon-2); }
+.sheet__foot .btn--primary svg { color: #fff; }
+.files { display: flex; flex-direction: column; gap: 8px; }
 .attachment { display: flex; align-items: center; gap: 8px; max-width: 320px; padding: 8px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface-dim); color: inherit; text-decoration: none; }
 .attachment:hover { border-color: var(--primary); }
 .attachment__media { flex-shrink: 0; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: var(--radius); background: var(--surface); }
@@ -235,13 +251,13 @@ th + th, td + td { padding-left: 16px; }
 .attachment__action { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: var(--radius); color: var(--icon-2); }
 .attachment__action svg { width: 16px; height: 16px; }
 .attachment:hover .attachment__action { background: var(--neutral-hover); }
-.pills { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 0; padding: 0; list-style: none; }
+.pills { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
 .pills li { display: inline-flex; align-items: center; height: 24px; padding: 0 8px; border-radius: 999px; background: #e6e8eb; color: var(--text-2); font-size: 12px; }
 .btn svg { width: 16px; height: 16px; }
 a.btn { text-decoration: none; }
 .toast { position: fixed; left: 50%; bottom: 24px; z-index: 60; transform: translateX(-50%); padding: 12px 16px; border-radius: var(--radius); background: #242c36; color: #fff; font-size: 14px; opacity: 0; pointer-events: none; transition: opacity .15s; }
 .toast.is-on { opacity: 1; }
-.sheet__body h3 { margin: 0 0 8px; font-size: 14px; line-height: 1.4; font-weight: 600; }
+
 .sheet__body p { margin: 0; }
 
 /* Phone / narrow */
@@ -279,6 +295,8 @@ a.btn { text-decoration: none; }
   <button type="button" data-state="error" aria-pressed="false">Error</button>
   <button type="button" data-state="many" aria-pressed="false">Many rows</button>
   <button type="button" data-state="sheet" aria-pressed="false">Record open</button>
+  <button type="button" data-state="sheetlong" aria-pressed="false">Long note</button>
+  <button type="button" data-state="sheetlongappt" aria-pressed="false">Long summary</button>
   <button type="button" data-state="sheetload" aria-pressed="false">Record loading</button>
   <button type="button" data-state="sheeterr" aria-pressed="false">Record error</button>
 </div>
@@ -404,12 +422,13 @@ a.btn { text-decoration: none; }
   </section>
 </main>
 
-<!-- ui-next: Sheet | side="right"; header = title + a line under it with the Badge and the date; header actions = IconButton "Copy link" + close -->
-<!-- data: note: subject (title), category (amber Badge, the same as in the list), created date + time with time zone, full text, attachments (0..n: file name, type, size), topics (0..n), author name + department. Appointment: "<type> appointment" (title), which list it's from (neutral Badge: Summary / No show / Cancelled), created date + time, the summary / no-show / cancellation text, department member + department, created by. -->
-<!-- rule: body order, no section headings or field labels: text → attachments → topics → a hairline → the person row. Nothing is pinned to the bottom of the panel; there is no footer. -->
+<!-- ui-next: Sheet | side="right"; header = title + Badge, close IconButton; body = sections; footer = actions -->
+<!-- data: note: subject (title), category (amber Badge, the same as in the list), full text, attachments (0..n: file name, type, size), topics (0..n), author name + department, created date + time with time zone. Appointment: type (title), status Badge (Completed / No show / Cancelled — from the tab it was opened from), department, the summary / no-show note / cancellation reason, summary attachments (0..n), the student's reason for visit (optional), department member, booked by, created on, topics (0..n). -->
+<!-- rule: an appointment can have no text at all (no-shows often don't): then the body shows one muted line "<first name> didn't add a note." instead of an empty section. Empty rows (Topics) are hidden, never shown as "—". -->
+<!-- rule: body order: text section ("Note" for a note; "Summary" / "Note" / "Cancellation reason" for an appointment) → "Attachments" (only when there are files) → appointment only: "Reason for visit" (only when the student wrote one) → "Details". Details follow right after the content — not pinned to the bottom of the panel. The date is only in Details, not in the header. -->
 <!-- action: opened by View (or tapping a card); closed by the X, Esc or clicking outside; focus goes back to what opened it -->
-<!-- state: "Record loading": SkeletonLine rows in the body while the full record is read; title, Badge and date are already known from the list -->
-<!-- state: "Record error": ErrorState in the body, "We couldn't open this note" + Button variant="secondary" "Try again" (reads the record again) -->
+<!-- state: "Record loading": SkeletonLine rows in the body, footer hidden; title and Badge are already known from the list -->
+<!-- state: "Record error": ErrorState in the body, "We couldn't open this note" + Button variant="secondary" "Try again" (reads the record again); footer hidden -->
 <div class="sheet" id="sheet" aria-hidden="true">
   <div class="sheet__scrim" data-close></div>
   <div class="sheet__panel" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
@@ -417,25 +436,35 @@ a.btn { text-decoration: none; }
       <div class="sheet__heading">
         <!-- ui-next: Text | as="h2" (Sheet title), 18px semibold -->
         <h2 id="sheet-title"></h2>
-        <!-- ui-next: Badge | note: category, amber tint (same as the list); appointment: Summary / No show / Cancelled, neutral tint -->
-        <!-- data: created date + time with time zone, "Oct 22, 2026 · 12:12 PM PDT" -->
+        <!-- ui-next: Badge | note: category, amber tint (same as the list); appointment: "Completed" success tint, "No show" / "Cancelled" neutral tint — as on the Scheduling past-appointment page -->
+        <!-- data: appointment only: the department, 14px text secondary, after the Badge -->
         <p class="sheet__meta" id="sheet-sub"></p>
       </div>
-      <!-- ui-next: IconButton | icon link, aria-label + Tooltip "Copy link" -->
-      <!-- action: copies a link that opens this record (the page URL with ?note=<id> or ?appointment=<id>) and shows a toast "Link copied" -->
-      <button class="sheet__close" type="button" aria-label="Copy link" title="Copy link" id="copy-link"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg></button>
       <!-- ui-next: IconButton | icon close, aria-label "Close" -->
       <button class="sheet__close" type="button" aria-label="Close" data-close><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
     </div>
-    <!-- ui-next: Text | the record text, line breaks kept -->
-    <!-- ui-next: none | needs a new component: Attachment (the hp-design DS one: 40px file tile, name 12/600, "PDF · 182 KB" 10px muted, download IconButton; max 320px wide, never stretched to the panel width). One per file, stacked 8px apart, no "Attachments" heading. -->
+    <!-- ui-next: Text | section labels as="h3", 12px semibold, text secondary: "Note", "Attachments", "Details" -->
+    <!-- ui-next: Text | the record text, 14px, line breaks kept -->
+    <!-- ui-next: none | needs a new component: Attachment (the hp-design DS one: 40px file tile, name 12/600, "PDF · 182 KB" 10px muted, download IconButton; max 320px wide, never stretched to the panel width). One per file, stacked 8px apart. -->
     <!-- action: the download button (or the whole attachment) downloads the file -->
-    <!-- ui-next: PillList | topics, small neutral pills; hidden when there are none -->
+    <!-- rule: Booked by shows "You" (with the student's own Avatar) when the student booked the appointment themselves -->
+    <!-- ui-next: DefinitionList | label column 144px (96px under 480px), muted; note: Created by (Avatar + name + department), Created on ("Oct 22, 2026 · 12:12 PM PDT"), Topics (PillList, row hidden when there are none) — no Category row, it is already the Badge in the header. Appointment: With (Avatar + department member name), Booked by (Avatar + name), Created on, Topics (PillList, hidden when none) — no Department or Type rows: the type is the title, the department sits next to the Badge -->
     <!-- ui-next: none | needs a new component: Avatar, same as in the tables -->
-    <!-- ui-next: Button | variant="secondary" size="sm", icon chat, label "Message <first name>" — next to the person it writes to -->
-    <!-- action: opens a new message to that advisor in the Message Center (a link to another page → AnchorButton) -->
-    <!-- rule: appointment: the person row is the department member; "Booked by <name>" (12px, muted) under it only when someone else created the appointment -->
+    <!-- rule: the body (text, attachments, reason for visit) is the only part that scrolls; Details stay pinned between it and the footer (a hairline on top), so a long text scrolls under them. If Details are taller than 45% of the panel, they scroll on their own. -->
     <div class="sheet__body" id="sheet-body"></div>
+    <div class="sheet__details" id="sheet-details"></div>
+    <!-- ui-next: Toolbar | Sheet footer, buttons on the right; under 480px the buttons share one row and fill it (no link icon on Copy); when they don't fit, they wrap to full width, Message on top -->
+    <div class="sheet__foot" id="sheet-foot">
+      <!-- ui-next: AnchorButton | variant="outline", "Book again" — appointment only, instead of Copy link -->
+      <!-- action: opens Scheduling with this appointment type and department picked (another page) -->
+      <a class="btn btn--outline" href="#scheduling" id="book-again" hidden>Book again</a>
+      <!-- ui-next: Button | variant="outline", icon link, "Copy note link" — note only -->
+      <!-- action: copies a link that opens this record (the page URL with ?note=<id> or ?appointment=<id>) and shows a toast "Link copied" -->
+      <button class="btn btn--outline" type="button" id="copy-link"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg><span id="copy-label">Copy note link</span></button>
+      <!-- ui-next: AnchorButton | variant="primary", icon chat, label "Message advisor", aria-label "Message <full name>" (note: the author; appointment: the department member) -->
+      <!-- action: opens a new message to that person in the Message Center (another page) -->
+      <a class="btn btn--primary" href="#message-center" id="sheet-msg"></a>
+    </div>
   </div>
 </div>
 
@@ -450,7 +479,7 @@ a.btn { text-decoration: none; }
   var NOTES = [
     ["Advisor Outreach", "Spring registration and MATH 140 plan", "Alexander Robinson", "Office of Undergraduate Academic Advising and Student Success", "2026-10-22T12:12", "We went over your spring schedule. MATH 140 fits Tuesday/Thursday mornings; register the day your window opens — sections fill in the first hour.\n\nI attached the plan we made, with a back-up section for each course.", ["Registration", "On-Track"], [["Spring 2027 Course Plan.pdf", "PDF · 182 KB"]]],
     ["Academics", "Fall Course Registration Review", "Alexander Robinson", REG, "2026-06-12T11:44", "Your fall schedule is complete and meets full-time status. The prerequisite hold on CHEM 201 has been cleared.", ["Registration"], [["Fall 2026 Schedule.pdf", "PDF · 96 KB"], ["CHEM 201 Prerequisite Waiver.pdf", "PDF · 64 KB"]]],
-    ["Advisor Outreach", "Semester Review", "Alexander Robinson", ADV, "2026-04-30T12:16", "Semester review: on track for your degree. Next step is the degree audit before the October deadline.", ["First-Time Freshmen", "On-Track"]],
+    ["Advisor Outreach", "Semester Review", "Alexander Robinson", ADV, "2026-04-30T12:16", "Semester review: you're on track for your degree. Here is everything we covered, so you have it in one place.\n\nGrades. You finished the spring term with a 3.4 GPA and 15 units, which keeps you in good standing and above the 3.0 you need for the Health Sciences application next year. Your strongest grades were in BIOL 110 and ENGL 101. CHEM 101 was a B-; if you want to raise it before applying, the department lets you retake one lower-division course, but I don't think you need to.\n\nRequirements left. After this term you have 46 units of general education done out of 52. The two gaps are one Arts & Humanities course and the Diversity requirement. HIST 145 covers both at once, so take it in the fall if a section fits.\n\nMajor prep. You still need MATH 140 (statistics) and PSYC 101 before you apply. MATH 140 fills fast — register the day your window opens. If both Tuesday/Thursday sections are full, add yourself to the waitlist and email me; I can ask the department about an overflow seat.\n\nDeadlines.\n• Degree audit: request it before October 15 so it's ready for spring registration.\n• FAFSA renewal: opens October 1; submit before March 2 to keep the state grant.\n• Health Sciences application: opens January 10, closes February 15.\n\nNext steps. Book a 30-minute check-in with me in the first two weeks of fall, bring your draft schedule, and we'll go over the application essay together in November.", ["First-Time Freshmen", "On-Track"]],
     ["General", "Skills Assessment", "Alexander Robinson", ADV, "2026-03-25T10:52", "Completed the skills assessment together. Strengths in writing and quantitative reasoning; we talked about the tutoring center for statistics."],
     ["Advisor Outreach", "Placement testing", "Alexander Robinson", ADV, "2026-02-26T10:34", "Placement testing is booked for March 3 at 9:00 AM in the Learning Commons."],
     ["Career", "Internship search kickoff", "Caitlin Moore", CA, "2026-02-12T14:05", "Reviewed your resume and three internship listings. Draft a cover letter for the county health department posting."],
@@ -475,23 +504,27 @@ a.btn { text-decoration: none; }
     ["Advising Referral", LA, "Abigail Reed", "2026-05-02T14:30", "Referred to the Writing Center for the ENGL 201 research paper."],
     ["Document Request", FA, "George Amalor", "2026-04-10T11:05", "Submit the independent-student appeal form."]
   ];
-  // [department, type, member, createdBy, created, text]
+  // [department, type, member, createdBy, created, text, reason for visit?, topics?, attachments?]
   var APPTS = {
     summaries: [
-      [PSY, "Advising", "Caitlin Moore", "George Amalor", "2024-12-03T08:54", "Reviewed your Psychology minor requirements. Two courses left: PSYC 210 and PSYC 315."],
-      [PSY, "Advising", "Caitlin Moore", "George Amalor", "2024-09-26T10:02", "Talked about research assistant openings in the department; apply through the department site."],
-      [LA, "Academic Difficulty", "Abigail Reed", "George Amalor", "2023-10-26T15:42", "Made a study plan for the second half of the term and signed up for tutoring."],
+      [PSY, "Advising", "Caitlin Moore", "George Amalor", "2024-12-03T08:54", "Reviewed your Psychology minor requirements. Two courses left: PSYC 210 and PSYC 315.\n\nI attached the minor checklist with both courses marked.", "I want to check how many classes I still need for the Psychology minor.", ["Minor", "Degree Progress"], [["Psychology Minor Checklist.pdf", "PDF · 96 KB"]]],
+      [PSY, "Advising", "Caitlin Moore", "George Amalor", "2024-09-26T10:02", "Talked about research assistant openings in the department; apply through the department site.", "Would like to meet soon please.", ["Research", "Career"]],
+      [LA, "Academic Difficulty", "Abigail Reed", "George Amalor", "2023-10-26T15:42", "We went through where you are in each class and made a plan for the rest of the term.\n\nCHEM 101: you're at a 64% after the midterm. The final is worth 35%, so a C is still within reach. Go to the Tuesday and Thursday tutoring sessions in the Science Learning Center (Room 210, 3–5 PM) and redo the problem sets from chapters 6–9 before the final.\n\nENGL 101: two essays are missing. Professor Kim agreed to accept them by November 14 for partial credit. Start with the shorter one this weekend and book a Writing Center appointment for the second.\n\nMATH 105: you're passing with a B-. Keep doing what you're doing; don't drop study time here to catch up elsewhere.\n\nWeekly plan: three 2-hour study blocks (Mon/Wed/Sun evenings), one for each class, plus the tutoring sessions. Put them in your calendar today.\n\nWithdrawal: the last day to withdraw with a W is November 8. We agreed you won't withdraw from anything unless the CHEM quiz on November 5 goes under 50%. If it does, message me that day and we'll decide together.\n\nI signed you up for the Academic Success workshop on November 2; you'll get the confirmation by email. Book a follow-up with me for the week after midterm grades post.", "I'm behind in two classes and don't know where to start.", ["Academic Difficulty", "Tutoring"], [["Rest-of-term Study Plan.pdf", "PDF · 74 KB"]]],
       [EN, "Degree Planning", "Caitlin Moore", "George Amalor", "2023-09-22T08:45", "Mapped the English requirements across four terms."],
       [LA, "Degree Planning", "Abigail Reed", "George Amalor", "2023-09-05T10:37", "Chose general-education courses for fall."],
       [ADV, "Registration", "Alexander Robinson", "Alexander Robinson", "2023-08-14T13:20", "Registered for first-term classes together."],
       [ADV, "Orientation", "Alexander Robinson", "Alexander Robinson", "2023-07-28T09:00", "New-student orientation advising session."]
     ],
     noshows: [
-      [ADV, "Advising", "Alexander Robinson", "Alexander Robinson", "2025-03-04T09:30", "You didn't check in; marked a no-show 15 minutes after the start."],
+      [ADV, "Change of Major", "Tony Reed", "Kevin Gomez", "2026-02-27T16:53", "Marking this appointment as a no-show.", "Questions about switching to Business."],
+      [ADV, "Education Plan", "Alexander Robinson", "Alexander Robinson", "2025-08-07T12:02", "Student did not attend."],
+      [ADV, "Education Plan", "Alexander Robinson", "Alexander Robinson", "2024-10-23T16:03", ""],
       [FA, "Financial Aid Review", "George Amalor", "George Amalor", "2024-11-18T13:00", "You didn't check in; marked a no-show 15 minutes after the start."]
     ],
     cancellations: [
-      [ADV, "Advising", "Alexander Robinson", "Alexander Robinson", "2024-10-09T14:00", "Cancelled by the student — schedule conflict."]
+      [ADV, "Education Plan", "Alexander Robinson", "Alexander Robinson", "2026-10-23T13:04", "Schedule Conflict", "Check graduation timeline after the credit evaluation."],
+      [ADV, "Education Plan", "Ava Robinson", "You", "2026-07-02T05:39", "Work Conflict", "Hi Ava - I'd like to review my education plan for the fall term and make sure I'm registered for the right courses to stay on track for graduation. I also have a couple of questions about prerequisites for the statistics sequence. Thank you!"],
+      [ADV, "Education Plan (15 min)", "Betty Locherty", "Betty Locherty", "2025-11-19T15:03", "No longer needed."]
     ]
   };
   var LONG = ["Office of Undergraduate Academic Advising and Student Success", "Department of Interdisciplinary Health and Human Performance Sciences", "Center for First-Generation and Transfer Student Achievement"];
@@ -556,7 +589,8 @@ a.btn { text-decoration: none; }
   var HUES = ["blue", "green", "magenta", "teal", "violet"]; // no amber/orange/red: amber is the category Badge colour, orange reads as amber next to it, red reads as an error
   function hash(t) { var h = 2166136261; for (var i = 0; i < t.length; i++) { h ^= t.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
   function avatar(name) { var ini = name.split(/[\s-]+/).map(function (w) { return w[0]; }).slice(0, 2).join(""); return '<span class="avatar avatar--' + HUES[hash(name) % HUES.length] + '" aria-hidden="true">' + esc(ini) + "</span>"; }
-  function person(name, dept) { return '<span class="person">' + avatar(name) + '<span class="person__text"><span class="person__name">' + esc(name) + "</span>" + (dept ? '<span class="person__sub" title="' + esc(dept) + '">' + esc(dept) + "</span>" : "") + "</span></span>"; }
+  var STUDENT = "Jamie Chen"; // the signed-in student — "You" when they booked it themselves
+  function person(name, dept) { return '<span class="person">' + avatar(name === "You" ? STUDENT : name) + '<span class="person__text"><span class="person__name">' + esc(name) + "</span>" + (dept ? '<span class="person__sub" title="' + esc(dept) + '">' + esc(dept) + "</span>" : "") + "</span></span>"; }
   function dt(iso) { return "<span>" + esc(shortDate(iso)) + '</span><span class="card__sep"> · </span><span>' + esc(time(iso)) + "</span>"; }
   function dateCell(iso) { return '<td class="date">' + esc(longDate(iso)) + '<span class="sub">' + esc(time(iso)) + "</span></td>"; }
 
@@ -639,23 +673,31 @@ a.btn { text-decoration: none; }
   var DOWNLOAD = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>';
   var CHAT = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>';
   function when(iso) { return esc(shortDate(iso)) + " · " + esc(time(iso)) + " PDT"; }
-  function byline(name, dept, booked) { return '<div class="byline">' + person(name, dept) + '<a class="btn" href="#message-center">' + CHAT + "Message " + esc(name.split(" ")[0]) + "</a>" + (booked && booked !== name ? '<span class="byline__booked">Booked by ' + esc(booked) + "</span>" : "") + "</div>"; }
-  function files(list) { return list && list.length ? '<div class="files">' + list.map(function (f) { return '<a class="attachment" href="#download" aria-label="Download ' + esc(f[0]) + '"><span class="attachment__media">' + FILE + '</span><span class="attachment__content"><span class="attachment__title">' + esc(f[0]) + '</span><span class="attachment__desc">' + esc(f[1]) + '</span></span><span class="attachment__action">' + DOWNLOAD + "</span></a>"; }).join("") + "</div>" : ""; }
-  function pills(list) { return list && list.length ? '<ul class="pills" aria-label="Topics">' + list.map(function (t) { return "<li>" + esc(t) + "</li>"; }).join("") + "</ul>" : ""; }
+  function files(list) { return list && list.length ? '<section><h3 class="sec__label">Attachments</h3><div class="files">' + list.map(function (f) { return '<a class="attachment" href="#download" aria-label="Download ' + esc(f[0]) + '"><span class="attachment__media">' + FILE + '</span><span class="attachment__content"><span class="attachment__title">' + esc(f[0]) + '</span><span class="attachment__desc">' + esc(f[1]) + '</span></span><span class="attachment__action">' + DOWNLOAD + "</span></a>"; }).join("") + "</div></section>" : ""; }
+  function pills(list) { return '<ul class="pills">' + list.map(function (t) { return "<li>" + esc(t) + "</li>"; }).join("") + "</ul>"; }
+  function sec(label, html) { return '<section><h3 class="sec__label">' + label + "</h3>" + html + "</section>"; }
+  function details(rows) { return '<section><h3 class="sec__label">Details</h3><dl class="dl">' + rows.filter(Boolean).map(function (r) { return "<dt>" + r[0] + "</dt><dd>" + r[1] + "</dd>"; }).join("") + "</dl></section>"; }
   function openSheet(key, mode) {
-    var k = key.split(":"), i = +k[1], D = data(), title, sub, body;
+    var k = key.split(":"), i = +k[1], D = data(), title, sub, body, who, det = "";
     if (k[0] === "notes") {
       var n = filtered(D.notes)[i];
-      title = n[1]; sub = '<span class="badge">' + esc(n[0]) + "</span>" + when(n[4]);
-      body = '<p class="sheet__text">' + esc(n[5]) + "</p>" + files(n[7]) + pills(n[6]) + byline(n[2], n[3]);
+      title = n[1]; sub = '<span class="badge">' + esc(n[0]) + "</span>"; who = n[2];
+      body = sec("Note", '<p class="sheet__text">' + esc(n[5]) + "</p>") + files(n[7]);
+        det = details([["Created by", person(n[2], n[3])], ["Created on", when(n[4])], n[6] && n[6].length ? ["Topics", pills(n[6])] : null]);
     } else {
       var a = D.appts[k[0]][i];
-      title = a[1] + " appointment"; sub = '<span class="badge badge--neutral">' + { summaries: "Summary", noshows: "No show", cancellations: "Cancelled" }[k[0]] + "</span>" + when(a[4]);
-      body = '<p class="sheet__text">' + esc(a[5]) + "</p>" + byline(a[2], a[0], a[3]);
+      title = a[1]; who = a[2];
+      sub = '<span class="badge ' + { summaries: "badge--success", noshows: "badge--neutral", cancellations: "badge--neutral" }[k[0]] + '">' + { summaries: "Completed", noshows: "No show", cancellations: "Cancelled" }[k[0]] + '</span><span class="sheet__dept">' + esc(a[0]) + "</span>";
+      body = (a[5] ? sec({ summaries: "Summary", noshows: "Note", cancellations: "Cancellation reason" }[k[0]], '<p class="sheet__text">' + esc(a[5]) + "</p>") : '<p class="sheet__none">' + esc(a[2].split(" ")[0]) + " didn't add a note.</p>") + files(a[8]) +
+        (a[6] ? sec("Reason for visit", '<p class="sheet__text">' + esc(a[6]) + "</p>") : "");
+        det = details([["With", person(a[2])], ["Booked by", person(a[3])], ["Created on", when(a[4])], a[7] && a[7].length ? ["Topics", pills(a[7])] : null]);
     }
     if (mode === "loading") body = '<div class="sheet-sk" aria-busy="true" aria-label="Loading">' + new Array(7).join('<span class="sk"></span>') + "</div>";
     if (mode === "error") body = '<div class="state state--error"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm1 15h-2v-2h2v2Zm0-4h-2V7h2v6Z"/></svg><h3>We couldn\'t open this ' + (k[0] === "notes" ? "note" : "appointment") + '</h3><p>Something went wrong on our side. Try again in a moment.</p><button class="btn btn--secondary" type="button" id="sheet-retry" data-retry="' + key + '">Try again</button></div>';
-    $("#sheet-title").textContent = title; $("#sheet-sub").innerHTML = sub; $("#sheet-body").innerHTML = body;
+    $("#sheet-title").textContent = title; $("#sheet-sub").innerHTML = sub; $("#sheet-body").innerHTML = body; $("#sheet-details").innerHTML = mode ? "" : det; $("#sheet-body").scrollTop = 0;
+    $("#sheet-msg").innerHTML = CHAT + "Message advisor"; $("#sheet-msg").setAttribute("aria-label", "Message " + who);
+    $("#copy-link").hidden = k[0] !== "notes"; $("#book-again").hidden = k[0] === "notes";
+    $("#sheet-foot").hidden = !!mode;
     if (!$("#sheet").classList.contains("is-open")) lastFocus = document.activeElement;
     $("#sheet").classList.add("is-open"); $("#sheet").setAttribute("aria-hidden", "false");
     $(".sheet__close").focus();
@@ -697,6 +739,8 @@ a.btn { text-decoration: none; }
     closeSheet();
     render();
     if (s === "sheet") openSheet("notes:0");
+    if (s === "sheetlong") openSheet("notes:2");
+    if (s === "sheetlongappt") openSheet("summaries:2");
     if (s === "sheetload") openSheet("notes:0", "loading");
     if (s === "sheeterr") openSheet("notes:0", "error");
   }
