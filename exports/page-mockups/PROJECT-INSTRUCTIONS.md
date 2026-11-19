@@ -90,3 +90,7 @@ RULES
 - **EmptyState = the DS compact pill** (user decision 2026-11-13): one short line of text, `text.secondary` on `bg.neutral` #e6e8eb, radius full, padding 8px 16px, centred with 24px around it — as on the Message Center design pages ("No threads found"). No icon, no heading, no explanatory sentence.
 - **Phone notes use the guide's 768px** (2026-11-18): table at 768px and wider; tablet cards 560–767px; phone cards below 560px (widths of the content area). Describe both tablet and phone in `phone:` notes.
 - **Toast:** the app places it (top centre); don't describe its position. The mockup shows it top centre too.
+- **Toolbar filters with a telling placeholder get no visible label** (user decision 2026-11-19, Advisors): a SelectField filter whose placeholder names what it filters ("All departments") has no visible label, like a search field — keep an accessible label and a `rule:` note.
+- **Page layout like the design pages, not one big card** (user, 2026-11-19): tabs are SegmentedTabs on the page; the count, search and filters sit on the page above the list; the Card holds only the table; pagination goes under the card ("Showing 1–10 of 49" + page buttons, as on Scheduling).
+- **Sorted column header** looks as in the DS Table: header text stays grey; only the arrow changes (light grey → dark grey icon.default). Never black text or a blue arrow.
+

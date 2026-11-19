@@ -143,11 +143,9 @@ tbody tr:last-child td { border-bottom: none; }
 tbody tr:hover td { background: var(--surface-dim); }
 th + th, td + td { padding-left: 16px; }
 .sorth { display: inline-flex; align-items: center; gap: 4px; padding: 0; border: 0; background: none; font: inherit; color: inherit; text-transform: inherit; cursor: pointer; border-radius: 4px; }
-.sorth svg { width: 14px; height: 14px; opacity: .4; transition: transform .12s ease, opacity .12s ease; }
-.sorth:hover svg { opacity: .7; }
+.sorth svg { width: 16px; height: 16px; color: #8e99a7; transition: transform .12s ease; }
 .sorth:focus-visible { outline: 2px solid #0468c4; outline-offset: 2px; }
-th[aria-sort] .sorth { color: var(--text); }
-th[aria-sort] .sorth svg { opacity: 1; color: #0468c4; }
+th[aria-sort] .sorth svg { color: var(--icon); }
 th[aria-sort="ascending"] .sorth svg { transform: rotate(180deg); }
 .t-title { font-size: 14px; line-height: 1.4; font-weight: 600; }
 .sub { display: block; color: var(--text-2); }
@@ -408,7 +406,7 @@ a.btn { text-decoration: none; }
     <div class="panel__body" id="notes-body">
       <!-- ui-next: Table | columns: Date · Subject · Category · Created by · (View); each of the four named columns has a SortHeader -->
       <!-- ui-next: SortHeader | on Date, Subject, Category, Created by (sorts by the author's name) -->
-      <!-- action (sorting, all three tables): clicking a header sorts the whole list by that column (not just the visible page) and goes back to page 1; clicking it again flips the order. A date column starts newest first, a text column starts A→Z. One column at a time; the active one shows its arrow in blue, the others a faint arrow. Default: Date (Created on in Appointments), newest first. Not kept in the URL and not remembered; the search and the Appointments tab keep the chosen sort. Nothing is saved. While the sorted list loads it shows SkeletonLine rows; if the request fails → page ErrorState (Error loading). -->
+      <!-- action (sorting, all three tables): clicking a header sorts the whole list by that column (not just the visible page) and goes back to page 1; clicking it again flips the order. A date column starts newest first, a text column starts A→Z. One column at a time; as the ui-next Table draws it: header text stays grey, the active column's arrow is dark grey, the others a light grey arrow. Default: Date (Created on in Appointments), newest first. Not kept in the URL and not remembered; the search and the Appointments tab keep the chosen sort. Nothing is saved. While the sorted list loads it shows SkeletonLine rows; if the request fails → page ErrorState (Error loading). -->
       <!-- phone (sorting): cards have no headers, so below 768px the list can't be re-sorted and shows the default order (newest first) — or the order picked on a wider screen -->
       <!-- data: per row — created date ("Tuesday, December 3, 2024" over "8:54 AM"), subject, category, author name over author department -->
       <!-- state: "Loading": 3 SkeletonLine rows instead of the table / cards. "Many rows": long subjects cut after 2 lines, long names and departments cut to one line -->

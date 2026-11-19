@@ -6,7 +6,7 @@
 PAGE: Advisors
 FOR: student (signed in)
 PURPOSE: Lets a student find the advisor they need — their own assigned advisors or anyone in the advisor directory — and then message them or book time with them.
-URL: ?tab=my|search (selected tab; default my), ?q=<text> (Advisor Search text), ?dept=<id>,<id> (Advisor Search department filter). Page number, rows per page and the sort order are not kept in the URL.
+URL: ?tab=my|search (selected tab; default my), ?q=<text> (Advisor Search text), ?dept=<id>,<id> (Advisor Search department filter). Page number and the sort order are not kept in the URL.
 KNOWN BEFORE LOAD: whose advisors to show comes from the signed-in user (the student) — never from the address. From the address: the tab, the search text and the departments.
 DATA:
   - Signed-in student: whose assigned advisors to show, and what the Actions menu is checked against. Source: the sign-in session.
@@ -20,7 +20,7 @@ ACTIONS:
   - Switch tabs: My Advisors, Advisor Search.
   - Advisor Search: search by name or ID; filter by one or more departments.
   - Sort the table by Advisor (and by Role on My Advisors).
-  - Change rows per page (10, 20, 50) and page through the list.
+  - Page through the list (10 advisors per page).
   - Call or email an advisor (tel: / mailto: links on the phone number and email).
   - Per advisor, from the Actions menu (each item only when that advisor allows it): Send message (Message Center, another page), New appointment (old scheduling, another page), Schedule with this advisor (new Scheduling → Book, filtered to this advisor, another page).
   - Settings button in the top bar: the app's global Preferences menu (Institutions, About), the same on every page.
@@ -90,7 +90,7 @@ a:hover { text-decoration: underline; }
 .iconbtn { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; padding: 0; border: 0; border-radius: var(--radius); background: none; color: var(--icon); cursor: pointer; }
 .iconbtn:hover { background: var(--neutral-hover); }
 .iconbtn--sm { width: 32px; height: 32px; }
-.wrap { container-type: inline-size; max-width: 1280px; margin: 0 auto; padding: 32px 32px 48px; display: flex; flex-direction: column; gap: 24px; }
+.wrap { container-type: inline-size; max-width: 1280px; margin: 0 auto; padding: 32px 32px 48px; display: flex; flex-direction: column; gap: 16px; }
 
 /* Alert */
 .alerts { display: flex; flex-direction: column; gap: 8px; }
@@ -102,21 +102,22 @@ a:hover { text-decoration: underline; }
 .alert .iconbtn { width: 20px; height: 20px; border-radius: 4px; }
 .alert .iconbtn svg { width: 16px; height: 16px; }
 
-/* Card + Tabs (underline) */
-.panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
-.tabs { display: flex; padding: 0 16px; border-bottom: 1px solid var(--border); overflow-x: auto; scrollbar-width: none; }
-.tab { display: inline-flex; align-items: center; gap: 8px; height: 48px; padding: 0 12px 2px; border: 0; border-bottom: 2px solid transparent; margin-bottom: -1px; background: none; color: var(--text-2); font-size: 14px; font-weight: 400; white-space: nowrap; cursor: pointer; }
-.tab:hover { color: var(--text); }
-.tab[aria-selected="true"] { color: var(--text); font-weight: 600; border-bottom-color: var(--primary); }
+/* SegmentedTabs (DS Tabs segmented, base) */
+.seg { display: inline-flex; align-self: flex-start; align-items: center; gap: 4px; max-width: 100%; padding: 4px; border-radius: 12px; background: var(--sunken); overflow-x: auto; scrollbar-width: none; }
+.tab { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 40px; padding: 0 12px; border: 0; border-radius: 8px; background: transparent; color: var(--text-2); font-size: 14px; line-height: 1.2; font-weight: 400; white-space: nowrap; cursor: pointer; }
+.tab:not([aria-selected="true"]):hover { background: #cdd1d6; color: var(--text); }
+.tab[aria-selected="true"] { background: var(--surface); color: var(--text); font-weight: 600; }
 .count { display: inline-flex; align-items: center; justify-content: center; min-width: 16px; height: 16px; padding: 0 4px; border-radius: 999px; background: var(--counter-bg); color: var(--counter-text); font-size: 10px; line-height: 1; font-weight: 700; }
 .tab[aria-selected="true"] .count { background: var(--primary); color: #fff; }
+/* Card (the table only) */
+.panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
 
 /* Toolbar */
-.toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; padding: 16px; border-bottom: 1px solid var(--border); }
-.toolbar__count { margin: 0; margin-right: auto; font-size: 14px; font-weight: 600; }
+.toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; }
+.toolbar__count { margin: 0; margin-right: auto; font-size: 16px; line-height: 1.4; font-weight: 600; }
 .toolbar__count span { font-weight: 400; color: var(--text-2); }
 .toolbar__filters { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
-.search { display: flex; align-items: center; gap: 8px; width: 280px; max-width: 100%; height: 32px; padding: 0 12px; background: var(--surface-dim); border: 1px solid var(--border); border-radius: var(--radius); }
+.search { display: flex; align-items: center; gap: 8px; width: 280px; max-width: 100%; height: 40px; padding: 0 12px; background: var(--surface-dim); border: 1px solid var(--border); border-radius: var(--radius); }
 .search:hover { background: var(--surface-dim-hover); border-color: var(--border-strong); }
 .search:focus-within { border-color: var(--focus); }
 .search__icon { color: var(--icon); }
@@ -128,7 +129,7 @@ a:hover { text-decoration: underline; }
 .is-disabled { opacity: .5; pointer-events: none; }
 .field-inline { position: relative; display: flex; align-items: center; gap: 8px; }
 .field-inline > label, .field-inline > span.lbl { font-size: 14px; color: var(--text-2); white-space: nowrap; }
-.select { display: flex; align-items: center; gap: 8px; width: 220px; height: 32px; padding: 0 8px 0 12px; background: var(--surface-dim); border: 1px solid var(--border); border-radius: var(--radius); font-size: 14px; color: var(--text); text-align: left; cursor: pointer; }
+.select { display: flex; align-items: center; gap: 8px; width: 240px; height: 40px; padding: 0 8px 0 12px; background: var(--surface-dim); border: 1px solid var(--border); border-radius: var(--radius); font-size: 14px; color: var(--text); text-align: left; cursor: pointer; }
 .select:hover { background: var(--surface-dim-hover); border-color: var(--border-strong); }
 .select[aria-expanded="true"] { border-color: var(--focus); }
 .select span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -137,7 +138,7 @@ a:hover { text-decoration: underline; }
 .select[aria-expanded="true"] svg { transform: rotate(180deg); }
 .listbox { position: absolute; top: calc(100% + 4px); right: 0; z-index: 20; width: 280px; max-height: 320px; overflow-y: auto; margin: 0; padding: 4px; list-style: none; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: 0 2px 8px rgba(21, 25, 30, 0.1); }
 .select .count { flex-shrink: 0; }
-.lb-search { width: 100%; margin-bottom: 4px; }
+.lb-search { width: 100%; height: 32px; margin-bottom: 4px; }
 .lb-sum { padding: 4px 8px 8px; font-size: 12px; color: var(--text-2); border-bottom: 1px solid var(--border); margin-bottom: 4px; }
 .listbox .lb-sum button { display: inline; width: auto; min-height: 0; padding: 0; border: 0; background: none; color: var(--primary-text); font-size: 12px; font-weight: 600; cursor: pointer; }
 .listbox .lb-sum button:hover { background: none; text-decoration: underline; }
@@ -160,10 +161,8 @@ td { padding: 12px 16px; vertical-align: middle; border-bottom: 1px solid var(--
 tbody tr:last-child td { border-bottom: none; }
 tbody tr:hover td { background: var(--surface-dim); }
 .sorth { display: inline-flex; align-items: center; gap: 4px; padding: 0; border: 0; background: none; font: inherit; color: inherit; text-transform: inherit; cursor: pointer; border-radius: 4px; }
-.sorth svg { width: 14px; height: 14px; opacity: .4; }
-.sorth:hover svg { opacity: .7; }
-th[aria-sort] .sorth { color: var(--text); }
-th[aria-sort] .sorth svg { opacity: 1; color: #0468c4; }
+.sorth svg { width: 16px; height: 16px; color: #8e99a7; }
+th[aria-sort] .sorth svg { color: var(--icon); }
 th[aria-sort="ascending"] .sorth svg { transform: rotate(180deg); }
 .col-act { width: 120px; text-align: right; }
 .person { display: flex; align-items: center; gap: 12px; min-width: 0; }
@@ -203,21 +202,19 @@ th[aria-sort="ascending"] .sorth svg { transform: rotate(180deg); }
 .card__contact a span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .card__contact svg { width: 16px; height: 16px; }
 
-/* TablePaginationControl */
-.foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 24px; padding: 12px 16px; border-top: 1px solid var(--border); }
-.rpp { position: relative; display: inline-flex; align-items: center; gap: 8px; font-size: 14px; }
-.rpp .select { width: 72px; padding: 0 8px; }
-.pager { display: flex; align-items: center; gap: 12px; }
-.range { font-size: 12px; color: var(--text-muted); }
+/* TablePaginationControl — as on Scheduling: "Showing x–y of n" left, pages right, under the card */
+.foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+.range { font-size: 14px; color: var(--text-2); }
 .pages { display: inline-flex; align-items: center; gap: 4px; }
-.pages button { min-width: 32px; height: 32px; padding: 0 6px; border: 0; border-radius: var(--radius); background: none; font-size: 14px; color: var(--text); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
+.pages button { min-width: 32px; height: 32px; padding: 0 6px; border: 0; border-radius: var(--radius); background: none; font-size: 14px; line-height: 1.2; color: var(--text); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
+.pages button svg { width: 16px; height: 16px; }
 .pages button:hover:not(:disabled):not([aria-current]) { background: var(--neutral-hover); }
 .pages button[aria-current="page"] { background: var(--primary); color: #fff; }
 .pages button:disabled { color: var(--text-disabled); cursor: default; }
 .pages .gap { min-width: 24px; text-align: center; color: var(--text-muted); }
 
 /* EmptyState / ErrorState / SkeletonLine */
-.empty { display: flex; justify-content: center; padding: 24px; }
+.empty { display: flex; justify-content: center; padding: 24px 16px; }
 .empty__text { padding: 8px 16px; border-radius: 999px; background: #e6e8eb; color: var(--text-2); font-size: 14px; line-height: 1.4; text-align: center; }
 .state { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 32px 16px; text-align: center; }
 .state svg { width: 32px; height: 32px; color: var(--danger-text); }
@@ -243,12 +240,13 @@ th[aria-sort="ascending"] .sorth svg { transform: rotate(180deg); }
 @media (max-width: 767px) {
   .topbar { padding: 0 8px 0 16px; }
   .wrap { padding: 16px 0; gap: 16px; }
-  .alerts { padding: 0 16px; }
+  .alerts, .toolbar, .foot { padding: 0 16px; }
+  .seg { margin: 0 16px; }
   .panel { border-left: 0; border-right: 0; border-radius: 0; }
   .toolbar__filters, .toolbar__filters > *, .search { width: 100%; }
   .field-inline .select { flex: 1; width: auto; }
   .field-inline .listbox { left: 0; right: 0; width: auto; }
-  .foot { justify-content: center; }
+  .foot { flex-direction: column; justify-content: center; }
 }
 .toast { position: fixed; left: 50%; top: 24px; z-index: 60; transform: translateX(-50%); padding: 12px 16px; border-radius: var(--radius); background: #242c36; color: #fff; font-size: 14px; opacity: 0; pointer-events: none; transition: opacity .15s; }
 .toast.is-on { opacity: 1; }
@@ -302,58 +300,60 @@ th[aria-sort="ascending"] .sorth svg { transform: rotate(180deg); }
   <!-- phone: below 768px the messages keep 16px from the screen edges -->
   <div class="alerts" id="alerts" hidden></div>
 
-  <!-- ui-next: Card | flush (no padding): Tabs, then Toolbar, then the Table and the pagination -->
-  <!-- phone: below 768px the card loses its side borders and rounded corners and runs edge to edge -->
-  <section class="panel" aria-label="Advisors">
-    <!-- ui-next: Tabs | underline style; My Advisors has a CountBadge (number of assigned advisors; "–" while loading); Advisor Search has none -->
-    <!-- data: selected tab, kept in the URL as ?tab= (default my) -->
-    <!-- action: switches the content below and updates ?tab=. Each tab keeps its own search, filter, sort and page while the page is open. The list shows SkeletonLine rows while it loads; failing → ErrorState -->
-    <!-- phone: below 768px the tabs keep their size; the row starts 16px from the screen edge -->
-    <div class="tabs" role="tablist" aria-label="Advisor lists">
-      <button class="tab" role="tab" type="button" aria-selected="true" data-tab="my">My Advisors <span class="count" id="count-my"></span></button>
-      <button class="tab" role="tab" type="button" aria-selected="false" data-tab="search">Advisor Search</button>
-    </div>
+  <!-- ui-next: SegmentedTabs | base size; My Advisors has a CountBadge (number of assigned advisors; "–" while loading); Advisor Search has none -->
+  <!-- data: selected tab, kept in the URL as ?tab= (default my) -->
+  <!-- action: switches everything below and updates ?tab=. Each tab keeps its own search, filter, sort and page while the page is open. The list shows SkeletonLine rows while it loads; failing → ErrorState -->
+  <!-- phone: below 768px the same, 16px from the screen edge -->
+  <div class="seg" role="tablist" aria-label="Advisor lists">
+    <button class="tab" role="tab" type="button" aria-selected="true" data-tab="my">My Advisors <span class="count" id="count-my"></span></button>
+    <button class="tab" role="tab" type="button" aria-selected="false" data-tab="search">Advisor Search</button>
+  </div>
 
-    <!-- ui-next: Toolbar | left: the count; right (Advisor Search only): SearchField + department filter -->
-    <!-- phone: below 768px the search field and the filter each take the full width, under the count -->
-    <div class="toolbar">
-      <!-- ui-next: Text | as="h2" (looks 14px semibold); "<n> advisors" — "1 advisor" for one. While a search or filter is on: "<n> of <total> advisors". "Loading": "Advisors" with no number -->
-      <h2 class="toolbar__count" id="count-text"></h2>
-      <div class="toolbar__filters" id="filters">
-        <!-- ui-next: SearchField | size small (32px, same height as the filter), placeholder "Search by name or ID", accessible label "Search advisors" (not shown) -->
-        <!-- rule: no visible label on purpose: the agreed exception for search fields (search icon + placeholder only) -->
-        <!-- data: search text, kept in the URL as ?q= -->
-        <!-- action: filters the list as the user types (matches the advisor's first name, last name, full name or ID); the X clears it; any change goes back to page 1 and updates ?q=. The request failing → ErrorState -->
-        <!-- rule: Advisor Search tab only; any text, no minimum length. Search and department filter work together (both must match) -->
-        <!-- state: "Loading": shown but disabled -->
-        <div class="search" id="search-box">
-          <svg class="search__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-          <label for="q" class="vh">Search advisors</label>
-          <input type="search" id="q" placeholder="Search by name or ID" autocomplete="off" />
-          <button class="clear" type="button" aria-label="Clear search"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
-        </div>
-        <!-- ui-next: Field + SelectField | multiple, searchable (the gallery's "Select multiple": checkboxes, a search box on top with "No results", an "<n> selected · Clear all" row, the first choice and "+N" in the field). Label "Department" shown inline to the left (the Field label sits above by default — put it beside the field in this toolbar); size sm (32px); placeholder "All departments"; one option per department, A→Z -->
-        <!-- data: the field shows "All departments" when nothing is picked, else the first picked department (cut with …) and a "+N" for the rest -->
-        <!-- data: picked departments, kept in the URL as ?dept= -->
-        <!-- action: each tick filters the list at once (an advisor matches when they belong to any picked department) and goes back to page 1; unticking all shows every advisor. Closes on Esc or clicking outside. The request failing → ErrorState -->
-        <!-- rule: Advisor Search tab only. State "Loading": disabled -->
-        <!-- phone: below 768px the label stays on the left and the field fills the rest of the row; the option list is as wide as the field -->
-        <div class="field-inline" id="dept-field">
-          <span class="lbl" id="dept-label">Department</span>
-          <button class="select" type="button" id="dept-btn" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="dept-label dept-btn"><span id="dept-value" class="ph">All departments</span><b class="count" id="dept-more" hidden></b><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
-          <div class="listbox" id="dept-list" hidden>
-            <div class="search lb-search"><svg class="search__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg><label class="vh" for="dept-q">Find a department</label><input type="search" id="dept-q" placeholder="Search" autocomplete="off" /></div>
-            <div class="lb-sum" id="dept-sum" hidden><span id="dept-n"></span> · <button type="button" id="dept-clear">Clear all</button></div>
-            <ul class="lb-opts" id="dept-opts" role="listbox" aria-multiselectable="true" aria-labelledby="dept-label"></ul>
-          </div>
+  <!-- ui-next: Toolbar | on the page, not in a card: left the count; right (Advisor Search only) SearchField + department filter -->
+  <!-- phone: below 768px the count, then the search field and the filter each take the full width, 16px from the screen edges -->
+  <div class="toolbar">
+    <!-- ui-next: Text | as="h2" (looks 16px semibold); "<n> advisors" — "1 advisor" for one. While a search or filter is on: "<n> of <total> advisors". "Loading" and "Error loading": "Advisors" with no number -->
+    <h2 class="toolbar__count" id="count-text"></h2>
+    <div class="toolbar__filters" id="filters">
+      <!-- ui-next: SearchField | size base (40px, same height as the department filter), placeholder "Search by name or ID", accessible label "Search advisors" (not shown) -->
+      <!-- rule: no visible label on purpose: the agreed exception for search fields (search icon + placeholder only) -->
+      <!-- data: search text, kept in the URL as ?q= -->
+      <!-- action: filters the list as the user types (matches the advisor's first name, last name, full name or ID); the X clears it; any change goes back to page 1 and updates ?q=. The request failing → ErrorState -->
+      <!-- rule: Advisor Search tab only; any text, no minimum length. Search and department filter work together (both must match) -->
+      <!-- state: "Loading": shown but disabled -->
+      <div class="search" id="search-box">
+        <svg class="search__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+        <label for="q" class="vh">Search advisors</label>
+        <input type="search" id="q" placeholder="Search by name or ID" autocomplete="off" />
+        <button class="clear" type="button" aria-label="Clear search"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
+      </div>
+      <!-- ui-next: SelectField | multiple, searchable (the gallery's "Select multiple": checkboxes, a search box on top with "No results", an "<n> selected · Clear all" row, the first choice and "+N" in the field); size base (40px, same as the search field); placeholder "All departments"; accessible label "Department" (not shown); one option per department, A→Z -->
+      <!-- rule: no visible label on purpose (user decision, 2026-11-19): the placeholder "All departments" already says what it filters, as on the Scheduling filters -->
+      <!-- data: the field shows "All departments" when nothing is picked, else the first picked department (cut with …) and a "+N" for the rest -->
+      <!-- data: picked departments, kept in the URL as ?dept= -->
+      <!-- action: each tick filters the list at once (an advisor matches when they belong to any picked department) and goes back to page 1; unticking all shows every advisor. Closes on Esc or clicking outside. The request failing → ErrorState -->
+      <!-- rule: Advisor Search tab only. State "Loading": disabled -->
+      <!-- phone: below 768px the field goes full width under the search field; the option list is as wide as the field -->
+      <div class="field-inline" id="dept-field">
+        <span class="vh" id="dept-label">Department</span>
+        <button class="select" type="button" id="dept-btn" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="dept-label dept-btn"><span id="dept-value" class="ph">All departments</span><b class="count" id="dept-more" hidden></b><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+        <div class="listbox" id="dept-list" hidden>
+          <div class="search lb-search"><svg class="search__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg><label class="vh" for="dept-q">Find a department</label><input type="search" id="dept-q" placeholder="Search" autocomplete="off" /></div>
+          <div class="lb-sum" id="dept-sum" hidden><span id="dept-n"></span> · <button type="button" id="dept-clear">Clear all</button></div>
+          <ul class="lb-opts" id="dept-opts" role="listbox" aria-multiselectable="true" aria-labelledby="dept-label"></ul>
         </div>
       </div>
     </div>
+  </div>
 
+  <!-- ui-next: Card | flush (no padding); holds only the Table (or its ErrorState / SkeletonLine rows) -->
+  <!-- phone: below 768px the card loses its side borders and rounded corners and runs edge to edge -->
+  <section class="panel" id="table-card" aria-labelledby="count-text">
     <!-- ui-next: Table | My Advisors columns: Advisor · Role · Phone · Email · (Actions). Advisor Search: Advisor · Phone · Email · (Actions) -->
-    <!-- ui-next: SortHeader | on Advisor (by last name, then first name; default A→Z) and on Role (My Advisors only). Clicking sorts the whole list and goes back to page 1; again flips the order. Not kept in the URL -->
+    <!-- ui-next: SortHeader | (as the ui-next Table draws it: the header text stays grey; the sorted column only darkens its arrow) on Advisor (by last name, then first name; default A→Z) and on Role (My Advisors only). Clicking sorts the whole list and goes back to page 1; again flips the order. Not kept in the URL -->
     <!-- data: per row — Avatar, full name, departments (all, comma-separated, A→Z), role (My Advisors), phone, email -->
-    <!-- ui-next: Avatar | with AvatarFallback; 40px circle; the advisor's photo when they have one, otherwise their initials on a colour picked from the name (palettes blue, green, pink, teal, violet — the same person always gets the same colour; not red/amber/orange, which read as status); decorative, aria-hidden. Not in the guide's list but in the ui-next gallery -->    <!-- rule: departments: one line under the name, cut with "…" when they don't fit; the full list in a Tooltip on hover / focus. The name is one line, cut with "…" (the full name in the Tooltip too) -->
+    <!-- ui-next: Avatar | with AvatarFallback; 40px circle; the advisor's photo when they have one, otherwise their initials on a colour picked from the name (palettes blue, green, pink, teal, violet — the same person always gets the same colour; not red/amber/orange, which read as status); decorative, aria-hidden. Not in the guide's list but in the ui-next gallery -->
+    <!-- rule: departments: one line under the name, cut with "…" when they don't fit; the full list in a Tooltip on hover / focus. The name is one line, cut with "…" (the full name in the Tooltip too) -->
     <!-- rule: phone is a tel: link, email a mailto: link (cut with "…" when long, full address in a Tooltip). A missing value leaves the cell empty -->
     <!-- state: "Loading": 3 SkeletonLine rows. "No advisors" (My Advisors): EmptyState "No advisors assigned to you yet". "No search results": EmptyState "No advisors match “<search text>”" — or "No advisors in the selected departments" when only the filter is on, "No advisors match these filters" when both are on -->
     <!-- phone (widths of the content area): 768px and wider = table. Tablet, 560–767px: each row becomes a card — Avatar, then name, role, departments (up to 2 lines, then …) on the left; phone and email stacked in a 200px column on the right; the Actions IconButton at the top right. Phone, below 560px: the same card with phone and email under the departments, side by side, wrapping when they don't fit. See OPEN QUESTIONS 2 -->
@@ -365,14 +365,8 @@ th[aria-sort="ascending"] .sorth svg { transform: rotate(180deg); }
     <!-- rule: while an institution runs old and new scheduling side by side, a student can see both 2 and 3 (they open two different systems). Each item is checked on its own, per advisor. When no item is available the Actions button is hidden and the cell is empty -->
     <!-- action: the menu closes on Esc, clicking outside or picking an item; focus goes back to the button. Nothing on this page changes -->
     <div id="list"></div>
-    <!-- ui-next: TablePaginationControl | rows per page 10 / 20 / 50 (default 10), range "1–10 of 49", page buttons -->
-    <!-- action: changing rows per page goes back to page 1; a page button loads that page. Not saved. While a page loads the list shows SkeletonLine rows; failing → ErrorState -->
-    <!-- rule: page buttons hidden when everything fits on one page (usually the case on My Advisors); the whole control hidden while loading, on errors and when the list is empty. "Many rows": page buttons shorten with "…" (1 2 … 5 6) -->
-    <!-- phone: below 768px rows per page and the page buttons are centred and wrap onto two lines when they don't fit -->
-    <div class="foot" id="foot"></div>
-
     <!-- ui-next: ErrorState | title "We couldn't load advisors", message "Something went wrong on our side. Try again in a moment.", onRetry = load the current tab again (SkeletonLine rows while it waits; failing again brings this back) -->
-    <!-- state: "Error loading": replaces the toolbar's filters, the table and the pagination; the tabs stay so the student can switch -->
+    <!-- state: "Error loading": shown inside the card instead of the table; the search, filter and pagination are hidden; the tabs stay so the student can switch -->
     <div id="error" hidden>
       <div class="state">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm1 15h-2v-2h2v2Zm0-4h-2V7h2v6Z"/></svg>
@@ -382,6 +376,15 @@ th[aria-sort="ascending"] .sorth svg { transform: rotate(180deg); }
       </div>
     </div>
   </section>
+
+  <!-- ui-next: EmptyState | on the page in place of the card (texts in the Table's state note) -->
+  <div id="empty" hidden></div>
+
+  <!-- ui-next: TablePaginationControl | under the card, as on Scheduling: "Showing 1–10 of 49" on the left, page buttons on the right; 10 rows per page, no rows-per-page choice -->
+  <!-- action: a page button loads that page and scrolls to the top of the list. Not saved. While a page loads the card shows SkeletonLine rows; failing → ErrorState -->
+  <!-- rule: hidden when everything fits on one page (usually the case on My Advisors), while loading, on errors and when the list is empty. "Many rows": page buttons shorten with "…" (1 2 … 5 6) -->
+  <!-- phone: below 768px "Showing …" sits above the page buttons, both centred -->
+  <div class="foot" id="foot"></div>
 </main>
 
 <div class="dropdown-menu" id="menu" role="menu" hidden><ul class="dropdown-menu__list" id="menu-list"></ul></div>
@@ -472,7 +475,7 @@ th[aria-sort="ascending"] .sorth svg { transform: rotate(180deg); }
 
   function render() {
     var my = S.tab === "my", err = S.state === "error", loading = S.state === "loading";
-    $$(".tab").forEach(function (b) { b.setAttribute("aria-selected", b.dataset.tab === S.tab); });
+    $$(".seg .tab").forEach(function (b) { b.setAttribute("aria-selected", b.dataset.tab === S.tab); });
     $("#count-my").textContent = loading ? "–" : (S.state === "empty" ? 0 : S.state === "many" ? 5 : MY.length);
     $("#filters").hidden = my || err;
     $("#search-box").classList.toggle("is-disabled", loading); $("#dept-field").classList.toggle("is-disabled", loading);
@@ -485,12 +488,12 @@ th[aria-sort="ascending"] .sorth svg { transform: rotate(180deg); }
     $("#error").hidden = !err; $("#list").hidden = err;
     var all = list(), total = source().length, filtered = !my && (S.q.trim() || S.dept.length);
     $("#count-text").innerHTML = loading ? "Advisors" : err ? "Advisors" : filtered ? all.length + ' <span>of ' + total + " advisors</span>" : total + (total === 1 ? " advisor" : " advisors");
-    var rpp = S.rpp[S.tab], pages = Math.max(1, Math.ceil(all.length / rpp));
+    var rpp = 10, pages = Math.max(1, Math.ceil(all.length / rpp));
     if (S.page[S.tab] > pages) S.page[S.tab] = pages;
-    var start = (S.page[S.tab] - 1) * rpp, rows = all.slice(start, start + rpp), html;
+    var start = (S.page[S.tab] - 1) * rpp, rows = all.slice(start, start + rpp), html, emptyText = "";
     if (err) html = "";
     else if (loading) html = skeleton();
-    else if (!all.length) html = my ? empty("No advisors assigned to you yet") : empty(S.q.trim() && S.dept.length ? "No advisors match these filters" : S.q.trim() ? "No advisors match “" + S.q.trim() + "”" : "No advisors in the selected departments");
+    else if (!all.length) html = "", emptyText = my ? "No advisors assigned to you yet" : ( (S.q.trim() && S.dept.length ? "No advisors match these filters" : S.q.trim() ? "No advisors match “" + S.q.trim() + "”" : "No advisors in the selected departments"));
     else {
       html = '<div class="tablewrap"><table><colgroup><col>' + (my ? '<col style="width:160px">' : "") + '<col style="width:160px"><col style="width:260px"><col style="width:120px"></colgroup><thead><tr>' + th("name", "Advisor") + (my ? th("role", "Role") : "") + "<th>Phone</th><th>Email</th>" + '<th class="col-act"><span class="vh">Actions</span></th></tr></thead><tbody>' +
         rows.map(function (a, i) {
@@ -509,7 +512,9 @@ th[aria-sort="ascending"] .sorth svg { transform: rotate(180deg); }
         }).join("") + "</ul>";
     }
     $("#list").innerHTML = html;
-    foot(all.length, pages, start, loading || err || !all.length);
+    var isEmpty = !loading && !err && !all.length;
+    $("#table-card").hidden = isEmpty; $("#empty").hidden = !isEmpty; $("#empty").innerHTML = isEmpty ? empty(emptyText) : "";
+    foot(all.length, pages, start, loading || err || !all.length || pages < 2);
     renderAlerts();
   }
   function foot(total, pages, start, hide) {
@@ -523,7 +528,7 @@ th[aria-sort="ascending"] .sorth svg { transform: rotate(180deg); }
       }
       p += '<button type="button" data-page="next" aria-label="Next page"' + (S.page[key] === pages ? " disabled" : "") + ">" + I.chev + "</button>";
     }
-    el.innerHTML = '<div class="rpp"><span id="rpp-label">Rows per page</span><button class="select" type="button" id="rpp-btn" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="rpp-label rpp-btn"><span>' + S.rpp[key] + "</span>" + I.chevD + '</button><ul class="listbox listbox--up" id="rpp-list" role="listbox" aria-labelledby="rpp-label" hidden>' + [10, 20, 50].map(function (v) { return '<li role="none"><button type="button" role="option" data-rpp="' + v + '" aria-selected="' + (v === S.rpp[key]) + '"><span>' + v + "</span>" + I.tick + "</button></li>"; }).join("") + '</ul></div><div class="pager"><span class="range">' + (start + 1) + "–" + Math.min(start + S.rpp[key], total) + " of " + total + '</span><nav class="pages" aria-label="Pages">' + p + "</nav></div>";
+    el.innerHTML = '<span class="range">Showing ' + (start + 1) + "–" + Math.min(start + 10, total) + " of " + total + '</span><nav class="pages" aria-label="Pages">' + p + "</nav>";
   }
   function renderDepts() {
     var dq = ($("#dept-q").value || "").trim().toLowerCase(), opts = DEPTS.filter(function (d) { return !dq || d.toLowerCase().indexOf(dq) > -1; });
@@ -552,7 +557,7 @@ th[aria-sort="ascending"] .sorth svg { transform: rotate(180deg); }
   window.addEventListener("scroll", function () { closeMenu(); }, true);
   window.addEventListener("resize", function () { closeMenu(); });
 
-  function closeLists(except) { ["#dept-list", "#rpp-list"].forEach(function (s) { var l = $(s); if (l && l !== except) { l.hidden = true; l.previousElementSibling.setAttribute("aria-expanded", "false"); } }); }
+  function closeLists(except) { ["#dept-list"].forEach(function (s) { var l = $(s); if (l && l !== except) { l.hidden = true; l.previousElementSibling.setAttribute("aria-expanded", "false"); } }); }
   document.addEventListener("click", function (e) {
     var t = e.target;
     if (t.closest('a[href^="#"]')) { e.preventDefault(); var mi = t.closest(".dropdown-menu__item"); if (mi) { toast("Opens " + { "#message-center": "Message Center", "#old-scheduling": "old scheduling", "#scheduling-book": "Scheduling → Book" }[mi.getAttribute("href")] + " (another page)"); closeMenu(true); } return; }
@@ -567,12 +572,10 @@ th[aria-sort="ascending"] .sorth svg { transform: rotate(180deg); }
     if ((b = t.closest("[data-alert]"))) { S.alerts = S.alerts.filter(function (i) { return i !== +b.dataset.alert; }); renderAlerts(); return; }
     if ((b = t.closest("#dept-btn"))) { var l = $("#dept-list"), open = l.hidden; closeLists(l); l.hidden = !open; b.setAttribute("aria-expanded", open); return; }
     if ((b = t.closest("[data-dept]"))) { var d = b.dataset.dept, i = S.dept.indexOf(d); if (i > -1) S.dept.splice(i, 1); else S.dept.push(d); S.page.search = 1; b.setAttribute("aria-selected", i === -1); render(); return; }
-    if ((b = t.closest("#rpp-btn"))) { var rl = $("#rpp-list"), o2 = rl.hidden; closeLists(rl); rl.hidden = !o2; b.setAttribute("aria-expanded", o2); return; }
-    if ((b = t.closest("[data-rpp]"))) { S.rpp[S.tab] = +b.dataset.rpp; S.page[S.tab] = 1; render(); $("#rpp-btn").focus(); return; }
     if ((b = t.closest("#dept-clear"))) { S.dept = []; S.page.search = 1; renderDepts(); render(); $("#dept-q").focus(); return; }
     if ((b = t.closest(".clear"))) { S.q = ""; S.page.search = 1; render(); $("#q").focus(); return; }
     if ((b = t.closest("#retry"))) { var tab = S.tab; setState("loading"); S.tab = tab; render(); setTimeout(function () { setState(tab === "search" ? "search" : "default"); }, 1000); return; }
-    if (!t.closest(".field-inline, .rpp")) closeLists();
+    if (!t.closest(".field-inline")) closeLists();
   });
   document.addEventListener("keydown", function (e) { if (e.key === "Escape") { if (!$("#menu").hidden) closeMenu(true); closeLists(); } });
   $("#dept-q").addEventListener("input", renderDepts);
