@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<!--
+PAGE: Advisors
+FOR: student (signed in)
+PURPOSE: Lets a student find the advisor they need — their own assigned advisors or anyone in the advisor directory — and then message them or book time with them.
+URL: ?tab=my|search (selected tab; default my), ?q=<text> (Advisor Search text), ?dept=<id>,<id> (Advisor Search department filter). Page number, rows per page and the sort order are not kept in the URL.
+KNOWN BEFORE LOAD: whose advisors to show comes from the signed-in user (the student) — never from the address. From the address: the tab, the search text and the departments.
+DATA:
+  - Signed-in student: whose assigned advisors to show, and what the Actions menu is checked against. Source: the sign-in session.
+  - My Advisors: the student's assigned advisors — photo, name, role (the advisor's role for this student, e.g. "Advisor", "Faculty Advisor"), departments, phone, email. Source: not known yet.
+  - Advisor Search: every advisor the student may see — the same fields without the role, plus the advisor ID (searched, not shown). Source: not known yet.
+  - Departments for the filter: every department that has at least one advisor. Source: not known yet.
+  - Per advisor, which Actions menu items are available (rules in the Actions menu note). Source: department messaging + scheduling settings, the advisor's role permissions, Scheduling Settings, the advisor's bookable services.
+  - Each list comes with its total count (CountBadge on the My Advisors tab, count text in the toolbar).
+  - Page messages: 0..n messages set up for this page by the institution (info / warning / error). Source: page message settings (same as on the live page).
+ACTIONS:
+  - Switch tabs: My Advisors, Advisor Search.
+  - Advisor Search: search by name or ID; filter by one or more departments.
+  - Sort the table by Advisor (and by Role on My Advisors).
+  - Change rows per page (10, 20, 50) and page through the list.
+  - Call or email an advisor (tel: / mailto: links on the phone number and email).
+  - Per advisor, from the Actions menu (each item only when that advisor allows it): Send message (Message Center, another page), New appointment (old scheduling, another page), Schedule with this advisor (new Scheduling → Book, filtered to this advisor, another page).
+  - Settings button in the top bar (what it opens: OPEN QUESTIONS 1).
+  - Close a page message.
+  - Nothing on this page saves or sends anything, and nothing saves automatically.
+ITEMS:
+  - Advisor row — Table row (768px+) or a card (below 768px): Avatar (photo or initials), name, departments (all of them, comma-separated, one line cut with …; the full list in a Tooltip), role (My Advisors only), phone (tel: link), email (mailto: link, cut with …), Actions. Any field the advisor doesn't have (no phone, no email, no departments) is left out, not shown as "—". No messages of its own.
+  - Actions menu item — DropdownMenu item, shown only when its rule (in the Actions menu note) is met for that advisor. The Actions button is hidden for an advisor with no items.
+  - Department option — one per department in the filter, with a checkbox; any number can be picked.
+  - Page message — Alert, one per message, in the order set up; tone from its type (info / warning / error → tone="info" / "warning" / "danger").
+OPEN QUESTIONS:
+  1. The settings button in the top bar: what does it open for a student, and is it shown to students at all? Kept from the current page; this mockup doesn't design what it opens.
+  2. Phone-width rows: in the ui-next gallery, Table below md only goes full-bleed and hides its header — rows don't stack. Below 768px this mockup shows each row as a card; which component should the cards be?
+  3. Role: is the role always set for an assigned advisor? If it can be empty, the cell is left empty (mockup does that).
+CHECKED IN THE UI-NEXT GALLERY (2026-11-19): Avatar (Radix root + AvatarFallback, palettes incl. blue, green, teal, violet, pink), Dropdown Menu, Select with multiple + searchable (the gallery's "Select multiple" block), Table, CountBadge.
+STATES NOT SHOWN: "Error saving" — nothing on this page saves. Other user types — only students use this page.
+-->
+<!--
+STATES (switcher order):
+  Default: My Advisors, 3 assigned advisors; the institution runs old and new scheduling side by side, so menus can have all three items.
+  Advisor Search: the second tab, 49 advisors, page 1 of 5.
+  Menu open: the Actions menu of Tony Reed, with all three items (Abigail Reed's has two: she offers no service the student can book in new Scheduling).
+  After switchover: old scheduling is off — no menu shows New appointment.
+  Loading: first load; skeleton rows, the count shows "–", search and filter disabled.
+  No advisors: a student with no assigned advisor (My Advisors empty).
+  No search results: Advisor Search text matches nobody.
+  Error loading: the advisors couldn't load; ErrorState in the card.
+  Many rows: 56 advisors with long names, long department lists and long emails; pagination shortens with "…".
+  Page messages: three page messages from the institution above the tabs.
+-->
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Advisors — mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+/* Mockup styling only — developers use ui-next components, not this CSS.
+   Values are copied from the HighPoint design system (hp-design tokens and the History / Scheduling design pages), not new ones. */
+:root {
+  --page: #f9fafb; --surface: #ffffff; --surface-dim: #f4f5f7; --surface-dim-hover: #e6e8eb; --sunken: #e6e8eb;
+  --border: #dadde0; --border-strong: #adb5be; --text: #121921; --text-2: #5d6a7a; --text-muted: #758191; --text-disabled: #adb5be;
+  --icon: #485462; --icon-2: #758191; --primary: #077fec; --primary-hover: #0468c4; --primary-text: #0468c4;
+  --primary-tint: #d9eaff; --primary-tint-hover: #c7dffc; --focus: #0468c4;
+  --neutral-hover: #e6e8eb; --counter-bg: #cdd1d6; --counter-text: #485462;
+  --info-bg: #eef6ff; --info-border: #b3d6fe; --warn-bg: #fff3e7; --warn-border: #ffc68c; --warn-icon: #c17702;
+  --danger-bg: #ffdfde; --danger-border: #febebd; --danger-text: #c11435;
+  --radius: 8px;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { margin: 0; }
+body { font-family: "Sora", system-ui, sans-serif; font-size: 14px; line-height: 1.4; color: var(--text); background: var(--page); }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+svg { width: 20px; height: 20px; flex-shrink: 0; fill: currentColor; }
+a { color: var(--primary-text); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* mockup-only state switcher */
+.mk { position: sticky; top: 0; z-index: 30; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 8px 16px; background: #242c36; color: #fff; font-size: 12px; line-height: 16px; }
+.mk b { margin-right: 4px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: #d9eaff; }
+.mk button { padding: 4px 12px; border: 1px solid #485462; border-radius: 999px; background: transparent; color: #fff; font-size: 12px; cursor: pointer; }
+.mk button[aria-pressed="true"] { background: #fff; color: #121921; border-color: #fff; }
+
+/* TopBar */
+.topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; height: 64px; padding: 0 24px; background: var(--surface); border-bottom: 1px solid var(--border); }
+.topbar h1 { margin: 0; font-size: 18px; line-height: 1.4; font-weight: 600; }
+.iconbtn { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; padding: 0; border: 0; border-radius: var(--radius); background: none; color: var(--icon); cursor: pointer; }
+.iconbtn:hover { background: var(--neutral-hover); }
+.iconbtn--sm { width: 32px; height: 32px; }
+.wrap { container-type: inline-size; max-width: 1280px; margin: 0 auto; padding: 32px 32px 48px; display: flex; flex-direction: column; gap: 24px; }
+
+/* Alert */
+.alerts { display: flex; flex-direction: column; gap: 8px; }
+.alert { display: flex; align-items: flex-start; gap: 8px; padding: 12px 16px; border-radius: var(--radius); border: 1px solid var(--info-border); background: var(--info-bg); }
+.alert > svg { color: var(--primary-text); }
+.alert--warning { border-color: var(--warn-border); background: var(--warn-bg); } .alert--warning > svg { color: var(--warn-icon); }
+.alert--danger { border-color: var(--danger-border); background: var(--danger-bg); } .alert--danger > svg { color: var(--danger-text); }
+.alert__msg { flex: 1; margin: 0; } .alert__msg b { font-weight: 600; }
+.alert .iconbtn { width: 20px; height: 20px; border-radius: 4px; }
+.alert .iconbtn svg { width: 16px; height: 16px; }
+
+/* Card + Tabs (underline) */
+.panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
+.tabs { display: flex; padding: 0 16px; border-bottom: 1px solid var(--border); overflow-x: auto; scrollbar-width: none; }
+.tab { display: inline-flex; align-items: center; gap: 8px; height: 48px; padding: 0 12px 2px; border: 0; border-bottom: 2px solid transparent; margin-bottom: -1px; background: none; color: var(--text-2); font-size: 14px; font-weight: 400; white-space: nowrap; cursor: pointer; }
+.tab:hover { color: var(--text); }
+.tab[aria-selected="true"] { color: var(--text); font-weight: 600; border-bottom-color: var(--primary); }
+.count { display: inline-flex; align-items: center; justify-content: center; min-width: 16px; height: 16px; padding: 0 4px; border-radius: 999px; background: var(--counter-bg); color: var(--counter-text); font-size: 10px; line-height: 1; font-weight: 700; }
+.tab[aria-selected="true"] .count { background: var(--primary); color: #fff; }
+
+/* Toolbar */
+.toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; padding: 16px; border-bottom: 1px solid var(--border); }
+.toolbar__count { margin: 0; margin-right: auto; font-size: 14px; font-weight: 600; }
+.toolbar__count span { font-weight: 400; color: var(--text-2); }
+.toolbar__filters { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.search { display: flex; align-items: center; gap: 8px; width: 280px; max-width: 100%; height: 32px; padding: 0 12px; background: var(--surface-dim); border: 1px solid var(--border); border-radius: var(--radius); }
+.search:hover { background: var(--surface-dim-hover); border-color: var(--border-strong); }
+.search:focus-within { border-color: var(--focus); }
+.search__icon { color: var(--icon); }
+.search input { flex: 1; min-width: 0; height: 100%; padding: 0; border: 0; outline: none; background: transparent; font: inherit; font-size: 14px; color: var(--text); }
+.search input::placeholder { color: var(--text-muted); }
+.search input::-webkit-search-cancel-button { display: none; }
+.search .clear { display: none; width: 20px; height: 20px; padding: 0; border: 0; background: none; color: var(--icon); cursor: pointer; border-radius: var(--radius); }
+.search.has-value .clear { display: inline-flex; }
+.is-disabled { opacity: .5; pointer-events: none; }
+.field-inline { position: relative; display: flex; align-items: center; gap: 8px; }
+.field-inline > label, .field-inline > span.lbl { font-size: 14px; color: var(--text-2); white-space: nowrap; }
+.select { display: flex; align-items: center; gap: 8px; width: 220px; height: 32px; padding: 0 8px 0 12px; background: var(--surface-dim); border: 1px solid var(--border); border-radius: var(--radius); font-size: 14px; color: var(--text); text-align: left; cursor: pointer; }
+.select:hover { background: var(--surface-dim-hover); border-color: var(--border-strong); }
+.select[aria-expanded="true"] { border-color: var(--focus); }
+.select span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.select span.ph { color: var(--text-muted); }
+.select svg { width: 16px; height: 16px; color: var(--icon); transition: transform .12s; }
+.select[aria-expanded="true"] svg { transform: rotate(180deg); }
+.listbox { position: absolute; top: calc(100% + 4px); right: 0; z-index: 20; width: 280px; max-height: 320px; overflow-y: auto; margin: 0; padding: 4px; list-style: none; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: 0 2px 8px rgba(21, 25, 30, 0.1); }
+.select .count { flex-shrink: 0; }
+.lb-search { width: 100%; margin-bottom: 4px; }
+.lb-sum { padding: 4px 8px 8px; font-size: 12px; color: var(--text-2); border-bottom: 1px solid var(--border); margin-bottom: 4px; }
+.listbox .lb-sum button { display: inline; width: auto; min-height: 0; padding: 0; border: 0; background: none; color: var(--primary-text); font-size: 12px; font-weight: 600; cursor: pointer; }
+.listbox .lb-sum button:hover { background: none; text-decoration: underline; }
+.lb-opts { list-style: none; margin: 0; padding: 0; }
+.lb-none { padding: 8px; color: var(--text-muted); }
+.listbox--up { top: auto; bottom: calc(100% + 4px); width: 72px; min-width: 72px; }
+.listbox button { display: flex; align-items: center; gap: 8px; width: 100%; min-height: 36px; padding: 8px; border: 0; border-radius: 4px; background: none; font-size: 14px; color: var(--text); cursor: pointer; text-align: left; }
+.listbox button:hover { background: var(--neutral-hover); }
+.cb { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; border: 1px solid var(--border-strong); border-radius: 4px; background: var(--surface); }
+.cb svg { width: 14px; height: 14px; color: #fff; visibility: hidden; }
+[aria-selected="true"] > .cb { background: var(--primary); border-color: var(--primary); }
+[aria-selected="true"] > .cb svg { visibility: visible; }
+.listbox--up svg.tick { width: 16px; height: 16px; color: var(--primary); visibility: hidden; margin-left: auto; }
+.listbox--up [aria-selected="true"] svg.tick { visibility: visible; }
+
+/* Table */
+table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+th { padding: 12px 16px; text-align: left; font-size: 12px; line-height: 1.4; font-weight: 700; text-transform: uppercase; color: var(--text-muted); border-bottom: 1px solid var(--border); white-space: nowrap; }
+td { padding: 12px 16px; vertical-align: middle; border-bottom: 1px solid var(--border); }
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover td { background: var(--surface-dim); }
+.sorth { display: inline-flex; align-items: center; gap: 4px; padding: 0; border: 0; background: none; font: inherit; color: inherit; text-transform: inherit; cursor: pointer; border-radius: 4px; }
+.sorth svg { width: 14px; height: 14px; opacity: .4; }
+.sorth:hover svg { opacity: .7; }
+th[aria-sort] .sorth { color: var(--text); }
+th[aria-sort] .sorth svg { opacity: 1; color: #0468c4; }
+th[aria-sort="ascending"] .sorth svg { transform: rotate(180deg); }
+.col-act { width: 120px; text-align: right; }
+.person { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.person__text { display: flex; flex-direction: column; min-width: 0; }
+.person__name { font-weight: 600; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.person__sub { color: var(--text-2); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; }
+.avatar { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 999px; font-size: 14px; line-height: 1; font-weight: 600; user-select: none; }
+.avatar--blue { background: #d9eaff; color: #0468c4; } .avatar--green { background: #d4f1da; color: #057e3f; }
+.avatar--magenta { background: #ffddec; color: #b51c79; } .avatar--teal { background: #cfefef; color: #057878; }
+.avatar--violet { background: #e8e4ff; color: #743ed8; }
+.cell-1 { display: block; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.muted { color: var(--text-muted); }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 4px; height: 32px; padding: 0 8px 0 12px; border: 1px solid var(--border-strong); border-radius: var(--radius); background: var(--surface); color: var(--text); font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+.btn:hover { background: var(--neutral-hover); }
+.btn svg { width: 16px; height: 16px; color: var(--icon-2); transition: transform .12s; }
+.btn[aria-expanded="true"] svg { transform: rotate(180deg); }
+.btn--primary { height: 40px; padding: 0 16px; border: 0; background: var(--primary); color: #fff; font-size: 14px; }
+.btn--primary:hover { background: var(--primary-hover); }
+
+/* DropdownMenu (as the DS DropdownMenu) */
+.dropdown-menu { position: fixed; z-index: 50; margin: 0; padding: 4px; border-radius: 8px; background: var(--surface); border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(21, 25, 30, 0.10); min-width: 240px; }
+.dropdown-menu__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.dropdown-menu__item { width: 100%; display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 8px; border-radius: 4px; color: var(--text); font-size: 14px; line-height: 1.4; text-decoration: none; }
+.dropdown-menu__item:hover, .dropdown-menu__item:focus-visible { background: var(--neutral-hover); outline: none; text-decoration: none; }
+.dropdown-menu__item svg { width: 16px; height: 16px; color: var(--icon-2); }
+
+/* Cards (below 768px) */
+.cards { display: none; list-style: none; margin: 0; padding: 0; }
+.card { display: flex; gap: 12px; align-items: flex-start; padding: 16px; border-bottom: 1px solid var(--border); }
+.cards li:last-child .card { border-bottom: none; }
+.card__main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.card__name { font-weight: 600; overflow-wrap: anywhere; }
+.card__role { font-size: 12px; color: var(--text-2); }
+.card__depts { font-size: 12px; color: var(--text-2); display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; }
+.card__contact { display: flex; flex-wrap: wrap; gap: 4px 16px; margin-top: 4px; font-size: 12px; }
+.card__contact a { display: inline-flex; align-items: center; gap: 4px; min-width: 0; max-width: 100%; }
+.card__contact a span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.card__contact svg { width: 16px; height: 16px; }
+
+/* TablePaginationControl */
+.foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 24px; padding: 12px 16px; border-top: 1px solid var(--border); }
+.rpp { position: relative; display: inline-flex; align-items: center; gap: 8px; font-size: 14px; }
+.rpp .select { width: 72px; padding: 0 8px; }
+.pager { display: flex; align-items: center; gap: 12px; }
+.range { font-size: 12px; color: var(--text-muted); }
+.pages { display: inline-flex; align-items: center; gap: 4px; }
+.pages button { min-width: 32px; height: 32px; padding: 0 6px; border: 0; border-radius: var(--radius); background: none; font-size: 14px; color: var(--text); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
+.pages button:hover:not(:disabled):not([aria-current]) { background: var(--neutral-hover); }
+.pages button[aria-current="page"] { background: var(--primary); color: #fff; }
+.pages button:disabled { color: var(--text-disabled); cursor: default; }
+.pages .gap { min-width: 24px; text-align: center; color: var(--text-muted); }
+
+/* EmptyState / ErrorState / SkeletonLine */
+.empty { display: flex; justify-content: center; padding: 24px; }
+.empty__text { padding: 8px 16px; border-radius: 999px; background: #e6e8eb; color: var(--text-2); font-size: 14px; line-height: 1.4; text-align: center; }
+.state { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 32px 16px; text-align: center; }
+.state svg { width: 32px; height: 32px; color: var(--danger-text); }
+.state h2 { margin: 0; font-size: 16px; font-weight: 600; }
+.state p { margin: 0; color: var(--text-2); max-width: 400px; }
+.state .btn--primary { margin-top: 8px; }
+.sk { display: block; height: 12px; border-radius: 4px; background: linear-gradient(90deg, var(--sunken) 0%, var(--surface-dim) 50%, var(--sunken) 100%); background-size: 200% 100%; animation: sk 1.2s linear infinite; }
+@keyframes sk { to { background-position: -200% 0; } }
+@media (prefers-reduced-motion: reduce) { .sk { animation: none; } }
+.sk-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1.5fr; gap: 16px; padding: 26px 16px; border-bottom: 1px solid var(--border); }
+
+@container (max-width: 767px) {
+  .tablewrap { display: none; }
+  .cards { display: block; }
+  .sk-row { grid-template-columns: 1fr; gap: 8px; }
+}
+/* tablet cards: contact moves to a right column */
+@container (min-width: 560px) and (max-width: 767px) {
+  .card__main { display: grid; grid-template-columns: minmax(0, 1fr) 200px; column-gap: 16px; row-gap: 4px; }
+  .card__main > * { grid-column: 1; }
+  .card__contact { grid-column: 2; grid-row: 1 / span 3; flex-direction: column; margin-top: 0; }
+}
+@media (max-width: 767px) {
+  .topbar { padding: 0 8px 0 16px; }
+  .wrap { padding: 16px 0; gap: 16px; }
+  .alerts { padding: 0 16px; }
+  .panel { border-left: 0; border-right: 0; border-radius: 0; }
+  .toolbar__filters, .toolbar__filters > *, .search { width: 100%; }
+  .field-inline .select { flex: 1; width: auto; }
+  .field-inline .listbox { left: 0; right: 0; width: auto; }
+  .foot { justify-content: center; }
+}
+.toast { position: fixed; left: 50%; top: 24px; z-index: 60; transform: translateX(-50%); padding: 12px 16px; border-radius: var(--radius); background: #242c36; color: #fff; font-size: 14px; opacity: 0; pointer-events: none; transition: opacity .15s; }
+.toast.is-on { opacity: 1; }
+</style>
+</head>
+<body>
+
+<!-- mockup-only: state switcher, do not build -->
+<div class="mk" role="toolbar" aria-label="Mockup states">
+  <b>Mockup state</b>
+  <button type="button" data-state="default" aria-pressed="true">Default</button>
+  <button type="button" data-state="search" aria-pressed="false">Advisor Search</button>
+  <button type="button" data-state="menu" aria-pressed="false">Menu open</button>
+  <button type="button" data-state="switch" aria-pressed="false">After switchover</button>
+  <button type="button" data-state="loading" aria-pressed="false">Loading</button>
+  <button type="button" data-state="empty" aria-pressed="false">No advisors</button>
+  <button type="button" data-state="nosearch" aria-pressed="false">No search results</button>
+  <button type="button" data-state="error" aria-pressed="false">Error loading</button>
+  <button type="button" data-state="many" aria-pressed="false">Many rows</button>
+  <button type="button" data-state="alerts" aria-pressed="false">Page messages</button>
+</div>
+
+<!-- ui-next: TopBar | title on the left, settings IconButton on the right -->
+<!-- phone: below 768px the bar's side padding drops to 16px on the left, 8px on the right (the IconButton has its own padding) -->
+<header class="topbar">
+  <!-- ui-next: Text | as="h1" -->
+  <h1>Advisors</h1>
+  <!-- ui-next: IconButton | variant="ghost", size="base", icon settings, aria-label "Settings" -->
+  <!-- action: not known — see OPEN QUESTIONS 1 -->
+  <button class="iconbtn" type="button" aria-label="Settings" data-toast="Settings — see OPEN QUESTIONS 1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.48.48 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.49.49 0 0 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32a.49.49 0 0 0-.12-.61l-2.01-1.58zM12 15.6A3.6 3.6 0 1 1 12 8.4a3.6 3.6 0 0 1 0 7.2z"/></svg></button>
+</header>
+
+<main class="wrap" id="main">
+
+  <!-- ui-next: Alert | one per page message; tone from the message type: info → tone="info", warning → tone="warning", error → tone="danger"; the message text as set up (it can have bold words and links, so render it with HtmlContent); a close IconButton (variant="ghost", size="sm", aria-label "Close message") on the right -->
+  <!-- data: the page messages the institution set up for this page, in their order; none → nothing is shown and there is no gap -->
+  <!-- action: close hides that message until the page is opened again; nothing is saved -->
+  <!-- state: "Page messages" shows three -->
+  <!-- phone: below 768px the messages keep 16px from the screen edges -->
+  <div class="alerts" id="alerts" hidden></div>
+
+  <!-- ui-next: Card | flush (no padding): Tabs, then Toolbar, then the Table and the pagination -->
+  <!-- phone: below 768px the card loses its side borders and rounded corners and runs edge to edge -->
+  <section class="panel" aria-label="Advisors">
+    <!-- ui-next: Tabs | underline style; My Advisors has a CountBadge (number of assigned advisors; "–" while loading); Advisor Search has none -->
+    <!-- data: selected tab, kept in the URL as ?tab= (default my) -->
+    <!-- action: switches the content below and updates ?tab=. Each tab keeps its own search, filter, sort and page while the page is open. The list shows SkeletonLine rows while it loads; failing → ErrorState -->
+    <!-- phone: below 768px the tabs keep their size; the row starts 16px from the screen edge -->
+    <div class="tabs" role="tablist" aria-label="Advisor lists">
+      <button class="tab" role="tab" type="button" aria-selected="true" data-tab="my">My Advisors <span class="count" id="count-my"></span></button>
+      <button class="tab" role="tab" type="button" aria-selected="false" data-tab="search">Advisor Search</button>
+    </div>
+
+    <!-- ui-next: Toolbar | left: the count; right (Advisor Search only): SearchField + department filter -->
+    <!-- phone: below 768px the search field and the filter each take the full width, under the count -->
+    <div class="toolbar">
+      <!-- ui-next: Text | as="h2" (looks 14px semibold); "<n> advisors" — "1 advisor" for one. While a search or filter is on: "<n> of <total> advisors". "Loading": "Advisors" with no number -->
+      <h2 class="toolbar__count" id="count-text"></h2>
+      <div class="toolbar__filters" id="filters">
+        <!-- ui-next: SearchField | size small (32px, same height as the filter), placeholder "Search by name or ID", accessible label "Search advisors" (not shown) -->
+        <!-- rule: no visible label on purpose: the agreed exception for search fields (search icon + placeholder only) -->
+        <!-- data: search text, kept in the URL as ?q= -->
+        <!-- action: filters the list as the user types (matches the advisor's first name, last name, full name or ID); the X clears it; any change goes back to page 1 and updates ?q=. The request failing → ErrorState -->
+        <!-- rule: Advisor Search tab only; any text, no minimum length. Search and department filter work together (both must match) -->
+        <!-- state: "Loading": shown but disabled -->
+        <div class="search" id="search-box">
+          <svg class="search__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+          <label for="q" class="vh">Search advisors</label>
+          <input type="search" id="q" placeholder="Search by name or ID" autocomplete="off" />
+          <button class="clear" type="button" aria-label="Clear search"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
+        </div>
+        <!-- ui-next: Field + SelectField | multiple, searchable (the gallery's "Select multiple": checkboxes, a search box on top with "No results", an "<n> selected · Clear all" row, the first choice and "+N" in the field). Label "Department" shown inline to the left (the Field label sits above by default — put it beside the field in this toolbar); size sm (32px); placeholder "All departments"; one option per department, A→Z -->
+        <!-- data: the field shows "All departments" when nothing is picked, else the first picked department (cut with …) and a "+N" for the rest -->
+        <!-- data: picked departments, kept in the URL as ?dept= -->
+        <!-- action: each tick filters the list at once (an advisor matches when they belong to any picked department) and goes back to page 1; unticking all shows every advisor. Closes on Esc or clicking outside. The request failing → ErrorState -->
+        <!-- rule: Advisor Search tab only. State "Loading": disabled -->
+        <!-- phone: below 768px the label stays on the left and the field fills the rest of the row; the option list is as wide as the field -->
+        <div class="field-inline" id="dept-field">
+          <span class="lbl" id="dept-label">Department</span>
+          <button class="select" type="button" id="dept-btn" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="dept-label dept-btn"><span id="dept-value" class="ph">All departments</span><b class="count" id="dept-more" hidden></b><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></button>
+          <div class="listbox" id="dept-list" hidden>
+            <div class="search lb-search"><svg class="search__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg><label class="vh" for="dept-q">Find a department</label><input type="search" id="dept-q" placeholder="Search" autocomplete="off" /></div>
+            <div class="lb-sum" id="dept-sum" hidden><span id="dept-n"></span> · <button type="button" id="dept-clear">Clear all</button></div>
+            <ul class="lb-opts" id="dept-opts" role="listbox" aria-multiselectable="true" aria-labelledby="dept-label"></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ui-next: Table | My Advisors columns: Advisor · Role · Phone · Email · (Actions). Advisor Search: Advisor · Phone · Email · (Actions) -->
+    <!-- ui-next: SortHeader | on Advisor (by last name, then first name; default A→Z) and on Role (My Advisors only). Clicking sorts the whole list and goes back to page 1; again flips the order. Not kept in the URL -->
+    <!-- data: per row — Avatar, full name, departments (all, comma-separated, A→Z), role (My Advisors), phone, email -->
+    <!-- ui-next: Avatar | with AvatarFallback; 40px circle; the advisor's photo when they have one, otherwise their initials on a colour picked from the name (palettes blue, green, pink, teal, violet — the same person always gets the same colour; not red/amber/orange, which read as status); decorative, aria-hidden. Not in the guide's list but in the ui-next gallery -->    <!-- rule: departments: one line under the name, cut with "…" when they don't fit; the full list in a Tooltip on hover / focus. The name is one line, cut with "…" (the full name in the Tooltip too) -->
+    <!-- rule: phone is a tel: link, email a mailto: link (cut with "…" when long, full address in a Tooltip). A missing value leaves the cell empty -->
+    <!-- state: "Loading": 3 SkeletonLine rows. "No advisors" (My Advisors): EmptyState "No advisors assigned to you yet". "No search results": EmptyState "No advisors match “<search text>”" — or "No advisors in the selected departments" when only the filter is on, "No advisors match these filters" when both are on -->
+    <!-- phone (widths of the content area): 768px and wider = table. Tablet, 560–767px: each row becomes a card — Avatar, then name, role, departments (up to 2 lines, then …) on the left; phone and email stacked in a 200px column on the right; the Actions IconButton at the top right. Phone, below 560px: the same card with phone and email under the departments, side by side, wrapping when they don't fit. See OPEN QUESTIONS 2 -->
+    <!-- ui-next: Button | variant="outline", size="sm", label "Actions" with a chevron-down icon, aria-label "Actions for <full name>"; on cards (below 768px) an IconButton | variant="ghost", size="sm", icon more_horiz, aria-label "Actions for <full name>" -->
+    <!-- ui-next: DropdownMenu | opens under the button, right-aligned (above it when there is no room below); items are links (each opens another page), each with an icon, in this order: -->
+    <!--   1. "Send message" (icon chat) — rule: shown when the advisor's department has messaging on AND the advisor's role has the send-message permission; if the department limits messaging to assigned advisors, the advisor must also be one of the student's assigned advisors (so on Advisor Search it can be missing for advisors who aren't the student's). action: opens a new message to this advisor in the Message Center, recipient filled in; sending and its errors happen there -->
+    <!--   2. "New appointment" (icon calendar) — old scheduling. rule: shown when the advisor's department has scheduling on AND the advisor's role has the create-appointment permission; hidden for everyone once old scheduling is hidden after the switchover. action: opens the old scheduling page for this advisor -->
+    <!--   3. "Schedule with this advisor" (icon event available) — new Scheduling. rule: shown when Appointments is on in Scheduling Settings AND the advisor offers at least one service the student can book. action: opens Scheduling → Book filtered to this advisor (their appointments and drop-ins) -->
+    <!-- rule: while an institution runs old and new scheduling side by side, a student can see both 2 and 3 (they open two different systems). Each item is checked on its own, per advisor. When no item is available the Actions button is hidden and the cell is empty -->
+    <!-- action: the menu closes on Esc, clicking outside or picking an item; focus goes back to the button. Nothing on this page changes -->
+    <div id="list"></div>
+    <!-- ui-next: TablePaginationControl | rows per page 10 / 20 / 50 (default 10), range "1–10 of 49", page buttons -->
+    <!-- action: changing rows per page goes back to page 1; a page button loads that page. Not saved. While a page loads the list shows SkeletonLine rows; failing → ErrorState -->
+    <!-- rule: page buttons hidden when everything fits on one page (usually the case on My Advisors); the whole control hidden while loading, on errors and when the list is empty. "Many rows": page buttons shorten with "…" (1 2 … 5 6) -->
+    <!-- phone: below 768px rows per page and the page buttons are centred and wrap onto two lines when they don't fit -->
+    <div class="foot" id="foot"></div>
+
+    <!-- ui-next: ErrorState | title "We couldn't load advisors", message "Something went wrong on our side. Try again in a moment.", onRetry = load the current tab again (SkeletonLine rows while it waits; failing again brings this back) -->
+    <!-- state: "Error loading": replaces the toolbar's filters, the table and the pagination; the tabs stay so the student can switch -->
+    <div id="error" hidden>
+      <div class="state">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm1 15h-2v-2h2v2Zm0-4h-2V7h2v6Z"/></svg>
+        <h2>We couldn't load advisors</h2>
+        <p>Something went wrong on our side. Try again in a moment.</p>
+        <button class="btn btn--primary" type="button" id="retry">Try again</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="dropdown-menu" id="menu" role="menu" hidden><ul class="dropdown-menu__list" id="menu-list"></ul></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<!-- mockup-only: everything below fakes the data and the states, do not build -->
+<script>
+(function () {
+  var AA = "Academic Advising", AR = "Admissions & Records", CARE = "CARE", EOPS = "EOPS", FA = "Financial Aid", GA = "Grad - Admissions", REG = "Office of the Registrar", SF = "Student Financials", CO = "Counseling", SM = "Student Mentoring", VRC = "Veterans Resource Center", FY = "Center for First-Year Advising, Transfer Student Support, and Academic Recovery Services - Northwest", EN = "English Dept", LA = "Liberal Arts", HC = "Health Careers", TC = "Tutoring Center", CC = "Career Center", TR = "Transfer Center";
+  var DEPTS = [AA, AR, CARE, CC, FY, CO, EN, EOPS, FA, GA, HC, LA, REG, SF, SM, TR, TC, VRC].sort();
+  // [id, first, last, role, depts, phone, email, msg, old, new]
+  var MY = [
+    ["E10482", "Tony", "Reed", "Advisor", [AA, CARE, EOPS, FA, GA, REG, SF], "(555) 512-1138", "treed@highpoint.edu", 1, 1, 1],
+    ["E10217", "Alexander", "Robinson", "Faculty Advisor", [AA, FY, CO, GA, HC, REG, SM, TC], "(555) 512-1212", "arobinson@highpoint.edu", 1, 1, 1],
+    ["E10933", "Abigail", "Reed", "Advisor", [AA, AR, CO, SM, VRC], "(555) 512-4321", "abigail.reed@highpoint.edu", 1, 1, 0]
+  ];
+  var FIRST = ["Aaron", "Alex", "Alexa", "Alison", "Allen", "Amanda", "Andrea", "Andrew", "Ava", "Betty", "Brian", "Caitlin", "Carlos", "Dana", "Daniel", "Elena", "Emily", "Farah", "George", "Grace", "Hannah", "Hector", "Isaac", "Jasmine", "Kevin", "Laura", "Marcus", "Maya", "Nadia", "Omar", "Priya", "Rachel", "Samuel", "Sofia", "Thomas", "Victor", "Wendy", "Yusuf", "Zoe", "Lena", "Diego", "Mei", "Ruth", "Peter", "Irene", "Kofi"];
+  var LAST = ["Russell", "Roberts", "Robinson", "Rose", "Rice", "Rogers", "Robins", "Moore", "Locherty", "Amalor", "Gomez", "Nguyen", "Patel", "Kim", "Okafor", "Silva", "Bennett", "Hughes", "Alvarez", "Chen", "Foster", "Haddad", "Ivanova", "Jensen", "Kowalski", "Lopez", "Mendes", "Nakamura", "Owens", "Park"];
+  var SETS = [[FA, GA, REG, SF], [AA, AR, CO, SM, VRC], [TC], [SM], [FA, SF], [AA], [AA, FY, EN, LA], [CC], [CO, HC], [TR, AA], [EOPS, CARE, FA], [REG]];
+  var ROLES = ["Advisor", "Faculty Advisor", "Peer Mentor", "Counselor"];
+  function gen(n, long) {
+    var out = [], LN = ["Maria-Fernanda Castellanos-Villarreal", "Christopher Montgomery-Abernathy", "Oluwaseun Adebayo-Okonkwo"];
+    for (var i = 0; i < n; i++) {
+      var f = FIRST[i % FIRST.length], l = LAST[(i * 7) % LAST.length], depts = SETS[i % SETS.length];
+      if (long && i % 4 === 0) { var p = LN[(i / 4) % 3].split(" "); f = i % 12 === 0 ? p[0] : f; l = p[1]; depts = [AA, FY, CO, GA, HC, REG, SM, TC, VRC]; }
+      var email = (f[0] + l).toLowerCase().replace(/[^a-z]/g, "") + (long && i % 4 === 0 ? ".academicadvising.northwest" : "") + "@highpoint.edu";
+      out.push(["E1" + String(1000 + i * 37).padStart(4, "0"), f, l, ROLES[i % 4], depts, i % 9 === 5 ? "" : "(555) 512-" + String(1000 + (i * 271) % 9000), email, i % 5 !== 3 ? 1 : 0, i % 6 !== 2 ? 1 : 0, i % 7 === 4 ? 0 : 1]);
+    }
+    out[10][7] = 0; out[10][8] = 0; out[10][9] = 0; // an advisor with no actions at all
+    return out;
+  }
+  var ALL = gen(49), MANY = gen(56, true);
+
+  var S = { state: "default", tab: "my", q: "", dept: [], sort: { my: ["name", "asc"], search: ["name", "asc"] }, page: { my: 1, search: 1 }, rpp: { my: 10, search: 10 }, alerts: [] };
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  var I = {
+    chev: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>',
+    chevL: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>',
+    chevD: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>',
+    check: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>',
+    tick: '<svg class="tick" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>',
+    arrow: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12l-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8 8-8z"/></svg>',
+    more: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>',
+    phone: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>',
+    mail: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>',
+    chat: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>',
+    cal: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM9 14H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2zm-8 4H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2z"/></svg>',
+    avail: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16.53 11.06L15.47 10l-4.88 4.88-2.12-2.12-1.06 1.06L10.59 17l5.94-5.94zM19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z"/></svg>',
+    info: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>',
+    warn: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>',
+    err: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm1 15h-2v-2h2v2Zm0-4h-2V7h2v6Z"/></svg>',
+    close: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>'
+  };
+  var HUES = ["blue", "green", "magenta", "teal", "violet"]; // magenta = ui-next "pink"
+  function hash(t) { var h = 2166136261; for (var i = 0; i < t.length; i++) { h ^= t.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+  function name(a) { return a[1] + " " + a[2]; }
+  function avatar(a) { return '<span class="avatar avatar--' + HUES[hash(name(a)) % 5] + '" aria-hidden="true">' + esc(a[1][0] + a[2][0]) + "</span>"; }
+
+  function source() {
+    if (S.tab === "my") return S.state === "empty" ? [] : S.state === "many" ? MANY.slice(0, 5).map(function (a, i) { a = a.slice(); a[3] = i % 2 ? "Faculty Advisor" : "Advisor"; return a; }) : MY;
+    return S.state === "many" ? MANY : ALL;
+  }
+  function list() {
+    var src = source(), q = S.q.trim().toLowerCase();
+    if (S.tab === "search") src = src.filter(function (a) {
+      var okQ = !q || (name(a) + " " + a[2] + " " + a[0]).toLowerCase().indexOf(q) > -1;
+      var okD = !S.dept.length || a[4].some(function (d) { return S.dept.indexOf(d) > -1; });
+      return okQ && okD;
+    });
+    var so = S.sort[S.tab], dir = so[1] === "asc" ? 1 : -1;
+    return src.slice().sort(function (a, b) { var x = so[0] === "role" ? a[3] + a[2] : a[2] + a[1], y = so[0] === "role" ? b[3] + b[2] : b[2] + b[1]; return x.localeCompare(y) * dir; });
+  }
+  function items(a) {
+    var out = [];
+    if (a[7]) out.push(["Send message", I.chat, "#message-center"]);
+    if (a[8] && S.state !== "switch") out.push(["New appointment", I.cal, "#old-scheduling"]);
+    if (a[9]) out.push(["Schedule with this advisor", I.avail, "#scheduling-book"]);
+    return out;
+  }
+  function th(col, label) {
+    var on = S.sort[S.tab][0] === col, dir = S.sort[S.tab][1];
+    return "<th" + (on ? ' aria-sort="' + (dir === "asc" ? "ascending" : "descending") + '"' : "") + '><button class="sorth" type="button" data-sort="' + col + '">' + label + I.arrow + "</button></th>";
+  }
+  function skeleton() { var r = ""; for (var i = 0; i < 3; i++) r += '<div class="sk-row"><span class="sk"></span><span class="sk"></span><span class="sk"></span><span class="sk"></span></div>'; return '<div aria-busy="true" aria-label="Loading">' + r + "</div>"; }
+  function empty(t) { return '<div class="empty"><span class="empty__text">' + esc(t) + "</span></div>"; }
+
+  function render() {
+    var my = S.tab === "my", err = S.state === "error", loading = S.state === "loading";
+    $$(".tab").forEach(function (b) { b.setAttribute("aria-selected", b.dataset.tab === S.tab); });
+    $("#count-my").textContent = loading ? "–" : (S.state === "empty" ? 0 : S.state === "many" ? 5 : MY.length);
+    $("#filters").hidden = my || err;
+    $("#search-box").classList.toggle("is-disabled", loading); $("#dept-field").classList.toggle("is-disabled", loading);
+    $("#q").value = S.q; $("#search-box").classList.toggle("has-value", !!S.q);
+    var sel = DEPTS.filter(function (d) { return S.dept.indexOf(d) > -1; });
+    $("#dept-value").textContent = sel.length ? sel[0] : "All departments";
+    $("#dept-value").className = sel.length ? "" : "ph";
+    $("#dept-more").hidden = sel.length < 2; $("#dept-more").textContent = "+" + (sel.length - 1);
+    $("#dept-sum").hidden = !sel.length; $("#dept-n").textContent = sel.length + " selected";
+    $("#error").hidden = !err; $("#list").hidden = err;
+    var all = list(), total = source().length, filtered = !my && (S.q.trim() || S.dept.length);
+    $("#count-text").innerHTML = loading ? "Advisors" : err ? "Advisors" : filtered ? all.length + ' <span>of ' + total + " advisors</span>" : total + (total === 1 ? " advisor" : " advisors");
+    var rpp = S.rpp[S.tab], pages = Math.max(1, Math.ceil(all.length / rpp));
+    if (S.page[S.tab] > pages) S.page[S.tab] = pages;
+    var start = (S.page[S.tab] - 1) * rpp, rows = all.slice(start, start + rpp), html;
+    if (err) html = "";
+    else if (loading) html = skeleton();
+    else if (!all.length) html = my ? empty("No advisors assigned to you yet") : empty(S.q.trim() && S.dept.length ? "No advisors match these filters" : S.q.trim() ? "No advisors match “" + S.q.trim() + "”" : "No advisors in the selected departments");
+    else {
+      html = '<div class="tablewrap"><table><colgroup><col>' + (my ? '<col style="width:160px">' : "") + '<col style="width:160px"><col style="width:260px"><col style="width:120px"></colgroup><thead><tr>' + th("name", "Advisor") + (my ? th("role", "Role") : "") + "<th>Phone</th><th>Email</th>" + '<th class="col-act"><span class="vh">Actions</span></th></tr></thead><tbody>' +
+        rows.map(function (a, i) {
+          var d = a[4].join(", "), k = start + i, has = items(a).length;
+          return '<tr><td><span class="person">' + avatar(a) + '<span class="person__text"><span class="person__name" title="' + esc(name(a)) + '">' + esc(name(a)) + '</span><span class="person__sub" title="' + esc(d) + '">' + esc(d) + "</span></span></span></td>" +
+            (my ? "<td>" + esc(a[3]) + "</td>" : "") +
+            "<td>" + (a[5] ? '<a href="tel:' + a[5].replace(/\D/g, "") + '">' + esc(a[5]) + "</a>" : "") + "</td>" +
+            '<td><a class="cell-1" href="mailto:' + esc(a[6]) + '" title="' + esc(a[6]) + '">' + esc(a[6]) + "</a></td>" +
+            '<td class="col-act">' + (has ? '<button class="btn" type="button" data-menu="' + k + '" aria-haspopup="menu" aria-expanded="false" aria-label="Actions for ' + esc(name(a)) + '">Actions' + I.chevD + "</button>" : "") + "</td></tr>";
+        }).join("") + '</tbody></table></div><ul class="cards">' +
+        rows.map(function (a, i) {
+          var k = start + i, has = items(a).length;
+          return '<li><div class="card">' + avatar(a) + '<div class="card__main"><span class="card__name">' + esc(name(a)) + "</span>" + (my ? '<span class="card__role">' + esc(a[3]) + "</span>" : "") + '<span class="card__depts">' + esc(a[4].join(", ")) + '</span><span class="card__contact">' +
+            (a[5] ? '<a href="tel:' + a[5].replace(/\D/g, "") + '">' + I.phone + "<span>" + esc(a[5]) + "</span></a>" : "") + '<a href="mailto:' + esc(a[6]) + '">' + I.mail + "<span>" + esc(a[6]) + "</span></a></span></div>" +
+            (has ? '<button class="iconbtn iconbtn--sm" type="button" data-menu="' + k + '" aria-haspopup="menu" aria-expanded="false" aria-label="Actions for ' + esc(name(a)) + '">' + I.more + "</button>" : "") + "</div></li>";
+        }).join("") + "</ul>";
+    }
+    $("#list").innerHTML = html;
+    foot(all.length, pages, start, loading || err || !all.length);
+    renderAlerts();
+  }
+  function foot(total, pages, start, hide) {
+    var el = $("#foot"), key = S.tab; el.hidden = hide; if (hide) return;
+    var p = "";
+    if (pages > 1) {
+      p = '<button type="button" data-page="prev" aria-label="Previous page"' + (S.page[key] === 1 ? " disabled" : "") + ">" + I.chevL + "</button>";
+      for (var i = 1; i <= pages; i++) {
+        if (pages > 7 && i > 2 && i < pages - 1 && Math.abs(i - S.page[key]) > 1) { if (p.slice(-7) !== "</span>") p += '<span class="gap">&hellip;</span>'; continue; }
+        p += '<button type="button" data-page="' + i + '"' + (i === S.page[key] ? ' aria-current="page"' : "") + ">" + i + "</button>";
+      }
+      p += '<button type="button" data-page="next" aria-label="Next page"' + (S.page[key] === pages ? " disabled" : "") + ">" + I.chev + "</button>";
+    }
+    el.innerHTML = '<div class="rpp"><span id="rpp-label">Rows per page</span><button class="select" type="button" id="rpp-btn" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="rpp-label rpp-btn"><span>' + S.rpp[key] + "</span>" + I.chevD + '</button><ul class="listbox listbox--up" id="rpp-list" role="listbox" aria-labelledby="rpp-label" hidden>' + [10, 20, 50].map(function (v) { return '<li role="none"><button type="button" role="option" data-rpp="' + v + '" aria-selected="' + (v === S.rpp[key]) + '"><span>' + v + "</span>" + I.tick + "</button></li>"; }).join("") + '</ul></div><div class="pager"><span class="range">' + (start + 1) + "–" + Math.min(start + S.rpp[key], total) + " of " + total + '</span><nav class="pages" aria-label="Pages">' + p + "</nav></div>";
+  }
+  function renderDepts() {
+    var dq = ($("#dept-q").value || "").trim().toLowerCase(), opts = DEPTS.filter(function (d) { return !dq || d.toLowerCase().indexOf(dq) > -1; });
+    if (!opts.length) { $("#dept-opts").innerHTML = '<li class="lb-none">No results</li>'; return; }
+    $("#dept-opts").innerHTML = opts.map(function (d) { return '<li role="none"><button type="button" role="option" data-dept="' + esc(d) + '" aria-selected="' + (S.dept.indexOf(d) > -1) + '"><span class="cb">' + I.check + "</span><span>" + esc(d) + "</span></button></li>"; }).join("");
+  }
+  var ALERTS = [["info", "Information:", "Advisor office hours change for the winter break, December 19 – January 5."], ["warning", "Warning:", "Phone lines at the Financial Aid office are down today; please send a message instead."], ["danger", "Error:", "Some advisor photos can't be shown right now."]];
+  function renderAlerts() {
+    var el = $("#alerts"); el.hidden = !S.alerts.length;
+    el.innerHTML = S.alerts.map(function (i) { var a = ALERTS[i]; return '<div class="alert alert--' + a[0] + '" role="' + (a[0] === "info" ? "status" : "alert") + '">' + (a[0] === "info" ? I.info : a[0] === "warning" ? I.warn : I.err) + '<p class="alert__msg"><b>' + a[1] + "</b> " + esc(a[2]) + '</p><button class="iconbtn" type="button" aria-label="Close message" data-alert="' + i + '">' + I.close + "</button></div>"; }).join("");
+  }
+
+  // menu
+  var menuBtn = null;
+  function openMenu(btn) {
+    closeMenu();
+    var a = list()[+btn.dataset.menu], m = $("#menu");
+    $("#menu-list").innerHTML = items(a).map(function (it) { return '<li role="none"><a class="dropdown-menu__item" role="menuitem" href="' + it[2] + '">' + it[1] + "<span>" + it[0] + "</span></a></li>"; }).join("");
+    m.hidden = false; btn.setAttribute("aria-expanded", "true"); menuBtn = btn;
+    var r = btn.getBoundingClientRect(), h = m.offsetHeight, w = m.offsetWidth;
+    m.style.left = Math.max(8, r.right - w) + "px";
+    m.style.top = (r.bottom + 4 + h > window.innerHeight ? r.top - 4 - h : r.bottom + 4) + "px";
+    m.querySelector("a").focus();
+  }
+  function closeMenu(back) { $("#menu").hidden = true; if (menuBtn) { menuBtn.setAttribute("aria-expanded", "false"); if (back) menuBtn.focus(); } menuBtn = null; }
+  window.addEventListener("scroll", function () { closeMenu(); }, true);
+  window.addEventListener("resize", function () { closeMenu(); });
+
+  function closeLists(except) { ["#dept-list", "#rpp-list"].forEach(function (s) { var l = $(s); if (l && l !== except) { l.hidden = true; l.previousElementSibling.setAttribute("aria-expanded", "false"); } }); }
+  document.addEventListener("click", function (e) {
+    var t = e.target;
+    if (t.closest('a[href^="#"]')) { e.preventDefault(); var mi = t.closest(".dropdown-menu__item"); if (mi) { toast("Opens " + { "#message-center": "Message Center", "#old-scheduling": "old scheduling", "#scheduling-book": "Scheduling → Book" }[mi.getAttribute("href")] + " (another page)"); closeMenu(true); } return; }
+    var b;
+    if ((b = t.closest("[data-state]"))) { setState(b.dataset.state); return; }
+    if ((b = t.closest("[data-menu]"))) { if (menuBtn === b) closeMenu(true); else openMenu(b); return; }
+    if (!t.closest("#menu")) closeMenu();
+    if ((b = t.closest("[data-toast]"))) { toast(b.dataset.toast); return; }
+    if ((b = t.closest("[data-tab]"))) { S.tab = b.dataset.tab; closeLists(); render(); return; }
+    if ((b = t.closest("[data-sort]"))) { var c = S.sort[S.tab]; S.sort[S.tab] = [b.dataset.sort, c[0] === b.dataset.sort && c[1] === "asc" ? "desc" : "asc"]; S.page[S.tab] = 1; render(); $('[data-sort="' + b.dataset.sort + '"]').focus(); return; }
+    if ((b = t.closest("[data-page]"))) { var v = b.dataset.page; S.page[S.tab] = v === "prev" ? S.page[S.tab] - 1 : v === "next" ? S.page[S.tab] + 1 : +v; render(); return; }
+    if ((b = t.closest("[data-alert]"))) { S.alerts = S.alerts.filter(function (i) { return i !== +b.dataset.alert; }); renderAlerts(); return; }
+    if ((b = t.closest("#dept-btn"))) { var l = $("#dept-list"), open = l.hidden; closeLists(l); l.hidden = !open; b.setAttribute("aria-expanded", open); return; }
+    if ((b = t.closest("[data-dept]"))) { var d = b.dataset.dept, i = S.dept.indexOf(d); if (i > -1) S.dept.splice(i, 1); else S.dept.push(d); S.page.search = 1; b.setAttribute("aria-selected", i === -1); render(); return; }
+    if ((b = t.closest("#rpp-btn"))) { var rl = $("#rpp-list"), o2 = rl.hidden; closeLists(rl); rl.hidden = !o2; b.setAttribute("aria-expanded", o2); return; }
+    if ((b = t.closest("[data-rpp]"))) { S.rpp[S.tab] = +b.dataset.rpp; S.page[S.tab] = 1; render(); $("#rpp-btn").focus(); return; }
+    if ((b = t.closest("#dept-clear"))) { S.dept = []; S.page.search = 1; renderDepts(); render(); $("#dept-q").focus(); return; }
+    if ((b = t.closest(".clear"))) { S.q = ""; S.page.search = 1; render(); $("#q").focus(); return; }
+    if ((b = t.closest("#retry"))) { var tab = S.tab; setState("loading"); S.tab = tab; render(); setTimeout(function () { setState(tab === "search" ? "search" : "default"); }, 1000); return; }
+    if (!t.closest(".field-inline, .rpp")) closeLists();
+  });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") { if (!$("#menu").hidden) closeMenu(true); closeLists(); } });
+  $("#dept-q").addEventListener("input", renderDepts);
+  $("#q").addEventListener("input", function (e) { S.q = e.target.value; S.page.search = 1; render(); $("#q").focus(); });
+
+  function toast(msg) { var to = $("#toast"); to.textContent = msg; to.classList.add("is-on"); clearTimeout(to._t); to._t = setTimeout(function () { to.classList.remove("is-on"); }, 2000); }
+  function setState(s) {
+    closeMenu(); closeLists();
+    S.state = { search: "default", menu: "default", nosearch: "default", alerts: "default" }[s] || s;
+    S.tab = /^(search|nosearch|many)$/.test(s) ? "search" : "my";
+    S.q = s === "nosearch" ? "Whitfield" : ""; S.dept = [];
+    S.page = { my: 1, search: 1 }; S.sort = { my: ["name", "asc"], search: ["name", "asc"] };
+    S.alerts = s === "alerts" ? [0, 1, 2] : [];
+    $$(".mk button").forEach(function (b) { b.setAttribute("aria-pressed", b.dataset.state === s); });
+    renderDepts(); render();
+    if (s === "menu") { var mb = $('.tablewrap [data-menu="1"]'); openMenu(mb && mb.offsetParent ? mb : $('.cards [data-menu="1"]')); }
+  }
+  setState("default");
+})();
+</script>
+</body>
+</html>

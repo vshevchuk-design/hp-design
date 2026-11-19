@@ -130,6 +130,7 @@ export const DESIGN_PRODUCTS = {
       schedule: { label: "Schedule", href: "designs/schedule.html" },
       "cx-advising-history": { label: "History", href: "designs/cx-advising-history.html" },
       "advising-post-session-survey": { label: "Post-session Survey", href: "designs/advising-post-session-survey.html" },
+      "advising-advisors": { label: "Advisors", href: "designs/advising-advisors.html" },
     },
   },
   "release-emails": {
