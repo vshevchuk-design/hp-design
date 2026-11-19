@@ -11,6 +11,7 @@
 // (a function of the helpers in X, so it resolves tokens the same way) and
 // its own script. The shell script exposes window.cx.toast(text) and
 // window.cx.notDesigned() for links that lead outside the prototype.
+import { SETTINGS_BUTTON_CSS, SETTINGS_COLOR_PATHS, settingsButton } from "./app-shell.mjs";
 import { FAB_CSS, fabHtml } from "./fab.mjs";
 import fs from "node:fs";
 import path from "node:path";
@@ -94,11 +95,12 @@ const componentColorPaths = [];
   if (node.$type === "color" && typeof node.$value === "string" && node.$value.startsWith("{")) componentColorPaths.push(refPath(node.$value));
   for (const [k, v] of Object.entries(node)) if (!k.startsWith("$")) walk(v);
 })(tokens);
-const SHELL_COLOR_PATHS = ["bg.primary", "surface.sunken", "surface.page", "surface.default", "text.default", "text.secondary", "text.muted", "text.primary", "icon.secondary", "icon.primary", "border.default", "fill.primary"];
+const SHELL_COLOR_PATHS = [...SETTINGS_COLOR_PATHS, "bg.primary", "surface.sunken", "surface.page", "surface.default", "text.default", "text.secondary", "text.muted", "text.primary", "icon.secondary", "icon.primary", "border.default", "fill.primary"];
 const headLabel = style("label-sm");
 const headCase = textExt("text-style.label-sm").textTransform || "none";
 
 const SHELL_CSS = `
+${SETTINGS_BUTTON_CSS}
 /* ============ CX shell: sidebar + topbar + page ============ */
 html, body { height: auto; min-height: 100%; }
 .cx { display: flex; min-height: 100dvh; }
@@ -242,7 +244,7 @@ ${css}
     <header class="cx-topbar">
       ${SIDEBAR_MENU_BUTTON("btn btn--secondary btn--base btn--icon-only")}
       <h1 class="cx-topbar__title" id="cx-topbar-title">${title}</h1>
-      <button class="btn btn--secondary btn--base btn--icon-only" type="button" aria-label="Settings">${icon("settings", "btn__icon")}</button>
+      ${settingsButton(icon)}
     </header>
     <main class="cx-page">
 ${views}

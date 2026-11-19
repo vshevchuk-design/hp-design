@@ -26,7 +26,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { renderRootVars, cssVarName } from "./lib/css-vars.mjs";
 import { renderDesignViewer } from "./lib/design-viewer.mjs";
-import { SHELL_TOPBAR_CSS, SHELL_COLOR_PATHS, shellTopbar } from "./lib/app-shell.mjs";
+import { SHELL_TOPBAR_CSS, SHELL_COLOR_PATHS, shellTopbar, settingsButton } from "./lib/app-shell.mjs";
 import { ssCss, SS_COLOR_PATHS } from "./lib/ss-css.mjs";
 import { ssAppJs } from "./lib/ss-app.mjs";
 import { TOAST_JS } from "./lib/toast.mjs";
@@ -109,9 +109,9 @@ const appCss = hoverGuard(`${rootVars}
 ${SHELL_TOPBAR_CSS}
 ${ssCss({ tokens, resolve, resolveToken, cv, px, refPath, typoCss, textExt, get })}`);
 
-// The topbar's settings action: Button secondary base icon-only — this page
-// ships its own full Button recipe, so it takes only the topbar half of the shell.
-const settingsBtn = `<button class="btn btn--secondary btn--base btn--icon-only" type="button" aria-label="Settings">${icon("settings", "btn__icon")}</button>`;
+// The topbar's settings action: the shared outline Settings button (app-shell.mjs;
+// its CSS comes with SHELL_TOPBAR_CSS).
+const settingsBtn = settingsButton(icon);
 const chevronDown = icon("expand_more", "chip__icon");
 
 // v5's section bar: segmented Tabs (base) instead of underline; the bar is the track.
@@ -895,7 +895,7 @@ const markupV7 = () => {
   const nav = m.slice(tabsAt, navEnd).replace("ss-sections--seg ss-sections--center", "ss-sections--top");
   m = m.slice(0, tabsAt) + m.slice(navEnd);
   // the section Tabs go between the title and the settings button
-  const settingsAt = m.lastIndexOf('<button class="btn btn--secondary btn--base btn--icon-only" type="button" aria-label="Settings">', m.indexOf("</header>"));
+  const settingsAt = m.lastIndexOf('<button class="btn settings-btn"', m.indexOf("</header>"));
   m = m.slice(0, settingsAt) + nav + "\n    " + m.slice(settingsAt);
   return m
     .replace('<header class="app__topbar">', `<header class="app__topbar">\n    ${SIDEBAR_MENU_BUTTON("btn btn--secondary btn--base btn--icon-only")}`)
@@ -1043,7 +1043,7 @@ const checkinMarkup = () => `<!-- prototype chrome, not part of the design: jump
   <header class="app__topbar">
     ${SIDEBAR_MENU_BUTTON("btn btn--secondary btn--base btn--icon-only")}
     <div class="app__brand"><h1 class="app__title">Check in</h1></div>
-    <button class="btn btn--secondary btn--base btn--icon-only" type="button" aria-label="Settings">${icon("settings", "btn__icon")}</button>
+    ${settingsBtn}
   </header>
   <main class="ss__main">
     <div class="ck-page">

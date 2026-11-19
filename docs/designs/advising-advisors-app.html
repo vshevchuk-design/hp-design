@@ -23,7 +23,7 @@ ACTIONS:
   - Change rows per page (10, 20, 50) and page through the list.
   - Call or email an advisor (tel: / mailto: links on the phone number and email).
   - Per advisor, from the Actions menu (each item only when that advisor allows it): Send message (Message Center, another page), New appointment (old scheduling, another page), Schedule with this advisor (new Scheduling → Book, filtered to this advisor, another page).
-  - Settings button in the top bar (what it opens: OPEN QUESTIONS 1).
+  - Settings button in the top bar: the app's global Preferences menu (Institutions, About), the same on every page.
   - Close a page message.
   - Nothing on this page saves or sends anything, and nothing saves automatically.
 ITEMS:
@@ -32,9 +32,8 @@ ITEMS:
   - Department option — one per department in the filter, with a checkbox; any number can be picked.
   - Page message — Alert, one per message, in the order set up; tone from its type (info / warning / error → tone="info" / "warning" / "danger").
 OPEN QUESTIONS:
-  1. The settings button in the top bar: what does it open for a student, and is it shown to students at all? Kept from the current page; this mockup doesn't design what it opens.
-  2. Phone-width rows: in the ui-next gallery, Table below md only goes full-bleed and hides its header — rows don't stack. Below 768px this mockup shows each row as a card; which component should the cards be?
-  3. Role: is the role always set for an assigned advisor? If it can be empty, the cell is left empty (mockup does that).
+  1. Phone-width rows: in the ui-next gallery, Table below md only goes full-bleed and hides its header — rows don't stack. Below 768px this mockup shows each row as a card; which component should the cards be?
+  2. Role: is the role always set for an assigned advisor? If it can be empty, the cell is left empty (mockup does that).
 CHECKED IN THE UI-NEXT GALLERY (2026-11-19): Avatar (Radix root + AvatarFallback, palettes incl. blue, green, teal, violet, pink), Dropdown Menu, Select with multiple + searchable (the gallery's "Select multiple" block), Table, CountBadge.
 STATES NOT SHOWN: "Error saving" — nothing on this page saves. Other user types — only students use this page.
 -->
@@ -253,6 +252,16 @@ th[aria-sort="ascending"] .sorth svg { transform: rotate(180deg); }
 }
 .toast { position: fixed; left: 50%; top: 24px; z-index: 60; transform: translateX(-50%); padding: 12px 16px; border-radius: var(--radius); background: #242c36; color: #fff; font-size: 14px; opacity: 0; pointer-events: none; transition: opacity .15s; }
 .toast.is-on { opacity: 1; }
+/* Settings — the global header button: Button outline base icon-only + DropdownMenu "Preferences" (same on every page) */
+.prefs { position: relative; display: inline-flex; flex-shrink: 0; }
+.settings-btn { display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box; width: 40px; height: 40px; padding: 0; border: 1px solid #dadde0; border-radius: 8px; background: transparent; color: #485462; cursor: pointer; }
+.settings-btn svg { width: 20px; height: 20px; fill: currentColor; }
+.settings-btn:hover, .settings-btn[aria-expanded="true"] { background: #e6e8eb; }
+.settings-btn:active { background: #cdd1d6; }
+.prefs-menu { position: absolute; top: calc(100% + 4px); right: 0; z-index: 55; min-width: 200px; padding: 4px; background: #fff; border: 1px solid #dadde0; border-radius: 8px; box-shadow: 0 2px 8px rgba(21, 25, 30, 0.10); text-align: left; }
+.prefs-menu__label { display: flex; align-items: center; height: 28px; padding: 0 8px; color: #758191; font-size: 12px; font-weight: 600; line-height: 1.4; }
+.prefs-menu__item { display: flex; align-items: center; height: 36px; padding: 0 8px; border-radius: 4px; color: #121921; font-size: 14px; font-weight: 400; text-decoration: none; }
+.prefs-menu__item:hover, .prefs-menu__item:focus-visible { background: #e6e8eb; outline: none; text-decoration: none; }
 </style>
 </head>
 <body>
@@ -272,14 +281,16 @@ th[aria-sort="ascending"] .sorth svg { transform: rotate(180deg); }
   <button type="button" data-state="alerts" aria-pressed="false">Page messages</button>
 </div>
 
-<!-- ui-next: TopBar | title on the left, settings IconButton on the right -->
+<!-- ui-next: TopBar | title on the left, the global Settings button on the right -->
 <!-- phone: below 768px the bar's side padding drops to 16px on the left, 8px on the right (the IconButton has its own padding) -->
 <header class="topbar">
   <!-- ui-next: Text | as="h1" -->
   <h1>Advisors</h1>
-  <!-- ui-next: IconButton | variant="ghost", size="base", icon settings, aria-label "Settings" -->
-  <!-- action: not known — see OPEN QUESTIONS 1 -->
-  <button class="iconbtn" type="button" aria-label="Settings" data-toast="Settings — see OPEN QUESTIONS 1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.48.48 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.49.49 0 0 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32a.49.49 0 0 0-.12-.61l-2.01-1.58zM12 15.6A3.6 3.6 0 1 1 12 8.4a3.6 3.6 0 0 1 0 7.2z"/></svg></button>
+  <!-- ui-next: IconButton | variant="outline", size="base", icon settings, aria-label "Settings" — the app's global header button, drawn the same on every page -->
+  <!-- ui-next: DropdownMenu | opens under the button, right-aligned; a group label "Preferences", then two items: "Institutions", "About" -->
+  <!-- action: part of the app's global header, not tied to this page: each item opens that app page (Institutions, About); nothing on this page changes -->
+  <!-- phone: the same below 768px -->
+  <span class="prefs"><button class="settings-btn" type="button" aria-label="Settings" aria-haspopup="menu" aria-expanded="false" id="prefs-btn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.48.48 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.49.49 0 0 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32a.49.49 0 0 0-.12-.61l-2.01-1.58zM12 15.6A3.6 3.6 0 1 1 12 8.4a3.6 3.6 0 0 1 0 7.2z"/></svg></button><div class="prefs-menu" id="prefs-menu" role="menu" aria-label="Preferences" hidden><div class="prefs-menu__label">Preferences</div><a class="prefs-menu__item" role="menuitem" href="#institutions">Institutions</a><a class="prefs-menu__item" role="menuitem" href="#about">About</a></div></span>
 </header>
 
 <main class="wrap" id="main">
@@ -580,6 +591,17 @@ th[aria-sort="ascending"] .sorth svg { transform: rotate(180deg); }
     if (s === "menu") { var mb = $('.tablewrap [data-menu="1"]'); openMenu(mb && mb.offsetParent ? mb : $('.cards [data-menu="1"]')); }
   }
   setState("default");
+})();
+</script>
+<!-- mockup-only: opens the Preferences menu, do not build -->
+<script>
+(function () {
+  var b = document.getElementById("prefs-btn"), m = document.getElementById("prefs-menu");
+  function close(back) { m.hidden = true; b.setAttribute("aria-expanded", "false"); if (back) b.focus(); }
+  b.addEventListener("click", function (e) { e.stopPropagation(); if (m.hidden) { m.hidden = false; b.setAttribute("aria-expanded", "true"); m.querySelector("a").focus(); } else close(true); });
+  m.addEventListener("click", function (e) { if (e.target.closest("a")) { e.preventDefault(); close(true); } });
+  document.addEventListener("click", function (e) { if (!m.hidden && !e.target.closest(".prefs")) close(); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !m.hidden) close(true); });
 })();
 </script>
 </body>

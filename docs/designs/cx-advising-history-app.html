@@ -96,7 +96,7 @@ svg { width: 20px; height: 20px; flex-shrink: 0; fill: currentColor; }
 .mk button[aria-pressed="true"] { background: #fff; color: #121921; border-color: #fff; }
 
 /* TopBar */
-.topbar { display: flex; align-items: center; height: 64px; padding: 0 24px; background: var(--surface); border-bottom: 1px solid var(--border); }
+.topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; height: 64px; padding: 0 24px; background: var(--surface); border-bottom: 1px solid var(--border); }
 .topbar h1 { margin: 0; font-size: 18px; line-height: 1.4; font-weight: 600; }
 .wrap { container-type: inline-size; max-width: 1280px; margin: 0 auto; padding: 32px 32px 48px; display: flex; flex-direction: column; gap: 24px; }
 
@@ -313,6 +313,16 @@ a.btn { text-decoration: none; }
   .tabs { padding-left: 16px; }
   .foot { justify-content: center; }
 }
+/* Settings — the global header button: Button outline base icon-only + DropdownMenu "Preferences" (same on every page) */
+.prefs { position: relative; display: inline-flex; flex-shrink: 0; }
+.settings-btn { display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box; width: 40px; height: 40px; padding: 0; border: 1px solid #dadde0; border-radius: 8px; background: transparent; color: #485462; cursor: pointer; }
+.settings-btn svg { width: 20px; height: 20px; fill: currentColor; }
+.settings-btn:hover, .settings-btn[aria-expanded="true"] { background: #e6e8eb; }
+.settings-btn:active { background: #cdd1d6; }
+.prefs-menu { position: absolute; top: calc(100% + 4px); right: 0; z-index: 55; min-width: 200px; padding: 4px; background: #fff; border: 1px solid #dadde0; border-radius: 8px; box-shadow: 0 2px 8px rgba(21, 25, 30, 0.10); text-align: left; }
+.prefs-menu__label { display: flex; align-items: center; height: 28px; padding: 0 8px; color: #758191; font-size: 12px; font-weight: 600; line-height: 1.4; }
+.prefs-menu__item { display: flex; align-items: center; height: 36px; padding: 0 8px; border-radius: 4px; color: #121921; font-size: 14px; font-weight: 400; text-decoration: none; }
+.prefs-menu__item:hover, .prefs-menu__item:focus-visible { background: #e6e8eb; outline: none; text-decoration: none; }
 </style>
 </head>
 <body>
@@ -337,11 +347,16 @@ a.btn { text-decoration: none; }
 </div>
 
 <!-- ui-next: TopBar -->
-<!-- data: page title "History" only; no actions in the bar on this page -->
+<!-- data: page title "History"; on the right the app's global Settings button (the same on every page) -->
 <!-- phone: below 768px the bar's side padding drops from 24px to 16px -->
 <header class="topbar">
   <!-- ui-next: Text | as="h1" -->
   <h1>History</h1>
+  <!-- ui-next: IconButton | variant="outline", size="base", icon settings, aria-label "Settings" — the app's global header button, drawn the same on every page -->
+  <!-- ui-next: DropdownMenu | opens under the button, right-aligned; a group label "Preferences", then two items: "Institutions", "About" -->
+  <!-- action: part of the app's global header, not tied to this page: each item opens that app page (Institutions, About); nothing on this page changes -->
+  <!-- phone: the same below 768px -->
+  <span class="prefs"><button class="settings-btn" type="button" aria-label="Settings" aria-haspopup="menu" aria-expanded="false" id="prefs-btn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.48.48 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.49.49 0 0 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32a.49.49 0 0 0-.12-.61l-2.01-1.58zM12 15.6A3.6 3.6 0 1 1 12 8.4a3.6 3.6 0 0 1 0 7.2z"/></svg></button><div class="prefs-menu" id="prefs-menu" role="menu" aria-label="Preferences" hidden><div class="prefs-menu__label">Preferences</div><a class="prefs-menu__item" role="menuitem" href="#institutions">Institutions</a><a class="prefs-menu__item" role="menuitem" href="#about">About</a></div></span>
 </header>
 
 <main class="wrap" id="main">
@@ -843,6 +858,17 @@ a.btn { text-decoration: none; }
   function tabsEnd() { tabs.classList.toggle("is-end", tabs.scrollLeft + tabs.clientWidth >= tabs.scrollWidth - 1); }
   tabs.addEventListener("scroll", tabsEnd); window.addEventListener("resize", tabsEnd);
   render(); tabsEnd();
+})();
+</script>
+<!-- mockup-only: opens the Preferences menu, do not build -->
+<script>
+(function () {
+  var b = document.getElementById("prefs-btn"), m = document.getElementById("prefs-menu");
+  function close(back) { m.hidden = true; b.setAttribute("aria-expanded", "false"); if (back) b.focus(); }
+  b.addEventListener("click", function (e) { e.stopPropagation(); if (m.hidden) { m.hidden = false; b.setAttribute("aria-expanded", "true"); m.querySelector("a").focus(); } else close(true); });
+  m.addEventListener("click", function (e) { if (e.target.closest("a")) { e.preventDefault(); close(true); } });
+  document.addEventListener("click", function (e) { if (!m.hidden && !e.target.closest(".prefs")) close(); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !m.hidden) close(true); });
 })();
 </script>
 </body>

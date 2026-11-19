@@ -86,6 +86,33 @@ const secondary = {
   },
 };
 
+/* The global Settings button — the same on every app page (user, 2026-11-19:
+   "one look everywhere; the live site draws it with an outline"). Button
+   OUTLINE base icon-only, resolved from button.tokens.json. Own class so it
+   doesn't depend on which Button recipe a page ships. It opens the app's
+   Preferences menu (Institutions, About) — not tied to the page it's on. */
+const outline = {
+  radius: px(resolve(button.outline.radius.$value)),
+  border: refPath(button.outline.state.default.border.$value),
+  icon: refPath(button.outline.state.default.icon.$value),
+  hoverFill: refPath(button.outline.state.hover.fill.$value),
+  pressedFill: refPath(button.outline.state.pressed.fill.$value),
+  ringColor: refPath(button.outline.state.focused.ringColor.$value),
+  ringWidth: px(resolve(button.outline.state.focused.ringWidth.$value)),
+  ringOffset: px(resolve(button.outline.state.focused.ringOffset.$value)),
+  height: px(resolve(button.outline.size.base.height.$value)),
+  iconSize: px(resolve(button.outline.size.base.iconSize.$value)),
+};
+export const SETTINGS_COLOR_PATHS = [outline.border, outline.icon, outline.hoverFill, outline.pressedFill, outline.ringColor];
+export const SETTINGS_BUTTON_CSS = `/* Settings — Button outline base icon-only (app-shell.mjs) */
+.btn.settings-btn { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; box-sizing: border-box; width: ${outline.height}; height: ${outline.height}; padding: 0; border: 1px solid ${cv(outline.border)}; border-radius: ${outline.radius}; background: transparent; cursor: pointer; }
+.btn.settings-btn .btn__icon { width: ${outline.iconSize}; height: ${outline.iconSize}; color: ${cv(outline.icon)}; }
+.btn.settings-btn:hover { background: ${cv(outline.hoverFill)}; }
+.btn.settings-btn:active { background: ${cv(outline.pressedFill)}; }
+.btn.settings-btn:focus-visible { outline: ${outline.ringWidth} solid ${cv(outline.ringColor)}; outline-offset: ${outline.ringOffset}; }`;
+/** iconFn: the page's own icon helper (each builder has one). */
+export const settingsButton = (iconFn) => `<button class="btn settings-btn" type="button" aria-label="Settings" aria-haspopup="menu">${iconFn("settings", "btn__icon")}</button>`;
+
 /** Token paths the shell CSS references — merge into the page's own colorPaths. */
 export const SHELL_COLOR_PATHS = [
   "surface.page",
@@ -100,6 +127,7 @@ export const SHELL_COLOR_PATHS = [
   secondary.hoverFill,
   secondary.pressedFill,
   secondary.ringColor,
+  ...SETTINGS_COLOR_PATHS,
 ];
 
 /** The wordmark, with its own #090D19 text fill swapped for currentColor so it
@@ -111,7 +139,8 @@ export const LOGO_SVG = fs
 const icon = (name, cls) =>
   fs.readFileSync(path.join(root, `assets/icons/material-filled/${name}.svg`), "utf8").replace("<svg ", `<svg class="${cls}" `);
 
-export const SHELL_TOPBAR_CSS = `/* ---- portal app shell (tools/lib/app-shell.mjs) ---- */
+export const SHELL_TOPBAR_CSS = `${SETTINGS_BUTTON_CSS}
+/* ---- portal app shell (tools/lib/app-shell.mjs) ---- */
 .app { min-height: 100%; display: flex; flex-direction: column; }
 /* Exactly dim.16 (64px) tall, border included: everything lands on the 4px
    grid, and vertical padding + a 1px border can never total a multiple of 4
@@ -165,7 +194,7 @@ ${SHELL_BUTTON_CSS}`;
 export function shellTopbar({ title, meta, actions } = {}) {
   const right =
     actions ??
-    `<button class="btn btn--secondary btn--base btn--icon-only" type="button" aria-label="Settings">${icon("settings", "btn__icon")}</button>`;
+    settingsButton(icon);
   const left = title
     ? `<div class="app__brand"><h1 class="app__title">${title}</h1>${meta ? `<span class="app__meta">${meta}</span>` : ""}</div>`
     : `<span class="app__logo">${LOGO_SVG}</span>`;

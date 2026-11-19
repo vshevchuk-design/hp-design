@@ -1841,3 +1841,7 @@ Storybook's FormBadgeList is a tag input (type, Enter, a chip) — black chips, 
 ## 2026-11-19 — Advisors page mockup: keep both scheduling actions
 
 The brief questioned "New appointment" vs "Schedule with this advisor". Devs answered: they open two different systems (old vs new scheduling); while an institution runs both side by side a student can see both, and after switchover New appointment goes away. Each Actions item is checked per advisor, so the mockup keeps all three with their own rule notes and hides the Actions button when none apply. Department filter follows the ui-next gallery's "Select multiple" (searchable), not MultiSelectCombobox.
+
+## 2026-11-19 — Settings button: one outline button everywhere
+
+The user pointed out the header gear was drawn three ways (secondary fill in the prototypes, ghost in the Advisors mockup, absent on History) and that it is a global Preferences menu (Institutions, About), not page-specific. Chose outline to match the live site. One shared helper in app-shell.mjs now renders it for every prototype; the three page mockups carry the same button + menu and notes; Advisors' open question about it was dropped.

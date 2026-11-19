@@ -18,6 +18,7 @@
 // status.md already flagged as Select's natural next step), Send appends a
 // real self Bubble, Archive really moves the thread to the Archived list.
 // Run: node tools/build-design-student-message-center.mjs
+import { SETTINGS_BUTTON_CSS, SETTINGS_COLOR_PATHS, settingsButton } from "./lib/app-shell.mjs";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -124,6 +125,7 @@ const usedHues = [...new Set(identityNames.map(hueOf))];
 // (Input/Select/Search/Composer/compose fields) shares one recipe.
 const fieldHoverBg = refPath(input.state.hover.bg.$value);
 const colorPaths = [
+  ...SETTINGS_COLOR_PATHS,
   "surface.page", "surface.default", "surface.sunken", "surface.dim",
   "border.default", "border.strong", "border.focus",
   "text.default", "text.secondary", "text.muted", "text.primary", "text.onFill",
@@ -982,6 +984,7 @@ body { margin: 0; background: ${cv("surface.page")}; font-family: ${cv("family.s
 }`;
 
 const appCss = `${rootVars}
+${SETTINGS_BUTTON_CSS}
 
 ${componentCss}
 
@@ -2017,7 +2020,7 @@ ${appCss}
 </head>
 <body>
 <div class="mc">
-  <header class="mc__topbar"><h1>Message Center</h1><div class="mc__topbar-actions"><button class="btn btn--primary btn--base mc-topbar-new" id="mc-new-desktop" type="button">${iconEdit}New message</button><button class="btn btn--secondary btn--base btn--icon-only" type="button" aria-label="Settings">${iconSettings}</button></div></header>
+  <header class="mc__topbar"><h1>Message Center</h1><div class="mc__topbar-actions"><button class="btn btn--primary btn--base mc-topbar-new" id="mc-new-desktop" type="button">${iconEdit}New message</button>${settingsButton(iconOf)}</div></header>
   <div class="mc__body">
     <aside class="mc__rail" aria-label="Thread list">
       <div class="mc-rail__topbar">
